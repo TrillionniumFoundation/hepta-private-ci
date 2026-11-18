@@ -3,23 +3,6 @@
 //! remains exclusively held; no digest, callback, key or replacement grant can
 //! stand in for its live selected-artifact and consumed-use checks.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -410,11 +393,7 @@ impl PublishedCircuitFeatureTaskV1 {
             .current
             .check_current(self.0.publication.target())
             .map_err(invalid)?;
-        OriginalVersion::require_current(
-            phase_observe!(sync, "version.mutex_wait", self.0.original.lock())
-                .map_err(invalid)?
-                .as_ref(),
-        )?;
+        OriginalVersion::require_current(self.0.original.lock().map_err(invalid)?.as_ref())?;
         self.0
             .current
             .check_current(self.0.publication.target())
@@ -423,10 +402,7 @@ impl PublishedCircuitFeatureTaskV1 {
 
     fn require_active(&self) -> Result<(), AgentdError> {
         self.require_current()?;
-        if phase_observe!(sync, "version.mutex_wait", self.0.original.lock())
-            .map_err(invalid)?
-            .is_drained()?
-        {
+        if self.0.original.lock().map_err(invalid)?.is_drained()? {
             return Err(invalid("ordinary published Feature task is drained"));
         }
         self.require_current()

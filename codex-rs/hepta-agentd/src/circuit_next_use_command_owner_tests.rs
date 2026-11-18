@@ -2,11 +2,6 @@
 //! Training metadata and process credentials are explicit fixtures. These tests
 //! do not claim a native optimizer run or an installed cross-UID LEARN loop.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_diagnostic as phase;
-// HEPTA_PHASE_END
-
 use super::*;
 use pretty_assertions::assert_eq;
 use pretty_assertions::assert_ne;
@@ -17,13 +12,6 @@ use crate::OriginalCircuitNextUseCommandErrorV1;
 use crate::OriginalCircuitNextUseCommandOwnerV1;
 use crate::OriginalCircuitSelectionCommandReceiptV1;
 use crate::learning_iteration_evidence_client::next_use_command_test_support as next;
-
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-macro_rules! phase_case { ($($body:tt)*) => { phase::run_case(/*case*/ 1, async { $($body)* }).await }; }
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_case { ($($body:tt)*) => { { $($body)* } }; }
-// HEPTA_PHASE_END
 
 type ObserverHost = OriginalCircuitNextUseCommandOwnerV1<FileAnchorWitnessStore>;
 type ObserverThread = std::thread::JoinHandle<Result<u64, OriginalCircuitNextUseCommandErrorV1>>;
@@ -597,8 +585,6 @@ mod readiness;
 // read reaches the same live original owners; no timeout or cache is changed.
 #[tokio::test]
 async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
-    // HEPTA_PHASE_CASE_BEGIN
-    phase_case! {
     let f = CompletionFixture::ready(None).await?;
     f.complete_c().await?;
     let context = f.context()?;
@@ -607,13 +593,6 @@ async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
     let server = next::serve(Arc::clone(&service.owner), channel);
     let completed = client.attest_completed_task().await?;
     let before = f.f.original.bytes()?;
-    // HEPTA_PHASE_BEGIN
-    #[cfg(all(test, hepta_ci_phase_diagnostic))]
-    {
-        phase::begin_measurement();
-    }
-    // HEPTA_PHASE_END
-
 
     let started = std::time::Instant::now();
     let command_current = client.readback().await;
@@ -657,21 +636,10 @@ async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
         service_terminal,
     );
     f.finish(false).await?;
-    // HEPTA_PHASE_BEGIN
-    #[cfg(all(test, hepta_ci_phase_diagnostic))]
-    {
-        if command_terminal.is_ok() && service_terminal.is_ok() {
-            phase::cleanup_complete();
-        }
-    }
-    // HEPTA_PHASE_END
-
     command_terminal?;
     service_terminal?;
     let evidence_current = evidence_current?;
     assert_eq!(evidence_current, *completed.attestation());
     evidence_terminal?;
     Ok(())
-    }
-    // HEPTA_PHASE_CASE_END
 }

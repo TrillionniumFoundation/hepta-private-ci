@@ -1,28 +1,6 @@
 //! Existing Selector evidence purpose only. No execute, attest or write route.
 //! Each request rereads the original C Observer and its live task/Trainer peers.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_diagnostic as phase;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use codex_hepta_contracts::HostAuthorityPeerChannel;
 use codex_hepta_contracts::HostIssuerTransportError;
 use codex_hepta_neuron::AnchorWitnessStore;
@@ -54,11 +32,6 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
     }
 
     fn evidence_response(&self, bytes: &[u8], request_id: u64) -> Result<Vec<u8>, Error> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(all(test, hepta_ci_phase_diagnostic))]
-        let _phase_scope = phase::scope("c.evidence_handler");
-        // HEPTA_PHASE_END
-
         let started_at = now()?;
         let request: evidence_wire::Request = serde_json::from_slice(bytes)?;
         let snapshot_head: Digest32 = request
@@ -80,13 +53,10 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
         }
         self.context.authenticate(started_at)?;
         let (receipt, signed) = {
-            let mut owner = phase_observe!(sync, "c.owner_try_lock", self.owner.try_lock())
-                .map_err(|_| Error::Busy)?;
+            let mut owner = self.owner.try_lock().map_err(|_| Error::Busy)?;
             let original: &mut OriginalCircuitNextUseReceiptOwnerV1<W> = &mut owner;
-            self.runtime.block_on(phase_observe!(
-                future,
-                "c.runtime_block_on",
-                OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
+            self.runtime
+                .block_on(OriginalCircuitNextUseReceiptOwnerV1::readback_remote(
                     original,
                     OriginalCircuitNextUseRemoteSourcesV1 {
                         snapshot: &self.context.selection,
@@ -94,8 +64,7 @@ impl<W: AnchorWitnessStore + Send + 'static> OriginalCircuitNextUseCommandOwnerV
                         trainer: &self.trainer,
                         selector: &self.selector,
                     },
-                )
-            ))?
+                ))?
         };
         let current = now()?;
         require_clock(started_at, current)?;

@@ -3,28 +3,6 @@
 //! caller still needs its authenticated effect-owner record to prove what was
 //! applied; a caller-supplied witness alone does not prove effect completion.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(hepta_ci_phase_diagnostic)]
-use crate::phase_diagnostic as phase;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(hepta_ci_phase_diagnostic)]
-use crate::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(hepta_ci_phase_diagnostic))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use super::FinalUseAuthenticationProfile;
 use super::FinalUseAuthority;
 use super::FinalUseBinding;
@@ -47,7 +25,10 @@ impl FinalUseAuthority {
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
-        let state = phase_observe!(sync, "final_use.state_mutex_wait", self.0.state.lock())
+        let state = self
+            .0
+            .state
+            .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         Ok(frontier_for_state_with_profile(&state, self.0.profile))
@@ -64,11 +45,6 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         witness: &VerifiedUseTokenWitnessV1,
     ) -> Result<FinalUseRevocations, FinalUseError> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(hepta_ci_phase_diagnostic)]
-        let _phase_scope = phase::scope("final_use.verify_retained");
-        // HEPTA_PHASE_END
-
         if self.0.frontier_store.is_none() {
             return Err(FinalUseError::InvalidTrust);
         }
@@ -80,7 +56,10 @@ impl FinalUseAuthority {
             expected,
             witness,
         )?;
-        let state = phase_observe!(sync, "final_use.state_mutex_wait", self.0.state.lock())
+        let state = self
+            .0
+            .state
+            .lock()
             .map_err(|_| FinalUseError::Unavailable)?;
         let state = self.0.ensure_current_effect_state(state)?;
         retained.verify_state(&state)
@@ -104,11 +83,6 @@ impl<'a> RetainedUse<'a> {
         expected: &FinalUseBinding,
         witness: &'a VerifiedUseTokenWitnessV1,
     ) -> Result<Self, FinalUseError> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(hepta_ci_phase_diagnostic)]
-        let _phase_scope = phase::scope("final_use.authenticate");
-        // HEPTA_PHASE_END
-
         if signed.grant.schema_version != profile.grant_schema() {
             return Err(FinalUseError::InvalidGrant);
         }
@@ -147,11 +121,6 @@ impl<'a> RetainedUse<'a> {
     }
 
     pub(super) fn verify_state(&self, state: &State) -> Result<FinalUseRevocations, FinalUseError> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(hepta_ci_phase_diagnostic)]
-        let _phase_scope = phase::scope("final_use.verify_state");
-        // HEPTA_PHASE_END
-
         if state.head.authority_epoch != self.witness.authority_epoch {
             return Err(FinalUseError::EpochMismatch);
         }

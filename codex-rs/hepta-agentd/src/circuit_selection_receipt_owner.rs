@@ -3,23 +3,6 @@
 //! A Training NoUpdate is necessary for this profile, but cannot stand in for
 //! the original version owner's independently authorized publication.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use std::fs::File;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -187,7 +170,7 @@ async fn read_remote_selection(
     )?;
     #[cfg(test)]
     let published_started = std::time::Instant::now();
-    let original = phase_observe!(future, "selector.published_current", live.read_current()).await;
+    let original = live.read_current().await;
     #[cfg(test)]
     eprintln!(
         "HEPTA_SELECTOR_REMOTE_PUBLISHED elapsed_us={} result={:?}",
@@ -301,26 +284,16 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         if source.snapshot().receipts.len() > self.config.decision.receipts.len() {
             return self.readback_source(source).await;
         }
-        match phase_observe!(
-            sync,
-            "selector.physical_journal_read",
-            self.journal.read(&self.saved)
-        ) {
+        match self.journal.read(&self.saved) {
             Ok(_) => return self.readback_source(source).await,
             Err(OwnerError::Store(ProductEvaluationExecutionStoreErrorV1::Missing)) => {}
             Err(error) => return Err(error.into()),
         }
         require_new_attestation(&self.config, started_at, now()?)?;
-        let observed =
-            phase_observe!(future, "selector.prepare_before", self.prepare(&source)).await?;
+        let observed = self.prepare(&source).await?;
         #[cfg(test)]
         let before_started = std::time::Instant::now();
-        let evidence = phase_observe!(
-            future,
-            "selector.training_before",
-            self.training_evidence(&source)
-        )
-        .await;
+        let evidence = self.training_evidence(&source).await;
         #[cfg(test)]
         if matches!(source.location(), ObservationLocation::RemoteOwner) {
             eprintln!(
@@ -331,9 +304,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         }
         let evidence = evidence?;
         authenticate_training(&self.config, &evidence, now()?)?;
-        if phase_observe!(future, "selector.prepare_before", self.prepare(&source)).await?
-            != observed
-        {
+        if self.prepare(&source).await? != observed {
             return Err(OwnerError::CommitUncertain.into());
         }
         let claim_at = now()?;
@@ -406,17 +377,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());
         }
-        let observed =
-            phase_observe!(future, "selector.prepare_before", self.prepare(&source)).await?;
+        let observed = self.prepare(&source).await?;
         if matches!(source.location(), ObservationLocation::RemoteOwner) {
             #[cfg(test)]
             let before_started = std::time::Instant::now();
-            let before = phase_observe!(
-                future,
-                "selector.training_before",
-                self.training_evidence(&source)
-            )
-            .await;
+            let before = self.training_evidence(&source).await;
             #[cfg(test)]
             eprintln!(
                 "HEPTA_SELECTOR_REMOTE_TRAINER_BEFORE elapsed_us={} result={:?}",
@@ -426,11 +391,7 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             let before = before?;
             authenticate_training(&self.config, &before, now()?)?;
         }
-        let bytes = phase_observe!(
-            sync,
-            "selector.physical_journal_read",
-            self.journal.read(&self.saved)
-        )?;
+        let bytes = self.journal.read(&self.saved)?;
         let result = self
             .finish_original_readback(
                 &source, &observed, &bytes, started_at, /*new_attestation*/ false,
@@ -488,33 +449,19 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
             ObservationLocation::LocalOwner => {
                 // Preserve the established local-owner order, including
                 // detecting a withdrawal while its Trainer read is in flight.
-                let evidence = phase_observe!(
-                    future,
-                    "selector.training_after",
-                    self.training_evidence(source)
-                )
-                .await?;
-                if phase_observe!(future, "selector.prepare_after", self.prepare(source)).await?
-                    != *observed
-                {
+                let evidence = self.training_evidence(source).await?;
+                if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
                 evidence
             }
             ObservationLocation::RemoteOwner => {
-                if phase_observe!(future, "selector.prepare_after", self.prepare(source)).await?
-                    != *observed
-                {
+                if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
                 #[cfg(test)]
                 let after_started = std::time::Instant::now();
-                let after = phase_observe!(
-                    future,
-                    "selector.training_after",
-                    self.training_evidence(source)
-                )
-                .await;
+                let after = self.training_evidence(source).await;
                 #[cfg(test)]
                 eprintln!(
                     "HEPTA_SELECTOR_REMOTE_TRAINER_AFTER elapsed_us={} result={:?}",
@@ -524,20 +471,11 @@ impl<W: AnchorWitnessStore> OriginalCircuitSelectionReceiptOwnerV1<W> {
                 after?
             }
         };
-        if phase_observe!(
-            sync,
-            "selector.physical_journal_read",
-            self.journal.read(&self.saved)
-        )? != bytes
-        {
+        if self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
         }
         let current = now()?;
-        phase_observe!(
-            sync,
-            "selector.completed_authentication",
-            self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
-        )
+        self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
     }
 
     fn decode_completed(

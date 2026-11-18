@@ -2,23 +2,6 @@
 //! The host supplies enrolled custody, original files and connected predecessor
 //! owners. This owner neither runs C nor selects, adopts or enrolls any owner.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use std::fs::File;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
@@ -208,7 +191,7 @@ async fn read_remote_next_use(
         &config.training_evidence,
         Some(&config.selection_evidence),
     )?;
-    let original = phase_observe!(future, "c.published_current", live.read_current()).await?;
+    let original = live.read_current().await?;
     Ok(original.observation().clone())
 }
 
@@ -326,15 +309,14 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
             return Err(OwnerError::CommitUncertain.into());
         }
         require_new_attestation(&self.config, started_at, started_at)?;
-        let observed = phase_observe!(future, "c.prepare_before", self.prepare(&source)).await?;
+        let observed = self.prepare(&source).await?;
         // A completed coordinator can only recover an existing owner result.
         if source.snapshot().receipts.len() > self.config.selection.receipts.len() {
             return self.readback_source(source).await;
         }
-        let evidence =
-            phase_observe!(future, "c.predecessors_before", self.predecessors(&source)).await?;
+        let evidence = self.predecessors(&source).await?;
         authenticate_predecessors(&self.config, &evidence, now()?)?;
-        if phase_observe!(future, "c.prepare_before", self.prepare(&source)).await? != observed {
+        if self.prepare(&source).await? != observed {
             return Err(OwnerError::CommitUncertain.into());
         }
         let config = &self.config;
@@ -403,17 +385,12 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());
         }
-        let observed = phase_observe!(future, "c.prepare_before", self.prepare(&source)).await?;
+        let observed = self.prepare(&source).await?;
         if matches!(source.location(), ObservationLocation::RemoteOwner) {
-            let before =
-                phase_observe!(future, "c.predecessors_before", self.predecessors(&source)).await?;
+            let before = self.predecessors(&source).await?;
             authenticate_predecessors(&self.config, &before, now()?)?;
         }
-        let bytes = phase_observe!(
-            sync,
-            "c.physical_journal_read",
-            self.journal.read(&self.saved)
-        )?;
+        let bytes = self.journal.read(&self.saved)?;
         let result = self
             .finish_original_readback(
                 &source, &observed, &bytes, started_at, /*new_attestation*/ false,
@@ -481,39 +458,24 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         // authentication sends another predecessor request.
         let evidence = match source.location() {
             ObservationLocation::LocalOwner => {
-                let evidence =
-                    phase_observe!(future, "c.predecessors_after", self.predecessors(source))
-                        .await?;
-                if phase_observe!(future, "c.prepare_after", self.prepare(source)).await?
-                    != *observed
-                {
+                let evidence = self.predecessors(source).await?;
+                if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
                 evidence
             }
             ObservationLocation::RemoteOwner => {
-                if phase_observe!(future, "c.prepare_after", self.prepare(source)).await?
-                    != *observed
-                {
+                if self.prepare(source).await? != *observed {
                     return Err(OwnerError::CommitUncertain.into());
                 }
-                phase_observe!(future, "c.predecessors_after", self.predecessors(source)).await?
+                self.predecessors(source).await?
             }
         };
-        if phase_observe!(
-            sync,
-            "c.physical_journal_read",
-            self.journal.read(&self.saved)
-        )? != bytes
-        {
+        if self.journal.read(&self.saved)? != bytes {
             return Err(OwnerError::CommitUncertain.into());
         }
         let current = now()?;
-        phase_observe!(
-            sync,
-            "c.completed_authentication",
-            self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
-        )
+        self.authenticate_completed(completed, &evidence, started_at, current, new_attestation)
     }
 
     fn decode_completed(

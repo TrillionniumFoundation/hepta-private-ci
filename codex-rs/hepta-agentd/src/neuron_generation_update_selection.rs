@@ -5,28 +5,6 @@
 //! sealed observation grant no activation authority: Control must separately
 //! consume the exact independently signed FinalUse operation.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_diagnostic as phase;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use std::fs::File;
 
 use codex_hepta_learning_artifacts::ArtifactKind;
@@ -132,12 +110,8 @@ impl AgentdSelectedGenerationV1 {
         if !metadata.is_file() || metadata.len() != signed.encoded_size_bytes {
             return Err(invalid("generation payload file differs from selection"));
         }
-        let current: VerifiedCurrentRegistryViewV1 = phase_observe!(
-            sync,
-            "artifact.current_registry_view",
-            owner.current_registry_view(now)
-        )
-        .map_err(invalid)?;
+        let current: VerifiedCurrentRegistryViewV1 =
+            owner.current_registry_view(now).map_err(invalid)?;
         Self::load_at_current(
             verifier,
             signed,
@@ -234,11 +208,6 @@ impl AgentdSelectedGenerationV1 {
         owner: &LearningArtifactOwnerService,
         now: u64,
     ) -> Result<(), AgentdError> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(all(test, hepta_ci_phase_diagnostic))]
-        let _phase_scope = phase::scope("artifact.revalidate_selection");
-        // HEPTA_PHASE_END
-
         if now < self.observed_at || owner.recovery_required().is_some() {
             return Err(invalid(
                 "generation selection owner or clock is unavailable",
@@ -250,27 +219,18 @@ impl AgentdSelectedGenerationV1 {
         {
             return Err(invalid("generation selection withdrawal cut changed"));
         }
-        let current: VerifiedCurrentRegistryViewV1 = phase_observe!(
-            sync,
-            "artifact.current_registry_view",
-            owner.current_registry_view(now)
-        )
-        .map_err(invalid)?;
-        let verified = phase_observe!(
-            sync,
-            "artifact.selection_verify",
-            self.verifier.verify(&self.signed, &current, now)
-        )
-        .map_err(invalid)?;
+        let current: VerifiedCurrentRegistryViewV1 =
+            owner.current_registry_view(now).map_err(invalid)?;
+        let verified = self
+            .verifier
+            .verify(&self.signed, &current, now)
+            .map_err(invalid)?;
         if verified.selection_digest() != self.observation.selection {
             return Err(invalid("generation selection identity changed"));
         }
-        phase_observe!(
-            sync,
-            "artifact.payload_current",
-            self.candidate.with_current(current, |_| ())
-        )
-        .map_err(invalid)?;
+        self.candidate
+            .with_current(current, |_| ())
+            .map_err(invalid)?;
         self.observed_at = now;
         Ok(())
     }

@@ -1,27 +1,5 @@
 //! The existing root-owned Control CAS backend, with no untrusted store input.
 
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_diagnostic as phase;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(all(test, hepta_ci_phase_diagnostic))]
-use codex_hepta_contracts::phase_observe;
-// HEPTA_PHASE_END
-
-// HEPTA_PHASE_BEGIN
-#[cfg(not(all(test, hepta_ci_phase_diagnostic)))]
-macro_rules! phase_observe {
-    ($kind:ident, $phase:literal, $value:expr) => {
-        $value
-    };
-    (future_at, $context:expr, $phase:literal, $value:expr) => {
-        $value
-    };
-}
-// HEPTA_PHASE_END
-
 use std::sync::Arc;
 
 use codex_hepta_contracts::AuthorityFrontierStore;
@@ -95,7 +73,7 @@ impl CurrentStore {
         root: Arc<RootAuthorityDirectory>,
         head: CurrentHead,
     ) -> Result<Self, AgentdError> {
-        let owner_id = phase_observe!(sync, "control.scope", owner_id(head.current.scope()))?;
+        let owner_id = owner_id(head.current.scope())?;
         let store = HostAuthorityFrontierStore::initialize(root, owner_id.clone(), head)
             .map_err(invalid)?;
         Ok(Self {
@@ -207,40 +185,20 @@ impl CurrentStore {
     }
 
     pub(super) fn load(&self) -> Result<CurrentHead, AgentdError> {
-        // HEPTA_PHASE_BEGIN
-        #[cfg(all(test, hepta_ci_phase_diagnostic))]
-        let _phase_scope = phase::scope("control.current_load");
-        // HEPTA_PHASE_END
-
         let head = match &self.store {
-            Store::Host(store) => {
-                phase_observe!(sync, "control.host_load", store.load(&self.owner_id))
-                    .map_err(invalid)?
-            }
+            Store::Host(store) => store.load(&self.owner_id).map_err(invalid)?,
             #[cfg(target_os = "linux")]
-            Store::Root(original) => {
-                phase_observe!(sync, "control.root_observe", original.observe())?
-            }
+            Store::Root(original) => original.observe()?,
             #[cfg(target_os = "linux")]
-            Store::RootInitial(original) => phase_observe!(
-                sync,
-                "control.root_initial_observe",
-                original.observe_initial_current()
-            )?,
+            Store::RootInitial(original) => original.observe_initial_current()?,
             #[cfg(test)]
-            Store::Test { store } => {
-                phase_observe!(sync, "control.test_load", store.load(&self.owner_id))
-                    .map_err(invalid)?
-            }
+            Store::Test { store } => store.load(&self.owner_id).map_err(invalid)?,
         };
-        if head.schema_version != 1
-            || phase_observe!(sync, "control.scope", owner_id(head.current.scope()))?
-                != self.owner_id
-        {
+        if head.schema_version != 1 || owner_id(head.current.scope())? != self.owner_id {
             return Err(invalid("generation current scope or schema differs"));
         }
-        phase_observe!(sync, "control.digest", head.current.digest()).map_err(invalid)?;
-        phase_observe!(sync, "control.initial_validation", head.validate_initial())?;
+        head.current.digest().map_err(invalid)?;
+        head.validate_initial()?;
         Ok(head)
     }
 
