@@ -5,6 +5,7 @@ No command, module or executable is taken from a model/task manifest.
 """
 
 import argparse
+from contextlib import closing
 import hashlib
 import json
 import math
@@ -151,6 +152,11 @@ def validate(request):
         scope == "engineering",
         "independent scope requires original authenticated B/C and controller evidence; this research coordinator has no authentication authority",
         "BLOCKED",
+    )
+    timeout = plan.get("cold_timeout_seconds", 120)
+    require(
+        type(timeout) in (int, float) and 0 < timeout <= 600 and math.isfinite(timeout),
+        "cold timeout",
     )
     need(train, "parent_model_digest candidate_model_digest steps parameter_change")
     need(evaluation, "rows")
@@ -365,7 +371,7 @@ def recover(spec, expected_digest=None):
     if expected_digest is not None:
         require(digest(spec) == expected_digest, "cold request changed")
     selected = verify_manifest(spec["manifest"], spec["artifact_root"])
-    with sqlite3.connect(f"file:{spec['database']}?mode=ro", uri=True) as db:
+    with closing(sqlite3.connect(f"file:{spec['database']}?mode=ro", uri=True)) as db:
         row = db.execute(
             "SELECT binding,selected FROM selections WHERE operation=?",
             (spec["operation_id"],),
@@ -453,15 +459,21 @@ def execute(request, output):
     db, predictor, inserted = None, None, False
     started = time.monotonic()
     try:
+        # Detach caller-owned nested objects before validation or any callback.
+        request = json.loads(canonical(request))
         decision, selected, scores = validate(request)
         plan = request["plan"]
         binding = digest(request)
         manifest = request["candidate"] if decision == "ADOPTED" else request["parent"]
-        db = sqlite3.connect(root / "selection.sqlite", isolation_level=None)
-        db.execute("PRAGMA journal_mode=WAL")
-        db.execute("PRAGMA synchronous=FULL")
-        db.execute(
-            "CREATE TABLE IF NOT EXISTS selections(operation TEXT PRIMARY KEY,binding TEXT,selected TEXT,decision TEXT,report TEXT)"
+        from .adoption_journal import completed_report, open_selection
+
+        db = open_selection(
+            root,
+            plan["operation_id"],
+            binding,
+            selected,
+            decision,
+            sys.modules[__name__],
         )
         db.execute("BEGIN IMMEDIATE")
         prior = db.execute(
@@ -473,8 +485,16 @@ def execute(request, output):
             require(
                 prior[0] == binding, "operation was already bound to different evidence"
             )
-            old = json.loads(prior[1]) if prior[1] else None
-            if old and old["status"] in ("ADOPTED", "NO_UPDATE"):
+            old = completed_report(
+                root,
+                prior[1],
+                binding,
+                selected,
+                decision,
+                digest(plan),
+                sys.modules[__name__],
+            )
+            if old is not None:
                 return old
             report.update(model_decision=prior[3], selected_model_digest=prior[2])
             raise EvidenceError(
@@ -600,6 +620,7 @@ def execute(request, output):
             status=decision,
             cold=cold,
             cold_wall_seconds=process["seconds"],
+            cold_process_digest=digest(process),
             cold_scope="new process, same last-C inference input; no additional independent task",
             costs_complete=False,
             energy_joules=None,
@@ -630,7 +651,11 @@ def execute(request, output):
         root
         / (
             "RESULT.json"
-            if inserted or not (root / "RESULT.json").exists()
+            if inserted
+            or not any(
+                (root / name).exists()
+                for name in ("RESULT.json", "ADMISSION.json", "selection.sqlite")
+            )
             else f"ATTEMPT-{time.time_ns()}.json"
         ),
         report,
