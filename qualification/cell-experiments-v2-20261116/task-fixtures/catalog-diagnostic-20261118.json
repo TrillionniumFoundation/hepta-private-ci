@@ -1,0 +1,132 @@
+{
+  "fixtures": [
+    {
+      "controls": [
+        {
+          "id": "constant-x86",
+          "kind": "constant",
+          "value": "x86_64"
+        },
+        {
+          "id": "trailing-suffix",
+          "kind": "suffix",
+          "value": "-wrong"
+        }
+      ],
+      "entry": "direct",
+      "fixture_id": "diagnostic-C-machine",
+      "function": "normalize_machine",
+      "globals": {},
+      "nodes": [
+        "normalize_machine"
+      ],
+      "source": {
+        "archive_name": "hepta_diagnostic_targets_20261118.py.txt",
+        "git_blob": "e217e8d0fd485cfddfc8f50ec9c0b3a90c8be985",
+        "path": "scripts/codex_package/targets.py",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "revision": "d0070b6985f54bc2d72e4bf82153b9872e31eb52",
+        "sha256": "a3113fef785df2cfeb9a3a41edc487f74c00463b7716cec27e1bca64be2bc7a8",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d0070b6985f54bc2d72e4bf82153b9872e31eb52/scripts/codex_package/targets.py"
+      },
+      "subject_source": "def normalize_machine(machine: str) -> str:\n    machine = machine.lower()\n    if machine in (\"amd64\", \"x86_64\"):\n        return \"x86_64\"\n    if machine in (\"aarch64\", \"arm64\"):\n        return \"aarch64\"\n    return machine\n"
+    },
+    {
+      "controls": [
+        {
+          "id": "constant-zero",
+          "kind": "constant",
+          "value": "0.0 KiB"
+        },
+        {
+          "id": "fraction-lost",
+          "kind": "constant",
+          "value": "1.0 KiB",
+          "when_first_arg": 1536
+        }
+      ],
+      "entry": "direct",
+      "fixture_id": "diagnostic-C-kib",
+      "function": "format_kib",
+      "globals": {},
+      "nodes": [
+        "format_kib"
+      ],
+      "source": {
+        "archive_name": "hepta_diagnostic_blob_size_20261118.py.txt",
+        "git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+        "path": "scripts/check_blob_size.py",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "revision": "d0070b6985f54bc2d72e4bf82153b9872e31eb52",
+        "sha256": "eb7a9eab936b7c7948ed13fbd6d6aca09aa38997c20685a8ee12d72e388d52c3",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d0070b6985f54bc2d72e4bf82153b9872e31eb52/scripts/check_blob_size.py"
+      },
+      "subject_source": "def format_kib(size_bytes: int) -> str:\n    return f\"{size_bytes / 1024:.1f} KiB\"\n"
+    },
+    {
+      "controls": [
+        {
+          "id": "constant-debug",
+          "kind": "constant",
+          "value": "debug"
+        },
+        {
+          "id": "custom-rewritten",
+          "kind": "constant",
+          "value": "release",
+          "when_first_arg": "profiling"
+        }
+      ],
+      "entry": "direct",
+      "fixture_id": "diagnostic-D-profile",
+      "function": "cargo_profile_dirname",
+      "globals": {},
+      "nodes": [
+        "cargo_profile_dirname"
+      ],
+      "source": {
+        "archive_name": "hepta_diagnostic_cargo_20261118.py.txt",
+        "git_blob": "f759e447620c62d50ab0441880e3383e335e0648",
+        "path": "scripts/codex_package/cargo.py",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "revision": "d0070b6985f54bc2d72e4bf82153b9872e31eb52",
+        "sha256": "95303ad6fcb3d6bf69bc66d8dc78f3386499893e22e3aba62f37ace952c2b946",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d0070b6985f54bc2d72e4bf82153b9872e31eb52/scripts/codex_package/cargo.py"
+      },
+      "subject_source": "def cargo_profile_dirname(profile: str) -> str:\n    if profile == \"dev\":\n        return \"debug\"\n    if profile == \"release\":\n        return \"release\"\n    return profile\n"
+    },
+    {
+      "controls": [
+        {
+          "id": "constant-targz",
+          "kind": "constant",
+          "value": "tar.gz"
+        },
+        {
+          "id": "tgz-alias-lost",
+          "kind": "constant",
+          "value": "tgz",
+          "when_first_arg": "codex.tgz"
+        }
+      ],
+      "entry": "path_string",
+      "fixture_id": "diagnostic-D-archive",
+      "function": "archive_format_for_path",
+      "globals": {},
+      "nodes": [
+        "archive_format_for_path"
+      ],
+      "source": {
+        "archive_name": "hepta_diagnostic_archive_20261118.py.txt",
+        "git_blob": "7e6a3f84652d7cd371a3aaf78c58f1d435df21b6",
+        "path": "scripts/codex_package/archive.py",
+        "repository": "TrillionniumFoundation/hepta-private-ci",
+        "revision": "d0070b6985f54bc2d72e4bf82153b9872e31eb52",
+        "sha256": "24ef6deae60020ffd89af602de6867f7f9147351d7d54412d256b518fcdcbddd",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/d0070b6985f54bc2d72e4bf82153b9872e31eb52/scripts/codex_package/archive.py"
+      },
+      "subject_source": "def archive_format_for_path(path: Path) -> str:\n    suffixes = path.suffixes\n    if suffixes[-2:] == [\".tar\", \".gz\"] or path.suffix == \".tgz\":\n        return \"tar.gz\"\n    if suffixes[-2:] == [\".tar\", \".zst\"]:\n        return \"tar.zst\"\n    if path.suffix == \".zip\":\n        return \"zip\"\n    raise RuntimeError(\n        f\"Unsupported archive suffix for {path}. Use .tar.gz, .tgz, .tar.zst, or .zip.\"\n    )\n"
+    }
+  ],
+  "schema": "hepta.repo-function-fixtures.v1"
+}
