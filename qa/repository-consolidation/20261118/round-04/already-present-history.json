@@ -1,0 +1,165 @@
+{
+  "source": "f571db956745d0702baba6da800b6c923aed34cc",
+  "source_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e",
+  "independent_native_git_merge_checks": [
+    {
+      "head": "7a887343015043351da5b0560121dee6a248a434",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    },
+    {
+      "head": "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    },
+    {
+      "head": "c49c15055d0dcece7ddbad41076e171213328359",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    },
+    {
+      "head": "0013e14ca3b835f7eef0e9db82bd56f0995936cb",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    },
+    {
+      "head": "47262faa604dcff76142f9653f6c9923f82c19f8",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    },
+    {
+      "head": "b88fe0a86bbfb1569638c6912b6e9f029128924e",
+      "exit_code": 0,
+      "merged_tree": "8b7633e92ff38bbbd6f5b4d1f7449e532f287b4e"
+    }
+  ],
+  "full_review": {
+    "source": "f571db956745d0702baba6da800b6c923aed34cc",
+    "heads": [
+      "7a887343015043351da5b0560121dee6a248a434",
+      "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+      "c49c15055d0dcece7ddbad41076e171213328359",
+      "0013e14ca3b835f7eef0e9db82bd56f0995936cb",
+      "47262faa604dcff76142f9653f6c9923f82c19f8",
+      "b88fe0a86bbfb1569638c6912b6e9f029128924e"
+    ],
+    "exact_heads": [
+      "7a887343015043351da5b0560121dee6a248a434",
+      "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+      "c49c15055d0dcece7ddbad41076e171213328359"
+    ],
+    "roundtrip_heads": [
+      {
+        "sha": "0013e14ca3b835f7eef0e9db82bd56f0995936cb",
+        "names": [
+          "audit/hpca-frozen-evaluator-roster-original-0013e14-20261111-hold"
+        ],
+        "source": "f571db956745d0702baba6da800b6c923aed34cc",
+        "changed_paths": 4,
+        "proofs": [
+          {
+            "base": "dd90310817db4cc028f859174ed7e8413dc6f8c2",
+            "patch_sha256": "541efba0c82876e7b3dbc1f1c0da60c05f88e7a5310a747c0519881c67812afe",
+            "patch_bytes": 18570,
+            "source_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538",
+            "reverse_returncode": 0,
+            "forward_returncode": 0,
+            "roundtrip_entries_identical": true,
+            "restored_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538"
+          }
+        ],
+        "complete_roundtrip": true
+      },
+      {
+        "sha": "47262faa604dcff76142f9653f6c9923f82c19f8",
+        "names": [
+          "fix/encoder-lock-refresh-prettier-20261019"
+        ],
+        "source": "f571db956745d0702baba6da800b6c923aed34cc",
+        "changed_paths": 1,
+        "proofs": [
+          {
+            "base": "ecc4f8c42035bf6fdec288137ddc822e619d5e59",
+            "patch_sha256": "6eca616361ac0d82b10481232b62b3208d7b11624d111e8159b55da607e87266",
+            "patch_bytes": 799,
+            "source_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538",
+            "reverse_returncode": 0,
+            "forward_returncode": 0,
+            "roundtrip_entries_identical": true,
+            "restored_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538"
+          }
+        ],
+        "complete_roundtrip": true
+      },
+      {
+        "sha": "b88fe0a86bbfb1569638c6912b6e9f029128924e",
+        "names": [
+          "fix/healthy-readonly-registry-lifecycle-20261004"
+        ],
+        "source": "f571db956745d0702baba6da800b6c923aed34cc",
+        "changed_paths": 6,
+        "proofs": [
+          {
+            "base": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+            "patch_sha256": "3c9d508e018fcbf5b439e71d8e4235e3acd2b57671cf17a5a81481640d8d32bd",
+            "patch_bytes": 33128,
+            "source_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538",
+            "reverse_returncode": 0,
+            "forward_returncode": 0,
+            "roundtrip_entries_identical": true,
+            "restored_index_entries_sha256": "6b858e510f6951a0ff2c758144dd3c46e47c5addf00e87dfd2afdabc96c88538"
+          }
+        ],
+        "complete_roundtrip": true
+      }
+    ],
+    "newly_covered_unique_heads": 7,
+    "newly_covered_branch_names": 7,
+    "covered": [
+      {
+        "sha": "0013e14ca3b835f7eef0e9db82bd56f0995936cb",
+        "names": [
+          "audit/hpca-frozen-evaluator-roster-original-0013e14-20261111-hold"
+        ]
+      },
+      {
+        "sha": "47262faa604dcff76142f9653f6c9923f82c19f8",
+        "names": [
+          "fix/encoder-lock-refresh-prettier-20261019"
+        ]
+      },
+      {
+        "sha": "7a887343015043351da5b0560121dee6a248a434",
+        "names": [
+          "audit/hpca-posttrain-b2-collapse-original-7a88734-20261111-hold"
+        ]
+      },
+      {
+        "sha": "9aa9fa75f74ad7a15c3a3db36586502f0215aff0",
+        "names": [
+          "research/cell-common-foundations-20261108-ab8f"
+        ]
+      },
+      {
+        "sha": "b88fe0a86bbfb1569638c6912b6e9f029128924e",
+        "names": [
+          "fix/healthy-readonly-registry-lifecycle-20261004"
+        ]
+      },
+      {
+        "sha": "c49c15055d0dcece7ddbad41076e171213328359",
+        "names": [
+          "fix/hcsn-finite-nan-gate-20261111-gpt6"
+        ]
+      },
+      {
+        "sha": "ecf6b1161300c1aae5f2d8b48843f723c973bddc",
+        "names": [
+          "codex/hcsn-p1-fixed-gaps-relative-diagnostics-20261110-gpt6"
+        ]
+      }
+    ],
+    "source_changes_required": 0,
+    "review": "Exact heads pass complete path/mode/blob equality. Supplemental heads pass complete patch reverse/replay identity in independent indexes; inspected patches retain existing Python evaluator freeze checks, CI quote formatting, and healthy read-only registry replacement. No source writes required. Original commits must remain parents, and preserve all historical/current HIA pins."
+  }
+}

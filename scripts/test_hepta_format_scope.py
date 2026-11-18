@@ -98,6 +98,28 @@ class FormatterScopeTests(unittest.TestCase):
             (),
         )
 
+    def test_build_metadata_is_preserved_while_starlark_sources_are_formatted(self):
+        metadata = self.write("qualification/evidence/BUILD.json", '{"exit": 1}\n')
+        original = metadata.read_bytes()
+        self.write("WORKSPACE.json", '{"source": "original"}\n')
+        sources = ["BUILD", "BUILD.bazel", "tools/BUILD.fixture", "tools/check.bzl"]
+        for source in sources:
+            self.write(source, "exports_files([])\n")
+        self.git("add", ".")
+
+        full = FMT.buildifier_formatter_group(check=True)
+        scoped = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in scoped], ["Bazel/Starlark"])
+        for group in (full, scoped[0]):
+            self.assertEqual(list(group.commands[0].args[4:]), sorted(sources))
+        self.assertEqual(metadata.read_bytes(), original)
+        self.assertEqual(
+            FMT.scoped_formatter_groups(
+                ["qualification/evidence/BUILD.json", "WORKSPACE.json"], check=False
+            ),
+            (),
+        )
+
     def test_explicit_full_python_scope_includes_github_helpers(self):
         group = FMT.python_scripts_formatter_group(check=True)
         self.assertEqual(group.commands[0].args[-2:], ("scripts", ".github"))
