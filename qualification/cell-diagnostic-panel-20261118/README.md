@@ -73,6 +73,11 @@ source SHA-256 is `110b33222dc620ce5fb61b1e4ff9fb4b4e5f7bb03ee25a4c9c726e99f7476
 It performs the unchanged original model, source, training and actual tensor
 checks. The old online directory is preserved. The new verifier is imported
 only by the main process. No manifest is rewritten and no source gate is patched.
+The provider also binds the actual imported `hepta_cells/__init__.py` and
+`hepta_cells/semantic.py` paths and hashes before generation and on each request.
+These two support files were missing from the first run's freeze; that run is
+preserved with this limitation. The declared cold repeat uses the same exposed
+four tasks, models, arms and caps, and adds no independent sample or learning gain.
 The provider script and interpreter are explicit CLI paths, bound in `LAUNCH.json`
 and `FREEZE.json`; a model manifest cannot nominate executable code.
 
