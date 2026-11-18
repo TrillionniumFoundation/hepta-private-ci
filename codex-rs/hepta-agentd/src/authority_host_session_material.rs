@@ -2,6 +2,7 @@
 
 use super::*;
 use crate::authority_host_checkpoint::RootMaterialProfile;
+use std::io::Write;
 
 impl PreparedHostAuthoritySession {
     /// Seal only this material-backed session's registered Agent journal root.
@@ -148,10 +149,20 @@ impl PreparedHostAuthoritySession {
         registration_file: &Path,
         owner_pidfd: OwnedFd,
     ) -> io::Result<Self> {
-        let config = read_root_json(config_file)?;
-        let registration = read_root_json(registration_file)?;
-        let service = open_registered_writer(&config, &registration, &owner_pidfd)?
-            .recover_material_from_registered(&config, &registration, &owner_pidfd)?;
+        let config = read_root_json(config_file).inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=recover.read_service\n");
+        })?;
+        let registration = read_root_json(registration_file).inspect_err(|_| {
+            let _ = std::io::stderr().write_all(b"root_stage=recover.read_registration\n");
+        })?;
+        let service = open_registered_writer(&config, &registration, &owner_pidfd)
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=recover.writer_open\n");
+            })?
+            .recover_material_from_registered(&config, &registration, &owner_pidfd)
+            .inspect_err(|_| {
+                let _ = std::io::stderr().write_all(b"root_stage=recover.material\n");
+            })?;
         Ok(Self {
             config,
             registration,
