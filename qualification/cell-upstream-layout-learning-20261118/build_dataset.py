@@ -96,6 +96,18 @@ def build(source_commit):
             }
             record["information_digest"] = layout.information(record)
             records.append(record)
+    parent_reuse_files = {}
+    for index in range(4):
+        for attempt in (0, 1):
+            for kind in ("REQUEST", "OUTPUT", "VERIFICATION", "FEEDBACK"):
+                path = (
+                    ctx.COLLECTION
+                    / "results/P"
+                    / str(index)
+                    / (kind + "-" + str(attempt) + ".json")
+                )
+                retained(path)
+                parent_reuse_files[str(path)] = input_files[str(path)]
     from transformers import AutoTokenizer
 
     tokenizer = AutoTokenizer.from_pretrained(
@@ -218,6 +230,7 @@ def build(source_commit):
         "training_material_scope": "authorized public historical maintainer material; actual current-student failures are masked observations",
         "inference_policy": inference,
         "A_tasks_sha256": ctx.TASKS_SHA,
+        "A_parent_reuse_files": parent_reuse_files,
         "collection_policy_source_sha256": ctx.POLICY_SHA,
         "native_verifier_sha256": ctx.NATIVE_SHA,
         "new_model_call_cap": 56,

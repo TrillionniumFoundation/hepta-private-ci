@@ -18,6 +18,18 @@ def admitted():
         layout.require(
             ctx.sha(ctx.HERE / name) == expected, "frozen candidate changed: " + name
         )
+    for name, expected in freeze["original_input_files"].items():
+        layout.require(
+            ctx.sha(name) == expected, "frozen original evidence changed: " + name
+        )
+    layout.require(
+        len(freeze["A_parent_reuse_files"]) == 32
+        and all(
+            freeze["original_input_files"].get(name) == expected
+            for name, expected in freeze["A_parent_reuse_files"].items()
+        ),
+        "all reused A parent calls must be precommitted",
+    )
     records = ctx.read(ctx.HERE / "prepared/DATASET.json")
     layout.require(
         ctx.data.digest(records) == freeze["train_records_digest"],
