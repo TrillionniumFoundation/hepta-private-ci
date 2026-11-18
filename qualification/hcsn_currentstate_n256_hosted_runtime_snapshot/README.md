@@ -39,3 +39,20 @@ the terminal receipt binds both the encoded file and decoded original SHA-256.
 `REQUEST_V2.json` changes only the launch form to Python module execution.
 Runtime versions, capture bytes, observation scope, zero numerical counts, and
 the HOLD gates are unchanged.  The failed run is not relabelled or discarded.
+
+## Attempt 002 successful observation
+
+The single repaired run `44253300311`, job `134628918636`, completed all steps
+and uploaded artifact `14404508535`.  The 1,718-byte ZIP has SHA-256
+`8c0f54e7a49353615bac59c19e6072445b3453aa829b0d6d31e9a709b135fb13`
+and contains one 3,358-byte canonical observation.  The complete job log and
+artifact are preserved under `evidence/attempt002` with an independent
+zero-execution readback.
+
+The observation binds Python 3.12.3, NumPy 2.3.5, SciPy 1.17.0, both
+distribution RECORD hashes, both module-anchor hashes, 14.48 GiB
+MemAvailable, three visible cgroup levels, and zero finite `memory.max`
+entries.  The latter is not an allocation guarantee: allocation and calendar
+contracts remain null, and runtime/resource admission remain false.  The
+observation executed zero N256 input reads, dynamics, matrix exponentials,
+Torch calls, and optimizer steps.
