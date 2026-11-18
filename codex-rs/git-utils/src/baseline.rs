@@ -180,10 +180,7 @@ fn codex_signature(elapsed: Result<Duration, SystemTimeError>) -> gix::actor::Si
     gix::actor::Signature {
         name: "Codex".into(),
         email: "noreply@openai.com".into(),
-        time: gix::date::Time {
-            seconds,
-            offset: 0,
-        },
+        time: gix::date::Time { seconds, offset: 0 },
     }
 }
 

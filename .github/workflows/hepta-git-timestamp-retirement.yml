@@ -37,7 +37,7 @@ jobs:
           mkdir -p "$evidence"
           test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
           git rev-parse HEAD > "$evidence/source-head.txt"
-          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/metadata.json"
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/metadata.json"
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > /dev/null
           just bazel-lock-update 2>&1 | tee "$evidence/lock-update.log"
           just bazel-lock-check 2>&1 | tee "$evidence/lock-check.log"
@@ -54,14 +54,14 @@ jobs:
               old["dependencies"].remove("chrono")
           assert before == after, "unrelated Cargo graph drift"
           changed = subprocess.check_output(["git","diff","--name-only"],text=True).splitlines()
-          assert set(changed) <= {"codex-rs/Cargo.lock","MODULE.bazel.lock"}, changed
+          assert changed == [], changed
           manifest = tomllib.loads(pathlib.Path("codex-rs/git-utils/Cargo.toml").read_text())
           assert "chrono" not in manifest["dependencies"]
           assert any(p["name"] == "chrono" for p in after["package"]), "unexpected whole-graph removal"
           (root/"record.json").write_text(json.dumps({
               "head":os.environ["EXPECTED_HEAD"],"changed":changed,
               "locks":{n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["Cargo.lock","MODULE.bazel.lock"]},
-              "scope":"one direct git-utils edge; chrono remains; generated locks pending review"
+              "scope":"one direct git-utils edge; chrono remains; reviewed locks committed; zero drift required"
           },indent=2)+"\n")
           PY
       - name: Check original calendar boundary with pinned external oracle
