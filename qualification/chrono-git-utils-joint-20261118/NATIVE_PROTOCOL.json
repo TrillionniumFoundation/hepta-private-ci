@@ -1,0 +1,40 @@
+{
+  "base": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-git-utils",
+    "--retries",
+    "0",
+    "--test-threads",
+    "2",
+    "--no-tests",
+    "fail",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final"
+  ],
+  "complete_package_suites": [
+    "codex-git-utils"
+  ],
+  "required_baseline_cases": [
+    "reset_creates_fresh_baseline",
+    "ensure_recovers_from_unborn_repository",
+    "write_index_ignores_configured_hooks_path",
+    "diff_reports_added_modified_and_deleted_files",
+    "reset_drops_previous_history",
+    "status_scan_does_not_write_added_file_blobs",
+    "reports_executable_bit_changes_as_modified"
+  ],
+  "baseline_tests_sha256": "b120a2d9ec4462e44dee673c885bc873c4a63a3ee22bc95c9e513d007d85fb0d",
+  "all_existing_package_tests_unchanged": true,
+  "retries": 0,
+  "native_timeout_seconds": 7200,
+  "new_model_calls": 0,
+  "prior_native_results_inherited": false,
+  "prior_git_utils_results_inherited": false
+}
