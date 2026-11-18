@@ -19,6 +19,7 @@ PREFIX = "codex-rs/hepta-intelligence-eval/src/"
 STORE = PREFIX + "product_execution_file.rs"
 PHYSICAL = PREFIX + "product_execution_physical.rs"
 READER = PREFIX + "product_execution_readback.rs"
+CACHE = PREFIX + "product_execution_replay_cache.rs"
 
 
 class ExecutionPhysicalSourceTests(unittest.TestCase):
@@ -26,8 +27,8 @@ class ExecutionPhysicalSourceTests(unittest.TestCase):
     def setUpClass(cls):
         manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
         cls.rows = [row for row in manifest["protected_file"]
-                    if row["path"] in (STORE, PHYSICAL, READER)]
-        assert {row["path"] for row in cls.rows} == {STORE, PHYSICAL, READER}
+                    if row["path"] in (STORE, PHYSICAL, READER, CACHE)]
+        assert {row["path"] for row in cls.rows} == {STORE, PHYSICAL, READER, CACHE}
 
     def rejects_removal(self, path, function, markers):
         source = (ROOT / path).read_text()
@@ -58,9 +59,10 @@ class ExecutionPhysicalSourceTests(unittest.TestCase):
         self.rejects_removal(STORE, "fn ensure_ready(", (
             "if self.poisoned", "self.poisoned = true",
             "physical::read_stable_image(&mut self.file)",
-            "physical::replay_image(&bytes, self.binding, self.anchor)",
+            ".replay_current_image(&bytes)",
             "bytes.len() as u64 != self.length", "Digest32::of_bytes(&bytes) != self.image_digest",
             "replayed.anchor != self.anchor", "replayed.records != self.records",
+            "self.remember_verified_replay(&bytes, replayed)",
             "self.poisoned = false"))
 
     def test_claim_completion_and_readback_cannot_return_cached_success(self):
@@ -72,7 +74,8 @@ class ExecutionPhysicalSourceTests(unittest.TestCase):
     def test_append_requires_original_preimage_before_poison_sync_and_exact_postimage(self):
         self.rejects_removal(STORE, "fn append(", (
             ".filter(|length| *length <= MAX_FILE_BYTES)", "let mut expected = self.ensure_ready()?",
-            "expected.extend_from_slice(&frame);\n        self.poisoned = true;",
+            "expected.extend_from_slice(&frame)", "self.verified_replay = None",
+            "self.poisoned = true",
             ".and_then(|()| self.file.sync_all())", "physical::read_stable_image(&mut self.file)",
             "physical::replay_image(&observed, self.binding, next)",
             "if observed != expected || replayed.anchor != next",
@@ -104,6 +107,21 @@ class ExecutionPhysicalSourceTests(unittest.TestCase):
             "if !(36..=MAX_FRAME).contains(&count)", "let payload = take(&mut remaining, count)?",
             "if checksum != next.history_digest.as_array()", "replay(&mut records, payload)?",
             "witnessed |= anchor == minimum", "if !witnessed", "return Err(FileError::Rollback)"))
+
+    def test_replay_reuse_requires_the_exact_binding_anchor_and_image(self):
+        self.rejects_removal(CACHE, "fn replay_current_image(", (
+            "if let Some(verified) = &self.verified_replay",
+            "verified.binding == self.binding", "verified.minimum == self.anchor",
+            "verified.bytes.as_ref() == bytes", "Arc::clone(&verified.replayed)",
+            "physical::replay_image(bytes, self.binding, self.anchor).map(Arc::new)"))
+
+    def test_replay_retention_remains_bounded_and_keeps_the_full_verified_image(self):
+        self.rejects_removal(CACHE, "fn remember_verified_replay(", (
+            "if bytes.len() > MAX_VERIFIED_REPLAY_IMAGE_BYTES",
+            "self.verified_replay = None", "Arc::ptr_eq(&verified.replayed, &replayed)",
+            "self.verified_replay = Some(VerifiedReplayImage {",
+            "binding: self.binding", "minimum: self.anchor",
+            "bytes: bytes.to_vec().into_boxed_slice()"))
 
     def test_readonly_data_cut_remains_exact_and_shared_lock_released(self):
         self.rejects_removal(READER, "fn open(", (

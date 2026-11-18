@@ -137,9 +137,39 @@ class OriginalLearningOwnerClosureTests(unittest.TestCase):
             with self.subTest(marker=marker): self.rejects(JOURNAL, "fn require_current(", marker)
 
     def test_live_execution_current_replays_original_locked_bytes(self):
-        path = "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs"
-        for marker in ("length > MAX_FILE_BYTES", "length != self.length", ".take(MAX_FILE_BYTES + 1)", ".read_to_end(&mut bytes)", "&bytes[8..40] != self.binding.as_array()", "next_anchor(current, payload)?", "checksum != next.history_digest.as_array()", "replay(&mut records, payload)?", "current != self.anchor || records != self.records", "self.file.seek(SeekFrom::Start(cursor))", "if result.is_err()"):
-            with self.subTest(marker=marker): self.rejects(path, "fn read_current_anchor(", marker)
+        current = "codex-rs/hepta-intelligence-eval/src/product_execution_current.rs"
+        physical = "codex-rs/hepta-intelligence-eval/src/product_execution_physical.rs"
+        for marker in (
+            "length > MAX_FILE_BYTES", "length != self.length",
+            "let bytes = physical::read_stable_image(&mut self.file)?",
+            "self.replay_current_image(&bytes)?",
+            "replayed.anchor != self.anchor", "replayed.records != self.records",
+            "Digest32::of_bytes(&bytes) != self.image_digest",
+            "let stable = physical::read_stable_image(&mut self.file)?",
+            "stable != bytes || Digest32::of_bytes(&stable) != self.image_digest",
+            "self.file.seek(SeekFrom::Start(cursor))", "position == cursor",
+            "self.remember_verified_replay(&bytes, replayed)", "if result.is_err()",
+            "self.poisoned = true",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(current, "fn read_current_anchor(", marker)
+        for marker in (
+            ".take(MAX_FILE_BYTES + 1)", ".read_to_end(&mut bytes)",
+            "for _ in 0..2", "!metadata.is_file()", "length > MAX_FILE_BYTES",
+            "bytes.len() as u64 != length",
+            "file.metadata().map_err(io_error)?.len() != length",
+            "previous.as_ref().is_some_and(|original| original != &bytes)",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(physical, "fn read_stable_image(", marker)
+        for marker in (
+            "&bytes[8..40] != binding.as_array()", "next_anchor(anchor, payload)?",
+            "checksum != next.history_digest.as_array()", "replay(&mut records, payload)?",
+            "if !witnessed",
+        ):
+            with self.subTest(marker=marker):
+                self.rejects(physical, "fn replay_image(", marker)
+
 
 if __name__ == "__main__":
     unittest.main()

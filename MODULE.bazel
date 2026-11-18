@@ -401,6 +401,13 @@ crate.annotation(
     version = "0.19.1",
 )
 crate.annotation(
+    # Match Cargo's HEPTA Digest32 backend without changing hashes or deadlines.
+    crate = "sha2",
+    repositories = ["crates"],
+    rustc_flags = ["-Copt-level=3"],
+    version = "0.10.9",
+)
+crate.annotation(
     # Match the exact SHA-256 backend used by the full-strength Matrix KDF.
     crate = "sha2",
     repositories = ["crates"],
