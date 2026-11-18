@@ -4,7 +4,12 @@
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
+use std::ops::Deref;
+use std::ops::DerefMut;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -319,14 +324,20 @@ impl LedgerFixture {
         }
     }
 
-    pub(super) fn writer(&self, reopen: bool) -> LedgerWriter {
+    pub(super) fn writer(&self, reopen: bool) -> ObservedLedgerWriter {
+        let ledger_file = self.file("ledger");
+        let witness_file = self.file("witness");
+        let readback = [
+            checked(ledger_file.try_clone()),
+            checked(witness_file.try_clone()),
+        ];
         let binding = digest("episode-ledger-binding");
         let (ledger, witness) = if reopen {
-            let witness = checked(LedgerWitnessStore::recover(self.file("witness"), binding));
+            let witness = checked(LedgerWitnessStore::recover(witness_file, binding));
             let anchor = checked(witness.frontier()).anchor;
             (
                 checked(DurableLedger::recover(
-                    self.file("ledger"),
+                    ledger_file,
                     binding,
                     32,
                     LedgerRecovery::Acknowledged(anchor),
@@ -335,24 +346,75 @@ impl LedgerFixture {
             )
         } else {
             (
-                checked(DurableLedger::create(self.file("ledger"), binding, 32)),
-                checked(LedgerWitnessStore::create(self.file("witness"), binding)),
+                checked(DurableLedger::create(ledger_file, binding, 32)),
+                checked(LedgerWitnessStore::create(witness_file, binding)),
             )
         };
-        checked(LedgerWriter::from_durable(
+        let writer = checked(LedgerWriter::from_durable(
             ledger,
             witness,
             activated_trust(),
             &self.directory(),
             &self.directory(),
-        ))
+        ));
+        ObservedLedgerWriter {
+            writer,
+            readback,
+            directory: self.directory.path().to_path_buf(),
+        }
+    }
+}
+
+// Keep observation and mutable writer access in one borrow domain, including
+// while an asynchronous caller awaits a ledger operation.
+pub(super) struct ObservedLedgerWriter {
+    writer: LedgerWriter,
+    readback: [File; 2],
+    directory: PathBuf,
+}
+
+impl Deref for ObservedLedgerWriter {
+    type Target = LedgerWriter;
+
+    fn deref(&self) -> &Self::Target {
+        &self.writer
+    }
+}
+
+impl DerefMut for ObservedLedgerWriter {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.writer
+    }
+}
+
+impl ObservedLedgerWriter {
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        self.readback.each_mut().map(|file| {
+            let position = checked(file.stream_position());
+            checked(file.seek(SeekFrom::Start(0)));
+            let mut bytes = Vec::new();
+            let read = file.read_to_end(&mut bytes);
+            let restored = file.seek(SeekFrom::Start(position));
+            assert_eq!(checked(restored), position);
+            checked(read);
+            assert_eq!(checked(file.stream_position()), position);
+            bytes
+        })
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(fs::read(self.directory.path().join("ledger"))),
-            checked(fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn assert_both_locks_held(&self) {
+        for name in ["ledger", "witness"] {
+            let contender = checked(
+                OpenOptions::new()
+                    .read(true)
+                    .write(true)
+                    .open(self.directory.join(name)),
+            );
+            assert!(matches!(
+                contender.try_lock(),
+                Err(std::fs::TryLockError::WouldBlock)
+            ));
+        }
     }
 }
 
