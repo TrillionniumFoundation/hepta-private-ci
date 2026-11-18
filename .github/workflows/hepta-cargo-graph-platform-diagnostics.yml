@@ -1,0 +1,82 @@
+name: Hepta independent Cargo graph platform diagnostics
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-cargo-graph-platform-diagnostics.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-cargo-graph-platforms-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  graph:
+    name: Cargo graph and bindgen (${{ matrix.proposal.label }}, ${{ matrix.platform.target }})
+    runs-on: ${{ matrix.platform.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        proposal:
+          - label: rmcp
+            ref: 4f9cd13376463b9544639e309330bb2c5126249a
+          - label: sqlite
+            ref: 9685742f3a66c7e3b5f1e1e9fc95978934341206
+        platform:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+          - os: macos-15
+            target: aarch64-apple-darwin
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.proposal.ref }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - name: Verify exact native graph and formatter compilation
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ matrix.proposal.ref }}
+          TARGET: ${{ matrix.platform.target }}
+          CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          mkdir -p "$RUNNER_TEMP/hepta-platform-graph"
+          evidence="$RUNNER_TEMP/hepta-platform-graph"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          rustc -Vv > "$evidence/rustc.txt"
+          grep -Fx "host: $TARGET" "$evidence/rustc.txt"
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --filter-platform "$TARGET" > "$evidence/metadata.json"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p bindgen@0.73.2 --lib 2>&1 | tee "$evidence/bindgen-check.log"
+          python - <<'PY'
+          import json, os, pathlib, subprocess
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-platform-graph"
+          metadata = json.loads((root / "metadata.json").read_text())
+          packages = {p["id"]: p for p in metadata["packages"]}
+          nodes = {n["id"]: n for n in metadata["resolve"]["nodes"]}
+          bindgen = next(p for p in packages.values() if p["name"] == "bindgen" and p["version"] == "0.73.2")
+          syn = [packages[d["pkg"]] for d in nodes[bindgen["id"]]["deps"] if d["name"] == "syn"]
+          assert len(syn) == 1 and syn[0]["version"] == "2.0.119", syn
+          pretty = next(packages[d["pkg"]] for d in nodes[bindgen["id"]]["deps"] if d["name"] == "prettyplease")
+          pretty_syn = [packages[d["pkg"]] for d in nodes[pretty["id"]]["deps"] if d["name"] == "syn"]
+          assert len(pretty_syn) == 1 and pretty_syn[0]["id"] == syn[0]["id"], pretty_syn
+          assert not subprocess.check_output(["git", "diff", "--name-only"], text=True).strip()
+          (root / "result.json").write_text(json.dumps({
+              "source_head": os.environ["EXPECTED_HEAD"],
+              "native_target": os.environ["TARGET"],
+              "bindgen_syn": syn[0]["version"],
+              "formatter_same_syn_identity": True,
+              "scope": "native Cargo graph and bindgen library compilation only; not full product tests",
+          }, indent=2) + "\n")
+          PY
+      - name: Preserve graph and real failure output
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-cargo-graph-${{ matrix.proposal.label }}-${{ matrix.platform.target }}-${{ matrix.proposal.ref }}
+          path: ${{ runner.temp }}/hepta-platform-graph
+          if-no-files-found: error
