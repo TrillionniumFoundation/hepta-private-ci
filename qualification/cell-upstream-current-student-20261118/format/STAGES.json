@@ -1,0 +1,159 @@
+[
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "76b8bb3ddd599d48e7dd924c6f624d20dbb44ab4",
+      "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 4.075174374971539
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "76b8bb3ddd599d48e7dd924c6f624d20dbb44ab4"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.016487821005284786
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.00454272300703451
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 3.7738639450399205
+  },
+  {
+    "label": "just-fmt",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/codex-rs",
+    "exit_code": 0,
+    "wall_seconds": 0.5659617519704625
+  },
+  {
+    "label": "ruff-format-check-before",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "format",
+      "--check",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 1,
+    "wall_seconds": 0.06477791402721778
+  },
+  {
+    "label": "ruff-format",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "format",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.032354919996578246
+  },
+  {
+    "label": "ruff-format-check-after",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "format",
+      "--check",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.03249481099192053
+  },
+  {
+    "label": "ruff-check",
+    "command": [
+      "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+      "run",
+      "--frozen",
+      "--project",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+      "ruff",
+      "check",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+      "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+    "exit_code": 1,
+    "wall_seconds": 0.03233538201311603
+  }
+]

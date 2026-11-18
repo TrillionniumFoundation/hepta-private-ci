@@ -1,0 +1,244 @@
+{
+  "base": "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e",
+  "changed_files": [
+    "qualification/cell-upstream-current-student-20261118/prepare.py",
+    "qualification/cell-upstream-current-student-20261118/teacher_bridge.py"
+  ],
+  "executed_model_source_unchanged": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
+  "files": [
+    {
+      "AST_unchanged": true,
+      "after_sha256": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c",
+      "before_sha256": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c",
+      "bytes": 26011,
+      "changed": false,
+      "git_blob": "eba16f303d16a91d3755f39b7846c07a99e8f7a5",
+      "path": "qualification/cell-upstream-current-student-20261118/native_sandbox.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "fc9ec2aa4600b8d554f4a9ef9ee802bf196cc68e8fad890a4090538497bb0ac1",
+      "before_sha256": "fc9ec2aa4600b8d554f4a9ef9ee802bf196cc68e8fad890a4090538497bb0ac1",
+      "bytes": 13474,
+      "changed": false,
+      "git_blob": "b36fc30adda930b339c5437ac147effb742fb4a8",
+      "path": "qualification/cell-upstream-current-student-20261118/owner.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "7183fa015fa9056b0b6b5f22ea9c2cf8b78aa4d658b90d5e0838ab30bdf37095",
+      "before_sha256": "2ac5813aa1af29fe708ed129bacd150c6601b9e31300f4df12b613a638b7720b",
+      "bytes": 15956,
+      "changed": true,
+      "git_blob": "333e0de402194ffcf013579c1f29024cec2db866",
+      "path": "qualification/cell-upstream-current-student-20261118/prepare.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "68546d87c57c152c3f82fe058821907b479cb2d78ce7725818d28fff09642a4e",
+      "before_sha256": "68546d87c57c152c3f82fe058821907b479cb2d78ce7725818d28fff09642a4e",
+      "bytes": 15932,
+      "changed": false,
+      "git_blob": "e864bd3be94de55f0dba2c99af6d3d3dc90eeaaa",
+      "path": "qualification/cell-upstream-current-student-20261118/run_students.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "29e86adde645a712812dbf20a325f86f412ec3ec7462928b282647a0b1cca82d",
+      "before_sha256": "29e86adde645a712812dbf20a325f86f412ec3ec7462928b282647a0b1cca82d",
+      "bytes": 14710,
+      "changed": false,
+      "git_blob": "161ab2331fcacd3b9934f7823f59b320312ac3bd",
+      "path": "qualification/cell-upstream-current-student-20261118/run_teacher.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "1481ebf2cfe6109ebf9afe5f515c0f729e3269f907ae2b2054b2d92b6291bc12",
+      "before_sha256": "7eb0def0b86d64445570c2e56d3e4c87171ff351e0ffc65cb2a4fbbd07a7729d",
+      "bytes": 5177,
+      "changed": true,
+      "git_blob": "0a5652467fa954340af3750664553e2b8173c381",
+      "path": "qualification/cell-upstream-current-student-20261118/teacher_bridge.py"
+    },
+    {
+      "AST_unchanged": true,
+      "after_sha256": "8bf0895c14ed0204677338c6214e3c315d2c6c8e14969e81e0fd0a613f4f16cc",
+      "before_sha256": "8bf0895c14ed0204677338c6214e3c315d2c6c8e14969e81e0fd0a613f4f16cc",
+      "bytes": 12266,
+      "changed": false,
+      "git_blob": "a5d9febfd6cedae53458fae399405b55b27a0f17",
+      "path": "qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+    }
+  ],
+  "final_format_check_exit": 0,
+  "format_patch_bytes": 9164,
+  "format_patch_sha256": "ba524f023bb0b7dea945ce072dc4dbea8cb7333767bdc7a5b95fd7b3f007e88a",
+  "initial_format_check_exit": 1,
+  "just_fmt_exit": 0,
+  "model_calls": 0,
+  "ruff_lint_exit": 1,
+  "source": "76b8bb3ddd599d48e7dd924c6f624d20dbb44ab4",
+  "source_AST_unchanged": true,
+  "stages": [
+    {
+      "command": [
+        "git",
+        "fetch",
+        "--depth=1",
+        "--filter=blob:none",
+        "origin",
+        "76b8bb3ddd599d48e7dd924c6f624d20dbb44ab4",
+        "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "fetch",
+      "wall_seconds": 4.075174374971539
+    },
+    {
+      "command": [
+        "git",
+        "worktree",
+        "add",
+        "--detach",
+        "--no-checkout",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+        "76b8bb3ddd599d48e7dd924c6f624d20dbb44ab4"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "worktree",
+      "wall_seconds": 0.016487821005284786
+    },
+    {
+      "command": [
+        "git",
+        "sparse-checkout",
+        "set",
+        "--no-cone",
+        "--stdin"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "sparse",
+      "wall_seconds": 0.00454272300703451
+    },
+    {
+      "command": [
+        "git",
+        "read-tree",
+        "-mu",
+        "HEAD"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "materialize",
+      "wall_seconds": 3.7738639450399205
+    },
+    {
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/codex-rs",
+      "exit_code": 0,
+      "label": "just-fmt",
+      "wall_seconds": 0.5659617519704625
+    },
+    {
+      "command": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 1,
+      "label": "ruff-format-check-before",
+      "wall_seconds": 0.06477791402721778
+    },
+    {
+      "command": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "ruff-format",
+      "wall_seconds": 0.032354919996578246
+    },
+    {
+      "command": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 0,
+      "label": "ruff-format-check-after",
+      "wall_seconds": 0.03249481099192053
+    },
+    {
+      "command": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/native_sandbox.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/owner.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_students.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/run_teacher.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_bridge.py",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/qualification/cell-upstream-current-student-20261118/teacher_connection.py"
+      ],
+      "cwd": "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source",
+      "exit_code": 1,
+      "label": "ruff-check",
+      "wall_seconds": 0.03233538201311603
+    }
+  ],
+  "status": "FORMAT_PASS",
+  "training_steps": 0,
+  "upstream_tests_reexecuted": false
+}

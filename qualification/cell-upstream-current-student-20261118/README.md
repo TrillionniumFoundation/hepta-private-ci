@@ -1,7 +1,7 @@
-# Actual current-student collection on four upstream A repair tasks
+# Real upstream current-student collection
 
-This stage retains the four licensed historical maintenance sources acquired in #6715, verifies their unchanged tests in real bwrap, and collects at most 24 new model actions. It performs zero training and does not change prior NoUpdate or claim independent confirmation.
+Completed 24 real calls with no new training: unchanged P/C each 0/4; existing T2 1/4 and no recovery. Prior research NoUpdate remains unchanged. See [RESULTS.md](RESULTS.md), [READOUT.json](READOUT.json), and the exact [INDEX.json](INDEX.json) for the complete results and limits.
 
-The patch interface binds exact before-file bytes, a single allowed source path/function (plus a bounded platformdirs regex constant), immutable original tests and dependencies, strict JSON edits and actual native pytest. Source admission does not execute submitted code outside bwrap. The namespace, network denial, read-only mounts and credential-free environment are measured before each native test child.
+Actual sampling source is `dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950`; its prepared protocol and strict original source identities remain binding. The separate teacher pre-call freeze is `9cfa4995c5d08aa0af00cdda6ef1fa67e49b6d1e`. Later publication/formatting does not replace either execution identity. Reproduction should start from those fixed source revisions and their original material/model manifests.
 
-Preparation must reproduce all four exact upstream fixes with unchanged original test-case sets and validate both the input token counts and full reference patch encoding. A common 8192-input/2048-output collection policy is frozen separately from the unchanged original model manifests; there is no silent prompt truncation. No model request is authorized by a merely successful Python process exit.
+The complete archive contains all 631 owned originals plus its index, including failures and all 24 model requests. Upstream source/dependency material and unchanged model weights retain their prior artifact identities. This is A maintenance material with zero authenticated users; it is not independent confirmation or adoption.
