@@ -1,0 +1,116 @@
+{
+  "repository": "/workspace/scratch/a28fa6a6513a/audit/frontier/notes-merge-sim.git",
+  "base": "342b284c1514da3d3d8b6451b6bd3fb6edfc783a",
+  "incoming": "307dced98e8b40c1e8321a357e1af1cde3400fef",
+  "original_true_merge": "7277a9f43f9dded6ba7997dfa265da40022d96ba",
+  "tested_green": "076b20004f7ba6d7653dc41e61edaffd05424925",
+  "formatted_commit": "31b56711b5d755777d16130d0351d0b562d5159b",
+  "formatted_tree": "084a1ba80832d4a7c1835efc7e11dd07d33371d7",
+  "formatter_only_semantics": "The only edit moves the opening brace of one test function signature to its own line. Exact byte replacement checked; all other bytes identical.",
+  "formatter_only_patch_sha256": "7788c0d0d460568c2c0f15b780942ca7464d848c13e22642753d8f0b496b93ff",
+  "tests_after_formatting": false,
+  "final_source_blobs": {
+    "codex-rs/hepta-agentd/src/learning_iteration.rs": "5b4b07bf3ba605a72da401649e1fb49e40a5f550",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "0aec98de405cfb0123838d78cbf4c5f273acfce8",
+    "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "48812f76696992d3614e5073bfee2dbf96b58901"
+  },
+  "final_source_sha256": {
+    "codex-rs/hepta-agentd/src/learning_iteration.rs": "3481ea38124907223662fb71842846c6914fe74dda8cd617e7d11f8f7a09fb15",
+    "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "6dba8688549dfdd4dae1c4b4c078fecbc9158f8cb421e5eeefa226656449dbc6",
+    "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "f58d47470aed3bd2f32562243293b47bcd446315645dc78ef782247845e4776a"
+  },
+  "protected_inventory_refs": 356,
+  "protected_inventory_sha256": "3c01927324e0f3f0c3891af43042ff15d44455eeb1bc70fb4da6d6d4cd137285",
+  "joins": [
+    {
+      "onto": "770179d123b879355b53db1d75f8f9f301280d3e",
+      "commit": "f351cfe400c8e19ccb096639aa40ade80eafa961",
+      "tree": "1083ce24a1a673f2a76bee463cf2802b0a130816",
+      "parents": [
+        "770179d123b879355b53db1d75f8f9f301280d3e",
+        "31b56711b5d755777d16130d0351d0b562d5159b"
+      ],
+      "merge_base": "342b284c1514da3d3d8b6451b6bd3fb6edfc783a",
+      "original_merge_tree_exit": 0,
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs"
+      ],
+      "source_blobs": {
+        "codex-rs/hepta-agentd/src/learning_iteration.rs": "5b4b07bf3ba605a72da401649e1fb49e40a5f550",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "0aec98de405cfb0123838d78cbf4c5f273acfce8",
+        "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "48812f76696992d3614e5073bfee2dbf96b58901"
+      },
+      "unchanged_existing_learning_baseline": {
+        "codex-rs/hepta-agentd/src/learning_iteration.rs": {
+          "base": "1c759fba4404b6757cf3df1019aa25fdea50b204",
+          "onto": "1c759fba4404b6757cf3df1019aa25fdea50b204"
+        },
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": {
+          "base": "461aa14b08e5250e257c463cb479c7e0e9198495",
+          "onto": "461aa14b08e5250e257c463cb479c7e0e9198495"
+        }
+      },
+      "introduced_learning_history": [
+        "31b56711b5d755777d16130d0351d0b562d5159b",
+        "076b20004f7ba6d7653dc41e61edaffd05424925",
+        "7277a9f43f9dded6ba7997dfa265da40022d96ba",
+        "307dced98e8b40c1e8321a357e1af1cde3400fef",
+        "086cc7d21bb958c348e352395f0355793ba2de94"
+      ],
+      "protected_tip_intersection": [],
+      "hia_root_or_anchor_ancestors": {
+        "f02bb9f3344cdff4e361cca4353540ca0193bd21": false,
+        "3aa1f85ba90c79d220a5cadf2261def176892867": false,
+        "8347769bab248a287efa2e4e82f667b55a0f29bc": false
+      },
+      "incoming_branch_is_ancestor": true
+    },
+    {
+      "onto": "09483d18b1188d7d6c4f6843b64f9da2533a9f6c",
+      "commit": "16d5561430d5b61b79fe5695185f6386b5f51a83",
+      "tree": "1083ce24a1a673f2a76bee463cf2802b0a130816",
+      "parents": [
+        "09483d18b1188d7d6c4f6843b64f9da2533a9f6c",
+        "31b56711b5d755777d16130d0351d0b562d5159b"
+      ],
+      "merge_base": "342b284c1514da3d3d8b6451b6bd3fb6edfc783a",
+      "original_merge_tree_exit": 0,
+      "changed_paths": [
+        "codex-rs/hepta-agentd/src/learning_iteration.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs",
+        "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs"
+      ],
+      "source_blobs": {
+        "codex-rs/hepta-agentd/src/learning_iteration.rs": "5b4b07bf3ba605a72da401649e1fb49e40a5f550",
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": "0aec98de405cfb0123838d78cbf4c5f273acfce8",
+        "codex-rs/hepta-agentd/src/learning_iteration_handoff_tests.rs": "48812f76696992d3614e5073bfee2dbf96b58901"
+      },
+      "unchanged_existing_learning_baseline": {
+        "codex-rs/hepta-agentd/src/learning_iteration.rs": {
+          "base": "1c759fba4404b6757cf3df1019aa25fdea50b204",
+          "onto": "1c759fba4404b6757cf3df1019aa25fdea50b204"
+        },
+        "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime_tests.rs": {
+          "base": "461aa14b08e5250e257c463cb479c7e0e9198495",
+          "onto": "461aa14b08e5250e257c463cb479c7e0e9198495"
+        }
+      },
+      "introduced_learning_history": [
+        "31b56711b5d755777d16130d0351d0b562d5159b",
+        "076b20004f7ba6d7653dc41e61edaffd05424925",
+        "7277a9f43f9dded6ba7997dfa265da40022d96ba",
+        "307dced98e8b40c1e8321a357e1af1cde3400fef",
+        "086cc7d21bb958c348e352395f0355793ba2de94"
+      ],
+      "protected_tip_intersection": [],
+      "hia_root_or_anchor_ancestors": {
+        "f02bb9f3344cdff4e361cca4353540ca0193bd21": false,
+        "3aa1f85ba90c79d220a5cadf2261def176892867": false,
+        "8347769bab248a287efa2e4e82f667b55a0f29bc": false
+      },
+      "incoming_branch_is_ancestor": true
+    }
+  ]
+}

@@ -2655,9 +2655,16 @@ async fn send_input_interrupts_before_prompt() {
 #[tokio::test]
 async fn send_input_accepts_structured_items() {
     let (mut session, turn) = make_session_and_context().await;
-    let manager = thread_manager();
+    let server = core_test_support::responses::start_mock_server().await;
+    let mut config = turn.config.as_ref().clone();
+    // Input recording does not require an external provider connection.
+    config.model_provider.base_url = Some(format!("{}/v1", server.uri()));
+    config.model_provider.supports_websockets = false;
+    let manager = ThreadManager::with_models_provider_for_tests(
+        CodexAuth::from_api_key("dummy"),
+        config.model_provider.clone(),
+    );
     session.services.agent_control = manager.agent_control();
-    let config = turn.config.as_ref().clone();
     let thread = manager
         .start_thread(StartThreadOptions::new(config.clone()))
         .await

@@ -1,0 +1,51 @@
+{
+  "status": "READ_ONLY_FINDINGS_CONTROLLED_INVESTIGATION_PENDING",
+  "base": "a91102d3639a5a1f02394bfc0331611e9ab101a1",
+  "same_four_routing_test_blobs_at_joint": "b7480ac0cc6d83ec06c9153cef99b689d747da74",
+  "test": "tools::handlers::multi_agents::tests::send_input_accepts_structured_items",
+  "duplicate_registration": {
+    "source_attributes": ["tokio::test"],
+    "test_case_attributes": 0,
+    "original_failed_shard_case_result_occurrences": 1,
+    "independent_native_lists": {
+      "origin_not_yet_fully_bound": true,
+      "two_cached_libtest_binaries_each_contain_one_target_entry": true
+    }
+  },
+  "routing": [
+    "SendInputHandler parses typed items unchanged",
+    "AgentControl::send_input calls CodexThread::start_or_steer_turn",
+    "StartOrSteer attaches RegularTask and returns Started before message observation",
+    "RegularTask emits TurnStarted and awaits startup prewarm",
+    "run_turn prepares MCP/plugin/step/world-state/skills/hooks before record_pending_input",
+    "record_user_prompt_and_emit_turn_item emits typed UserMessage ItemStarted and ItemCompleted"
+  ],
+  "observation_gap": {
+    "wait_seconds": 5,
+    "only_user_message_item_completed_accepted": true,
+    "all_other_event_types_ignored_in_original_helper": true,
+    "original_ci_contains_no_event_or_request_route_timeline": true
+  },
+  "specific_risk": {
+    "fixture_provider": "default OpenAI provider with dummy API key, no local mock base URL",
+    "default_provider_supports_websockets": true,
+    "production_websocket_connect_budget_ms": 15000,
+    "startup_prewarm_await_precedes_user_message_recording": true,
+    "conclusion": "A delayed startup prewarm can outlast the unrelated 5-second test observation. The original CI log does not prove this was the historical cause."
+  },
+  "candidate_history_review": {
+    "a3bf4c98b619244f0c81ab900aa086495b31d62e": "different wait-agent timeout and tracing subscriber fixtures; no direct structured-input fix",
+    "42c81cae9049ea66bcb567024137b466e933c81f": "different wait-agent timeout fixture",
+    "0bdbd394afaa4e1e0f94fda0d1fa51c88bbcdad7": "different list_agents completed-status fixture",
+    "a8cb5bc98ba62e043bbce1f58d9167292d0fd2b5": "different list_agents completed-status observation"
+  },
+  "next_control": {
+    "only_loopback_provider": true,
+    "controlled_ws_handshake_delay_seconds": 6,
+    "original_test_observation_seconds": 5,
+    "original_structured_inputs_and_equality_assertion_retained": true,
+    "production_code_or_timeout_changes": 0
+  },
+  "source_provenance_file": "source-provenance.json",
+  "ci_evidence_file": "original-ci-classification.json"
+}
