@@ -139,6 +139,7 @@ impl LedgerFixture {
         #[cfg(windows)]
         {
             use std::os::windows::fs::OpenOptionsExt;
+            options.write(true);
             options.custom_flags(0x0200_0000 | 0x0020_0000);
         }
         let directory_handle: File = checked(options.open(directory.path()));
