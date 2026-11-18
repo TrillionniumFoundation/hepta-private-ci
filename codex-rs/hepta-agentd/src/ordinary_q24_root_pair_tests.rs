@@ -76,8 +76,10 @@ pub(super) fn spawn_with_original_pairs<T: Send>(
         drop(child);
         let prepared = prepared
             .join()
-            .map_err(|_| anyhow::anyhow!("original child preparation panicked"))?;
-        Ok::<_, anyhow::Error>((root?, prepared?))
+            .map_err(|_| anyhow::anyhow!("original child preparation panicked"))??;
+        // The Root child reports ECANCELED when preparation refuses. Preserve
+        // the original owner preparation error instead of masking its cause.
+        Ok::<_, anyhow::Error>((root?, prepared))
     })?;
     require_end(end)?;
     Ok(outcome)
@@ -360,6 +362,9 @@ fn ordinary_root_child_pair_refuses_failed_original_owner_preparation() -> anyho
         end,
         |_| anyhow::bail!("original child setup refused"),
     );
-    assert!(result.is_err());
+    let error = result
+        .err()
+        .ok_or_else(|| anyhow::anyhow!("failed original owner preparation was accepted"))?;
+    pretty_assertions::assert_eq!(error.to_string(), "original child setup refused");
     Ok(())
 }
