@@ -1,0 +1,65 @@
+{
+  "format_AST_unchanged": true,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "no_B3_materials_read": true,
+  "source_sha256": {
+    "checkpoint_probe.py": "0e733d04647f6349d887cf45c0d38c37f5f352f139310dfb1250d4c41f9f8d62",
+    "checkpoint_softmax.py": "81ad33310f7bb427d01d25fd4ff696d281e6c53f3bba24cbc80667df63316aaa"
+  },
+  "stages": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_probe.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_softmax.py"
+      ],
+      "exit_code": 0,
+      "name": "format",
+      "wall_seconds": 0.03871707897633314
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_probe.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_softmax.py"
+      ],
+      "exit_code": 0,
+      "name": "format-check",
+      "wall_seconds": 0.030537260987330228
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_probe.py",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint/probe/checkpoint_softmax.py"
+      ],
+      "exit_code": 0,
+      "name": "lint",
+      "wall_seconds": 0.031510036962572485
+    }
+  ],
+  "status": "PASS"
+}

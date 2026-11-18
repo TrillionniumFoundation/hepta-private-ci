@@ -1,0 +1,7 @@
+# Prospective original eager / inner softmax checkpoint calibration
+
+The original full-length attempts already used HF non-reentrant decoder-layer checkpointing. This distinct candidate adds checkpointing inside the eager attention softmax, preserving its complete QK and AV matrix multiplications, FP32 softmax then original BF16 cast, native eager mask, scaling, repetition, RoPE and dropout=0. Independent query rows are partitioned into blocks of 128. Saved softmax activations are recomputed during backward. The extra forward/recompute calls are observed by counters; matching the old physical work is not claimed.
+
+Before any new actual forward: freeze the same short exposed A record, both layouts, original P, same 70% memory cap, four model F/B pairs, zero optimizer updates and zero generations. Full short transcripts 773/777 plus 115 targets remain. The exact numerical tolerances from the rejected SDPA probe are unchanged. Old numerical rejection and three OOMs remain valid outcomes with costs. B3 remains sealed. Passing short-A numbers is insufficient: the full 3584-position maximum group must also pass actual F/B before two-arm training.
+
+The checkpoint source is a narrow derivation of the pinned Apache-2.0 Transformers Qwen2 eager function. Runtime registration is per process; installed library bytes and other executors are unchanged. Nested checkpoint counters only observe execution and do not alter tensor results. Full kernel FLOPs remain unknown.
