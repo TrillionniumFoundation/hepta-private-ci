@@ -1,0 +1,518 @@
+{
+  "candidate_sha256": "36116708f9ce77685a8f2c488a4d642050f1fc14acf71cd769037404aeb41697",
+  "origin_candidate_sha256": "4305fda003831c5629fa495115697f7741e3c6785fcdf731e4e96d268027a4c5",
+  "source_bases": {
+    "cells": "0c2b0c529882a0caeae23f8060a14e69475f4a14",
+    "hia_compiler": "f33d8da316de8fdf27b504371f1a5310997ff548",
+    "runtime": "73b5c33d5762eefc0554a86750094350f18ae6a0"
+  },
+  "runtime_identity": {
+    "binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+    "config_sha256": "828986fd469f1e86553fe57fc213c806fd31b9675e55236c6de66ab64b064c55",
+    "source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+    "source_tree": "d9b16016a4df226d6471a934076390da9b978735",
+    "transport": "actual_mcp_stdio"
+  },
+  "native": {
+    "image": "native/cell_bridge.so",
+    "image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+    "source_sha256": "89f18f52e77f19ce596bab12a695cf354e76e5a78ff814996588ffc12fbace6a"
+  },
+  "file_counts": {
+    "artifacts": 5,
+    "cells": 64,
+    "hia": 193
+  },
+  "lanes": {
+    "semantic_updates": {
+      "job_id": "1a1ecb78e71-28c7-1",
+      "reported_elapsed_seconds": 16.011271266999927,
+      "sessions": [
+        {
+          "calls": {
+            "process_read": 18,
+            "process_start": 1,
+            "process_status": 17
+          },
+          "fresh_initialize": true,
+          "phase": "original",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        },
+        {
+          "calls": {
+            "process_read": 18,
+            "process_start": 0,
+            "process_status": 2
+          },
+          "fresh_initialize": true,
+          "phase": "cold_controller",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        }
+      ],
+      "stdout_bytes": 289600
+    },
+    "single_cell": {
+      "job_id": "1a1ecb754e7-1edf-1",
+      "reported_elapsed_seconds": 32.74938767699996,
+      "sessions": [
+        {
+          "calls": {
+            "process_read": 1,
+            "process_start": 1,
+            "process_status": 3
+          },
+          "fresh_initialize": true,
+          "phase": "original",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        },
+        {
+          "calls": {
+            "process_read": 1,
+            "process_start": 0,
+            "process_status": 2
+          },
+          "fresh_initialize": true,
+          "phase": "cold_controller",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        }
+      ],
+      "stdout_bytes": 1913
+    },
+    "syntax": {
+      "job_id": "1a1ecb75e19-2096-1",
+      "reported_elapsed_seconds": 12.321991285999957,
+      "sessions": [
+        {
+          "calls": {
+            "process_read": 16,
+            "process_start": 1,
+            "process_status": 10
+          },
+          "fresh_initialize": true,
+          "phase": "original",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        },
+        {
+          "calls": {
+            "process_read": 16,
+            "process_start": 0,
+            "process_status": 2
+          },
+          "fresh_initialize": true,
+          "phase": "cold_controller",
+          "reassembled_streams_equal": true,
+          "runtime_tools_sha256": "67d0fb5eec4b5fd5342efd5c0dc9cf601598419a829153b8485d12de93078f9d",
+          "terminal_proofs_equal": 2
+        }
+      ],
+      "stdout_bytes": 246436
+    }
+  },
+  "semantic": {
+    "adopt": 0,
+    "no_update": 2,
+    "cells": {
+      "memory": {
+        "A_retention": {
+          "candidate": 6,
+          "frozen": 2
+        },
+        "B_denominator": 8,
+        "B_successes": {
+          "candidate": 6,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_denominator": 8,
+        "C_successes": 2,
+        "D_cold": {
+          "compile_calls": 2,
+          "compile_success": false,
+          "semantic_status": "not_run_compile_error",
+          "semantic_subprocesses": 0,
+          "success": false,
+          "task_id": "fixture_D_cold"
+        },
+        "candidate_weights_sha256": "cb01ec945688c4b4f28fd1300e7de70ce79491ce7c63082ff6dcd0c4a19e5b5f",
+        "checkpoint_sha256": {
+          "candidate.npz": "cd312269fcbd201871917399051733c545681f5d16af7cc8b8f995f72d0ff279",
+          "live.npz": "4ec4c313b8c78db4c1abe611c4ccc3a3de9efa6771af375b65247a758ab9dc59",
+          "parent.npz": "ce5209dd7e8db0bdfd9f6fd3e346b6b519298069112ffaa4b53295ca1e263ba8"
+        },
+        "cold_exact": true,
+        "cold_wall_ns": 92696714,
+        "decision": "NoUpdate",
+        "native_completed": 269,
+        "parent_weights_sha256": "c45da2c45e8991b8a71d0f276a126f9c695060c9d52e5241846d1aba5d252819",
+        "pending": 0,
+        "reason": "candidate failed one or more predeclared baseline/retention gates",
+        "selected_version_sha256": "7b8f14eb53de88afc65670c10e4d0bd47266e67c581e405822076c93c836674b",
+        "training": {
+          "batch_episodes": 8,
+          "data_sha256": "c5aa52dc1ff93e396df42207093871e7d5498d139adad4ab1f6c9b33f62be125",
+          "events_per_episode": 3,
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "process_cpu_seconds": 0.007279210999999952,
+          "requested_updates": 16,
+          "validated_updates": 16,
+          "wall_seconds": 0.007277952000038113
+        },
+        "training_file_sha256": "e0a84c33d67e998aa9dc6f16c89da110c4c54a8c1a5672c1ed99e3c1d0683cf5"
+      },
+      "predictor": {
+        "A_retention": {
+          "candidate": 2,
+          "frozen": 2
+        },
+        "B_denominator": 8,
+        "B_successes": {
+          "candidate": 2,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_denominator": 8,
+        "C_successes": 2,
+        "D_cold": {
+          "compile_calls": 2,
+          "compile_success": true,
+          "semantic_status": "passed",
+          "semantic_subprocesses": 1,
+          "success": true,
+          "task_id": "fixture_D_cold"
+        },
+        "candidate_weights_sha256": "d8b6f09df4c30bdcfee9b8ed1fe6ccc751164a0e99455c71f0a74fc22024abee",
+        "checkpoint_sha256": {
+          "candidate.npz": "19206cedd39c19d04d6413703049c51e2bb904641497d4b513288ed1254dc492",
+          "live.npz": "4c08a26e0659ce5cff8bb600753cfff9f95db61386ddecbbd8bd3e3bae1c8caa",
+          "parent.npz": "37e720f37551c321a7d750faeecec9ebc0a679df609f60ff7f7f7e5c5599313f"
+        },
+        "cold_exact": true,
+        "cold_wall_ns": 124848653,
+        "decision": "NoUpdate",
+        "native_completed": 464,
+        "parent_weights_sha256": "b211775109c6257f9e8081c23cbd4ef4cda60002bb966bc9635c47fae1b08262",
+        "pending": 0,
+        "reason": "candidate failed one or more predeclared baseline/retention gates",
+        "selected_version_sha256": "359ee488da2aafce2013d05ed3541b7ad5242020441bd82d39d7045eddb79bd4",
+        "training": {
+          "batch_episodes": 32,
+          "data_sha256": "7f875273d7a7d50662124847ca6cfecd21714450ebb1a56dc95aeea475c9e66a",
+          "events_per_episode": 3,
+          "measurement_scope": "local candidate copy and episode fitting; excludes caller data preparation and serving",
+          "process_cpu_seconds": 0.01076946599999995,
+          "requested_updates": 16,
+          "validated_updates": 16,
+          "wall_seconds": 0.010768107999979293
+        },
+        "training_file_sha256": "e5e2a3ca1f8e4ed0319fceb654380251572b5fd007bca6f951e24ae1f55e21a7"
+      }
+    },
+    "native_completed": 733,
+    "parent_compile_calls": 208,
+    "cold_compile_calls": 4,
+    "semantic_child_processes": 65,
+    "task_counts": {
+      "A": 8,
+      "B": 8,
+      "C": 8,
+      "D_cold_per_cell": 1
+    },
+    "cost": {
+      "aggregation": "windows are inclusive and may nest; never add stage, task, child and outer windows",
+      "compile_scope": "prior shared build, not repeated in this run",
+      "energy_joules": null,
+      "full_system_cost_known": false,
+      "latency_scope": "inclusive task wall windows; shared A/B diagnostics charged once outside per-arm windows; linear-interpolated observed tails are not population guarantees",
+      "memory_scope": "process-lifetime high-water marks only; campaign process-tree peak remains unknown",
+      "parent_cpu_seconds": 1.796590825,
+      "peak_rss_bytes": null,
+      "scope": "outer wall includes both cells, all attempts/controls, IO and cold children; parent CPU excludes child CPU reported separately; no physical energy measurement",
+      "shared_diagnostics": "A acquisition and B original diagnostics are recorded once; A/B/retention per-arm windows exclude them",
+      "shared_native_compile_wall_ns": 237676106,
+      "task_latency": {
+        "memory/A-retention/candidate": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 43.579344449999994,
+          "observed_p99_ms": 44.29640569
+        },
+        "memory/A-retention/frozen": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 40.205783,
+          "observed_p99_ms": 40.4514494
+        },
+        "memory/A/active": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 45.82946655,
+          "observed_p99_ms": 46.57829491
+        },
+        "memory/B/candidate": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 46.4743199,
+          "observed_p99_ms": 46.95536718
+        },
+        "memory/B/deterministic": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 35.4883339,
+          "observed_p99_ms": 36.04242197999999
+        },
+        "memory/B/frozen": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 46.45118169999999,
+          "observed_p99_ms": 47.269128339999995
+        },
+        "memory/B/no_learning": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 43.74894319999999,
+          "observed_p99_ms": 44.85826624
+        },
+        "memory/B/no_memory": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 48.747565099999996,
+          "observed_p99_ms": 51.68027781999999
+        },
+        "memory/C/selected": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 41.08514985,
+          "observed_p99_ms": 41.82570757
+        },
+        "memory/D-cold/selected": {
+          "count": 1,
+          "missing_count": 0,
+          "observed_count": 1,
+          "observed_p95_ms": 18.841898,
+          "observed_p99_ms": 18.841898
+        },
+        "predictor/A-retention/candidate": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 51.3989419,
+          "observed_p99_ms": 52.40046998
+        },
+        "predictor/A-retention/frozen": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 47.120647649999995,
+          "observed_p99_ms": 47.65525753
+        },
+        "predictor/A/active": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 57.120101049999995,
+          "observed_p99_ms": 57.84499221
+        },
+        "predictor/B/candidate": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 48.766143299999996,
+          "observed_p99_ms": 48.854808659999996
+        },
+        "predictor/B/deterministic": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 34.33192455,
+          "observed_p99_ms": 34.53378411
+        },
+        "predictor/B/frozen": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 52.9494869,
+          "observed_p99_ms": 55.04129018
+        },
+        "predictor/B/no_learning": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 50.21599415,
+          "observed_p99_ms": 51.38128443
+        },
+        "predictor/B/no_memory": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 52.3026832,
+          "observed_p99_ms": 52.75772464
+        },
+        "predictor/C/selected": {
+          "count": 8,
+          "missing_count": 0,
+          "observed_count": 8,
+          "observed_p95_ms": 50.33974109999999,
+          "observed_p99_ms": 51.51750902
+        },
+        "predictor/D-cold/selected": {
+          "count": 1,
+          "missing_count": 0,
+          "observed_count": 1,
+          "observed_p95_ms": 58.198449,
+          "observed_p99_ms": 58.198449
+        }
+      },
+      "task_window_phases": {
+        "A": 16,
+        "A-retention": 32,
+        "B": 80,
+        "C": 16,
+        "D-cold": 2
+      },
+      "unknown_meters": [
+        "physical energy",
+        "concurrent process-tree peak memory",
+        "queue peak occupancy",
+        "full system training/build/switch/serving cost"
+      ],
+      "wall_seconds": 4.7826906100000315,
+      "window_count": 172,
+      "window_stages": {
+        "cold_process": 2,
+        "data_acquisition": 8,
+        "recovery": 2,
+        "selection_and_switch": 2,
+        "shared_diagnostic": 8,
+        "task": 146,
+        "training": 2,
+        "validation": 2
+      }
+    }
+  },
+  "updates": {
+    "code": {
+      "candidate_plus_pilot_wall_ns": 142766709,
+      "decision": "NoUpdate",
+      "distributions": {
+        "builtin": {
+          "count": 24,
+          "coverage_complete": true,
+          "missing_count": 0,
+          "observed_count": 24,
+          "observed_p50_ms": 5.7980305,
+          "observed_p95_ms": 7.0250677999999995,
+          "observed_p99_ms": 7.41422098,
+          "percentile_method": "linear interpolation over observed durations; no minimum-tail-sample claim",
+          "scope": "whole native owner call, including admission and settlement"
+        },
+        "loop": {
+          "count": 24,
+          "coverage_complete": true,
+          "missing_count": 0,
+          "observed_count": 24,
+          "observed_p50_ms": 5.9541475,
+          "observed_p95_ms": 7.567522899999998,
+          "observed_p99_ms": 8.0848526,
+          "percentile_method": "linear interpolation over observed durations; no minimum-tail-sample claim",
+          "scope": "whole native owner call, including admission and settlement"
+        }
+      },
+      "full_system_cost_known": false,
+      "measured_wall_ns": {
+        "builtin": 141815984,
+        "loop": 144805028
+      },
+      "observed_wall_gain_after_pilot": true,
+      "outputs_and_states_equal": true,
+      "reason": "complete build/energy/process-tree memory cost is not measured",
+      "task_pairs": 24
+    },
+    "state": {
+      "cross_owner_or_effectful_migration": false,
+      "external_business_effect_counts": null,
+      "pending_preserved": true,
+      "same_owner_and_partition": true,
+      "status": "IDLE_READOUT_MIGRATION_AND_COLD_INFERENCE_PASS"
+    },
+    "native_phases": {
+      "cancel_requested": 1,
+      "completed": 52
+    },
+    "migration_wall_ns": 1689252,
+    "cold_wall_ns": 125628289,
+    "cost": {
+      "additive": false,
+      "campaign_process_tree_peak_rss_bytes": null,
+      "coverage": "inclusive window; process CPU may include concurrent work; child CPU covers reaped children only",
+      "energy_joules": null,
+      "error_type": null,
+      "full_system_cost_known": false,
+      "memory_scope": "resource snapshots are process-lifetime high-water marks; children maximum is not a concurrent sum",
+      "parent_process_cpu_ns": 250810216,
+      "parent_scope": null,
+      "queue_peak_items": null,
+      "reaped_children_cpu_seconds": 0.12416300000000025,
+      "resource_after": {
+        "reaped_children_cpu_seconds": 2.428945,
+        "reaped_children_max_peak_rss_bytes": 81534976,
+        "self_cpu_seconds": 2.304504,
+        "self_lifetime_peak_rss_bytes": 81534976
+      },
+      "resource_before": {
+        "reaped_children_cpu_seconds": 2.304782,
+        "reaped_children_max_peak_rss_bytes": 81084416,
+        "self_cpu_seconds": 2.053686,
+        "self_lifetime_peak_rss_bytes": 81403904
+      },
+      "schema": "hepta.measurement-window.v1",
+      "scope": "updates",
+      "stage": "updates",
+      "status": "returned",
+      "wall_ns": 456239353
+    }
+  },
+  "inventory": {
+    "byte_inventory_sha256": "ca96cfee9beaaf4c06a219f599ca32e1444262e5f3cba693b0aa42af531e8d78",
+    "bytes": 60961041,
+    "files": 616
+  },
+  "reviews": {
+    "semantic_updates": {
+      "error": null,
+      "failure_stage": null,
+      "original_verifier_expected_sha256": "9263dea8f2bddb35b5ae6255fe8969ac5c2538911a95878f31a4091a9a2f19dd",
+      "original_verifier_sha256": "9263dea8f2bddb35b5ae6255fe8969ac5c2538911a95878f31a4091a9a2f19dd",
+      "status": "READ_ONLY_SNAPSHOT_CONSISTENCY_PASS"
+    },
+    "syntax": {
+      "error": null,
+      "failure_stage": null,
+      "original_verifier_expected_sha256": "526d959dee1e7729d9097fc728556aa7395d0c993f0dcd4041a4f35c6a92d68f",
+      "original_verifier_sha256": "526d959dee1e7729d9097fc728556aa7395d0c993f0dcd4041a4f35c6a92d68f",
+      "status": "READ_ONLY_SNAPSHOT_CONSISTENCY_PASS"
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "schema": "hepta.evidence-archives.v1",
+  "chunk_limit_bytes": 491520,
+  "archives": [
+    {
+      "name": "historical-maintenance-capsule.tar.gz",
+      "bytes": 325841,
+      "sha256": "3faeb4b9e8914322362dc3f93ea9a091b7a509decca0ebc22b42d572a5cd28fd",
+      "parts": [
+        {
+          "path": "archives/historical-maintenance-capsule.tar.gz.part000",
+          "bytes": 325841,
+          "sha256": "3faeb4b9e8914322362dc3f93ea9a091b7a509decca0ebc22b42d572a5cd28fd"
+        }
+      ],
+      "scope": "historical before/after development replay; not current candidate learning",
+      "data_sha256": "f6ccda39db1645ce49afb89cfac9a5c3bc42eac2d96ed6fcb904bd9d03bbbce2"
+    },
+    {
+      "name": "ci-44228252971-original.zip",
+      "bytes": 5132281,
+      "sha256": "aa93c016b424f2737eef47cd0b89bad14de62b31ae8f8298832602825b69c47a",
+      "parts": [
+        {
+          "path": "archives/ci-44228252971-original.zip.part000",
+          "bytes": 491520,
+          "sha256": "0368c79a1d40301ad78c0a27f9940a190297643f8ef43aa50bfb1774c842b2e4"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part001",
+          "bytes": 491520,
+          "sha256": "652016225f483012c8cefa78f7ffff5adc1f0bc0d152d1af811dc61258551f92"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part002",
+          "bytes": 491520,
+          "sha256": "9e6f516a61e6cb6ae01863a73a78397d1fb32513b3845fa215a29634cfbde0b2"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part003",
+          "bytes": 491520,
+          "sha256": "fd122fcced8cfb13cadc00ce28dfb140ebc52acb5dd412d4a971a40184320ed6"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part004",
+          "bytes": 491520,
+          "sha256": "7eb592d61c04f80e74128378edf3621be3fdf5387a7c3c3c41bf03d8db3d7570"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part005",
+          "bytes": 491520,
+          "sha256": "ebe4877a57f7f1d1eb454a2d81aee6cc23ee07aae65adee16fb0a1d2fbe2cec8"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part006",
+          "bytes": 491520,
+          "sha256": "9b724946ca16d6b7794460361e00aff843ec25e12a30affb0c702c2307a60a67"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part007",
+          "bytes": 491520,
+          "sha256": "ada28ace77cd66ccd56de8d268f80f6e0f95c2b40e76e4e8a592aee877979ca7"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part008",
+          "bytes": 491520,
+          "sha256": "d293e422530cc84f26e758adb6a8041aa48508fcd98c8c4ef8efec90b7543e98"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part009",
+          "bytes": 491520,
+          "sha256": "8b43e5eaa380808e333fdc43f5c61f8067d385faa1fd7ae85f94d8132848461a"
+        },
+        {
+          "path": "archives/ci-44228252971-original.zip.part010",
+          "bytes": 217081,
+          "sha256": "5f84f007229b1d8b621312922ca9cc9fcce8e8793299e52f18a244e904ad8e47"
+        }
+      ],
+      "source_commit": "10939f76dea5858c8c24dabd13485742f2eb8f00",
+      "run_id": 44228252971,
+      "workflow_conclusion": "failure",
+      "scope": "actual runtime passed; independent snapshot review failed stale verifier hash; original retained unchanged"
+    },
+    {
+      "name": "supporting-evidence.tar.gz",
+      "bytes": 1081175,
+      "sha256": "fc6382acd0ed19243142e8ba0fd0d5cc1d53ec219f4776b40b1b184fe9e3a742",
+      "parts": [
+        {
+          "path": "archives/supporting-evidence.tar.gz.part000",
+          "bytes": 491520,
+          "sha256": "f6f6dd418dc6b6f909ae32940c1d7e1e9038be81c1882f139c6cc22b07b75119"
+        },
+        {
+          "path": "archives/supporting-evidence.tar.gz.part001",
+          "bytes": 491520,
+          "sha256": "68f162cabbe9681585d089e69996105ae7362d26d057c599ea51f325c17ee1fc"
+        },
+        {
+          "path": "archives/supporting-evidence.tar.gz.part002",
+          "bytes": 98135,
+          "sha256": "f4b7f8e279686c8a9e059e70e37168105db7857d2f7667956da575c72d83a280"
+        }
+      ],
+      "scope": "Historical and development evidence, counterexamples and original failed runs; qualifications retain their own source identities. No transfer of older qualification to final source."
+    },
+    {
+      "name": "ci-44230303266-original.zip",
+      "bytes": 6968439,
+      "sha256": "493dc472ae355991d7ba2161a94b6e4fafeb2340b4bd142c579645b0269c074a",
+      "parts": [
+        {
+          "path": "archives/ci-44230303266-original.zip.part000",
+          "bytes": 491520,
+          "sha256": "f9dae0e23e0321b7a9647a7a479781b36fac18be73f90af593753aebb4b77f05"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part001",
+          "bytes": 491520,
+          "sha256": "c520182860c3c539605d7daca8ee85b13288c61964eb2e9b77cc74662d0bb62c"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part002",
+          "bytes": 491520,
+          "sha256": "30b76fb4560fc90ab6cd4cc91f81cd533755d01cd6b53f2d58e0becab7d6535f"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part003",
+          "bytes": 491520,
+          "sha256": "39228cec1c41736d1bc1b3e4d7c77314b1451927b84897b2bc7eda08a7b07997"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part004",
+          "bytes": 491520,
+          "sha256": "97402b4748541c7a62e2c3b3943f29c9d6f3d43747a2d5d1cce63ba77e8d62a7"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part005",
+          "bytes": 491520,
+          "sha256": "a3e454f94305e40dc4708bf00421fb22d5211b543bf5c52abce290c0a76eff92"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part006",
+          "bytes": 491520,
+          "sha256": "d24a30c8965a57a5eb0a80b483f71d25a9d28454f484b825460c33a4ef818fd8"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part007",
+          "bytes": 491520,
+          "sha256": "ab07db43efc8d5685669cb7dad71308a10e099260d09bbf7a67254c5241920b7"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part008",
+          "bytes": 491520,
+          "sha256": "30a9fc20ad4b560d646d63cfcb10814fe33758ec513253f01ace7d06c997dade"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part009",
+          "bytes": 491520,
+          "sha256": "1da8805810c81490639809bf0dc92c4bca3d7a1d90c07760fcd2fd84649c8a1d"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part010",
+          "bytes": 491520,
+          "sha256": "5ff709832e65e8d541cc1a043d99c213f9bdd6188d4cfc7d1b26d23882651d7c"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part011",
+          "bytes": 491520,
+          "sha256": "cd29e067907ece08ee4edc4e5dd872d9a205a5170913efd39086c44cc91a925b"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part012",
+          "bytes": 491520,
+          "sha256": "a5fdac86962daa6f943186e4932ee95fab8f83d1ce42940f2e912a7db464fd4b"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part013",
+          "bytes": 491520,
+          "sha256": "9283c53b51245447a40838c9c9b60d583011c68c1a43044c4791dfaa7a96f24b"
+        },
+        {
+          "path": "archives/ci-44230303266-original.zip.part014",
+          "bytes": 87159,
+          "sha256": "64440324b8a43f9d061de65328d53632ca313e0420d46e3ce48457a62db55dd4"
+        }
+      ],
+      "source_commit": "0c2b0c529882a0caeae23f8060a14e69475f4a14",
+      "run_id": 44230303266,
+      "workflow_conclusion": "success",
+      "scope": "final source exact candidate; original Actions artifact bytes, including actual runtime and independent reviews"
+    },
+    {
+      "name": "final-job.log.gz",
+      "bytes": 26039,
+      "sha256": "d1b6a18a816bdacff7ea36b649291ed8f558e298cab68b6f79ee97c5e2aefe69",
+      "parts": [
+        {
+          "path": "archives/final-job.log.gz.part000",
+          "bytes": 26039,
+          "sha256": "d1b6a18a816bdacff7ea36b649291ed8f558e298cab68b6f79ee97c5e2aefe69"
+        }
+      ],
+      "uncompressed_bytes": 126224,
+      "uncompressed_sha256": "a400cdbfcaa9d857238e29a44860a55fb12e0f745b73d96b88d490f4f8354517",
+      "scope": "Decoded UTF-8 GitHub Actions job log returned by GitHub connector; final job 134553405340"
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "claim_limits": {
+    "cell_learned_to_repair": false,
+    "current_candidate_qualification": false,
+    "external_distribution_evidence": false,
+    "fixture_variants_increase_independent_n": false,
+    "learning_experiment_performed": false,
+    "long_term_retained_gain": false,
+    "training_or_inference_cost_comparison": false
+  },
+  "counts": {
+    "dependence_groups": 3,
+    "fix_commits": 4,
+    "independent_external_project_groups": 0,
+    "replay_tasks": 5,
+    "repositories": 3,
+    "statistical_independence_established": false
+  },
+  "experiment_id": "hepta-maintenance-historical-capsule-20261118-v1",
+  "frozen_data_sha256": "f6ccda39db1645ce49afb89cfac9a5c3bc42eac2d96ed6fcb904bd9d03bbbce2",
+  "groups": [
+    {
+      "fix_dates_utc": [
+        "2026-10-23",
+        "2026-10-26"
+      ],
+      "id": "runtime_terminal",
+      "proposed_split": "A",
+      "reason": "Same jobs.rs supervisor/status dependency closure; the later parent already contains the earlier repair. Keep together.",
+      "tasks": [
+        "terminal_nonce_witness",
+        "original_child_terminal"
+      ]
+    },
+    {
+      "fix_dates_utc": [
+        "2026-11-12"
+      ],
+      "id": "cell_policy_identity",
+      "proposed_split": "B",
+      "reason": "One correction commit, one owner/population fixture and shared identity closure. Keep all variants together.",
+      "tasks": [
+        "qualification_callback_identity",
+        "population_policy_recovery"
+      ]
+    },
+    {
+      "fix_dates_utc": [
+        "2026-11-16"
+      ],
+      "id": "native_loader",
+      "proposed_split": "C",
+      "reason": "Separate Hepta loader correction/source closure; related project ecosystem, not an external independent distribution.",
+      "tasks": [
+        "native_loader_identity"
+      ]
+    }
+  ],
+  "initial_execution_environment": {
+    "libc": [
+      "glibc",
+      "2.41"
+    ],
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]"
+  },
+  "initial_harness_correction": {
+    "invalid_observation_records": "results/cells-{before,after}/SUMMARY.json",
+    "original_harness": "cell_replay-v1.py",
+    "reason": "The initial diagnostic read CellOwner.checkpoint after its before-SQL snapshot; checkpoint persists a row. The observer itself changed the after state. Original source tests already passed after. Corrected harness creates the checkpoint before taking the baseline SQL snapshot; corrected independent observations in results-v2. No original record overwritten."
+  },
+  "not_enrolled": [
+    {
+      "after": "a5015236c66854a3e2cb816a8f2faa14a677e2d2",
+      "before": "c81a938150d2e533843a42af77739cb888812338",
+      "enrolled_task": false,
+      "paths": [
+        "src/mcp/runtime/jobs_inventory_source.rs",
+        "src/mcp/runtime/jobs_inventory_source_tests.rs",
+        "src/mcp/runtime/jobs_inventory_cache_tests.rs"
+      ],
+      "reason": "Source and test patch read; original-byte cursor invariants identified. No equivalent public pre/post behavioral replay executed. New private Rust APIs must not turn a missing-API compile error into semantic RED.",
+      "repository": "TrillionniumFoundation/hepta-runtime"
+    }
+  ],
+  "purpose": "Historical before/after behavioral replay and prospective corpus design only",
+  "schema": "hepta-historical-maintenance-corpus/v1",
+  "split_policy": {
+    "B_labels_never_used_for_training_or_hyperparameter_search": true,
+    "C_not_opened_for_selection_and_cold_restart_uses_new_task_oracle": true,
+    "all_golden_patches_have_been_read": true,
+    "branches_and_subtests_are_not_new_sources": true,
+    "proposed_time_order": "A October runtime -> B November12 Cell identity -> C November16 Hepta loader",
+    "requires_new_unseen_future_incidents_for_generalization_claim": true,
+    "status": "retrospective development replay; not heldout evidence for the present assistant or candidate",
+    "training_uses_A_only_if_future_experiment_is_separately_frozen": true,
+    "unit": "dependence_group",
+    "within_group_random_split_forbidden": true
+  },
+  "tasks": [
+    {
+      "after": "7da3a7ebaded8214bc65e69046b74e6251e21767",
+      "before": "cd295bd218a685dbc17f5cc86412f54b72777ea6",
+      "expected_after": {
+        "missing_witness": "finalizing",
+        "passed": 27,
+        "total": 27,
+        "wrong_nonce": "finalizing"
+      },
+      "expected_before": {
+        "missing_witness": "succeeded",
+        "passed": 4,
+        "total": 27,
+        "wrong_nonce": "succeeded"
+      },
+      "group": "runtime_terminal",
+      "id": "terminal_nonce_witness",
+      "incident": "7da3a7ebaded8214bc65e69046b74e6251e21767",
+      "oracle": "src/mcp/runtime/jobs_terminal_publication_tests.rs::STATUS_FIXTURE",
+      "original_records": "results/terminal-witness-{before,after}.stdout",
+      "proposed_split": "A",
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "source_paths": [
+        "src/mcp/runtime/jobs.rs"
+      ]
+    },
+    {
+      "after": "57453f74c2967246fc961c02fbf0e6e4104103b2",
+      "before": "5f558594cc2a69154eb8b34c70559aa80307d0eb",
+      "controls": "Natural exit7 without custody loss remains failed/7 in both revisions; no signals; one actual workload",
+      "expected_after": {
+        "automatic_retry": false,
+        "child_exit_code": null,
+        "effect_count": 1,
+        "real_child_exit": 7,
+        "reported_exit": 125,
+        "status": "effect_unknown"
+      },
+      "expected_before": {
+        "effect_count": 1,
+        "real_child_exit": 7,
+        "reported_exit": 0,
+        "status": "succeeded"
+      },
+      "group": "runtime_terminal",
+      "id": "original_child_terminal",
+      "incident": "57453f74c2967246fc961c02fbf0e6e4104103b2",
+      "oracle": "src/mcp/runtime/jobs_output_durability_tests.rs::NORMAL_REAP_CUSTODY_FIXTURE",
+      "original_records": "results/original-terminal-{before,after}-{control,custody_lost}.stdout",
+      "proposed_split": "A",
+      "repository": "TrillionniumFoundation/hepta-runtime",
+      "source_paths": [
+        "src/mcp/runtime/jobs.rs"
+      ]
+    },
+    {
+      "after": "a194098c99e785d05a90e5e9f5a9de53df23ba96",
+      "before": "a5bdfb5b7fbe4558fff7d8ad1ea85d3b33e21946",
+      "expected_after": {
+        "adopts_candidate": false,
+        "database_unchanged": true,
+        "reject_changed_evaluation_digest": true
+      },
+      "expected_before": {
+        "adopts_candidate": true,
+        "database_unchanged": false,
+        "reject_changed_evaluation_digest": false
+      },
+      "group": "cell_policy_identity",
+      "id": "qualification_callback_identity",
+      "incident": "a194098c99e785d05a90e5e9f5a9de53df23ba96",
+      "oracle": "scripts/test_hepta_cells_qualification.py::QualificationTests (canonical control + three callback mutations), plus SQL observation",
+      "original_records": "results-v2/cells-{before,after}/SUMMARY.json",
+      "proposed_split": "B",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source_paths": [
+        "scripts/hepta_cells/lifecycle.py",
+        "scripts/hepta_cells/component_types.py"
+      ]
+    },
+    {
+      "after": "a194098c99e785d05a90e5e9f5a9de53df23ba96",
+      "before": "a5bdfb5b7fbe4558fff7d8ad1ea85d3b33e21946",
+      "expected_after": {
+        "database_unchanged": true,
+        "reject_erased_policy": true
+      },
+      "expected_before": {
+        "reject_erased_policy": false
+      },
+      "group": "cell_policy_identity",
+      "id": "population_policy_recovery",
+      "incident": "a194098c99e785d05a90e5e9f5a9de53df23ba96",
+      "oracle": "scripts/test_hepta_cells_population_owner.py::test_reopen_refuses_erased_population_tables_with_retained_checkpoints and test_reopen_checks_later_population_checkpoint_when_first_marker_is_lost",
+      "original_records": "results-v2/cells-{before,after}/SUMMARY.json",
+      "proposed_split": "B",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "source_paths": [
+        "scripts/hepta_cells/population_owner.py"
+      ],
+      "variants": [
+        "DELETE FROM all policy tables",
+        "DROP TABLE all policy tables",
+        "first checkpoint marker removed while later original markers remain"
+      ]
+    },
+    {
+      "after": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
+      "before": "0d1d1d414bffae16a5e541e05cdf64174cab7643",
+      "controls": "Closed wrapper rejects further call in both revisions; both native images are separately hashed",
+      "expected_after": {
+        "first_return": 17,
+        "second_return": 23
+      },
+      "expected_before": {
+        "expected_second_return": 23,
+        "first_return": 17,
+        "second_return": 17
+      },
+      "group": "native_loader",
+      "id": "native_loader_identity",
+      "incident": "8ba46fc7a112fc220cdcbbd48dc5d24fda76a738",
+      "oracle": "Public NativeCellBridge.begin after image17 close and image23 load; original regression tests/test_hia_cell_bridge.py::test_loader_actual_multi_image_close_reopen_and_simultaneous_handles",
+      "original_records": "results/LOADER-SUMMARY.json",
+      "proposed_split": "C",
+      "repository": "TrillionniumFoundation/Hepta",
+      "source_paths": [
+        "tools/cell_bridge_native.py"
+      ]
+    }
+  ]
+}

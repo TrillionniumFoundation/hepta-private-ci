@@ -1,0 +1,950 @@
+{
+  "common_protocol": {
+    "P01_COMMON_CANDIDATE": {
+      "candidate_generation_rule": "Same pinned candidate-generator implementation, initial candidate pool, source groups, proposal/search budget and seed schedule for eligible arms. Disabled-learning/adoption arms record that intervention instead of running useless training to consume a budget. Every proposal, rejection and evaluation opportunity is charged and retained.",
+      "identity_fields": [
+        "source_commit_and_tree",
+        "executed_source_sha256",
+        "HIA_compiler_commit_and_bytes",
+        "native_image_sha256",
+        "runtime_commit_tree_binary_config",
+        "Cell_implementation_and_owner_partition",
+        "model_initial_weights_and_optimizer",
+        "data_and_split_manifests",
+        "task_and_candidate_generators",
+        "device_and_numeric_identity",
+        "tool_authority",
+        "arm_configuration",
+        "seed_schedule"
+      ],
+      "requirement": "Freeze the whole experiment family and each allowed variant before evaluation; one branch cannot supply compiler success while another supplies learning or recovery success.",
+      "runtime_rule": "Bind request, durable owner job, exact stdout, fixed-path original files, candidate/image identity and independent review. Source snapshots or post-hoc consistency alone do not establish runtime execution.",
+      "status": "REQUIRES_NEW_EXPERIMENT_MANIFEST",
+      "variant_rule": "All arms descend from the same frozen family manifest; only declared experimental factors may differ. Record each descendant manifest, parent, selected live identity and in-flight version; never imply variant manifests are byte-identical."
+    },
+    "P02_GROUPED_INDEPENDENCE": {
+      "current_fixture_use": "Retain the controlled 4-action fixture as a conformance/retention sentinel. It cannot stand in for independent repositories or source groups.",
+      "group_key": [
+        "upstream_repository_or_environment",
+        "origin_issue_or_change",
+        "root_cause_family",
+        "source_template_and_all_derived_variants"
+      ],
+      "predicate": "pairwise_disjoint(origin_groups[A], origin_groups[B], origin_groups[C], origin_groups[D_cold]); no near-duplicate or lineage group crosses a split; held-out oracles remain sealed until their phase",
+      "required_manifest_fields": [
+        "origin_id",
+        "origin_commit",
+        "root_cause_group",
+        "parent_task_ids",
+        "transformation_provenance",
+        "split",
+        "task_sha256",
+        "oracle_sha256",
+        "generator_sha256",
+        "generation_seed",
+        "admission_time"
+      ],
+      "requirement": "Assign whole origin groups, including transformed near-duplicates, before generating split variants. Use temporal future groups for held-out drift when chronology is part of the claim.",
+      "split_roles": {
+        "A": "experience and training only; candidate generation may read these groups",
+        "B": "independent selection groups; all candidate queries count against a fixed selection budget",
+        "C": "new groups opened only after the Adopt or complete NoUpdate decision and live identity are frozen; never select or tune on C",
+        "D_cold": "further unopened groups after a fresh process/controller recovery; not a rerun of C or an equivalent template variant",
+        "retention": "sealed old-task groups plus the current eight-case deterministic 8/8 sentinel; no training or tuning on retained evaluation outcomes"
+      },
+      "status": "BLOCKED_CURRENT_REAL_SOURCE_GROUP_COUNT_ZERO"
+    },
+    "P03_MATCHED_RESOURCES": {
+      "budget_accounting": "Equal predeclared ceilings and opportunities, plus measured actual consumption. Count retries, failed candidates, all action scoring, tool/model tokens or steps, background training, verifier trials and cold recovery. No free hidden search or refunded failed evaluations.",
+      "capacity_accounting": "Count all reachable live parameters, all private/shared heads, optimizer state, active and shadow versions, retrieval state, activation memory and resident copies. Padding with unreachable parameters does not establish matched useful capacity. If no capacity match is possible, label the comparison descriptive and block the causal contribution claim.",
+      "capacity_or_compute_mismatch_policy": "Do not call the comparison controlled. Either build an actually matched arm or publish it separately without attributing the difference to plasticity/topology.",
+      "same_across_arms": [
+        "task_and_oracle_bytes",
+        "task_order_and_seed_blocks",
+        "base_model_weights",
+        "total_live_model_capacity",
+        "maximum_retained_experience_bytes",
+        "tool_permissions_and_tool_set",
+        "inference_budget",
+        "training_and_search_budget",
+        "evaluation_opportunities",
+        "device_class_and_runtime",
+        "fault_schedule_for_fault_comparisons"
+      ],
+      "status": "BLOCKED_CURRENT_ARMS_HAVE_NOMINAL_LIMITS_NOT_MATCHED_COMPUTE"
+    },
+    "P04_PREREGISTRATION_AND_STATISTICS": {
+      "confidence_level_proposal": 0.95,
+      "frozen_sentinel_predicate": "The existing mature repair rule remains 8/8 on its sealed eight-case panel; do not remove it, reduce its observations, or weaken the current strict Adopt threshold.",
+      "gain_predicate": "lower_confidence_bound(paired_primary_metric_gain) > preregistered_minimum_meaningful_gain, with all retention/resource/authority gates satisfied",
+      "missing_design_value_policy": "Any required null blocks the experiment. These nulls are intentional missing commitments, not observed zeroes.",
+      "required_before_any_B_C_D_access": {
+        "evaluation_and_candidate_counts": null,
+        "longitudinal_horizon_and_change_schedule": null,
+        "minimum_meaningful_gain": null,
+        "number_of_independent_origin_groups": null,
+        "number_of_seed_blocks": null,
+        "power_or_precision_justification": null,
+        "primary_task_metric": null,
+        "resource_noninferiority_bounds": null,
+        "stopping_rule_and_multiple_comparison_policy": null,
+        "tail_latency_precision_and_sample_requirement": null,
+        "training_and_inference_budgets": null
+      },
+      "statistical_unit": "Independent source group; paired seeds/order blocks within groups. Repeated variants from one template are not independent observations.",
+      "status": "BLOCKED_REQUIRED_DESIGN_VALUES_UNSET"
+    },
+    "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING": {
+      "NoUpdate_rule": "Report complete NoUpdate numerator, reason histogram and total eligible opportunities. Failed or incomplete trials remain failures, not completed NoUpdate.",
+      "cost_dimensions": [
+        "wall_time",
+        "parent_and_child_CPU",
+        "accelerator_active_time",
+        "physical_energy_with_meter_scope",
+        "concurrent_process_tree_memory_peak",
+        "queue_wait_and_occupancy",
+        "model_and_tool_work",
+        "training",
+        "validation",
+        "compile_and_build",
+        "switch_and_migration",
+        "recovery",
+        "failed_or_rejected_work"
+      ],
+      "distribution_dimensions": [
+        "cell",
+        "arm",
+        "phase",
+        "origin_group",
+        "task_outcome",
+        "measurement_scope"
+      ],
+      "energy_rule": "Use a calibrated, named measurement boundary and account for idle/background work consistently; CPU-only measurements cannot be relabeled whole-device/system energy. Unmeasured energy stays null and blocks a complete-cost dominance claim.",
+      "memory_rule": "Process-lifetime ru_maxrss and sampled RSS are labeled as such. Neither is called an exact concurrent campaign process-tree peak.",
+      "no_double_counting": "Inclusive/nested stage wall windows are not additive. Sum only disjoint measured resource intervals with explicit attribution. Record shared A/B diagnostics once; a component percentile is never a whole-task or whole-campaign percentile.",
+      "required_distribution_metadata": [
+        "observed_sample_count",
+        "missing_count",
+        "scheduled_denominator",
+        "quantile_estimator",
+        "confidence_interval_or_precision_limit",
+        "shared_diagnostic_scope",
+        "task_start_event",
+        "task_end_event"
+      ],
+      "status": "BLOCKED_ENERGY_TREE_MEMORY_QUEUE_AND_SOME_SYSTEM_COSTS_UNKNOWN",
+      "tail_rule": "An n=1 D-cold value is one observation. Compute p95/p99 only with explicit sample counts/estimator and meet a preregistered tail precision target before claiming tail improvement.",
+      "whole_campaign_boundary": "Frozen run start through training, all validation/search, build/compile, switching/migration, task execution and cold recovery; report initialization and one-time build cost separately and with a preregistered amortization horizon.",
+      "whole_task_boundary": "From accepted request/enqueue through queueing, inference, tool action, semantic check and durable final effect/readback. Preserve failures, cancellations, timeouts and unresolved results as separate outcomes."
+    },
+    "P06_AUTHORITY_AND_RECOVERY": {
+      "effect_oracle": "A separately durable receiver-side effect ledger with request/effect IDs, owner epoch/fencing and commit receipts; the controller cannot prove external exactly-once effects from its own journal alone.",
+      "required_invariants": [
+        "one_effect_owner_per_operation_and_epoch",
+        "request_effect_idempotency_binding",
+        "version_and_state_lineage_retained",
+        "first_durable_terminal_observation_immutable",
+        "lost_ack_does_not_authorize_resubmission",
+        "cancel_requested_is_not_effect_absent",
+        "UNKNOWN_retained_until_independent_reconciliation",
+        "no_automatic_adoption_without_independent_gate",
+        "failed_and_historical_evidence_append_only"
+      ],
+      "status": "PARTIAL_ENGINEERING_CONTROLS_EXIST_NEW_EFFECTFUL_PROTOCOL_NOT_IMPLEMENTED"
+    }
+  },
+  "comparison_arms": [
+    {
+      "configuration": "Same frozen Cell/HIA/runtime family with independently admitted local learning, persistent experience and only the predeclared bounded structural actions.",
+      "id": "FULL",
+      "purpose": "Reference for all one-factor ablations; remains blocked until those features actually execute.",
+      "role": "reference"
+    },
+    {
+      "configuration": "Fixed common base model with an ordinary tool loop, equal tools/authority/context/data/resource ceilings and pinned deterministic orchestration.",
+      "id": "TOOL_AGENT_FIXED",
+      "purpose": "Separate contribution from base-model capability, more model calls, tool access and token/step budget.",
+      "role": "control"
+    },
+    {
+      "configuration": "Same Cell owners, topology, heads and allocated initial weights; training/adoption disabled.",
+      "id": "CELL_LEARNING_OFF",
+      "purpose": "Private plasticity contribution; comparison is uninformative if FULL also never adopts.",
+      "role": "control"
+    },
+    {
+      "configuration": "Same eligible learning and budgets; topology remains exactly fixed.",
+      "id": "LEARNING_FIXED_TOPOLOGY",
+      "purpose": "Incremental contribution of bounded structural change.",
+      "role": "control"
+    },
+    {
+      "configuration": "Persistent experience/retrieval disabled only at declared session boundaries, while safety journal/effect ownership survive. Preserve adopted weights to isolate experience; a separate all-learned-state reset arm requires a distinct hypothesis.",
+      "id": "NO_CROSS_SESSION_EXPERIENCE",
+      "purpose": "Contribution of cross-session experience without confounding it with loss of authority or all parameter learning.",
+      "role": "control"
+    },
+    {
+      "configuration": "Pinned, predeclared mature deterministic supervision/scheduling and repair policies with the same observations, authority and budgets.",
+      "id": "DETERMINISTIC_SUPERVISION",
+      "purpose": "Whether learned control earns its complexity and full cost. The present four-token repair rule alone is not evidence for a whole mature supervisor.",
+      "role": "control"
+    },
+    {
+      "configuration": "FULL under the fixed restart, lost-ack, cancellation and handoff fault matrix. Apply the same matrix to comparison arms when attributing relative performance.",
+      "id": "FULL_WITH_FAULTS",
+      "purpose": "Persistence and recovery correctness; healthy-vs-faulted differences are not a plasticity effect.",
+      "role": "fault_stratum"
+    }
+  ],
+  "created_utc": "2026-11-18T03:38:23.072514+00:00",
+  "document_type": "UNEXECUTED_ACCEPTANCE_SPECIFICATION",
+  "evidence_scope": {
+    "current_engineering_ci_run_id": 44230303266,
+    "current_engineering_source_commit": "0c2b0c529882a0caeae23f8060a14e69475f4a14",
+    "current_engineering_workflow_status": "SUCCESS",
+    "current_engineering_workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303266",
+    "current_original_archive": {
+      "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/original-artifact.zip",
+      "sha256": "493dc472ae355991d7ba2161a94b6e4fafeb2340b4bd142c579645b0269c074a"
+    },
+    "current_originals": {
+      "OBSERVATION.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-campaign-worker/OBSERVATION.json",
+        "sha256": "ffb0c7d6c1772032c5b25e3d366e784659a91419cb58257b31569e6bab6e9aad"
+      },
+      "campaign/PLAN.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-campaign-worker/campaign/PLAN.json",
+        "sha256": "fe43bf354d8c82584b91a541d49b637fa4eda01672210eaa0787af6522cd5758"
+      },
+      "campaign/RESULT.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-campaign-worker/campaign/RESULT.json",
+        "sha256": "d2e7194f86c7f797b6008c7a7b66f7de7c5fe9ee4c5e19c04a3f8a5e307f48f1"
+      },
+      "updates/PLAN.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-campaign-worker/updates/PLAN.json",
+        "sha256": "530816a5cb1c3c05293da8776dc7d69173dcc4548df250944c64805b789806b5"
+      },
+      "updates/RESULT.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-campaign-worker/updates/RESULT.json",
+        "sha256": "a3ff833af3463e7546e3aac9413b77b820a2ebce587f29b79fd6b53c0cb91284"
+      }
+    },
+    "current_readonly_audit": {
+      "original_artifacts_unchanged": true,
+      "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/independent-audit.json",
+      "scope": "read-only original-file/protocol/SQLite consistency audit; no task/model/native rerun or new qualification",
+      "sha256": "84d66277703510e855b3aa8eed123ce2a8736666405b9f26cf173eaba2b832ef",
+      "status": "PASS"
+    },
+    "current_runtime_review_bindings": {
+      "campaign": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/campaign-review-binding.json",
+        "sha256": "1ea7fb3925ecb0a99e27b66aa115bcbd10cc263f104c0ae9218eda8720b8532d"
+      },
+      "semantic": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/extracted/runtime-joint/semantic-review-binding.json",
+        "sha256": "fdc7fab0d139df75ad259b1761a4569920a101d9a0368bbd515e4309b4374e69"
+      }
+    },
+    "historical_ci_run_id": 44228252971,
+    "historical_failure_scope": "The actual runtime stages completed; the original independent-review workflow failed on verifier digest constants. Subsequent read-only postreview is separate evidence, not a new successful original workflow.",
+    "historical_originals": {
+      "OBSERVATION.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44228252971/extracted/runtime-joint/semantic-campaign-worker/OBSERVATION.json",
+        "sha256": "5fb53f4af2f4a0ab34c89205f7dcb8728817bc4ddc506138803a6ade8552b7cf"
+      },
+      "campaign/PLAN.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44228252971/extracted/runtime-joint/semantic-campaign-worker/campaign/PLAN.json",
+        "sha256": "f462c682fa544156014d91644978cda432786aa814cf6e7b5c11ee970a4c99cc"
+      },
+      "campaign/RESULT.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44228252971/extracted/runtime-joint/semantic-campaign-worker/campaign/RESULT.json",
+        "sha256": "18988865437086d148b79f730b0e94d4b9e8bc3db85209760fa8fec63c19249a"
+      },
+      "updates/PLAN.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44228252971/extracted/runtime-joint/semantic-campaign-worker/updates/PLAN.json",
+        "sha256": "505b8c6052d262be9076e54d56eeab351354680ebaee6042f660f8ba95e44b06"
+      },
+      "updates/RESULT.json": {
+        "path": "/workspace/scratch/8ceb8d0b9456/validation/ci-44228252971/extracted/runtime-joint/semantic-campaign-worker/updates/RESULT.json",
+        "sha256": "bfc50d0738e2fcfe852f8041ea3a074a6402dcba48de394a1b2798fc1fb99e2d"
+      }
+    },
+    "historical_runtime_source_commit": "10939f76dea5858c8c24dabd13485742f2eb8f00",
+    "historical_workflow_status": "FAIL_RETAINED_NOT_RELABELED_BY_POSTREVIEW",
+    "no_head_mixing": "Known limits below were read from the current 0c2b0c5 engineering run originals. Historical 10939 failures are retained separately. Neither engineering run executes the proposed independent-origin research comparisons."
+  },
+  "execution_readiness": {
+    "must_resolve_first": [
+      "P02_GROUPED_INDEPENDENCE",
+      "P03_MATCHED_RESOURCES",
+      "P04_PREREGISTRATION_AND_STATISTICS",
+      "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING"
+    ],
+    "next_concrete_work": [
+      "Freeze a richer independent-origin maintenance benchmark and matched deterministic/tool-agent controls while preserving the current sentinel.",
+      "Implement scoped full-cost and external-effect measurement owners; leave unavailable fields unknown.",
+      "Preregister budgets, candidate/evaluation opportunities, group/seed counts, gain/retention bounds and longitudinal horizon.",
+      "Then execute eligible experiments once, preserving complete negative outcomes; enable effectful migration only after its separate protocol qualification."
+    ],
+    "not_authorized_by_this_document": [
+      "changing_admission_thresholds_to_force_Adopt",
+      "declaring_an_unrun_comparison_passed",
+      "ordinary_daemon_or_production_adoption",
+      "effectful_migration_without_qualified_owner_handoff"
+    ],
+    "ready_for_research_execution": false
+  },
+  "experiments": [
+    {
+      "acceptance": [
+        {
+          "id": "E01_G1",
+          "predicate": "arm_manifest_match_except_declared_factor == true AND all_resource_and_evaluation_caps_match == true",
+          "required_artifacts": [
+            "ARM_MANIFESTS.json",
+            "GROUP_SPLITS.json",
+            "BUDGET_LEDGER.jsonl"
+          ],
+          "requirement": "All listed interventions run on the same frozen experiment family and group/seed schedule.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E01_G2",
+          "predicate": "paired_group_gain_LCB > preregistered_margin AND deterministic_sentinel_success == 8/8 AND preregistered_old_capability_retention_pass AND resource_and_effect_constraints_pass",
+          "required_artifacts": [
+            "C_OUTCOMES.jsonl",
+            "PAIRED_ANALYSIS.json",
+            "RETENTION.json",
+            "COST.json"
+          ],
+          "requirement": "A claimed contribution must beat its matched ablation on untouched C groups without violating retention, resource or recovery gates.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "arm_ids": [
+        "FULL",
+        "TOOL_AGENT_FIXED",
+        "CELL_LEARNING_OFF",
+        "LEARNING_FIXED_TOPOLOGY",
+        "NO_CROSS_SESSION_EXPERIENCE",
+        "DETERMINISTIC_SUPERVISION",
+        "FULL_WITH_FAULTS"
+      ],
+      "blocked_by": [
+        "No ordinary tool-agent or mature deterministic supervisor arm has been qualified in the current fixture.",
+        "Current frozen and no_learning arms are intentionally identical and actual compute is not matched.",
+        "All current parameter decisions are NoUpdate; there is no adopted-learning treatment to attribute."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING",
+        "E02_ADOPTED_PARAMETERS",
+        "E06_TOPOLOGY"
+      ],
+      "execution": null,
+      "id": "E01_SYSTEM_CONTROLS",
+      "question": "Do private learning, memory and bounded structural change improve held-out maintenance outcomes at matched capacity and budgets?",
+      "required_artifacts": [
+        "all_arms_raw_task_receipts",
+        "all_candidate_and_NoUpdate_records",
+        "independent_semantic_oracle_results",
+        "runtime_original_review_binding"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "普通 agent 与 Cell 贡献比较"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E02_G1",
+          "predicate": "source_group_disjointness_pass AND realistic_action_contract_frozen AND no_posthoc_baseline_or_gate_change",
+          "required_artifacts": [
+            "BENCHMARK_CONTRACT.json",
+            "GROUP_SPLITS.json",
+            "ORACLE_MANIFEST.json"
+          ],
+          "requirement": "Use a separately versioned, preregistered real maintenance family with adequate inputs/actions; keep the existing panel and its strict gate unchanged.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E02_G2",
+          "predicate": "all_admission_gates_pass AND decision == Adopt AND selected_live_identity == admitted_identity",
+          "required_artifacts": [
+            "B_REVIEW.json",
+            "DECISION.json",
+            "OWNER_READBACK.json"
+          ],
+          "requirement": "Adopt only after independent B gain and old-task/resource gates; persist candidate/parent/selected versions and active readback.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E02_G3",
+          "predicate": "C_gain_LCB > margin AND C_receipts_identity == adopted_identity AND cold_state_and_version_match AND D_gain_retained_within_preregistered_bound",
+          "required_artifacts": [
+            "C_OUTCOMES.jsonl",
+            "COLD_ORIGINALS.json",
+            "D_OUTCOMES.jsonl"
+          ],
+          "requirement": "Demonstrate improvement on C with the actually adopted version, then preserve its identity/state and gain after cold recovery on D.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "The four-action B panel has a deterministic 8/8 ceiling under a strict greater-than-every-baseline gate; that panel cannot produce a qualifying Adopt.",
+        "Observed MEM/PRED decisions are NoUpdate, so C used the original selected models.",
+        "No independent real source groups are present."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING"
+      ],
+      "execution": null,
+      "id": "E02_ADOPTED_PARAMETERS",
+      "negative_completion": "A fully evidenced NoUpdate is a completed experiment with no demonstrated adopted-learning benefit; never force an adoption to complete this item.",
+      "question": "Does a real independently admitted MEM/PRED update improve untouched tasks and retain old capability?",
+      "required_artifacts": [
+        "A_experience",
+        "training_receipts",
+        "all_B_attempts",
+        "Adopt_or_complete_NoUpdate",
+        "C_and_D_independent_oracles",
+        "runtime_job_and_review_binding"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "参数 Adopt 后的新任务与保留"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E03_G1",
+          "predicate": "output_state_effect_equivalence == true",
+          "required_artifacts": [
+            "DIFFERENTIAL_ORACLES.jsonl",
+            "STATE_AND_EFFECT_LEDGER.jsonl"
+          ],
+          "requirement": "Compare exact outputs, state transitions and authorized external effects across paired workload groups.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E03_G2",
+          "predicate": "all_required_cost_dimensions_observed AND no_nested_double_count AND horizon_frozen_before_run",
+          "required_artifacts": [
+            "COST_BOUNDARIES.json",
+            "METER_READINGS.jsonl",
+            "BUILD_SWITCH_RECOVERY.jsonl"
+          ],
+          "requirement": "Measure complete compile/build, validation, switch/migration, execution and recovery costs with a declared amortization horizon.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E03_G3",
+          "predicate": "cost_gain_LCB > margin AND all_resource_noninferiority_gates_pass AND equivalence_pass",
+          "required_artifacts": [
+            "PAIRED_FULL_COST_ANALYSIS.json",
+            "DECISION.json"
+          ],
+          "requirement": "The predeclared cost objective improves beyond its margin and every constrained resource remains within its bound.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "The current local paired wall comparison omits complete build/energy/process-tree-memory costs and correctly returns NoUpdate."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING"
+      ],
+      "execution": null,
+      "id": "E03_CODE_FULL_COST",
+      "negative_completion": "Missing energy or required resource attribution remains NoUpdate; a wall-only speedup is reported only as a scoped observation.",
+      "question": "Does a code replacement reduce complete measured cost over the declared workload horizon while preserving outputs, state and effects?",
+      "required_artifacts": [
+        "original_and_candidate_code_images",
+        "paired_order_and_cache_policy",
+        "complete_cost_receipts",
+        "live_version_and_rollback_readback"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "输出不变的代码全成本下降"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E04_G1",
+          "predicate": "new_protocol_explicitly_admitted AND old_unsupported_cases_still_refuse",
+          "required_artifacts": [
+            "HANDOFF_PROTOCOL.json",
+            "AUTHORITY_MODEL.json",
+            "SOURCE_CLOSURE.json"
+          ],
+          "requirement": "Implement a separately versioned durable handoff/fencing protocol before enabling effectful migration; retain current refusal for unsupported cases.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E04_G2",
+          "predicate": "simultaneously_authorized_effect_owners <= 1 AND state_conservation AND all_inflight_version_references_resolvable",
+          "required_artifacts": [
+            "HANDOFF_JOURNAL.jsonl",
+            "STATE_MAPPING.json",
+            "RECEIVER_LEDGER.jsonl"
+          ],
+          "requirement": "A real upgrade/split transfers state, queued work, version references and effect IDs with at most one authorized writer.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E04_G3",
+          "predicate": "proven_duplicate_effects == 0 AND proven_lost_committed_effects == 0 AND all_unresolved_effects_explicit_UNKNOWN AND no_unsafe_resubmission",
+          "required_artifacts": [
+            "FAULT_SCHEDULE.json",
+            "RESTART_READBACK.jsonl",
+            "RECONCILIATION.json"
+          ],
+          "requirement": "Inject crashes/lost acknowledgements at each handoff/effect boundary and reconcile from an independent receiver ledger.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "Current migration is pure, idle, same-owner/partition and same native image/transport.",
+        "Current in-flight refusal and pending preservation are valid safety controls, not successful in-flight handoff.",
+        "External business effect counts are unknown and no receiver-side effect oracle is bound."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING",
+        "P06_AUTHORITY_AND_RECOVERY"
+      ],
+      "execution": null,
+      "id": "E04_EFFECTFUL_INFLIGHT_MIGRATION",
+      "nonclaim": "Exactly-once external effects cannot be inferred from a controller-only journal or by treating UNKNOWN as zero.",
+      "question": "Can an upgrade or split safely transfer in-flight effect custody and state across a real owner/version boundary?",
+      "required_artifacts": [
+        "old_and_new_owner_epochs",
+        "receiver_commit_receipts",
+        "state_and_queue_conservation",
+        "fault_and_recovery_costs"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "在途业务效果的状态与所有权迁移"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E05_G1",
+          "predicate": "same_total_useful_capacity AND same_training_inference_and_evaluation_caps AND same_group_seed_schedule",
+          "required_artifacts": [
+            "HEAD_CAPACITY_AUDIT.json",
+            "ARM_MANIFESTS.json"
+          ],
+          "requirement": "Only the declared head-sharing factor varies; count all live head/core/optimizer/activation resources.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E05_G2",
+          "predicate": "primary_gain_LCB > margin AND retention_and_resource_gates_pass",
+          "required_artifacts": [
+            "LONGITUDINAL_HEAD_ANALYSIS.json"
+          ],
+          "requirement": "Specialization improves independent adaptation or preregistered efficiency while retaining old tasks across rounds.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "No matched-capacity shared-head versus independent-head longitudinal comparison has been executed."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "E02_ADOPTED_PARAMETERS"
+      ],
+      "execution": null,
+      "id": "E05_HEAD_DIFFERENTIATION",
+      "question": "Does head specialization improve adaptation/retention after controlling total model capacity and data?",
+      "required_artifacts": [
+        "per_head_updates_and_interference",
+        "new_and_old_task_outcomes",
+        "complete_costs"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "共享 head 与独立 head"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E06_G1",
+          "predicate": "topology_diff_in_allowlist AND capacity_cap_unchanged AND each_handoff_passes_E04",
+          "required_artifacts": [
+            "TOPOLOGY_ACTION_CONTRACT.json",
+            "TOPOLOGY_EVENTS.jsonl"
+          ],
+          "requirement": "Freeze allowed structural actions and capacity/queue limits; every structural update has state/effect conservation evidence.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E06_G2",
+          "predicate": "paired_C_or_longitudinal_gain_LCB > margin AND full_cost_and_retention_gates_pass",
+          "required_artifacts": [
+            "FIXED_TOPOLOGY_COMPARISON.json"
+          ],
+          "requirement": "Compare against learning-enabled fixed topology, including search, retraining and migration costs.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "No bounded topology action set, matched fixed-topology arm or effect-safe topology handoff is qualified."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "E04_EFFECTFUL_INFLIGHT_MIGRATION"
+      ],
+      "execution": null,
+      "id": "E06_TOPOLOGY",
+      "question": "Does bounded splitting/merging/rerouting add value beyond parameter learning at the same total capacity?",
+      "required_artifacts": [
+        "same_candidate_generator_proposals",
+        "topology_version_lineage",
+        "state_effect_migration_receipts",
+        "all_failed_structural_candidates"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "固定拓扑与有限结构变化"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E07_G1",
+          "predicate": "alternate_kernel_contract_and_same_runtime_provenance_pass",
+          "required_artifacts": [
+            "KERNEL_MANIFESTS.json",
+            "TRAINING_PATH.json",
+            "STATE_RECOVERY_CONTRACT.json"
+          ],
+          "requirement": "Predeclare one alternate kernel and supply the same real Cell interface, trained weights, owner/state semantics, recovery and HIA binding.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E07_G2",
+          "predicate": "capacity_and_budget_match AND primary_gain_LCB > margin AND retention_and_recovery_gates_pass",
+          "required_artifacts": [
+            "PAIRED_KERNEL_ANALYSIS.json"
+          ],
+          "requirement": "Use paired groups/seeds and account for actual kernel steps, model size, optimizer state and compilation costs.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "The main closed learning path uses GRU; a different kernel name or isolated HCSN result does not qualify this joint candidate."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P06_AUTHORITY_AND_RECOVERY"
+      ],
+      "execution": null,
+      "id": "E07_TEMPORAL_KERNELS",
+      "optional_research_candidate": "HCSN is eligible only after meeting the same interface/training/recovery gates; no main-loop substitution is assumed.",
+      "question": "Does an alternate temporal kernel improve the same Cell task family at matched useful capacity and work budgets?",
+      "required_artifacts": [
+        "GRU_and_alternate_task_receipts",
+        "actual_step_and_memory_accounting",
+        "all_compile_training_verification_costs"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "GRU 与其他时序核"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E08_G1",
+          "predicate": "schedule_and_horizon_frozen AND future_group_oracles_sealed",
+          "required_artifacts": [
+            "LONGITUDINAL_PLAN.json",
+            "SESSION_BOUNDARIES.json"
+          ],
+          "requirement": "Predeclare the environment-change sequence, horizon, sealed retention panels and experience-reset intervention.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E08_G2",
+          "predicate": "rounds >= 3 AND intervening_cold_restarts >= 2 AND at_least_one_real_Adopt AND all_selected_identity_and_state_readbacks_match",
+          "required_artifacts": [
+            "ROUND_LEDGER.jsonl",
+            "COLD_READBACKS.jsonl"
+          ],
+          "requirement": "As a minimum persistence check, complete at least three independently evaluated update rounds and at least two intervening cold restarts after an initial qualifying adoption.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E08_G3",
+          "predicate": "longitudinal_gain_LCB > margin AND retention_trajectory_within_predeclared_bound AND cumulative_resource_gates_pass",
+          "required_artifacts": [
+            "ADAPTATION_AND_FORGETTING_CURVES.json",
+            "CUMULATIVE_COST.json"
+          ],
+          "requirement": "Retain new-task benefit and old-task performance through later rounds under matched cumulative budgets.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "No multi-round adopted improvement exists; a cold restore after NoUpdate only establishes retained selected state."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING",
+        "E02_ADOPTED_PARAMETERS"
+      ],
+      "execution": null,
+      "id": "E08_LONGITUDINAL_PLASTICITY",
+      "minimum_check_scope": "Three rounds/two restarts are a structural minimum check, not by themselves a broad long-term-capability claim; the research horizon and precision remain preregistration blockers.",
+      "question": "Do adopted improvements survive multiple environmental changes, later updates and cold restarts without catastrophic forgetting?",
+      "required_artifacts": [
+        "frozen_vs_local_learning_vs_no_cross_session_experience",
+        "all_Adopt_NoUpdate_failure_reasons",
+        "round_by_round_original_artifacts"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "冻结模型、局部学习与跨会话经验"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E09_G1",
+          "predicate": "supervisor_baseline_pinned_and_unrestricted_by_artificial_information_loss",
+          "required_artifacts": [
+            "SUPERVISOR_BASELINE.json",
+            "WORKLOAD_ARRIVALS.jsonl"
+          ],
+          "requirement": "Choose and freeze a strong deterministic implementation/configuration with equal observations, resource limits, authority and safe retry/recovery semantics.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E09_G2",
+          "predicate": "primary_control_gain_LCB > margin AND all_latency_queue_resource_effect_constraints_pass",
+          "required_artifacts": [
+            "QUEUE_AND_TASK_EVENTS.jsonl",
+            "PAIRED_CONTROL_ANALYSIS.json"
+          ],
+          "requirement": "Compare success, deadlines, fairness, p95/p99, queue occupancy and training/control overhead on identical arrival/fault schedules.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "The current deterministic arm is a repair selector over CPython diagnostics, not a qualified queueing/supervision benchmark.",
+        "A measured queue occupancy/wait ledger and learned-control policy comparison are absent."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P02_GROUPED_INDEPENDENCE",
+        "P03_MATCHED_RESOURCES",
+        "P04_PREREGISTRATION_AND_STATISTICS",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING"
+      ],
+      "execution": null,
+      "id": "E09_LEARNED_CONTROL",
+      "question": "Does learned scheduling/control improve full task outcomes, queueing and costs over a strong deterministic supervisor?",
+      "required_artifacts": [
+        "learned_policy_training_and_validation_costs",
+        "per_task_accepted_start_final_events",
+        "deterministic_and_learned_recovery_logs"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "学习型控制与成熟确定性调度"
+    },
+    {
+      "acceptance": [
+        {
+          "id": "E10_G1",
+          "predicate": "all_fault_points_have_bound_runtime_and_receiver_evidence AND no_unrecorded_or_relabelled_failures",
+          "required_artifacts": [
+            "FAULT_MATRIX_COVERAGE.json",
+            "OWNER_AND_RECEIVER_EVENTS.jsonl"
+          ],
+          "requirement": "Run the same preregistered fault matrix through the real owner/runtime/receiver boundaries and retain every failed or unresolved outcome.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E10_G2",
+          "predicate": "version_state_queue_conservation AND first_terminal_bytes_immutable AND lost_ack_never_auto_resubmitted",
+          "required_artifacts": [
+            "COLD_RECOVERY_REVIEW.json"
+          ],
+          "requirement": "Recover identity, selected version, state and queue without duplicate submission or terminal byte substitution.",
+          "status": "NOT_EVALUATED"
+        },
+        {
+          "id": "E10_G3",
+          "predicate": "measurement_coverage_complete_for_required_dimensions AND unknown_effect_count_explicit AND no_component_tail_as_whole_task_tail",
+          "required_artifacts": [
+            "WHOLE_TASK_COST.json",
+            "RESOURCE_METERS.jsonl",
+            "EFFECT_RECONCILIATION.json"
+          ],
+          "requirement": "Record true end-to-end costs and distinguish established zero effects from unobserved effect counts.",
+          "status": "NOT_EVALUATED"
+        }
+      ],
+      "blocked_by": [
+        "Current energy, process-tree peak and queue peaks are unknown.",
+        "Existing continuation/UNKNOWN preservation is not receiver-verified external business effect accounting."
+      ],
+      "depends_on": [
+        "P01_COMMON_CANDIDATE",
+        "P05_COMPLETE_COST_AND_FAILURE_ACCOUNTING",
+        "P06_AUTHORITY_AND_RECOVERY"
+      ],
+      "execution": null,
+      "fault_points": [
+        "before_durable_intent",
+        "after_intent_before_dispatch",
+        "after_receiver_effect_before_ack",
+        "after_receipt_before_owner_commit",
+        "cancel_while_effect_unknown",
+        "controller_and_worker_restart",
+        "terminal_publication_or_stdout_conflict",
+        "handoff_prepare",
+        "old_owner_fenced_before_new_owner_commit",
+        "new_owner_commit_before_ack"
+      ],
+      "id": "E10_FAULT_RECOVERY_AND_FULL_COST",
+      "question": "Do successful outcomes and their costs remain valid under actual runtime restarts, cancellation, lost acknowledgement and terminal publication conflicts?",
+      "required_artifacts": [
+        "healthy_and_faulted_matched_task_groups",
+        "recovery_latency_distribution",
+        "pending_lost_duplicate_effect_counts_with_oracle",
+        "NoUpdate_and_failure_distribution"
+      ],
+      "result": null,
+      "status": "BLOCKED_NOT_EXECUTED",
+      "title": "完整故障组与全成本观测"
+    }
+  ],
+  "known_limits": {
+    "cross_session_ablation_not_yet_qualified": "The current no_memory fixture resets between observations; it does not implement the separately specified cross-session-experience ablation.",
+    "current_controls_scope": "frozen/no_learning intentionally identical; no_memory resets between observations; deterministic reads CPython diagnostics",
+    "current_task_contract": {
+      "encoded_observation_dimensions": 13,
+      "independent_real_source_groups": 0,
+      "repair_actions": 4,
+      "scope": "controlled generated maintenance fixture, not general repository maintenance"
+    },
+    "fairness_scope": "same programs and nominal limits; PRED scores four actions, MEM one four-way head; actual work recorded, not matched compute",
+    "migration_scope": {
+      "effectful_or_cross_owner_migration": false,
+      "external_business_effect_counts": null,
+      "inflight_action": "refused with pending retained",
+      "observed_kind": "idle pure readout upgrade with same owner/partition/native transport/image and cold inference"
+    },
+    "observed_code_outcome": {
+      "decision": "NoUpdate",
+      "full_system_cost_known": false,
+      "reason": "complete build/energy/process-tree memory cost is not measured"
+    },
+    "observed_parameter_outcomes": {
+      "memory": {
+        "B_denominator": 8,
+        "B_successes": {
+          "candidate": 6,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_denominator": 8,
+        "C_successes": 2,
+        "C_used_adopted_candidate": false,
+        "decision": "NoUpdate"
+      },
+      "predictor": {
+        "B_denominator": 8,
+        "B_successes": {
+          "candidate": 2,
+          "deterministic": 8,
+          "frozen": 2,
+          "no_learning": 2,
+          "no_memory": 2
+        },
+        "C_denominator": 8,
+        "C_successes": 2,
+        "C_used_adopted_candidate": false,
+        "decision": "NoUpdate"
+      }
+    },
+    "strict_gate_ceiling": "The unchanged gate demands candidate B success strictly exceed every baseline; deterministic 8/8 makes qualifying adoption impossible on that same eight-case panel. This is a blocker, not a reason to weaken the baseline or gate.",
+    "tail_scope": "Phase/Cell component distributions and one D-cold task per Cell do not establish whole-task p95/p99 or stable tail improvements.",
+    "unknown_costs": {
+      "complete_build_switch_recovery_cost_attribution": null,
+      "concurrent_campaign_process_tree_peak_rss_bytes": null,
+      "physical_energy_joules": null,
+      "queue_peak_items": null
+    }
+  },
+  "nonnegotiable_rules": [
+    "Preserve deterministic 8/8 and the current strict admission/retention gates; never tune a baseline downward to manufacture Adopt.",
+    "Complete NoUpdate is valid process completion, not evidence of learned benefit; no adopted C/retention claim without live admitted-version receipts.",
+    "Do not drop failed candidates, incomplete runs, cancellation, UNKNOWN, lost acknowledgement or historical negative evidence.",
+    "Do not merge results across source HEADs, native images, runtime configurations, task manifests or independently generated candidate families.",
+    "Do not weaken the current in-flight migration refusal before an independently qualified handoff protocol exists.",
+    "Use changed independent information or a concrete unresolved gate to justify reruns; repeated runs of the same ceilinged four-action panel cannot establish new learning ability."
+  ],
+  "schema": "hepta.open-experiments.v1",
+  "source_snapshot": {
+    "ci_result_not_generalized_to_research_experiments": true,
+    "ci_run_id": 44230303266,
+    "commit": "0c2b0c529882a0caeae23f8060a14e69475f4a14",
+    "complete_new_experiment_candidate_manifest_sha256": null,
+    "engineering_candidate_sha256": "36116708f9ce77685a8f2c488a4d642050f1fc14acf71cd769037404aeb41697",
+    "engineering_ci_status": "SUCCESS",
+    "engineering_ci_status_source": "/workspace/scratch/8ceb8d0b9456/validation/ci-44230303266/independent-audit.json",
+    "engineering_native_image_sha256": "c475a22313d401e84d5e0b13c935aabb4615c6da15aba3e6083f842d35f54812",
+    "engineering_runtime_identity": {
+      "binary_sha256": "8a00d4d6edf6ce5a7c374eccf16605d1e18a043d9fa990215bbc736861de6130",
+      "config_sha256": "828986fd469f1e86553fe57fc213c806fd31b9675e55236c6de66ab64b064c55",
+      "source_commit": "73b5c33d5762eefc0554a86750094350f18ae6a0",
+      "source_tree": "d9b16016a4df226d6471a934076390da9b978735",
+      "transport": "actual_mcp_stdio"
+    },
+    "repository": "hepta-private-ci",
+    "source_files": {
+      "scripts/hepta_cells/maintenance_cycle.py": "5b052e1f69eaa28596eb1a58066c5c23873b9000d29fd2112f0eeae03dad1a7a",
+      "scripts/hepta_cells/maintenance_tasks.py": "3cf44cd47880ade86358416a16d2a87821b3633fc7274b5298c64f15436112f7",
+      "scripts/qualify_cell_updates.py": "511459a16a21aff5e8539303d613c86f7f1d05ae13501cd9de0c8a0b19782192",
+      "scripts/qualify_runtime_campaign.py": "988441124de5831d8e46ab97733d278405f9d48fe8440b4874f4a13e3ff894af"
+    }
+  },
+  "status": "NOT_RUN_NO_RESEARCH_GATE_CLOSED_BY_THIS_DOCUMENT",
+  "termination_semantics": {
+    "ACCEPTED_CLAIM": "Only the specific preregistered claim whose complete provenance, fairness, statistical, retention, cost and recovery gates pass.",
+    "COMPLETE_NO_BENEFIT": "All planned arms/opportunities finish with retained originals but the gain/adoption gate fails; publish negative results and complete NoUpdate reasons.",
+    "FAILED_OR_INCOMPLETE": "Missing originals, broken provenance, protocol failure, budget overrun or unresolved execution outside allowed UNKNOWN semantics.",
+    "INCONCLUSIVE": "Insufficient independent groups, unmatched capacity, inadequate tail precision, or other preregistered uncertainty.",
+    "UNKNOWN_EFFECT": "External outcome unresolved; keep custody and reconciliation requirements, never silently convert to no effect or resubmit."
+  }
+}

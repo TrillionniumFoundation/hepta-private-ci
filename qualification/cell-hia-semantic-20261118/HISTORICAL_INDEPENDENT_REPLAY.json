@@ -1,0 +1,80 @@
+{
+  "capsule_manifest_sha256": "f5d4abf33049dfaca3472a5c3c6ffaa78e5ba4e62579d47f6d85445881c7e0e9",
+  "cell_repair_learning_demonstrated": false,
+  "commands": {
+    "cells": {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-B",
+        "/workspace/scratch/8ceb8d0b9456/learning-analysis/history-replay/cell_replay.py",
+        "/workspace/scratch/8ceb8d0b9456/validation/historical-capsule-independent/cells"
+      ],
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e1f295b8475dacbafb987d69967dddf812415b48b853373d94ec4bf659edc801"
+    },
+    "loader": {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-B",
+        "/workspace/scratch/8ceb8d0b9456/learning-analysis/history-replay/loader_replay.py",
+        "/workspace/scratch/8ceb8d0b9456/validation/historical-capsule-independent/loader"
+      ],
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "e84922cda90250fe7b5af2e270b15098b5b36237e15b0df418124521c486affb"
+    },
+    "runtime": {
+      "argv": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-B",
+        "/workspace/scratch/8ceb8d0b9456/learning-analysis/history-replay/replay.py",
+        "/workspace/scratch/8ceb8d0b9456/validation/historical-capsule-independent/runtime"
+      ],
+      "returncode": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "f9b8337ef0eb661b4c207e529d4acca7a6ea64d503f5e04d01459cec4469751c"
+    }
+  },
+  "corpus_sha256": "dc7fd2ee5e36d14a7adbe82ceca6aab9c4fe2c0e2006d7d33ad4b4f981633a22",
+  "current_candidate_qualified": false,
+  "dependence_groups": 3,
+  "experiment_id": "hepta-maintenance-historical-capsule-20261118-v1",
+  "git_blobs_verified": 28,
+  "historical_fix_incidents": 4,
+  "independent_external_distribution": false,
+  "schema": "hepta-historical-replay-verification/v1",
+  "status": "PASS",
+  "task_count": 5,
+  "tasks": {
+    "native_loader_identity": {
+      "expected_red_green_observed": true,
+      "historical_after_semantic_pass": true,
+      "historical_before_semantic_pass": false
+    },
+    "original_child_terminal": {
+      "expected_red_green_observed": true,
+      "historical_after_semantic_pass": true,
+      "historical_before_semantic_pass": false
+    },
+    "population_policy_recovery": {
+      "expected_red_green_observed": true,
+      "historical_after_semantic_pass": true,
+      "historical_before_semantic_pass": false
+    },
+    "qualification_callback_identity": {
+      "expected_red_green_observed": true,
+      "historical_after_semantic_pass": true,
+      "historical_before_semantic_pass": false
+    },
+    "terminal_nonce_witness": {
+      "expected_red_green_observed": true,
+      "historical_after_semantic_pass": true,
+      "historical_before_semantic_pass": false
+    }
+  },
+  "training_or_inference_cost_comparison": false
+}

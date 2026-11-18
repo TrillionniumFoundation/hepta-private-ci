@@ -1,0 +1,309 @@
+{
+  "observed_utc": "2026-11-18 03:41:57 UTC",
+  "source_head": "0c2b0c529882a0caeae23f8060a14e69475f4a14",
+  "all_repository_ci_green": false,
+  "workflow_runs": [
+    {
+      "id": 44230303266,
+      "name": "Cell HIA joint candidate",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303266",
+      "head_sha": "0c2b0c529882a0caeae23f8060a14e69475f4a14"
+    },
+    {
+      "id": 44230303182,
+      "name": "v8-canary",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303182",
+      "head_sha": "0c2b0c529882a0caeae23f8060a14e69475f4a14"
+    },
+    {
+      "id": 44230303185,
+      "name": "blocking-ci",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303185",
+      "head_sha": "0c2b0c529882a0caeae23f8060a14e69475f4a14"
+    },
+    {
+      "id": 44230303263,
+      "name": "Hepta architecture convergence",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303263",
+      "head_sha": "0c2b0c529882a0caeae23f8060a14e69475f4a14"
+    },
+    {
+      "id": 44230303141,
+      "name": "Hepta stem Cell routes",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44230303141",
+      "head_sha": "0c2b0c529882a0caeae23f8060a14e69475f4a14"
+    }
+  ],
+  "blocking_ci_jobs": [
+    {
+      "id": 134553647649,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553648230,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553648252,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810735,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run cargo-deny"
+      ]
+    },
+    {
+      "id": 134553810744,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810762,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810794,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810826,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810848,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810862,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810908,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553810929,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811110,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": []
+    },
+    {
+      "id": 134553811117,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test shard"
+      ]
+    },
+    {
+      "id": 134553811126,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test //..."
+      ]
+    },
+    {
+      "id": 134553811150,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "bazel test shard"
+      ]
+    },
+    {
+      "id": 134553811178,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": []
+    },
+    {
+      "id": 134553811235,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811271,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": []
+    },
+    {
+      "id": 134553811277,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811278,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811286,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811323,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811339,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811351,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553811360,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553812368,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "id": 134553812925,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "id": 134553813109,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "id": 134553927311,
+      "name": "rust-ci / Cargo manifest preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553927325,
+      "name": "rust-ci / cargo shear",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553927408,
+      "name": "rust-ci / Rust format",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134553929869,
+      "name": "rust-ci / Argument comment lint package",
+      "status": "completed",
+      "conclusion": "skipped",
+      "failed_steps": []
+    },
+    {
+      "id": 134554061101,
+      "name": "rust-ci / Rust benchmark smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    },
+    {
+      "id": 134554693535,
+      "name": "rust-ci / CI results (required)",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": []
+    }
+  ],
+  "baseline_same_gate_failure": {
+    "source": "f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb",
+    "run_id": 43802820916,
+    "job_id": 133087090505,
+    "step": "Run cargo-deny",
+    "scope": "same gate failed at baseline; not a claim that every present failure has the identical cause"
+  }
+}
