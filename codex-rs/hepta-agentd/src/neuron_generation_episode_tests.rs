@@ -80,9 +80,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     assert_eq!(appended.disposition, AppendDisposition::Appended);
     assert_eq!(checked(writer.records()).len(), 2);
     let ledger_after = writer.bytes();
-    let generation_after = checked(std::fs::read(
-        fixture.directory.path().join("generation-journal"),
-    ));
+    let generation_after = fixture.journal_bytes(&handle).await;
     tasks.shutdown().await;
     drop(handle);
     drop(writer);
@@ -111,9 +109,7 @@ async fn real_actor_delivery_and_cold_reopen_append_one_authenticated_outcome() 
     assert_eq!(checked(writer.records()).len(), 2);
     assert_eq!(writer.bytes(), ledger_after);
     assert_eq!(
-        checked(std::fs::read(
-            fixture.directory.path().join("generation-journal")
-        )),
+        fixture.journal_bytes(&handle).await,
         generation_after
     );
     assert_eq!(control.calls.load(Ordering::SeqCst), 1);
