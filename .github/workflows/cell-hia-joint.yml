@@ -26,6 +26,7 @@ on:
       - "scripts/test*cell*"
       - "scripts/test_hepta_owner*"
       - "scripts/test_hepta_cgroup_observation.py"
+      - "scripts/test_hepta_research_trial.py"
       - "scripts/test_runtime_process_bridge.py"
       - ".github/workflows/cell-hia-joint.yml"
   workflow_dispatch:
@@ -107,11 +108,28 @@ jobs:
           HEPTA_OWNER_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/cell-joint-evidence/owner-controls
           HEPTA_RECEIVER_TEST_ARTIFACT_ROOT: ${{ runner.temp }}/cell-joint-evidence/receiver-controls
         run: |
-          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe test_hepta_receiver_store test_hepta_receiver_handoff test_hepta_owner_store test_hepta_owner_history test_hepta_cgroup_observation 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity test_hepta_joint_candidate_closure test_hepta_runtime_campaign_binding test_hepta_cells_research_sources test_hepta_task_observation test_hepta_research_statistics test_hepta_temporal_native_probe test_hepta_receiver_store test_hepta_receiver_handoff test_hepta_owner_store test_hepta_owner_history test_hepta_cgroup_observation test_hepta_research_trial 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
       - name: Observe current cgroup accounting with explicit measurement scope
         working-directory: cells
         run: |
           python -B scripts/hepta_cells/cgroup_observation.py > "$RUNNER_TEMP/cell-joint-evidence/cgroup-observation.json"
+      - name: Execute the frozen historical development capsule through the common runner
+        working-directory: cells
+        env:
+          PYTHONPATH: scripts
+        run: |
+          python -B - <<'PYCODE'
+          import hashlib, io, os, pathlib, tarfile
+          source = pathlib.Path("qualification/cell-hia-semantic-20261118/archives/historical-maintenance-capsule.tar.gz.part000")
+          raw = source.read_bytes()
+          if hashlib.sha256(raw).hexdigest() != "3faeb4b9e8914322362dc3f93ea9a091b7a509decca0ebc22b42d572a5cd28fd":
+              raise ValueError("historical capsule differs from the original frozen archive")
+          target = pathlib.Path(os.environ["RUNNER_TEMP"]) / "historical-capsule"
+          target.mkdir()
+          with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
+              archive.extractall(target, filter="data")
+          PYCODE
+          python -B -m hepta_cells.research_trial_history --capsule "$RUNNER_TEMP/historical-capsule/history-replay" --output "$RUNNER_TEMP/cell-joint-evidence/historical-development-trial"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
