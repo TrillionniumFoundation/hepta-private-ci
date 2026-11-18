@@ -8,4 +8,5 @@ fn main() {
     link_native("allowed_prefixes");
     link_native("command_dispatch");
     link_native("network_host");
+    link_native("example_validation_step");
 }

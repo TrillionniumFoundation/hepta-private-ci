@@ -1,6 +1,6 @@
 hia-asm.v1 hepta.hia.program.v9 codex_example_validation_step
-fn f0(source:readbuf,output:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
-block entry(source:readbuf,output:mutbuf)
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
   entry_actual:usize = buffer.len(source)
   entry_required:usize = const() {"value":56}
   entry_exact:bool = compare.eq(entry_actual,entry_required)
