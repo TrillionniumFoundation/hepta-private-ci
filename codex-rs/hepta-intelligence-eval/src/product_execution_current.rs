@@ -19,7 +19,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
                 return Err(io_error(error));
             }
         };
-        let current = (|| -> Result<ProductEvaluationExecutionAnchorV1, FileError> {
+        let current = (|| {
             let length = self.file.metadata().map_err(io_error)?.len();
             if length > MAX_FILE_BYTES {
                 return Err(FileError::Capacity);
@@ -27,62 +27,29 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             if length != self.length {
                 return Err(FileError::Corrupt);
             }
-            self.file.seek(SeekFrom::Start(0)).map_err(io_error)?;
-            let mut bytes = Vec::new();
-            (&mut *self.file)
-                .take(MAX_FILE_BYTES + 1)
-                .read_to_end(&mut bytes)
-                .map_err(io_error)?;
-            if bytes.len() as u64 != length
-                || self.file.metadata().map_err(io_error)?.len() != length
+            let bytes = physical::read_stable_image(&mut self.file)?;
+            let replayed = self.replay_current_image(&bytes)?;
+            if bytes.len() as u64 != self.length
+                || replayed.anchor != self.anchor
+                || replayed.records != self.records
+                || Digest32::of_bytes(&bytes) != self.image_digest
             {
-                return Err(FileError::Corrupt);
-            }
-            if bytes.len() < HEADER {
-                return Err(FileError::MissingHeader);
-            }
-            if &bytes[..8] != MAGIC
-                || &bytes[8..40] != self.binding.as_array()
-                || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-            {
-                return Err(FileError::Corrupt);
-            }
-            let mut current = ProductEvaluationExecutionAnchorV1 {
-                sequence: 0,
-                history_digest: Digest32::of_bytes(&bytes[..HEADER]),
-            };
-            let mut records = BTreeMap::new();
-            let mut remaining = &bytes[HEADER..];
-            while !remaining.is_empty() {
-                let raw: [u8; 4] = take(&mut remaining, /*count*/ 4)?
-                    .try_into()
-                    .map_err(|_| FileError::Corrupt)?;
-                let count = u32::from_be_bytes(raw) as usize;
-                if !(36..=MAX_FRAME).contains(&count) {
-                    return Err(FileError::Capacity);
-                }
-                let payload = take(&mut remaining, count)?;
-                let checksum = take(&mut remaining, /*count*/ 32)?;
-                let next = next_anchor(current, payload)?;
-                if checksum != next.history_digest.as_array() {
-                    return Err(FileError::Corrupt);
-                }
-                replay(&mut records, payload)?;
-                current = next;
-            }
-            if current != self.anchor || records != self.records {
                 return Err(FileError::Rollback);
             }
             let stable = physical::read_stable_image(&mut self.file)?;
             if stable != bytes || Digest32::of_bytes(&stable) != self.image_digest {
                 return Err(FileError::Rollback);
             }
-            Ok(current)
+            Ok((replayed.anchor, bytes, replayed))
         })();
         let restored = self.file.seek(SeekFrom::Start(cursor)).map_err(io_error);
         let result = match (current, restored) {
             (Err(error), _) | (_, Err(error)) => Err(error),
-            (Ok(current), Ok(position)) if position == cursor => Ok(current),
+            (Ok((current, bytes, replayed)), Ok(position)) if position == cursor => {
+                // Publish only after every physical check and cursor restoration.
+                self.remember_verified_replay(&bytes, replayed);
+                Ok(current)
+            }
             (Ok(_), Ok(_)) => Err(FileError::Indeterminate),
         };
         if result.is_err() {

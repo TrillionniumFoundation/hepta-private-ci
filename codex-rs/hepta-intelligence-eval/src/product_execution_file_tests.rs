@@ -311,3 +311,6 @@ fn failed_constructor_releases_lock_even_with_a_duplicate_description() {
 
 #[path = "product_execution_current_tests.rs"]
 mod current;
+
+#[path = "product_execution_replay_cache_tests.rs"]
+mod replay_cache;

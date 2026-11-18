@@ -9,7 +9,10 @@
 //! rewrap writable duplicates (including `File::try_clone`) or modify it outside
 //! this store. A shared open description can make the OS lock reentrant.
 //! Every live operation compares two complete physical images and the original
-//! canonical replay against the retained state. Observed uncertainty poisons
+//! canonical replay against the retained state. A bounded memo may reuse only
+//! pure parsing of an exactly identical, previously verified image. Every
+//! operation still performs the complete physical reads and state comparisons.
+//! Observed uncertainty poisons
 //! this handle, even after old bytes are restored; this is not a cold fence.
 //! All writers must honor the held lock. Cross-host use requires filesystem
 //! locking and fsync semantics that are linearizable across those hosts.
@@ -37,8 +40,14 @@ use crate::ProductEvaluationExecutionStateV1;
 use crate::ProductEvaluationExecutionStoreErrorV1;
 use crate::ProductEvaluationExecutionStoreV1;
 
+#[path = "product_execution_current.rs"]
+mod current;
+
 #[path = "product_execution_physical.rs"]
 mod physical;
+
+#[path = "product_execution_replay_cache.rs"]
+mod replay_cache;
 
 #[path = "product_execution_readback.rs"]
 mod readback;
@@ -91,6 +100,7 @@ pub struct LockedFileProductEvaluationExecutionStoreV1 {
     file: HeldFile,
     binding: Digest32,
     image_digest: Digest32,
+    verified_replay: Option<replay_cache::VerifiedReplayImage>,
     records: BTreeMap<StableId, (Digest32, State)>,
     anchor: ProductEvaluationExecutionAnchorV1,
     length: u64,
@@ -137,6 +147,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             file,
             binding,
             image_digest: Digest32::of_bytes(&header),
+            verified_replay: None,
             records: BTreeMap::new(),
             anchor: ProductEvaluationExecutionAnchorV1 {
                 sequence: 0,
@@ -167,6 +178,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
             file,
             binding,
             image_digest: Digest32::of_bytes(&bytes),
+            verified_replay: None,
             records: replayed.records,
             anchor: replayed.anchor,
             length: bytes.len() as u64,
@@ -206,7 +218,8 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         self.poisoned = true;
         let bytes =
             physical::read_stable_image(&mut self.file).map_err(|_| StoreError::Indeterminate)?;
-        let replayed = physical::replay_image(&bytes, self.binding, self.anchor)
+        let replayed = self
+            .replay_current_image(&bytes)
             .map_err(|_| StoreError::Indeterminate)?;
         if bytes.len() as u64 != self.length
             || Digest32::of_bytes(&bytes) != self.image_digest
@@ -215,6 +228,7 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         {
             return Err(StoreError::Indeterminate);
         }
+        self.remember_verified_replay(&bytes, replayed);
         self.poisoned = false;
         Ok(bytes)
     }
@@ -231,6 +245,8 @@ impl LockedFileProductEvaluationExecutionStoreV1 {
         frame.extend_from_slice(payload);
         frame.extend_from_slice(next.history_digest.as_array());
         expected.extend_from_slice(&frame);
+        // No parsed prefix may stand in for the new image after any write attempt.
+        self.verified_replay = None;
         self.poisoned = true;
         if self
             .file
@@ -418,9 +434,6 @@ fn acquire(file: File, binding: Digest32) -> Result<HeldFile, FileError> {
 fn io_error(error: io::Error) -> FileError {
     FileError::Io(error.kind())
 }
-
-#[path = "product_execution_current.rs"]
-mod current;
 
 #[cfg(test)]
 #[path = "product_execution_file_tests.rs"]

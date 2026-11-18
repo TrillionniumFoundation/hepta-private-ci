@@ -15,7 +15,7 @@ class SemanticChecks(unittest.TestCase):
         correct = "This image is red.\n".ljust(128)
         cases = (
             (correct, red, True, True),
-            ("ue" + "e" * 126, red, False, True),
+            ("u" + "e" * 127, red, False, True),
             ("This image is blue.\n".ljust(128), red, False, True),
             (correct, blue, True, False),
             (correct, card((80, 75, 75)), True, False),
