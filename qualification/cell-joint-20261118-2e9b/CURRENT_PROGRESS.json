@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-18T16:00:17Z",
+  "observed_at_utc": "2026-11-18T17:54:32Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T11:00:17.000-05:00",
+  "observed_at_user_timezone": "2026-11-18T12:54:32.000-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -60,6 +60,31 @@
       "sha256": "960c2277260386d648845923d6a75fe30a144181c40921ff8efb2e9e3278bba7",
       "bytes": 952,
       "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d/qualification/cell-current-policy-credit-20261118/training-evidence/training/verified_credit/TRAINING.json"
+    },
+    {
+      "key": "E2_common_prefix",
+      "sha256": "ec65db0622d391963edd3d3f5332a65ef6a6fd8697a4f2d582c49893505407be",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/2b9cd0fa5383aa4657521a1c623e6b67e9b83bfa/qualification/cell-e2-fixed-prefix-20261118/READOUT.json"
+    },
+    {
+      "key": "E4_parent_credit",
+      "sha256": "d60e05f9522e13763868a2fbeb8a21a6c8063e3dcc2cfde8e5b807805df787b0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/8f1f6f1930ef4ed60dd95d6fd3fe2be7502ad23f/qualification/cell-parent-credit-circuit-20261118/READOUT.json"
+    },
+    {
+      "key": "E5_materials_readout",
+      "sha256": "1642673f38ca74b5805a1740ebc59b62839cdc0b2ad65a8286f9df31ebdcd297",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f0ea76d5b8db590a32be8e301591bae7f2d5d8e8/qualification/cell-upstream-training-sources-20261118/READOUT.json"
+    },
+    {
+      "key": "E5_materials",
+      "sha256": "fe3e4a5f4cc2505cf1e1dca4e47b14edad1df79bbd393d9cfe491a7a0821d578",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f0ea76d5b8db590a32be8e301591bae7f2d5d8e8/qualification/cell-upstream-training-sources-20261118/MATERIALS.jsonl"
+    },
+    {
+      "key": "E5_growth_protocol",
+      "sha256": "943d6f63db772d638d8636dd599b424a35166114ab441bc648c00e6b059a91cc",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f0ea76d5b8db590a32be8e301591bae7f2d5d8e8/qualification/cell-upstream-training-sources-20261118/SOURCE_GROWTH_PROTOCOL.json"
     }
   ],
   "E1": {
@@ -261,7 +286,7 @@
       "negative_control_checks": 6,
       "qualification_limits": "Material release after observed weight freeze; shared-workspace operational blinding, not authenticated independent custody. No learning success claim."
     },
-    "evidence_commit": "e11c75e1d6c3902a7118d76794804e8aaf1f7d7f",
+    "evidence_commit": "2bc71d97995229122769d3ccee66e342e2edd100",
     "completed_readout_sha256": "9448a6bef0064086d3b126cb11d7ee62a0243217acbe222b7d9323214add45f9",
     "independent_audit_sha256": "afdf9eb3bd3816a815b6f63d732ce8fbc6578565f5340019b0a70a981cb9521e",
     "outcomes": {
@@ -438,7 +463,7 @@
       "actual_new_adapters_included": 2
     },
     "followup": {
-      "status": "FROZEN_PUBLISHED_AND_ACTUAL_JOB_RUNNING",
+      "status": "COMPLETE_RETAINED_A_MECHANISM_DIAGNOSTIC",
       "kind": "Common historical-prefix mechanism diagnostic on exposed A",
       "models": "same three frozen models",
       "planned_calls": 33,
@@ -455,7 +480,82 @@
       "host": "desktop",
       "job_id": "1a1ef5fa542-ffbe-4a4",
       "idempotency_key": "e123-fixed-prefix-33-desktop-2e9b-001",
-      "input_tokens_per_model_all_cases": 5828
+      "input_tokens_per_model_all_cases": 5828,
+      "evidence_commit": "2b9cd0fa5383aa4657521a1c623e6b67e9b83bfa",
+      "execution_exit_code": 0,
+      "total_model_calls": 33,
+      "total_verifier_calls": 33,
+      "input_tokens": 17484,
+      "output_tokens": 2941,
+      "business_executions": 26,
+      "format_rejections": 7,
+      "observed_subject_calls": 117,
+      "output_caps": 0,
+      "readout_sha256": "ec65db0622d391963edd3d3f5332a65ef6a6fd8697a4f2d582c49893505407be",
+      "archive_bytes": 127208,
+      "archive_sha256": "62ff592e727968b2e2df035d6b4a4bd2141037de6774d1e37a0407b08e507858",
+      "index_sha256": "f5a9cb70d0db4887eff1fd10ee0b3610e7bb2637fe5bc8f04f49095c4b7cfbac",
+      "root_recomputed": {
+        "summary": {
+          "NoUpdate": {
+            "calls": 11,
+            "input_tokens": 5828,
+            "output_tokens": 1065,
+            "recovered": 2,
+            "failure_prefixes": 6,
+            "preserved": 2,
+            "success_prefixes": 5,
+            "executed": 7,
+            "format_rejects": 4,
+            "subject_calls": 36,
+            "output_caps": 0
+          },
+          "all_observed": {
+            "calls": 11,
+            "input_tokens": 5828,
+            "output_tokens": 980,
+            "recovered": 5,
+            "failure_prefixes": 6,
+            "preserved": 2,
+            "success_prefixes": 5,
+            "executed": 9,
+            "format_rejects": 2,
+            "subject_calls": 41,
+            "output_caps": 0
+          },
+          "verified_credit": {
+            "calls": 11,
+            "input_tokens": 5828,
+            "output_tokens": 896,
+            "recovered": 5,
+            "failure_prefixes": 6,
+            "preserved": 5,
+            "success_prefixes": 5,
+            "executed": 10,
+            "format_rejects": 1,
+            "subject_calls": 40,
+            "output_caps": 0
+          }
+        },
+        "requestPairing": {
+          "A-counter/failure": 1,
+          "A-mse/failure": 1,
+          "A-readout-score/failure": 1,
+          "A-clipped-metrics/failure": 1,
+          "A-pair-map/failure": 1,
+          "A-colon-repair/failure": 1,
+          "A-counter/success": 1,
+          "A-mse/success": 1,
+          "A-readout-score/success": 1,
+          "A-clipped-metrics/success": 1,
+          "A-pair-map/success": 1
+        },
+        "five_successful_failure_answers_identical": true
+      },
+      "disjoint_model_stage_wall_seconds": 317.70805674995063,
+      "disjoint_model_stage_child_cpu_seconds": 318.47740899999997,
+      "interpretation": "Updated models emit byte-identical successful answers for five failure prefixes. Credit also emits the same answer across each task's failure/success histories. This supports retained reuse of seen A answers, not general feedback understanding or independent confirmation.",
+      "old_108_decision_changed": false
     }
   },
   "E3": {
@@ -778,7 +878,7 @@
       "scope": "Oracle union of separate two-call arms on already exposed B2; not a same-budget two-call Circuit result"
     },
     "followup": {
-      "status": "PROTOCOL_PREPARATION_ONLY",
+      "status": "COMPLETE_ORIGINALS_ARCHIVED_AND_AUDITED",
       "panel": "already exposed B2",
       "models": [
         "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
@@ -802,15 +902,548 @@
       "planned_A_reference_verifier_calls": 6,
       "planned_total_model_calls": 112,
       "planned_total_verifier_calls": 118,
-      "oracle_union_scope": "Two separately executed two-call arms, six already-exposed tasks and original controls only. The parent first_true test relies on Python bool/int equality and passed the original two controls; no stronger semantic claim is made."
+      "oracle_union_scope": "Two separately executed two-call arms, six already-exposed tasks and original controls only. The parent first_true test relies on Python bool/int equality and passed the original two controls; no stronger semantic claim is made.",
+      "pr": 6714,
+      "execution_source": "18de34630fe4b81efaf875c073272b062aeea211",
+      "execution_tree": "d6085bbf232c2dbf13d9951d99085add7f9e4b69",
+      "evidence_commit": "8f1f6f1930ef4ed60dd95d6fd3fe2be7502ad23f",
+      "evidence_tree": "6ae489312c50a2e1d261ef6efc17e4a12fe0eee7",
+      "source_freeze_sha256": "de5e208e429c3944390d5efbd6ab695cbaeca7669203340c4a3107e4f1e6940d",
+      "actual_job_id": "1a1ef774693-ffbe-4f9",
+      "actual_host": "desktop",
+      "model_calls": 112,
+      "verifier_calls": 118,
+      "groups": {
+        "CC": {
+          "cost": {
+            "business_executions": 10,
+            "format_rejections": 2,
+            "generation_wall_seconds": 37.18440643005306,
+            "input_tokens": 5259,
+            "model_calls": 12,
+            "observed_subject_calls": 35,
+            "output_limit_hits": 0,
+            "output_tokens": 502,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.9423026440000002
+          },
+          "first": 4,
+          "last": 3,
+          "recoveries": 1,
+          "regressions": 2,
+          "selected": 5,
+          "tasks": 6
+        },
+        "CC_retrieval": {
+          "cost": {
+            "business_executions": 12,
+            "format_rejections": 0,
+            "generation_wall_seconds": 50.11336126201786,
+            "input_tokens": 9350,
+            "model_calls": 12,
+            "observed_subject_calls": 12,
+            "output_limit_hits": 0,
+            "output_tokens": 690,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 2.4042633589999998
+          },
+          "first": 0,
+          "last": 0,
+          "recoveries": 0,
+          "regressions": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "CP": {
+          "cost": {
+            "business_executions": 10,
+            "format_rejections": 2,
+            "generation_wall_seconds": 36.05798419495113,
+            "input_tokens": 5259,
+            "model_calls": 12,
+            "observed_subject_calls": 36,
+            "output_limit_hits": 0,
+            "output_tokens": 520,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.9144112100000001
+          },
+          "first": 4,
+          "last": 3,
+          "recoveries": 1,
+          "regressions": 2,
+          "selected": 5,
+          "tasks": 6
+        },
+        "PC": {
+          "cost": {
+            "business_executions": 9,
+            "format_rejections": 3,
+            "generation_wall_seconds": 35.92703210300533,
+            "input_tokens": 5264,
+            "model_calls": 12,
+            "observed_subject_calls": 34,
+            "output_limit_hits": 0,
+            "output_tokens": 504,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.778233288
+          },
+          "first": 4,
+          "last": 3,
+          "recoveries": 1,
+          "regressions": 2,
+          "selected": 5,
+          "tasks": 6
+        },
+        "PC_no_answer": {
+          "cost": {
+            "business_executions": 10,
+            "format_rejections": 2,
+            "generation_wall_seconds": 28.135524843004532,
+            "input_tokens": 5039,
+            "model_calls": 12,
+            "observed_subject_calls": 30,
+            "output_limit_hits": 0,
+            "output_tokens": 403,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.9698957979999998
+          },
+          "first": 4,
+          "last": 4,
+          "recoveries": 0,
+          "regressions": 0,
+          "selected": 4,
+          "tasks": 6
+        },
+        "PC_no_feedback": {
+          "cost": {
+            "business_executions": 9,
+            "format_rejections": 3,
+            "generation_wall_seconds": 37.47561576991575,
+            "input_tokens": 4911,
+            "model_calls": 12,
+            "observed_subject_calls": 34,
+            "output_limit_hits": 0,
+            "output_tokens": 508,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.713290485
+          },
+          "first": 4,
+          "last": 3,
+          "recoveries": 1,
+          "regressions": 2,
+          "selected": 5,
+          "tasks": 6
+        },
+        "PC_retrieval": {
+          "cost": {
+            "business_executions": 10,
+            "format_rejections": 2,
+            "generation_wall_seconds": 56.81541132892016,
+            "input_tokens": 9420,
+            "model_calls": 12,
+            "observed_subject_calls": 12,
+            "output_limit_hits": 0,
+            "output_tokens": 758,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.954349708
+          },
+          "first": 0,
+          "last": 0,
+          "recoveries": 0,
+          "regressions": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "PP": {
+          "cost": {
+            "business_executions": 8,
+            "format_rejections": 4,
+            "generation_wall_seconds": 41.03898826794466,
+            "input_tokens": 5264,
+            "model_calls": 12,
+            "observed_subject_calls": 31,
+            "output_limit_hits": 0,
+            "output_tokens": 531,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.558203783
+          },
+          "first": 4,
+          "last": 2,
+          "recoveries": 1,
+          "regressions": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "PP_retrieval": {
+          "cost": {
+            "business_executions": 9,
+            "format_rejections": 3,
+            "generation_wall_seconds": 57.41669889801415,
+            "input_tokens": 9420,
+            "model_calls": 12,
+            "observed_subject_calls": 9,
+            "output_limit_hits": 0,
+            "output_tokens": 765,
+            "verifier_calls": 12,
+            "verifier_wall_seconds": 1.734229292
+          },
+          "first": 0,
+          "last": 0,
+          "recoveries": 0,
+          "regressions": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "main_cost": {
+        "business_executions": 87,
+        "format_rejections": 21,
+        "generation_wall_seconds": 380.16502309782663,
+        "input_tokens": 59186,
+        "model_calls": 108,
+        "observed_subject_calls": 233,
+        "output_limit_hits": 0,
+        "output_tokens": 5181,
+        "verifier_calls": 108,
+        "verifier_wall_seconds": 16.969179567000005
+      },
+      "calibration_cost": {
+        "business_executions": 4,
+        "format_rejections": 0,
+        "generation_wall_seconds": 11.843868258001748,
+        "input_tokens": 1128,
+        "model_calls": 4,
+        "observed_subject_calls": 12,
+        "output_limit_hits": 0,
+        "output_tokens": 164,
+        "verifier_calls": 4,
+        "verifier_wall_seconds": 0.7538837070000001
+      },
+      "reference_preparation_cost": {
+        "business_executions": 6,
+        "model_calls": 0,
+        "verifier_calls": 6,
+        "verifier_wall_seconds": 1.198204505
+      },
+      "pool_initialization_cost": {
+        "adapter_load_count": 2,
+        "base_load_count": 1,
+        "complete": false,
+        "cpu_seconds": 31.383492485000005,
+        "energy_joules": null,
+        "gpu_active_seconds": null,
+        "monetary_cost": null,
+        "scope": "verification and one shared pool load",
+        "shared_cost_do_not_sum_per_call": true,
+        "wall_seconds": 30.875898371974472
+      },
+      "owner_exit": {
+        "automatic_retry": false,
+        "cost_scope": "owner plus owned child and waited descendants; nested model/verifier scopes are not additive",
+        "energy_joules": null,
+        "exit_source": "subprocess.Popen.wait",
+        "failure_present": false,
+        "full_system_cost_known": false,
+        "monetary_cost": null,
+        "observed_child_system_cpu_seconds": 21.592976,
+        "observed_child_user_cpu_seconds": 514.769474,
+        "owner_system_cpu_seconds": 0.21383899999999997,
+        "owner_user_cpu_seconds": 0.43961799999999995,
+        "pid": 3566362,
+        "result_present": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "0f6cb836c4c80f9eb1cfdf53720392a8e944cd3a4a879559c1a9a26e7bfbc879",
+        "timed_out": false,
+        "wait_returncode": 0,
+        "wall_seconds": 541.1914743730449
+      },
+      "verifier_sources_by_scope": {
+        "A_calibration": "ee37e28567944ab542a21926f66957cf663c0ec7e7ceab62a4c30da5fce4282b",
+        "main_and_A_references": "64fcc25e4ccf82f31c2549f5d4c1a5c4af1831c5bed4219c0aac2283b213a020"
+      },
+      "readout_sha256": "d60e05f9522e13763868a2fbeb8a21a6c8063e3dcc2cfde8e5b807805df787b0",
+      "archive_bytes": 5582960,
+      "archive_sha256": "0cda7c982d5fc1e19526bf755d92bedc8fa07ec1bf6a7c51a4bf097234034d41",
+      "archive_original_files": 1956,
+      "index_sha256": "b71e89ca76761f9ad1a823f66de05b02498711e0735d574d430d627a0c710fa0",
+      "index_gzip_sha256": "c449df8ffe784f447c9793134f06522e5103ab544136766605458cffd2b0f073",
+      "index_gzip_bytes": 95964,
+      "root_cost_recomputed": {
+        "business_executions": 87,
+        "format_rejections": 21,
+        "generation_wall_seconds": 380.16502309782663,
+        "input_tokens": 59186,
+        "model_calls": 108,
+        "observed_subject_calls": 233,
+        "output_limit_hits": 0,
+        "output_tokens": 5181,
+        "verifier_calls": 108,
+        "verifier_wall_seconds": 16.969179566999998
+      },
+      "prior_failures_retained": "export-complete-1 checked retained-core A calibration with the newer main verifier hash; export-complete-2 checked the old hash against the training-source path instead of the actual retained provider core. Both source/error/log originals are retained. The corrected checker binds main and calibration to their exact predeclared provider paths and raw source hashes, with no result or call changes.",
+      "zero_call_deployment_refusal_retained": true,
+      "additional_calls_after_results": 0,
+      "actual_oracle_union_reached": false,
+      "same_budget_Circuit_gain_established": false,
+      "interpretation": "PP, CC, PC and CP select 5/6 each. Fixed-order collaboration does not reach the separate-arm 6/6 oracle union and does not beat the single-model controls. All retrieval arms score zero on exposed B2."
     }
   },
   "E5": {
     "authenticated_new_users": 0,
-    "new_deduplicated_real_training_sources": 0,
+    "new_deduplicated_real_training_sources": 4,
+    "source_unit": "Historical maintainer repair lineage; not an original agent trajectory or authenticated user",
+    "pr": 6715,
+    "evidence_commit": "b20ece30e1e8884c6b892ba9d0ad06d012ea2f6e",
+    "acquisition_source_commit": "5e78427a7e0bf2623177c10ab1ad9ab03932b80b",
+    "replay_source_commit": "b8568658762bb3a54c94253811d563b0f39dac3e",
+    "material_entry_source_commit": "c80a4cfdb49a49ed72cbdae18c0e4de68883c1d0",
+    "deduplication": {
+      "authenticated_human_users": 0,
+      "distinct_git_blobs": 83,
+      "downloaded_unique_blob_bytes": 1115549,
+      "frozen_new_pool_project_count": 4,
+      "github_organization_identity_count": 4,
+      "repair_lineage_count": 4,
+      "repeated_model_calls_are_new_sources": false,
+      "statistical_source_independence_established": false,
+      "test_parameters_are_new_sources": false,
+      "unique_observation_count": 4
+    },
+    "sources": [
+      {
+        "after_commit": "97f8d175656bc03c373a1c9038048a4d312c307c",
+        "after_exit": 0,
+        "after_failed": 0,
+        "after_passed": 5,
+        "before_commit": "6851ab593cd25f3c14393e9355d57d22bec2a074",
+        "before_exit": 1,
+        "before_failed": 1,
+        "before_passed": 4,
+        "case_timeouts_before": 0,
+        "cases_each_revision": 5,
+        "collection_errors": 0,
+        "license": {
+          "complete_notice_retained": true,
+          "git_blob_sha1": "2bd6453d255e19b973f19b128596a8b6dd65b2c3",
+          "path": "LICENSE",
+          "sha256": "882115c95dfc2af1eeb6714f8ec6d5cbcabf667caff8729f42420da63f714e9f",
+          "spdx_id": "MIT"
+        },
+        "original_merged_at": "2026-07-31T13:30:57Z",
+        "original_regression_demonstrated": true,
+        "original_test_functions": [
+          "test_is_class_var"
+        ],
+        "original_test_path": "tests/test_annotations.py",
+        "outer_child_timeouts": 0,
+        "owner": {
+          "id": 25880274,
+          "login": "python-attrs",
+          "type": "Organization"
+        },
+        "project_id": "python-attrs/attrs",
+        "repository_id": 29918975,
+        "request_url": "https://github.com/python-attrs/attrs/pull/1593",
+        "source_id": "github:python-attrs/attrs:pull:1593"
+      },
+      {
+        "after_commit": "7338cb9dafd0d0e916585f191ae505b3e602bb51",
+        "after_exit": 0,
+        "after_failed": 0,
+        "after_passed": 24,
+        "before_commit": "27701029082052c6541031b6f139097230253900",
+        "before_exit": 1,
+        "before_failed": 10,
+        "before_passed": 14,
+        "case_timeouts_before": 8,
+        "cases_each_revision": 24,
+        "collection_errors": 0,
+        "license": {
+          "complete_notice_retained": true,
+          "git_blob_sha1": "4415505566f261c802b671426be529a31f914137",
+          "path": "LICENSE",
+          "sha256": "deed7c17a4318158190a3ea239cc879a5a50271cebb98ae7025f48fbe58dca15",
+          "spdx_id": "MIT"
+        },
+        "original_merged_at": "2026-02-19T17:04:17Z",
+        "original_regression_demonstrated": true,
+        "original_test_functions": [
+          "test_split_graphemes",
+          "test_chop_cells_zero_width"
+        ],
+        "original_test_path": "tests/test_cells.py",
+        "outer_child_timeouts": 0,
+        "owner": {
+          "id": 93378883,
+          "login": "Textualize",
+          "type": "Organization"
+        },
+        "project_id": "Textualize/rich",
+        "repository_id": 220809393,
+        "request_url": "https://github.com/Textualize/rich/pull/4006",
+        "source_id": "github:Textualize/rich:pull:4006"
+      },
+      {
+        "after_commit": "786757ff6cd876094b985eb851c324d96f44fdbf",
+        "after_exit": 0,
+        "after_failed": 0,
+        "after_passed": 29,
+        "before_commit": "b888560ea8c0d6dff5bd45d9f9712feb9174229a",
+        "before_exit": 1,
+        "before_failed": 1,
+        "before_passed": 28,
+        "case_timeouts_before": 0,
+        "cases_each_revision": 29,
+        "collection_errors": 0,
+        "license": {
+          "complete_notice_retained": true,
+          "git_blob_sha1": "f35fed9191b1142ddaada8a96de4a9461c5d796c",
+          "path": "LICENSE",
+          "sha256": "29e0fd62e929850e86eb28c3fdccf0cefdf4fa94879011cffb3d0d4bed6d4db6",
+          "spdx_id": "MIT"
+        },
+        "original_merged_at": "2026-11-17T20:01:29Z",
+        "original_regression_demonstrated": true,
+        "original_test_functions": [
+          "test_user_dirs_read_like_xdg_user_dir",
+          "test_user_dirs_carriage_return"
+        ],
+        "original_test_path": "tests/test_unix.py",
+        "outer_child_timeouts": 0,
+        "owner": {
+          "id": 20345659,
+          "login": "tox-dev",
+          "type": "Organization"
+        },
+        "project_id": "tox-dev/platformdirs",
+        "repository_id": 367032142,
+        "request_url": "https://github.com/tox-dev/platformdirs/pull/721",
+        "source_id": "github:tox-dev/platformdirs:pull:721"
+      },
+      {
+        "after_commit": "318888db38ac12e5aaf3144546a11b8ebe60555d",
+        "after_exit": 0,
+        "after_failed": 0,
+        "after_passed": 56,
+        "before_commit": "d16e6352c9785c5ab86de0133222bd22e89b0db2",
+        "before_exit": 1,
+        "before_failed": 3,
+        "before_passed": 53,
+        "case_timeouts_before": 0,
+        "cases_each_revision": 56,
+        "collection_errors": 0,
+        "license": {
+          "complete_notice_retained": true,
+          "git_blob_sha1": "e0687959f9e19e8bee8783424885bca65477fa28",
+          "path": "LICENCE",
+          "sha256": "8ba6c18112a431400ad3c743f70670079b302545d98884fc2f28a91c383a0380",
+          "spdx_id": "MIT"
+        },
+        "original_merged_at": "2026-11-12T09:13:42Z",
+        "original_regression_demonstrated": true,
+        "original_test_functions": [
+          "test_naturaltime",
+          "test_precisedelta_multiple_units"
+        ],
+        "original_test_path": "tests/test_time.py",
+        "outer_child_timeouts": 0,
+        "owner": {
+          "id": 62149795,
+          "login": "python-humanize",
+          "type": "Organization"
+        },
+        "project_id": "python-humanize/humanize",
+        "repository_id": 466683324,
+        "request_url": "https://github.com/python-humanize/humanize/pull/479",
+        "source_id": "github:python-humanize/humanize:pull:479"
+      }
+    ],
+    "replay_cost": {
+      "acquisition_includes_dependency_setup": true,
+      "actual_owned_test_children": 8,
+      "actual_test_case_executions": 228,
+      "after_passes": 114,
+      "before_case_timeouts": 8,
+      "before_failures": 15,
+      "cold_setup_acquisition_wall_seconds_separate": 83.3284717160277,
+      "collection_errors": 0,
+      "completed_child_cpu_seconds": 29.321943,
+      "energy_joules": null,
+      "full_system_cost_known": false,
+      "monetary_cost": null,
+      "outer_child_timeouts": 0,
+      "overlap_note": "Acquisition and native replay are disjoint; nested setup, test child and download timings must not be added again.",
+      "owner_wall_seconds": 29.860169451974798,
+      "per_case_timeout_seconds": 3,
+      "per_child_wall_and_cpu_receipts": "replay-1/RESULT.json"
+    },
+    "packaging_adaptations": [
+      "Exact upstream package and test bytes preserved; selected after-fix original tests executed on both revisions.",
+      "Only selected original function parameter sets run; repository-wide conftest/plugins disabled via isolated pytest configuration.",
+      "platformdirs.version and humanize._version generated packaging metadata supplied as explicitly logged ModuleType stubs; no behavior function replaced.",
+      "Rich original unbounded loops are observed case failures under the same 3-second timeout before and after.",
+      "A fresh isolated venv uses pinned, retained dependency wheels; no shared training environment or service changed."
+    ],
+    "actual_new_model_calls_in_replay": 0,
+    "actual_training_updates": 0,
+    "evidence_boundaries": {
+      "actual_native_before_after_execution": true,
+      "coding_learning_gain_established": false,
+      "full_repository_test_suite": false,
+      "future_unexposed_evaluation": false,
+      "historical_maintainer_code_and_tests": true,
+      "native_adoption": false,
+      "new_model_calls": 0,
+      "new_student_trajectory_collected": false,
+      "new_training_updates": 0,
+      "original_historical_agent_trajectory": false,
+      "pretraining_overlap_known": false,
+      "user_growth_established": false
+    },
+    "continuation": {
+      "actual_training_updates": 0,
+      "budget_regimes": [
+        "fixed_total",
+        "fixed_per_source"
+      ],
+      "fixed_per_source_planned_updates_for_1_and_4": [
+        32,
+        128
+      ],
+      "fixed_total_planned_updates_for_1_and_4": [
+        32,
+        32
+      ],
+      "numeric_head_accuracy_is_coding_gain": false,
+      "one_source_selection": [
+        "github:Textualize/rich:pull:4006"
+      ],
+      "one_source_selection_reason": "same lexically sorted source_id prefix as existing composition.py; fixed before any new training or model call",
+      "remaining_requirements": [
+        "Freeze a coding task renderer and candidate interpreter/verifier before collecting new model trajectories; original code/tests remain authoritative.",
+        "Freeze initialization, tokenizer, optimizer, padded tokens, target-token masks and actual update counts across arms; caps alone are insufficient.",
+        "Freeze fresh source-separated future selection/confirmation tasks; old B and B2 are exposed diagnostics and cannot supply new source choices.",
+        "For numeric composition only, collect actual frozen preaction features, named class targets and model/verifier receipts; do not turn source identity into an outcome label.",
+        "Authenticated real-user sources remain zero; external custody and pretraining contamination remain unresolved."
+      ],
+      "sixteen_source_missing": 12,
+      "sixty_four_source_missing": 60,
+      "source_sizes": [
+        1,
+        4,
+        16,
+        64
+      ]
+    },
     "fixed_total_budget_growth_curve": null,
     "fixed_per_source_budget_growth_curve": null,
-    "evaluation_projects_count_as_users": false
+    "evaluation_projects_count_as_users": false,
+    "archive_bytes": 2989114,
+    "archive_sha256": "998d989c99834dfd70058bcee4e3ea8f38cea00dbeb36dc7481c51501c1ed9f7",
+    "index_sha256": "d0cc358e5e999741dcb176a6e407b7768b1c6835da04026171dad88e6caaccc6",
+    "readout_sha256": "1642673f38ca74b5805a1740ebc59b62839cdc0b2ad65a8286f9df31ebdcd297",
+    "material_sha256": "fe3e4a5f4cc2505cf1e1dca4e47b14edad1df79bbd393d9cfe491a7a0821d578",
+    "source_growth_protocol_sha256": "943d6f63db772d638d8636dd599b424a35166114ab441bc648c00e6b059a91cc"
   },
   "E6": {
     "original_owner_pr": 6700,
@@ -994,7 +1627,12 @@
       }
     },
     "minimal_namespace_fix": "Original 169-byte CompletedLearning owner key exceeded fixed128 bound; scoped Initial-identity digest key preserves full original record identities and target refusal.",
-    "publication_client_observation": "POLLIN|POLLHUP; Root pidfd revents=0; original deadline not elapsed. Underlying historical operation error precedes channel shutdown; no poll guard weakened.",
+    "publication_client_observation": {
+      "current_task_bound": 28933,
+      "other_operation_bound": 16384,
+      "current_native_observation": "v13 original complete Task reply 19118 bytes admitted; later shared-lane request65 refuses at unchanged maximum64.",
+      "whole_native_NoUpdate_passed": false
+    },
     "complete_native_NoUpdate": false,
     "native_adopt": false,
     "cold_case_checks_retained_C_only": true,
@@ -1072,7 +1710,79 @@
       },
       "interpretation": "The original complete-task operation hit its reply-size guard. The exact payload size and a qualified protocol repair are not established by this failure; no bound or poll guard was changed."
     },
-    "published_v10_history": "1f4bdb211f0fb80fef89f25aef0f969053998b84"
+    "published_v10_history": "1f4bdb211f0fb80fef89f25aef0f969053998b84",
+    "v11": {
+      "source": "e21ca2d9718c9c3506f6301449b29e6471a5cc22",
+      "tree": "67f260e7df22f5be937d08aa2a961d7eb8807262",
+      "published_evidence_commit": "b01b277b7c887a65a2159b37074eb7e0564e09e0",
+      "dedicated_task_response_bound": 28933,
+      "derivation": {
+        "ledger": 12288,
+        "publication": 16384,
+        "envelope": 261
+      },
+      "other_operation_response_bound": 16384,
+      "bootstrap_bound": 65536,
+      "max_reads": 64,
+      "regression_cases": 9,
+      "regression_passed": 9,
+      "regression_xml_sha256": "110a3d8ef9ccd9d19b6059d88f7fbf128bbfb419dfa8c8606dee1579ee2dc65f",
+      "whole_NoUpdate_passed": false,
+      "whole_NoUpdate_test_seconds": 64.049,
+      "measured_task_reply_bytes": 19114,
+      "original_failure": "Historical Dataset complete task read unavailable; separate process logs do not establish a total order",
+      "result_sha256": "f894d86ba3988ebc63935c1111882605eb21a4a3921268ffc9fe19fc61d3adba",
+      "whole_xml_sha256": "6e44a89bb42abf3e39aabc61bc8fc199b5f2cceb43f9adf5085ca327974718c3",
+      "source_unchanged": true,
+      "tracked_files": 15544,
+      "cleanup_passed": true,
+      "adopt_executed": false,
+      "full_cost_known": false
+    },
+    "v12": {
+      "source": "30b4e260accbc0d81f6a17e106854c41c61c3346",
+      "tree": "f0764fd91e5aff3921b9b20fc274f422516c8fd2",
+      "published_evidence_commit": "5a5d9c5256cd3ce390b2442474224ab98ea2efcc",
+      "status": "HELPER_COMPILATION_FAILED_NO_BUSINESS_CASE_EXECUTED",
+      "failure": "E0034 Read/Write by_ref ambiguity from diagnostic Write trait import through existing super glob",
+      "helper_compile_seconds": 14.717660166788846,
+      "whole_owned_seconds": 15.246130984043702,
+      "reused_old_binary_as_pass": false,
+      "archive_bytes": 96700,
+      "archive_sha256": "94cc06fb09a3d6f7557cc3439fc1d9e5aa94319f509e9def93b5c8af66efac8f"
+    },
+    "v13": {
+      "source": "978719e6137cc1fe9a64bcde7795cd478b2f293e",
+      "tree": "51814cb530c723c7544f6eda763f28d9fa228fcf",
+      "published_evidence_commit": "3299c1d3318ff157f4948dee89b7939ef67b515c",
+      "all_attempted_stages_passed": false,
+      "whole_NoUpdate_passed": false,
+      "whole_NoUpdate_test_seconds": 68.181,
+      "whole_stage_seconds": 71.33425311907195,
+      "owner_wall_seconds": 234.0532579831779,
+      "actual_refusal": {
+        "request_id": 65,
+        "maximum": 64,
+        "stage": "historical_client.read_limit",
+        "enclosing_stage": "historical_client.observe_before_action"
+      },
+      "measured_task_reply_bytes": 19118,
+      "task_reply_bound": 28933,
+      "result_sha256": "35195d71c46cd735d43758121f61bae1d578293df89ddc682529a8a54bb0c850",
+      "whole_xml_sha256": "6abdc83dc2a5d044af7868a130cf8826552223efee20275dc6b5f66f60ea15c9",
+      "source_unchanged": true,
+      "tracked_files": 15558,
+      "tracked_sha256": "a1f4699ca5e11f6578bd9ba13b14426ccf3a1b3ec1820cebb966a49903023b25",
+      "cleanup_passed": true,
+      "adopt_executed": false,
+      "archive_bytes": 106920,
+      "archive_sha256": "bff48544b40faee865e8b5d136f2497d320da0526f8bce220d84d82f235a3888",
+      "diagnostic_scope": "The 65/64 refusal and 19118/28933 response are read directly from the exact native XML. They do not retroactively measure v10/v11. No total inter-process order is inferred.",
+      "next_work": "Original executor retains exclusive source/target ownership; v14 is preparing exact static caller/QA marker reconciliation, without yet proving a read-budget repair.",
+      "proposed_read_scope_review": "Independent static review found two narrow synchronous caller grouping candidates that could save four Task exchanges while retaining a separate physical postcheck before witness initialization. This has not been executed and does not establish that the total 64-read budget is sufficient."
+    },
+    "published_v13_history": "3299c1d3318ff157f4948dee89b7939ef67b515c",
+    "historical_v10_publication_client_observation": "POLLIN|POLLHUP; Root pidfd revents=0; original deadline not elapsed. Underlying historical operation error precedes channel shutdown; no poll guard weakened."
   },
   "Chain": {
     "repository": "TrillionniumFoundation/Trillionnium-Chain",
@@ -1228,13 +1938,186 @@
       "source": "e6af21fd47347ba900ef87842447ed6fe227a6f0",
       "tree": "af911ad472b7820f8c6c7d4c9a425097263d80ac",
       "F0_run": 44335832525,
-      "business_result": "pending",
+      "business_result": "FAIL",
       "scope": "Complete deltas from actual native authenticated execution on eligible path; full normalized readback and original other-path union retained.",
-      "F0_status": "in_progress",
+      "F0_status": "completed",
       "F0_job": 134912190949,
-      "runner_allocated_at": "2026-11-18T15:55:19Z"
+      "runner_allocated_at": "2026-11-18T15:55:19Z",
+      "confirmed_in_original_thirty_second_phases": 2,
+      "planned_confirmations": 6,
+      "four_second_slo_successes": 0,
+      "independent_readback_sha256": "70cd8bfe25f5c8ee6e25f75c466db7d9b6fd542845cf15d3ca8ebfdc207a7d9d",
+      "cost_profile_sha256": "29d1cb95e07a864594c65ffe0ef134f50db0c0484e5e031cdf18a6a9970172dd",
+      "evidence_pr": 961,
+      "evidence_commit": "cb04bbd5d29f839980f5c90bfcda621f9a6a490c",
+      "archive_bytes": 19573624,
+      "archive_sha256": "6ab6d65c68a2d0b36e49995507dbcc7f7728e16fec3fe6e20de53cb1fdff62fa",
+      "planned_packet_exposures": 42,
+      "timely_ACK_exposures": 28,
+      "unattempted_exposures": 14,
+      "ACK_is_confirmation": false,
+      "all_services_known_empty": true,
+      "manifest_files_checked": 443,
+      "provider_timing": {
+        "billable_UBUNTU_total_ms": 0,
+        "reported_run_duration_ms": 2164000,
+        "zero_means_zero_physical_cost": false,
+        "run_duration_is_cpu_time": false
+      }
     },
-    "full_physical_cost_closed": false
+    "full_physical_cost_closed": false,
+    "next_native_record_graph": {
+      "pr": 962,
+      "source": "1380eaae3c902b3e17d5e5a7d73bf242b0366562",
+      "tree": "176e1a77202f6604823163fde07d5e51d6cc47ed",
+      "F0_run": 44356270247,
+      "F0_status": "completed",
+      "F0_attempt": 1,
+      "business_passed": false,
+      "complete_original_source_pins": 2617,
+      "source_gate_passed": true,
+      "original_omission_and_mutation_controls_passed": true,
+      "component_tests_passed": 179,
+      "component_tests_ignored": 2,
+      "strict_clippy_passed": true,
+      "final_patch_sha256": "c52916cae380877e42606940f5c2adb342159601bb879ad7381823fc10d84faa",
+      "scope": "Actual complete parent graph; original owner captured before its read; no intervening attempted writes/schema changes; one native-owned passive metadata INSERT; only original parsed PK/BINARY+rowid index. Extra metadata indexes, triggers, altered owners and additional writes retain original full-reader/error paths.",
+      "old_scope_restamped": false,
+      "current_child_record_state_deltas_final_callback_and_cancellation_preserved": true,
+      "full_physical_cost_closed": false,
+      "F0_job": 134985105101,
+      "runner_allocated_at": "2026-11-18T17:36:43Z",
+      "runner": "GitHub Actions 1000189688",
+      "status_observation_scope": "Root read the completed hosted job and exact 8,990-byte independent readback. Original 30-second gate: baseline 1/3, ROOT 0/3; original four-second gate 0/6. ROOT phase performed no History call or import; zero nested import CPU is not evidence of cheap service. Full physical cost remains open.",
+      "F0_conclusion": "failure",
+      "native_exit_code": 101,
+      "original_30s_confirmations": 1,
+      "scheduled_4s_confirmations": 0,
+      "planned_confirmations": 6,
+      "planned_packet_exposures": 42,
+      "all_original_preparation_controls_passed": 7,
+      "owned_services_empty": true,
+      "original_business_gate": {
+        "failure": "BASELINE_MUST_PASS",
+        "passed": false
+      },
+      "original_scheduled_four_second_gate": {
+        "failure": "F0_ALL_SIX_SCHEDULED_FOUR_SECOND_TARGETS_REQUIRED",
+        "passed": false
+      },
+      "first_confirmation_from_scheduled_seconds": 24.507888471,
+      "phase_costs": [
+        {
+          "client_thread_cpu_ns": 5425864517,
+          "controller_cgroup_cpu_delta_usec": 2488082,
+          "controller_memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+          "controller_memory_samples": [
+            {
+              "cpu_usage_usec": 7268073,
+              "memory_current_bytes": 49930240,
+              "memory_peak_lifetime_bytes": 57618432,
+              "stage": "before_launch"
+            },
+            {
+              "cpu_usage_usec": 7782709,
+              "memory_current_bytes": 74805248,
+              "memory_peak_lifetime_bytes": 76173312,
+              "stage": "actors_ready"
+            },
+            {
+              "cpu_usage_usec": 9756155,
+              "memory_current_bytes": 58138624,
+              "memory_peak_lifetime_bytes": 80191488,
+              "stage": "after_reap"
+            }
+          ],
+          "history_calls": 8,
+          "host_checkpoint_calls": 82046,
+          "host_checkpoint_cpu_ns_nested": 4543810044,
+          "observed_imports": 8,
+          "phase": "baseline",
+          "retained_public_rss_diagnostic": {
+            "kernel_rusage_self_peak_rss_bytes": 71540736,
+            "lifetime_peak_rss_bytes": 71852032,
+            "rss_bytes": 71852032,
+            "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+          },
+          "whole_public_phase_cpu_ns": 8376872630,
+          "whole_public_phase_wall_ns": 34583361761
+        },
+        {
+          "client_thread_cpu_ns": 0,
+          "controller_cgroup_cpu_delta_usec": 4062319,
+          "controller_memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+          "controller_memory_samples": [
+            {
+              "cpu_usage_usec": 9764255,
+              "memory_current_bytes": 60760064,
+              "memory_peak_lifetime_bytes": 80191488,
+              "stage": "before_launch"
+            },
+            {
+              "cpu_usage_usec": 10336086,
+              "memory_current_bytes": 115818496,
+              "memory_peak_lifetime_bytes": 115888128,
+              "stage": "actors_ready"
+            },
+            {
+              "cpu_usage_usec": 13826574,
+              "memory_current_bytes": 103698432,
+              "memory_peak_lifetime_bytes": 126967808,
+              "stage": "after_reap"
+            }
+          ],
+          "history_calls": 0,
+          "host_checkpoint_calls": 0,
+          "host_checkpoint_cpu_ns_nested": 0,
+          "observed_imports": 0,
+          "phase": "valid-work-root",
+          "retained_public_rss_diagnostic": {
+            "kernel_rusage_self_peak_rss_bytes": 118456320,
+            "lifetime_peak_rss_bytes": 118562816,
+            "rss_bytes": 118562816,
+            "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+          },
+          "whole_public_phase_cpu_ns": 8691669137,
+          "whole_public_phase_wall_ns": 34893774157
+        }
+      ],
+      "original_archive_bytes": 17509272,
+      "original_archive_sha256": "ba7317fdbc7da70965c277323ca0a4321ab5692945322bc906c086b92d6bc872",
+      "independent_readback_sha256": "db3ff744c2a392093b53003e9de76b5b8961d0e293f60495e4d4388bce7c263f",
+      "independent_readback_path": "chain-graph-f0/preliminary-independent-readback.json",
+      "original_manifest_files_checked": 443
+    },
+    "original_small_window_robust_closure_established": false,
+    "other_executor_original_window_followup": {
+      "evidence_commit": "cf53f57d12af8fe4dc4d0273cfac630e999155a2",
+      "evidence_path": "docs/development/evidence/chain-exact-body-delay-20261118/ci-e305-followup/README.md",
+      "tested_head": "e305ec2fb3c98734936041af75f502cf6791f7f2",
+      "prospective_merge": "77ea3ef3bd0928bb9f07455bd0e7d8daeed754dd",
+      "shared_tested_tree": "351b9e851a9650e6a38208326b2cd331f6ccb187",
+      "same_packet": {
+        "head": "0/1",
+        "prospective_merge": "1/1"
+      },
+      "fresh_challenges": {
+        "head": "0/1",
+        "prospective_merge": "0/1"
+      },
+      "mixed_service_original_max_gap_predicate": {
+        "passed_cells": 0,
+        "total_cells": 4,
+        "limit_ns": "2000000000",
+        "quiet_tail_retained": true
+      },
+      "honest_successes_do_not_substitute_for_phase_wide_gap": true,
+      "independent_retrieval_not_business_rerun": true,
+      "original_provider_archives": 6,
+      "original_provider_archive_bytes": 16118256,
+      "original_974_observations_preserved": true,
+      "causal_speed_or_failure_probability_established": false
+    }
   },
   "CI": {
     "joint_all_checks_passed": false,
@@ -1244,7 +2127,414 @@
     "mac_native_regression_passed": false,
     "fixture_scope": "Canonical temporary input paths, including original Circuit database reopen; all negative controls and production custody unchanged.",
     "Windows_original_positive_business_case_passed": false,
-    "cargo_deny_passed": false
+    "cargo_deny_passed": false,
+    "blob_policy_infrastructure": {
+      "pr": 6713,
+      "source": "88f2e59b86ad42520a8b183043c1d83e937738b9",
+      "fence_pin": "7cba9082252803421a0e433f29198de6d0063221",
+      "fence_version": "0.13.1",
+      "run": 44344431831,
+      "job": 134942886696,
+      "status": "success",
+      "original_policy_tests_passed": 7,
+      "actual_changed_blob_checker_passed": true,
+      "post_fence_health_evidence_passed": true,
+      "audit_mode_and_permissions_unchanged": true,
+      "global_max_blob_bytes": 512000,
+      "original_failed_job": 134918558084,
+      "original_failed_log_sha256": "5baab65da1331361b9cbcdd2c116ba550ce3934d7832ffd98463eed5e1aac41a",
+      "entire_required_CI_passed": false
+    },
+    "exact_evidence_blob_gates": {
+      "E2": {
+        "archive": "qualification/cell-current-policy-credit-20261118/complete-originals.tar.gz",
+        "archive_bytes": 4511826,
+        "archive_sha256": "95beda262721a747aeb3180b7d7f37a245735870b3ee0c8c58e80e45857b9bb6",
+        "base": "462c651d349663d86f6ec88ed5d9eed453f218c0",
+        "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+        "exact_SHA256_path_pin_only": true,
+        "head": "14e242ed35246dc130a44861ccb3f543c457fd4d",
+        "max_blob_bytes": 512000,
+        "policy_tests": 7,
+        "source_and_outputs_unchanged": true,
+        "stages": [
+          {
+            "command": [
+              "git",
+              "fetch",
+              "--depth=1",
+              "--filter=blob:none",
+              "origin",
+              "14e242ed35246dc130a44861ccb3f543c457fd4d",
+              "462c651d349663d86f6ec88ed5d9eed453f218c0"
+            ],
+            "exit_code": 0,
+            "label": "fetch",
+            "wall_seconds": 7.383752272056881
+          },
+          {
+            "command": [
+              "git",
+              "worktree",
+              "add",
+              "--detach",
+              "--no-checkout",
+              "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E2/source",
+              "14e242ed35246dc130a44861ccb3f543c457fd4d"
+            ],
+            "exit_code": 0,
+            "label": "worktree",
+            "wall_seconds": 0.016709420015104115
+          },
+          {
+            "command": [
+              "git",
+              "sparse-checkout",
+              "set",
+              "--no-cone",
+              "--stdin"
+            ],
+            "exit_code": 0,
+            "label": "sparse",
+            "wall_seconds": 0.0045212520053610206
+          },
+          {
+            "command": [
+              "git",
+              "read-tree",
+              "-mu",
+              "HEAD"
+            ],
+            "exit_code": 0,
+            "label": "materialize",
+            "wall_seconds": 7.3847627739887685
+          },
+          {
+            "command": [
+              "python3",
+              "-B",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts/tests",
+              "-p",
+              "test_blob_size_policy.py"
+            ],
+            "exit_code": 0,
+            "label": "policy-tests",
+            "wall_seconds": 1.9703497029840946
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/check_blob_size.py",
+              "--base",
+              "462c651d349663d86f6ec88ed5d9eed453f218c0",
+              "--head",
+              "14e242ed35246dc130a44861ccb3f543c457fd4d",
+              "--max-bytes",
+              "512000",
+              "--allowlist",
+              ".github/blob-size-allowlist.txt"
+            ],
+            "exit_code": 0,
+            "label": "changed-blob-gate",
+            "wall_seconds": 0.36558330297702923
+          }
+        ],
+        "status": "PASS"
+      },
+      "E4": {
+        "archive": "qualification/cell-parent-credit-circuit-20261118/RAW_EVIDENCE.tar.xz",
+        "archive_bytes": 5582960,
+        "archive_sha256": "0cda7c982d5fc1e19526bf755d92bedc8fa07ec1bf6a7c51a4bf097234034d41",
+        "base": "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+        "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+        "exact_SHA256_path_pin_only": true,
+        "head": "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2",
+        "max_blob_bytes": 512000,
+        "policy_tests": 7,
+        "stages": [
+          {
+            "command": [
+              "git",
+              "fetch",
+              "--depth=1",
+              "--filter=blob:none",
+              "origin",
+              "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2",
+              "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+            "exit_code": 0,
+            "label": "fetch",
+            "wall_seconds": 7.385833700012881
+          },
+          {
+            "command": [
+              "git",
+              "worktree",
+              "add",
+              "--detach",
+              "--no-checkout",
+              "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+              "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+            "exit_code": 0,
+            "label": "worktree",
+            "wall_seconds": 0.017122088000178337
+          },
+          {
+            "command": [
+              "git",
+              "sparse-checkout",
+              "set",
+              "--no-cone",
+              "--stdin"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+            "exit_code": 0,
+            "label": "sparse",
+            "wall_seconds": 0.005054791981820017
+          },
+          {
+            "command": [
+              "git",
+              "read-tree",
+              "-mu",
+              "HEAD"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+            "exit_code": 0,
+            "label": "materialize",
+            "wall_seconds": 5.931447342038155
+          },
+          {
+            "command": [
+              "python3",
+              "-B",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts/tests",
+              "-p",
+              "test_blob_size_policy.py"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+            "exit_code": 0,
+            "label": "policy-tests",
+            "wall_seconds": 2.421210644999519
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/check_blob_size.py",
+              "--base",
+              "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+              "--head",
+              "8defd8ff4a98f4fe77c574b9ba7eded7233b89e2",
+              "--max-bytes",
+              "512000",
+              "--allowlist",
+              ".github/blob-size-allowlist.txt"
+            ],
+            "cwd": "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E4/source",
+            "exit_code": 0,
+            "label": "changed-blob-gate",
+            "wall_seconds": 7.184005293995142
+          }
+        ],
+        "status": "PASS"
+      },
+      "E5": {
+        "archive": "qualification/cell-upstream-training-sources-20261118/complete-originals.tar.gz",
+        "archive_bytes": 2989114,
+        "archive_sha256": "998d989c99834dfd70058bcee4e3ea8f38cea00dbeb36dc7481c51501c1ed9f7",
+        "base": "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+        "checker_git_blob": "18bc6175c274abaeabe3ef0c32d82627d498bbe7",
+        "exact_SHA256_path_pin_only": true,
+        "head": "ee16fd728405c9f40b94977e5abcdf38f297cf03",
+        "max_blob_bytes": 512000,
+        "policy_tests": 7,
+        "source_and_outputs_unchanged": true,
+        "stages": [
+          {
+            "command": [
+              "git",
+              "fetch",
+              "--depth=1",
+              "--filter=blob:none",
+              "origin",
+              "ee16fd728405c9f40b94977e5abcdf38f297cf03",
+              "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+            ],
+            "exit_code": 0,
+            "label": "fetch",
+            "wall_seconds": 5.278178605018184
+          },
+          {
+            "command": [
+              "git",
+              "worktree",
+              "add",
+              "--detach",
+              "--no-checkout",
+              "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E5/source",
+              "ee16fd728405c9f40b94977e5abcdf38f297cf03"
+            ],
+            "exit_code": 0,
+            "label": "worktree",
+            "wall_seconds": 0.016586639976594597
+          },
+          {
+            "command": [
+              "git",
+              "sparse-checkout",
+              "set",
+              "--no-cone",
+              "--stdin"
+            ],
+            "exit_code": 0,
+            "label": "sparse",
+            "wall_seconds": 0.00469426199560985
+          },
+          {
+            "command": [
+              "git",
+              "read-tree",
+              "-mu",
+              "HEAD"
+            ],
+            "exit_code": 0,
+            "label": "materialize",
+            "wall_seconds": 7.834808312996756
+          },
+          {
+            "command": [
+              "python3",
+              "-B",
+              "-m",
+              "unittest",
+              "discover",
+              "-s",
+              "scripts/tests",
+              "-p",
+              "test_blob_size_policy.py"
+            ],
+            "exit_code": 0,
+            "label": "policy-tests",
+            "wall_seconds": 1.9697194630280137
+          },
+          {
+            "command": [
+              "python3",
+              "scripts/check_blob_size.py",
+              "--base",
+              "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+              "--head",
+              "ee16fd728405c9f40b94977e5abcdf38f297cf03",
+              "--max-bytes",
+              "512000",
+              "--allowlist",
+              ".github/blob-size-allowlist.txt"
+            ],
+            "exit_code": 0,
+            "label": "changed-blob-gate",
+            "wall_seconds": 0.4162326739751734
+          }
+        ],
+        "status": "PASS"
+      }
+    },
+    "joint_dependency_candidate": {
+      "pr": 6719,
+      "head": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+      "tree": "7695f9c9f70f80d1c5e860fddf6e8510c9fde3c7",
+      "runtime_dependency_freeze": "2b3642214ba5ff4aaac27de13322a354a69507e7",
+      "runtime_dependency_tree": "4f558b31a5ea13d3ddf7fa43aec605dd478ef072",
+      "verified_source_inputs": 75,
+      "actual_bazel_lock_update_passed": true,
+      "actual_bazel_lock_check_passed": true,
+      "actual_locked_metadata_passed": true,
+      "actual_repository_formatter_passed": true,
+      "authored_Rust_scoped_diff_check_passed": true,
+      "full_diff_check_exit": 2,
+      "full_diff_check_reason": "Three unchanged original SQLx documentation trailing spaces retained with exact upstream source; original warning receipt preserved.",
+      "graph": {
+        "rmcp": "3.9.0",
+        "rusqlite": "0.43.0",
+        "libsqlite3_sys": "0.40.0",
+        "sqlite3_link_count": 1,
+        "bundled": true,
+        "sqlcipher": false,
+        "bindgen_syn": "2.0.119"
+      },
+      "chrono": {
+        "version": "0.4.45",
+        "packages": 1523,
+        "source_less_roots": 193,
+        "reachable_roots": 121,
+        "direct_roots": 28,
+        "indirect_only_roots": 93,
+        "require_zero_exit": 2,
+        "resolved": false
+      },
+      "original_qualification_workflows_status": "New exact-head workflows queued/running; no prior proposal pass is borrowed",
+      "archive_bytes": 787256,
+      "archive_sha256": "5bf67c7fb0b67459ad0b0be7ffd7146ed8829dda07a6acda1932ab3bef701c7b"
+    },
+    "mac_actual_validation": {
+      "source": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+      "tree": "c25c9a3d93e799c275ba4888eef1148e6507d420",
+      "expected_cases": 11,
+      "platform": "Darwin 25.6.0 arm64",
+      "rustc": "1.96.0 ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96",
+      "actual_materialized_files": 11217,
+      "source_inventory_sha256": "b697530400bc32c2b5a83624e0f5f60a4f8ffe283f0501159f92c43eaf7706c0",
+      "preparation_timeout_job": "1a1ef860460-ffbe-527",
+      "preparation_timeout_exit": 124,
+      "recovered_original_object_carrier_bytes": 11643657,
+      "recovered_original_object_carrier_sha256": "d025a9f26c4e7facf85112601f53fe0d19699c1a0894b595bea9bbc59c37d748",
+      "original_blob_count_recovered_from_peer": 2982,
+      "complete_source_import_job": "1a1efaf5812-ffbe-5a6",
+      "complete_source_import_passed": true,
+      "native_first_job": "1a1efb163e3-ffbe-5a9",
+      "native_first_command_exit": 101,
+      "native_first_actual_testcases": 0,
+      "first_failure": "Offline registry index has no matching sqlx-sqlite 0.9.0 entry; native test compilation did not proceed",
+      "first_result_sha256": "de979e4651e8dc64955b0caeb31bb48b0ba0a64738874f48773a665cdc99efce",
+      "first_stderr_sha256": "bed39e29ea405959c5774c068454a0b74cf56cfa586bb7a987681a3f279fd44f",
+      "first_source_unchanged": true,
+      "locked_acquisition_job": "1a1efb48370-ffbe-5b3",
+      "current_scope": "E45 owns Mac worktree/targets; retain first cache failure, completed locked acquisition and second missing-source failure. No Mac regression pass.",
+      "passed": false,
+      "locked_acquisition_completed": true,
+      "locked_acquisition_exit": 0,
+      "locked_acquisition_wall_seconds": 681.282,
+      "locked_acquisition_result_sha256": "fbe18a35676ceda7142cbe777880f0040fa4bd69567fa367c8159080e6da74ea",
+      "native_second_job": "1a1efc0c852-ffbe-5d8",
+      "native_second_status": "completed_failure_before_tests",
+      "joint_source_preparation": {
+        "job": "1a1efbf5c54-ffbe-5d4",
+        "source": "2b3642214ba5ff4aaac27de13322a354a69507e7",
+        "tree": "4f558b31a5ea13d3ddf7fa43aec605dd478ef072",
+        "verified_changed_source_hashes": 75,
+        "materialization_wall_seconds": 104.85,
+        "build_started": false
+      },
+      "native_second_command_exit": 101,
+      "native_second_actual_testcases": 0,
+      "native_second_junit_present": false,
+      "native_second_wall_seconds": 308.221291292,
+      "native_second_result_sha256": "3d5f9a90d9ca3e0b75a78f1a274f7571b3ee1aad11fe0f684ea476c9f1701543",
+      "native_second_stderr_sha256": "ea67c2cd51fa9630d946135161b989909ff72a2969d316e50828dd67c3a7489f",
+      "native_second_source_unchanged": true,
+      "native_second_failure": "Compilation could not include original tracked docs/modules/MODULES.json outside the materialized source subset. No fixture assertion ran.",
+      "next_step": "Restore original fixed-source Git blob; retain the prior inventory and record expanded compile inputs; resume same eleven cases."
+    }
   },
   "environment": {
     "scratch_status": "unavailable",
@@ -1307,6 +2597,167 @@
       "bytes": 6601,
       "sha256": "82d02288566aebf2e7216f242c307f7162e041b541bdb0ef592b83ebc5fbae87",
       "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v10/ordinary-whole-cold-no-update.xml"
+    },
+    {
+      "path": "native-v11/RESULT.json",
+      "bytes": 18446,
+      "sha256": "f894d86ba3988ebc63935c1111882605eb21a4a3921268ffc9fe19fc61d3adba",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v11/result.json"
+    },
+    {
+      "path": "native-v11/ordinary-whole-cold-no-update.xml",
+      "bytes": 5313,
+      "sha256": "6e44a89bb42abf3e39aabc61bc8fc199b5f2cceb43f9adf5085ca327974718c3",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v11/ordinary-whole-cold-no-update.xml"
+    },
+    {
+      "path": "native-v11/task-response-capacity-regressions.xml",
+      "bytes": 2445,
+      "sha256": "110a3d8ef9ccd9d19b6059d88f7fbf128bbfb419dfa8c8606dee1579ee2dc65f",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v11/task-capacity-regressions.xml"
+    },
+    {
+      "path": "native-v13/RESULT.json",
+      "bytes": 13459,
+      "sha256": "35195d71c46cd735d43758121f61bae1d578293df89ddc682529a8a54bb0c850",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v13/result.json"
+    },
+    {
+      "path": "native-v13/ordinary-whole-cold-no-update.xml",
+      "bytes": 6341,
+      "sha256": "6abdc83dc2a5d044af7868a130cf8826552223efee20275dc6b5f66f60ea15c9",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v13/ordinary-whole-cold-no-update.xml"
+    },
+    {
+      "path": "cost-counter-capability/RESULT.json",
+      "bytes": 1266,
+      "sha256": "2be61526187213df7e57f01b351a3abcbb0054de8e85b051646f78f51c359289",
+      "original_path": "/home/qian-qi/work/hepta-root-cost-capability-20261118-2e9b/RESULT.json"
+    },
+    {
+      "path": "mac-native-first/RESULT.json",
+      "bytes": 4074,
+      "sha256": "de979e4651e8dc64955b0caeb31bb48b0ba0a64738874f48773a665cdc99efce",
+      "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/RESULT.json"
+    },
+    {
+      "path": "mac-native-first/original-macos-fixtures.stderr",
+      "bytes": 1165,
+      "sha256": "bed39e29ea405959c5774c068454a0b74cf56cfa586bb7a987681a3f279fd44f",
+      "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
-  ]
+  ],
+  "previous_evidence_commit": "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+  "next_actual_student_collection": {
+    "pr": 6717,
+    "source": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
+    "tree": "6abcd8ed0fee281b8154171f830aeba90afecde1",
+    "status": "PARENT_AND_CREDIT_ACTUAL_OWNER_STARTED_TEACHER_CODEC_PREPARATION",
+    "parent_model": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+    "credit_model": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1",
+    "actual_parent_credit_job": "1a1efba0ff6-ffbe-5bf",
+    "host": "desktop",
+    "idempotency_key": "e123-upstream-current-students-dfc4e24-2e9b-001",
+    "planned_parent_calls": 8,
+    "planned_credit_calls": 8,
+    "conditional_teacher_calls": 8,
+    "total_call_cap": 24,
+    "new_training_updates": 0,
+    "source_pool": "Same four newly acquired upstream A materials; no B/B2 training",
+    "protocol_sha256": "56071aea433cbf5e3b3c479e01ad39e3b025533030e6d4c57c68357163bdfc50",
+    "tasks_sha256": "b30229f6fe886a0d23151b3e761592e3e11eeb333bdaf7e79c606eb6f85a08de",
+    "generation_policy_sha256": "f2241e8719eb2e9b8b699aa402ddd6d5915e18c153a9301f372a56040a9376da",
+    "input_cap": 8192,
+    "output_cap": 2048,
+    "student_native_context": 32768,
+    "teacher_per_slot_context": 131072,
+    "initial_prompt_tokens": [
+      473,
+      1303,
+      1770,
+      1757
+    ],
+    "reference_patch_tokens": [
+      113,
+      1194,
+      374,
+      99
+    ],
+    "complete_reference_repairs_reproduce_original_after_bytes": true,
+    "prompt_truncation_allowed": false,
+    "actual_sandbox_preflight_job": "1a1efa9ebe8-ffbe-597",
+    "actual_sandbox_case_executions": 228,
+    "actual_sandbox_child_count": 8,
+    "original_case_timeout_seconds": 3,
+    "oracle_and_dependencies_read_only": true,
+    "network_namespace_isolated": true,
+    "host_canary_inaccessible": true,
+    "reference_preflight_model_calls": 0,
+    "actual_model_result_known": false,
+    "teacher_first_preflight_refused": true,
+    "teacher_service_natural_restoration_observed": true,
+    "teacher_service_restarted_by_this_work": false,
+    "physical_compute_matched": false,
+    "new_policy_is_old_384_policy": false,
+    "original_NoUpdate_rejudged": false,
+    "cpu_energy_scope": "Prospective whole-host CPU package counters sampled every 20 seconds; includes concurrent activity, is not per-model net energy; GPU remains unmeasured.",
+    "remaining_scope": "Collect all first/second responses and real sandbox feedback under frozen caps, retain every failure/cost, then audit. No new training or independent confirmation is claimed.",
+    "teacher_freeze_commit": "9cfa4995c5d08aa0af00cdda6ef1fa67e49b6d1e",
+    "teacher_freeze_path": "qualification/cell-upstream-current-student-20261118/teacher-preparation/TEACHER_FREEZE.json",
+    "teacher_freeze_sha256": "c9e7b72fb1bd196b32bb7022d6743054e234e1b7de1f08233e93939e3ff33094",
+    "teacher_template_codec_preflight_passed": true,
+    "teacher_freeze_new_generations": 0,
+    "teacher_actual_first_four_job": "1a1efc81fab-ffbe-5e5",
+    "teacher_first_four_status": "launched_after_prospective_freeze; outcome not included",
+    "student_owner_status": "Completed according to owning agent; final original readout not yet incorporated in this snapshot. Original 16-call limit retained."
+  },
+  "prospective_cost_counter_capability": {
+    "original_job": "1a1ef98043c-ffbe-55b",
+    "result_sha256": "2be61526187213df7e57f01b351a3abcbb0054de8e85b051646f78f51c359289",
+    "original": {
+      "schema": "hepta.cost-counter-capability.v1",
+      "observed_unix_ns": "1795021081099588414",
+      "purpose": "Prospective read-only capability check; no model or verifier execution",
+      "past_experiment_energy_backfilled": false,
+      "host_energy_is_process_energy": false,
+      "system_configuration_changed": false,
+      "rapl": [
+        {
+          "path": "/sys/class/powercap/intel-rapl:0",
+          "name": "package-0",
+          "max_energy_range_uj": "262143328850",
+          "unprivileged_errno": 13,
+          "existing_sudo_read": {
+            "exit_code": 0,
+            "wall_nanoseconds": "55996657",
+            "energy_uj": "197370772561",
+            "error": null
+          }
+        },
+        {
+          "path": "/sys/class/powercap/intel-rapl:1",
+          "name": "package-1",
+          "max_energy_range_uj": "262143328850",
+          "unprivileged_errno": 13,
+          "existing_sudo_read": {
+            "exit_code": 0,
+            "wall_nanoseconds": "13874597",
+            "energy_uj": "141460922405",
+            "error": null
+          }
+        }
+      ],
+      "nvml": {
+        "library": "libnvidia-ml.so.1",
+        "initialization_return": 0,
+        "device_handle_return": 0,
+        "total_energy_return": 3,
+        "total_energy_api_value": null,
+        "total_energy_return_description": "Not Supported"
+      },
+      "finished_unix_ns": "1795021081239888772"
+    },
+    "old_experiment_energy_backfilled": false,
+    "full_physical_cost_closed": false
+  }
 }

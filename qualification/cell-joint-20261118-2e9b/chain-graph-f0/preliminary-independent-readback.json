@@ -1,0 +1,229 @@
+{
+  "all_planned_rounds": [
+    {
+      "actual_ended_ns": 25507888471,
+      "actual_started_ns": 1000207594,
+      "confirmed_inside_original_window": true,
+      "elapsed_from_scheduled_ns": 24507888471,
+      "end_lateness_from_four_second_deadline_ns": 20507888471,
+      "four_second_slo_met": false,
+      "observed_exactly_once": true,
+      "phase": "baseline",
+      "round": 0,
+      "scheduled_offset_ns": 1000000000,
+      "start_lateness_from_schedule_ns": 207594
+    },
+    {
+      "actual_ended_ns": 30001871988,
+      "actual_started_ns": 25507901034,
+      "confirmed_inside_original_window": false,
+      "elapsed_from_scheduled_ns": 25001871988,
+      "end_lateness_from_four_second_deadline_ns": 21001871988,
+      "four_second_slo_met": false,
+      "observed_exactly_once": true,
+      "phase": "baseline",
+      "round": 1,
+      "scheduled_offset_ns": 5000000000,
+      "start_lateness_from_schedule_ns": 20507901034
+    },
+    {
+      "actual_ended_ns": null,
+      "actual_started_ns": null,
+      "confirmed_inside_original_window": false,
+      "elapsed_from_scheduled_ns": null,
+      "end_lateness_from_four_second_deadline_ns": null,
+      "four_second_slo_met": false,
+      "observed_exactly_once": false,
+      "phase": "baseline",
+      "round": 2,
+      "scheduled_offset_ns": 9000000000,
+      "start_lateness_from_schedule_ns": null
+    },
+    {
+      "actual_ended_ns": 30056008025,
+      "actual_started_ns": 1001946037,
+      "confirmed_inside_original_window": false,
+      "elapsed_from_scheduled_ns": 29056008025,
+      "end_lateness_from_four_second_deadline_ns": 25056008025,
+      "four_second_slo_met": false,
+      "observed_exactly_once": true,
+      "phase": "valid-work-root",
+      "round": 0,
+      "scheduled_offset_ns": 1000000000,
+      "start_lateness_from_schedule_ns": 1946037
+    },
+    {
+      "actual_ended_ns": null,
+      "actual_started_ns": null,
+      "confirmed_inside_original_window": false,
+      "elapsed_from_scheduled_ns": null,
+      "end_lateness_from_four_second_deadline_ns": null,
+      "four_second_slo_met": false,
+      "observed_exactly_once": false,
+      "phase": "valid-work-root",
+      "round": 1,
+      "scheduled_offset_ns": 5000000000,
+      "start_lateness_from_schedule_ns": null
+    },
+    {
+      "actual_ended_ns": null,
+      "actual_started_ns": null,
+      "confirmed_inside_original_window": false,
+      "elapsed_from_scheduled_ns": null,
+      "end_lateness_from_four_second_deadline_ns": null,
+      "four_second_slo_met": false,
+      "observed_exactly_once": false,
+      "phase": "valid-work-root",
+      "round": 2,
+      "scheduled_offset_ns": 9000000000,
+      "start_lateness_from_schedule_ns": null
+    }
+  ],
+  "all_services_known_empty": true,
+  "archive_bytes": 17509272,
+  "archive_sha256": "ba7317fdbc7da70965c277323ca0a4321ab5692945322bc906c086b92d6bc872",
+  "execution_complete_success": false,
+  "finalization_complete_success": false,
+  "four_second_confirmations": 0,
+  "full_physical_cost_closed": false,
+  "head": "1380eaae3c902b3e17d5e5a7d73bf242b0366562",
+  "manifest_files_checked": 443,
+  "native_binary_bytes": 13243784,
+  "native_binary_sha256": "6f77f0636d9b8ac3c4ba3d8b7081a1bc796f1d359bab31eb515e28b96a2479ec",
+  "native_exit_code": 101,
+  "original_gate": {
+    "failure": "BASELINE_MUST_PASS",
+    "passed": false
+  },
+  "original_reader_source_sha256": {
+    "formal/pon-nakamoto-v1/bounded_process.py": "16fa98206e75db5e925a31508e889df9d1968c32f518554f52c2a0711047b356",
+    "formal/pon-nakamoto-v1/contract_wire.py": "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+    "scripts/ci/fixed_root_f0_ownership.py": "a6376e43166cd782a90ac782c1619ef6ec6cd5cbb8d25093aedaf870c2d5dba1",
+    "scripts/ci/fixed_root_f0_resources.py": "43b86bdab5715917cd7e7140765099a75178815e730a66d438b820b9cb370a4a",
+    "scripts/ci/public_host_ci_observation.py": "cc0facf46d14bc113d6a83d6b1215afe91c7b5cf22d65892f34921c8f1b983e3",
+    "scripts/ci/run_fixed_root_phase_host.py": "f572b12727d119f7d1c1490d2a8c70de69e596155e20a837ebf94d19e24911e7",
+    "scripts/pon_public_v3_phase_read.py": "f2dd54ec905117e26fc7128218acb74c36a3ae7c16229d56c7cc04dae1a5ef41",
+    "scripts/pon_public_v3_policy_read.py": "89c45bebc01691bf42fcd65bc19625797b32d4112907f3d24ada094c6b9d698a",
+    "scripts/pon_w1_cost_matrix_reader.py": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa",
+    "scripts/read_original_native_campaign.py": "4381e3af6dac9ea2301cb78ff1761628a3b0e236750d1f291f4d51118c31b417",
+    "scripts/run_fixed_host_root_f0.py": "abf75f729dcb54d7c2bebf2c54c253c5164e801b7ebcc642bb8ba58290518cca",
+    "scripts/run_pon_w1_native_campaign.py": "eff0930837331f08882a0d69a6909e8f8dda2b23dad58cf0e6bc60d175f0a431"
+  },
+  "original_window_confirmations": 1,
+  "phases": [
+    {
+      "client_thread_cpu_ns": 5425864517,
+      "controller_cgroup_cpu_delta_usec": 2488082,
+      "controller_memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+      "controller_memory_samples": [
+        {
+          "cpu_usage_usec": 7268073,
+          "memory_current_bytes": 49930240,
+          "memory_peak_lifetime_bytes": 57618432,
+          "stage": "before_launch"
+        },
+        {
+          "cpu_usage_usec": 7782709,
+          "memory_current_bytes": 74805248,
+          "memory_peak_lifetime_bytes": 76173312,
+          "stage": "actors_ready"
+        },
+        {
+          "cpu_usage_usec": 9756155,
+          "memory_current_bytes": 58138624,
+          "memory_peak_lifetime_bytes": 80191488,
+          "stage": "after_reap"
+        }
+      ],
+      "history_calls": 8,
+      "host_checkpoint_calls": 82046,
+      "host_checkpoint_cpu_ns_nested": 4543810044,
+      "observed_imports": 8,
+      "phase": "baseline",
+      "retained_public_rss_diagnostic": {
+        "kernel_rusage_self_peak_rss_bytes": 71540736,
+        "lifetime_peak_rss_bytes": 71852032,
+        "rss_bytes": 71852032,
+        "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+      },
+      "whole_public_phase_cpu_ns": 8376872630,
+      "whole_public_phase_wall_ns": 34583361761
+    },
+    {
+      "client_thread_cpu_ns": 0,
+      "controller_cgroup_cpu_delta_usec": 4062319,
+      "controller_memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+      "controller_memory_samples": [
+        {
+          "cpu_usage_usec": 9764255,
+          "memory_current_bytes": 60760064,
+          "memory_peak_lifetime_bytes": 80191488,
+          "stage": "before_launch"
+        },
+        {
+          "cpu_usage_usec": 10336086,
+          "memory_current_bytes": 115818496,
+          "memory_peak_lifetime_bytes": 115888128,
+          "stage": "actors_ready"
+        },
+        {
+          "cpu_usage_usec": 13826574,
+          "memory_current_bytes": 103698432,
+          "memory_peak_lifetime_bytes": 126967808,
+          "stage": "after_reap"
+        }
+      ],
+      "history_calls": 0,
+      "host_checkpoint_calls": 0,
+      "host_checkpoint_cpu_ns_nested": 0,
+      "observed_imports": 0,
+      "phase": "valid-work-root",
+      "retained_public_rss_diagnostic": {
+        "kernel_rusage_self_peak_rss_bytes": 118456320,
+        "lifetime_peak_rss_bytes": 118562816,
+        "rss_bytes": 118562816,
+        "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+      },
+      "whole_public_phase_cpu_ns": 8691669137,
+      "whole_public_phase_wall_ns": 34893774157
+    }
+  ],
+  "planned_confirmations": 6,
+  "planned_packet_exposures": 42,
+  "prepared_controls_checked": 7,
+  "report_bytes": 12109679,
+  "report_sha256": "68dd117050f4773df835f89b63316f766697c59b8698cfd4afe54024f4863f04",
+  "retained_owner_database_files": [
+    {
+      "bytes": 3366912,
+      "compressed_member_bytes": 1386424,
+      "member": "execution/raw/baseline/independent-client/native.sqlite"
+    },
+    {
+      "bytes": 4317184,
+      "compressed_member_bytes": 1756908,
+      "member": "execution/raw/baseline/receiver/native.sqlite"
+    },
+    {
+      "bytes": 5505024,
+      "compressed_member_bytes": 2190068,
+      "member": "execution/raw/honest-miner/native.sqlite"
+    },
+    {
+      "bytes": 2002944,
+      "compressed_member_bytes": 920841,
+      "member": "execution/raw/valid-work-root/independent-client/native.sqlite"
+    },
+    {
+      "bytes": 2834432,
+      "compressed_member_bytes": 1220012,
+      "member": "execution/raw/valid-work-root/receiver/native.sqlite"
+    }
+  ],
+  "run_id": 44356270247,
+  "scheduled_four_second_gate": {
+    "failure": "F0_ALL_SIX_SCHEDULED_FOUR_SECOND_TARGETS_REQUIRED",
+    "passed": false
+  },
+  "tree": "176e1a77202f6604823163fde07d5e51d6cc47ed"
+}

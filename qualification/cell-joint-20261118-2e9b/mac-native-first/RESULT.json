@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.actual-macos-fixture-validation.v1",
+  "source_head": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+  "source_tree": "c25c9a3d93e799c275ba4888eef1148e6507d420",
+  "expected_cases": [
+    "causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+    "causal_readback_refuses_substituted_inputs_and_absent_cell_owner_history",
+    "research_material_canonicalization_sorts_every_object_level",
+    "research_material_reads_reject_leaf_ancestor_and_hardlink_aliases",
+    "research_material_rejects_duplicate_json_keys_at_any_depth",
+    "research_material_size_reference_and_mutation_checks_use_actual_bytes",
+    "research_material_tensors_reject_overlap_holes_trailing_and_nonfinite",
+    "research_owner_concurrent_handles_cas_has_exactly_one_retained_winner",
+    "research_owner_initial_freeze_rejects_existing_training_or_evaluation",
+    "research_owner_partial_entries_are_observable_and_never_replaced",
+    "research_owner_publication_is_create_only_and_detects_directory_replacement"
+  ],
+  "source_preparation_job": "1a1efaf5812-ffbe-5a6",
+  "source_preparation_files": 11217,
+  "started": "2026-11-18T17:26:01.121767+00:00",
+  "stages": [
+    {
+      "name": "platform",
+      "command": [
+        "uname",
+        "-srm"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.003920291026588529,
+      "owned_child_user_cpu_seconds": 0.0004919999999999994,
+      "owned_child_system_cpu_seconds": 0.0010609999999999925
+    },
+    {
+      "name": "rustc-version",
+      "command": [
+        "rustc",
+        "-vV"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.13049137499183416,
+      "owned_child_user_cpu_seconds": 0.016256000000000003,
+      "owned_child_system_cpu_seconds": 0.022479
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "just",
+        "--version"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0034580419887788594,
+      "owned_child_user_cpu_seconds": 0.0014049999999999965,
+      "owned_child_system_cpu_seconds": 0.0009450000000000014
+    },
+    {
+      "name": "nextest-version",
+      "command": [
+        "cargo",
+        "nextest",
+        "--version"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.04959237499861047,
+      "owned_child_user_cpu_seconds": 0.017428,
+      "owned_child_system_cpu_seconds": 0.009207999999999994
+    },
+    {
+      "name": "original-macos-fixtures",
+      "command": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(research_material_) | test(research_owner_) | test(causal_readback_)",
+        "--retries",
+        "0",
+        "--test-threads",
+        "1",
+        "--no-tests",
+        "fail",
+        "--success-output",
+        "final",
+        "--failure-output",
+        "final"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 0.5584804159589112,
+      "owned_child_user_cpu_seconds": 0.215398,
+      "owned_child_system_cpu_seconds": 0.13656600000000002
+    }
+  ],
+  "original_negative_controls_retained": true,
+  "full_platform_qualification": false,
+  "energy_joules": null,
+  "monetary_cost": null,
+  "before": {
+    "head": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+    "tree": "c25c9a3d93e799c275ba4888eef1148e6507d420",
+    "files": 11217,
+    "inventory_sha256": "b697530400bc32c2b5a83624e0f5f60a4f8ffe283f0501159f92c43eaf7706c0",
+    "status": ""
+  },
+  "junit_present": false,
+  "passed": false,
+  "status": "failed",
+  "after": {
+    "head": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+    "tree": "c25c9a3d93e799c275ba4888eef1148e6507d420",
+    "files": 11217,
+    "inventory_sha256": "b697530400bc32c2b5a83624e0f5f60a4f8ffe283f0501159f92c43eaf7706c0",
+    "status": ""
+  },
+  "source_unchanged": true,
+  "wall_seconds_including_nested_stages": 1.5271967920125462,
+  "cost_scope": "Owned validation stages; command CPU/wall is nested and must not be added to this overall wall again. Full physical cost is unmeasured.",
+  "finished": "2026-11-18T17:26:02.648952+00:00"
+}
