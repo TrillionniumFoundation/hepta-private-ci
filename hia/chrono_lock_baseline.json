@@ -1,0 +1,198 @@
+{
+  "advisory": "RUSTSEC-2026-0543",
+  "chrono_versions": [
+    "0.4.43"
+  ],
+  "closure_ready": false,
+  "gate": "OPEN",
+  "importers": [
+    {
+      "kind": "registry_external",
+      "name": "oauth2",
+      "version": "5.0.0"
+    },
+    {
+      "kind": "registry_external",
+      "name": "rmcp",
+      "version": "3.9.0"
+    },
+    {
+      "kind": "registry_external",
+      "name": "schemars",
+      "version": "1.2.1"
+    },
+    {
+      "kind": "registry_external",
+      "name": "serde_with",
+      "version": "3.17.0"
+    },
+    {
+      "kind": "registry_external",
+      "name": "sqlx-core",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "registry_external",
+      "name": "sqlx-mysql",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "registry_external",
+      "name": "sqlx-postgres",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "vendored_external",
+      "name": "sqlx-sqlite",
+      "version": "0.9.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "app_test_support",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-agent-identity",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-api",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-app-server-transport",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-app-server",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-cli",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-cloud-config",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-cloud-tasks-client",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-cloud-tasks-mock-client",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-cloud-tasks",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-core-plugins",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-core",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-external-agent-migration",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-git-utils",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-goal-extension",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-hepta-memory-extension",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-hooks",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-login",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-memories-write",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-models-manager",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-network-proxy",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-otel",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-protocol",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-rollout",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-state",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-thread-store",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-tui",
+      "version": "0.0.0"
+    },
+    {
+      "kind": "workspace_local",
+      "name": "codex-windows-sandbox",
+      "version": "0.0.0"
+    }
+  ],
+  "issued": "2026-11-17",
+  "lock_git_blob": "e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd",
+  "schema": "codex.hia.chrono_dependency_audit.v2",
+  "source_head": "bbb534d8be9098c041d5f3dd1ca1214fbcc2fd8a",
+  "workspace_local_count": 28,
+  "registry_external_count": 7,
+  "vendored_external_count": 1,
+  "workspace_manifest_git_blob": "145c9b24e7203461337a68cf9938f9f0bce720a9"
+}
