@@ -80,97 +80,133 @@ async fn original_evaluation_model_material_reads_actual_panel_and_identical_loc
     Ok(())
 }
 
+// Each independent mechanism owns a complete actual B/retention and Evaluator
+// fixture. Give each fixture its own ordinary test watchdog while retaining all
+// original request limits, owner lifetimes, readbacks and cleanup assertions.
+async fn reject_material_page_fault(fault: &'static str) -> anyhow::Result<()> {
+    let fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let evaluation = complete(&fixture).await?;
+    let original_files = fixture.original_files()?;
+    let upstream = fixture.upstream_files()?;
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(Some(evaluation.clone()), fault, /*pause*/ None)?;
+    assert!(
+        client.fixture_read_current_at(fixture.at).await.is_err(),
+        "wire fault {fault}"
+    );
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert!(close(client, peer)? > 0);
+    assert_eq!(fixture.original_files()?, original_files);
+    assert_eq!(fixture.upstream_files()?, upstream);
+    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_wrong_page_order() -> anyhow::Result<()> {
+    reject_material_page_fault("wrong-order").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_wrong_page_total() -> anyhow::Result<()> {
+    reject_material_page_fault("wrong-total").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_wrong_page_offset() -> anyhow::Result<()> {
+    reject_material_page_fault("wrong-offset").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_wrong_last_page() -> anyhow::Result<()> {
+    reject_material_page_fault("wrong-last").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_lost_finish() -> anyhow::Result<()> {
+    reject_material_page_fault("lose-finish").await
+}
+
+// Each real Trainer peer retains its original 128-frame budget. Independent
+// negative mechanisms use independent original fixtures, never reconnect
+// or splice an unfinished material transfer to extend that budget.
+async fn reject_completed_material_regression(
+    fault: &'static str,
+    cold_fault: &'static str,
+) -> anyhow::Result<()> {
+    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let evaluation = complete(&fixture).await?;
+    let original_files = fixture.original_files()?;
+    let upstream = fixture.upstream_files()?;
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
+    let material = client.fixture_read_current_at(fixture.at).await?;
+    assert_eq!(material.original_evaluation(), &evaluation);
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(
+        close(client, peer)?,
+        material.fixture_original_material_pages() as u64 + 2
+    );
+    // A cold read consumes newly recovered original read-only owners;
+    // it never clears the failed live host's fence or retries its transfer.
+    fixture.recover()?;
+    let (client, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(
+            Some(evaluation.clone()),
+            cold_fault,
+            /*pause*/ None,
+        )?;
+    assert!(matches!(
+        client.fixture_read_current_at(fixture.at).await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert!(matches!(
+        client.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    assert_eq!(close(client, peer)?, 1);
+    assert_eq!(fixture.original_files()?, original_files);
+    assert_eq!(fixture.upstream_files()?, upstream);
+    assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
+    Ok(())
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_completed_to_missing_regression()
+-> anyhow::Result<()> {
+    reject_completed_material_regression("after-missing", "cold-missing").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_model_material_rejects_completed_to_pending_regression()
+-> anyhow::Result<()> {
+    reject_completed_material_regression("after-pending", "cold-pending").await
+}
+
+// Retain the original test entry for the final renewal/expiry fixture; the
+// seven independent page/regression fixtures above retain their complete cases.
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_model_material_rejects_pages_renewal_and_completed_regression()
 -> anyhow::Result<()> {
-    for fault in [
-        "wrong-order",
-        "wrong-total",
-        "wrong-offset",
-        "wrong-last",
-        "lose-finish",
-    ] {
-        let fixture = HostFixture::new(/*pending_claim*/ false).await?;
-        let evaluation = complete(&fixture).await?;
-        let original_files = fixture.original_files()?;
-        let upstream = fixture.upstream_files()?;
-        let (client, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(
-                Some(evaluation.clone()),
-                fault,
-                /*pause*/ None,
-            )?;
-        assert!(
-            client.fixture_read_current_at(fixture.at).await.is_err(),
-            "wire fault {fault}"
-        );
-        assert!(matches!(
-            client.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        assert!(close(client, peer)? > 0);
-        assert_eq!(fixture.original_files()?, original_files);
-        assert_eq!(fixture.upstream_files()?, upstream);
-        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
-    }
-    // Each real Trainer peer retains its original 128-frame budget. Independent
-    // negative mechanisms use independent original fixtures, never reconnect
-    // or splice an unfinished material transfer to extend that budget.
-    for (fault, cold_fault) in [
-        ("after-missing", "cold-missing"),
-        ("after-pending", "cold-pending"),
-    ] {
-        let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
-        let evaluation = complete(&fixture).await?;
-        let original_files = fixture.original_files()?;
-        let upstream = fixture.upstream_files()?;
-        let (client, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(/*expected*/ None, fault, /*pause*/ None)?;
-        let material = client.fixture_read_current_at(fixture.at).await?;
-        assert_eq!(material.original_evaluation(), &evaluation);
-        assert!(matches!(
-            client.fixture_read_current_at(fixture.at).await,
-            Err(CommandError::CommitUncertain)
-        ));
-        assert!(matches!(
-            client.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        assert_eq!(
-            close(client, peer)?,
-            material.fixture_original_material_pages() as u64 + 2
-        );
-        // A cold read consumes newly recovered original read-only owners;
-        // it never clears the failed live host's fence or retries its transfer.
-        fixture.recover()?;
-        let (client, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(
-                Some(evaluation.clone()),
-                cold_fault,
-                /*pause*/ None,
-            )?;
-        assert!(matches!(
-            client.fixture_read_current_at(fixture.at).await,
-            Err(CommandError::CommitUncertain)
-        ));
-        assert!(matches!(
-            client.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        assert_eq!(close(client, peer)?, 1);
-        assert_eq!(fixture.original_files()?, original_files);
-        assert_eq!(fixture.upstream_files()?, upstream);
-        assert!(fixture.finish().await?.into_iter().all(|reads| reads > 2));
-    }
     let fixture = HostFixture::new(/*pending_claim*/ false).await?;
     let evaluation = complete(&fixture).await?;
     let original_files = fixture.original_files()?;
