@@ -4,6 +4,8 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -221,6 +223,33 @@ class SourceIdentityControls(unittest.TestCase):
         self.assertFalse(observation["origin_exact_head_source"])
         with self.assertRaises(ValueError):
             verify_transferred_identity(target, mapped, raw + b"\n")
+
+
+class MaintenanceImportControls(unittest.TestCase):
+    def test_runtime_campaign_and_cold_child_freeze_identical_source_maps(self):
+        script_root = Path(__file__).resolve().parent
+
+        def observed(entry):
+            program = (
+                "import " + entry + "\n"
+                "from hepta_cells.maintenance_tasks import sources\n"
+                "import json; print(json.dumps(sources(), sort_keys=True))\n"
+            )
+            return json.loads(
+                subprocess.check_output(
+                    [sys.executable, "-B", "-c", program],
+                    cwd=script_root,
+                    timeout=15,
+                )
+            )
+
+        cold = observed("hepta_cells.maintenance_cycle")
+        for entry in (
+            "hepta_cell_campaign_worker",
+            "hepta_cell_semantic_campaign_worker",
+        ):
+            with self.subTest(entry=entry):
+                self.assertEqual(observed(entry), cold)
 
 
 if __name__ == "__main__":
