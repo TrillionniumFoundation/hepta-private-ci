@@ -3,6 +3,9 @@
 
 use std::fs;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::future::Future;
 use std::io::Write;
 use std::path::PathBuf;
@@ -186,6 +189,7 @@ pub(super) struct Fixture {
     pub control: Control,
     pub config: CellGenerationConfigV2,
     pub ticks: Arc<AtomicU64>,
+    journal_readback: std::sync::Mutex<Option<[std::fs::File; 2]>>,
 }
 
 impl Fixture {
@@ -242,6 +246,7 @@ impl Fixture {
             control,
             config,
             ticks: Arc::new(AtomicU64::new(20)),
+            journal_readback: std::sync::Mutex::new(None),
         };
         fixture.attach_prerequisites().await;
         checked(fixture.registry.compare_and_transition(
@@ -312,8 +317,14 @@ impl Fixture {
                     .open(self.directory.path().join(name)),
             )
         };
+        let journal_file = open(&format!("{stem}-journal"));
+        let witness_file = open(&format!("{stem}-witness"));
+        let readback = [
+            checked(journal_file.try_clone()),
+            checked(witness_file.try_clone()),
+        ];
         let witness = checked(FileAnchorWitnessStore::open(
-            open(&format!("{stem}-witness")),
+            witness_file,
             JournalScope {
                 scope_digest: Digest32::of_bytes(b"generation-service"),
                 objective_digest: Digest32::of_bytes(b"generation-task"),
@@ -321,12 +332,59 @@ impl Fixture {
             generation(1),
             /*max_records*/ 256,
         ));
-        checked(CellGenerationJournalV2::open(
-            open(&format!("{stem}-journal")),
+        let journal = checked(CellGenerationJournalV2::open(
+            journal_file,
             witness,
             config,
             /*max_records*/ 256,
-        ))
+        ));
+        if stem == "generation" {
+            *checked(self.journal_readback.lock()) = Some(readback);
+        }
+        journal
+    }
+
+    pub(super) async fn journal_bytes(
+        &self,
+        handle: &crate::NeuronGenerationRuntimeHandleV2,
+    ) -> [Vec<u8>; 2] {
+        let readback = checked(self.journal_readback.lock())
+            .as_ref()
+            .expect("generation owner readback")
+            .each_ref()
+            .map(|file| checked(file.try_clone()));
+        let directory = self.directory.path().to_path_buf();
+        checked(
+            handle
+                .inspect_test_bytes(Box::new(move || {
+                    let mut readback = readback;
+                    let bytes = readback.each_mut().map(|file| {
+                        let position = checked(file.stream_position());
+                        checked(file.seek(SeekFrom::Start(0)));
+                        let mut bytes = Vec::new();
+                        let read = file.read_to_end(&mut bytes);
+                        let restored = file.seek(SeekFrom::Start(position));
+                        assert_eq!(checked(restored), position);
+                        checked(read);
+                        assert_eq!(checked(file.stream_position()), position);
+                        bytes
+                    });
+                    for name in ["generation-journal", "generation-witness"] {
+                        let contender = checked(
+                            OpenOptions::new()
+                                .read(true)
+                                .write(true)
+                                .open(directory.join(name)),
+                        );
+                        assert!(matches!(
+                            contender.try_lock(),
+                            Err(std::fs::TryLockError::WouldBlock)
+                        ));
+                    }
+                    bytes
+                }))
+                .await,
+        )
     }
 
     pub(super) fn clock(&self) -> impl FnMut() -> u64 + Send + 'static {

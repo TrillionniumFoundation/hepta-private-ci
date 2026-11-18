@@ -139,6 +139,12 @@ where
                 });
                 respond(state, response, result)
             }
+            #[cfg(test)]
+            GenerationCommand::InspectTestBytes { read, response } => {
+                // Only test builds expose this observation; it runs in the
+                // existing owner's serial command region, never beside a write.
+                respond(state, response, Ok(read()))
+            }
             GenerationCommand::Snapshot(response) => {
                 respond(state, response, self.owner.journal().snapshot().cloned())
             }
