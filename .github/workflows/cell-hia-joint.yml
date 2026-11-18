@@ -31,6 +31,9 @@ jobs:
   same-candidate:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     env:
       PYTHONDONTWRITEBYTECODE: '1'
       OPENBLAS_NUM_THREADS: '1'
@@ -55,18 +58,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install repository-pinned task runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
       - name: Prepare numerical dependency and disposable SSH fixture
         run: |
           python -m pip install numpy==2.3.5 uv
           sudo apt-get update
-          sudo apt-get install -y openssh-server just
+          sudo apt-get install -y openssh-server
           rustup toolchain install 1.95.0 --profile minimal
       - name: Format changed sources and require an unchanged candidate
         working-directory: cells
         run: |
           mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/cell-joint-evidence/format-source.txt"
+          just --version > "$RUNNER_TEMP/cell-joint-evidence/format-tool.txt"
           git fetch --no-tags --depth=1 origin f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb
-          just fmt --base f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb
+          just fmt --base f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/format.log"
           git diff --binary > "$RUNNER_TEMP/cell-joint-evidence/format.patch"
           git diff --exit-code
       - name: Native continuation and sealed image controls
