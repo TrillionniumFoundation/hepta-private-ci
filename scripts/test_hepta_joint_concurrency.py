@@ -172,6 +172,39 @@ time.sleep(60)
         )
         self.assertFalse(result["detached_descendants_covered"])
 
+    def test_ordinary_worker_import_preserves_cold_source_identity(self):
+        program = """
+import json
+from hepta_cells.maintenance_cycle import run
+from hepta_cells.maintenance_tasks import sources
+cold = sources()
+from hepta_cell_joint_worker import load_candidate
+warm = sources()
+assert warm == cold, {
+    "added": sorted(warm.keys() - cold.keys()),
+    "removed": sorted(cold.keys() - warm.keys()),
+    "changed": sorted(k for k in cold.keys() & warm.keys() if cold[k] != warm[k]),
+}
+print(json.dumps({"source_count": len(cold), "equal": True}))
+"""
+        child = subprocess.run(
+            [sys.executable, "-B", "-c", program],
+            capture_output=True,
+            text=True,
+            timeout=15,
+            env={
+                **os.environ,
+                "PYTHONPATH": str(
+                    Path(joint_concurrency.__file__).resolve().parents[1]
+                ),
+                "PYTHONDONTWRITEBYTECODE": "1",
+            },
+        )
+        self.assertEqual(child.returncode, 0, child.stderr)
+        result = json.loads(child.stdout)
+        self.assertTrue(result["equal"])
+        self.assertGreater(result["source_count"], 0)
+
 
 if __name__ == "__main__":
     unittest.main()
