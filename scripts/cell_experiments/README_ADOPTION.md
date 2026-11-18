@@ -152,6 +152,16 @@ prediction time. Cold process wall time overlaps its inference time and must not
 be added to it. Training/B costs and energy remain unknown; `costs_complete`
 stays false. Omitting D preserves the original replay-only experiment behavior.
 
+Each hot C, cold replay and D inference now retains a dispatch intent before the
+call and its measurements immediately after return, before answer verification.
+`C_INFERENCE.json`, `COLD_REPLAY_INFERENCE.json` and `D_INFERENCE.json` preserve
+these observations even when verification fails or the cold child exits during D.
+`inference_attempts` and `execution_costs` are retained for failed/incomplete
+selected operations as well as completed ones. A failed or lost return leaves
+phase totals null; `observed_complete_prediction_costs` gives only the measured
+subtotal. An intent alone does not prove that the model began execution. Missing
+streams remain unknown, and successful readback checks the original streams.
+
 ## Explicit qualification boundary
 
 The experiment journal is not the existing CellOwner/agentd authority or a

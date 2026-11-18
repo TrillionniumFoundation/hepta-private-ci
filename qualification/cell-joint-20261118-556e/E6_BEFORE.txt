@@ -1,0 +1,42 @@
+EEEE
+======================================================================
+ERROR: test_cold_hard_exit_retains_replay_and_partial_d_costs (cell_experiments.test_adoption_costs.AdoptionCostTests.test_cold_hard_exit_retains_replay_and_partial_d_costs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/556e5fc18a5b/e6-before/scripts/cell_experiments/test_adoption_costs.py", line 86, in test_cold_hard_exit_retains_replay_and_partial_d_costs
+    phases = result["execution_costs"]["phases"]
+             ~~~~~~^^^^^^^^^^^^^^^^^^^
+KeyError: 'execution_costs'
+
+======================================================================
+ERROR: test_completed_readback_requires_original_inference_streams (cell_experiments.test_adoption_costs.AdoptionCostTests.test_completed_readback_requires_original_inference_streams)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/556e5fc18a5b/e6-before/scripts/cell_experiments/test_adoption_costs.py", line 108, in test_completed_readback_requires_original_inference_streams
+    (output / "C_INFERENCE.json").unlink()
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py", line 1342, in unlink
+    os.unlink(self)
+FileNotFoundError: [Errno 2] No such file or directory: '/tmp/tmpyfcp0glc/readback/C_INFERENCE.json'
+
+======================================================================
+ERROR: test_failed_hot_call_keeps_previous_cost_and_unknown_remainder (cell_experiments.test_adoption_costs.AdoptionCostTests.test_failed_hot_call_keeps_previous_cost_and_unknown_remainder)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/556e5fc18a5b/e6-before/scripts/cell_experiments/test_adoption_costs.py", line 39, in test_failed_hot_call_keeps_previous_cost_and_unknown_remainder
+    phase = result["execution_costs"]["phases"]["hot_C"]
+            ~~~~~~^^^^^^^^^^^^^^^^^^^
+KeyError: 'execution_costs'
+
+======================================================================
+ERROR: test_verifier_failure_still_charges_returned_prediction (cell_experiments.test_adoption_costs.AdoptionCostTests.test_verifier_failure_still_charges_returned_prediction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/556e5fc18a5b/e6-before/scripts/cell_experiments/test_adoption_costs.py", line 56, in test_verifier_failure_still_charges_returned_prediction
+    phase = result["execution_costs"]["phases"]["hot_C"]
+            ~~~~~~^^^^^^^^^^^^^^^^^^^
+KeyError: 'execution_costs'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.157s
+
+FAILED (errors=4)

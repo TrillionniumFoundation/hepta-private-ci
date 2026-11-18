@@ -132,6 +132,7 @@ def completed_report(root, prior, binding, selected, decision, plan_digest, api)
             "D",
             "fresh_D_status",
             "execution_costs",
+            "inference_attempts",
         )
     }
     expected_decision.update(status="INCOMPLETE", C=[])
@@ -201,5 +202,14 @@ def completed_report(root, prior, binding, selected, decision, plan_digest, api)
             old.get("D") == old["cold"].get("D")
             and old.get("execution_costs") == measured_costs(old),
             "retained D or cost accounting changed",
+        )
+    if "inference_attempts" in old:
+        from .adoption_costs import collect, measured_costs
+
+        api.require(
+            collect(root, api) == old["inference_attempts"]
+            and old.get("execution_costs") == measured_costs(old["inference_attempts"]),
+            "retained inference costs changed or are missing",
+            "INCOMPLETE",
         )
     return old
