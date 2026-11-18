@@ -83,6 +83,8 @@ pub use cell_binding::canonical_cell_step_request_digest_v1;
 pub use cell_generation_control::CellGenerationWorkerV2;
 pub use cell_generation_control::ControlledCellGenerationConfigV2;
 pub use cell_generation_control::ControlledCellGenerationPortV2;
+#[cfg(feature = "qualification-control-snapshot")]
+pub use cell_generation_control::ControlTestSnapshot;
 pub use cell_generation_current::CellGenerationCurrentV1;
 pub use cell_generation_current::CellGenerationOpenModeV1;
 pub use cell_generation_current::CellGenerationOwnerBindingV1;
