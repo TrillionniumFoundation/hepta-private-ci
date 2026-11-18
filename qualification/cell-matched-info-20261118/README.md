@@ -1,5 +1,9 @@
 # Matched-information E1 candidate
 
+The completed 128-update / 96-call result is in [RESULTS.md](RESULTS.md), with
+machine-readable raw-receipt validation in [READOUT.json](READOUT.json). All four
+arms fail all six upstream tasks; the research selection remains NoUpdate.
+
 The historical answer-only and trajectory fits used different visible training
 histories. This candidate isolates a narrower causal question: with the same
 complete A trajectory information and model computation, does supervising every

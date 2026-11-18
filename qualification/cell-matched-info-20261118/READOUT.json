@@ -1,0 +1,716 @@
+{
+  "candidate_cost": {
+    "cost_scope": "sum of disjoint child stage windows; excludes owner checkpoint IO and prior engineering",
+    "energy_joules": null,
+    "evaluation_verifier_calls": 96,
+    "freeze_reference_verifier_calls": 12,
+    "full_system_cost_known": false,
+    "model_calls": 96,
+    "nested_training_or_evaluation_costs_must_not_be_added": true,
+    "optimizer_updates": 128,
+    "stage_child_cpu_seconds": 1304.468347,
+    "stage_child_wall_seconds": 1284.7401081619319,
+    "training_reference_verifier_calls": 12
+  },
+  "evaluation": {
+    "all_actions": {
+      "by_panel": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 2,
+          "regressed": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "cost": {
+        "completed_children_cpu_seconds": 3.3358679999999996,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "input_tokens": 10577,
+        "model_calls": 24,
+        "output_tokens": 2370,
+        "scope": "load, all attempts, business verifier children and close; do not sum nested windows",
+        "self_cpu_seconds": 200.400589097,
+        "verifier_calls": 24,
+        "wall_seconds": 200.64212427398888
+      },
+      "observed": {
+        "business_successful_calls": 5,
+        "executed_business_checks": 17,
+        "input_tokens": 10577,
+        "output_limit_hits": 2,
+        "output_tokens": 2370
+      }
+    },
+    "final_only": {
+      "by_panel": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 0,
+          "regressed": 1,
+          "selected": 3,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "cost": {
+        "completed_children_cpu_seconds": 3.1000759999999996,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "input_tokens": 10732,
+        "model_calls": 24,
+        "output_tokens": 2301,
+        "scope": "load, all attempts, business verifier children and close; do not sum nested windows",
+        "self_cpu_seconds": 196.96856060099998,
+        "verifier_calls": 24,
+        "wall_seconds": 196.98629379295744
+      },
+      "observed": {
+        "business_successful_calls": 5,
+        "executed_business_checks": 16,
+        "input_tokens": 10732,
+        "output_limit_hits": 2,
+        "output_tokens": 2301
+      }
+    },
+    "frozen": {
+      "by_panel": {
+        "A_retention": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "cost": {
+        "completed_children_cpu_seconds": 0.0,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "input_tokens": 13285,
+        "model_calls": 24,
+        "output_tokens": 7191,
+        "scope": "load, all attempts, business verifier children and close; do not sum nested windows",
+        "self_cpu_seconds": 448.246853874,
+        "verifier_calls": 24,
+        "wall_seconds": 440.09195198799716
+      },
+      "observed": {
+        "business_successful_calls": 0,
+        "executed_business_checks": 0,
+        "input_tokens": 13285,
+        "output_limit_hits": 13,
+        "output_tokens": 7191
+      }
+    },
+    "retrieval": {
+      "by_panel": {
+        "A_retention": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "cost": {
+        "completed_children_cpu_seconds": 0.0,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "input_tokens": 31262,
+        "model_calls": 24,
+        "output_tokens": 2388,
+        "scope": "load, all attempts, business verifier children and close; do not sum nested windows",
+        "self_cpu_seconds": 168.625238402,
+        "verifier_calls": 24,
+        "wall_seconds": 165.64861819398357
+      },
+      "observed": {
+        "business_successful_calls": 0,
+        "executed_business_checks": 0,
+        "input_tokens": 31262,
+        "output_limit_hits": 0,
+        "output_tokens": 2388
+      }
+    }
+  },
+  "freeze_digest": "dd35d54c1dd72006bf9b8031a11f8f98c8b9d6cd60a590a2f8787d1462f2ba3e",
+  "native_adoption": false,
+  "paired_objective_comparison": {
+    "A_retention": {
+      "first": {
+        "all_actions_only": 0,
+        "both": 3,
+        "final_only_only": 0,
+        "neither": 3
+      },
+      "last": {
+        "all_actions_only": 2,
+        "both": 0,
+        "final_only_only": 2,
+        "neither": 2
+      },
+      "selected": {
+        "all_actions_only": 2,
+        "both": 3,
+        "final_only_only": 0,
+        "neither": 1
+      }
+    },
+    "B_upstream": {
+      "first": {
+        "all_actions_only": 0,
+        "both": 0,
+        "final_only_only": 0,
+        "neither": 6
+      },
+      "last": {
+        "all_actions_only": 0,
+        "both": 0,
+        "final_only_only": 0,
+        "neither": 6
+      },
+      "selected": {
+        "all_actions_only": 0,
+        "both": 0,
+        "final_only_only": 0,
+        "neither": 6
+      }
+    }
+  },
+  "schema": "hepta.matched-information-e1-readout.v1",
+  "scientific_confirmation_qualified": false,
+  "selection": "both candidate objectives fixed before B evaluation; no selection from B",
+  "source_commit": "992f2b3de51902448abf5743f94179bf40e11b6d",
+  "source_scope": {
+    "B_training_allowed": false,
+    "external_teachers": 0,
+    "independent_users": 0,
+    "maintainer_groups": 2,
+    "pretraining_overlap_known": false,
+    "repositories": 3,
+    "upstream_tasks": 6
+  },
+  "status": "COMPLETE",
+  "student_experience_scope": "actual updated-policy execution and recovery; no training on these new rollouts",
+  "task_outcomes": {
+    "all_actions": {
+      "A_retention": [
+        {
+          "first": false,
+          "last": true,
+          "recovered": true,
+          "regressed": false,
+          "selected": true,
+          "task_id": "test-completion:A-counter"
+        },
+        {
+          "first": false,
+          "last": true,
+          "recovered": true,
+          "regressed": false,
+          "selected": true,
+          "task_id": "test-completion:A-mse"
+        },
+        {
+          "first": true,
+          "last": false,
+          "recovered": false,
+          "regressed": true,
+          "selected": true,
+          "task_id": "test-completion:A-readout-score"
+        },
+        {
+          "first": true,
+          "last": false,
+          "recovered": false,
+          "regressed": true,
+          "selected": true,
+          "task_id": "test-completion:A-clipped-metrics"
+        },
+        {
+          "first": true,
+          "last": false,
+          "recovered": false,
+          "regressed": true,
+          "selected": true,
+          "task_id": "test-completion:A-pair-map"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-colon-repair"
+        }
+      ],
+      "B_upstream": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-header-value"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-unreserved"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-parse-header-links"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-entity-header"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-byte-range-valid"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-click-split-opt"
+        }
+      ]
+    },
+    "final_only": {
+      "A_retention": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-counter"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-mse"
+        },
+        {
+          "first": true,
+          "last": true,
+          "recovered": false,
+          "regressed": false,
+          "selected": true,
+          "task_id": "test-completion:A-readout-score"
+        },
+        {
+          "first": true,
+          "last": true,
+          "recovered": false,
+          "regressed": false,
+          "selected": true,
+          "task_id": "test-completion:A-clipped-metrics"
+        },
+        {
+          "first": true,
+          "last": false,
+          "recovered": false,
+          "regressed": true,
+          "selected": true,
+          "task_id": "test-completion:A-pair-map"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-colon-repair"
+        }
+      ],
+      "B_upstream": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-header-value"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-unreserved"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-parse-header-links"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-entity-header"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-byte-range-valid"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-click-split-opt"
+        }
+      ]
+    },
+    "frozen": {
+      "A_retention": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-counter"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-mse"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-readout-score"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-clipped-metrics"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-pair-map"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-colon-repair"
+        }
+      ],
+      "B_upstream": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-header-value"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-unreserved"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-parse-header-links"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-entity-header"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-byte-range-valid"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-click-split-opt"
+        }
+      ]
+    },
+    "retrieval": {
+      "A_retention": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-counter"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-mse"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-readout-score"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-clipped-metrics"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-pair-map"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:A-colon-repair"
+        }
+      ],
+      "B_upstream": [
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-header-value"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-unquote-unreserved"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-requests-parse-header-links"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-entity-header"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-werkzeug-is-byte-range-valid"
+        },
+        {
+          "first": false,
+          "last": false,
+          "recovered": false,
+          "regressed": false,
+          "selected": false,
+          "task_id": "test-completion:upstream-click-split-opt"
+        }
+      ]
+    }
+  },
+  "training": {
+    "all_actions": {
+      "cost": {
+        "cuda_peak_allocated_bytes": 3755675136,
+        "cuda_peak_reserved_bytes": 4150263808,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "head_positions": 7112,
+        "input_tokens": 40247,
+        "model_backwards": 96,
+        "model_forwards": 96,
+        "nested_scopes_are_not_additive": true,
+        "padded_positions": 147456,
+        "self_cpu_seconds": 119.82271435599999,
+        "supervised_positions": 7112,
+        "wall_seconds": 118.73808396299137
+      },
+      "encoded_groups_digest": "844d0ce92f8065b6f18f75ce88a8d6b569b59c1e9284555e726b2dc673fab701",
+      "model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+      "native_adoption": false,
+      "objective": "all_actions",
+      "parameter_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+      "parameter_before": "bd8d0e3cde37c3a6694bfc02b6a7b49a826e74f85d44f8ce9773f3d3bf9d02df",
+      "scientific_confirmation_qualified": false,
+      "status": "COMPLETE",
+      "steps": 64,
+      "train_records_digest": "f3206c37a200890561b47b3823a39a5419189d06861c161f5c92ca7de5c6d644"
+    },
+    "final_only": {
+      "cost": {
+        "cuda_peak_allocated_bytes": 3755675136,
+        "cuda_peak_reserved_bytes": 4150263808,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "head_positions": 7112,
+        "input_tokens": 40247,
+        "model_backwards": 96,
+        "model_forwards": 96,
+        "nested_scopes_are_not_additive": true,
+        "padded_positions": 147456,
+        "self_cpu_seconds": 120.157880655,
+        "supervised_positions": 5390,
+        "wall_seconds": 120.32319149799878
+      },
+      "encoded_groups_digest": "844d0ce92f8065b6f18f75ce88a8d6b569b59c1e9284555e726b2dc673fab701",
+      "model_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+      "native_adoption": false,
+      "objective": "final_only",
+      "parameter_after": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+      "parameter_before": "bd8d0e3cde37c3a6694bfc02b6a7b49a826e74f85d44f8ce9773f3d3bf9d02df",
+      "scientific_confirmation_qualified": false,
+      "status": "COMPLETE",
+      "steps": 64,
+      "train_records_digest": "f3206c37a200890561b47b3823a39a5419189d06861c161f5c92ca7de5c6d644"
+    }
+  },
+  "verification_reasons": {
+    "all_actions": {
+      "business_tests_failed": 12,
+      "business_tests_passed": 5,
+      "invalid_test_patch": 7
+    },
+    "final_only": {
+      "business_tests_failed": 11,
+      "business_tests_passed": 5,
+      "invalid_test_patch": 8
+    },
+    "frozen": {
+      "invalid_test_patch": 24
+    },
+    "retrieval": {
+      "invalid_test_patch": 24
+    }
+  }
+}

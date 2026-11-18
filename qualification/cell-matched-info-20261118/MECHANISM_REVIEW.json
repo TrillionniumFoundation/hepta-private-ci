@@ -1,0 +1,1205 @@
+{
+  "original_archive_sha256": "bb42d6353d4865c92790948473dcacedd626d160dd2e50cf2e94f7a66f258476",
+  "source": "992f2b3de51902448abf5743f94179bf40e11b6d",
+  "scope": "read-only diagnosis of retained original outputs; no rescoring, normalization or new model calls",
+  "modes": {
+    "frozen": {
+      "A_retention": {
+        "counts": {
+          "calls": 12,
+          "executed": 0,
+          "success": 0,
+          "fenced_output": 10,
+          "reason:invalid_test_patch": 12
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "A-counter",
+            "attempt": 0,
+            "raw_answer_sha256": "cdb207e29e32f604984163ee6e7f76b38fc0d373a2e507f879164632cec6cfd1",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-counter",
+            "attempt": 1,
+            "raw_answer_sha256": "cdb207e29e32f604984163ee6e7f76b38fc0d373a2e507f879164632cec6cfd1",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-mse",
+            "attempt": 0,
+            "raw_answer_sha256": "023b6406cccc4fd4f4084f00ab416913e96e7aa75f2a0ebc3df920c2dfb00d31",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-mse",
+            "attempt": 1,
+            "raw_answer_sha256": "708489297b52cababcb5b09220cb6e670e30e136a13474f0b563f0eaa50ee544",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 0,
+            "raw_answer_sha256": "6bc8fee19ec5e9ab3342a640d13bd99aa8b58f9a0147aa93cbae41e5bb202beb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 1,
+            "raw_answer_sha256": "6bc8fee19ec5e9ab3342a640d13bd99aa8b58f9a0147aa93cbae41e5bb202beb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 0,
+            "raw_answer_sha256": "e19cf9ee61e16cddcbec65a87b85ad201f9608b75c9bd54ebe1fc8f6fa0f8598",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 1,
+            "raw_answer_sha256": "d6e8a132f61fbb9c5a5e6861d31736fb14e4a58847a5ec6943f2c8bf5f8dc484",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 0,
+            "raw_answer_sha256": "d994e1c1e1f741dba75a50a3b89e68e6ff5a1b3c9663ba0b7fba79862407d2cf",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 1,
+            "raw_answer_sha256": "c1cd4458f69b307c8a602854d304551956ed4fea8d5e7f92596737dfcb85376f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 0,
+            "raw_answer_sha256": "53ae0bb0c3d44d76d1b36e0dabeb42c660e6a1590c4fba9204042c8388e77c61",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 1,
+            "raw_answer_sha256": "a94c3d23856eafa01363ffd2b51299e89258f7ba5ec6df630c024d34cab4c05f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          }
+        ]
+      },
+      "B_upstream": {
+        "counts": {
+          "calls": 12,
+          "executed": 0,
+          "success": 0,
+          "fenced_output": 12,
+          "reason:invalid_test_patch": 12
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 0,
+            "raw_answer_sha256": "b410424955b7a96caa7ca4b001f959057b1ec8627e8ccfe15ac22ab3d112f388",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 1,
+            "raw_answer_sha256": "38b03576962c36bb48857ade6be9c55da7ea219aff292a5c5fd2a3d15a268ba1",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 0,
+            "raw_answer_sha256": "ebfdca5e26a8f742947cec8ff7393ae8bacf89ab5deb8e42aea00a2e5a9c899f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 1,
+            "raw_answer_sha256": "ebfdca5e26a8f742947cec8ff7393ae8bacf89ab5deb8e42aea00a2e5a9c899f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 0,
+            "raw_answer_sha256": "41c63a4f055fb8ea55bf324add3cab3c747d575293c48741d31e6e25fe3794dc",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 1,
+            "raw_answer_sha256": "3f2e84dad5a04699604f292b200bcdaaed04d5556d7575e3fdf7eae584f996d7",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 0,
+            "raw_answer_sha256": "037908943d80a6b092c6b43650385663ab39851ed05c847bf777708b33165a22",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 1,
+            "raw_answer_sha256": "037908943d80a6b092c6b43650385663ab39851ed05c847bf777708b33165a22",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 0,
+            "raw_answer_sha256": "cf0fea54a24debea0c8c11195483553b2e2f7216357ad4ea4dbad675991cf5a9",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 1,
+            "raw_answer_sha256": "cf0fea54a24debea0c8c11195483553b2e2f7216357ad4ea4dbad675991cf5a9",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 0,
+            "raw_answer_sha256": "e1883029d1241079a96cd5637d3d32eb676b170ccd9da14d079393e2fbc02ccb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 1,
+            "raw_answer_sha256": "e1883029d1241079a96cd5637d3d32eb676b170ccd9da14d079393e2fbc02ccb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          }
+        ]
+      }
+    },
+    "retrieval": {
+      "A_retention": {
+        "counts": {
+          "calls": 12,
+          "executed": 0,
+          "success": 0,
+          "fenced_output": 12,
+          "reason:invalid_test_patch": 12
+        },
+        "message_roles": {
+          "('user', 'tool')": 6,
+          "('user', 'tool', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "A-counter",
+            "attempt": 0,
+            "raw_answer_sha256": "e62b48b226622f615081bcb4a683fa55f90bc597cfd08bc0771ba9bdb32d0c36",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-counter",
+            "attempt": 1,
+            "raw_answer_sha256": "e62b48b226622f615081bcb4a683fa55f90bc597cfd08bc0771ba9bdb32d0c36",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-mse",
+            "attempt": 0,
+            "raw_answer_sha256": "0d0b0f012745f44a2092adae18b2d16737ea2f2ab0d428ad9ff96e34efaeb489",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-mse",
+            "attempt": 1,
+            "raw_answer_sha256": "0d0b0f012745f44a2092adae18b2d16737ea2f2ab0d428ad9ff96e34efaeb489",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 0,
+            "raw_answer_sha256": "fcea5562c13342f89e4636e4b67db594983638cfcb350e6a7fbd166cca7bdbfb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 1,
+            "raw_answer_sha256": "fcea5562c13342f89e4636e4b67db594983638cfcb350e6a7fbd166cca7bdbfb",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 0,
+            "raw_answer_sha256": "d450b5188512a416581560dea4b032853b63417f4876006cb9873e11f2fb0eb3",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 1,
+            "raw_answer_sha256": "d450b5188512a416581560dea4b032853b63417f4876006cb9873e11f2fb0eb3",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 0,
+            "raw_answer_sha256": "4555117800316e000fe9dc3d39d6d1688d0d1b9723deb4512745550c8bd0ef0f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 1,
+            "raw_answer_sha256": "4555117800316e000fe9dc3d39d6d1688d0d1b9723deb4512745550c8bd0ef0f",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 0,
+            "raw_answer_sha256": "1699daee3c12ccdce005aeb6e038676d0fbc02dbd9c30fc9bb60d7a20ea42621",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 1,
+            "raw_answer_sha256": "1699daee3c12ccdce005aeb6e038676d0fbc02dbd9c30fc9bb60d7a20ea42621",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          }
+        ]
+      },
+      "B_upstream": {
+        "counts": {
+          "calls": 12,
+          "executed": 0,
+          "success": 0,
+          "fenced_output": 12,
+          "reason:invalid_test_patch": 12
+        },
+        "message_roles": {
+          "('user', 'tool')": 6,
+          "('user', 'tool', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 0,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 1,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 0,
+            "raw_answer_sha256": "1f15cc4a0dc5315aa61981f1413b60b6ff2b2a4bd1adfb89b9f8d9b8c17e9d46",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 1,
+            "raw_answer_sha256": "1f15cc4a0dc5315aa61981f1413b60b6ff2b2a4bd1adfb89b9f8d9b8c17e9d46",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 0,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 1,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 0,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 1,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 0,
+            "raw_answer_sha256": "1f15cc4a0dc5315aa61981f1413b60b6ff2b2a4bd1adfb89b9f8d9b8c17e9d46",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 1,
+            "raw_answer_sha256": "1f15cc4a0dc5315aa61981f1413b60b6ff2b2a4bd1adfb89b9f8d9b8c17e9d46",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 0,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 1,
+            "raw_answer_sha256": "003fbf002800f06fc0846a10886fb1707b7a97dff12eb8a8eef537431b7ad9c4",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting value: line 1 column 1 (char 0)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          }
+        ]
+      }
+    },
+    "final_only": {
+      "A_retention": {
+        "counts": {
+          "calls": 12,
+          "executed": 11,
+          "success": 5,
+          "fenced_output": 0,
+          "reason:business_tests_failed": 6,
+          "original_passed": 5,
+          "all_controls_rejected": 11,
+          "reason:business_tests_passed": 5,
+          "reason:invalid_test_patch": 1
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "A-counter",
+            "attempt": 0,
+            "raw_answer_sha256": "566e70d7c1a7a11718bde127be6c3fb5559e061b026d545250ed7a638cc6e6e2",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-counter",
+            "attempt": 1,
+            "raw_answer_sha256": "566e70d7c1a7a11718bde127be6c3fb5559e061b026d545250ed7a638cc6e6e2",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-mse",
+            "attempt": 0,
+            "raw_answer_sha256": "b0e5533919025148859a64c548be1e89f8b499014f7c6a403b76cb8b4edc8315",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 3
+          },
+          {
+            "task": "A-mse",
+            "attempt": 1,
+            "raw_answer_sha256": "b0e5533919025148859a64c548be1e89f8b499014f7c6a403b76cb8b4edc8315",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 3
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 0,
+            "raw_answer_sha256": "2f081f44f11b862e04c0d103a40fd0f51c5e947d4d8cead79e1440b4c6c8660b",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 1,
+            "raw_answer_sha256": "2f081f44f11b862e04c0d103a40fd0f51c5e947d4d8cead79e1440b4c6c8660b",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 0,
+            "raw_answer_sha256": "be4b4689678906006b9ab968cc77c1a26afbb0f23756d67845eeef7f5ee6b0a9",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 1,
+            "raw_answer_sha256": "be4b4689678906006b9ab968cc77c1a26afbb0f23756d67845eeef7f5ee6b0a9",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 0,
+            "raw_answer_sha256": "76a5faf382be180e3f7599ac5961779dcf85781d059d0d299693a18b3789e4f1",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 1,
+            "raw_answer_sha256": "97e5d8666ca3bfde66074c22b072fb85ff99497b9ad087b8c2c6dc8bd207550a",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "malformed node or string on line 3: <ast.Name object at 0x7099eb21d850>",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 0,
+            "raw_answer_sha256": "ecccc4b1df85ec4f987359e4792e16019fc81172257b05d478134eae0d570d75",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 3
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 1,
+            "raw_answer_sha256": "ecccc4b1df85ec4f987359e4792e16019fc81172257b05d478134eae0d570d75",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 3
+          }
+        ]
+      },
+      "B_upstream": {
+        "counts": {
+          "calls": 12,
+          "executed": 5,
+          "success": 0,
+          "fenced_output": 0,
+          "reason:invalid_test_patch": 7,
+          "reason:business_tests_failed": 5,
+          "original_passed": 0,
+          "all_controls_rejected": 4
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 0,
+            "raw_answer_sha256": "46cd6e321142300f71fe118eba8d2631024344ab8efbdb8abc9d0cd7c6959edf",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "malformed node or string on line 2: <ast.Name object at 0x7099ee839b90>",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 1,
+            "raw_answer_sha256": "46cd6e321142300f71fe118eba8d2631024344ab8efbdb8abc9d0cd7c6959edf",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "malformed node or string on line 2: <ast.Name object at 0x7099eb6ac090>",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 0,
+            "raw_answer_sha256": "13b6bfe1c57ab73e9008827c7a96a4b8c7474790cb763fd9040acaaf169853ef",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 1,
+            "raw_answer_sha256": "772cb87041883fccd27dff00269ac2f123fe57b9bec4aad4653d65650edeaf07",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 0,
+            "raw_answer_sha256": "c1713515b83a166efd77a5c9fed4c4f1cac05add61fd0da12f6637abcf6f3484",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting ',' delimiter: line 1 column 221 (char 220)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 1,
+            "raw_answer_sha256": "41d93c86f0647fbe9cd94ba7e19e09da8b9aeb8848db6061dc7da4256ad10740",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "closing parenthesis '}' does not match opening parenthesis '[' (<unknown>, line 2)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 0,
+            "raw_answer_sha256": "d5de5f35b10b7ce65b29b8a8f9690e7a46aacccd5fe583ee3aaf74696d4682ed",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Expecting ',' delimiter: line 1 column 71 (char 70)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 1,
+            "raw_answer_sha256": "ede9e179f432c63374a9c639774db0adbbfa2fc9f72631ad2e99e85cb236f81e",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 0,
+            "raw_answer_sha256": "67bbaa14f7f3a7411b99b639bc77e56e6981e820f795231f65f30dad8ee3f4e3",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 1,
+            "raw_answer_sha256": "1983a7958c8e552d607bc4f3db5e32ba83994d7c7d25ae0091e1e49355881d9d",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 0,
+            "raw_answer_sha256": "8aaea4f9d68938e63ccd6db13cf761167f8603a6b83835449586dfae85a30034",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Unterminated string starting at: line 1 column 18 (char 17)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 1,
+            "raw_answer_sha256": "8aaea4f9d68938e63ccd6db13cf761167f8603a6b83835449586dfae85a30034",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Unterminated string starting at: line 1 column 18 (char 17)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          }
+        ]
+      }
+    },
+    "all_actions": {
+      "A_retention": {
+        "counts": {
+          "calls": 12,
+          "executed": 10,
+          "success": 5,
+          "fenced_output": 0,
+          "reason:business_tests_failed": 5,
+          "original_passed": 9,
+          "all_controls_rejected": 6,
+          "reason:business_tests_passed": 5,
+          "reason:invalid_test_patch": 2
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "A-counter",
+            "attempt": 0,
+            "raw_answer_sha256": "3e2e20650015f2fe4637b351b4873c799c15ee7eb672d619670fc7472f904d68",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 1
+          },
+          {
+            "task": "A-counter",
+            "attempt": 1,
+            "raw_answer_sha256": "75c744a3321ad34d3dc1316fff9053923cc59e87ed34bf55633e2d643704b57a",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-mse",
+            "attempt": 0,
+            "raw_answer_sha256": "c316013faa6e39cfaa3bbe2344223c819b07cc88c950801b8f8522bfd3675375",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-mse",
+            "attempt": 1,
+            "raw_answer_sha256": "05fe91673372f820c52fabf0a71f3edc54480e5835725de1f5cf099361a51abb",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 3
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 0,
+            "raw_answer_sha256": "2f081f44f11b862e04c0d103a40fd0f51c5e947d4d8cead79e1440b4c6c8660b",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-readout-score",
+            "attempt": 1,
+            "raw_answer_sha256": "257849d539d28269bf1e9b62c1001604237b29977afcdf51730619ffa44f5020",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Extra data: line 1 column 248 (char 247)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 0,
+            "raw_answer_sha256": "be4b4689678906006b9ab968cc77c1a26afbb0f23756d67845eeef7f5ee6b0a9",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-clipped-metrics",
+            "attempt": 1,
+            "raw_answer_sha256": "ad010680f7748e542ac01376893c477155bc2eb991d111b9cce68c82833aa544",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 0,
+            "raw_answer_sha256": "76a5faf382be180e3f7599ac5961779dcf85781d059d0d299693a18b3789e4f1",
+            "reason": "business_tests_passed",
+            "executed": true,
+            "success": true,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-pair-map",
+            "attempt": 1,
+            "raw_answer_sha256": "4eb4d42066eca0049f4ba186ea339bf6adf6080e99a4bd12231f0f7cef03d569",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "malformed node or string on line 3: <ast.Name object at 0x7d12d7bea690>",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 0,
+            "raw_answer_sha256": "cceace12c4095be65d7c1ec022ba712dacdceb3ecd1be219e828af0c16285d22",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          },
+          {
+            "task": "A-colon-repair",
+            "attempt": 1,
+            "raw_answer_sha256": "e50b6e7a72b0b84a64fb1b6db52f5d78e182cb67d0d35ce760140c0e523c484b",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 2
+          }
+        ]
+      },
+      "B_upstream": {
+        "counts": {
+          "calls": 12,
+          "executed": 7,
+          "success": 0,
+          "fenced_output": 0,
+          "reason:business_tests_failed": 7,
+          "original_passed": 1,
+          "all_controls_rejected": 5,
+          "reason:invalid_test_patch": 5
+        },
+        "message_roles": {
+          "('user',)": 6,
+          "('user', 'assistant', 'tool')": 6
+        },
+        "rows": [
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 0,
+            "raw_answer_sha256": "b3bf732706497c8222c65a5e86a41f548a4682f008e30e3373616fbeadc593c0",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-requests-unquote-header-value",
+            "attempt": 1,
+            "raw_answer_sha256": "c7e6ffd5213bfc845ce4718bc09b233cfd02d8934a768256f6d57193adaecbdd",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "literal positional subject arguments required",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 0,
+            "raw_answer_sha256": "ab003e8724ba9159a14687b24af70ee68f0ba7186f948045741703a0a251aae8",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Unterminated string starting at: line 1 column 18 (char 17)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-unquote-unreserved",
+            "attempt": 1,
+            "raw_answer_sha256": "178c61d17600f5afc9ec06966339baa559e1a56c42f88167168b6b7cfa87e6f8",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "Unterminated string starting at: line 1 column 18 (char 17)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 0,
+            "raw_answer_sha256": "b2d3e716366d73d8f1ef706662c2e9314aa16cabf3a907c529d01993a0e5d5dc",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "closing parenthesis '}' does not match opening parenthesis '[' (<unknown>, line 2)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-requests-parse-header-links",
+            "attempt": 1,
+            "raw_answer_sha256": "03a280a82990cade5d160035ef84126ddb422c33be2a92c1db7e583c59f2756c",
+            "reason": "invalid_test_patch",
+            "executed": false,
+            "success": false,
+            "feedback": "unmatched '}' (<unknown>, line 2)",
+            "actual_source_original_passed": null,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 0,
+            "raw_answer_sha256": "1f85a4c6295f771a83e30090d3cb7a94d0952a1add558ec836ecb173ef20c87d",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": true,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-entity-header",
+            "attempt": 1,
+            "raw_answer_sha256": "2fa86eca073dba695c7329a5db07f318c481e6aa2e40ee89829836be3a5e0e3a",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 0,
+            "raw_answer_sha256": "479120ad2d68e8a6c71ca5e76afeda97e1db39a90bd2b1f03283502c00d0888a",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 0
+          },
+          {
+            "task": "upstream-werkzeug-is-byte-range-valid",
+            "attempt": 1,
+            "raw_answer_sha256": "7c8959bc97e2c03f1fd11d8205bced13199391e04763dac2d31c43294d6a9792",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 0,
+            "raw_answer_sha256": "e9637f365d766c5c7373739c27b034cf7d00194f14660362aa8a8005732da960",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          },
+          {
+            "task": "upstream-click-split-opt",
+            "attempt": 1,
+            "raw_answer_sha256": "988174b3b6f6e9cdd9d4933967d2bdc6a3b97857f1ce87fbc166ea08c65c7a24",
+            "reason": "business_tests_failed",
+            "executed": true,
+            "success": false,
+            "feedback": null,
+            "actual_source_original_passed": false,
+            "controls_rejected": 2
+          }
+        ]
+      }
+    }
+  }
+}
