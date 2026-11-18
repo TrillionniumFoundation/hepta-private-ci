@@ -16,12 +16,12 @@ import shutil
 import sqlite3
 import subprocess
 import sys
-import time
 
 from hepta_cells.component_types import CellError, Partition, PendingExecution
 from hepta_cells.component_types import RequestConflict
 from hepta_cells.deterministic import ToolCell
 from hepta_cells.lifecycle import CellOwner
+from hepta_cells.fault_processes import await_fault_release, run_fault_workers
 from hepta_cells.receiver_handoff import ReceiverLease, ReceiverLedger, ReceiverPort
 
 
@@ -58,7 +58,7 @@ def objects(root, port_type=ReceiverPort, ledger_type=ReceiverLedger):
     return partition, ledger, tool
 
 
-def worker(root, fault):
+def worker(root, fault, *, start_barrier=False):
     """Exit only this disposable child, at actual transaction/callback boundaries."""
 
     class FaultLedger(ReceiverLedger):
@@ -99,6 +99,8 @@ def worker(root, fault):
     partition, ledger, tool = objects(root, FaultPort, FaultLedger)
     owner = FaultOwner(root / "owner.sqlite")
     try:
+        if start_barrier:
+            await_fault_release(root)
         receipt = owner.step(partition, tool, "operation", PAYLOAD)
         print(json.dumps({"pid": os.getpid(), "receipt": receipt}, sort_keys=True))
     except PendingExecution:
@@ -227,6 +229,7 @@ def run(output):
         "scope": "experimental Python CellOwner and authoritative local append receiver",
         "native_hia_handoff": False,
         "research_experiment": False,
+        "concurrent_start_protocol": "serial_store_admission_then_concurrent_dispatch.v1",
         "uncovered": [
             "full Cell/HIA custody handoff",
             "arbitrary external API effects",
@@ -253,52 +256,13 @@ def run(output):
         owner.create(partition, tool)
         owner.close()
         ledger.close()
-        started = time.perf_counter_ns()
-        children = [
-            subprocess.Popen(
-                [
-                    sys.executable,
-                    "-B",
-                    str(frozen / Path(__file__).name),
-                    "--worker",
-                    str(root),
-                    "--fault",
-                    fault,
-                ],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env={
-                    **os.environ,
-                    "PYTHONPATH": str(frozen),
-                    "PYTHONDONTWRITEBYTECODE": "1",
-                },
-            )
-            for _ in range(4 if fault == "concurrent_writers" else 1)
-        ]
-        processes = []
-        for index, child in enumerate(children):
-            timed_out = False
-            try:
-                stdout, stderr = child.communicate(timeout=30)
-            except subprocess.TimeoutExpired:
-                timed_out = True
-                child.kill()
-                stdout, stderr = child.communicate()
-            (root / f"process-{index}.stdout").write_bytes(stdout)
-            (root / f"process-{index}.stderr").write_bytes(stderr)
-            processes.append(
-                {
-                    "pid": child.pid,
-                    "exit": child.returncode,
-                    "timed_out": timed_out,
-                    "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
-                    "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
-                }
-            )
-        process_record = {
-            "processes": processes,
-            "controller_wall_ns": time.perf_counter_ns() - started,
-        }
+        process_record = run_fault_workers(
+            root,
+            frozen / Path(__file__).name,
+            fault,
+            expected_workers=4 if fault == "concurrent_writers" else 1,
+        )
+        processes = process_record["processes"]
         write(root / "PROCESSES.json", process_record)
         originals = root / "raw-after-workers"
         originals.mkdir()
@@ -310,7 +274,7 @@ def run(output):
         )
         try:
             audit = exercise_cold_recovery(root, fault)
-        except (CellError, sqlite3.Error, OSError) as error:
+        except (CellError, sqlite3.Error, OSError, TypeError, ValueError) as error:
             audit = {
                 "case": fault,
                 "passed": False,
@@ -320,10 +284,16 @@ def run(output):
             any(p["exit"] == 0 for p in processes)
             and all(p["exit"] in (0, 20) for p in processes)
             if fault == "concurrent_writers"
-            else processes[0]["exit"] == expected
+            else len(processes) == 1 and processes[0]["exit"] == expected
         )
         audit["process_exit_matches"] &= all(not p["timed_out"] for p in processes)
-        audit["passed"] &= audit["process_exit_matches"]
+        admission = process_record["admission"]
+        audit["startup_complete"] = (
+            admission["startup_error"] is None
+            and admission["launched_workers"] == admission["expected_workers"]
+            and (fault != "concurrent_writers" or admission["released"])
+        )
+        audit["passed"] &= audit["process_exit_matches"] and audit["startup_complete"]
         write(root / "AUDIT.json", audit)
         results.append(audit)
     source_unchanged = all(
@@ -359,11 +329,14 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path)
     parser.add_argument("--worker", type=Path)
     parser.add_argument("--fault", choices=CASES)
+    parser.add_argument("--start-barrier", action="store_true")
     args = parser.parse_args()
     if args.worker is not None:
         if args.fault is None or args.output is not None:
             parser.error("worker requires fault and excludes output")
-        sys.exit(worker(args.worker, args.fault))
-    if args.output is None or args.fault is not None:
+        if args.start_barrier and args.fault != "concurrent_writers":
+            parser.error("start barrier is restricted to concurrent writers")
+        sys.exit(worker(args.worker, args.fault, start_barrier=args.start_barrier))
+    if args.output is None or args.fault is not None or args.start_barrier:
         parser.error("output required without fault")
     sys.exit(run(args.output.resolve()))
