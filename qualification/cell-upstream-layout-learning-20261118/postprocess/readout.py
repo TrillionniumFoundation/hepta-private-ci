@@ -288,6 +288,11 @@ def main(binding_path):
                         False,
                         verifier.feedback,
                     )
+                    if panel == "B3":
+                        require(
+                            int(row["started_at_ns"]) > int(binding["released_at_ns"]),
+                            "B3 common-prefix call predates release",
+                        )
                     row.update(
                         panel=panel, mode=mode, kind="common_P_prefix", task_index=index
                     )
