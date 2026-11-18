@@ -22,6 +22,7 @@
     allow(dead_code, unused_imports)
 )]
 
+mod cipher_task;
 mod connection;
 #[cfg(feature = "crypto-store")]
 mod crypto_store;
@@ -32,6 +33,7 @@ mod event_cache_store;
 mod media_store;
 #[cfg(feature = "state-store")]
 mod state_store;
+mod store_cipher;
 mod utils;
 use std::{
     cmp::max,

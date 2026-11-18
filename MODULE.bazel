@@ -356,6 +356,28 @@ crate.from_cargo(
 
 bazel_dep(name = "zstd", version = "1.5.7")
 
+# Match the Cargo development profile for Matrix's unchanged password KDF.
+# These flags apply to the production libraries and keep both checks enabled.
+crate.annotation(
+    crate = "matrix-sdk-store-encryption",
+    repositories = ["crates"],
+    rustc_flags = [
+        "-Copt-level=3",
+        "-Cdebug-assertions=on",
+        "-Coverflow-checks=on",
+    ],
+    version = "0.19.1",
+)
+crate.annotation(
+    crate = "sha2",
+    repositories = ["crates"],
+    rustc_flags = [
+        "-Copt-level=3",
+        "-Cdebug-assertions=on",
+        "-Coverflow-checks=on",
+    ],
+    version = "0.11.1",
+)
 crate.annotation(
     # The Windows lint toolchain cannot reliably materialize blake3's native x86 assembly archives.
     crate = "blake3",
