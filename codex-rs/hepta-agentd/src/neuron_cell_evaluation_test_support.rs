@@ -5,6 +5,9 @@ use std::fmt::Debug;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::path::Path;
 use std::path::PathBuf;
 
@@ -266,6 +269,7 @@ pub(super) struct Fixture {
     pub(super) candidate_temporal: TemporalEvaluationPlan,
     pub(super) baseline_temporal: TemporalEvaluationPlan,
     pub(super) provider: Provider,
+    pub(super) holdout_readback: File,
     pub(super) directory: tempfile::TempDir,
 }
 impl Fixture {
@@ -274,8 +278,10 @@ impl Fixture {
         let candidate = journal(directory.path(), "candidate", costs, [17; 32]);
         let fixed = journal(directory.path(), "fixed", Costs::Complete, [17; 32]);
         let path = directory.path().join("holdout");
+        let holdout_file = file(&path);
+        let holdout_readback = checked(holdout_file.try_clone());
         let store = checked(LockedFileFinalHoldoutCasStoreV1::create(
-            file(&path),
+            holdout_file,
             digest("binding"),
         ));
         let owner = checked(FencedFinalHoldoutOwnerV1::initialize(
@@ -302,6 +308,7 @@ impl Fixture {
                 initial_bytes,
             },
             directory,
+            holdout_readback,
         }
     }
     pub(super) fn journals(
@@ -335,7 +342,16 @@ impl Fixture {
             &mut self.provider,
         )
     }
-    pub(super) fn holdout_bytes(&self) -> Vec<u8> {
-        checked(fs::read(self.directory.path().join("holdout")))
+    pub(super) fn holdout_bytes(&mut self) -> Vec<u8> {
+        // The duplicate shares the locked owner's file object and cursor.
+        // Exclusive fixture access serializes this observation with run().
+        let position = checked(self.holdout_readback.stream_position());
+        checked(self.holdout_readback.seek(SeekFrom::Start(0)));
+        let mut bytes = Vec::new();
+        let read = self.holdout_readback.read_to_end(&mut bytes);
+        let restored = self.holdout_readback.seek(SeekFrom::Start(position));
+        checked(restored);
+        checked(read);
+        bytes
     }
 }

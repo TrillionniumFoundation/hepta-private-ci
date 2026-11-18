@@ -1,3 +1,4 @@
+use std::io::Seek;
 use std::io::Write;
 
 use codex_hepta_intelligence_eval::*;
@@ -110,8 +111,10 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
     let anchor = fixture.runner.product.holdout_anchor();
     let consumed = fixture.holdout_bytes();
     drop(fixture.runner);
+    let holdout_file = file(&fixture.directory.path().join("holdout"));
+    fixture.holdout_readback = checked(holdout_file.try_clone());
     let store = checked(LockedFileFinalHoldoutCasStoreV1::recover(
-        file(&fixture.directory.path().join("holdout")),
+        holdout_file,
         digest("binding"),
         Some(anchor),
     ));
@@ -137,7 +140,7 @@ fn actual_file_owners_compute_sign_and_publish_only_bound_comparison() {
 
 #[test]
 fn unfair_or_missing_training_declarations_never_consume_holdout() {
-    let fixture = Fixture::new(Costs::Complete);
+    let mut fixture = Fixture::new(Costs::Complete);
     let before = fixture.holdout_bytes();
     for mutation in 0..9 {
         let mut registration = fixture.registration.clone();
@@ -177,7 +180,7 @@ fn missing_or_unknown_costs_refuse_gain_while_unrequested_energy_stays_unknown()
         Costs::UnknownOutcome,
         Costs::UnknownEnvelope,
     ] {
-        let fixture = Fixture::new(profile);
+        let mut fixture = Fixture::new(profile);
         let before = fixture.holdout_bytes();
         assert!(fixture.freeze().is_err());
         assert_eq!(fixture.holdout_bytes(), before);
@@ -348,4 +351,33 @@ fn signatures_for_another_fair_budget_cannot_publish_this_result() {
         (sink.publications, checked(sink.file.metadata()).len()),
         (0, 0)
     );
+}
+
+#[test]
+fn holdout_readback_serializes_with_owner_and_preserves_cursor_and_lock() {
+    let fixture = std::sync::Mutex::new(Fixture::new(Costs::Complete));
+    std::thread::scope(|scope| {
+        let reader = scope.spawn(|| {
+            for _ in 0..32 {
+                let mut fixture = checked(fixture.lock());
+                let position = checked(fixture.holdout_readback.stream_position());
+                assert!(!fixture.holdout_bytes().is_empty());
+                assert_eq!(checked(fixture.holdout_readback.stream_position()), position);
+                let contender = file(&fixture.directory.path().join("holdout"));
+                assert!(matches!(
+                    contender.try_lock(),
+                    Err(std::fs::TryLockError::WouldBlock)
+                ));
+            }
+        });
+        let writer = scope.spawn(|| {
+            let mut fixture = checked(fixture.lock());
+            let before = fixture.holdout_bytes();
+            let plan = checked(fixture.freeze());
+            checked(fixture.run(&plan));
+            assert_ne!(fixture.holdout_bytes(), before);
+        });
+        reader.join().expect("readback thread");
+        writer.join().expect("owner thread");
+    });
 }
