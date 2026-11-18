@@ -26,10 +26,24 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = ["chrono 0.4.43"]
 '''
         result = analyze_lock(data)
-        self.assertEqual(result["workspace_count"], 1)
-        self.assertEqual(result["external_count"], 1)
+        self.assertEqual(result["workspace_local_count"], 1)
+        self.assertEqual(result["registry_external_count"], 1)
+        self.assertEqual(result["vendored_external_count"], 0)
         self.assertEqual(result["chrono_versions"], ["0.4.43"])
         self.assertFalse(result["closure_ready"])
+
+    def test_vendored_patched_dependency_is_not_first_party(self):
+        patch = b'[patch.crates-io]\nsqlx-sqlite = { path = "third_party/sqlx-sqlite-0.9.0" }\n'
+        lock = b'version = 4\n[[package]]\nname = "sqlx-sqlite"\nversion = "0.9.0"\ndependencies = ["chrono"]\n'
+        result = analyze_lock(lock, patch)
+        self.assertEqual(result["vendored_external_count"], 1)
+        self.assertEqual(result["workspace_local_count"], 0)
+        self.assertEqual(result["registry_external_count"], 0)
+
+    def test_invalid_vendor_manifest_fails_closed(self):
+        lock = b'version = 4\n[[package]]\nname = "sqlx-sqlite"\n'
+        with self.assertRaises(ValueError):
+            analyze_lock(lock, b'[patch.crates-io]\nsqlx-sqlite = { path = 5 }\n')
 
     def test_complete_removal_required(self):
         empty = b'version = 3\n[[package]]\nname = "other"\nversion = "1.0.0"\n'

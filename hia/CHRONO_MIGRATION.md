@@ -4,9 +4,9 @@
 
 **Blocking advisory:** [RUSTSEC-2026-0543](https://rustsec.org/advisories/RUSTSEC-2026-0543.html), issued 2026-11-17, classifies all `chrono` versions as **unmaintained**; no patched release is listed. RustSec recommends `jiff` or `time`. This is an informational maintenance advisory, not evidence of an exploited vulnerability. Upgrading from `chrono 0.4.43` to another `chrono` release does not close it.
 
-At the pinned `codex-rs/Cargo.lock` Git blob `e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd`, the resolved graph contains `chrono 0.4.43` and **36 immediate dependency edges**: **28 first-party workspace packages** and **8 third-party packages**. The complete names and versions are recorded in `chrono_lock_baseline.json`. This counts lockfile edges, **not** independent runtime uses, executed code paths, or the number of public API changes.
+At the pinned `codex-rs/Cargo.lock` Git blob `e1fdaf3fde907d24fec7ea787d49c0e29b3eb4bd`, the resolved graph contains `chrono 0.4.43` and **36 immediate dependency edges**: **28 workspace-local packages, seven registry packages and one vendored third-party package**. The complete names and versions are recorded in `chrono_lock_baseline.json`. This counts lockfile edges, **not** independent runtime uses, executed code paths, or the number of public API changes.
 
-The workspace itself pins `chrono = "0.4.43"` in `codex-rs/Cargo.toml` (Git blob `145c9b24e7203461337a68cf9938f9f0bce720a9`). External importers include `oauth2`, `rmcp`, `schemars`, `serde_with`, and the `sqlx-core/mysql/postgres/sqlite` family. Replacing direct first-party imports alone cannot make a graph-wide cargo-deny check pass while external importers still depend on `chrono`.
+The workspace itself pins `chrono = "0.4.43"` in `codex-rs/Cargo.toml` (Git blob `145c9b24e7203461337a68cf9938f9f0bce720a9`). External importers include `oauth2`, `rmcp`, `schemars`, `serde_with`, and the `sqlx-core/mysql/postgres/sqlite` family. `sqlx-sqlite 0.9.0` is patched from `third_party/sqlx-sqlite-0.9.0`; its missing registry source does not make it first-party. The `workspace_local` label is based on lockfile and patch provenance, not a standalone authorship proof. Replacing direct first-party imports alone cannot make a graph-wide cargo-deny check pass while external importers still depend on `chrono`.
 
 ## Executable inventory and closure condition
 
@@ -22,4 +22,6 @@ The first command distinguishes retired/new immediate edges; **it does not repla
 
 Practical order: migrate first-party date/time uses to a reviewed `jiff`/`time` representation while preserving time-zone, serialization, precision and historical timestamp behavior; separately trace the external dependency graph to identify upstream releases or actual feature changes eliminating `chrono`; finally regenerate both Cargo and Bazel locks under the pinned toolchain and run the original checks. Do not remove Rust/default dispatch, loosen tests, change security profiles, merge, or promote a release from this inventory.
 
-This package provides **only static dependency analysis and five synthetic unit tests**. It does not fix `RUSTSEC-2026-0543`, add a production HIA kernel, or prove entire Codex migration/retirement. All of those status gates remain false.
+This package provides **only static dependency analysis and seven synthetic unit tests**. It does not fix `RUSTSEC-2026-0543`, add a production HIA kernel, or prove entire Codex migration/retirement. All of those status gates remain false.
+
+**November 18 audit correction:** v1 prose claimed 28/8, but its Python implementation actually classified vendored SQLx SQLite as a workspace dependency (29/7). v2 corrects the three-way classification using the pinned workspace manifest. This repairs the audit, not the RustSec/cargo-deny blocker. The historical v1 report remains preserved in Git history.

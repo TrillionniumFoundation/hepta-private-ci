@@ -10,7 +10,7 @@ import hashlib
 import json
 import sys
 import tomllib
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 
 def dependency_name(spec: str) -> str:
@@ -18,12 +18,33 @@ def dependency_name(spec: str) -> str:
     return spec.split(" ", 1)[0]
 
 
-def analyze_lock(data: bytes) -> dict:
+def vendored_patch_names(workspace_data: bytes) -> set[str]:
+    manifest = tomllib.loads(workspace_data.decode("utf-8"))
+    root = manifest.get("patch", {})
+    if not isinstance(root, dict):
+        raise ValueError("workspace patch must be a table")
+    patch = root.get("crates-io", {})
+    if not isinstance(patch, dict):
+        raise ValueError("workspace patch.crates-io must be a table")
+    names = set()
+    for name, item in patch.items():
+        if not isinstance(item, dict):
+            raise ValueError(f"invalid patch entry {name}")
+        path = item.get("path")
+        if path is not None and not isinstance(path, str):
+            raise ValueError(f"invalid patch path {name}")
+        if path and PurePosixPath(path).parts[:1] == ("third_party",):
+            names.add(name)
+    return names
+
+
+def analyze_lock(data: bytes, workspace_data: bytes = b"") -> dict:
     lock = tomllib.loads(data.decode("utf-8"))
     packages = lock.get("package")
     if not isinstance(packages, list):
         raise ValueError("Cargo.lock has no package array")
 
+    vendored = vendored_patch_names(workspace_data)
     imported = []
     installed = []
     for entry in packages:
@@ -38,17 +59,20 @@ def analyze_lock(data: bytes) -> dict:
             imported.append({
                 "name": entry["name"],
                 "version": entry.get("version", "unknown"),
-                "kind": "external" if entry.get("source") else "workspace",
+                "kind": "vendored_external" if entry["name"] in vendored and not entry.get("source")
+                        else "registry_external" if entry.get("source") else "workspace_local",
             })
 
     imported.sort(key=lambda p: (p["kind"], p["name"], p["version"]))
     return {
-        "schema": "codex.hia.chrono_dependency_audit.v1",
+        "schema": "codex.hia.chrono_dependency_audit.v2",
+        "workspace_manifest_git_blob": hashlib.sha1(b"blob " + str(len(workspace_data)).encode() + b"\0" + workspace_data).hexdigest(),
         "lock_git_blob": hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest(),
         "chrono_versions": sorted(installed),
         "importers": imported,
-        "workspace_count": sum(x["kind"] == "workspace" for x in imported),
-        "external_count": sum(x["kind"] == "external" for x in imported),
+        "workspace_local_count": sum(x["kind"] == "workspace_local" for x in imported),
+        "registry_external_count": sum(x["kind"] == "registry_external" for x in imported),
+        "vendored_external_count": sum(x["kind"] == "vendored_external" for x in imported),
         "closure_ready": not installed and not imported,
     }
 
@@ -72,6 +96,7 @@ def comparison(report: dict, baseline: dict) -> dict:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lock", type=Path, help="exact Cargo.lock to inspect")
+    parser.add_argument("--workspace-manifest", type=Path, help="default: Cargo.toml alongside Cargo.lock")
     parser.add_argument("--baseline", type=Path, help="optional pinned historical edge inventory")
     parser.add_argument("--fail-on-growth", action="store_true", help="fail on new chrono edges")
     parser.add_argument("--require-zero", action="store_true", help="fail until chrono is absent")
@@ -80,7 +105,8 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("--fail-on-growth requires --baseline")
 
     try:
-        report = analyze_lock(args.lock.read_bytes())
+        workspace_manifest = args.workspace_manifest or args.lock.with_name("Cargo.toml")
+        report = analyze_lock(args.lock.read_bytes(), workspace_manifest.read_bytes())
         if args.baseline:
             report["compared_to"] = str(args.baseline)
             report["delta"] = comparison(report, json.loads(args.baseline.read_text()))
