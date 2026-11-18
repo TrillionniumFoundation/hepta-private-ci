@@ -1,0 +1,121 @@
+F401 [*] `copy` imported but unused
+ --> qualification/cell-upstream-current-student-20261118/native_sandbox.py:4:8
+  |
+3 | import ast
+4 | import copy
+  |        ^^^^
+5 | import errno
+6 | import hashlib
+  |
+help: Remove unused import: `copy`
+
+F841 Local variable `usage` is assigned to but never used
+   --> qualification/cell-upstream-current-student-20261118/owner.py:138:14
+    |
+136 |     assert lock.is_file() and not lock.is_symlink()
+137 |     samples, exits = [], []
+138 |     started, usage = time.perf_counter(), resource.getrusage(resource.RUSAGE_CHILDREN)
+    |              ^^^^^
+139 |     try:
+140 |         with lock.open("a+b") as held:
+    |
+help: Remove assignment to unused variable `usage`
+
+F401 [*] `importlib.util` imported but unused
+ --> qualification/cell-upstream-current-student-20261118/prepare.py:6:8
+  |
+4 | import ast
+5 | import difflib
+6 | import importlib.util
+  |        ^^^^^^^^^^^^^^
+7 | import json
+8 | from pathlib import Path
+  |
+help: Remove unused import: `importlib.util`
+
+F401 [*] `hashlib` imported but unused
+ --> qualification/cell-upstream-current-student-20261118/run_students.py:5:8
+  |
+3 | import argparse
+4 | import copy
+5 | import hashlib
+  |        ^^^^^^^
+6 | import json
+7 | from pathlib import Path
+  |
+help: Remove unused import: `hashlib`
+
+E402 Module level import not at top of file
+  --> qualification/cell-upstream-current-student-20261118/run_students.py:14:1
+   |
+12 | HERE = Path(__file__).resolve().parent
+13 | sys.path.insert(0, str(HERE))
+14 | import native_sandbox as native
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+15 |
+16 | PREVIOUS = Path("/home/qian-qi/work/hepta-e2-current-credit-20261118-2e9b")
+   |
+
+E402 Module level import not at top of file
+  --> qualification/cell-upstream-current-student-20261118/run_students.py:22:1
+   |
+20 | sys.path.insert(0, str(OLD_CODE / "scripts"))
+21 | sys.path.insert(0, str(CANDIDATE))
+22 | import current_credit as credit
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+23 | from cell_experiments import chat_protocol, data
+   |
+
+E402 Module level import not at top of file
+  --> qualification/cell-upstream-current-student-20261118/run_students.py:23:1
+   |
+21 | sys.path.insert(0, str(CANDIDATE))
+22 | import current_credit as credit
+23 | from cell_experiments import chat_protocol, data
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+E402 Module level import not at top of file
+  --> qualification/cell-upstream-current-student-20261118/run_teacher.py:12:1
+   |
+10 | HERE = Path(__file__).resolve().parent
+11 | sys.path.insert(0, str(HERE))
+12 | import teacher_connection as connection
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+E401 [*] Multiple imports on one line
+ --> qualification/cell-upstream-current-student-20261118/teacher_bridge.py:3:1
+  |
+1 | """Dispatch frozen teacher outputs through the unchanged actual upstream sandbox."""
+2 |
+3 | import argparse, hashlib, json, pathlib, resource, sys, time
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+4 |
+5 | ROOT = pathlib.Path("/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b")
+  |
+help: Split imports
+
+E402 Module level import not at top of file
+  --> qualification/cell-upstream-current-student-20261118/teacher_bridge.py:12:1
+   |
+10 | )
+11 | sys.path.insert(0, str(CODE))
+12 | import native_sandbox as native
+   | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+
+F401 [*] `sys` imported but unused
+  --> qualification/cell-upstream-current-student-20261118/teacher_connection.py:8:8
+   |
+ 6 | import os
+ 7 | from pathlib import Path
+ 8 | import sys
+   |        ^^^
+ 9 | import time
+10 | import urllib.error
+   |
+help: Remove unused import: `sys`
+
+Found 11 errors.
+[*] 5 fixable with the `--fix` option (1 hidden fix can be enabled with the `--unsafe-fixes` option).

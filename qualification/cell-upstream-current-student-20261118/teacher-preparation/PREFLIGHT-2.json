@@ -1,0 +1,68 @@
+{
+  "all_slots_idle": true,
+  "chat_template_sha256": "c3cf9e34abf4f9e36c2d72165aa9c132d3e2a725b6c2586aaa3a8af9d7a81041",
+  "credentials_retained": false,
+  "model_alias": "qwen38-flash-next-uc",
+  "model_ids": [
+    "qwen38-flash-next-uc"
+  ],
+  "model_path": "/home/qq/local-llm/models/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf",
+  "new_model_calls": 0,
+  "previous_weight_record": "/home/qq/work/hepta-e3-teacher-20261118-2e9b/WEIGHT_IDENTITY.json",
+  "previous_weight_record_sha256": "2775390a319fe2be6d1b2709594218008e82bd79fe2b857926bb9db5c4b8b165",
+  "probe_at_ns": 1795022781355682093,
+  "security_configuration_changed": false,
+  "server": {
+    "executable": "/home/qq/local-llm/releases/llama-b1376-gfx1151-20261115/bin/llama-server",
+    "executable_sha256": "6ea3ab7dae809df8fc7f48cb9c846c77fd0f57c09f427d496eb483cb272190c6",
+    "pid": 167405,
+    "process_start_ticks": "204752437"
+  },
+  "slots": [
+    {
+      "id": 0,
+      "id_task": null,
+      "is_processing": false,
+      "n_ctx": 131072
+    },
+    {
+      "id": 1,
+      "id_task": null,
+      "is_processing": false,
+      "n_ctx": 131072
+    },
+    {
+      "id": 2,
+      "id_task": null,
+      "is_processing": false,
+      "n_ctx": 131072
+    },
+    {
+      "id": 3,
+      "id_task": null,
+      "is_processing": false,
+      "n_ctx": 131072
+    }
+  ],
+  "status": "MATCHED_EXISTING_SERVICE",
+  "weight_identity": {
+    "bytes_read": 98403356224,
+    "file_identity": {
+      "ctime_ns": 1794760254969023414,
+      "device": 66306,
+      "inode": 46279858,
+      "mtime_ns": 1791254091051789893,
+      "size": 98403356224
+    },
+    "full_system_cost_known": false,
+    "hash_recomputed": true,
+    "nice": 19,
+    "path": "/home/qq/local-llm/models/Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4.gguf",
+    "read_only": true,
+    "schema": "hepta.teacher-weight-identity.v1",
+    "self_cpu_seconds": 49.02022946,
+    "serving_process_binding": "separate fresh freeze required",
+    "sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e",
+    "wall_seconds": 134.14375476702116
+  }
+}

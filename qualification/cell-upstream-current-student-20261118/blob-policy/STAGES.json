@@ -1,0 +1,141 @@
+[
+  {
+    "label": "published-pr-range",
+    "command": [
+      "gh",
+      "api",
+      "repos/TrillionniumFoundation/hepta-private-ci/pulls/6717",
+      "--jq",
+      "{base_sha:.base.sha,head_sha:.head.sha,base_ref:.base.ref,head_ref:.head.ref}"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 1.9613753620069474
+  },
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "c1467e70b9379aa0094125fcf185d392db98d3a0",
+      "ee16fd728405c9f40b94977e5abcdf38f297cf03"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 3.8200192709919065
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+      "c1467e70b9379aa0094125fcf185d392db98d3a0"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.011618841963354498
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.0038240069989115
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 4.251667290984187
+  },
+  {
+    "label": "status-before",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.42596337100258097
+  },
+  {
+    "label": "just-fmt",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "ee16fd728405c9f40b94977e5abcdf38f297cf03"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source/codex-rs",
+    "exit_code": 0,
+    "wall_seconds": 0.22643678699387237
+  },
+  {
+    "label": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 1.8269760289695114
+  },
+  {
+    "label": "changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "ee16fd728405c9f40b94977e5abcdf38f297cf03",
+      "--head",
+      "c1467e70b9379aa0094125fcf185d392db98d3a0",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.667210421001073
+  },
+  {
+    "label": "status-after",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-upstream-student-final-policy-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.0445701620192267
+  }
+]
