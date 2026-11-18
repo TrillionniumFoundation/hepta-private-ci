@@ -1,0 +1,159 @@
+{
+  "execution_source": "975a29ae7e01aa070e60e1d70256452ae2837cae",
+  "execution_tree": "02e42082bed744d2b5c35daa122c489513b00434",
+  "materialized_source_files": 11890,
+  "materialized_source_sha256": "3d968f658a5f7bac56a737d0e0ec08876ef9001c4997d6f9d4680814e6739aee",
+  "native": {
+    "source_head": "975a29ae7e01aa070e60e1d70256452ae2837cae",
+    "source_tree": "02e42082bed744d2b5c35daa122c489513b00434",
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-git-utils",
+      "--retries",
+      "0",
+      "--test-threads",
+      "2",
+      "--no-tests",
+      "fail",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "retries": 0,
+    "new_model_calls": 0,
+    "runner_backend": "persistent_target_account_pty",
+    "timeout_seconds": 7200,
+    "timed_out": false,
+    "source_before_sha256": "3d968f658a5f7bac56a737d0e0ec08876ef9001c4997d6f9d4680814e6739aee",
+    "native_child_pid": 35916,
+    "wait_returncode": 0,
+    "exit_source": "subprocess.Popen.wait",
+    "command_wall_seconds": 77.67503870799999,
+    "source_after_sha256": "3d968f658a5f7bac56a737d0e0ec08876ef9001c4997d6f9d4680814e6739aee",
+    "dirty": "",
+    "junit_sha256": "d3a7e3370cfec2350a97a9f944b7c1cb69f3ab045868c46399dc6b073ea85108",
+    "junit_original_path": "/Users/qianqi/work/hepta-chrono-git-utils-joint-20261118-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+    "junit_attributes": {
+      "name": "nextest-run",
+      "tests": "38",
+      "skipped": "0",
+      "failures": "0",
+      "errors": "0",
+      "uuid": "3022c3aa-45d5-4fcb-b3c0-ecc6d3e626d0",
+      "timestamp": "2026-11-19T05:01:23.252+08:00",
+      "time": "4.969"
+    },
+    "testcases": 38,
+    "unique_cases": 38,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "suite_counts": {
+      "codex-git-utils": 38
+    },
+    "passed": true,
+    "owner_wall_seconds": 80.27028525
+  },
+  "native_result_sha256": "5b0be1147d457cc843fc60b2ddd1fdcee1a0a6c292c3d5b873b0fc525c10d659",
+  "native_terminal_session": "dpty-46f05ccc157ffb1c431fbb60d15bcba5369127d7ac8bfcf8ba99ae706fde9840",
+  "native_terminal_exit": {
+    "pid": 35908,
+    "owner_pid": 35907,
+    "boot": "{ sec = 1794536756, usec = 751956 } Fri Nov 13 10:25:56 2026",
+    "state": "exited",
+    "output_complete": true,
+    "created_unix_ms": 1795035609276,
+    "bytes_seen": 1387,
+    "bytes_stored": 1387,
+    "capture_error": null,
+    "exit_code": 0,
+    "closed": false
+  },
+  "native_terminal_exit_sha256": "abf83ee28b9377bf050532f70f5d9b1677002227474a0f22fb42913692465f8f",
+  "original_preparation_terminal": "dpty-ce2fcb4cdfd9ed04ab9e52446ed89317ef56bd129e211708e9c697ac75ffa692",
+  "dual_lock": {
+    "cargo_sha256": "1bcd8351057718fb842f9407544a5ac644ad079ea15c684c6059cc4243481c21",
+    "bazel_sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1",
+    "actual_update_exit": 0,
+    "actual_check_exit": 0,
+    "bazel_bytes_changed": false
+  },
+  "graph": {
+    "base": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+    "cargo_lock_sha256": "1bcd8351057718fb842f9407544a5ac644ad079ea15c684c6059cc4243481c21",
+    "before": {
+      "package_count": 1524,
+      "source_less_candidate_roots": 194,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 26,
+      "indirect_only_candidate_roots": 95
+    },
+    "after": {
+      "package_count": 1524,
+      "source_less_candidate_roots": 194,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 25,
+      "indirect_only_candidate_roots": 96
+    },
+    "delta": {
+      "new_edges": [],
+      "remaining_edges": 33,
+      "retired_edges": [
+        [
+          "workspace_local",
+          "codex-git-utils",
+          "0.0.0"
+        ]
+      ]
+    },
+    "remaining_paths": [
+      {
+        "path": [
+          "codex-agent-identity@0.0.0",
+          "codex-protocol@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-agent-identity@0.0.0"
+      },
+      {
+        "path": [
+          "codex-cloud-config@0.0.0",
+          "codex-core@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-cloud-config@0.0.0"
+      },
+      {
+        "path": [
+          "codex-git-utils@0.0.0",
+          "codex-protocol@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-git-utils@0.0.0"
+      }
+    ],
+    "require_zero_actual_exit": 2,
+    "cargo_deny_pass_claimed": false,
+    "whole_chrono_retirement_closed": false
+  },
+  "archive": {
+    "path": "GIT_UTILS_ORIGINALS.tar.xz",
+    "bytes": 2095028,
+    "sha256": "2ba5a3035e20eeb8b9b90249e0928fa78120fe00e8d105e5a6fa685b4cc43a98",
+    "index_sha256": "993a38f681572d1b315a2d38d85ceb5e9dce4923f548b77028e6b1a8afa72444",
+    "retained_original_files": 115
+  },
+  "limits": {
+    "cargo_deny_passed": false,
+    "all_chrono_retired": false,
+    "all_platform_metadata_passed": false,
+    "windows_qualified": false,
+    "prior_native_counts_inherited": false,
+    "new_model_calls": 0
+  }
+}

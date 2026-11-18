@@ -1,0 +1,158 @@
+[
+  {
+    "label": "execution-head",
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.009004542
+  },
+  {
+    "label": "execution-clean",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.127039833
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/Users/qianqi/work/hepta-chrono-git-utils-joint-20261118-2e9b/publication-source-1",
+      "975a29ae7e01aa070e60e1d70256452ae2837cae"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.013882124999999995
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.007719666000000014
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.17752783399999997
+  },
+  {
+    "label": "clean-before",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.04222308400000002
+  },
+  {
+    "label": "diff-check",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.03590175000000001
+  },
+  {
+    "label": "stage",
+    "command": [
+      "git",
+      "add",
+      ".github/blob-size-allowlist.txt",
+      "qualification/chrono-git-utils-joint-20261118"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.07672516699999998
+  },
+  {
+    "label": "commit-originals",
+    "command": [
+      "git",
+      "commit",
+      "-s",
+      "-m",
+      "docs: retain exact git-utils joint native qualification"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.05435066600000005
+  },
+  {
+    "label": "first-head",
+    "command": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.007038666000000027
+  },
+  {
+    "label": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.426127541
+  },
+  {
+    "label": "first-head-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+      "--head",
+      "5c6bded15cf8359bf4f716d346e939a717b377fa",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.27754341699999996
+  },
+  {
+    "label": "first-clean",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.04748233300000004
+  }
+]

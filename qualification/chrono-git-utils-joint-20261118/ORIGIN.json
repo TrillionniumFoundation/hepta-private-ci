@@ -1,0 +1,23 @@
+{
+  "base": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+  "base_execution_source": "4cf78192425b8c9478147915745694495879a6f4",
+  "selection": "remaining real first-party direct Chrono consumer; git-utils codex_signature UTC seconds",
+  "scope": [
+    "codex-rs/git-utils/src/baseline.rs: codex_signature seconds",
+    "codex-rs/git-utils/Cargo.toml direct dependency",
+    "codex-rs/Cargo.lock dependency edge"
+  ],
+  "semantics": {
+    "clock": "UTC system clock",
+    "integer": "signed whole Unix seconds",
+    "gix_time_offset": 0,
+    "name": "Codex",
+    "email": "noreply@openai.com",
+    "commit_message_changed": false,
+    "tree_index_hooks_or_file_permissions_changed": false,
+    "signature_identity_changed": false
+  },
+  "existing_package_tests_unchanged": true,
+  "previous_native_test_counts_inherited": false,
+  "chrono_retirement_or_cargo_deny_claimed": false
+}

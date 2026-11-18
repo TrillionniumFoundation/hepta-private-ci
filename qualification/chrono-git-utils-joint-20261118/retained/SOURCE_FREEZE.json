@@ -1,0 +1,73 @@
+{
+  "base": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+  "branch": "codex/chrono-git-utils-joint-20261118-2e9b",
+  "new_native_tests": 0,
+  "new_model_calls": 0,
+  "passed": true,
+  "head": "975a29ae7e01aa070e60e1d70256452ae2837cae",
+  "tree": "02e42082bed744d2b5c35daa122c489513b00434",
+  "materialized_source_files": 11890,
+  "materialized_source_sha256": "3d968f658a5f7bac56a737d0e0ec08876ef9001c4997d6f9d4680814e6739aee",
+  "cargo_lock_sha256": "1bcd8351057718fb842f9407544a5ac644ad079ea15c684c6059cc4243481c21",
+  "bazel_lock_sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1",
+  "published": true,
+  "required_baseline_cases": 7,
+  "graph": {
+    "base": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+    "cargo_lock_sha256": "1bcd8351057718fb842f9407544a5ac644ad079ea15c684c6059cc4243481c21",
+    "before": {
+      "package_count": 1524,
+      "source_less_candidate_roots": 194,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 26,
+      "indirect_only_candidate_roots": 95
+    },
+    "after": {
+      "package_count": 1524,
+      "source_less_candidate_roots": 194,
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 25,
+      "indirect_only_candidate_roots": 96
+    },
+    "delta": {
+      "new_edges": [],
+      "remaining_edges": 33,
+      "retired_edges": [
+        [
+          "workspace_local",
+          "codex-git-utils",
+          "0.0.0"
+        ]
+      ]
+    },
+    "remaining_paths": [
+      {
+        "path": [
+          "codex-agent-identity@0.0.0",
+          "codex-protocol@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-agent-identity@0.0.0"
+      },
+      {
+        "path": [
+          "codex-cloud-config@0.0.0",
+          "codex-core@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-cloud-config@0.0.0"
+      },
+      {
+        "path": [
+          "codex-git-utils@0.0.0",
+          "codex-protocol@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-git-utils@0.0.0"
+      }
+    ],
+    "require_zero_actual_exit": 2,
+    "cargo_deny_pass_claimed": false,
+    "whole_chrono_retirement_closed": false
+  }
+}
