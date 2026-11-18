@@ -18,6 +18,7 @@ import stat
 import tempfile
 
 from .component_types import CellError, OwnerLimits
+from .owner_history import validate_owner_history
 
 
 _SCHEMA = """
@@ -95,6 +96,7 @@ def _validate(db, limits):
         raise CellError("owner limits differ from the retained database policy")
     if [tuple(row) for row in db.execute("PRAGMA integrity_check")] != [("ok",)]:
         raise CellError("owner integrity check failed")
+    validate_owner_history(db)
 
 
 def _files(path):
