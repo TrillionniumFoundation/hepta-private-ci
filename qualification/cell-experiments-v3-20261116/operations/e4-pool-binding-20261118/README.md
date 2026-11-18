@@ -1,0 +1,7 @@
+# Explicit pool source binding for the next E4 freeze
+
+The shared-pool precision repair in #6680 needs a separately identified E4 candidate. The extended study now accepts an explicit pool class and expected source SHA256, records the actual class module/name and pool inventory source in POOL_BINDING.json, and rejects an unexpected source before any graph generation. The default behavior still uses the ordinary shared pool. No original task, graph, routing selection, token cap, verifier, or result-selection rule changes.
+
+The next owned worker will import the repaired loader by exact source SHA256 and pass it explicitly. Original B source/comparison checks cover the retained predecessor; the new protocol separately binds the repaired loader and worker. This avoids modifying the completed E2 source or retroactively changing the failed E4 protocol.
+
+Seven CPU engineering fixtures passed, including the new incorrect-source rejection/cleanup path and the original six control tests. The first local attempt lacked an archived dependency (coding_sft) and is retained as CPU_TESTS_MATERIALIZATION_FAILURE.json; after using the complete byte-verified dependency tree the unchanged seven tests passed. These scripted-provider fixtures are not model results. Original just fmt exited 0 with identical pre/post ASTs for core, test, and the separately frozen worker; no tests were rerun after formatting.

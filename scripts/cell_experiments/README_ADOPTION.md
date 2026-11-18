@@ -107,6 +107,13 @@ when their original store and all required receipts agree. These are local
 consistency checks, not a protected native owner or an external freshness anchor;
 replacement of the entire directory and journal is outside this guarantee.
 
+New completions bind the entire canonical cold-process object with
+`cold_process_digest`, including stderr and any retained fields. A legacy result
+without that digest can reconcile the return code, parsed stdout and recorded
+wall time, but cannot establish the original stderr content. Canonical-object
+binding does not authenticate the JSON file's whitespace or encoding choices.
+No digest computed after a legacy run can retroactively supply that evidence.
+
 The result has exactly one status:
 
 | Status | Meaning |
@@ -164,6 +171,8 @@ false, with `authority: DENY_ALL` and `qualification: HOLD_NO_GO`.
 Original native HEPLCP02/03 or HEPLCP04 materials require the corresponding
 existing Chain readers; JSON from this experiment cannot substitute for them.
 
-Tests use explicitly authored fixtures and mock model/process ports. They check
-status separation, immutable selection, cold evidence consistency and refusal
-behavior. They are not model-training or independent-user evidence.
+Tests use explicitly authored fixtures and model ports. Process recovery controls
+include actual spawned OS processes, concurrent contenders and an abrupt exit;
+the model predictions in those controls remain fixtures. They check status
+separation, immutable selection, cold evidence consistency and refusal behavior.
+They are not model-training or independent-user evidence.

@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.e4-readout-binding-validation.v1",
+  "scope": "reader engineering; synthetic adversarial receipts and offline existing originals; no model/GPU/business verifier execution",
+  "base_commit": "ddf8ef8a721b1d0d8aa42b02b9c52f3bc1ab3c34",
+  "base_reader_sha256": "c11c3301b6926e3e0e89650897b8c1c1d2b4b44a1396063320d00ba6887cb5fa",
+  "final_sources": [
+    {
+      "name": "readout_extended_circuit.py",
+      "before_sha256": "38426856d76322593f324a249b7f5aed8a79ca6ae008ab88e39fc0858cd17435",
+      "after_sha256": "a37bcd22f31f4ce9b31b798cb4efad70dc90fa427db23c976955777a9711a316",
+      "ast_sha256": "58d2f18b1c6c34685dc782345ac48fd1aab5b01695eeeb3cb732782b43df2147",
+      "ast_equal": true,
+      "bytes": 25153,
+      "lines": 644,
+      "git_blob": "74ab0422b29065566f630e82c815b68529a5dc28"
+    },
+    {
+      "name": "test_readout_binding.py",
+      "before_sha256": "e93566401942acf7caafa6a0e0fa08f9d4596d2aec49427e60263f9710f08a0b",
+      "after_sha256": "879ae17fe17ed7ac127ae0a100dfb5447b2bb616e055cf109f079048b0b1570d",
+      "ast_sha256": "1eff437986aeda0be28dca049aba9ace97ec4fbe7d8675c97d147b2806de2e61",
+      "ast_equal": true,
+      "bytes": 18819,
+      "lines": 477,
+      "git_blob": "a65d7158a50c60ab49ca3bfa790322b22d4a0cd8"
+    }
+  ],
+  "red": {
+    "methods": 12,
+    "failed_subcases": 22,
+    "exit_code": 1,
+    "skips": 0,
+    "scope": "expected counterexamples against unchanged original"
+  },
+  "green": {
+    "methods": 12,
+    "failed_subcases": 0,
+    "exit_code": 0,
+    "skips": 0
+  },
+  "format": {
+    "exit_code": 0,
+    "ast_equal": true,
+    "post_format_tests_rerun": false
+  },
+  "offline_old_failure": {
+    "input_archive_sha256": "86268f5af2e7855bd5d864cf236d46f47e893f34106be39097d6318049b8a27f",
+    "input_commit": "bc53d6974d9dc4ddcd1baec1b4db4c4abeef1b9d",
+    "input_repository_path": "qualification/cell-experiments-v3-20261116/operations/e4-first-pool-failure-20261118/e4-originals.tar.gz",
+    "status": "INCOMPLETE",
+    "completed_graph_records": 0,
+    "complete_call_and_token_totals": null
+  },
+  "offline_actual_partial": {
+    "scope": "one original completed graph plus shared pool/worker; incomplete run snapshot",
+    "protocol_sha256": "f4111d887c9827156da1f6c4a6859cb3d9cef02b1c54a90f3af47004a036c7c1",
+    "status": "INCOMPLETE",
+    "graphs": 1,
+    "first_success": true,
+    "last_success": false,
+    "selected_success": true,
+    "full_run_costs": null
+  },
+  "archive": {
+    "path": "BINDING_VALIDATION_RAW.tar.gz",
+    "bytes": 35112,
+    "sha256": "411abb2bae187762fe275267887b87be1fb9200fc187c526d7cb8970d7d51f0c",
+    "members": 52,
+    "raw_member_bytes": 210783,
+    "manifest_path": "MANIFEST.json",
+    "manifest_sha256": "0272eb2bc2c94658882e18d6039611a48f0244472217364392a009c6c726688b",
+    "all_members_verified": true
+  },
+  "scientific_qualification": false,
+  "independent_sample_increment": 0,
+  "full_system_cost_complete": false
+}

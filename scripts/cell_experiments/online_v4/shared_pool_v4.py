@@ -211,6 +211,17 @@ class SharedAdapterPool:
                     view.model, directory, **options
                 )
             else:
+                # Admitted PEFT 0.18 casts after loading; BF16 targets would lose
+                # saved FP32 bits. Promote only this new label before the copy.
+                config = peft.PeftConfig.from_pretrained(
+                    directory, local_files_only=True
+                )
+                view.model._check_new_adapter_config(config, is_trainable=False)
+                config.inference_mode = True
+                view.model.add_adapter(entry["adapter_label"], config)
+                view.model.base_model._cast_adapter_dtype(
+                    adapter_name=entry["adapter_label"], autocast_adapter_dtype=True
+                )
                 view.model.load_adapter(directory, **options)
             self._activate(entry)
         self.resident_parameters = sum(p.numel() for p in view.model.parameters())
