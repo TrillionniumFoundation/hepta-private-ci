@@ -108,6 +108,11 @@ def audit(root, expected_head, *, allow_working_tree=False):
         "concurrent_writers": (0, 1, False),
     }
     check(set(plan["cases"]) == set(expected), "fault matrix changed")
+    check(
+        plan.get("concurrent_start_protocol")
+        == "serial_store_admission_then_concurrent_dispatch.v1",
+        "concurrent admission protocol missing",
+    )
     observations = []
     for case, (exit_code, count, pending) in expected.items():
         original = root / case / "raw-after-workers"
@@ -115,7 +120,19 @@ def audit(root, expected_head, *, allow_working_tree=False):
             inventory(original) == load(root / case / "ORIGINALS.json"),
             "original database bytes changed",
         )
-        processes = load(root / case / "PROCESSES.json")["processes"]
+        process_record = load(root / case / "PROCESSES.json")
+        processes = process_record["processes"]
+        admission = process_record["admission"]
+        denominator = 4 if case == "concurrent_writers" else 1
+        check(
+            type(admission["expected_workers"]) is int
+            and type(admission["launched_workers"]) is int
+            and admission["expected_workers"]
+            == admission["launched_workers"]
+            == denominator
+            and admission["startup_error"] is None,
+            "incomplete worker admission",
+        )
         check(
             len(processes) == (4 if case == "concurrent_writers" else 1),
             "process denominator differs",
@@ -127,7 +144,13 @@ def audit(root, expected_head, *, allow_working_tree=False):
                     == process[channel + "_sha256"],
                     "process output differs",
                 )
-            check(not process["timed_out"], "worker timeout")
+            check(
+                process["timed_out"] is False, "worker timeout or missing observation"
+            )
+            check(
+                type(process["pid"]) is int and process["pid"] > 0, "invalid worker PID"
+            )
+            check(type(process["exit"]) is int, "missing or invalid worker exit")
             check(
                 process["exit"]
                 in ((0, 20) if case == "concurrent_writers" else (exit_code,)),
@@ -135,6 +158,29 @@ def audit(root, expected_head, *, allow_working_tree=False):
             )
         if case == "concurrent_writers":
             check(any(p["exit"] == 0 for p in processes), "no writer completed")
+            pids = [p["pid"] for p in processes]
+            start = load(root / case / "START.json")
+            ready = [load(root / case / f"READY-{pid}.json") for pid in pids]
+            check(
+                len(set(pids)) == 4
+                and admission["barrier_required"] is True
+                and admission["released"] is True
+                and start["pids"] == pids
+                and all(type(pid) is int for pid in start["pids"])
+                and admission["ready"] == ready,
+                "common start identity differs",
+            )
+            check(
+                type(start["released_ns"]) is int
+                and all(
+                    type(row["pid"]) is int
+                    and row["pid"] == pid
+                    and type(row["ready_ns"]) is int
+                    and 0 <= row["ready_ns"] <= start["released_ns"]
+                    for pid, row in zip(pids, ready)
+                ),
+                "dispatch preceded worker admission",
+            )
         with tempfile.TemporaryDirectory(prefix="hepta-effect-audit-") as directory:
             copied = Path(directory) / "copied-originals"
             shutil.copytree(original, copied)
