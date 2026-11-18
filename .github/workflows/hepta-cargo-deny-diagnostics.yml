@@ -21,10 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - label: candidate
-            ref: ${{ github.event.pull_request.head.sha }}
-          - label: pre-snapshot-baseline
-            ref: 572cdaf90db4b5b8611737f222e9794b5e87d495
+          - label: rmcp-upgrade
+            ref: aa1f5ea122d6c48f89489f7d484f544e43ce5bc2
+          - label: sqlite-upgrade
+            ref: 700d08b49b6f520b38aa429dab842da9e5e82e8c
     steps:
       - name: Checkout exact diagnostic source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
