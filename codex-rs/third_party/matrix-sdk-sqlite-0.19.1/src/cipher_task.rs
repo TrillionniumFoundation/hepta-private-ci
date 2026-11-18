@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
-use tokio::task::{AbortHandle, JoinError};
+use tokio::task::AbortHandle;
+use tokio::task::JoinError;
 
 struct AbortOnDrop(AbortHandle);
 

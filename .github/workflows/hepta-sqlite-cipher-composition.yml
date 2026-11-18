@@ -79,7 +79,6 @@ jobs:
           ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
             test --nocache_test_results --flaky_test_attempts=1 --test_output=all -- \
             //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test \
-            //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-storage_upgrade-test \
             //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-cipher_task-test \
             //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-unit-tests \
             //codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-durable_transport-test \

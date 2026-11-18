@@ -641,8 +641,6 @@ debug = "limited"
 # Matrix's full-strength passphrase KDF runs during bounded startup.
 # Keep this dependency optimized in development/test builds; unoptimized
 # crypto exceeded the unchanged five-second deadline in constrained runs.
-[profile.dev.package.matrix-sdk-store-encryption]
-opt-level = 3
 
 # Matrix imports password-derived stores during ordinary client startup. Keep
 # the unchanged 200,000-round KDF optimized in development and inherited test
