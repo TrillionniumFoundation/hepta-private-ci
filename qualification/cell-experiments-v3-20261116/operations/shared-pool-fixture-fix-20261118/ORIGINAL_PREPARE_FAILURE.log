@@ -1,0 +1,34 @@
+test_actual_saved_adapter_loads_exact_previous_tensors_and_updates (cell_experiments.online_v4.test_onpolicy_tensor.WarmStartTensorTests.test_actual_saved_adapter_loads_exact_previous_tensors_and_updates) ... /home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/peft/utils/save_and_load.py:295: UserWarning: Could not find a config file in  - will assume that the vocabulary was not modified.
+  warnings.warn(
+ok
+test_actual_A_B_A_switch_has_stable_identity_and_one_base (cell_experiments.online_v4.test_shared_pool_v4.SharedPoolTensorTests.test_actual_A_B_A_switch_has_stable_identity_and_one_base) ... ERROR
+
+======================================================================
+ERROR: test_actual_A_B_A_switch_has_stable_identity_and_one_base (cell_experiments.online_v4.test_shared_pool_v4.SharedPoolTensorTests.test_actual_A_B_A_switch_has_stable_identity_and_one_base)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/round03-source-20261118-392934/online_v4/test_shared_pool_v4.py", line 87, in test_actual_A_B_A_switch_has_stable_identity_and_one_base
+    outputs.append(pool.generate(cell, request, root / ("call-" + str(index))))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/round03-source-20261118-392934/online_v4/shared_pool_v4.py", line 227, in generate
+    output = probe.Predictor.predict(view, copy.deepcopy(request))
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/candidate-qwen-03/scripts/cell_experiments/causal_probe_v3.py", line 395, in predict
+    output = self.model.generate(**encoded, generation_config=self.generation)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/peft/peft_model.py", line 2048, in generate
+    outputs = self.base_model.generate(*args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/utils/_contextlib.py", line 120, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/generation/utils.py", line 2388, in generate
+    self._validate_model_kwargs(model_kwargs.copy())
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/generation/utils.py", line 1599, in _validate_model_kwargs
+    raise ValueError(
+ValueError: The following `model_kwargs` are not used by the model: ['token_type_ids'] (note: typos in the generate arguments will also show up in this list)
+
+----------------------------------------------------------------------
+Ran 2 tests in 19.641s
+
+FAILED (errors=1)
