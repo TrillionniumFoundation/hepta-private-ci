@@ -2,6 +2,9 @@
 
 use std::fs::File;
 use std::fs::OpenOptions;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 
 use codex_hepta_intelligence::ObservedOutcomeRequestV2;
 use codex_hepta_intelligence::OutcomeCreditClosureRequestV2;
@@ -76,6 +79,7 @@ fn sign(
 
 pub(super) struct LedgerFixture {
     pub(super) writer: LedgerWriter,
+    readback: [File; 2],
     directory: tempfile::TempDir,
 }
 
@@ -91,12 +95,18 @@ impl LedgerFixture {
                     .open(directory.path().join(name)),
             )
         };
+        let ledger_file = file("ledger");
+        let witness_file = file("witness");
+        let readback = [
+            checked(ledger_file.try_clone()),
+            checked(witness_file.try_clone()),
+        ];
         let ledger = checked(DurableLedger::create(
-            file("ledger"),
+            ledger_file,
             d(domain),
             /*max_records*/ 32,
         ));
-        let witness = checked(LedgerWitnessStore::create(file("witness"), d(domain)));
+        let witness = checked(LedgerWitnessStore::create(witness_file, d(domain)));
         let key = SigningKey::from_bytes(&[99; 32]);
         let root = LearningTrustRootV1 {
             root_id: id("root"),
@@ -150,14 +160,26 @@ impl LedgerFixture {
             &directory_handle,
             &directory_handle,
         ));
-        Self { writer, directory }
+        Self {
+            writer,
+            readback,
+            directory,
+        }
     }
 
-    pub(super) fn bytes(&self) -> [Vec<u8>; 2] {
-        [
-            checked(std::fs::read(self.directory.path().join("ledger"))),
-            checked(std::fs::read(self.directory.path().join("witness"))),
-        ]
+    pub(super) fn bytes(&mut self) -> [Vec<u8>; 2] {
+        // Borrowing the whole fixture excludes an in-flight writer operation.
+        // Both observations retain the original owner lock and restore its cursor.
+        self.readback.each_mut().map(|file| {
+            let position = checked(file.stream_position());
+            checked(file.seek(SeekFrom::Start(0)));
+            let mut bytes = Vec::new();
+            let read = file.read_to_end(&mut bytes);
+            let restored = file.seek(SeekFrom::Start(position));
+            checked(restored);
+            checked(read);
+            bytes
+        })
     }
 }
 
@@ -255,4 +277,50 @@ pub(super) fn closure(
         credit,
         credit_evidence,
     }
+}
+
+#[test]
+fn ledger_readback_serializes_with_append_and_keeps_both_locks() {
+    let fixture = std::sync::Mutex::new(LedgerFixture::new("readback-locks"));
+    std::thread::scope(|scope| {
+        let reader = scope.spawn(|| {
+            for _ in 0..32 {
+                let mut fixture = checked(fixture.lock());
+                let positions = fixture
+                    .readback
+                    .each_mut()
+                    .map(|file| checked(file.stream_position()));
+                assert!(fixture.bytes().iter().all(|bytes| !bytes.is_empty()));
+                assert_eq!(
+                    fixture
+                        .readback
+                        .each_mut()
+                        .map(|file| checked(file.stream_position())),
+                    positions
+                );
+                for name in ["ledger", "witness"] {
+                    let contender = checked(
+                        OpenOptions::new()
+                            .read(true)
+                            .write(true)
+                            .open(fixture.directory.path().join(name)),
+                    );
+                    assert!(matches!(
+                        contender.try_lock(),
+                        Err(std::fs::TryLockError::WouldBlock)
+                    ));
+                }
+            }
+        });
+        let writer = scope.spawn(|| {
+            let mut fixture = checked(fixture.lock());
+            let before = fixture.bytes();
+            append_decision(&mut fixture.writer, &id("readback-run"), &id("episode"));
+            let after = fixture.bytes();
+            assert_ne!(after[0], before[0]);
+            assert_ne!(after[1], before[1]);
+        });
+        reader.join().expect("ledger readback thread");
+        writer.join().expect("ledger append thread");
+    });
 }
