@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   graph:
-    name: Cargo graph and bindgen (${{ matrix.proposal.label }}, ${{ matrix.platform.target }})
+    name: Cargo graph and operations (${{ matrix.proposal.label }}, ${{ matrix.platform.target }})
     runs-on: ${{ matrix.platform.os }}
     timeout-minutes: 30
     strategy:
@@ -36,7 +36,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
         with:
           toolchain: 1.96.0
-      - name: Verify exact native graph and formatter compilation
+      - name: Verify exact native graph and operations compilation
         shell: bash
         env:
           EXPECTED_HEAD: ${{ matrix.proposal.ref }}
@@ -51,7 +51,7 @@ jobs:
           rustc -Vv > "$evidence/rustc.txt"
           grep -Fx "host: $TARGET" "$evidence/rustc.txt"
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 --filter-platform "$TARGET" > "$evidence/metadata.json"
-          cargo check --locked --manifest-path codex-rs/Cargo.toml -p bindgen@0.73.2 --lib 2>&1 | tee "$evidence/bindgen-check.log"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations --lib 2>&1 | tee "$evidence/operations-check.log"
           python - <<'PY'
           import json, os, pathlib, subprocess
           root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-platform-graph"
@@ -70,7 +70,7 @@ jobs:
               "native_target": os.environ["TARGET"],
               "bindgen_syn": syn[0]["version"],
               "formatter_same_syn_identity": True,
-              "scope": "native Cargo graph and bindgen library compilation only; not full product tests",
+              "scope": "native Cargo graph and operations library compilation; not full product tests",
           }, indent=2) + "\n")
           PY
       - name: Preserve graph and real failure output
