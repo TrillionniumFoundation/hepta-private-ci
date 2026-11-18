@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-18T17:54:32Z",
+  "observed_at_utc": "2026-11-18 19:35:52 UTC",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T12:54:32.000-05:00",
+  "observed_at_user_timezone": "2026-11-18 14:35:52 America/New_York",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -182,7 +182,68 @@
     "decision": "NoUpdate",
     "decision_scope": "research candidate selection only",
     "complete_native_NoUpdate": false,
-    "generalizable_gain_established": false
+    "generalizable_gain_established": false,
+    "next_independent_task_material": {
+      "pr": 6720,
+      "commit": "be30b06e13c11c44fb2821edfbd0383a8e28eb05",
+      "tasks": 4,
+      "tasks_sha256": "8ac4ecffb705f819b57b6d03aa1faff7808d9bb9f8eaff97006800cfc5861a15",
+      "preparation_protocol_sha256": "95f3e4d82ea78721e360d9928530c9c60b841a1976cb4a6bc817d514aeb13225",
+      "native_loader_sha256": "90c1ff7130ad20f775fdeb926703bb9cc8f0c3c83bc36da4bb66fa294e587109",
+      "prepared_at_ns": "1795027967091392958",
+      "source_separated_from_A": true,
+      "shared_workspace_operational_holdout_only": true,
+      "independent_controller_authenticated": false,
+      "pretraining_contamination_excluded": false,
+      "task_release_to_training_owner": false,
+      "release_condition": "Both new weights and exact training manifests, parameter digests and completion timestamps must be frozen first.",
+      "model_calls": 0,
+      "training_updates": 0,
+      "original_replay": {
+        "source": "c8f30714c26999095f9b392a0fd759612c513574",
+        "job": "1a1efe98358-ffbe-675",
+        "children": 8,
+        "case_executions": 60,
+        "before_passed": 12,
+        "after_passed": 30,
+        "cases_per_revision": 30,
+        "result_sha256": "1861aac95879f5640ebd135cac6594d1cda5bdc9822da9c2b2672b7ebdbd44de"
+      },
+      "sandbox_preparation": {
+        "source": "1a6e6a7ab0bdb71751ac242c8f6f81dcbd09ab84",
+        "job": "1a1f000da26-ffbe-6c0",
+        "children": 8,
+        "case_executions": 60,
+        "before_passed": 12,
+        "after_passed": 30,
+        "negative_admission_controls": 6,
+        "all_passed": true,
+        "full_prompt_tokens": [
+          690,
+          1550,
+          862,
+          1627
+        ],
+        "reference_patch_tokens": [
+          146,
+          450,
+          133,
+          253
+        ],
+        "truncation": false,
+        "owner_wall_seconds": 15.935460342036095
+      },
+      "archive": {
+        "bytes": 4284798,
+        "sha256": "a181be245a9f907e533d359dbfd715d6fbde36e9f790311ab9dd6d63da574d26",
+        "original_files": 854,
+        "index_sha256": "a200da2372c2b405a68458eb53c3090e68599b230ae101f25f304026991c1524",
+        "publicly_released": false,
+        "local_policy_commit": "a27709051d9743434163509f92aeee96e31b8276",
+        "local_policy_only": true
+      },
+      "limits": "Selected original tests, not full repository suites. Common pytest 9.2 exceeds semver upstream 9.1.1 test-extra ceiling. Four source projects are not authenticated users."
+    }
   },
   "E2": {
     "status": "COMPLETE_ORIGINALS_AND_INDEPENDENT_READBACK_PUBLISHED",
@@ -556,6 +617,147 @@
       "disjoint_model_stage_child_cpu_seconds": 318.47740899999997,
       "interpretation": "Updated models emit byte-identical successful answers for five failure prefixes. Credit also emits the same answer across each task's failure/success histories. This supports retained reuse of seen A answers, not general feedback understanding or independent confirmation.",
       "old_108_decision_changed": false
+    },
+    "current_student_layout_followup": {
+      "pr": 6722,
+      "source": "d5f52660f37d3fc46b2cdb17560691cca4ab332d",
+      "status": "Three actual calibration attempts failed under the unchanged 70% memory cap; zero updates and zero generation. Next SDPA numerical calibration is being prepared; B3 remains sealed.",
+      "primary_arm": "native_feedback",
+      "control_arm": "document_evidence",
+      "parent_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+      "parent_parameter_digest": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+      "protocol_sha256": "2bce7b3d98e46e17969aca953fa6cefed54c0300ef712e9682b36135423ba34f",
+      "dataset_sha256": "83d8e4c9294e9fd2250a9915db1c859acf607e053c29647bcf0dabcb94368bf3",
+      "train_record_count": 8,
+      "original_A_input_files": 52,
+      "reused_P_original_files": 32,
+      "encoded_groups_digest": {
+        "document_evidence": "b845fb2c7e19d955db79315250616f3f765a94c5d2d649ca9b1b963639a87176",
+        "native_feedback": "9489bc9ecd1037a2d7132cdbe4256b5feccebb3d830a717a4842ff77905dbd63"
+      },
+      "training_settings": {
+        "cuda_memory_fraction": 0.7,
+        "head_chunk_positions": 256,
+        "learning_rate": 0.0001,
+        "lora_alpha": 8,
+        "lora_dropout": 0,
+        "max_grad_norm": 1,
+        "optimizer_betas": [
+          0.9,
+          0.999
+        ],
+        "optimizer_eps": 1e-8,
+        "optimizer_state": "fresh identical empty AdamW",
+        "rank": 4,
+        "seed": 1729,
+        "sequence_tokens": 3584,
+        "steps": 32,
+        "target_modules": [
+          "q_proj",
+          "v_proj"
+        ],
+        "weight_decay": 0.01,
+        "allocator": "expandable_segments:True"
+      },
+      "prospective_each_arm": {
+        "optimizer_updates": 32,
+        "full_padded_forwards_backwards": 72,
+        "padded_positions": 258048,
+        "target_positions": 14304,
+        "budget_status": "Frozen intended budget, not completed computation"
+      },
+      "information_match": "same original task, actual first P/C answer, exact actual feedback, identical verified maintainer target",
+      "new_generation_call_cap": 56,
+      "actual_completed_optimizer_updates": 0,
+      "B3_read_before_weights_frozen": false,
+      "decision_rule": {
+        "A": "strictly more final successes than original P; no lost P final successes; preserve all successful original P second calls on identical first prefixes",
+        "B3": "strictly more final successes than actual P; no lost P final successes; preserve all successful P second calls on identical first prefixes",
+        "accept": "both A and B3 rules pass, complete exact source/model/runtime/receipts, otherwise NoUpdate and retain original P",
+        "designated_candidate": "native_feedback",
+        "native_unique_mechanism": "separate claim only if native common-prefix success set strictly contains document success set; report A and B3 separately",
+        "scope": "small development mechanism result; not authenticated independent confirmation, adoption, E5 curves or complete E1 controls"
+      },
+      "calibration_4096_failure": {
+        "source": "a764cca4e303f8acd10bf62629a3fc63a7cbb276",
+        "evidence_commit": "c50cc1fbcba2570649c10e4ef79d6b8e981ca045",
+        "job": "1a1f011ca61-ffbe-6ec",
+        "status": "failed CUDA out of memory during original eager forward",
+        "sequence_tokens": 4096,
+        "cuda_memory_fraction": 0.7,
+        "attempted_allocation_MiB": 768,
+        "gpu_capacity_GiB": 7.62,
+        "allowed_allocator_GiB": 5.34,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "actual_parent_loaded": true,
+        "at_least_one_forward_attempted": true,
+        "completed_forward_backward_counts": null,
+        "unknown_completed_compute_is_not_zero": true,
+        "model_failure_wall_seconds": 31.700328756996896,
+        "owner_wait_wall_seconds": 33.34721042698948,
+        "nested_wall_not_summed": true,
+        "failed_sha256": "1a30a38f05d36d0a276e18d1dddb6181cc6933c0df0362c38f30ae1e6205d6c1",
+        "exit_sha256": "b8b4ebdd3b27193564c535ba732f209fbdc676f2b0bdff36692055147ae30f36",
+        "whole_host_cpu_energy_joules": {
+          "package-0": 742.350578,
+          "package-1": 959.668808
+        },
+        "cpu_energy_samples": 3,
+        "model_net_energy_claim": false
+      },
+      "successor_scope": "The 3584 candidate retains the complete longest 3471-token record and all eight original records. The expandable allocator candidate changed only allocator behavior and completed one forward before backward OOM. A proposed new training SDPA engine must pass actual logits/gradient calibration and be prospectively frozen for both arms; its kernel/compute cost is not presumed equal to eager. No B3 model data released.",
+      "complete_E1_four_arm_controls": false,
+      "E5_growth_curves": false,
+      "independent_confirmation_qualified": false,
+      "native_adoption": false,
+      "calibration_3584_failure": {
+        "source": "8f5835080b7fa4522cc3a675b071cc8e26d81b23",
+        "protocol_sha256": "39925e113bf8f4128add89f81e0f4d7016b0e0ae22793059333be87cb5af9c33",
+        "job": "1a1f01ae9b1-ffbe-701",
+        "terminal_exit": 1,
+        "timed_out": false,
+        "forward_attempts": 1,
+        "completed_forwards": 0,
+        "backward_attempts": 0,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "evidence_status": "worker observed original chunk cost events; root detailed read pending"
+      },
+      "calibration_expandable_failure": {
+        "source": "d5f52660f37d3fc46b2cdb17560691cca4ab332d",
+        "protocol_sha256": "2bce7b3d98e46e17969aca953fa6cefed54c0300ef712e9682b36135423ba34f",
+        "job": "1a1f0231869-ffbe-712",
+        "terminal_exit": 1,
+        "timed_out": false,
+        "forward_attempts": 1,
+        "completed_forwards": 1,
+        "backward_attempts": 1,
+        "completed_backwards": 0,
+        "optimizer_updates": 0,
+        "generation_calls": 0,
+        "failed_sha256": "c198b7c9e556c189d4842a9fb2cbd6d9f3c689cf839672f88615290a58d5df8e",
+        "root_read_actual_FAILED": {
+          "automatic_retry": false,
+          "error": "CUDA out of memory. Tried to allocate 588.00 MiB. GPU 0 has a total capacity of 7.62 GiB of which 1.40 GiB is free. Process 9243 has 319.78 MiB memory in use. Process 2477729 has 23.32 MiB memory in use. Including non-PyTorch memory, this process has 5.20 GiB memory in use. 5.34 GiB allowed; Of the allocated memory 5.03 GiB is allocated by PyTorch, and 35.79 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+          "error_type": "OutOfMemoryError",
+          "optimizer_updates": 0,
+          "wall_seconds": 31.900404635001905
+        },
+        "count_evidence_status": "worker observed original chunk start/completion events; root independently read exact FAILED.json; full owner/chunk receipts publication pending"
+      },
+      "allocator_capability_probe": {
+        "actual_8_MiB_CUDA_allocation": true,
+        "actual_is_expandable": true,
+        "allocator_backend": "native",
+        "cuda_memory_fraction": 0.7,
+        "model_loads": 0,
+        "forward_calls": 0,
+        "optimizer_updates": 0,
+        "wall_seconds": 3.207,
+        "receipt_sha256": "356db0b16048160e723b40e11f34c06e455634e3881282ee79160e5c58259aa2",
+        "status": "worker verified original probe; root independent read pending"
+      }
     }
   },
   "E3": {
@@ -646,7 +848,20 @@
       "weight_hash_cpu_seconds": 49.02022946,
       "weight_hash_wall_seconds": 134.143754767
     },
-    "original_archive_sha256": "0ee947fdd6833a46b52a1165795268ac697969c0f2b167ca261c1b71a0e5f132"
+    "original_archive_sha256": "0ee947fdd6833a46b52a1165795268ac697969c0f2b167ca261c1b71a0e5f132",
+    "current_actual_maintenance_collection": {
+      "reference": "next_actual_student_collection",
+      "teacher": "T2",
+      "tasks": 4,
+      "calls": 8,
+      "first_success": 1,
+      "final_success": 1,
+      "failed_task_recovery": 0,
+      "failed_task_opportunities": 3,
+      "preserved_successes": 1,
+      "union_better_than_best": false,
+      "physical_compute_matched": false
+    }
   },
   "E4": {
     "status": "COMPLETE_ORIGINALS_VALIDATED",
@@ -1433,7 +1648,11 @@
         4,
         16,
         64
-      ]
+      ],
+      "current_24_collection_completed": true,
+      "two_arm_same_4_source_learning_in_progress": true,
+      "growth_curves_executed": false,
+      "B3_eval_sources_count_as_users": false
     },
     "fixed_total_budget_growth_curve": null,
     "fixed_per_source_budget_growth_curve": null,
@@ -1778,11 +1997,54 @@
       "archive_bytes": 106920,
       "archive_sha256": "bff48544b40faee865e8b5d136f2497d320da0526f8bce220d84d82f235a3888",
       "diagnostic_scope": "The 65/64 refusal and 19118/28933 response are read directly from the exact native XML. They do not retroactively measure v10/v11. No total inter-process order is inferred.",
-      "next_work": "Original executor retains exclusive source/target ownership; v14 is preparing exact static caller/QA marker reconciliation, without yet proving a read-budget repair.",
+      "next_work": "Original executor source/target remain exclusively owned; v15 only closed diagnostic source QA and product compilation. Root is preparing a separate a6f9-based operation-scope candidate without changing MAX_READS or witness-write postchecks.",
       "proposed_read_scope_review": "Independent static review found two narrow synchronous caller grouping candidates that could save four Task exchanges while retaining a separate physical postcheck before witness initialization. This has not been executed and does not establish that the total 64-read budget is sufficient."
     },
     "published_v13_history": "3299c1d3318ff157f4948dee89b7939ef67b515c",
-    "historical_v10_publication_client_observation": "POLLIN|POLLHUP; Root pidfd revents=0; original deadline not elapsed. Underlying historical operation error precedes channel shutdown; no poll guard weakened."
+    "historical_v10_publication_client_observation": "POLLIN|POLLHUP; Root pidfd revents=0; original deadline not elapsed. Underlying historical operation error precedes channel shutdown; no poll guard weakened.",
+    "published_v15_history": "0cdb2a4985c91327e0ae3d59ceead35b950b16e9",
+    "v15": {
+      "source": "a6f9e8064f83680134af168e0500048b6942ddfd",
+      "tree": "894a8e5ff061980adec9825f0e519b3aba8c454e",
+      "source_qa_cases": 150,
+      "source_qa_passed": true,
+      "protected_rows": 892,
+      "protected_rows_passed": true,
+      "source_qa_wall_seconds": 13.636731559876353,
+      "product_preparation_passed": true,
+      "product_preparation_wall_seconds": 52.54007192887366,
+      "source_files": 15569,
+      "source_unchanged": true,
+      "Root_ELF_sha256": "baf520842749923ceac423ff62dc1b16938444fda3f75af97db1c708337361b7",
+      "daemon_ELF_sha256": "ccc9145e76984a940543db52b77f3fa06742478eca8e5caf8a0ab728efb9475c",
+      "fixed_Root_diagnostic_tags": 14,
+      "new_NoUpdate_executed": false,
+      "new_Adopt_executed": false,
+      "new_model_calls": 0,
+      "read_budget_unchanged": 64,
+      "prior_v13_failure_repaired": false
+    },
+    "root_isolated_operation_scope_candidate": {
+      "base_source": "a6f9e8064f83680134af168e0500048b6942ddfd",
+      "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
+      "original_executor_mutated": false,
+      "original_target_used": false,
+      "status": "two local production postimages, formatter passed; original source gates correctly refuse unupdated contracts; no native tests yet",
+      "source_changes": [
+        "cell_q24_prepared_learning.rs",
+        "production_post_a_q24_owners.rs"
+      ],
+      "preliminary_postimage_sha256": {
+        "cell_q24_prepared_learning.rs": "9cf9ffccf0b19a74a5d2c7e7a218411984fb1cb6cff2e796aa3b1815f1d702ad",
+        "production_post_a_q24_owners.rs": "c0bf49de76b4f6e638195b652966350a68753e6842d9a2167974f10c6cccdb48"
+      },
+      "original_source_qa_cases_attempted": 79,
+      "original_source_qa_passed": false,
+      "source_qa_result_sha256": "fe957d6efe658a407646362aa757c131056e39b6c1c0b22778a504ce3f3888df",
+      "native_tests": 0,
+      "business_execution": 0,
+      "claim": "Group existing synchronous Prepared borrow around read-only key/descriptor opening and pure profile construction. Keep complete physical postread before witness initialization, third standalone post-witness validation, original identity/HRTB/non-Send/fence/clock/deadline/error contracts. Full 64-read lifecycle sufficiency is unproven."
+    }
   },
   "Chain": {
     "repository": "TrillionniumFoundation/Trillionnium-Chain",
@@ -2117,6 +2379,355 @@
       "original_provider_archive_bytes": 16118256,
       "original_974_observations_preserved": true,
       "causal_speed_or_failure_probability_established": false
+    },
+    "next_native_record_frontier": {
+      "pr": 964,
+      "source": "d95239eda6a666458aa264ddeaf993d6d9fbf37d",
+      "tree": "a738dbba92df0d7ffa3f6dd257b4106b9c783603",
+      "production_sha256": "728effe2a6fedae09766cbee5fb1dbfb2bf9b8baf914586d5baa652614967440",
+      "static_root_review_passed": true,
+      "original_native_validation": {
+        "passed": 224,
+        "ignored": 7,
+        "new_cases_included_in_total": 8,
+        "source_pin_rows": 2617,
+        "source_gate_scope": "HOLD_NO_GO source integrity, not business qualification",
+        "original_baseline_progress_calls": 164,
+        "candidate_original_reader_progress_calls": 164,
+        "candidate_scoped_reader_progress_calls": 68,
+        "archive_bytes": 212896,
+        "archive_sha256": "9f38359c327d935f4bec287b37a348339fe35e0d2ec96297a9c10e0c8f39695e"
+      },
+      "actual_F0": {
+        "run": 44376853052,
+        "job": 135058186221,
+        "artifact": 14462800092,
+        "attempt": 1,
+        "native_exit": 101,
+        "original_business_failure": "BASELINE_MUST_PASS",
+        "planned_confirmations": 6,
+        "thirty_second_confirmations": 1,
+        "scheduled_four_second_confirmations": 0,
+        "root_confirmations": 0,
+        "planned_exposures": 42,
+        "timely_ACK": 19,
+        "not_attempted": 22,
+        "attempted_without_timely_ACK": 1,
+        "ACK_is_not_confirmation": true,
+        "first_confirmation_from_original_schedule_seconds": 18.608161919,
+        "original_controls": 7,
+        "original_controls_passed": true,
+        "original_manifest_files_checked": 443,
+        "source_before_after_groups_checked": 3,
+        "all_services_known_empty": true,
+        "root_history_calls": 0,
+        "baseline_history_calls": 13,
+        "archive_bytes": 18089290,
+        "archive_sha256": "b4457d8062f6f5068286c8b597668b09065a5eb2f12c85759517037cb386be93",
+        "report_sha256": "2d7041b82c29226a56300f7e0a52c6262d76175226d7a77309ed20459508318b",
+        "root_original_readback_sha256": "749ed0e70d4e7821d70fdf8c3bf6f3e9c7ecc21fc80c85af031ae505a68d91b2",
+        "readback_scope": "All twelve original readers imported from strongly pinned source; 443 original inventory members, original business and SLO failures, six controller boundaries, original source/execution binding, seven prepared controls and all-services-empty checked. No workload rerun.",
+        "twelve_strongly_pinned_readers_completed": true,
+        "full_physical_cost_closed": false,
+        "cross_runner_performance_causality_claim": false,
+        "independent_readback_sha256": "694877da3535471c04a048a9e6bec4d4aa63557309d0c7698a909daa9c5607d0",
+        "readback_source_sha256": "e7c17ba2ffe48107dde6e7905f2de6ac6e9718571c2b497113383efff04c3f99",
+        "original_slo_failure": "F0_ALL_SIX_SCHEDULED_FOUR_SECOND_TARGETS_REQUIRED",
+        "original_reader_source_sha256": {
+          "formal/pon-nakamoto-v1/bounded_process.py": "16fa98206e75db5e925a31508e889df9d1968c32f518554f52c2a0711047b356",
+          "formal/pon-nakamoto-v1/contract_wire.py": "cbe45d72ad20ed5683d50dceaa97b93bc74cdafced7d0896386edf9cbe9f98f6",
+          "scripts/ci/fixed_root_f0_ownership.py": "a6376e43166cd782a90ac782c1619ef6ec6cd5cbb8d25093aedaf870c2d5dba1",
+          "scripts/ci/fixed_root_f0_resources.py": "43b86bdab5715917cd7e7140765099a75178815e730a66d438b820b9cb370a4a",
+          "scripts/ci/public_host_ci_observation.py": "cc0facf46d14bc113d6a83d6b1215afe91c7b5cf22d65892f34921c8f1b983e3",
+          "scripts/ci/run_fixed_root_phase_host.py": "f572b12727d119f7d1c1490d2a8c70de69e596155e20a837ebf94d19e24911e7",
+          "scripts/pon_public_v3_phase_read.py": "f2dd54ec905117e26fc7128218acb74c36a3ae7c16229d56c7cc04dae1a5ef41",
+          "scripts/pon_public_v3_policy_read.py": "89c45bebc01691bf42fcd65bc19625797b32d4112907f3d24ada094c6b9d698a",
+          "scripts/pon_w1_cost_matrix_reader.py": "6a967274b93394494a2606c08173d4c755f255742bdca6cecd9665ce9f3686fa",
+          "scripts/read_original_native_campaign.py": "4381e3af6dac9ea2301cb78ff1761628a3b0e236750d1f291f4d51118c31b417",
+          "scripts/run_fixed_host_root_f0.py": "abf75f729dcb54d7c2bebf2c54c253c5164e801b7ebcc642bb8ba58290518cca",
+          "scripts/run_pon_w1_native_campaign.py": "eff0930837331f08882a0d69a6909e8f8dda2b23dad58cf0e6bc60d175f0a431"
+        },
+        "actual_history_cost": [
+          {
+            "attempts": [
+              {
+                "client_thread_cpu_ns": 467803422,
+                "history_index": 0,
+                "host_checkpoint_calls": 8245,
+                "host_checkpoint_cpu_ns": 395883820,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 2385746747,
+                "network_ended_ns": 2813686564
+              },
+              {
+                "client_thread_cpu_ns": 325739715,
+                "history_index": 1,
+                "host_checkpoint_calls": 5664,
+                "host_checkpoint_cpu_ns": 271101207,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1406472258,
+                "network_ended_ns": 5204100596
+              },
+              {
+                "client_thread_cpu_ns": 333868950,
+                "history_index": 2,
+                "host_checkpoint_calls": 5670,
+                "host_checkpoint_cpu_ns": 275732935,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1489462725,
+                "network_ended_ns": 6614568591
+              },
+              {
+                "client_thread_cpu_ns": 330439525,
+                "history_index": 3,
+                "host_checkpoint_calls": 5676,
+                "host_checkpoint_cpu_ns": 271628280,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1410913509,
+                "network_ended_ns": 8108186683
+              },
+              {
+                "client_thread_cpu_ns": 329793266,
+                "history_index": 4,
+                "host_checkpoint_calls": 5682,
+                "host_checkpoint_cpu_ns": 273430063,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1484674615,
+                "network_ended_ns": 9523212995
+              },
+              {
+                "client_thread_cpu_ns": 334078799,
+                "history_index": 5,
+                "host_checkpoint_calls": 5688,
+                "host_checkpoint_cpu_ns": 272965860,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1500298881,
+                "network_ended_ns": 11013298741
+              },
+              {
+                "client_thread_cpu_ns": 1580876933,
+                "history_index": 6,
+                "host_checkpoint_calls": 26858,
+                "host_checkpoint_cpu_ns": 1288888267,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 6894299308,
+                "network_ended_ns": 12517710905
+              },
+              {
+                "client_thread_cpu_ns": 454536492,
+                "history_index": 7,
+                "host_checkpoint_calls": 8121,
+                "host_checkpoint_cpu_ns": 387507406,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1999594202,
+                "network_ended_ns": 21499970548
+              },
+              {
+                "client_thread_cpu_ns": 329707464,
+                "history_index": 8,
+                "host_checkpoint_calls": 5733,
+                "host_checkpoint_cpu_ns": 274373120,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1409990226,
+                "network_ended_ns": 23503988039
+              },
+              {
+                "client_thread_cpu_ns": 328832932,
+                "history_index": 9,
+                "host_checkpoint_calls": 5739,
+                "host_checkpoint_cpu_ns": 273155451,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1509696389,
+                "network_ended_ns": 24918903067
+              },
+              {
+                "client_thread_cpu_ns": 332744298,
+                "history_index": 10,
+                "host_checkpoint_calls": 5745,
+                "host_checkpoint_cpu_ns": 275248815,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1388203624,
+                "network_ended_ns": 26432676701
+              },
+              {
+                "client_thread_cpu_ns": 332179007,
+                "history_index": 11,
+                "host_checkpoint_calls": 5751,
+                "host_checkpoint_cpu_ns": 275446899,
+                "import_error": null,
+                "import_observed": true,
+                "import_wall_ns": 1411632473,
+                "network_ended_ns": 27899834255
+              },
+              {
+                "client_thread_cpu_ns": 147026682,
+                "history_index": 12,
+                "host_checkpoint_calls": 2712,
+                "host_checkpoint_cpu_ns": 129058820,
+                "import_error": "PUBLIC_REQUEST_DEADLINE",
+                "import_observed": true,
+                "import_wall_ns": 685329296,
+                "network_ended_ns": 29315557119
+              }
+            ],
+            "client_thread_cpu_ns": 5627627485,
+            "history_calls": 13,
+            "host_checkpoint_calls": 97284,
+            "host_checkpoint_cpu_ns": 4664420943,
+            "observed_imports": 13,
+            "phase": "baseline",
+            "scope": "actual observed client imports; Host CPU is nested; do not add; not whole-process cost"
+          },
+          {
+            "attempts": [],
+            "client_thread_cpu_ns": 0,
+            "history_calls": 0,
+            "host_checkpoint_calls": 0,
+            "host_checkpoint_cpu_ns": 0,
+            "observed_imports": 0,
+            "phase": "valid-work-root",
+            "scope": "actual observed client imports; Host CPU is nested; do not add; not whole-process cost"
+          }
+        ],
+        "public_phase_process_cost": [
+          {
+            "phase": "baseline",
+            "scope": "original public phase process including receiver and independent client; not external controller",
+            "whole_parent_phase_cpu_ns": 8190303081,
+            "whole_parent_phase_wall_ns": 33910023853
+          },
+          {
+            "phase": "valid-work-root",
+            "scope": "original public phase process including receiver and independent client; not external controller",
+            "whole_parent_phase_cpu_ns": 8563349246,
+            "whole_parent_phase_wall_ns": 34505809050
+          }
+        ],
+        "controller_resource_summary": {
+          "complete": true,
+          "observed_boundary_samples": 6,
+          "per_actor_rss_qualified": false,
+          "phases": [
+            {
+              "cpu_usage_delta_usec": 2040834,
+              "expected_phase_actors": 0,
+              "observations": [
+                {
+                  "cpu_usage_usec": 6343555,
+                  "ended_monotonic_ns": 391549244833,
+                  "live_actors": 0,
+                  "memory_current_bytes": 50442240,
+                  "memory_peak_lifetime_bytes": 57864192,
+                  "stage": "before_launch",
+                  "started_monotonic_ns": 391549020957
+                },
+                {
+                  "cpu_usage_usec": 6725324,
+                  "ended_monotonic_ns": 396131090126,
+                  "live_actors": 0,
+                  "memory_current_bytes": 75169792,
+                  "memory_peak_lifetime_bytes": 76251136,
+                  "stage": "actors_ready",
+                  "started_monotonic_ns": 396130843195
+                },
+                {
+                  "cpu_usage_usec": 8384389,
+                  "ended_monotonic_ns": 426595399336,
+                  "live_actors": 0,
+                  "memory_current_bytes": 58073088,
+                  "memory_peak_lifetime_bytes": 80371712,
+                  "stage": "after_reap",
+                  "started_monotonic_ns": 426595162861
+                }
+              ],
+              "phase": "baseline"
+            },
+            {
+              "cpu_usage_delta_usec": 3448427,
+              "expected_phase_actors": 24,
+              "observations": [
+                {
+                  "cpu_usage_usec": 8393056,
+                  "ended_monotonic_ns": 426618236417,
+                  "live_actors": 0,
+                  "memory_current_bytes": 61206528,
+                  "memory_peak_lifetime_bytes": 80371712,
+                  "stage": "before_launch",
+                  "started_monotonic_ns": 426618025841
+                },
+                {
+                  "cpu_usage_usec": 8837976,
+                  "ended_monotonic_ns": 431199084870,
+                  "live_actors": 24,
+                  "memory_current_bytes": 117043200,
+                  "memory_peak_lifetime_bytes": 117116928,
+                  "stage": "actors_ready",
+                  "started_monotonic_ns": 431192276051
+                },
+                {
+                  "cpu_usage_usec": 11841483,
+                  "ended_monotonic_ns": 463107017238,
+                  "live_actors": 0,
+                  "memory_current_bytes": 106799104,
+                  "memory_peak_lifetime_bytes": 128020480,
+                  "stage": "after_reap",
+                  "started_monotonic_ns": 463106731990
+                }
+              ],
+              "phase": "valid-work-root"
+            }
+          ],
+          "planned_boundary_samples": 6,
+          "planned_phases": 2,
+          "schema": "fixed-host-root-controller-resources-v1",
+          "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+        },
+        "unknown_cost_dimensions": [
+          "concurrent whole-system RSS",
+          "storage byte-seconds",
+          "physical storage I/O",
+          "physical network bytes",
+          "GPU activity",
+          "energy",
+          "provider charges"
+        ],
+        "cost_summary_sha256": "eaf5ef25d6d7450240abe39bef54ab405b2af5472fa726b3ca3724e0ef6872df",
+        "actual_ROOT_pre_History_boundary": {
+          "observed_submit_attempts": 15,
+          "packet_indices": [
+            0,
+            0,
+            1,
+            1,
+            1,
+            2,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4,
+            5,
+            5
+          ],
+          "first_batch_required_packets": 7,
+          "history_calls": 0,
+          "worker_diagnosis": "Original caller enters History only after next == first (7). ROOT did not finish that first Submit batch; receiver/request correlation analysis continues."
+        }
+      },
+      "next_work": "Publish full original negative evidence and diagnose ROOT first-batch Submit/receiver observation costs using actual request digests. Do not change the original pressure window, security fences, or count ACK as confirmation."
     }
   },
   "CI": {
@@ -2124,7 +2735,7 @@
     "mac_fixture_pr": 6708,
     "mac_fixture_source": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
     "repository_formatter_passed": true,
-    "mac_native_regression_passed": false,
+    "mac_native_regression_passed": true,
     "fixture_scope": "Canonical temporary input paths, including original Circuit database reopen; all negative controls and production custody unchanged.",
     "Windows_original_positive_business_case_passed": false,
     "cargo_deny_passed": false,
@@ -2482,9 +3093,88 @@
         "require_zero_exit": 2,
         "resolved": false
       },
-      "original_qualification_workflows_status": "New exact-head workflows queued/running; no prior proposal pass is borrowed",
+      "original_qualification_workflows_status": "Both exact 7fc RMCP and SQLite workflows completed SUCCESS with original ZIP/lock verification",
       "archive_bytes": 787256,
-      "archive_sha256": "5bf67c7fb0b67459ad0b0be7ffd7146ed8829dda07a6acda1932ab3bef701c7b"
+      "archive_sha256": "5bf67c7fb0b67459ad0b0be7ffd7146ed8829dda07a6acda1932ab3bef701c7b",
+      "evidence_pr": 6721,
+      "evidence_head": "40bb1f38534922366768a30adf2bfa464aff123f",
+      "evidence_tree": "4536e2e5e25456f8af99c6e0df14a55a6255b946",
+      "executed_head_unchanged": true,
+      "original_ci_review_sha256": "c4d5fae669268b171a04aea79ce51807e589de7d386c6527f8191492f8963e40",
+      "workflows": [
+        {
+          "key": "rmcp",
+          "run": 44359468610,
+          "job": 134996522149,
+          "artifact": 14456513074,
+          "source_head": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+          "archive_bytes": 8938554,
+          "archive_sha256": "f8afadfbaf42a5305c7b5e22e5550f7f15ec728871ae42699f38840a21e08d29",
+          "original_result_sections": {
+            "failed": 0,
+            "ignored": 7,
+            "passed": 278
+          },
+          "bazel_summary": [
+            "Executed 24 out of 42 tests: 24 tests pass and 18 were skipped."
+          ],
+          "actual_locks": {
+            "Cargo.lock": {
+              "bytes": 421006,
+              "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1788366,
+              "sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+            }
+          },
+          "both_locks_equal_committed": true,
+          "locks_patch_bytes": 0,
+          "original_xml_count": 0,
+          "Rust_pass_count_is_executions_not_unique_cases": true
+        },
+        {
+          "key": "sqlite",
+          "run": 44359468771,
+          "job": 134996523370,
+          "artifact": 14454168128,
+          "source_head": "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+          "archive_bytes": 7762562,
+          "archive_sha256": "a2af9f6c35daf91c047071845964a855ac763305f8a29b7f5faff4078fc53ecf",
+          "original_result_sections": {
+            "failed": 0,
+            "ignored": 2,
+            "passed": 284
+          },
+          "bazel_summary": [
+            "Executed 9 out of 14 tests: 9 tests pass and 5 were skipped."
+          ],
+          "actual_locks": {
+            "Cargo.lock": {
+              "bytes": 421006,
+              "sha256": "dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7"
+            },
+            "MODULE.bazel.lock": {
+              "bytes": 1788366,
+              "sha256": "d240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1"
+            }
+          },
+          "both_locks_equal_committed": true,
+          "locks_patch_bytes": 0,
+          "original_xml_count": 0,
+          "Rust_pass_count_is_executions_not_unique_cases": false
+        }
+      ],
+      "archive_policy": {
+        "head": "40bb1f38534922366768a30adf2bfa464aff123f",
+        "original_tests": 7,
+        "materialized_checker_source": "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543",
+        "materialized_result_sha256": "70ba0e641e5b021eac0c051e721445afd7b83ba38cf139436c1187f92e540570",
+        "original_missing_blob_failure_retained": true,
+        "final_metadata_checker_exit": 0,
+        "final_metadata_checker_result_sha256": "4138fec6e27999c6ae2689253bdce431f350d5ae87d3954fcd6cf9d896494dbd",
+        "final_metadata_checker_attribution": "delegated original terminal receipt; no test or model rerun"
+      }
     },
     "mac_actual_validation": {
       "source": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
@@ -2509,8 +3199,8 @@
       "first_stderr_sha256": "bed39e29ea405959c5774c068454a0b74cf56cfa586bb7a987681a3f279fd44f",
       "first_source_unchanged": true,
       "locked_acquisition_job": "1a1efb48370-ffbe-5b3",
-      "current_scope": "E45 owns Mac worktree/targets; retain first cache failure, completed locked acquisition and second missing-source failure. No Mac regression pass.",
-      "passed": false,
+      "current_scope": "Original 9aa third native command passed 11/11; wrapper wrong JUnit lookup retained and original XML recovered without rerun. Separate joint2b command passed its own 11/11.",
+      "passed": true,
       "locked_acquisition_completed": true,
       "locked_acquisition_exit": 0,
       "locked_acquisition_wall_seconds": 681.282,
@@ -2533,11 +3223,52 @@
       "native_second_stderr_sha256": "ea67c2cd51fa9630d946135161b989909ff72a2969d316e50828dd67c3a7489f",
       "native_second_source_unchanged": true,
       "native_second_failure": "Compilation could not include original tracked docs/modules/MODULES.json outside the materialized source subset. No fixture assertion ran.",
-      "next_step": "Restore original fixed-source Git blob; retain the prior inventory and record expanded compile inputs; resume same eleven cases."
+      "next_step": "Continue unresolved Chrono/Windows and whole joint gates; do not rerun these completed native/CI cases.",
+      "native_third": {
+        "native_command_exit": 0,
+        "cases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "command_wall_seconds": 47.041,
+        "original_owner_wrapper_status": "failed to locate JUnit at wrong path; preserved",
+        "recovered_readout_sha256": "05b3d08a81653aa403486c944a40f6836d06d916e8a9bca05f52e70daf2f8a8f",
+        "junit_sha256": "2335596975d306299217427e112d6677eaaebcdb00c95a2b318c3bf89a2cce5d",
+        "run_uuid": "fec7d29f-a476-4fd4-a1f8-9312cf519221",
+        "expanded_source_files": 11219
+      },
+      "joint_native": {
+        "source": "2b3642214ba5ff4aaac27de13322a354a69507e7",
+        "tree": "4f558b31a5ea13d3ddf7fa43aec605dd478ef072",
+        "job": "1a1efe51808-ffbe-669",
+        "authoritative_exit": 0,
+        "cases": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0,
+        "command_wall_seconds": 180.443410625,
+        "whole_owner_wall_seconds": 192.688595791,
+        "owned_cache_clone_wall_seconds": 8.797531583,
+        "overlapping_times_not_summed": true,
+        "source_files": 11598,
+        "source_inventory_sha256": "972bb31325a567812e6d22666ddfab4cb24ee790e00a49643d6ae55b491c42af",
+        "source_unchanged": true,
+        "result_sha256": "d85b293244e2c5bec3fd43056482d3821fdb65a13a75be612e33a5a106942e8e",
+        "junit_sha256": "f0372ec53780748a849d6edbd3605f931fdd45669ca0f9afdfbb1aba1a6a3789",
+        "run_uuid": "a81117c9-07d9-42c2-bc7e-52d72c29df01",
+        "root_independent_original_read_verified": true
+      },
+      "whole_original_archive": {
+        "bytes": 52331264,
+        "sha256": "47db68782b3d13983749221886d74d8e04e195f1ba403f0a31aeebe2e13be548",
+        "original_members": 280,
+        "index_sha256": "6c1dd2a4d724f1c3159104b313246497fccc18abbb7f1b638cb7f8889354b0bc",
+        "evidence_pr": 6721
+      }
     }
   },
   "environment": {
-    "scratch_status": "unavailable",
+    "scratch_status": "Local exec-server remains unavailable after the environment handoff; original Git and authorized remote jobs/files survive. Temporary function caches were rebuilt from exact original bytes.",
     "actual_remote_evaluation_continues": true,
     "rerun_experiments_due_to_scratch_outage": false,
     "readout_reconstruction": "Hash-matched published originals and original remote native records; no experiment recomputation."
@@ -2554,7 +3285,7 @@
     "production_eligible": false,
     "full_system_cost_complete": false
   },
-  "interpretation": "Preserve every actual source/model/runtime/protocol. Each false qualification flag means not established; it is not fabricated evidence of impossibility. Keep failures, NoUpdate, all actual costs and unknowns.",
+  "interpretation": "Completed component CI/Mac gates, new source-separated B3 preparation, and actual current-student observations are concrete progress. The first 4096 learning calibration failed before updates; the 3584 successor is prospectively frozen. Latest Chain F0 still fails original 30s/4s business gates. E6 remains blocked at shared read 65/64; source QA and compiler products are not adoption. All whole-joint, independent-gain, native-adoption, FinalUse, settlement and full-cost qualification flags remain false.",
   "original_native_files": [
     {
       "path": "native-v8/RESULT.json",
@@ -2647,12 +3378,12 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+  "previous_evidence_commit": "5b5bd5ece3420d5b2acf7b0aab435df235aef6a0",
   "next_actual_student_collection": {
     "pr": 6717,
     "source": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
     "tree": "6abcd8ed0fee281b8154171f830aeba90afecde1",
-    "status": "PARENT_AND_CREDIT_ACTUAL_OWNER_STARTED_TEACHER_CODEC_PREPARATION",
+    "status": "completed; all 24 original calls retained; no learning updates",
     "parent_model": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
     "credit_model": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1",
     "actual_parent_credit_job": "1a1efba0ff6-ffbe-5bf",
@@ -2693,7 +3424,7 @@
     "network_namespace_isolated": true,
     "host_canary_inaccessible": true,
     "reference_preflight_model_calls": 0,
-    "actual_model_result_known": false,
+    "actual_model_result_known": true,
     "teacher_first_preflight_refused": true,
     "teacher_service_natural_restoration_observed": true,
     "teacher_service_restarted_by_this_work": false,
@@ -2701,15 +3432,111 @@
     "new_policy_is_old_384_policy": false,
     "original_NoUpdate_rejudged": false,
     "cpu_energy_scope": "Prospective whole-host CPU package counters sampled every 20 seconds; includes concurrent activity, is not per-model net energy; GPU remains unmeasured.",
-    "remaining_scope": "Collect all first/second responses and real sandbox feedback under frozen caps, retain every failure/cost, then audit. No new training or independent confirmation is claimed.",
+    "remaining_scope": "Both student arms failed all four A tasks. T2 preserved humanize only; no failed-task recovery. Actual failed observations now seed a separately frozen 2-arm learning study.",
     "teacher_freeze_commit": "9cfa4995c5d08aa0af00cdda6ef1fa67e49b6d1e",
     "teacher_freeze_path": "qualification/cell-upstream-current-student-20261118/teacher-preparation/TEACHER_FREEZE.json",
     "teacher_freeze_sha256": "c9e7b72fb1bd196b32bb7022d6743054e234e1b7de1f08233e93939e3ff33094",
     "teacher_template_codec_preflight_passed": true,
     "teacher_freeze_new_generations": 0,
     "teacher_actual_first_four_job": "1a1efc81fab-ffbe-5e5",
-    "teacher_first_four_status": "launched_after_prospective_freeze; outcome not included",
-    "student_owner_status": "Completed according to owning agent; final original readout not yet incorporated in this snapshot. Original 16-call limit retained."
+    "teacher_first_four_status": "succeeded",
+    "student_owner_status": "succeeded with original 16 P/C calls",
+    "evidence_commit": "9af894b5505cd3f3d49313b925954b76f8c62b70",
+    "teacher_second_four_job": "1a1efccb06e-ffbe-5f5",
+    "teacher_second_four_status": "succeeded",
+    "actual_calls": 24,
+    "actual_verifier_calls": 24,
+    "actual_native_children": 6,
+    "actual_native_case_executions": 170,
+    "model_results": {
+      "C": {
+        "actual_model_calls": 8,
+        "actual_native_children": 0,
+        "actual_verifier_calls": 8,
+        "any_success": 0,
+        "failure_categories": {
+          "invalid_JSON": 1,
+          "invalid_edit_schema": 1,
+          "original_text_mismatch": 6
+        },
+        "final": 0,
+        "first": 0,
+        "generation_wall_seconds": 32.077592954039574,
+        "input_tokens": 11183,
+        "output_caps_hit": 0,
+        "output_tokens": 357,
+        "preservation_opportunities": 0,
+        "recovery": 0,
+        "recovery_opportunities": 4,
+        "regression": 0,
+        "tasks": 4,
+        "unchanged_second_answers": 2,
+        "verifier_wall_seconds": 0.033595237124245614
+      },
+      "P": {
+        "actual_model_calls": 8,
+        "actual_native_children": 0,
+        "actual_verifier_calls": 8,
+        "any_success": 0,
+        "failure_categories": {
+          "invalid_JSON": 5,
+          "original_text_mismatch": 2,
+          "restricted_name": 1
+        },
+        "final": 0,
+        "first": 0,
+        "generation_wall_seconds": 213.08247939689318,
+        "input_tokens": 12948,
+        "output_caps_hit": 0,
+        "output_tokens": 2940,
+        "preservation_opportunities": 0,
+        "recovery": 0,
+        "recovery_opportunities": 4,
+        "regression": 0,
+        "tasks": 4,
+        "unchanged_second_answers": 2,
+        "verifier_wall_seconds": 0.051986724021844566
+      },
+      "T2": {
+        "actual_model_calls": 8,
+        "actual_native_children": 6,
+        "actual_verifier_calls": 8,
+        "any_success": 1,
+        "failure_categories": {
+          "native_business_failure": 4,
+          "native_pass": 2,
+          "original_text_mismatch": 2
+        },
+        "final": 1,
+        "first": 1,
+        "generation_wall_seconds": 147.37514885514975,
+        "input_tokens": 13378,
+        "output_caps_hit": 0,
+        "output_tokens": 3327,
+        "preservation_opportunities": 1,
+        "recovery": 0,
+        "recovery_opportunities": 3,
+        "regression": 0,
+        "tasks": 4,
+        "unchanged_second_answers": 3,
+        "verifier_wall_seconds": 52.80877933098236
+      }
+    },
+    "readout_sha256": "1b9451d4839046c7407e01d301eada93b14adb001f6e7be48cb6d88c2ece792d",
+    "archive": {
+      "bytes": 879198,
+      "sha256": "c23f69125da60941fd2b5c8719cc47af77cb2b76bbcec7ca7f5e6e142b8d33c9",
+      "original_files": 631,
+      "index_additional": true
+    },
+    "whole_host_cpu_energy_joules": {
+      "package-0": 7642.957667,
+      "package-1": 8596.784023
+    },
+    "cpu_energy_samples": 19,
+    "cpu_energy_attribution": "whole-host package window, includes background work; no model-net attribution or idle subtraction",
+    "full_system_cost_known": false,
+    "mutual_teacher_complementarity": false
   },
   "prospective_cost_counter_capability": {
     "original_job": "1a1ef98043c-ffbe-55b",

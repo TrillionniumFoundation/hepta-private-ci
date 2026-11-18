@@ -1,0 +1,788 @@
+{
+  "four_second": 0,
+  "head": "d95239eda6a666458aa264ddeaf993d6d9fbf37d",
+  "native_exit": 101,
+  "original_window": 1,
+  "phases": [
+    {
+      "final_actual_cpu_credit_flow": {
+        "balance_identity_verified": true,
+        "booked_reservation_ns": 0,
+        "credited_refill_ns": 822954465,
+        "discarded_refill_ns": 4551355061,
+        "initial_credit_ns": 2000000000,
+        "live_debited_cpu_ns": 839083689,
+        "live_owners": 0,
+        "paid_cpu_debit_ns": 839099420,
+        "remaining_paid_credit_ns": 1983855045,
+        "schema": "public-v3-local-actual-cpu-flow-v1",
+        "settled_full_cpu_ns": 839099420,
+        "settlement_discard_ns": 0,
+        "settlement_residual_cpu_ns": 15731,
+        "stored_credit_ns": 1983855045,
+        "unsettled_known_live_cpu_ns": 0
+      },
+      "history_client_cpu": {
+        "complete_observed_sum": 5627627485,
+        "known_sum": 5627627485,
+        "observed_rows": 13,
+        "unknown_rows": 0
+      },
+      "history_host_calls": 97284,
+      "history_host_cpu_nested": {
+        "complete_observed_sum": 4664420943,
+        "known_sum": 4664420943,
+        "observed_rows": 13,
+        "unknown_rows": 0
+      },
+      "host_checkpoint_bucket_totals": [
+        {
+          "calls": 26,
+          "cpu": {
+            "complete_observed_sum": 1269499,
+            "known_sum": 1269499,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "decode",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "context_owner_wait",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 195,
+          "cpu": {
+            "complete_observed_sum": 9618575,
+            "known_sum": 9618575,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "context",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 14287,
+          "cpu": {
+            "complete_observed_sum": 677180519,
+            "known_sum": 677180519,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "work",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "admission_owner_wait",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 13,
+          "cpu": {
+            "complete_observed_sum": 600613,
+            "known_sum": 600613,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "admission",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 21176,
+          "cpu": {
+            "complete_observed_sum": 1016917095,
+            "known_sum": 1016917095,
+            "observed_rows": 12,
+            "unknown_rows": 0
+          },
+          "owner_phase": "submit_result",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 26555,
+          "cpu": {
+            "complete_observed_sum": 1270842737,
+            "known_sum": 1270842737,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "admission_prepare",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 68,
+          "cpu": {
+            "complete_observed_sum": 3395527,
+            "known_sum": 3395527,
+            "observed_rows": 12,
+            "unknown_rows": 0
+          },
+          "owner_phase": "execution",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "commit_owner_wait",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 34697,
+          "cpu": {
+            "complete_observed_sum": 1670354356,
+            "known_sum": 1670354356,
+            "observed_rows": 12,
+            "unknown_rows": 0
+          },
+          "owner_phase": "commit",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 216,
+          "cpu": {
+            "complete_observed_sum": 11727093,
+            "known_sum": 11727093,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "cpu_wait",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "body_decode",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "response_encoding",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 13,
+          "cpu": {
+            "complete_observed_sum": 609998,
+            "known_sum": 609998,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "history_epoch_open",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "history_epoch_close",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 26,
+          "cpu": {
+            "complete_observed_sum": 1235568,
+            "known_sum": 1235568,
+            "observed_rows": 13,
+            "unknown_rows": 0
+          },
+          "owner_phase": "history_import",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": "cpu_settle",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 12,
+          "cpu": {
+            "complete_observed_sum": 669363,
+            "known_sum": 669363,
+            "observed_rows": 12,
+            "unknown_rows": 0
+          },
+          "owner_phase": "root_commitment",
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        },
+        {
+          "calls": 0,
+          "cpu": {
+            "complete_observed_sum": 0,
+            "known_sum": 0,
+            "observed_rows": 0,
+            "unknown_rows": 0
+          },
+          "owner_phase": null,
+          "unfinished_calls": 0,
+          "unknown_cpu_calls": 0
+        }
+      ],
+      "native_stage_deltas_nested_not_additive": {
+        "client": {
+          "account_graph": {
+            "calls": 79,
+            "cpu_ns": 4275857657,
+            "wall_ns": 19179176469
+          },
+          "activation": {
+            "calls": 1,
+            "cpu_ns": 1251882501,
+            "wall_ns": 5497162791
+          },
+          "admission": {
+            "calls": 13,
+            "cpu_ns": 3618246334,
+            "wall_ns": 15982683835
+          },
+          "complete_commitment": {
+            "calls": 137,
+            "cpu_ns": 91944441,
+            "wall_ns": 92098445
+          },
+          "complete_state_root": {
+            "calls": 51,
+            "cpu_ns": 12537308,
+            "wall_ns": 12614083
+          },
+          "delta": {
+            "calls": 410,
+            "cpu_ns": 140063374,
+            "wall_ns": 988731106
+          },
+          "execute": {
+            "calls": 12,
+            "cpu_ns": 20953899,
+            "wall_ns": 98609331
+          },
+          "execution_parent_binding": {
+            "calls": 12,
+            "cpu_ns": 3940977,
+            "wall_ns": 3954717
+          },
+          "packet": {
+            "calls": 422,
+            "cpu_ns": 13939208,
+            "wall_ns": 14323803
+          },
+          "persisted_state_root": {
+            "calls": 96,
+            "cpu_ns": 17746993,
+            "wall_ns": 17853380
+          },
+          "publish": {
+            "calls": 12,
+            "cpu_ns": 1677309358,
+            "wall_ns": 7475438829
+          },
+          "read_active": {
+            "calls": 5,
+            "cpu_ns": 310928898,
+            "wall_ns": 1390182445
+          },
+          "record": {
+            "calls": 766,
+            "cpu_ns": 5991962,
+            "wall_ns": 6668100
+          },
+          "state_at": {
+            "calls": 37,
+            "cpu_ns": 1566298155,
+            "wall_ns": 6891717628
+          },
+          "verify_history": {
+            "calls": 33,
+            "cpu_ns": 162841277,
+            "wall_ns": 625686961
+          },
+          "verify_state": {
+            "calls": 125,
+            "cpu_ns": 4423716519,
+            "wall_ns": 19942542174
+          }
+        },
+        "receiver": {
+          "account_graph": {
+            "calls": 76,
+            "cpu_ns": 377235776,
+            "wall_ns": 1860313666
+          },
+          "activation": {
+            "calls": 14,
+            "cpu_ns": 230990714,
+            "wall_ns": 798795624
+          },
+          "admission": {
+            "calls": 14,
+            "cpu_ns": 569380367,
+            "wall_ns": 2364928011
+          },
+          "complete_commitment": {
+            "calls": 154,
+            "cpu_ns": 47860345,
+            "wall_ns": 124502592
+          },
+          "complete_state_root": {
+            "calls": 19,
+            "cpu_ns": 3998823,
+            "wall_ns": 4024332
+          },
+          "delta": {
+            "calls": 651,
+            "cpu_ns": 74198957,
+            "wall_ns": 151779291
+          },
+          "execute": {
+            "calls": 14,
+            "cpu_ns": 14918910,
+            "wall_ns": 14941319
+          },
+          "execution_parent_binding": {
+            "calls": 14,
+            "cpu_ns": 2199480,
+            "wall_ns": 2214964
+          },
+          "packet": {
+            "calls": 665,
+            "cpu_ns": 15587389,
+            "wall_ns": 16184971
+          },
+          "persisted_state_root": {
+            "calls": 112,
+            "cpu_ns": 6857316,
+            "wall_ns": 6973390
+          },
+          "publish": {
+            "calls": 14,
+            "cpu_ns": 197967228,
+            "wall_ns": 885914183
+          },
+          "read_active": {
+            "calls": 28,
+            "cpu_ns": 216843116,
+            "wall_ns": 783297039
+          },
+          "record": {
+            "calls": 1232,
+            "cpu_ns": 6203000,
+            "wall_ns": 7257768
+          },
+          "state_at": {
+            "calls": 42,
+            "cpu_ns": 233216279,
+            "wall_ns": 799696064
+          },
+          "verify_history": {
+            "calls": 42,
+            "cpu_ns": 96407740,
+            "wall_ns": 173551251
+          },
+          "verify_state": {
+            "calls": 140,
+            "cpu_ns": 431708322,
+            "wall_ns": 1914866776
+          }
+        }
+      },
+      "observed_imports": 13,
+      "original_controller_cgroup_resources": {
+        "cpu_interval_scope": "before phase launcher spawn through actual actor reaping and phase exit; excludes earlier honest-miner preparation",
+        "cpu_usage_delta_usec": 2040834,
+        "memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+        "per_actor_rss_qualified": false,
+        "samples": [
+          {
+            "cpu_usage_usec": 6343555,
+            "memory_current_bytes": 50442240,
+            "memory_peak_lifetime_bytes": 57864192,
+            "stage": "before_launch"
+          },
+          {
+            "cpu_usage_usec": 6725324,
+            "memory_current_bytes": 75169792,
+            "memory_peak_lifetime_bytes": 76251136,
+            "stage": "actors_ready"
+          },
+          {
+            "cpu_usage_usec": 8384389,
+            "memory_current_bytes": 58073088,
+            "memory_peak_lifetime_bytes": 80371712,
+            "stage": "after_reap"
+          }
+        ],
+        "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+      },
+      "original_public_process_rss_diagnostic": {
+        "kernel_rusage_self_peak_rss_bytes": 76910592,
+        "lifetime_peak_rss_bytes": 77029376,
+        "rss_bytes": 77029376,
+        "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+      },
+      "phase": "baseline",
+      "receiver_application_read_bytes": {
+        "complete_observed_sum": 1395370,
+        "known_sum": 1395370,
+        "observed_rows": 27,
+        "unknown_rows": 0
+      },
+      "receiver_application_written_bytes": {
+        "complete_observed_sum": 1354363,
+        "known_sum": 1354363,
+        "observed_rows": 27,
+        "unknown_rows": 0
+      },
+      "receiver_measurement_failures": 0,
+      "receiver_observer_complete": true,
+      "receiver_physical_network_bytes": {
+        "complete_observed_sum": null,
+        "known_sum": 0,
+        "observed_rows": 27,
+        "unknown_rows": 27
+      },
+      "receiver_records_not_retained": 0,
+      "retained_database_files": [
+        {
+          "bytes": 3993600,
+          "compressed_zip_member_bytes": 1610631,
+          "member": "execution/raw/baseline/independent-client/native.sqlite"
+        },
+        {
+          "bytes": 4317184,
+          "compressed_zip_member_bytes": 1756908,
+          "member": "execution/raw/baseline/receiver/native.sqlite"
+        }
+      ],
+      "whole_public_phase_cpu_ns": 8190303081,
+      "whole_public_phase_wall_ns": 33910023853
+    },
+    {
+      "final_actual_cpu_credit_flow": {
+        "balance_identity_verified": true,
+        "booked_reservation_ns": 0,
+        "credited_refill_ns": 6422455118,
+        "discarded_refill_ns": 1152205763,
+        "initial_credit_ns": 2000000000,
+        "live_debited_cpu_ns": 6429375625,
+        "live_owners": 0,
+        "paid_cpu_debit_ns": 6429821181,
+        "remaining_paid_credit_ns": 1992633937,
+        "schema": "public-v3-local-actual-cpu-flow-v1",
+        "settled_full_cpu_ns": 6429821181,
+        "settlement_discard_ns": 0,
+        "settlement_residual_cpu_ns": 445556,
+        "stored_credit_ns": 1992633937,
+        "unsettled_known_live_cpu_ns": 0
+      },
+      "history_client_cpu": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "history_host_calls": 0,
+      "history_host_cpu_nested": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "host_checkpoint_bucket_totals": [],
+      "native_stage_deltas_nested_not_additive": {
+        "client": {
+          "account_graph": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "activation": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "admission": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "complete_commitment": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "complete_state_root": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "delta": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "execute": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "execution_parent_binding": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "packet": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "persisted_state_root": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "publish": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "read_active": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "record": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "state_at": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "verify_history": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          },
+          "verify_state": {
+            "calls": 0,
+            "cpu_ns": 0,
+            "wall_ns": 0
+          }
+        },
+        "receiver": {
+          "account_graph": {
+            "calls": 388,
+            "cpu_ns": 3940704362,
+            "wall_ns": 19114819311
+          },
+          "activation": {
+            "calls": 10,
+            "cpu_ns": 127695266,
+            "wall_ns": 520862676
+          },
+          "admission": {
+            "calls": 366,
+            "cpu_ns": 5267113225,
+            "wall_ns": 26860532409
+          },
+          "complete_commitment": {
+            "calls": 416,
+            "cpu_ns": 104652244,
+            "wall_ns": 659605600
+          },
+          "complete_state_root": {
+            "calls": 17,
+            "cpu_ns": 3645718,
+            "wall_ns": 3670808
+          },
+          "delta": {
+            "calls": 532,
+            "cpu_ns": 160952595,
+            "wall_ns": 639038544
+          },
+          "execute": {
+            "calls": 335,
+            "cpu_ns": 454177172,
+            "wall_ns": 1322830963
+          },
+          "execution_parent_binding": {
+            "calls": 335,
+            "cpu_ns": 61484292,
+            "wall_ns": 61989616
+          },
+          "packet": {
+            "calls": 538,
+            "cpu_ns": 18412224,
+            "wall_ns": 178754830
+          },
+          "persisted_state_root": {
+            "calls": 46,
+            "cpu_ns": 3432363,
+            "wall_ns": 3480219
+          },
+          "publish": {
+            "calls": 6,
+            "cpu_ns": 77277875,
+            "wall_ns": 236629755
+          },
+          "read_active": {
+            "calls": 71,
+            "cpu_ns": 839927603,
+            "wall_ns": 4441391066
+          },
+          "record": {
+            "calls": 1038,
+            "cpu_ns": 10968970,
+            "wall_ns": 167319784
+          },
+          "state_at": {
+            "calls": 375,
+            "cpu_ns": 4485369069,
+            "wall_ns": 23364569260
+          },
+          "verify_history": {
+            "calls": 16,
+            "cpu_ns": 31753482,
+            "wall_ns": 110814388
+          },
+          "verify_state": {
+            "calls": 415,
+            "cpu_ns": 4212537516,
+            "wall_ns": 21531205260
+          }
+        }
+      },
+      "observed_imports": 0,
+      "original_controller_cgroup_resources": {
+        "cpu_interval_scope": "before phase launcher spawn through actual actor reaping and phase exit; excludes earlier honest-miner preparation",
+        "cpu_usage_delta_usec": 3448427,
+        "memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+        "per_actor_rss_qualified": false,
+        "samples": [
+          {
+            "cpu_usage_usec": 8393056,
+            "memory_current_bytes": 61206528,
+            "memory_peak_lifetime_bytes": 80371712,
+            "stage": "before_launch"
+          },
+          {
+            "cpu_usage_usec": 8837976,
+            "memory_current_bytes": 117043200,
+            "memory_peak_lifetime_bytes": 117116928,
+            "stage": "actors_ready"
+          },
+          {
+            "cpu_usage_usec": 11841483,
+            "memory_current_bytes": 106799104,
+            "memory_peak_lifetime_bytes": 128020480,
+            "stage": "after_reap"
+          }
+        ],
+        "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+      },
+      "original_public_process_rss_diagnostic": {
+        "kernel_rusage_self_peak_rss_bytes": 118960128,
+        "lifetime_peak_rss_bytes": 119136256,
+        "rss_bytes": 119136256,
+        "scope": "Linux /proc/self magic self and kernel RUSAGE_SELF; peak is whole process lifetime, not an isolated allocation or incremental memory bound"
+      },
+      "phase": "valid-work-root",
+      "receiver_application_read_bytes": {
+        "complete_observed_sum": 39165219,
+        "known_sum": 39165219,
+        "observed_rows": 410,
+        "unknown_rows": 0
+      },
+      "receiver_application_written_bytes": {
+        "complete_observed_sum": 809415,
+        "known_sum": 809415,
+        "observed_rows": 410,
+        "unknown_rows": 0
+      },
+      "receiver_measurement_failures": 0,
+      "receiver_observer_complete": true,
+      "receiver_physical_network_bytes": {
+        "complete_observed_sum": null,
+        "known_sum": 0,
+        "observed_rows": 410,
+        "unknown_rows": 410
+      },
+      "receiver_records_not_retained": 0,
+      "retained_database_files": [
+        {
+          "bytes": 2002944,
+          "compressed_zip_member_bytes": 920841,
+          "member": "execution/raw/valid-work-root/independent-client/native.sqlite"
+        },
+        {
+          "bytes": 2834432,
+          "compressed_zip_member_bytes": 1220019,
+          "member": "execution/raw/valid-work-root/receiver/native.sqlite"
+        }
+      ],
+      "whole_public_phase_cpu_ns": 8563349246,
+      "whole_public_phase_wall_ns": 34505809050
+    }
+  ],
+  "run_id": 44376853052
+}
