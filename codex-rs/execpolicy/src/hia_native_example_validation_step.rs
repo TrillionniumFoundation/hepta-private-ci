@@ -208,23 +208,27 @@ pub(crate) fn validate_examples(
                 let matched = !policy
                     .matches_for_command_with_options(example, None, &options)
                     .is_empty();
+                // Match the original Rust path: render and retain a missed example
+                // before invoking any continuation. Formatting can itself unwind.
+                let previously_unmatched = rendered.len();
+                if !matched {
+                    rendered.push(
+                        try_join(example.iter().map(String::as_str))
+                            .unwrap_or_else(|_| "unable to render example".to_string()),
+                    );
+                }
                 let response = step(
                     2,
                     not_matches.len(),
                     matches.len(),
                     index,
-                    rendered.len(),
+                    previously_unmatched,
                     u64::from(matched),
                 );
-                if !matched {
-                    if response.append != 1 {
-                        panic!("HIA example-validation suppressed an unmatched example");
-                    }
-                    rendered.push(
-                        try_join(example.iter().map(String::as_str))
-                            .unwrap_or_else(|_| "unable to render example".to_string()),
-                    );
-                } else if response.append != 0 {
+                if !matched && response.append != 1 {
+                    panic!("HIA example-validation suppressed an unmatched example");
+                }
+                if matched && response.append != 0 {
                     panic!("HIA example-validation rendered a matched example");
                 }
                 if response.opcode == 3
