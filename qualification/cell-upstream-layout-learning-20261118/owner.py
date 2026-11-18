@@ -132,9 +132,19 @@ def own(phase, binding):
                 env = {
                     key: value
                     for key, value in os.environ.items()
-                    if key not in ("PYTHONPATH", "PYTHONSTARTUP", "PYTHONHOME")
+                    if key
+                    not in (
+                        "PYTHONPATH",
+                        "PYTHONSTARTUP",
+                        "PYTHONHOME",
+                        "PYTORCH_ALLOC_CONF",
+                        "PYTORCH_CUDA_ALLOC_CONF",
+                    )
                 }
                 env.update(
+                    PYTORCH_CUDA_ALLOC_CONF=protocol["training_settings"][
+                        "cuda_allocator"
+                    ],
                     HF_HUB_OFFLINE="1",
                     TRANSFORMERS_OFFLINE="1",
                     HF_DATASETS_OFFLINE="1",

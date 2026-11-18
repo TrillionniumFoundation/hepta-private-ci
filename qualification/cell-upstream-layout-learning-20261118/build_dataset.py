@@ -208,7 +208,36 @@ def build(source_commit):
         == "b8b4ebdd3b27193564c535ba732f209fbdc676f2b0bdff36692055147ae30f36",
         "original failed calibration must remain retained",
     )
+    allocator_proof = ctx.WORK / "preparation/allocator-capability/RESULT.json"
+    second_failure = (
+        ctx.WORK.parent
+        / "hepta-upstream-layout-learning-20261118-2e9b-3584/retained/calibration/FAILED.json"
+    )
+    layout.require(
+        ctx.sha(allocator_proof)
+        == "356db0b16048160e723b40e11f34c06e455634e3881282ee79160e5c58259aa2"
+        and ctx.sha(second_failure)
+        == "d3ccfdea6d8eb895d0159906e58d1e8867be127424a8395621d18757ba6255ff",
+        "actual allocator control or second failure changed",
+    )
     protocol = {
+        "allocator_revision": {
+            "configuration": "expandable_segments:True",
+            "backend": "native",
+            "scope": "explicit child-process environment only; memory cap remains 0.70; no daemon, driver, permissions or shared environment modified",
+            "real_capability_receipt_sha256": ctx.sha(allocator_proof),
+            "real_capability_probe_bytes": 8388608,
+            "real_capability_model_calls": 0,
+            "documentation": "https://docs.pytorch.org/docs/2.9/notes/cuda.html",
+            "second_failure_source": "8f5835080b7fa4522cc3a675b071cc8e26d81b23",
+            "second_failure_sha256": ctx.sha(second_failure),
+            "second_failure_attempted_forwards": 1,
+            "second_failure_completed_forwards": 0,
+            "second_failure_backward_calls": 0,
+            "second_failure_optimizer_updates": 0,
+            "second_failure_generation_calls": 0,
+            "second_failure_cold_load_seconds": 31.242553954012692,
+        },
         "prior_failed_calibration": {
             "source_commit": "a764cca4e303f8acd10bf62629a3fc63a7cbb276",
             "job_id": "1a1f011ca61-ffbe-6ec",

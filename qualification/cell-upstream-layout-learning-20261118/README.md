@@ -102,3 +102,22 @@ unknown. Nested wall/CPU scopes and reused prior costs are not added twice.
 
 Publication is staged into source, prepared data/protocol, actual weights,
 and actual evaluation evidence so review can distinguish code from results.
+
+## Explicit allocator revision
+
+The separate 3584 candidate 8f583508 also stopped during its first real
+forward: the existing allocator had 1.31 GiB reserved but unused when the
+588 MiB softmax allocation failed. Its exact trace contains one started
+forward, no completed forward or backward, and no optimizer or generation
+call. Its completed P cold load and whole-host energy readings remain costs.
+
+The next candidate keeps every tensor shape, target, attention implementation
+and 70% cap. It explicitly configures the native allocator's
+expandable_segments option in each owned child process. The
+[PyTorch 2.9 memory-management documentation](https://docs.pytorch.org/docs/2.9/notes/cuda.html)
+describes this option as reducing unusable fragments by growing allocation
+segments. A real 8 MiB CUDA allocation on this installed 2.9.1 runtime showed
+an expandable segment and the unchanged 0.70 cap; its raw receipt is retained.
+This does not establish that the full training fits: the largest-record
+calibration remains an actual gate. No daemon, driver, access policy, other
+owner's process or shared environment is changed.

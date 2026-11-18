@@ -31,9 +31,44 @@ SETTINGS = {
     "weight_decay": 0.01,
     "max_grad_norm": 1.0,
     "cuda_memory_fraction": 0.70,
+    "cuda_allocator": "expandable_segments:True",
     "optimizer_state": "fresh identical empty AdamW",
 }
 require = matched.require
+
+
+def allocator_admission(torch, device):
+    require(
+        os.environ.get("PYTORCH_CUDA_ALLOC_CONF") == SETTINGS["cuda_allocator"],
+        "per-process allocator configuration differs",
+    )
+    require("PYTORCH_ALLOC_CONF" not in os.environ, "conflicting allocator alias")
+    snapshot = torch.cuda.memory._snapshot()
+    settings = snapshot["allocator_settings"]
+    require(
+        settings["expandable_segments"] is True
+        and settings["PYTORCH_CUDA_ALLOC_CONF"] == SETTINGS["cuda_allocator"]
+        and torch.cuda.memory.get_allocator_backend() == "native"
+        and torch.cuda.get_per_process_memory_fraction(device)
+        == SETTINGS["cuda_memory_fraction"],
+        "actual allocator or memory cap differs",
+    )
+    segments = snapshot["segments"]
+    require(
+        any(segment.get("is_expandable") is True for segment in segments),
+        "actual model allocations must use expandable segments",
+    )
+    return {
+        "settings": settings,
+        "backend": "native",
+        "memory_fraction": SETTINGS["cuda_memory_fraction"],
+        "actual_expandable_segments": sum(
+            segment.get("is_expandable") is True for segment in segments
+        ),
+        "allocated_bytes": torch.cuda.memory_allocated(device),
+        "reserved_bytes": torch.cuda.memory_reserved(device),
+        "does_not_change_attention_or_weight_bytes": True,
+    }
 
 
 def information(record):
@@ -379,6 +414,7 @@ def train(
         torch.manual_seed(SETTINGS["seed"])
         torch.cuda.manual_seed_all(SETTINGS["seed"])
         predictor = matched.Predictor(parent, artifact_root, old_code_root)
+        write_new(output / "ALLOCATOR.json", allocator_admission(torch, device))
         write_new(
             output / "MODEL_LOADED.json",
             {
@@ -666,6 +702,7 @@ def calibrate(records, parent, artifact_root, old_code_root, freeze, output):
         torch.cuda.reset_peak_memory_stats(device)
         torch.manual_seed(SETTINGS["seed"])
         predictor = matched.Predictor(parent, artifact_root, old_code_root)
+        write_new(output / "ALLOCATOR.json", allocator_admission(torch, device))
         write_new(
             output / "MODEL_LOADED.json",
             {
