@@ -188,6 +188,9 @@ class ReceiverLedger:
     def _invocation(invocation):
         if type(invocation) is not ToolInvocation:
             raise CellError("canonical tool invocation required")
+        # Validate the retained snapshot, never the caller's mutable arguments.
+        encoded = _bounded_json(asdict(invocation), 32768)
+        invocation = ToolInvocation(**json.loads(encoded))
         for value in (
             invocation.operation_id,
             invocation.tool_digest,
@@ -208,10 +211,13 @@ class ReceiverLedger:
             or not 1 <= invocation.deadline_ms <= 60000
         ):
             raise CellError("unsupported bounded append request")
-        return _bounded_json(asdict(invocation), 32768)
+        return encoded
 
     def invoke(self, lease, invocation):
         encoded = self._invocation(invocation)
+        # BEGIN IMMEDIATE can wait while the caller changes nested arguments.
+        # Authority checks, the effect and its receipt must use these same bytes.
+        invocation = ToolInvocation(**json.loads(encoded))
         with self._transaction():
             authority = self._authorize(lease, "active")
             if (
@@ -262,6 +268,7 @@ class ReceiverLedger:
     def readback(self, invocation):
         """An absent row is UNKNOWN, never evidence authorizing retransmission."""
         encoded = self._invocation(invocation)
+        invocation = ToolInvocation(**json.loads(encoded))
         row = self.db.execute(
             "SELECT invocation,receipt FROM effects WHERE partition=? AND (request=? OR operation=?)",
             (
