@@ -66,3 +66,46 @@ async fn existing_signed_cache_keeps_canonical_time_bytes_and_authentication() {
         ));
     }
 }
+
+#[test]
+fn cache_clock_preserves_epoch_parts_without_rounding() {
+    for (seconds, nanos) in [
+        (0, 0),
+        (0, 999_999_999),
+        (1, 1),
+        (2_147_483_648, 123_456_789),
+        (8_210_266_876_799, 999_999_999),
+    ] {
+        let now = cache_now_utc(Ok(Duration::new(seconds, nanos)));
+        assert_eq!(
+            (now.unix_timestamp(), now.nanosecond(), now.offset()),
+            (
+                i64::try_from(seconds).expect("fixture fits i64"),
+                nanos,
+                time::UtcOffset::UTC
+            )
+        );
+    }
+}
+
+#[test]
+#[should_panic(expected = "system time before Unix epoch")]
+fn cache_clock_rejects_pre_epoch_system_time() {
+    let before_epoch = UNIX_EPOCH - Duration::from_secs(1);
+    cache_now_utc(before_epoch.duration_since(UNIX_EPOCH));
+}
+
+#[test]
+#[should_panic(expected = "system time outside timestamp range")]
+fn cache_clock_rejects_original_calendar_overflow() {
+    cache_now_utc(Ok(Duration::from_secs(8_210_266_876_800)));
+}
+
+#[test]
+fn cache_clock_preserves_original_seconds_cast() {
+    let now = cache_now_utc(Ok(Duration::from_secs(u64::MAX)));
+    assert_eq!(
+        (now.unix_timestamp(), now.nanosecond(), now.offset()),
+        (-1, 0, time::UtcOffset::UTC)
+    );
+}

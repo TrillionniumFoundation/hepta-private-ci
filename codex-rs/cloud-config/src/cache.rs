@@ -15,6 +15,9 @@ use serde::Serialize;
 use sha2::Sha256;
 use std::path::Path;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::SystemTimeError;
+use std::time::UNIX_EPOCH;
 use thiserror::Error;
 use time::OffsetDateTime;
 use tokio::fs;
@@ -101,7 +104,7 @@ impl CloudConfigBundleCache {
         if !cache_file
             .signed_payload
             .expires_at
-            .compare_to_instant(OffsetDateTime::now_utc())
+            .compare_to_instant(cache_now_utc(SystemTime::now().duration_since(UNIX_EPOCH)))
             .is_gt()
         {
             return Err(CacheLoadStatus::CacheExpired);
@@ -135,7 +138,7 @@ impl CloudConfigBundleCache {
         account_id: Option<String>,
         bundle: CloudConfigBundle,
     ) -> Result<(), CloudConfigBundleCacheError> {
-        let now = OffsetDateTime::now_utc();
+        let now = cache_now_utc(SystemTime::now().duration_since(UNIX_EPOCH));
         let expires_at = now
             .checked_add(
                 time::Duration::try_from(CLOUD_CONFIG_BUNDLE_CACHE_TTL)
@@ -170,6 +173,19 @@ impl CloudConfigBundleCache {
             .await
             .map_err(|_| CloudConfigBundleCacheError)?;
         Ok(())
+    }
+}
+
+// Keep system-clock failures distinct from valid historical timestamps parsed from
+// disk. The previous chrono 0.4.45 clock rejected pre-epoch and out-of-range clocks.
+fn cache_now_utc(elapsed: Result<Duration, SystemTimeError>) -> OffsetDateTime {
+    let elapsed = match elapsed {
+        Ok(elapsed) => elapsed,
+        Err(error) => panic!("system time before Unix epoch: {error:?}"),
+    };
+    match codex_utils_time::from_unix_parts(elapsed.as_secs() as i64, elapsed.subsec_nanos()) {
+        Ok(now) => now,
+        Err(error) => panic!("system time outside timestamp range: {error}"),
     }
 }
 
