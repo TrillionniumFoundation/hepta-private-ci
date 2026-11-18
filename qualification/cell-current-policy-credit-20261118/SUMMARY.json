@@ -1,0 +1,261 @@
+{
+  "schema": "hepta.current-policy-credit-summary.v1",
+  "status": "COMPLETE",
+  "training_source": "6a7696b0c0c5a0a2ba0fb52160aabb191850b2d3",
+  "evaluation_source": "048014f8634059b65b24f49da7f00d5b1bb85737",
+  "training": {
+    "all_observed": {
+      "adapter_files": [
+        {
+          "bytes": 5294,
+          "path": "README.md",
+          "sha256": "9afd6bdfe3dda6898765f14d4455335314c090627d35593da9b604f9ca06c11c"
+        },
+        {
+          "bytes": 1021,
+          "path": "adapter_config.json",
+          "sha256": "f13032dd8dbbdd53733ee1143ecf13ada6c7d7fce2d39681a25eae37dbf4b72a"
+        },
+        {
+          "bytes": 2193720,
+          "path": "adapter_model.safetensors",
+          "sha256": "28588cb7d84113e6a30b32ec86e511c5fff456628e7ee5a1eec371f2e76a4933"
+        }
+      ],
+      "cost": {
+        "cuda_peak_allocated_bytes": 4170159616,
+        "cuda_peak_reserved_bytes": 4594860032,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "head_positions": 16094,
+        "input_tokens": 103815,
+        "model_backwards": 192,
+        "model_forwards": 192,
+        "nested_scopes_are_not_additive": true,
+        "padded_positions": 393216,
+        "self_cpu_seconds": 301.982987998,
+        "supervised_positions": 16094,
+        "wall_seconds": 297.7154378480045
+      },
+      "manifest_sha256": "01a5dece93e07144c7f853f8e33e15f338b7a410f3540389b991783f00809c7f",
+      "model_digest": "0585075a5277f7e8e5a7b7ad3f42bc718f17253f1dbf6c2b03e8248cfc1c1562",
+      "parameter_after": "c8236cef9d45d4bee3825352adc9327aeca3764c72c62f5b2e3175ff1ed18b11",
+      "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+      "steps": 64
+    },
+    "verified_credit": {
+      "adapter_files": [
+        {
+          "bytes": 5294,
+          "path": "README.md",
+          "sha256": "9afd6bdfe3dda6898765f14d4455335314c090627d35593da9b604f9ca06c11c"
+        },
+        {
+          "bytes": 1021,
+          "path": "adapter_config.json",
+          "sha256": "eaf508cc70d26906d04c8bde1cab147e193389db6d045330625213543266cca3"
+        },
+        {
+          "bytes": 2193720,
+          "path": "adapter_model.safetensors",
+          "sha256": "2b868a5b225ee2402b90ad73c2700cde0e57091458ecb379e434343b22689865"
+        }
+      ],
+      "cost": {
+        "cuda_peak_allocated_bytes": 4170159616,
+        "cuda_peak_reserved_bytes": 4594860032,
+        "energy_joules": null,
+        "full_system_cost_known": false,
+        "head_positions": 16094,
+        "input_tokens": 103815,
+        "model_backwards": 192,
+        "model_forwards": 192,
+        "nested_scopes_are_not_additive": true,
+        "padded_positions": 393216,
+        "self_cpu_seconds": 303.44909595499996,
+        "supervised_positions": 9780,
+        "wall_seconds": 299.0903187899967
+      },
+      "manifest_sha256": "88f93eaca8b88eeec3ff426eb26d2ee472de7d1cd2c9e3388dea6750c1391005",
+      "model_digest": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1",
+      "parameter_after": "549ac578447c41d1ddc975f14468c54eeae12ba431f47bcd1a3da46fbc17ce8f",
+      "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+      "steps": 64
+    }
+  },
+  "by_arm": {
+    "NoUpdate": {
+      "A_retention": {
+        "first": 3,
+        "last": 2,
+        "recovered": 2,
+        "regressed": 3,
+        "selected": 5,
+        "tasks": 6
+      },
+      "B2_blind_future": {
+        "first": 4,
+        "last": 2,
+        "recovered": 1,
+        "regressed": 3,
+        "selected": 5,
+        "tasks": 6
+      },
+      "B_exposed_development": {
+        "first": 0,
+        "last": 0,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6
+      }
+    },
+    "all_observed": {
+      "A_retention": {
+        "first": 3,
+        "last": 2,
+        "recovered": 2,
+        "regressed": 3,
+        "selected": 5,
+        "tasks": 6
+      },
+      "B2_blind_future": {
+        "first": 3,
+        "last": 3,
+        "recovered": 1,
+        "regressed": 1,
+        "selected": 4,
+        "tasks": 6
+      },
+      "B_exposed_development": {
+        "first": 0,
+        "last": 0,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6
+      }
+    },
+    "verified_credit": {
+      "A_retention": {
+        "first": 4,
+        "last": 5,
+        "recovered": 1,
+        "regressed": 0,
+        "selected": 5,
+        "tasks": 6
+      },
+      "B2_blind_future": {
+        "first": 4,
+        "last": 3,
+        "recovered": 1,
+        "regressed": 2,
+        "selected": 5,
+        "tasks": 6
+      },
+      "B_exposed_development": {
+        "first": 0,
+        "last": 0,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6
+      }
+    }
+  },
+  "evaluation_costs": {
+    "NoUpdate": {
+      "completed_children_cpu_seconds": 4.70918,
+      "energy_joules": null,
+      "full_system_cost_known": false,
+      "hit_output_limit": 2,
+      "input_tokens": 15772,
+      "load_wall_seconds": 21.21441978699295,
+      "model_calls": 36,
+      "output_tokens": 2900,
+      "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+      "self_cpu_seconds": 227.765830646,
+      "verifier_calls": 36,
+      "wall_seconds": 228.91157568397466
+    },
+    "all_observed": {
+      "completed_children_cpu_seconds": 4.019794999999999,
+      "energy_joules": null,
+      "full_system_cost_known": false,
+      "hit_output_limit": 0,
+      "input_tokens": 15586,
+      "load_wall_seconds": 21.53693697898416,
+      "model_calls": 36,
+      "output_tokens": 2317,
+      "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+      "self_cpu_seconds": 190.073547937,
+      "verifier_calls": 36,
+      "wall_seconds": 191.1414414899773
+    },
+    "verified_credit": {
+      "completed_children_cpu_seconds": 4.870706,
+      "energy_joules": null,
+      "full_system_cost_known": false,
+      "hit_output_limit": 0,
+      "input_tokens": 15539,
+      "load_wall_seconds": 21.2286355390097,
+      "model_calls": 36,
+      "output_tokens": 2075,
+      "scope": "load, all actual calls, verifiers and close; nested generation windows are not additive",
+      "self_cpu_seconds": 191.498485851,
+      "verifier_calls": 36,
+      "wall_seconds": 193.5979450980085
+    }
+  },
+  "total_calls": {
+    "business_verifier_executions": 71,
+    "format_rejections": 37,
+    "generation_wall_seconds": 534.824645515182,
+    "input_tokens": 46897,
+    "model_calls": 108,
+    "observed_subject_calls": 270,
+    "output_limit_hits": 2,
+    "output_tokens": 7292,
+    "verifier_calls": 108,
+    "verifier_wall_seconds": 13.904571124999999
+  },
+  "disjoint_stage_wall_seconds": 1431.6778659840347,
+  "disjoint_stage_child_cpu_seconds": 1448.901724,
+  "original_advance_criterion_met": false,
+  "research_decision": "NoUpdate retained; report mechanism and external-task results without native promotion",
+  "recovery_opportunities": {
+    "NoUpdate": {
+      "A_failures": 3,
+      "recovered": 2,
+      "initial_successes": 3,
+      "retained": 0
+    },
+    "all_observed": {
+      "A_failures": 3,
+      "recovered": 2,
+      "initial_successes": 3,
+      "retained": 0
+    },
+    "verified_credit": {
+      "A_failures": 2,
+      "recovered": 1,
+      "initial_successes": 4,
+      "retained": 4
+    }
+  },
+  "recovery_count_interpretation": "MSE changes F->P into P->P, removing one recovery opportunity; common failed tasks counter and colon retain the same outcomes. Original absolute-count advancement gate remains failed.",
+  "artifact": {
+    "archive_sha256": "95beda262721a747aeb3180b7d7f37a245735870b3ee0c8c58e80e45857b9bb6",
+    "archive_bytes": 4511826,
+    "index_sha256": "a97062044b5252b98ea983f7e1107741ba49697aff2055c27d21c703e903c099",
+    "readout_sha256": "9448a6bef0064086d3b126cb11d7ee62a0243217acbe222b7d9323214add45f9",
+    "original_files": 586,
+    "actual_new_adapters_included": 2
+  },
+  "independent_audit_sha256": "afdf9eb3bd3816a815b6f63d732ce8fbc6578565f5340019b0a70a981cb9521e",
+  "pretraining_overlap_known": false,
+  "independent_users": 0,
+  "scientific_confirmation_qualified": false,
+  "native_adoption": false,
+  "full_system_cost_known": false
+}

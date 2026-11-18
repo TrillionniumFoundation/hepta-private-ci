@@ -1,0 +1,86 @@
+[
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "14e242ed35246dc130a44861ccb3f543c457fd4d",
+      "462c651d349663d86f6ec88ed5d9eed453f218c0"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 7.383752272056881
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-evidence-blob-policy-20261118-2e9b/E2/source",
+      "14e242ed35246dc130a44861ccb3f543c457fd4d"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.016709420015104115
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.0045212520053610206
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 7.3847627739887685
+  },
+  {
+    "label": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.9703497029840946
+  },
+  {
+    "label": "changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "462c651d349663d86f6ec88ed5d9eed453f218c0",
+      "--head",
+      "14e242ed35246dc130a44861ccb3f543c457fd4d",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.36558330297702923
+  }
+]
