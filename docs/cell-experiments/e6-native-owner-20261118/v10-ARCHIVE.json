@@ -1,0 +1,32 @@
+{
+  "status": "created",
+  "source_head": "82b1fadbdd77906ae28a46d6d26c378a70947c73",
+  "source_tree": "98057b24dfa633e6e7eb25a8b989391f1548fdfb",
+  "source_unchanged": true,
+  "output": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/public-evidence-v10",
+  "archive": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-owner-v10-public-evidence.tar.xz",
+  "prefix": "native-owner-v10",
+  "regular_files": 81,
+  "bytes": 130396,
+  "sha256": "e89776509879125039ffa26eeb7a4be63f9c0532b48e3f31a668feee2ec83f5a",
+  "observed_static_stages": [
+    "root_stage=cli.serve",
+    "root_stage=historical.observe_complete_task",
+    "root_stage=historical.recipient_service",
+    "root_stage=historical.reply_bound",
+    "root_stage=historical.route_task",
+    "root_stage=historical.worker",
+    "root_stage=historical_ledger.recipient_action",
+    "root_stage=historical_ledger.refusal_context",
+    "root_stage=historical_task.handoff",
+    "root_stage=historical_task.ledger",
+    "root_stage=historical_task.recipient_action",
+    "root_stage=historical_task.run_start",
+    "root_stage=historical_task.source_cell"
+  ],
+  "verified_regular_members": 81,
+  "manifest_sha256": "6f1248a6505a8095d8e874bea71925ce258ccd704c0cfe983392c8704cba95fd",
+  "tested_source": "82b1fadbdd77906ae28a46d6d26c378a70947c73",
+  "tested_tree": "98057b24dfa633e6e7eb25a8b989391f1548fdfb",
+  "publication_scope": "Evidence-only descendant; no tests are attributed to its metadata commit."
+}

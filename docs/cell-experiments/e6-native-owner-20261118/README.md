@@ -77,3 +77,22 @@ Both products were rebuilt and pinned at this exact source. The actual authority
 The safe v9 archive is native-owner-v9-public-evidence.tar.xz (104,876 bytes, SHA-256 f8e478dcd60a00d3e5d612d008452582a07922858cb4a66d0a98f0ad354b9a2d). Every one of its 77 regular members was checked against its manifest before this publication. v9-SUMMARY.json and v9-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
 
 All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
+
+## v10: original historical task boundaries
+
+The exact tested source is 82b1fadbdd77906ae28a46d6d26c378a70947c73, tree 98057b24dfa633e6e7eb25a8b989391f1548fdfb, direct child of evidence-only 121e7eee7b79c6cb5f15708f08fc18f6d06a59b0. This candidate adds only fixed error-stage diagnostics at original historical operation dispatch, data refusal arms, recipient context, physical observation and postchecks. The original errors, predicates, ordering, stop/refuse behavior and deadlines remain unchanged. Diagnostic output failures are ignored. No input value, configuration payload or key is included in a stage.
+
+The labels are emitted at the worker or original failing operation rather than after a fixed-order join. They identify observed failure boundaries; concurrent cleanup can still produce secondary failures, so a label does not by itself certify a complete causal explanation or an earlier successful business stage. Absence of a narrow callee error label does not prove that every later comparison or missing-record branch passed. In particular, entry to serve does not establish that its ready/handoff closure completed.
+
+| Exact selected stage | Actual outcome |
+|---|---|
+| ordinary-whole-cold-no-update | retained failure |
+| ordinary-whole-cold-adopt | not attempted |
+
+Observed original Root error stages: root_stage=cli.serve, root_stage=historical.observe_complete_task, root_stage=historical.recipient_service, root_stage=historical.reply_bound, root_stage=historical.route_task, root_stage=historical.worker, root_stage=historical_ledger.recipient_action, root_stage=historical_ledger.refusal_context, root_stage=historical_task.handoff, root_stage=historical_task.ledger, root_stage=historical_task.recipient_action, root_stage=historical_task.run_start, root_stage=historical_task.source_cell. The original errors and all failed outputs remain in the raw archive. These stages are execution evidence; a stage label alone is not an assertion about an unobserved deeper cause.
+
+Both products were rebuilt and pinned at this exact source. The actual authority ELF was required to differ from v9, and fixed new historical labels were verified inside its bytes before the test. The archive contains compiler output, product-manifest.json and component-executable-bindings.json. The original NoUpdate case executes once with retries zero. The original Adopt cold case is attempted once only if the NoUpdate case passes. The earlier f7 Root namespace regression and all earlier-source gates remain attached to their actually tested commits.
+
+The safe v10 archive is native-owner-v10-public-evidence.tar.xz (130,396 bytes, SHA-256 e89776509879125039ffa26eeb7a4be63f9c0532b48e3f31a668feee2ec83f5a). Every one of its 81 regular members was checked against its manifest before this publication. v10-SUMMARY.json and v10-ARCHIVE.json distinguish source, execution and metadata identities. This evidence-only commit is a direct child of the actually tested source.
+
+All command timings and cost gaps are retained. CPU/GPU/energy/API/monetary business costs remain unknown when unmeasured; Existing cold profiles inspect retained C and do not execute a fresh D. Independent-controller certification, FinalUse, settlement and complete E6 qualification remain unestablished.
