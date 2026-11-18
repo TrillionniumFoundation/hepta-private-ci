@@ -18,6 +18,7 @@ import sys
 import time
 
 from hepta_cell_joint_worker import device, load_candidate, sha
+from package_hia_cell_candidate import git, read_file, relative
 from hepta_cells.bundle import Bundle, REQUIRED, OPTIONAL
 from hepta_cells.component_types import Budget, Partition, PendingExecution, digest
 from hepta_cells.hia_component import HiaCellComponent
@@ -35,8 +36,141 @@ def write(path, value):
     return hashlib.sha256(raw).hexdigest()
 
 
-def freeze(hia_root, output):
+def capture_source_identity(root, paths, *, allow_dirty=False):
+    """Bind actual source bytes to a real Git checkout without trusting its index."""
+    root = Path(root).resolve(strict=True)
+    paths = sorted(str(relative(path)) for path in paths)
+    if not paths or len(set(paths)) != len(paths):
+        raise ValueError("source closure is empty or contains duplicate paths")
+    head = git(root, "rev-parse", "--verify", "HEAD^{commit}").decode().strip()
+    tree = git(root, "rev-parse", "--verify", "HEAD^{tree}").decode().strip()
+    try:
+        branch = git(root, "symbolic-ref", "-q", "HEAD").decode().strip()
+    except subprocess.CalledProcessError as error:
+        if error.returncode != 1:
+            raise
+        branch = None
+    object_format = git(root, "rev-parse", "--show-object-format").decode().strip()
+    if object_format not in {"sha1", "sha256"}:
+        raise ValueError("unsupported Git object format")
+    tracked = {}
+    for row in git(root, "ls-tree", "-r", "-z", head, "--", *paths).split(b"\0"):
+        if row:
+            header, name = row.split(b"\t", 1)
+            mode, kind, oid = header.decode().split()
+            if kind != "blob" or mode not in {"100644", "100755"}:
+                raise ValueError("source HEAD contains a nonregular file")
+            tracked[name.decode()] = (mode, oid)
+    files = []
+    for name in paths:
+        raw, mode = read_file(root, name)
+        blob = hashlib.new(
+            object_format, b"blob " + str(len(raw)).encode() + b"\0" + raw
+        ).hexdigest()
+        head_mode, head_blob = tracked.get(name, (None, None))
+        files.append({
+            "path": name, "bytes": len(raw), "sha256": hashlib.sha256(raw).hexdigest(),
+            "mode": format(mode | 0o100000, "o"), "git_blob": blob,
+            "head_blob": head_blob, "head_mode": head_mode,
+        })
+    status = git(root, "status", "--porcelain=v1", "--untracked-files=all").decode()
+    exact = not status and all(
+        item["git_blob"] == item["head_blob"] and item["mode"] == item["head_mode"]
+        for item in files
+    )
+    if not exact and not allow_dirty:
+        raise ValueError("execution source is dirty or absent from HEAD; --allow-dirty is exploratory only")
+    if git(root, "rev-parse", "HEAD^{commit}").decode().strip() != head:
+        raise ValueError("source HEAD changed during capture")
+    return {
+        "schema": "hepta.joint-source-identity.v1", "head": head, "tree": tree,
+        "symbolic_ref": branch, "object_format": object_format,
+        "git_status_porcelain": status, "exact_head_source": exact,
+        "allow_dirty": allow_dirty, "files": files,
+        "scope": "listed execution bytes and modes; branch names are location metadata, not authority",
+    }
+
+
+def verify_source_identity(root, expected):
+    """Refuse source or checkout identity drift, including same-tree HEAD changes."""
+    actual = capture_source_identity(
+        root, [item["path"] for item in expected["files"]],
+        allow_dirty=expected["allow_dirty"],
+    )
+    if actual != expected:
+        raise ValueError("source bytes, Git HEAD/tree/ref or checkout state changed")
+    return actual
+
+
+def execution_sources(cells_root, hia_root):
+    """Enumerate required production and independent review source bytes."""
+    locations = []
+    for package in ("hepta_cells", "hepta_pred1"):
+        prefix = "scripts/" + package
+        paths = set(git(
+            cells_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", prefix
+        ).decode().split("\0")) - {""}
+        paths = {path for path in paths if path.endswith(".py")}
+        paths.update(
+            str(path.relative_to(cells_root))
+            for path in (cells_root / prefix).rglob("*.py")
+        )
+        locations += [
+            ("cells", cells_root, cells_root / path) for path in sorted(paths)
+        ]
+    locations += [
+        ("cells", cells_root, cells_root / "scripts" / name)
+        for name in (
+            "hepta_cell_joint_worker.py",
+            "hepta_cell_campaign_worker.py",
+            "hepta_cell_semantic_campaign_worker.py",
+            "runtime_stdio.py",
+            "runtime_process_contract.py",
+            "runtime_process_bridge.py",
+            "qualify_runtime_process_bridge.py",
+            "qualify_runtime_campaign.py",
+            "package_hia_cell_candidate.py",
+            "verify_hepta_maintenance_cycle.py",
+            "verify_hepta_semantic_cycle.py",
+            "review_hepta_maintenance_snapshot.py",
+            "qualify_cell_updates.py",
+            "refreeze_joint_worker.py",
+        )
+    ]
+    locations += [("cells", cells_root, cells_root / "scripts/qualify_hia_cell_joint.py")]
+    compiler_paths = set(git(
+        hia_root, "ls-tree", "-r", "--name-only", "-z", "HEAD", "--", "hepta"
+    ).decode().split("\0")) - {""}
+    compiler_paths.update(
+        str(p.relative_to(hia_root)) for p in (hia_root / "hepta").rglob("*.py")
+    )
+    locations += [("hia", hia_root, hia_root / p) for p in sorted(compiler_paths)]
+    locations += [
+        ("hia", hia_root, hia_root / p)
+        for p in (
+            "tools/cell_bridge_native.py",
+            "examples/hia_cell_bridge/continuation.hepta",
+            "pyproject.toml",
+            "docs/HIA_CORE_LOWERING_ABI.json",
+            "docs/HIA_CORE_EMITTER_ABI.json",
+            "docs/HIA_BYTE_WRAPPER_ABI.json",
+            "docs/HIA_MACHINE_OBJECT_ABI.json",
+        )
+    ]
+    return locations
+
+
+def freeze(hia_root, output, *, allow_dirty=False):
     output.mkdir(parents=True, exist_ok=False)
+    cells_root = Path(__file__).resolve().parent.parent
+    locations = execution_sources(cells_root, hia_root)
+    source_identity = {
+        name: capture_source_identity(
+            root, [str(p.relative_to(root)) for group, _, p in locations if group == name],
+            allow_dirty=allow_dirty,
+        )
+        for name, root in (("cells", cells_root), ("hia", hia_root))
+    }
     spec = importlib.util.spec_from_file_location(
         "joint_builder", hia_root / "tools/cell_bridge_native.py"
     )
@@ -75,49 +209,6 @@ def freeze(hia_root, output):
             "config": asdict(config),
             "bundle": Bundle(cell + "-baseline", 1, parts).record(),
         }
-    cells_root = Path(__file__).resolve().parent.parent
-    locations = []
-    for package in ("hepta_cells", "hepta_pred1"):
-        locations += [
-            ("cells", cells_root, p)
-            for p in (cells_root / "scripts" / package).glob("*.py")
-        ]
-    locations += [
-        ("cells", cells_root, cells_root / "scripts" / name)
-        for name in (
-            "hepta_cell_joint_worker.py",
-            "hepta_cell_campaign_worker.py",
-            "runtime_stdio.py",
-            "runtime_process_contract.py",
-            "runtime_process_bridge.py",
-            "qualify_runtime_process_bridge.py",
-            "qualify_runtime_campaign.py",
-            "package_hia_cell_candidate.py",
-            "verify_hepta_maintenance_cycle.py",
-            "refreeze_joint_worker.py",
-        )
-    ]
-    locations += [("cells", cells_root, Path(__file__).resolve())]
-    compiler_paths = (
-        subprocess.check_output(
-            ["git", "-C", str(hia_root), "ls-files", "-z", "--", "hepta"], timeout=10
-        )
-        .decode()
-        .split("\0")
-    )
-    locations += [("hia", hia_root, hia_root / p) for p in compiler_paths if p]
-    locations += [
-        ("hia", hia_root, hia_root / p)
-        for p in (
-            "tools/cell_bridge_native.py",
-            "examples/hia_cell_bridge/continuation.hepta",
-            "pyproject.toml",
-            "docs/HIA_CORE_LOWERING_ABI.json",
-            "docs/HIA_CORE_EMITTER_ABI.json",
-            "docs/HIA_BYTE_WRAPPER_ABI.json",
-            "docs/HIA_MACHINE_OBJECT_ABI.json",
-        )
-    ]
     locations += [
         ("artifacts", output, output / p)
         for p in (
@@ -134,6 +225,17 @@ def freeze(hia_root, output):
             locations, key=lambda item: (item[0], str(item[2]))
         )
     ]
+    frozen_sources = {
+        (name, item["path"]): item["sha256"]
+        for name, identity in source_identity.items()
+        for item in identity["files"]
+    }
+    if any(
+        item["root"] != "artifacts"
+        and frozen_sources[(item["root"], item["path"])] != item["sha256"]
+        for item in files
+    ):
+        raise ValueError("source bytes changed after pre-build freeze")
     # Retain the exact executed source bytes. Source edits made after this run
     # must not erase the provenance needed to review this candidate.
     for item in files:
@@ -142,17 +244,22 @@ def freeze(hia_root, output):
         source_root = cells_root if item["root"] == "cells" else hia_root
         retained = output / "executed-source" / item["root"] / item["path"]
         retained.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(source_root / item["path"], retained)
-        assert sha(retained) == item["sha256"]
+        shutil.copy(source_root / item["path"], retained)
+        if sha(retained) != item["sha256"]:
+            raise ValueError("retained execution source changed during capture")
+    for name, root in (("cells", cells_root), ("hia", hia_root)):
+        verify_source_identity(root, source_identity[name])
     manifest = {
         "schema": "hepta.joint-cell-candidate.v1",
         "hia_root": str(hia_root),
         "source_bases": {
             "hia_compiler": build["compiler_commit"],
-            "cells": "bb34e07389ad75d3b4629b63b0af0ee46f9b9594",
+            "cells": source_identity["cells"]["head"]
+            if source_identity["cells"]["exact_head_source"] else None,
             "runtime": "73b5c33d5762eefc0554a86750094350f18ae6a0",
         },
-        "source_binding": "complete listed execution sources and artifacts; new files by SHA256",
+        "source_identity": source_identity,
+        "source_binding": "listed source bytes, modes and original Git HEAD/tree/ref; dirty exploration inherits no HEAD qualification",
         "runtime_execution": "local subprocess control; native runtime lane requires separate same-candidate execution",
         "device": device(),
         "files": files,
@@ -170,6 +277,10 @@ def freeze(hia_root, output):
         "budget": asdict(Budget(max_elapsed_ms=5000)),
         "total_work_units": 1000000,
         "claims": {
+            "source_head_matches_execution": all(
+                item["exact_head_source"] for item in source_identity.values()
+            ),
+            "qualification_inherited_from_source_head": False,
             "whole_stack_qualified": False,
             "native_runtime_qualified": False,
             "learning_benefit": False,
@@ -213,9 +324,9 @@ def child(candidate, database, request, output, label, *, reject=False):
     return json.loads(record["stdout"]), record
 
 
-def run(hia_root, output):
+def run(hia_root, output, *, allow_dirty=False):
     wall, cpu = time.perf_counter_ns(), time.process_time_ns()
-    manifest, build, data = freeze(hia_root, output)
+    manifest, build, data = freeze(hia_root, output, allow_dirty=allow_dirty)
     candidate, database = output / "candidate.json", output / "owner.sqlite"
     candidate_hash = sha(candidate)
     records, checks = [], []
@@ -480,6 +591,8 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
     checks.append("changed-native-image-binding-refused")
     load_candidate(candidate)[3].close()
     assert sha(candidate) == candidate_hash
+    for name, root in (("cells", Path(__file__).resolve().parent.parent), ("hia", hia_root)):
+        verify_source_identity(root, manifest["source_identity"][name])
     durations = sorted(r["wall_ns"] for r in records)
     import math
 
@@ -525,7 +638,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--hia-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--allow-dirty", action="store_true",
+                        help="Freeze exploratory bytes without attributing them to a Git HEAD")
     args = parser.parse_args()
     print(
-        json.dumps(run(args.hia_root.resolve(), args.output.resolve()), sort_keys=True)
+        json.dumps(run(args.hia_root.resolve(), args.output.resolve(),
+                       allow_dirty=args.allow_dirty), sort_keys=True)
     )

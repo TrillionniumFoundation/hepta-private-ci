@@ -6,6 +6,11 @@ on:
       - 'scripts/hepta_pred1/**'
       - 'scripts/hepta_cell_joint_worker.py'
       - 'scripts/hepta_cell_campaign_worker.py'
+      - 'scripts/hepta_cell_semantic_campaign_worker.py'
+      - 'scripts/qualify_cell_updates.py'
+      - 'scripts/verify_hepta_semantic_cycle.py'
+      - 'scripts/test_hepta_maintenance_semantics.py'
+      - 'scripts/test_hepta_joint_source_identity.py'
       - 'scripts/qualify_runtime_campaign.py'
       - 'scripts/package_hia_cell_candidate.py'
       - 'scripts/verify_hepta_maintenance_cycle.py'
@@ -52,10 +57,18 @@ jobs:
           python-version: '3.12'
       - name: Prepare numerical dependency and disposable SSH fixture
         run: |
-          python -m pip install numpy==2.3.5
+          python -m pip install numpy==2.3.5 uv
           sudo apt-get update
-          sudo apt-get install -y openssh-server
+          sudo apt-get install -y openssh-server just
           rustup toolchain install 1.95.0 --profile minimal
+      - name: Format changed sources and require an unchanged candidate
+        working-directory: cells
+        run: |
+          mkdir -p "$RUNNER_TEMP/cell-joint-evidence"
+          git fetch --no-tags --depth=1 origin f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb
+          just fmt --base f8e54c63700c8ffc40c9ddaec4e3fd44817da0fb
+          git diff --binary > "$RUNNER_TEMP/cell-joint-evidence/format.patch"
+          git diff --exit-code
       - name: Native continuation and sealed image controls
         working-directory: hia
         env:
@@ -79,7 +92,7 @@ jobs:
         env:
           PYTHONPATH: scripts
         run: |
-          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
+          python -B -m unittest -v test_hepta_cells_owner_control test_hepta_cells_lifecycle test_hepta_cells_temporal_component test_hepta_cells_population_owner test_runtime_process_bridge test_hepta_cells_hia_migration test_hepta_cells_maintenance_metrics test_hepta_maintenance_semantics test_hepta_joint_source_identity 2>&1 | tee "$RUNNER_TEMP/cell-joint-evidence/controls.log"
       - name: Freeze and run actual HIA and GRU cold processes
         working-directory: cells
         run: |
@@ -88,11 +101,12 @@ jobs:
       - name: Actual runtime entry and cold original-job observation
         working-directory: cells
         run: |
-          python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance
+          python -B scripts/qualify_runtime_process_bridge.py --runtime-source "$GITHUB_WORKSPACE/runtime" --runtime-binary "$GITHUB_WORKSPACE/runtime/target/release/hepta-runtime" --runtime-commit 73b5c33d5762eefc0554a86750094350f18ae6a0 --cell-source "$GITHUB_WORKSPACE/cells" --candidate "$RUNNER_TEMP/cell-joint-evidence/local-joint/candidate.json" --request "$RUNNER_TEMP/cell-joint-evidence/request.json" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint" --allow-disposable-sshd --with-maintenance --with-semantic-updates
       - name: Independently check retained maintenance records
         working-directory: cells
         run: |
           python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/campaign-readonly-review.json"
+          python -B scripts/review_hepta_maintenance_snapshot.py "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-campaign-worker/campaign" --snapshot-dir "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-review-snapshot" --output "$RUNNER_TEMP/cell-joint-evidence/runtime-joint/semantic-readonly-review.json" --semantic
       - name: Retain original evidence including failures
         if: always()
         uses: actions/upload-artifact@v4
