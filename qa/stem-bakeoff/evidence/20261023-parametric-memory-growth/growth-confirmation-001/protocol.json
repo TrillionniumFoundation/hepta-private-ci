@@ -1,0 +1,48 @@
+{
+  "final_template": "Which {relation} did we assign to {entity}?",
+  "incoming_count": 15,
+  "incoming_relation": "shape",
+  "learning_rate": 0.001,
+  "live_external_frontier_claimed": false,
+  "matched_parameter_budget_claimed": false,
+  "model_seed": 2718,
+  "old_count": 15,
+  "old_parent_correct_items_must_be_preserved": true,
+  "parent_manifest_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+  "parent_provenance_file_sha256": "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d",
+  "parent_source_file_sha256": "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce",
+  "production_accepted": false,
+  "rank": 8,
+  "schema": "hepta.parametric-memory.arrival-protocol.v1",
+  "selected_new_recall_minimum": 0.75,
+  "selected_old_recall_minimum": 0.75,
+  "selection_rule": "Preserve every parent-correct old item; single needs at least one extra correct source selection answer over nochange; split needs at least two over the best eligible cheaper arm; ties retain the cheaper/nochange arm.",
+  "selection_template": "State the {relation} for {entity}.",
+  "shape_assignment": "duplicate vocabulary, shuffle once, then retain first 15",
+  "shape_seed": 718203,
+  "shape_vocabulary": [
+    "circle",
+    "square",
+    "triangle",
+    "oval",
+    "star",
+    "cube",
+    "sphere",
+    "cone"
+  ],
+  "single_minimum_selection_gain": 1,
+  "single_steps": 480,
+  "source_frontier_epoch": 1,
+  "split_minimum_gain_over_eligible_cheaper": 2,
+  "split_steps_per_cell": 240,
+  "train_templates": [
+    "What is {entity}'s {relation}?",
+    "Recall the {relation} assigned to {entity}.",
+    "{entity} has which {relation}?",
+    "Return {entity}'s {relation}."
+  ],
+  "typed_namespace_router": {
+    "color": 0,
+    "shape": 1
+  }
+}

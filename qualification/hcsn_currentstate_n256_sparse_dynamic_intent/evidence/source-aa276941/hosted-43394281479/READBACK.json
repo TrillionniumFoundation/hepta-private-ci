@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-n256-sparse-dynamic-source-hosted-readback-v1",
+  "source_commit": "aa276941148f22520834d7aa9ace8a9a966b38b4",
+  "pull_request": 6298,
+  "workflow_run": 43394281479,
+  "job": 131781320891,
+  "workflow_conclusion": "success",
+  "artifact_id": 14020944683,
+  "artifact_name": "hcsn-n256-sparse-dynamic-source-8d81468da617013fcedf2eb89ea4f49948120606",
+  "artifact_name_uses_pull_request_merge_sha": true,
+  "workflow_run_head_sha": "aa276941148f22520834d7aa9ace8a9a966b38b4",
+  "zip_bytes": 1652,
+  "zip_sha256": "d2d7264a8a1f3688de132ac139e071acacf08ff82126eb3cf17927d2e3fff0dd",
+  "zip_git_blob_sha1": "e92e321c5ef24c291864a42959b666c163a88b6c",
+  "members": [
+    "COUNTS.json",
+    "REPORT.json",
+    "TEST_STDERR.txt",
+    "TEST_STDOUT.txt"
+  ],
+  "test_count": 3,
+  "test_failures": 0,
+  "wall_seconds": 0.17,
+  "cpu_user_seconds": 0.1,
+  "cpu_system_seconds": 0.02,
+  "max_rss_kib": 22112,
+  "execution_counts": {
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "oracle_calls": 0,
+    "serializer_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "status": "PASS_SOURCE_ONLY_HOLD_NUMERICAL",
+  "largegrid_qualification": false,
+  "all_closed": false
+}

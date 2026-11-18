@@ -1,0 +1,47 @@
+{
+  "binary_archive": {
+    "include_base": false,
+    "path": "/workspace/scratch/1d69f04ee9f4/hepta-memory-growth-checkpoints-20261023.zip",
+    "retain_all_candidates_even_if_unselected": true,
+    "snapshots": [
+      "confirmation-001/lifecycle/rebuilt-cell",
+      "growth-confirmation-001/candidates/single-0",
+      "growth-confirmation-001/candidates/split-0",
+      "growth-confirmation-001/candidates/split-1"
+    ]
+  },
+  "claims": {
+    "compression_advantage_proven": false,
+    "general_memory_proven": false,
+    "learned_routing_proven": false,
+    "production_accepted": false
+  },
+  "omit_binary_payloads_from_git": [
+    "*.safetensors",
+    "*.sqlite3",
+    "*.sqlite3-wal",
+    "*.sqlite3-shm",
+    "*.sqlite"
+  ],
+  "raw_record_policy": "Copy unchanged UTF-8 bytes, preserving hashes and negative outcomes. Do not rewrite previous6edef evidence. Model outputs must be complete before assembly.",
+  "raw_source_snapshot_filename_policy": "Any copied .py receipt is stored as .py.txt with unchanged bytes; its original source path remains in the inventory.",
+  "schema": "hepta.parametric-memory.next-evidence-assembly-plan.v1",
+  "source_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "source_tree": "78d3287f92f3abbca4843d746b975aed922c3d36",
+  "target_branch": "codex/memory-parametric-growth-evidence-20261023",
+  "target_repository_path": "qa/stem-bakeoff/evidence/20261023-parametric-memory-growth",
+  "text_roots": [
+    {
+      "destination": "engineering",
+      "source": "/workspace/scratch/1d69f04ee9f4/parametric-next-20261023"
+    },
+    {
+      "destination": "growth-validation",
+      "source": "/workspace/scratch/1d69f04ee9f4/memory-growth-validation-20261023"
+    },
+    {
+      "destination": "growth-confirmation-001",
+      "source": "/workspace/scratch/1d69f04ee9f4/parametric-runs/growth-confirmation-001"
+    }
+  ]
+}

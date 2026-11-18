@@ -1,0 +1,65 @@
+{
+  "closed_engineering": [
+    {
+      "evidence": "selection/tie-regression-before.txt and evolution-regression-after.txt",
+      "id": "continuation-on-quality-tie",
+      "resolution": "Strict source-selection improvement is now required; tie retains parent."
+    },
+    {
+      "evidence": "hardening/before.json and after.json",
+      "id": "withdrawal-during-checkpoint-validation",
+      "resolution": "Repeat frontier/version admission after checkpoint verification and before callback; post-admission in-flight result remains checked afterward."
+    },
+    {
+      "evidence": "hardening/focused-tests.log",
+      "id": "blocking-special-file-read",
+      "resolution": "Bounded regular-file and descriptor identity checks with conditional nofollow/nonblocking flags."
+    },
+    {
+      "evidence": "review/growth-review.json",
+      "id": "retired-growth-parent",
+      "resolution": "Pinned actual clean replay after withdrawal, with exact15-source digest and no revoked ancestry."
+    },
+    {
+      "evidence": "growth6 direct test log",
+      "id": "growth-cost-portability",
+      "resolution": "Correct Linux/Darwin RSS units and unavailable null on unsupported platforms."
+    },
+    {
+      "evidence": "source-reconciliation-before-run.json",
+      "id": "ambiguous-execution-source",
+      "resolution": "Published17 changed blobs verified before local HEAD reconciliation; main run uses frozen2b42a265."
+    }
+  ],
+  "code_head": "2b42a265e51ad2ac0d2127e8f6b81cc4fa4d1b3b",
+  "pending_until_actual_results": [
+    {
+      "gate": "Separate old and new recall >=.75, preserve every parent-correct old fact, measured matched updates, four admitted fresh readers, unchanged selection/source.",
+      "id": "bounded-sequential-arrival"
+    },
+    {
+      "gate": "Real required workflow jobs execute and pass; queued, pending and skipped are not success.",
+      "id": "remote-ci"
+    }
+  ],
+  "production_accepted": false,
+  "schema": "hepta.parametric-memory.next-stage-blocker-plan.v1",
+  "unproven_research": [
+    {
+      "gate": "Measure total active and retained bytes, source/replay cost, base amortization and task quality against real retrieval/exact stores at scale.",
+      "id": "compression-advantage"
+    },
+    {
+      "gate": "Demonstrate repeatable benefit under a learned/discovered partition and resource budget, beyond fixed color/shape routing.",
+      "id": "autonomous-specialization-and-routing"
+    },
+    {
+      "gate": "Generalize to heterogeneous factual/episodic/procedural memories, updates, time and out-of-distribution tasks with stable lifecycle controls.",
+      "id": "general-memory"
+    },
+    {
+      "gate": "Live authenticated external source frontier and production authorization; this run uses a pinned local snapshot.",
+      "id": "production-source-authority"
+    }
+  ]
+}

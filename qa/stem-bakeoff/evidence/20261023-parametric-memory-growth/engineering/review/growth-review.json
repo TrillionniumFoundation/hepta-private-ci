@@ -1,0 +1,77 @@
+{
+  "schema": "hepta.parametric-memory.independent-growth-review.v1",
+  "reviewer": "memory_hardening_review",
+  "mode": "read_only_code_and_retained_evidence_review",
+  "reviewed_directory": "scripts/memory_cell_growth",
+  "reviewed_source_manifest_reported_by_author": "2798e94b427c0f1e46af0e7e879d8ac73e5616f30915d6b309811cf297e0c29f",
+  "manifest_attribution": "Author-reported freeze identity, not independently recomputed. Findings concern the frozen files inspected before the subsequent RSS repair.",
+  "tests_or_model_runs_executed_by_reviewer": false,
+  "reviewer_edited_implementation": false,
+  "independently_checked_pins": {
+    "clean_parent_lineage_sha256": "c273d4555cc0dbb105fc38a674ac6963a43cf48c58d9fced6a38e373759c2e05",
+    "clean_replay_fixture_sha256": "1e2ee44982654500732596e6d41e4f7222702ce3b187f2eb1fced0c24afd70ce",
+    "parent_provenance_fixture_sha256": "ac920436b96e5dd9e2646add53db932d63b8d0f890a9675c9eca1beb587f430d",
+    "original_lifecycle_result_sha256": "a8bd641a93e41175674f1653a8c5a5799cadf782b8f0c99d72cd7b5ba19df167",
+    "original_source_file_sha256": "9080d8212c52662e574df2887783f82926e6a023cf394c52bd4d7ca99544e07d",
+    "prior_evidence_directory": "/workspace/scratch/1d69f04ee9f4/parametric-prior-evidence-published-6edef799/confirmation-001"
+  },
+  "lineage_findings": {
+    "fifteen_sources_and_no_alice": true,
+    "source_roots_equal_clean_parent_roots": true,
+    "revoked_roots_match_original_lifecycle_receipt": true,
+    "original_lifecycle_active_digest_matches_clean_parent": true,
+    "clean_parent_initialization": "frozen_base",
+    "clean_parent_inherited_roots": [],
+    "clean_parent_learned_parent": null,
+    "withdrawn_sources_rejected_before_candidate_model_load": true,
+    "retired_original_parent_rejected_by_fixed_clean_parent_pin": true
+  },
+  "budget_arithmetic": {
+    "old_facts": 15,
+    "incoming_facts": 15,
+    "templates_per_fact": 4,
+    "single_steps": 480,
+    "split_steps_each": 240,
+    "single_visits_per_source_template": "480 / (30 * 4) = 4",
+    "split_visits_per_source_template": "240 / (15 * 4) = 4",
+    "visits_per_fact_in_each_trained_arm": 16,
+    "all_candidate_optimizer_steps": 960,
+    "split_private_parameter_bytes_multiple": 2,
+    "equal_flops_or_equal_parameter_budget_accepted": false,
+    "basis": "Registered complete-epoch schedule in fit_sources; actual write receipts remain required from the main run."
+  },
+  "selection_and_admission_findings": [
+    "Fixed protocol and source identity are written before training; source and parent inputs are independently pinned.",
+    "Selection uses only the declared source-selection wording and source fact values, with per-item old retention and predeclared single/split improvement margins.",
+    "The final template is tokenized early only to check distinctness; final generation and scoring do not feed selection.",
+    "The complete selection report is flushed before final worker calls and its bytes are checked afterward.",
+    "Each actual fresh worker is invoked inside ParametricOwner.invoke using the admitted version; the owner performs pre-callback and post-callback validation.",
+    "Final exact-match scoring starts after all four worker journals exist.",
+    "No material lineage, budget, test-output leakage, or owner-bypass defect was found in this fixed main path."
+  ],
+  "material_defects": [
+    {
+      "id": "growth-rss-portability",
+      "file": "scripts/memory_cell_growth/growth_trial.py",
+      "observed_problem": "Unconditional import resource prevents Windows CLI import, and unconditional ru_maxrss multiplication by 1024 misstates Darwin byte measurements.",
+      "status": "Author reports repaired; parent validation and final freeze pending. Reviewer has not independently inspected or tested the subsequent repair.",
+      "requested_resolution": "Optional platform-aware RSS measurement: Linux KiB conversion, Darwin native bytes, explicit unavailable/null elsewhere.",
+      "primary_references": [
+        "https://docs.python.org/3/library/resource.html",
+        "https://bugs.python.org/issue20468"
+      ]
+    }
+  ],
+  "accepted_limits": [
+    "One fixed synthetic source-recall experiment; source facts are observed during training and only wording is held out.",
+    "Fifteen new shape assignments are a new relation, not a newly evolved architectural cell type.",
+    "The frontier is an independently pinned local epoch-1 snapshot, not a live authenticated external authority.",
+    "The final owner transaction is a local admission point; later authority/version changes may overlap computation and suppress results afterward.",
+    "The typed color/shape router is declared metadata routing, not learned or emergent routing.",
+    "Split has twice the private parameters; equal optimizer work and per-fact exposure do not establish equal resource cost or a compression advantage.",
+    "Nochange answers to unwritten incoming facts are diagnostic raw generations, not provenance-admitted memory claims.",
+    "No general-memory, production-acceptance, or statistical unlearning conclusion is supported.",
+    "Main real-model outcome was not yet available during this review; a negative fixed-protocol result must be retained."
+  ],
+  "production_accepted": false
+}

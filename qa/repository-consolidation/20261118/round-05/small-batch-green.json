@@ -1,0 +1,94 @@
+[
+  {
+    "name": "ndu-unit",
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_posthoc_signflip_audit",
+      "test_audit_cell_actions"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qa/ndu-grounded-generation",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_cli_creates_new_report_without_modifying_input (test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_creates_new_report_without_modifying_input) ... ok\ntest_cli_preserves_input_archive_when_output_aliases_it (test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_preserves_input_archive_when_output_aliases_it) ... usage: audit [-h] [--output OUTPUT] archive\naudit: error: output must be a new file distinct from the original archive\nok\ntest_cli_refuses_to_overwrite_existing_report (test_posthoc_signflip_audit.PosthocSignflipTests.test_cli_refuses_to_overwrite_existing_report) ... usage: audit [-h] [--output OUTPUT] archive\naudit: error: output must be a new file distinct from the original archive\nok\ntest_cross_task_source_alias_is_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_cross_task_source_alias_is_rejected) ... ok\ntest_duplicate_is_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_duplicate_is_rejected) ... ok\ntest_exact_negative_two (test_posthoc_signflip_audit.PosthocSignflipTests.test_exact_negative_two) ... ok\ntest_exact_positive_two (test_posthoc_signflip_audit.PosthocSignflipTests.test_exact_positive_two) ... ok\ntest_exact_ties (test_posthoc_signflip_audit.PosthocSignflipTests.test_exact_ties) ... ok\ntest_full_journal_score_tamper_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_full_journal_score_tamper_rejected) ... ok\ntest_holm_stepdown_with_tie_and_upper_bound (test_posthoc_signflip_audit.PosthocSignflipTests.test_holm_stepdown_with_tie_and_upper_bound) ... ok\ntest_nan_and_loss_tamper_are_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_nan_and_loss_tamper_are_rejected) ... ok\ntest_signflip_rejects_bad_input_or_unbounded_exact_work (test_posthoc_signflip_audit.PosthocSignflipTests.test_signflip_rejects_bad_input_or_unbounded_exact_work) ... ok\ntest_source_changes_inside_task_is_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_source_changes_inside_task_is_rejected) ... ok\ntest_unbalanced_method_order_rejected (test_posthoc_signflip_audit.PosthocSignflipTests.test_unbalanced_method_order_rejected) ... ok\ntest_valid_full_roster_and_rotated_order (test_posthoc_signflip_audit.PosthocSignflipTests.test_valid_full_roster_and_rotated_order) ... ok\ntest_duplicate_arm_rejected (test_audit_cell_actions.ActionAuditTests.test_duplicate_arm_rejected) ... ok\ntest_forged_argmax_flag_rejected (test_audit_cell_actions.ActionAuditTests.test_forged_argmax_flag_rejected) ... ok\ntest_forged_inactive_switch_rejected (test_audit_cell_actions.ActionAuditTests.test_forged_inactive_switch_rejected) ... ok\ntest_good_roster_is_non_authorizing (test_audit_cell_actions.ActionAuditTests.test_good_roster_is_non_authorizing) ... ok\ntest_invalid_action_weights_rejected (test_audit_cell_actions.ActionAuditTests.test_invalid_action_weights_rejected) ... ok\ntest_missing_arm_rejected (test_audit_cell_actions.ActionAuditTests.test_missing_arm_rejected) ... ok\ntest_modified_source_identity_denied (test_audit_cell_actions.ActionAuditTests.test_modified_source_identity_denied) ... ok\ntest_nan_quality_rejected (test_audit_cell_actions.ActionAuditTests.test_nan_quality_rejected) ... ok\ntest_termination_incomplete_remains_denominator (test_audit_cell_actions.ActionAuditTests.test_termination_incomplete_remains_denominator) ... ok\ntest_unpinned_journal_denied (test_audit_cell_actions.ActionAuditTests.test_unpinned_journal_denied) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.022s\n\nOK\n"
+  },
+  {
+    "name": "matrix-unit",
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_memory_matrix_contract"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qa/stem-bakeoff",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_all_nine_arms_pair_by_exact_query_and_group (test_memory_matrix_contract.MemoryMatrixContractTests.test_all_nine_arms_pair_by_exact_query_and_group) ... ok\ntest_arm_relabel_or_p_hacking_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_arm_relabel_or_p_hacking_rejected) ... ok\ntest_boolean_resource_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_boolean_resource_rejected) ... ok\ntest_duplicate_arm_query_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_duplicate_arm_query_is_fatal) ... ok\ntest_empty_future_window_is_not_promoted (test_memory_matrix_contract.MemoryMatrixContractTests.test_empty_future_window_is_not_promoted) ... ok\ntest_freeze_plan_create_only_with_exact_bytes (test_memory_matrix_contract.MemoryMatrixContractTests.test_freeze_plan_create_only_with_exact_bytes) ... ok\ntest_future_harm_is_exposed_without_cherry_picking (test_memory_matrix_contract.MemoryMatrixContractTests.test_future_harm_is_exposed_without_cherry_picking) ... ok\ntest_gold_byte_tamper_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_gold_byte_tamper_rejected) ... ok\ntest_gold_in_serving_payload_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_gold_in_serving_payload_is_fatal) ... ok\ntest_invented_source_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_invented_source_is_fatal) ... ok\ntest_missing_arm_row_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_missing_arm_row_is_fatal) ... ok\ntest_missing_source_snapshot_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_missing_source_snapshot_rejected) ... ok\ntest_multi_hop_safety_harm_is_exposed (test_memory_matrix_contract.MemoryMatrixContractTests.test_multi_hop_safety_harm_is_exposed) ... ok\ntest_negative_budget_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_negative_budget_rejected) ... ok\ntest_old_or_wrong_plan_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_old_or_wrong_plan_is_fatal) ... ok\ntest_over_budget_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_over_budget_rejected) ... ok\ntest_prediction_inventory_binds_the_bytes_actually_scored (test_memory_matrix_contract.MemoryMatrixContractTests.test_prediction_inventory_binds_the_bytes_actually_scored) ... ok\ntest_refuses_extra_prediction_metrics (test_memory_matrix_contract.MemoryMatrixContractTests.test_refuses_extra_prediction_metrics) ... ok\ntest_split_leakage_rejected (test_memory_matrix_contract.MemoryMatrixContractTests.test_split_leakage_rejected) ... ok\ntest_stale_forget_frontier_is_fatal (test_memory_matrix_contract.MemoryMatrixContractTests.test_stale_forget_frontier_is_fatal) ... ok\ntest_unanswerable_accepted_is_not_success (test_memory_matrix_contract.MemoryMatrixContractTests.test_unanswerable_accepted_is_not_success) ... ok\ntest_unsupported_wrong_answer_is_not_success (test_memory_matrix_contract.MemoryMatrixContractTests.test_unsupported_wrong_answer_is_not_success) ... ok\ntest_wrong_citation_is_not_success_even_for_exact_answer (test_memory_matrix_contract.MemoryMatrixContractTests.test_wrong_citation_is_not_success_even_for_exact_answer) ... ok\ntest_wrong_query_bytes_cannot_be_frozen (test_memory_matrix_contract.MemoryMatrixContractTests.test_wrong_query_bytes_cannot_be_frozen) ... ok\n\n----------------------------------------------------------------------\nRan 24 tests in 0.708s\n\nOK\n"
+  },
+  {
+    "name": "hcsn-unit",
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "-v",
+      "test_admission"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qualification/hcsn_c2_current_budget_admission_20261117_c06d",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_frozen_request_holds (test_admission.AdmissionTests.test_frozen_request_holds) ... ok\ntest_rejects_current_balance_fill (test_admission.AdmissionTests.test_rejects_current_balance_fill) ... ok\ntest_rejects_cursor_inference (test_admission.AdmissionTests.test_rejects_cursor_inference) ... ok\ntest_rejects_diagnostic_relabel (test_admission.AdmissionTests.test_rejects_diagnostic_relabel) ... ok\ntest_rejects_execution_key (test_admission.AdmissionTests.test_rejects_execution_key) ... ok\ntest_rejects_full_replay_claim (test_admission.AdmissionTests.test_rejects_full_replay_claim) ... ok\ntest_rejects_nonzero_optimizer_execution (test_admission.AdmissionTests.test_rejects_nonzero_optimizer_execution) ... ok\ntest_rejects_replay_admission (test_admission.AdmissionTests.test_rejects_replay_admission) ... ok\ntest_rejects_runtime_completion_claim (test_admission.AdmissionTests.test_rejects_runtime_completion_claim) ... ok\ntest_rejects_unknown_optimizer_fill (test_admission.AdmissionTests.test_rejects_unknown_optimizer_fill) ... ok\ntest_rejects_wall_rewrite (test_admission.AdmissionTests.test_rejects_wall_rewrite) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.003s\n\nOK\n"
+  },
+  {
+    "name": "hcsn-optimized-unit",
+    "command": [
+      "python",
+      "-O",
+      "-m",
+      "unittest",
+      "-v",
+      "test_admission"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qualification/hcsn_c2_current_budget_admission_20261117_c06d",
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_frozen_request_holds (test_admission.AdmissionTests.test_frozen_request_holds) ... ok\ntest_rejects_current_balance_fill (test_admission.AdmissionTests.test_rejects_current_balance_fill) ... ok\ntest_rejects_cursor_inference (test_admission.AdmissionTests.test_rejects_cursor_inference) ... ok\ntest_rejects_diagnostic_relabel (test_admission.AdmissionTests.test_rejects_diagnostic_relabel) ... ok\ntest_rejects_execution_key (test_admission.AdmissionTests.test_rejects_execution_key) ... ok\ntest_rejects_full_replay_claim (test_admission.AdmissionTests.test_rejects_full_replay_claim) ... ok\ntest_rejects_nonzero_optimizer_execution (test_admission.AdmissionTests.test_rejects_nonzero_optimizer_execution) ... ok\ntest_rejects_replay_admission (test_admission.AdmissionTests.test_rejects_replay_admission) ... ok\ntest_rejects_runtime_completion_claim (test_admission.AdmissionTests.test_rejects_runtime_completion_claim) ... ok\ntest_rejects_unknown_optimizer_fill (test_admission.AdmissionTests.test_rejects_unknown_optimizer_fill) ... ok\ntest_rejects_wall_rewrite (test_admission.AdmissionTests.test_rejects_wall_rewrite) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 0.002s\n\nOK\n"
+  },
+  {
+    "name": "hcsn-freeze",
+    "command": [
+      "python",
+      "verify_frozen_sources.py"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qualification/hcsn_c2_current_budget_admission_20261117_c06d",
+    "exit_code": 0,
+    "stdout": "{\"frozen_files\": 5, \"model_executions\": 0, \"native_jobs\": 0, \"new_execution_keys\": 0, \"optimizer_calls\": 0, \"status\": \"PASS\", \"torch_executions\": 0}\n",
+    "stderr": ""
+  },
+  {
+    "name": "hcsn-optimized-freeze",
+    "command": [
+      "python",
+      "-O",
+      "verify_frozen_sources.py"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qualification/hcsn_c2_current_budget_admission_20261117_c06d",
+    "exit_code": 0,
+    "stdout": "{\"frozen_files\": 5, \"model_executions\": 0, \"native_jobs\": 0, \"new_execution_keys\": 0, \"optimizer_calls\": 0, \"status\": \"PASS\", \"torch_executions\": 0}\n",
+    "stderr": ""
+  },
+  {
+    "name": "hcsn-hold",
+    "command": [
+      "python",
+      "admission.py"
+    ],
+    "cwd": "/workspace/scratch/4be89e6b2988/frontier_structure/small_clean_batch/tree/qualification/hcsn_c2_current_budget_admission_20261117_c06d",
+    "exit_code": 0,
+    "stdout": "{\"current_balance\": \"UNKNOWN\", \"diagnostics_count_as_full_replay\": false, \"execution_key\": null, \"full_fit_replays\": \"0/6\", \"replay_admitted\": false, \"resource_admitted\": false, \"status\": \"HOLD_INCOMPLETE_HISTORY\"}\n",
+    "stderr": ""
+  }
+]

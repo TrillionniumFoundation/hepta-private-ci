@@ -1,0 +1,146 @@
+{
+  "schema": "hepta.ndu-v1-posthoc-paired-sensitivity.v1",
+  "status": "exploratory_posthoc_only",
+  "archive_sha256": "2ac7d46df01fb3e24cd1004cef75ad0efd4076b5f1c9556b560e97546ffaceb5",
+  "compact_sha256": "6cd7eefcd53139e816ecccd31b963461526260081ede0f07b0fbffb327dab013",
+  "full_journal_sha256": "b9e7e0a53622b9b87e29507684684389aaf798e97bf53b0d4e93f44570786e39",
+  "tasks": 64,
+  "episodes": 768,
+  "methods": [
+    "base",
+    "static_cells",
+    "learned_router",
+    "best_of_n",
+    "mean_only",
+    "risk_actor_critic",
+    "ndu",
+    "ablate_covariance",
+    "ablate_fixed_weights",
+    "ablate_crossmodal",
+    "ablate_missing_modality",
+    "ablate_shuffled_pair"
+  ],
+  "method_execution_order": {
+    "balanced_positions": true,
+    "minimum_per_position": 5,
+    "maximum_per_position": 6,
+    "ndu_position_counts": {
+      "0": 5,
+      "1": 5,
+      "2": 5,
+      "3": 6,
+      "4": 6,
+      "5": 6,
+      "6": 6,
+      "7": 5,
+      "8": 5,
+      "9": 5,
+      "10": 5,
+      "11": 5
+    },
+    "all_scores_full_journal_reconciled": 768
+  },
+  "ndu_budget_exceeded": [
+    {
+      "task_id": "ggv1_42dfadfc934ac3d2e1fd030a",
+      "source_id": "coco:val2017:393226",
+      "wall_seconds": 24.83312520099571,
+      "encoder_seconds": 24.79578240299452,
+      "actual_control_decisions": 0
+    },
+    {
+      "task_id": "ggv1_e01f69ec9958977c743198f3",
+      "source_id": "coco:val2017:532901",
+      "wall_seconds": 23.00439158199879,
+      "encoder_seconds": 22.989070493997133,
+      "actual_control_decisions": 0
+    }
+  ],
+  "comparisons": {
+    "base": {
+      "nonzero_pairs": 5,
+      "wins": 3,
+      "losses": 2,
+      "ties": 59,
+      "mean_quality_delta": 0.007291666666666667,
+      "one_sided_ndu_superiority_p": 0.40625,
+      "two_sided_exchangeable_p": 0.8125,
+      "mean_wall_delta_seconds": 0.44639907401608525,
+      "mean_wall_ratio": 1.1633815230757438,
+      "coverage_delta": 0,
+      "holm_six_one_sided_p": 1
+    },
+    "static_cells": {
+      "nonzero_pairs": 5,
+      "wins": 2,
+      "losses": 3,
+      "ties": 59,
+      "mean_quality_delta": -0.009635416666666667,
+      "one_sided_ndu_superiority_p": 0.71875,
+      "two_sided_exchangeable_p": 0.6875,
+      "mean_wall_delta_seconds": 0.4454942029378799,
+      "mean_wall_ratio": 1.1629963599362032,
+      "coverage_delta": 0,
+      "holm_six_one_sided_p": 1
+    },
+    "learned_router": {
+      "nonzero_pairs": 3,
+      "wins": 1,
+      "losses": 2,
+      "ties": 61,
+      "mean_quality_delta": -0.023177083333333334,
+      "one_sided_ndu_superiority_p": 0.875,
+      "two_sided_exchangeable_p": 0.5,
+      "mean_wall_delta_seconds": 0.7742774182496532,
+      "mean_wall_ratio": 1.322029083370046,
+      "coverage_delta": -0.03125,
+      "holm_six_one_sided_p": 1
+    },
+    "best_of_n": {
+      "nonzero_pairs": 5,
+      "wins": 1,
+      "losses": 4,
+      "ties": 59,
+      "mean_quality_delta": -0.035416666666666666,
+      "one_sided_ndu_superiority_p": 0.96875,
+      "two_sided_exchangeable_p": 0.125,
+      "mean_wall_delta_seconds": 0.6141304532033018,
+      "mean_wall_ratio": 1.2394720723270243,
+      "coverage_delta": -0.03125,
+      "holm_six_one_sided_p": 1
+    },
+    "mean_only": {
+      "nonzero_pairs": 2,
+      "wins": 0,
+      "losses": 2,
+      "ties": 62,
+      "mean_quality_delta": -0.025520833333333333,
+      "one_sided_ndu_superiority_p": 1,
+      "two_sided_exchangeable_p": 0.5,
+      "mean_wall_delta_seconds": 0.7550870409223762,
+      "mean_wall_ratio": 1.3115609201780973,
+      "coverage_delta": -0.03125,
+      "holm_six_one_sided_p": 1
+    },
+    "risk_actor_critic": {
+      "nonzero_pairs": 2,
+      "wins": 0,
+      "losses": 2,
+      "ties": 62,
+      "mean_quality_delta": -0.025520833333333333,
+      "one_sided_ndu_superiority_p": 1,
+      "two_sided_exchangeable_p": 0.5,
+      "mean_wall_delta_seconds": 0.6942059462505767,
+      "mean_wall_ratio": 1.2794212097396298,
+      "coverage_delta": -0.03125,
+      "holm_six_one_sided_p": 1
+    }
+  },
+  "interpretation_limits": [
+    "Exact sign-flip p-values condition on exchangeability under the null; methods were not independently randomized within source.",
+    "Holm corrects six one-sided NDU-superiority comparisons only; analysis was defined after original test access.",
+    "No new samples, rerun decoder outputs, added seed, strict equal-cost allocation, multiplicity-adjusted confirmatory claim or causal attribution.",
+    "Zero-quality incomplete/over-budget episodes are included in every all-source comparison.",
+    "The original NDU v1 scoring/protocol/test rows must not be changed or promoted based on this supplement."
+  ]
+}

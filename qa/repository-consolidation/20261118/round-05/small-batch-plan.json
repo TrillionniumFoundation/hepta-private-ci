@@ -1,0 +1,317 @@
+{
+  "source": "f571db956745d0702baba6da800b6c923aed34cc",
+  "original_tree": "145fe40b35c1b2b24633a8b2c820f1a5ccbb8bc0",
+  "tree_sha": "eca8e1dba369a5448072ecda8a73b2feb4b931d1",
+  "original_heads": [
+    {
+      "sha": "49dbc2fd4e79369a3a607aed743972f22fc06a0d",
+      "names": [
+        "maintenance/ruff-two-source-artifact-20261019"
+      ]
+    },
+    {
+      "sha": "10b6f2199f5b9a4843b08b3ad8b8f127d65f40d4",
+      "names": [
+        "research/ndu-v1-posthoc-signflip-20261023"
+      ]
+    },
+    {
+      "sha": "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1",
+      "names": [
+        "research/ndu-v1-cell-action-forensics-20261023-gpt6"
+      ]
+    },
+    {
+      "sha": "761994a974b224bf2060a030bc714fd5d55289c7",
+      "names": [
+        "codex/memory-ai-matrix-v1-20261023"
+      ]
+    },
+    {
+      "sha": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "names": [
+        "codex/learn-merge-profile-ce434-20261112-v5"
+      ]
+    },
+    {
+      "sha": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "names": [
+        "research/hcsn-c2-current-budget-admission-hold-20261117-c06d-v1"
+      ]
+    }
+  ],
+  "covered_pending_heads": [
+    "10b6f2199f5b9a4843b08b3ad8b8f127d65f40d4",
+    "49dbc2fd4e79369a3a607aed743972f22fc06a0d",
+    "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+    "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+    "761994a974b224bf2060a030bc714fd5d55289c7",
+    "7809c14bda29dc851c27fe801830a83579c068c4",
+    "b5f1b48c4808d6e1233b5936f78daae261da6d5b",
+    "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1"
+  ],
+  "covered_pending_names": [
+    "codex/learn-head-readonly-merge-portable-ce434-20261112-v5",
+    "codex/learn-head-readonly-merge-recovery-ce434-20261112-v5",
+    "codex/learn-merge-profile-ce434-20261112-v5",
+    "codex/memory-ai-matrix-v1-20261023",
+    "maintenance/ruff-two-source-artifact-20261019",
+    "research/hcsn-c2-current-budget-admission-hold-20261117-c06d-v1",
+    "research/ndu-v1-cell-action-forensics-20261023-gpt6",
+    "research/ndu-v1-posthoc-signflip-20261023"
+  ],
+  "elements": [
+    {
+      "path": ".github/workflows/hepta-ruff-two-source-diagnostic.yml",
+      "mode": "100644",
+      "sha": "690607834a3c9b0b58ed8addb8cd9f20f838bb92",
+      "bytes": 2288,
+      "sha256": "ce268cc2e418309d1289ad75b546fe150867541f881adac9003c5a1d339fa32f",
+      "source_head": "49dbc2fd4e79369a3a607aed743972f22fc06a0d",
+      "original_blob": "690607834a3c9b0b58ed8addb8cd9f20f838bb92",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/ndu-grounded-evidence/2026-10-22/posthoc-paired-sensitivity.json",
+      "mode": "100644",
+      "sha": "b9a08619cc222d949879b2a82602ff879905e9b6",
+      "bytes": 4643,
+      "sha256": "4b4e465bd46c948b3eae8f63fd4501684db0ecfc62225e9a918898d389175305",
+      "source_head": "10b6f2199f5b9a4843b08b3ad8b8f127d65f40d4",
+      "original_blob": "b9a08619cc222d949879b2a82602ff879905e9b6",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/ndu-grounded-generation/posthoc_signflip_audit.py",
+      "mode": "100644",
+      "sha": "53bd7dc5ae31809b89eadf0849e408b0dc2425f1",
+      "bytes": 12140,
+      "sha256": "ab10de21a44613b3f8e5c85472459e64273fcf510205b75f8d48cd28742747f3",
+      "source_head": "10b6f2199f5b9a4843b08b3ad8b8f127d65f40d4",
+      "original_blob": "4ceb2553933961fe57df5cafbde585a4c17e037b",
+      "original_blob_unchanged": false
+    },
+    {
+      "path": "qa/ndu-grounded-generation/test_posthoc_signflip_audit.py",
+      "mode": "100644",
+      "sha": "c80a0d1ef78c1cbfb0b140e41b8e9df545fd8628",
+      "bytes": 7062,
+      "sha256": "e8f8f2154a203243cdd70d7d3aeeec74ba7e70fa93bffb8445c16ba8eb6f0884",
+      "source_head": "10b6f2199f5b9a4843b08b3ad8b8f127d65f40d4",
+      "original_blob": "5bc87fd86379551c476d2066352a0e5dbc569737",
+      "original_blob_unchanged": false
+    },
+    {
+      "path": "qa/ndu-grounded-evidence/2026-10-23/CELL_ACTION_AUDIT.md",
+      "mode": "100644",
+      "sha": "b9058735facc7b0706d57af5008c8001db275670",
+      "bytes": 1989,
+      "sha256": "e4e85c4cb0e3dbbcf01789b118039c5aa677b048d0f06fcc0a505a5ae3698c45",
+      "source_head": "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1",
+      "original_blob": "b9058735facc7b0706d57af5008c8001db275670",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/ndu-grounded-evidence/2026-10-23/cell-action-audit.json",
+      "mode": "100644",
+      "sha": "9c10f3d84af55c1c2f38d465277b7ee07e8f9460",
+      "bytes": 1658,
+      "sha256": "61f6cb308f6e3f6bebb962fd111f3de13bde2311c415ab9b87a59a4eea5a07e3",
+      "source_head": "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1",
+      "original_blob": "9c10f3d84af55c1c2f38d465277b7ee07e8f9460",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/ndu-grounded-generation/audit_cell_actions.py",
+      "mode": "100644",
+      "sha": "760702825a3c115269d612893f2ebd96c3a06dbe",
+      "bytes": 8073,
+      "sha256": "3362e4696789d4620c95beec641670d52498e45199851683dbf12699178dad5d",
+      "source_head": "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1",
+      "original_blob": "760702825a3c115269d612893f2ebd96c3a06dbe",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/ndu-grounded-generation/test_audit_cell_actions.py",
+      "mode": "100644",
+      "sha": "728f8d9814345981142bd1e2001a4c2ea05a3ba2",
+      "bytes": 3894,
+      "sha256": "c3904b5c49a19956e2dc145cd9d244aa175379fab97f218076b47bb221fe14aa",
+      "source_head": "e69edcfd84b534cc1f1d357dde2c4e04c5cf56e1",
+      "original_blob": "728f8d9814345981142bd1e2001a4c2ea05a3ba2",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": ".github/workflows/hepta-memory-ai-matrix-shadow.yml",
+      "mode": "100644",
+      "sha": "2fa93444144052696a861cc423b543c5cfb6d33b",
+      "bytes": 1493,
+      "sha256": "9efeaf6336538b533a82e23c7ddb4e6bbbfe8a101fffb38822968988ff405301",
+      "source_head": "761994a974b224bf2060a030bc714fd5d55289c7",
+      "original_blob": "2fa93444144052696a861cc423b543c5cfb6d33b",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "docs/learning/MEMORY_A_I_MATRIX_V1.md",
+      "mode": "100644",
+      "sha": "61f8711d6fbf4d1290360b10545078ccc526a88b",
+      "bytes": 10860,
+      "sha256": "abde811d08f8753d609062d8f06441ee487fab0ed9ee7c1aa3682c42d16671f2",
+      "source_head": "761994a974b224bf2060a030bc714fd5d55289c7",
+      "original_blob": "61f8711d6fbf4d1290360b10545078ccc526a88b",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qa/stem-bakeoff/memory_matrix_contract.py",
+      "mode": "100644",
+      "sha": "0a13a7cc153dcfd04d75f8d5e5c0846d18395824",
+      "bytes": 22960,
+      "sha256": "421493960c5a9ee5b21658073703cb1d22c642ef2bf0622d06c6263957acd7e5",
+      "source_head": "761994a974b224bf2060a030bc714fd5d55289c7",
+      "original_blob": "b4556ab78bae5f8aa0ada13f2c44d2f142c84c10",
+      "original_blob_unchanged": false
+    },
+    {
+      "path": "qa/stem-bakeoff/test_memory_matrix_contract.py",
+      "mode": "100644",
+      "sha": "dd87bf1cec68b91fbf14c58b6d765359431ef041",
+      "bytes": 13790,
+      "sha256": "56fd1b89019c8cacab37a3877dcd7f659d4c0bcac3f72e8464c6f2ece6b50653",
+      "source_head": "761994a974b224bf2060a030bc714fd5d55289c7",
+      "original_blob": "c2b2c455b7c948d11482914bd692a9b18994c3c1",
+      "original_blob_unchanged": false
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/README.md",
+      "mode": "100644",
+      "sha": "f5be79ac1e900f548879ade7430db0242d18fe2d",
+      "bytes": 5485,
+      "sha256": "3ba8b7abd06e939d57f32599c9c7e81089a4472a4ed30173c288c1e6f981e478",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "f5be79ac1e900f548879ade7430db0242d18fe2d",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/portable-resolver-notes.json",
+      "mode": "100644",
+      "sha": "e8e83171365d9901c3891185ad9b7e7d5cf3c193",
+      "bytes": 1215,
+      "sha256": "160def16b2392ed022b52720273e0f32aa444cf89eb189a65f1fc69df279cd6f",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "e8e83171365d9901c3891185ad9b7e7d5cf3c193",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/profile_learning_merge.py",
+      "mode": "100644",
+      "sha": "fcafd2250a1934f8933d00b23f469181621d517e",
+      "bytes": 10844,
+      "sha256": "aa4d1b14e26f3ba8aec85256ff32d23bfed8086602c699e4c63f25512dd12391",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "fcafd2250a1934f8933d00b23f469181621d517e",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/recovery-state.json",
+      "mode": "100644",
+      "sha": "4ba5cb255e893aa5c7419a3a595aea0fc6ad4a16",
+      "bytes": 3789,
+      "sha256": "56f53f608640a7d786461784f9c560d8ba2cc4ac5f8a23c364e7e127ff2dcfe1",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "4ba5cb255e893aa5c7419a3a595aea0fc6ad4a16",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/resolve_head_readonly_merge_portable_v5.py",
+      "mode": "100644",
+      "sha": "18bfd840102116c4ec4bd75027d838a505fe0d90",
+      "bytes": 14933,
+      "sha256": "6e8d5625b7c5398b949b14bf3dd66f48e9d2a4a5dc4ccebe7766d9b10314f6c2",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "18bfd840102116c4ec4bd75027d838a505fe0d90",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/learn-ordinary-ce434/head-readonly-merge-recovery-20261112/resolve_head_readonly_merge_v5.py",
+      "mode": "100644",
+      "sha": "3b8cdab17acb7e9dbd0062777c82f76ec2e93cf9",
+      "bytes": 14143,
+      "sha256": "696b3ef42485120a09d63fd27afcde12cff36280b81fd590cd58886ffc7930fb",
+      "source_head": "4f2bc7705d9608f69a360ebab82fd45a9ebdc5fa",
+      "original_blob": "3b8cdab17acb7e9dbd0062777c82f76ec2e93cf9",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/README.md",
+      "mode": "100644",
+      "sha": "cdb47773349d3a43043f22a5ed706b48aa1a3a76",
+      "bytes": 1928,
+      "sha256": "a153f36111b9642b5f2701b1c1d1e3a85297370557533c977bcfcae4350dfb0d",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "cdb47773349d3a43043f22a5ed706b48aa1a3a76",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/REQUEST.json",
+      "mode": "100644",
+      "sha": "007f0fc54149ac30a735d170d3fd4ba944f1bad3",
+      "bytes": 6257,
+      "sha256": "73b1f6ec2ddbd704bdf8b145c7c070478f7d017fae2cbf1e1fc935d3a590d7dd",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "007f0fc54149ac30a735d170d3fd4ba944f1bad3",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/SOURCE-FREEZE.json",
+      "mode": "100644",
+      "sha": "1159e78d098e6e4fa1d6173fe41fee37de2d325a",
+      "bytes": 730,
+      "sha256": "b0fb7eadc96ba97ddf1bff696d61534b2193d6d3908f7bb46b337dd5ea4b6c29",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "1159e78d098e6e4fa1d6173fe41fee37de2d325a",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/admission.py",
+      "mode": "100644",
+      "sha": "a7f3a7d82596b9d7d714fc5cdb10b4c9d0121ebc",
+      "bytes": 6840,
+      "sha256": "0053745a1f481bfa2b9d1a9b260df3e03d4bc8c8fbe99f6783df674fb89aec75",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "a7f3a7d82596b9d7d714fc5cdb10b4c9d0121ebc",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/test_admission.py",
+      "mode": "100644",
+      "sha": "d4edf30ff30c74b940e68f27676f3351b8e6679f",
+      "bytes": 2493,
+      "sha256": "80f838b75990a4fa31528ade89f358a344edbc28eb9fa0376d11d520c513cc1f",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "d4edf30ff30c74b940e68f27676f3351b8e6679f",
+      "original_blob_unchanged": true
+    },
+    {
+      "path": "qualification/hcsn_c2_current_budget_admission_20261117_c06d/verify_frozen_sources.py",
+      "mode": "100644",
+      "sha": "41f6f3739cc1dd51ecb8c703fc6a1df9c43dd47d",
+      "bytes": 1266,
+      "sha256": "9e77f36e4e6bafff418123f2208a658f75451fc394eb80e717fbdbde3d92f215",
+      "source_head": "6e4c33ad44b0f576a042d24647f757a5d5fa944d",
+      "original_blob": "41f6f3739cc1dd51ecb8c703fc6a1df9c43dd47d",
+      "original_blob_unchanged": true
+    }
+  ],
+  "new_path_count": 24,
+  "unchanged_original_blob_count": 20,
+  "adapted_source_or_test_count": 4,
+  "patch_sha256": "fbafa90883a602b860e2e064e2d6e7f1c3551fdd97ae549dae1dbb728578cab8",
+  "patch_bytes": 173466,
+  "adaptation_patch_sha256": "5df395b1355d91349f41f1bc09480dda0e2ea9fb6f82b1c2e3be4924fffbe6cb",
+  "diff_check_exit_code": 0,
+  "guard_sha256": "1cbbcf26bcf6a7ef811698128f76d5d119207843774186d256f2e3e2d16d2d3e",
+  "protected_pins_checked": 265,
+  "protected_markers_checked": 2,
+  "protected_ancestor_intersections": [],
+  "scope": "Six audited additive frontier heads; no existing source path or Rust source is changed. Apply elements to current candidate instead of replacing its tree with this older-base tree."
+}

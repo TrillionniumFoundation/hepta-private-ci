@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/workspace/scratch/4be89e6b2988/hepta-private-ci/scripts/.venv/bin/ruff",
+    "format",
+    "qa/ndu-grounded-generation/posthoc_signflip_audit.py",
+    "qa/ndu-grounded-generation/test_posthoc_signflip_audit.py",
+    "qa/stem-bakeoff/memory_matrix_contract.py",
+    "qa/stem-bakeoff/test_memory_matrix_contract.py"
+  ],
+  "stdout": "4 files reformatted\n",
+  "stderr": "",
+  "exit_code": 0,
+  "ast_unchanged_files": [
+    "qa/ndu-grounded-generation/posthoc_signflip_audit.py",
+    "qa/ndu-grounded-generation/test_posthoc_signflip_audit.py",
+    "qa/stem-bakeoff/memory_matrix_contract.py",
+    "qa/stem-bakeoff/test_memory_matrix_contract.py"
+  ],
+  "memory_module_unnecessary_future_import_removed": true,
+  "frozen_and_historical_sources_formatted": false
+}

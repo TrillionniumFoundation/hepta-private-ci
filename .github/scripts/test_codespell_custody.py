@@ -81,6 +81,21 @@ class CodespellCustodyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "digest mismatch"):
             codespell_custody.verified_skip(self.root)
 
+    def test_consolidation_binary_names_do_not_exempt_sources_or_neighbor_shards(self):
+        prefix = "qa/repository-consolidation/20261118/round-03/"
+        for suffix in (
+            "evidence.tar.gz.part-0004.py",
+            "evidence.tar.gz.part-0009/../restore_evidence.py",
+            "evidence.tar.gz.part-0005",
+            "evidence.tar.gz.part-*",
+            "restore_evidence.py",
+        ):
+            with self.subTest(suffix=suffix):
+                self.manifest["files"] = {prefix + suffix: "0" * 64}
+                self.write_manifest()
+                with self.assertRaisesRegex(ValueError, "exact repository path"):
+                    codespell_custody.verified_skip(self.root)
+
     def test_missing_original_is_rejected(self):
         (self.root / self.path).unlink()
         with self.assertRaises(FileNotFoundError):
