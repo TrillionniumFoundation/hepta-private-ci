@@ -1,0 +1,98 @@
+name: Hepta cloud cache clock compatibility qualification
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-cache-clock-compatibility.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-cache-clock-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+jobs:
+  qualify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: 1.96.0
+      - uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: ${{ matrix.target }}
+          cache-scope: cache-clock
+      - name: Verify locked graph and zero regenerated drift
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          evidence="$RUNNER_TEMP/hepta-cache-clock"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-head.txt"
+          cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/metadata.json"
+          just bazel-lock-update 2>&1 | tee "$evidence/lock-update.log"
+          just bazel-lock-check 2>&1 | tee "$evidence/lock-check.log"
+          cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
+          git diff --binary > "$evidence/generated-lock.patch"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path(os.environ["RUNNER_TEMP"]) / "hepta-cache-clock"
+          metadata = json.loads((root / "metadata.json").read_text(encoding="utf-8"))
+          links = [(p["name"],p["version"]) for p in metadata["packages"] if p.get("links") == "sqlite3"]
+          assert links == [("libsqlite3-sys","0.40.0")], links
+          changed = subprocess.check_output(["git","diff","--name-only"],text=True).splitlines()
+          assert changed == [], changed
+          (root / "record.json").write_text(json.dumps({
+              "head": os.environ["EXPECTED_HEAD"],
+              "links": links,
+              "changed": changed,
+              "locks": {n: hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["Cargo.lock","MODULE.bazel.lock"]},
+              "scope": "cloud-cache system-clock compatibility only; committed joint graph; zero drift required"
+          },indent=2)+"\n")
+          PY
+      - name: Execute codec, original cache controls and clock regressions without retries
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs -- \
+            test --nocache_test_results --flaky_test_attempts=1 --test_output=all -- \
+            //codex-rs/utils/time/... \
+            //codex-rs/cloud-config/... \
+            2>&1 | tee "$RUNNER_TEMP/hepta-cache-clock/tests.log"
+      - name: Clippy real codec and cache consumers
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary -- \
+            build --config=clippy -- \
+            //codex-rs/utils/time:time \
+            //codex-rs/cloud-config:cloud-config \
+            2>&1 | tee "$RUNNER_TEMP/hepta-cache-clock/clippy.log"
+          git diff --exit-code
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always() && !cancelled()
+        with:
+          name: hepta-cache-clock-${{ matrix.target }}-${{ github.event.pull_request.head.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-cache-clock
+            ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: error
