@@ -191,7 +191,6 @@ class DevelopmentTrial:
         self.ledger = TrialLedger(
             self.root / "trial.sqlite", expected_plan_sha256=expected_plan_sha256
         )
-        self.plan = self.ledger.plan
         clock = json.loads((self.root / "CLOCK.json").read_text())["clock_id"]
         if clock != clock_identity():
             raise ValueError("boot changed; old durations cannot use the new clock")
@@ -199,7 +198,31 @@ class DevelopmentTrial:
             self.root / "tasks.sqlite",
             candidate_sha256=expected_plan_sha256,
             clock_id=clock,
+            expected_plan_sha256=sha256(
+                canonical(
+                    {
+                        "candidate_sha256": expected_plan_sha256,
+                        "clock_id": clock,
+                        "tasks": [
+                            {
+                                "task_id": a["attempt_id"],
+                                "cell": "development-runner",
+                                "phase": "development",
+                                "arm": a["arm"],
+                                "source_group": canonical(
+                                    self.plan["tasks"][a["task_id"]]["source_groups"]
+                                ),
+                            }
+                            for a in self.plan["schedule"]
+                        ],
+                    }
+                ).encode()
+            ),
         )
+
+    @property
+    def plan(self):
+        return self.ledger.plan
 
     def execute(self, attempt_id):
         item = self.ledger.claim(attempt_id)

@@ -15,6 +15,8 @@ from pathlib import Path, PurePosixPath
 import re
 import sqlite3
 
+from .research_trial_integrity import validate_trial_history
+
 
 def canonical(value):
     return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False)
@@ -180,26 +182,45 @@ class TrialLedger:
             rows = db.execute("SELECT body FROM plan").fetchall()
         if len(rows) != 1 or sha256(rows[0][0].encode()) != expected_plan_sha256:
             raise ValueError("frozen plan differs from the externally retained digest")
-        self.raw, self.plan_sha256 = rows[0][0], expected_plan_sha256
-        self.plan = json.loads(self.raw)
-        validate_plan(self.plan)
+        self._raw, self._plan_sha256 = rows[0][0], expected_plan_sha256
+        validate_plan(json.loads(self._raw))
+        with self._db():
+            pass
+
+    @property
+    def raw(self):
+        return self._raw
+
+    @property
+    def plan(self):
+        """Return a copy; consumers cannot change an admitted decision mid-call."""
+        return json.loads(self._raw)
+
+    @property
+    def plan_sha256(self):
+        return self._plan_sha256
 
     @contextmanager
     def _db(self):
+        raw = getattr(self, "_raw", None)
+        plan = json.loads(raw) if raw is not None else None
         with closing(sqlite3.connect(self.path.as_uri() + "?mode=rw", uri=True)) as db:
             db.execute("PRAGMA synchronous=FULL")
             with db:
                 db.execute("BEGIN IMMEDIATE")
-                if hasattr(self, "raw") and db.execute(
+                if raw is not None and db.execute(
                     "SELECT body FROM plan"
-                ).fetchall() != [(self.raw,)]:
+                ).fetchall() != [(raw,)]:
                     raise ValueError("frozen plan was changed")
-                if hasattr(self, "plan") and canonical(self.plan) != self.raw:
-                    raise ValueError("in-memory frozen plan was changed")
+                if plan is not None:
+                    validate_trial_history(db, plan)
                 yield db
+                if plan is not None:
+                    validate_trial_history(db, plan)
 
     def claim(self, attempt_id):
-        schedule = {a["attempt_id"]: a for a in self.plan["schedule"]}
+        plan = json.loads(self._raw)
+        schedule = {a["attempt_id"]: a for a in plan["schedule"]}
         item, rejection = schedule.get(attempt_id), None
         with self._db() as db:
             used = dict(db.execute("SELECT id,state FROM attempts"))
@@ -209,13 +230,13 @@ class TrialLedger:
                 rejection = "attempt already consumed; pending work must not be retried"
             elif (
                 sum(schedule[a]["arm"] == item["arm"] for a in used)
-                >= self.plan["attempt_limit_per_arm"]
+                >= plan["attempt_limit_per_arm"]
             ):
                 rejection = "arm opportunity budget exhausted"
             else:
                 next_id = next(
                     a["attempt_id"]
-                    for a in self.plan["schedule"]
+                    for a in plan["schedule"]
                     if a["arm"] == item["arm"] and a["attempt_id"] not in used
                 )
                 if attempt_id != next_id:
