@@ -40,6 +40,11 @@ jobs:
           action="$RUNNER_TEMP/cargo-deny-action"
           mkdir -p "$evidence" "$RUNNER_TEMP/deny-home"
           git rev-parse HEAD > "$evidence/source-head.txt"
+          sha256sum codex-rs/Cargo.toml codex-rs/Cargo.lock MODULE.bazel MODULE.bazel.lock .github/workflows/cargo-deny.yml > "$evidence/source-inputs.sha256"
+          printf '%s\n' \
+            'dab5a95131e1b9c9b75144f6309d3a5686c2b82a5aee6a830d31bbeebfc8faf7  codex-rs/Cargo.lock' \
+            'd240b972292c4101a01eceb1281dd15cdc43c77979711281bcaa5d0c680580c1  MODULE.bazel.lock' \
+            | sha256sum --check
           git init "$action"
           git -C "$action" remote add origin https://github.com/EmbarkStudios/cargo-deny-action.git
           git -C "$action" fetch --depth=1 origin 82eb9f621fbc699dd0918f3ea06864c14cc84246
