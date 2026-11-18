@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="61" skipped="0" failures="0" errors="0" uuid="758c4326-cbda-4b1b-aa5a-5397978287ec" timestamp="2026-11-19T04:41:03.329+08:00" time="1.884">
+    <testsuite name="codex-agent-identity" tests="16" skipped="0" errors="0" failures="0">
+        <testcase name="tests::agent_identity_jwks_url_uses_agent_identity_jwt_route" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.331+08:00" time="0.017"/>
+        <testcase name="tests::agent_identity_jwks_url_uses_jwt_issuer_base_url" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.331+08:00" time="0.017"/>
+        <testcase name="tests::agent_task_registration_url_appends_to_authapi_base_url" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.348+08:00" time="0.011"/>
+        <testcase name="tests::agent_registration_url_appends_to_authapi_base_url" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.348+08:00" time="0.011"/>
+        <testcase name="tests::chatgpt_environment_maps_known_urls_to_authapi" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.360+08:00" time="0.009"/>
+        <testcase name="tests::authorization_header_for_agent_task_serializes_signed_agent_assertion" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.360+08:00" time="0.011"/>
+        <testcase name="tests::chatgpt_environment_rejects_custom_urls" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.369+08:00" time="0.008"/>
+        <testcase name="tests::decode_agent_identity_jwt_accepts_missing_email" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.371+08:00" time="0.008"/>
+        <testcase name="tests::decode_agent_identity_jwt_maps_raw_plan_aliases" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.377+08:00" time="0.007"/>
+        <testcase name="tests::decode_agent_identity_jwt_reads_claims" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.378+08:00" time="0.007"/>
+        <testcase name="tests::decode_agent_identity_jwt_rejects_untrusted_kid" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.385+08:00" time="0.008"/>
+        <testcase name="tests::decode_agent_identity_jwt_requires_issuer_and_audience" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.385+08:00" time="0.008"/>
+        <testcase name="tests::register_task_request_uses_single_run_task_shape" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.393+08:00" time="0.006"/>
+        <testcase name="tests::decode_agent_identity_jwt_verifies_when_jwks_is_present" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.393+08:00" time="0.008"/>
+        <testcase name="tests::retryable_registration_error_accepts_429_and_5xx" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.399+08:00" time="0.006"/>
+        <testcase name="tests::retryable_registration_error_rejects_hard_failures" classname="codex-agent-identity" timestamp="2026-11-19T04:41:03.401+08:00" time="0.006"/>
+    </testsuite>
+    <testsuite name="codex-cloud-config" tests="35" skipped="0" errors="0" failures="0">
+        <testcase name="cache::tests::load_rejects_expired_cache" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.406+08:00" time="0.010"/>
+        <testcase name="cache::tests::load_rejects_cache_for_incomplete_or_different_identity" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.405+08:00" time="0.011"/>
+        <testcase name="cache::tests::load_rejects_missing_request_identity_before_reading_cache_file" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.416+08:00" time="0.008"/>
+        <testcase name="cache::tests::load_rejects_tampered_payload" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.416+08:00" time="0.009"/>
+        <testcase name="cache::tests::load_reports_missing_and_malformed_cache_files" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.425+08:00" time="0.008"/>
+        <testcase name="cache::tests::load_rejects_unsupported_cache_version" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.425+08:00" time="0.009"/>
+        <testcase name="cache::tests::save_writes_signed_payload_and_loads_for_matching_identity" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.433+08:00" time="0.010"/>
+        <testcase name="cache::time_tests::existing_signed_cache_keeps_canonical_time_bytes_and_authentication" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.433+08:00" time="0.010"/>
+        <testcase name="service::tests::bundle_response_conversion_treats_missing_sections_as_empty" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.444+08:00" time="0.008"/>
+        <testcase name="service::tests::bundle_response_conversion_preserves_fragment_order" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.443+08:00" time="0.008"/>
+        <testcase name="service::tests::bundle_shape_tag_describes_sorted_enterprise_sources" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.451+08:00" time="0.008"/>
+        <testcase name="service::tests::get_bundle_allows_agent_identity_business_plan" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.460+08:00" time="0.010"/>
+        <testcase name="service::tests::dropping_loader_cancels_in_flight_startup_and_refresh" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.451+08:00" time="0.136"/>
+        <testcase name="service::tests::get_bundle_allows_eligible_workspace_plans_and_writes_cache" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.470+08:00" time="0.137"/>
+        <testcase name="service::tests::get_bundle_does_not_use_cache_when_auth_identity_is_incomplete" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.587+08:00" time="0.129"/>
+        <testcase name="service::tests::get_bundle_empty_response_is_success_and_cached" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.607+08:00" time="0.133"/>
+        <testcase name="service::tests::get_bundle_ignores_cache_for_different_auth_identity" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.716+08:00" time="0.146"/>
+        <testcase name="service::tests::get_bundle_ignores_invalid_cache_and_refetches" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.741+08:00" time="0.147"/>
+        <testcase name="service::tests::get_bundle_recovers_after_unauthorized_reload" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.863+08:00" time="0.145"/>
+        <testcase name="service::tests::get_bundle_recovers_after_unauthorized_reload_updates_cache_identity" classname="codex-cloud-config" timestamp="2026-11-19T04:41:03.889+08:00" time="0.152"/>
+        <testcase name="service::tests::get_bundle_refreshes_external_auth_after_unauthorized" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.007+08:00" time="0.186"/>
+        <testcase name="service::tests::get_bundle_rejects_invalid_remote_bundle_before_cache_write" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.041+08:00" time="0.178"/>
+        <testcase name="service::tests::get_bundle_retries_until_success" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.193+08:00" time="0.167"/>
+        <testcase name="service::tests::get_bundle_skips_non_chatgpt_auth" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.360+08:00" time="0.008"/>
+        <testcase name="service::tests::get_bundle_skips_individual_plan" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.219+08:00" time="0.158"/>
+        <testcase name="service::tests::get_bundle_skips_team_like_business_plans" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.368+08:00" time="0.156"/>
+        <testcase name="service::tests::get_bundle_stops_after_max_retries" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.376+08:00" time="0.154"/>
+        <testcase name="service::tests::get_bundle_surfaces_auth_recovery_message" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.524+08:00" time="0.172"/>
+        <testcase name="service::tests::get_bundle_times_out" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.530+08:00" time="0.170"/>
+        <testcase name="service::tests::get_bundle_uses_cache_when_valid" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.696+08:00" time="0.165"/>
+        <testcase name="service::tests::production_loader_refreshes_later_configs_and_preserves_failed_refreshes" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.700+08:00" time="0.168"/>
+        <testcase name="service::tests::refresh_can_clear_preserve_and_restore_the_latest_bundle" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.861+08:00" time="0.164"/>
+        <testcase name="service::tests::refresh_from_remote_updates_cached_bundle" classname="codex-cloud-config" timestamp="2026-11-19T04:41:04.869+08:00" time="0.162"/>
+        <testcase name="service::tests::refresh_replaces_initial_errors_and_recovers_with_success" classname="codex-cloud-config" timestamp="2026-11-19T04:41:05.025+08:00" time="0.156"/>
+        <testcase name="service::tests::refresh_stops_on_replacement_or_after_the_last_loader_clone" classname="codex-cloud-config" timestamp="2026-11-19T04:41:05.031+08:00" time="0.156"/>
+    </testsuite>
+    <testsuite name="codex-utils-time" tests="10" skipped="0" errors="0" failures="0">
+        <testcase name="tests::canonical_carrier_matches_actual_old_serde_including_leap_seconds" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.182+08:00" time="0.007"/>
+        <testcase name="tests::carrier_epoch_parts_and_all_wire_precisions_match_actual_old_leap_output" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.188+08:00" time="0.006"/>
+        <testcase name="tests::epoch_millis_match_actual_old_constructor_including_negative_fractions" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.188+08:00" time="0.005"/>
+        <testcase name="tests::expiry_comparison_matches_actual_old_ordering_even_at_leap_boundaries" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.193+08:00" time="0.005"/>
+        <testcase name="tests::epoch_parts_match_actual_old_constructor_without_coercing_leaps" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.193+08:00" time="0.005"/>
+        <testcase name="tests::formatter_normalizes_offset_and_truncates_without_rounding" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.198+08:00" time="0.005"/>
+        <testcase name="tests::formatting_refuses_instants_outside_the_previous_timestamp_range" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.198+08:00" time="0.004"/>
+        <testcase name="tests::optional_serde_preserves_null_and_absent_fields_but_rejects_invalid_values" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.203+08:00" time="0.004"/>
+        <testcase name="tests::instant_serde_preserves_legacy_grammar_but_does_not_normalize_leap" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.203+08:00" time="0.005"/>
+        <testcase name="tests::strict_parser_matches_actual_old_parser_or_explicitly_rejects_leap" classname="codex-utils-time" timestamp="2026-11-19T04:41:05.207+08:00" time="0.005"/>
+    </testsuite>
+</testsuites>

@@ -2002,9 +2002,9 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-http-client",
  "codex-protocol",
+ "codex-utils-time",
  "crypto_box",
  "ed25519-dalek 2.2.0",
  "http 1.5.0",
@@ -2014,6 +2014,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "time",
 ]
 
 [[package]]
