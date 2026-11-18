@@ -33,6 +33,12 @@ use codec::no_compute;
 use codec::prepare;
 use codec::validate;
 
+#[cfg(feature = "qualification-control-snapshot")]
+#[path = "cell_generation_control_snapshot.rs"]
+mod test_snapshot;
+#[cfg(feature = "qualification-control-snapshot")]
+pub use test_snapshot::ControlTestSnapshot;
+
 type Clock = Arc<dyn Fn() -> u64 + Send + Sync>;
 type Reply = Result<Option<CellGenerationProposalV2>, CellGenerationErrorV2>;
 type WorkerResult = Result<CellGenerationProposalV2, CellGenerationErrorV2>;
@@ -78,6 +84,35 @@ impl ControlledCellGenerationPortV2 {
         worker: Arc<dyn CellGenerationWorkerV2>,
         clock: Clock,
     ) -> Result<Self, CellGenerationErrorV2> {
+        Self::spawn_inner(
+            control, config, worker, clock,
+            #[cfg(feature = "qualification-control-snapshot")]
+            None,
+        )
+    }
+
+    /// Qualification-only. The file must be a clone of the file moved into control.
+    #[cfg(feature = "qualification-control-snapshot")]
+    pub fn spawn_with_test_snapshot(
+        control: DurableInferenceControl,
+        original_file: std::fs::File,
+        config: ControlledCellGenerationConfigV2,
+        worker: Arc<dyn CellGenerationWorkerV2>,
+        clock: Clock,
+    ) -> Result<(Self, ControlTestSnapshot), CellGenerationErrorV2> {
+        let (observation, snapshot) = test_snapshot::Observation::new(original_file, config.rpc_timeout);
+        let port = Self::spawn_inner(control, config, worker, clock, Some(observation))?;
+        Ok((port, snapshot))
+    }
+
+    fn spawn_inner(
+        control: DurableInferenceControl,
+        config: ControlledCellGenerationConfigV2,
+        worker: Arc<dyn CellGenerationWorkerV2>,
+        clock: Clock,
+        #[cfg(feature = "qualification-control-snapshot")]
+        observation: Option<test_snapshot::Observation>,
+    ) -> Result<Self, CellGenerationErrorV2> {
         config.manifest.digest()?;
         for id in [
             &config.scope.agent_id,
@@ -112,6 +147,8 @@ impl ControlledCellGenerationPortV2 {
             commands,
             stopping: Arc::clone(&stopping),
             active: None,
+            #[cfg(feature = "qualification-control-snapshot")]
+            observation,
         };
         let actor_closed = Arc::clone(&closed);
         drop(
@@ -257,12 +294,18 @@ struct Actor {
     commands: mpsc::Receiver<Command>,
     stopping: Arc<AtomicBool>,
     active: Option<Running>,
+    #[cfg(feature = "qualification-control-snapshot")]
+    observation: Option<test_snapshot::Observation>,
 }
 
 impl Actor {
     fn run(&mut self) {
         loop {
             self.collect();
+            #[cfg(feature = "qualification-control-snapshot")]
+            if let Some(observation) = &mut self.observation {
+                observation.poll();
+            }
             if self.stopping.load(Ordering::Acquire) {
                 if let Some(active) = &self.active {
                     active.cancellation.store(true, Ordering::Release);
