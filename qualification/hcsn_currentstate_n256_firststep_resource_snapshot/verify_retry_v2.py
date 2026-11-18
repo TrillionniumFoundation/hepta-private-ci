@@ -7,6 +7,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).parent
 EVIDENCE = ROOT / "evidence" / "attempt001"
+EVIDENCE_V2 = ROOT / "evidence" / "attempt002"
 
 
 def _sha(path):
@@ -18,6 +19,10 @@ def verify():
     terminal = json.loads((EVIDENCE / "TERMINAL.json").read_text())
     start = json.loads((EVIDENCE / "PROCESS_START.json").read_text())
     stderr = (EVIDENCE / "STDERR.txt").read_text()
+    terminal_v2 = json.loads((EVIDENCE_V2 / "TERMINAL.json").read_text())
+    start_v2 = json.loads((EVIDENCE_V2 / "PROCESS_START.json").read_text())
+    stderr_v2 = (EVIDENCE_V2 / "STDERR.txt").read_text()
+    hold = json.loads((ROOT / "RUNTIME_HOLD.json").read_text())
     if request["snapshot_source_sha256"] != _sha(ROOT / "snapshot_source.py"):
         raise ValueError("v2 source mismatch")
     for name, expected in request["predecessor_evidence_sha256"].items():
@@ -41,6 +46,25 @@ def verify():
         raise ValueError("predecessor raw traceback missing")
     if "PYTHONNOUSERSITE" in request["environment"]:
         raise ValueError("v1 override unexpectedly retained")
+    if start_v2["job"]["idempotency_key"] != request["idempotency_key"]:
+        raise ValueError("v2 request/start key mismatch")
+    if start_v2["job"]["id"] != terminal_v2["job_id"]:
+        raise ValueError("v2 start/terminal mismatch")
+    if terminal_v2["state"] != "failed" or terminal_v2["exit_code"] != 1:
+        raise ValueError("v2 RED was not preserved")
+    if terminal_v2["timed_out"] or terminal_v2["cancelled"]:
+        raise ValueError("v2 failure classification mismatch")
+    if terminal_v2["log_bytes"]["stderr"] != {"seen": 476, "stored": 476}:
+        raise ValueError("v2 stderr count mismatch")
+    if "not 'NoneType'" not in stderr_v2:
+        raise ValueError("v2 raw traceback missing")
+    if hold["status"] != "HOLD_RUNTIME_IDENTITY_REMEDIATION":
+        raise ValueError("runtime HOLD missing")
+    for name, expected in hold["attempt002_evidence_sha256"].items():
+        if _sha(EVIDENCE_V2 / name) != expected:
+            raise ValueError(f"v2 evidence mismatch: {name}")
+    if hold["next_idempotency_key"] is not None or hold["resource_admitted"]:
+        raise ValueError("unexpected retry or resource admission")
     if request["n256_numerical_execution_allowed"] or request["resource_admitted"]:
         raise ValueError("unexpected numerical admission")
     return {

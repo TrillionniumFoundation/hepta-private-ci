@@ -33,3 +33,17 @@ environment override while retaining the executable, source bytes, host,
 resource limits, zero-model scope, and future numerical envelope.  It has a
 new idempotency key because the v1 key is already terminal and immutable.  A
 v2 success would still be an observation only, not resource admission.
+
+## Attempt 002 RED and runtime HOLD
+
+The published v2 request ran once as durable job
+`1a1ecea79d3-392-45a1` and failed with the same `numpy.__file__ is None`
+traceback.  It was not timed out or cancelled and emitted no stdout.  This
+falsifies the narrower hypothesis that the v1 `PYTHONNOUSERSITE` override alone
+caused the rejection.  The selected current venv is not an admissible runtime
+identity for this N256 source.
+
+No v3 request or key is assigned.  `RUNTIME_HOLD.json` requires a newly frozen
+runtime with concrete, hashable NumPy/SciPy module bytes and distribution
+metadata before any further job.  Both RED attempts and all zero execution
+counts remain preserved.
