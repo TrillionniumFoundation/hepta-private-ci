@@ -1,6 +1,7 @@
 """Structural unit fixtures; mocked model/process ports never qualify real work."""
 
 import copy
+from contextlib import closing
 import hashlib
 import json
 import os
@@ -235,7 +236,7 @@ class AdoptionTests(unittest.TestCase):
             (retry["status"], retry["model_decision"]), ("INCOMPLETE", "ADOPTED")
         )
         self.assertEqual(a.read_json(output / "RESULT.json")["status"], "FAILED")
-        with sqlite3.connect(output / "selection.sqlite") as db:
+        with closing(sqlite3.connect(output / "selection.sqlite")) as db:
             self.assertEqual(
                 db.execute("SELECT selected FROM selections").fetchone()[0],
                 a.digest(self.request["candidate"]),

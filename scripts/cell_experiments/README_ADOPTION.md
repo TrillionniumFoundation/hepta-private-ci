@@ -91,6 +91,22 @@ evidence is refused. A completed operation returns its recorded result without
 repeating C. An interrupted/failed selected operation remains selected and
 requires explicit reconciliation; the runner does not silently repeat it.
 
+Each output directory belongs to exactly one operation. A create-only admission
+marker is made durable before creating the selection store. Recovery never
+recreates a missing database, table or selected row. A marker without its original
+store, or an occupied directory without a store, requires reconciliation. A
+different operation cannot overwrite the original request, decision or result.
+The request is detached from caller-owned objects before validation, and the
+cold timeout is checked before any C execution.
+
+Completed readback checks the original request, selection, decision, C receipts,
+cold request, cold process output and final result. Missing originals remain
+incomplete and changed originals fail; neither path dispatches another task.
+Legacy completed directories without an admission marker remain readable only
+when their original store and all required receipts agree. These are local
+consistency checks, not a protected native owner or an external freshness anchor;
+replacement of the entire directory and journal is outside this guarantee.
+
 The result has exactly one status:
 
 | Status | Meaning |
