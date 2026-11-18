@@ -29,7 +29,10 @@ def feedback(verification):
     summary = execution_summary(verification)
     reason = result.get("reason")
     if reason not in {
-        "invalid_test_patch", "test_timeout", "business_tests_passed", "business_tests_failed"
+        "invalid_test_patch",
+        "test_timeout",
+        "business_tests_passed",
+        "business_tests_failed",
     }:
         reason = "semantic_test_result"
     code = None
@@ -39,22 +42,40 @@ def feedback(verification):
         code = _ERRORS.get(raw, "INVALID_TEST_PATCH")
         if raw.startswith("malformed node or string"):
             code = "NON_LITERAL_EXPRESSION"
-        instruction = "Return a complete bounded JSON edit with literal arguments and assertions."
+        instruction = (
+            "Return a complete bounded JSON edit with literal arguments and assertions."
+        )
     elif summary["original_passed"] is False:
-        instruction = "Check subject arguments and assertions against the visible task contract."
+        instruction = (
+            "Check subject arguments and assertions against the visible task contract."
+        )
     elif verification["success"]:
         instruction = "Business tests passed."
     elif summary["original_passed"] is True:
         instruction = "Add assertions rejecting the remaining wrong-output controls."
     else:
-        instruction = "No original result was returned; submit a bounded replacement edit."
-    return data.canonical({
-        "schema": SCHEMA, "success": verification["success"], "reason": reason,
-        "error_code": code,
-        **{key: summary[key] for key in (
-            "execution_performed", "original_passed", "original_error_type",
-            "control_comparison_informative", "controls_rejected", "control_count",
-        )},
-        "completed_original_calls": summary["subject_call_count"],
-        "next_attempt_resets_template": True, "instruction": instruction,
-    }).decode()
+        instruction = (
+            "No original result was returned; submit a bounded replacement edit."
+        )
+    return data.canonical(
+        {
+            "schema": SCHEMA,
+            "success": verification["success"],
+            "reason": reason,
+            "error_code": code,
+            **{
+                key: summary[key]
+                for key in (
+                    "execution_performed",
+                    "original_passed",
+                    "original_error_type",
+                    "control_comparison_informative",
+                    "controls_rejected",
+                    "control_count",
+                )
+            },
+            "completed_original_calls": summary["subject_call_count"],
+            "next_attempt_resets_template": True,
+            "instruction": instruction,
+        }
+    ).decode()
