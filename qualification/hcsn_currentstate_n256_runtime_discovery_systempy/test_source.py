@@ -20,6 +20,17 @@ class RuntimeDiscoverySourceTests(unittest.TestCase):
         self.assertFalse(request["mutates_runtime"])
         self.assertFalse(request["runtime_admitted"])
         self.assertFalse(request["resource_admitted"])
+        self.assertEqual(
+            request["launch_contract"],
+            {
+                "args": ["-"],
+                "cpu_quota_percent": 100,
+                "environment": {},
+                "memory_max_bytes": 268435456,
+                "nice": 10,
+                "timeout_seconds": 30,
+            },
+        )
 
     def test_source_hash_is_bound(self):
         request = json.loads((ROOT / "REQUEST.json").read_text())
