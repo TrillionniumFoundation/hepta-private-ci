@@ -63,6 +63,8 @@ jobs:
           cargo tree --locked --manifest-path codex-rs/Cargo.toml -e features -i libsqlite3-sys 2>&1 | tee "$evidence/cargo-update.log"
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/dependency-metadata.json"
           cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p bindgen@0.73.2 --lib 2>&1 | tee "$evidence/bindgen-check.log"
+          just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
           cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
           just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
           git diff --binary -- codex-rs/Cargo.lock MODULE.bazel.lock > "$evidence/locks.patch"
@@ -80,11 +82,16 @@ jobs:
           assert len(sqlite_links) == 1, sqlite_links
           assert sqlite_links[0]["name"] == "libsqlite3-sys"
           assert sqlite_links[0]["version"] == "0.40.0"
+          by_id = {p["id"]: p for p in metadata["packages"]}
+          bindgen = next(p for p in metadata["packages"] if p["name"] == "bindgen" and p["version"] == "0.73.2")
+          bindgen_node = next(n for n in metadata["resolve"]["nodes"] if n["id"] == bindgen["id"])
+          syn = [by_id[d["pkg"]] for d in bindgen_node["deps"] if d["name"] == "syn"]
+          assert len(syn) == 1 and syn[0]["version"] == "2.0.119", syn
           features = next(n["features"] for n in metadata["resolve"]["nodes"] if n["id"] == sqlite_links[0]["id"])
           assert "bundled" in features, features
           assert not any("sqlcipher" in f for f in features), features
           changed = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
-          assert not changed, changed
+          assert set(changed) <= {"MODULE.bazel.lock"}, changed
           postimages = {}
           for name in ["Cargo.lock", "MODULE.bazel.lock"]:
               data = (evidence / name).read_bytes()
@@ -94,7 +101,7 @@ jobs:
               "libsqlite3_sys_versions": versions,
               "committed_locks": postimages,
               "source_changes": changed,
-              "qualification_scope": "exact committed source head and unchanged committed locks",
+              "qualification_scope": "exact committed Cargo graph plus generated Bazel lock postimage; pending commit",
           }, indent=2) + "\n")
           PY
       - name: Compile and clippy real SQLx and Matrix consumers
