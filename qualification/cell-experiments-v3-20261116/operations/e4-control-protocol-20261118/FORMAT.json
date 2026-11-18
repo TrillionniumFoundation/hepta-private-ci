@@ -1,0 +1,46 @@
+{
+  "returncode": 0,
+  "seconds": 3.249554583,
+  "stdout": "",
+  "stderr": "",
+  "files": [
+    {
+      "path": "scripts/cell_experiments/online_v4/circuit_controls_v4.py",
+      "before_sha256": "4c0fb25134cf962eabf697ed69f5ef1af6fb8f2ac4119d041bc1caa15b5fa838",
+      "after_sha256": "1afe503763642bae6597d179a7cfe5dbec558c13ba3fd8bfbff39c6ec8282201",
+      "ast_unchanged": true,
+      "bytes": 13601
+    },
+    {
+      "path": "scripts/cell_experiments/online_v4/test_circuit_controls_v4.py",
+      "before_sha256": "7e577ca41c4ac89e65627e7f94c568b2a8593c11d20f45a24aeda65124537e12",
+      "after_sha256": "fc328eae646c3dcc757cf0efc27b3cf0969e0c92dca6ff78c87ee439d6178e3d",
+      "ast_unchanged": true,
+      "bytes": 7154
+    }
+  ],
+  "formatter_files": [
+    {
+      "path": "justfile",
+      "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/format.py",
+      "sha": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "sha": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+    },
+    {
+      "path": "scripts/uv.lock",
+      "sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026"
+    }
+  ],
+  "scope": "Extract of the two new module entries from the original formatter receipt",
+  "original_receipt_sha256": "cf97cf5c42044d5a608f765c62f308aed96a467ac59d0eaaf58bbeaa855994fa"
+}
