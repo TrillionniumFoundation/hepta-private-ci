@@ -33,6 +33,7 @@ use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::RuntimeTasks;
 
+#[track_caller]
 pub(super) fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
         Ok(value) => value,
