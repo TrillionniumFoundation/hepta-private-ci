@@ -63,7 +63,7 @@ jobs:
           cargo tree --locked --manifest-path codex-rs/Cargo.toml -e features -i libsqlite3-sys 2>&1 | tee "$evidence/cargo-update.log"
           cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1 > "$evidence/dependency-metadata.json"
           cp codex-rs/Cargo.lock "$evidence/Cargo.lock"
-          cargo check --locked --manifest-path codex-rs/Cargo.toml -p bindgen@0.73.2 --lib 2>&1 | tee "$evidence/bindgen-check.log"
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations --lib 2>&1 | tee "$evidence/operations-check.log"
           just bazel-lock-update 2>&1 | tee "$evidence/bazel-lock-update.log"
           cp MODULE.bazel.lock "$evidence/MODULE.bazel.lock"
           just bazel-lock-check 2>&1 | tee "$evidence/bazel-lock-check.log"
