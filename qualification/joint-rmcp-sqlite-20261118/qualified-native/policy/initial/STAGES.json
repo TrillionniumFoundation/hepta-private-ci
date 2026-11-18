@@ -1,0 +1,118 @@
+[
+  {
+    "name": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.251801833
+  },
+  {
+    "name": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71",
+      "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.020655708000000494
+  },
+  {
+    "name": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.012712416999999476
+  },
+  {
+    "name": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 4.84998975
+  },
+  {
+    "name": "status-before",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.19296749999999996
+  },
+  {
+    "name": "just-fmt",
+    "command": [
+      "just",
+      "fmt",
+      "--base",
+      "7fc46c193a9ff8726e43fca2982d9b8f455e3dac"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.2760479999999994
+  },
+  {
+    "name": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 1.349426082999999
+  },
+  {
+    "name": "changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "7fc46c193a9ff8726e43fca2982d9b8f455e3dac",
+      "--head",
+      "3af71fd8d3f3bfb1350ac4514e0fbfa08093c543",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 1,
+    "wall_seconds": 108.73899225000001
+  },
+  {
+    "name": "status-after",
+    "command": [
+      "git",
+      "status",
+      "--porcelain",
+      "--untracked-files=all"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.2715714170000041
+  }
+]

@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71/scripts/check_blob_size.py", line 231, in <module>
+    sys.exit(main())
+             ~~~~^^
+  File "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71/scripts/check_blob_size.py", line 191, in main
+    blobs = collect_changed_blobs(args.base, args.head, allowlist)
+  File "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71/scripts/check_blob_size.py", line 113, in collect_changed_blobs
+    size_bytes=blob_size(head, path),
+               ~~~~~~~~~^^^^^^^^^^^^
+  File "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71/scripts/check_blob_size.py", line 102, in blob_size
+    return int(run_git("cat-file", "-s", f"{commit}:{path}").strip())
+               ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/evidence-policy-source-3af71/scripts/check_blob_size.py", line 27, in run_git
+    result = subprocess.run(
+        ["git", *args],
+    ...<2 lines>...
+        text=True,
+    )
+  File "/opt/homebrew/Cellar/python@3.14/3.14.3_1/Frameworks/Python.framework/Versions/3.14/lib/python3.14/subprocess.py", line 577, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'cat-file', '-s', '3af71fd8d3f3bfb1350ac4514e0fbfa08093c543:qualification/joint-rmcp-sqlite-20261118/qualified-native/SOURCE_RELATION.json']' returned non-zero exit status 128.
