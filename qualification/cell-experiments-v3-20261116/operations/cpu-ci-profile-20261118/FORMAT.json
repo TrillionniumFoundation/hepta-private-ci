@@ -1,0 +1,44 @@
+{
+  "after": {
+    ".github/workflows/cell-experiments.yml": "cef795c757d69782d5484f5b76db329c9dca6139afeee50a37a8c56533129be0",
+    ".github/workflows/codespell.yml": "8bad5e22d59a4c0ef4caad7e277b92440e3b8fe22de6ce016da63fca470039d4",
+    "scripts/cell_experiments/online_v4/test_shared_pool_v4.py": "d6836f2ed6dfec2fbaf1470a01dd0c5bb22a1033abbd50f898b84c11854e9200"
+  },
+  "all_changed_files_unchanged": true,
+  "before": {
+    ".github/workflows/cell-experiments.yml": "cef795c757d69782d5484f5b76db329c9dca6139afeee50a37a8c56533129be0",
+    ".github/workflows/codespell.yml": "8bad5e22d59a4c0ef4caad7e277b92440e3b8fe22de6ce016da63fca470039d4",
+    "scripts/cell_experiments/online_v4/test_shared_pool_v4.py": "d6836f2ed6dfec2fbaf1470a01dd0c5bb22a1033abbd50f898b84c11854e9200"
+  },
+  "command": [
+    "just",
+    "fmt"
+  ],
+  "cwd": "/Users/qianqi/work/e4-cpu-ci-format-20261118-392934/codex-rs",
+  "exit_code": 0,
+  "formatter_git_blobs": [
+    {
+      "path": "justfile",
+      "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+    },
+    {
+      "path": "scripts/format.py",
+      "sha": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "sha": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+    },
+    {
+      "path": "scripts/uv.lock",
+      "sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026"
+    }
+  ],
+  "log": "",
+  "wall_seconds": 1.272381125,
+  "session_id": "dpty-32f8ed8b0a0cf5859c24deb2be8a68bfda59e694efb0adb39a8301af6ba05159"
+}
