@@ -1,0 +1,174 @@
+{
+  "candidate_head": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+  "candidate_tree": "0d7949dd05715bf98c2abb71a45d52de0ad6f2d7",
+  "code_parent": "4283eb76535619d09df8e3fcc4ec5c90110199cd",
+  "code_parent_tree": "37bb94074ea74ec3469190b3c7e8c172344b491f",
+  "codespell": {
+    "actual_checkout_kind": "PR merge whose full Git tree equals candidate head",
+    "actual_checkout_sha": "67e6d2aab6dae4cdf80e6d35b824f4d1eda3ae03",
+    "completed_at": "2026-11-18T13:36:22Z",
+    "conclusion": "success",
+    "job_id": 134839237236,
+    "job_name": "Codespell / Check for spelling errors",
+    "labels": [
+      "ubuntu-latest"
+    ],
+    "log_bytes": 28549,
+    "log_file": "134839237236.log",
+    "log_sha256": "fa95bb62e54197ff749da7a8f14ed55323b1fe735574da443939335ec41039f6",
+    "run_id": 44315168951,
+    "runner_group_name": "GitHub Actions",
+    "runner_name": "GitHub Actions 1000185149",
+    "started_at": "2026-11-18T13:35:34Z",
+    "status": "completed",
+    "steps": [
+      {
+        "completed_at": "2026-11-18T13:36:19Z",
+        "conclusion": "success",
+        "name": "Codespell",
+        "number": 5,
+        "started_at": "2026-11-18T13:35:59Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-18T13:36:19Z",
+        "conclusion": "success",
+        "name": "Check for a clean worktree",
+        "number": 6,
+        "started_at": "2026-11-18T13:36:19Z",
+        "status": "completed"
+      }
+    ]
+  },
+  "cpu_integrity": [
+    {
+      "conclusion": "success",
+      "errors": 0,
+      "event": "push",
+      "failures": 0,
+      "job_id": 134839176746,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "log_bytes": 83698,
+      "log_file": "134839176746.log",
+      "log_sha256": "554230e6557e5efbf3c66ac545356bd0411850b91d313924b5539d1e34192318",
+      "metadata_file": "run-44315151839-jobs-snapshot-6.json",
+      "metadata_sha256": "940a24e54d06e76bf381404d17f76d7e21e1288a299f6da3fb682d7c33beceb0",
+      "observed_actual_checkout_sha": "2742bc37e9f4a74fba32bb534230de55f431e9ea",
+      "run_id": 44315151839,
+      "runner_group_name": "GitHub Actions",
+      "runner_name": "GitHub Actions 1000185235",
+      "skipped": 0,
+      "status": "completed",
+      "test_wall_seconds": 44.021,
+      "tests": 197,
+      "unittest_summary": "OK",
+      "zero_failure_interpretation": "unittest terminal OK and no skipped/error/failure test cases; expected failure receipts printed by negative fixtures are not failed tests"
+    },
+    {
+      "conclusion": "success",
+      "errors": 0,
+      "event": "pull_request",
+      "failures": 0,
+      "job_id": 134839314567,
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "log_bytes": 84115,
+      "log_file": "134839314567.log",
+      "log_sha256": "3c1403a1aae0eb128561d343049346509968e29d4dfc109fb2833232356b6e14",
+      "metadata_file": "run-44315168831-jobs-snapshot-7.json",
+      "metadata_sha256": "bd39e0c1775249fc2285143c7ae053e2dc3ce7e0899253b89a92ce5ebe0ea22b",
+      "observed_actual_checkout_sha": "67e6d2aab6dae4cdf80e6d35b824f4d1eda3ae03",
+      "run_id": 44315168831,
+      "runner_group_name": "GitHub Actions",
+      "runner_name": "GitHub Actions 1000185242",
+      "skipped": 0,
+      "status": "completed",
+      "test_wall_seconds": 44.921,
+      "tests": 197,
+      "unittest_summary": "OK",
+      "zero_failure_interpretation": "unittest terminal OK and no skipped/error/failure test cases; expected failure receipts printed by negative fixtures are not failed tests"
+    }
+  ],
+  "cpu_verification_file": "CPU_VERIFICATION.json",
+  "cpu_verification_sha256": "0b810ba223043099664b81f6a668f1f7205cbfecc2079eb13833fc49200db3e8",
+  "distinct_test_methods_in_the_CPU_suite": 197,
+  "format": {
+    "actual_checkout_kind": "PR merge whose full Git tree equals candidate head",
+    "actual_checkout_sha": "67e6d2aab6dae4cdf80e6d35b824f4d1eda3ae03",
+    "completed_at": "2026-11-18T14:01:37Z",
+    "conclusion": "success",
+    "job_id": 134842723700,
+    "job_name": "repo-checks / build-test",
+    "labels": [
+      "ubuntu-latest"
+    ],
+    "log_bytes": 240797,
+    "log_file": "134842723700.log",
+    "log_sha256": "b5e5328ef8dcfcdd3a6939658bd5258c9facaad9012374c2861035a41e6bb49a",
+    "run_id": 44315168951,
+    "runner_group_name": "GitHub Actions",
+    "runner_name": "GitHub Actions 1000185471",
+    "started_at": "2026-11-18T13:51:46Z",
+    "status": "completed",
+    "steps": [
+      {
+        "completed_at": "2026-11-18T14:01:31Z",
+        "conclusion": "success",
+        "name": "Check formatting (run `just fmt` to fix)",
+        "number": 19,
+        "started_at": "2026-11-18T14:01:15Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-18T14:01:32Z",
+        "conclusion": "success",
+        "name": "Prettier (run `pnpm run format:fix` to fix)",
+        "number": 20,
+        "started_at": "2026-11-18T14:01:31Z",
+        "status": "completed"
+      },
+      {
+        "completed_at": "2026-11-18T14:01:33Z",
+        "conclusion": "success",
+        "name": "Check for a clean worktree",
+        "number": 21,
+        "started_at": "2026-11-18T14:01:32Z",
+        "status": "completed"
+      }
+    ]
+  },
+  "format_was_not_inferred_from_local_checks": true,
+  "full_repository_all_green_claim": false,
+  "github_mutations": false,
+  "manual_workflow_rerun_cancel_or_dispatch": false,
+  "metadata_file": "run-44315168951-jobs-snapshot-18.json",
+  "metadata_sha256": "31c849f4fb87a6c72b975a94ef7732db9e9c3a99f32b2a63787dd0187d310d90",
+  "observed_utc": "2026-11-18T14:01:55Z",
+  "pr": 6696,
+  "pr_merge_commit": "67e6d2aab6dae4cdf80e6d35b824f4d1eda3ae03",
+  "pr_merge_tree_equals_candidate_tree": true,
+  "queue_interpretation": "Observed ordinary GitHub Actions labels; no custom self-hosted requirement. Queued states and later real starts are preserved. The reason for provider queue delay is unknown.",
+  "schema": "hepta.joint-ci-completed-scopes.v1",
+  "scientific_learning_or_independent_source_qualification": false,
+  "source_subtrees_equal": [
+    {
+      "matches_code_parent": true,
+      "path": "scripts",
+      "sha": "e58936feee33d90cd33f17c1eb288735a4e84f6e"
+    },
+    {
+      "matches_code_parent": true,
+      "path": ".github",
+      "sha": "00fc7342f41629e351ee2d16b9a00af714bc8f27"
+    },
+    {
+      "matches_code_parent": true,
+      "path": "codex-rs",
+      "sha": "5e4db85643d57b37e943dec786964a07e9f3d3d9"
+    }
+  ],
+  "the_two_197_runs_are_repeated_execution_not_394_distinct_tests": true
+}

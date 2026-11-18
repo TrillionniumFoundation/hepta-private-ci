@@ -1,0 +1,124 @@
+{
+  "schema": "hepta.root-r21-original-readback.v1",
+  "method": "Root fetched GitHub artifact metadata, verified both ZIP hashes and sizes, matched complete report/process bytes to their ZIP members, and read actual confirmation/invariant/cooldown/cost values. No experiment, model, verifier or native adoption re-execution.",
+  "source_commit": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+  "workflow_run_id": 44314787729,
+  "seven_packet_vectors_equal_across_old_and_new_architectures": true,
+  "seven_packet_compact_json_sha256": "d35d10829820d2fc859a27645975f640101ff19d87ae331fc27aed2122885293",
+  "observations": [
+    {
+      "architecture": "x64",
+      "artifact": {
+        "id": 14432798175,
+        "name": "cost-x64-27d6a4b19ff58de78f3f5804e44ccae41857c794-1",
+        "size_in_bytes": 9259973,
+        "digest": "sha256:07fa10715c01cd6792c099472fb5dac00ea61880711cd22044dcf4d11f244e3a"
+      },
+      "report": {
+        "path": "from-zero-native/confirmation/report.json",
+        "bytes": 8644635,
+        "sha256": "4d35f81acdbca0b43527efda09b798543e81a6a49fbfc5b27c1f0391b52b2890"
+      },
+      "process": {
+        "path": "from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+        "bytes": 949,
+        "sha256": "cc6b564cd368bebd568c0d1eddd80feccbc87e62e9d0a1144b5e58a0e1414318"
+      },
+      "baseline_confirmation_latency_ns": 3050875408,
+      "pressure": {
+        "requested_window_ns": 4000000000,
+        "workers": 16,
+        "client_confirmed_transactions": 1,
+        "client_confirmed_before_original_window_end": true,
+        "client_confirmation_latency_ns": 3346073556,
+        "finite_business_target_met": true,
+        "invariant_target_met": true,
+        "full_native_state_equal": true,
+        "accounting_closed": true,
+        "no_attack_accepted": true,
+        "overlap_demonstrated": true,
+        "overlapping_false_calls": 78
+      },
+      "service_metrics": {
+        "known_invalid_body_cooldown_publications": 64,
+        "known_invalid_body_cooldown_waits": 64,
+        "work_started": 71,
+        "work_failed": 64,
+        "completed_submit": 7
+      },
+      "whole_confirmation_test_child_cost": {
+        "wall_ns": 9216716711,
+        "user_cpu_ns": 535921000,
+        "system_cpu_ns": 1179638000,
+        "cpu_ns": 1715559000,
+        "max_rss_kib": 67976,
+        "cpu_scope": "entire child, not apportioned to nested wall intervals",
+        "rss_scope": "whole waited child including pre-exec image; no Rust-only RSS attribution",
+        "wait4_cpu_resolution_ns": 1000
+      },
+      "native_qualification": {
+        "production_activation": false,
+        "public_network_ready": false,
+        "work_profile_qualified": false
+      }
+    },
+    {
+      "architecture": "arm64",
+      "artifact": {
+        "id": 14433572562,
+        "name": "cost-arm64-27d6a4b19ff58de78f3f5804e44ccae41857c794-1",
+        "size_in_bytes": 8885150,
+        "digest": "sha256:626535723afb70fb8630cdd727bbe243e80561d9d5a84e4afe2fa8f3b6502031"
+      },
+      "report": {
+        "path": "from-zero-native/confirmation/report.json",
+        "bytes": 9109989,
+        "sha256": "c0531c2147ea03e0249424116ce40e3fbd64373f8e0bebd50d06c72d4880b30d"
+      },
+      "process": {
+        "path": "from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+        "bytes": 948,
+        "sha256": "656dd65db1fa686b015f6f9236049b9143c4ff37e125a3fa5d79cae3aca91faf"
+      },
+      "baseline_confirmation_latency_ns": 1815154207,
+      "pressure": {
+        "requested_window_ns": 4000000000,
+        "workers": 16,
+        "client_confirmed_transactions": 1,
+        "client_confirmed_before_original_window_end": true,
+        "client_confirmation_latency_ns": 2106682700,
+        "finite_business_target_met": true,
+        "invariant_target_met": true,
+        "full_native_state_equal": true,
+        "accounting_closed": true,
+        "no_attack_accepted": true,
+        "overlap_demonstrated": true,
+        "overlapping_false_calls": 61
+      },
+      "service_metrics": {
+        "known_invalid_body_cooldown_publications": 64,
+        "known_invalid_body_cooldown_waits": 64,
+        "work_started": 71,
+        "work_failed": 64,
+        "completed_submit": 7
+      },
+      "whole_confirmation_test_child_cost": {
+        "wall_ns": 8500901661,
+        "user_cpu_ns": 494443000,
+        "system_cpu_ns": 754957000,
+        "cpu_ns": 1249400000,
+        "max_rss_kib": 70748,
+        "cpu_scope": "entire child, not apportioned to nested wall intervals",
+        "rss_scope": "whole waited child including pre-exec image; no Rust-only RSS attribution",
+        "wait4_cpu_resolution_ns": 1000
+      },
+      "native_qualification": {
+        "production_activation": false,
+        "public_network_ready": false,
+        "work_profile_qualified": false
+      }
+    }
+  ],
+  "full_system_cost_complete": false,
+  "general_liveness_or_public_network_qualification": false
+}

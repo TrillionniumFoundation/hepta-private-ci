@@ -1,0 +1,129 @@
+{
+  "baseline_commit": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+  "baseline_tree": "bba212bffc9debcdf4a3f82fef7e1516ba7c8593",
+  "changed_current_source_path_count": 1,
+  "composition_changed_json_paths": [
+    [
+      "current_lifetime_correspondence",
+      "sha256"
+    ],
+    [
+      "current_lifetime_correspondence",
+      "source_snapshot_sha256"
+    ]
+  ],
+  "current_map_sha256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb",
+  "current_source_path_count": 21,
+  "dependency_scan": {
+    "additional_current_literal_map_or_snapshot_pin_outside_five_files_found": false,
+    "all_matched_bytes_equal_prior_head": true,
+    "historical_corpus": "config/pon/pq-cross-branch-corpus-v1.json contains historical Git blobs and remains unchanged.",
+    "limitations": "Whole-repository git grep timed out at45seconds and is preserved. The successful follow-up scan was limited to scripts/config/.github, so no exhaustive whole-repository claim is made.",
+    "matched_paths": 13,
+    "scope": [
+      "scripts",
+      "config",
+      ".github"
+    ]
+  },
+  "frozen_identity_values_unchanged": true,
+  "historical_frozen_files_unchanged_by_scope": true,
+  "hold_unchanged": true,
+  "limitations": [
+    "This is source review, not a new execution of CI.",
+    "Successful business windows and any reported prior green regression counts are outside this independent static review.",
+    "No security theorem, production activation, or whole-chain qualification is granted."
+  ],
+  "map_changed_json_paths": [
+    [
+      "current_source_files_sha256",
+      "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs"
+    ],
+    [
+      "current_source_snapshot_sha256"
+    ]
+  ],
+  "python_ast_reviews": [
+    {
+      "after_assignments": {
+        "EXPECTED_CURRENT_FILES_SHA256": "a576e79285e1d9b592de4b54acd7c0f9d97df19df7a82d448358e8f8ac9d26a6",
+        "EXPECTED_MAP_SHA256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb"
+      },
+      "all_other_ast_equal": true,
+      "before_assignments": {
+        "EXPECTED_CURRENT_FILES_SHA256": "f9991545b8b43b870559106d7be807d286f4b2ac555a2a10dbaf6c6e850ac8fd",
+        "EXPECTED_MAP_SHA256": "5328f618642aa14125b6325ebcc2285f8be85cf39843a11c6d9157863a0c27c6"
+      },
+      "only_changed_assignments": [
+        "EXPECTED_CURRENT_FILES_SHA256",
+        "EXPECTED_MAP_SHA256"
+      ],
+      "path": "scripts/ci/pq_lifetime_current_v2.py"
+    },
+    {
+      "after_assignments": {
+        "CURRENT_CORRESPONDENCE": {
+          "path": "config/pon/pq128-source-correspondence-current-v2.json",
+          "sha256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb",
+          "source_snapshot_sha256": "a576e79285e1d9b592de4b54acd7c0f9d97df19df7a82d448358e8f8ac9d26a6"
+        }
+      },
+      "all_other_ast_equal": true,
+      "before_assignments": {
+        "CURRENT_CORRESPONDENCE": {
+          "path": "config/pon/pq128-source-correspondence-current-v2.json",
+          "sha256": "5328f618642aa14125b6325ebcc2285f8be85cf39843a11c6d9157863a0c27c6",
+          "source_snapshot_sha256": "f9991545b8b43b870559106d7be807d286f4b2ac555a2a10dbaf6c6e850ac8fd"
+        }
+      },
+      "only_changed_assignments": [
+        "CURRENT_CORRESPONDENCE"
+      ],
+      "path": "scripts/ci/pq_lifetime_composition.py"
+    }
+  ],
+  "qualification_objects_and_all_other_json_fields_unchanged": true,
+  "recomputed_canonical_source_snapshot_sha256": "a576e79285e1d9b592de4b54acd7c0f9d97df19df7a82d448358e8f8ac9d26a6",
+  "review_did_not_modify_repository_or_workflows": true,
+  "review_did_not_run_repository_tests_or_validators": true,
+  "reviewed_diff_bytes": 6089,
+  "reviewed_diff_sha256": "fa67cb5aa6dc747cc6734f3812c02194824700ae216ce049460a06d64c2bae2b",
+  "reviewed_files": [
+    {
+      "after_git_blob": "eefb8add378483368ae64bfc66929e8654f35dd0",
+      "after_sha256": "1a581939adf0bc585bb9966779bd90cf2cde7775770c0f28d37a3316e453170d",
+      "before_sha256": "1b779ec937567eda42060477a664965602dbbfbcee0759614fb5369b569f5f65",
+      "path": ".github/workflows/pon-recent-batch-acceptance.yml"
+    },
+    {
+      "after_git_blob": "1fc9217eaeedfd62438011804b6cc6064ef59357",
+      "after_sha256": "3c7181dbcf4372b4d62375282c3ef87fe226aa0486111211de9373d877f5deb9",
+      "before_sha256": "f10a1e7d75c45c7e0ce7d989827c163c54b2e7951fd3e9e42e836978be37a970",
+      "path": "config/pon/pq128-lifetime-composition-current-v3.json"
+    },
+    {
+      "after_git_blob": "4dbbca5682ac8c0c8a9b7779f4bc976fe728d946",
+      "after_sha256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb",
+      "before_sha256": "5328f618642aa14125b6325ebcc2285f8be85cf39843a11c6d9157863a0c27c6",
+      "path": "config/pon/pq128-source-correspondence-current-v2.json"
+    },
+    {
+      "after_git_blob": "b76a2bce80d6ba6678be2907eb69d6daf87c53ba",
+      "after_sha256": "c803b0d712a45f775caa9bec993956a1a62acc1127a0d9b206a671c338010323",
+      "before_sha256": "22d71e1563b37472649da7fd1b72bb30247aff5193cb6b6caaf0ad3b52d6b8ae",
+      "path": "scripts/ci/pq_lifetime_composition.py"
+    },
+    {
+      "after_git_blob": "091c8189133eeb3aaa5f1748ce99bdb7df317b1b",
+      "after_sha256": "dd4b5bb5ba3ff8fd312fa9a48f06d36ed35d2526a1ee12036e14f8a5be866d8c",
+      "before_sha256": "28b5c4e0358147444cc18317b235b05f228ebd10e0cfdcecf1c9f8c25b6c5826",
+      "path": "scripts/ci/pq_lifetime_current_v2.py"
+    }
+  ],
+  "runtime_workload_source_unchanged": true,
+  "schema": "chain.r21.pin-repair-independent-static-review.v1",
+  "source_scope_exactly_five_paths": true,
+  "status": "PASS_FOR_CURRENT_SOURCE_REBINDING",
+  "strict_check_control_flow_unchanged": true,
+  "workflow_only_change": "one expected Git blob, matching actual r21 multiprocess bytes"
+}
