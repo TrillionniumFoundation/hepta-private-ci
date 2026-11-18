@@ -1,0 +1,268 @@
+{
+  "schema": "hepta.joint-engineering-candidate.v1",
+  "candidate_id": "cell-joint-candidate-20261118-2e9b-01",
+  "candidate_kind": "prospective merged source with explicitly separate real experiment bindings",
+  "code_head": "e52c4f67cb58a65409256f7be263cfb49ac22557",
+  "code_git_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
+  "previous_candidate_id": "cell-joint-candidate-20261118-392934-01",
+  "previous_candidate_head": "4283eb76535619d09df8e3fcc4ec5c90110199cd",
+  "source_parents": [
+    "4d9fc82c1efff45f964d4efdc6155b350e01fd23",
+    "4283eb76535619d09df8e3fcc4ec5c90110199cd",
+    "992f2b3de51902448abf5743f94179bf40e11b6d",
+    "ad73c100feece91c152a96ba121d2e9494f10607"
+  ],
+  "merge_resolutions": {
+    "circuit_controls_v4.py": "retain explicit pool type/source binding from 4283eb7",
+    "onpolicy_readout_v4.py": "retain task/input/answer/parameter/business receipt validation from 4d9fc82",
+    "README_ADOPTION.md": "combine original owner requirements with failed/interrupted inference cost retention"
+  },
+  "new_component_blob_inventory": "SOURCE_COMPONENTS.json",
+  "CPU_validation": {
+    "source_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
+    "source_commit": "e52c4f67cb58a65409256f7be263cfb49ac22557",
+    "source_files_verified_before_and_after": 221,
+    "source_unchanged": true,
+    "command": [
+      "/workspace/scratch/556e5fc18a5b/cell-test-venv/bin/python",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "--start-directory",
+      "scripts/cell_experiments",
+      "--top-level-directory",
+      "scripts",
+      "--pattern",
+      "test_*.py",
+      "--verbose"
+    ],
+    "started_unix": 1795010374.8567944,
+    "elapsed_seconds": 92.41183423995972,
+    "exit_code": 0,
+    "scope": "CPU engineering integrity; not a real numerical or native-owner qualification"
+  },
+  "models": {
+    "base_model_id": "Qwen/Qwen2.5-Coder-1.5B-Instruct",
+    "revision": "2e1fd397ee46e1388853d2af2c993145b0f1098a",
+    "base_model_digest": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+    "base_files": [
+      {
+        "bytes": 11343,
+        "path": "LICENSE",
+        "sha256": "832dd9e00a68dd83b3c3fb9f5588dad7dcf337a0db50f7d9483f310cd292e92e"
+      },
+      {
+        "bytes": 5258,
+        "path": "README.md",
+        "sha256": "a8504fd3e1247c90e4fe640d84df963237134bf29db02b0de7d502eed6c93c33"
+      },
+      {
+        "bytes": 660,
+        "path": "config.json",
+        "sha256": "88f9a17863c05fb313515d2ff74b1098e0c35579f99068e32beda00618508ae0"
+      },
+      {
+        "bytes": 242,
+        "path": "generation_config.json",
+        "sha256": "1a628a5775bc69cde01c6749a531150ca4d3189652c618a174f7077923acf3b1"
+      },
+      {
+        "bytes": 1671839,
+        "path": "merges.txt",
+        "sha256": "599bab54075088774b1733fde865d5bd747cbcc7a547c5bc12610e874e26f5e3"
+      },
+      {
+        "bytes": 3087467144,
+        "path": "model.safetensors",
+        "sha256": "c1b9b30e907950516ba3c646bdf570d8084c25a6410a0cdca80cf04b11bc13a8"
+      },
+      {
+        "bytes": 7031645,
+        "path": "tokenizer.json",
+        "sha256": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539"
+      },
+      {
+        "bytes": 7305,
+        "path": "tokenizer_config.json",
+        "sha256": "959e7f1d9a1b7641a6d6ce05ca97b75c7894fcb66cbe5a040406458fb1128ee4"
+      },
+      {
+        "bytes": 2776833,
+        "path": "vocab.json",
+        "sha256": "ca10d7e9fb3ed18575dd1e277a2579c16d108e32f27439684afa0e10b1440910"
+      }
+    ],
+    "matched_training_candidates": {
+      "final_only": {
+        "manifest_file": "models/E1_final_only_manifest.json",
+        "manifest_file_sha256": "30ca8c7eb55b8d71fe3663ae0cd6f844ad66bcaca1f5b08c85c0459264c8c508",
+        "manifest_digest": "46c1a35887fc0639050210a19ec2a3a421e1bdb3d5e58cff394a1e54879f29f2",
+        "trained_on_source": "992f2b3de51902448abf5743f94179bf40e11b6d",
+        "parameter_before": "bd8d0e3cde37c3a6694bfc02b6a7b49a826e74f85d44f8ce9773f3d3bf9d02df",
+        "parameter_after": "f9c23acb0dcc56fce2f5466e727751737daf9dd87104164848431cb80229d529",
+        "adapter_files": [
+          {
+            "bytes": 5294,
+            "path": "README.md",
+            "sha256": "9afd6bdfe3dda6898765f14d4455335314c090627d35593da9b604f9ca06c11c"
+          },
+          {
+            "bytes": 1021,
+            "path": "adapter_config.json",
+            "sha256": "f13032dd8dbbdd53733ee1143ecf13ada6c7d7fce2d39681a25eae37dbf4b72a"
+          },
+          {
+            "bytes": 2193720,
+            "path": "adapter_model.safetensors",
+            "sha256": "8b1af8fac79c32b2456c4d1d23bd8662d736ebb191061a407a61076cb7286d54"
+          }
+        ],
+        "trained_on_this_joint_source": false
+      },
+      "all_actions": {
+        "manifest_file": "models/E1_all_actions_manifest.json",
+        "manifest_file_sha256": "4a9c82ab237a5d902db378d1987170c1608bdef40c5603731718f4202fff6c5d",
+        "manifest_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+        "trained_on_source": "992f2b3de51902448abf5743f94179bf40e11b6d",
+        "parameter_before": "bd8d0e3cde37c3a6694bfc02b6a7b49a826e74f85d44f8ce9773f3d3bf9d02df",
+        "parameter_after": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "adapter_files": [
+          {
+            "bytes": 5294,
+            "path": "README.md",
+            "sha256": "9afd6bdfe3dda6898765f14d4455335314c090627d35593da9b604f9ca06c11c"
+          },
+          {
+            "bytes": 1021,
+            "path": "adapter_config.json",
+            "sha256": "eaf508cc70d26906d04c8bde1cab147e193389db6d045330625213543266cca3"
+          },
+          {
+            "bytes": 2193720,
+            "path": "adapter_model.safetensors",
+            "sha256": "8983207ec254dd74ce69141f8797672af2dc8fd131e2d638fadbb010022bfea9"
+          }
+        ],
+        "trained_on_this_joint_source": false
+      }
+    },
+    "selected_adoption_model": null,
+    "selection_from_B_permitted": false
+  },
+  "runtime": {
+    "research_runtime": {
+      "attn_implementation": "eager",
+      "base_directory": "materials-recovered",
+      "chat_template_sha256": "cd8e9439f0570856fd70470bf8889ebd8b5d1107207f67a5efb46e342330527f",
+      "device": "cuda:0",
+      "dtype": "bfloat16",
+      "generation": {
+        "bos_token_id": 151643,
+        "do_sample": false,
+        "eos_token_id": [
+          151645,
+          151643
+        ],
+        "max_new_tokens": 384,
+        "min_new_tokens": 0,
+        "no_repeat_ngram_size": 0,
+        "num_beams": 1,
+        "num_return_sequences": 1,
+        "pad_token_id": 151643,
+        "repetition_penalty": 1.0,
+        "temperature": 1.0,
+        "top_k": 50,
+        "top_p": 1.0,
+        "use_cache": true
+      },
+      "max_input_tokens": 4096,
+      "max_new_tokens": 384,
+      "message_protocol": "native_chat_v2",
+      "min_cuda_free_bytes": 4294967296,
+      "threads": 2,
+      "tokenizer_special_ids": {
+        "bos_token_id": null,
+        "eos_token_id": 151645,
+        "pad_token_id": 151643
+      }
+    },
+    "backend_versions": {
+      "safetensors": "0.7.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.9.1+cu128",
+      "transformers": "4.57.3",
+      "peft": "0.18.0"
+    },
+    "research_hardware": "desktop NVIDIA RTX 4060",
+    "full_joint_numerical_execution": false
+  },
+  "HIA": {
+    "codex_rs_git_tree": "5e4db85643d57b37e943dec786964a07e9f3d3d9",
+    "native_original_owner_binding": null,
+    "native_numerical_execution_of_this_joint_candidate": false
+  },
+  "data": {
+    "training_records_digest": "f3206c37a200890561b47b3823a39a5419189d06861c161f5c92ca7de5c6d644",
+    "training_use": "six existing A development tasks only",
+    "upstream_records_file": "qualification/cell-upstream-panel-20261118/prepared/records.jsonl",
+    "upstream_records_sha256": "1ad685bb99ffafdbb9ed0cfa1dbdea3ea2e279fedc326f865da76a173519f8cb",
+    "upstream_tasks": 6,
+    "upstream_projects": [
+      "requests",
+      "werkzeug",
+      "click"
+    ],
+    "upstream_maintainer_groups": 2,
+    "upstream_training_allowed": false,
+    "authenticated_new_users": 0,
+    "independent_evaluator": false,
+    "pretraining_overlap_known": false
+  },
+  "evaluation": {
+    "E1_source": "992f2b3de51902448abf5743f94179bf40e11b6d",
+    "E1_modes": [
+      "frozen",
+      "retrieval",
+      "final_only",
+      "all_actions"
+    ],
+    "E1_calls_per_task": 2,
+    "E1_task_count": 12,
+    "E1_planned_calls": 96,
+    "E1_run_status_at_snapshot": "RUNNING",
+    "E1_original_freeze_file_sha256": "47105fa44b90679062ac2d070deb09bb0e4f17ad8c7321679889c4eee1334690",
+    "E4_completed_execution_source": "ad73c100feece91c152a96ba121d2e9494f10607",
+    "E4_evidence_commit": "2be1ceb89c19befe4deab72be989c29cafae7322",
+    "E4_evidence_directory": "qualification/cell-native-repair-20261118",
+    "E4_joint_followup": "Requires a separately frozen descendant source, model registry, task exposure and protocol before any call; not executed at this snapshot",
+    "E6_independent_coordinator": "BLOCKED",
+    "E6_native_owner_source_observed": "b17f0643f5e03d8717e696702f91bf9fcf63de7b",
+    "E6_native_owner_run_observed": "native-v5",
+    "E6_native_owner_result": "FAILED: bootstrap exceeds the fixed descriptor bound",
+    "E6_native_owner_is_same_as_joint_source": false,
+    "E6_new_D_after_native_cold_recovery_executed": false
+  },
+  "Chain": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "original_small_window_source": "974049daa4b72825332b07b59084cb70f4b4c8b5",
+    "original_small_window_run": 44309944062,
+    "original_small_window_target_met": true,
+    "stronger_F0_source": "7e3e454f9b18d5d135e72cc5ea373e04fc5a2ef8",
+    "stronger_F0_run": 44315121617,
+    "stronger_F0_4s_confirmed": 0,
+    "stronger_F0_4s_target": 6,
+    "whole_system_cost_complete": false
+  },
+  "qualification": {
+    "independent_learning_gain_established": false,
+    "Circuit_necessity_established": false,
+    "native_Cell_adoption": false,
+    "native_original_owner_adoption": false,
+    "FinalUse": false,
+    "settlement_eligible": false,
+    "production_eligible": false,
+    "full_system_cost_complete": false
+  },
+  "interpretation": "This freeze binds code and research assets prospectively. Every numeric/native run retains its own source/runtime/model/protocol identity. Passing engineering integrity is not independent scientific, original owner or full-cost qualification."
+}

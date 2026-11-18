@@ -1,0 +1,11 @@
+{
+  "source": "74a611ae9d5197ddbe193603b6e7237210fb5a5a",
+  "native_run": "native-v4",
+  "original_file_sha256": "0136d277e3afa491cca45b949d79242c2c76371b6bd6bcedc992f40120491a9a",
+  "original_collection_tests": 1,
+  "failures": 1,
+  "elapsed_seconds": 60.047,
+  "error": "original Observer input custody/size differs",
+  "scope": "read-only original JUnit review; no actual key bytes retrieved; subsequent b17f0643 changes the caller to the existing Root original key without weakening custody",
+  "not_executed_on_joint_source": true
+}
