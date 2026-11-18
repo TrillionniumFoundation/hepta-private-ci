@@ -54,3 +54,7 @@ The unchanged #6624 scanners were rerun on the actual joint lock. They found 1,5
 - [INDEX.json](retained/INDEX.json) SHA-256: `e8b3739cd1eb54942204641bfd487c12bc012503a2d9c44aae48cebfd04da1bb`.
 
 Every archive member was reread and matched against the index. The repository size-policy exception permits only these exact archive bytes at this exact path; the global 512000-byte limit and all other paths remain unchanged.
+
+## Repository policy verification
+
+The [first evidence commit receipt](policy/first-evidence-head/RESULT.json) binds commit `38f44145d80fff6dc3eb62ad475f820cc010827e`. The original seven size-policy tests passed, and the actual `7fc46c193a9ff8726e43fca2982d9b8f455e3dac` to evidence-head changed-blob check passed with the unchanged global 512000-byte limit. Original stdout/stderr and runtime exits are preserved beside the receipt. This metadata addition receives a separate actual final-head changed-blob check before publication; native tests are not repeated for evidence-only changes.
