@@ -84,6 +84,11 @@ pub(crate) enum GenerationCommand {
         response: Response<()>,
     },
     Snapshot(Response<CellRuntimeSnapshotV2>),
+    #[cfg(test)]
+    InspectTestBytes {
+        read: Box<dyn FnOnce() -> [Vec<u8>; 2] + Send>,
+        response: Response<[Vec<u8>; 2]>,
+    },
     ObserveGeneration(Response<CellGenerationObservationV1>),
     #[cfg(unix)]
     LearningRead {
@@ -190,6 +195,15 @@ impl NeuronGenerationRuntimeHandleV2 {
 
     pub async fn cancel(&self, expected: [u8; 32]) -> Result<(), CellGenerationErrorV2> {
         self.call(|response| GenerationCommand::Cancel { expected, response })
+            .await
+    }
+
+    #[cfg(test)]
+    pub(crate) async fn inspect_test_bytes(
+        &self,
+        read: Box<dyn FnOnce() -> [Vec<u8>; 2] + Send>,
+    ) -> Result<[Vec<u8>; 2], CellGenerationErrorV2> {
+        self.call(|response| GenerationCommand::InspectTestBytes { read, response })
             .await
     }
 
