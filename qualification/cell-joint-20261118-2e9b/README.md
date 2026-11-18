@@ -1,5 +1,10 @@
 # Joint E1–E6 source continuation, 18 November 2026
 
+The prospective snapshot below is retained unchanged. See
+[CURRENT_PROGRESS.md](CURRENT_PROGRESS.md) and
+[CURRENT_PROGRESS.json](CURRENT_PROGRESS.json) for subsequent source-bound
+measurements, actual failures and work still in progress.
+
 The merged execution source is `e52c4f67cb58a65409256f7be263cfb49ac22557`,
 tree `3f976284d2990dcf0edb8de2ed2ec003a6685292`. It continues the previous joint
 candidate and retains its controls together with the subsequent E1, E2, E4 and E6

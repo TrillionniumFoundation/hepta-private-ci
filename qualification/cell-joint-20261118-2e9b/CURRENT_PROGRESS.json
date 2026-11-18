@@ -1,0 +1,988 @@
+{
+  "schema": "hepta.joint-continuation-observation.v1",
+  "observed_at_utc": "2026-11-18T15:34:49Z",
+  "user_timezone": "America/New_York",
+  "observed_at_user_timezone": "2026-11-18T10:34:49-05:00",
+  "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
+  "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
+  "historical_freeze_rewritten": false,
+  "input_original_hash_checks": [
+    {
+      "key": "e1",
+      "sha256": "ef24958fe3908105387de6a52b99e650d3bd6406ea414f77bc15b305191f8385",
+      "bytes": 20329,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/462c651d349663d86f6ec88ed5d9eed453f218c0/qualification/cell-matched-info-20261118/READOUT.json"
+    },
+    {
+      "key": "e3",
+      "sha256": "c605f89bc897ebc4c5e9c2ea99b5f367e2675e751204c95539279edfa1e4082a",
+      "bytes": 11300,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/5e027a1d0c49a2b1408e90491b4cc0bc1660725f/qualification/cell-e3-localteacher-20261118/READOUT.json"
+    },
+    {
+      "key": "e4",
+      "sha256": "2c58e290a21544637befe16ce8a3eb97024caa8879b3e20815cf08e11557cbc0",
+      "bytes": 21384,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/7e0687b916dfbc8b87f1e3d3709856ed44dafbc2/qualification/cell-upstream-circuit-20261118/READOUT.json"
+    },
+    {
+      "key": "e2_weights",
+      "sha256": "dabd5f13f8cc7392e8eb8b8eccbe1fd30dcc4da381d31a51e70818d255bc3bcd",
+      "bytes": 34049,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d/qualification/cell-current-policy-credit-20261118/training-evidence/WEIGHTS_FROZEN.json"
+    },
+    {
+      "key": "b2_commit",
+      "sha256": "79dd9032c7f335711567e5e4ba2ad8b69a4c75f5f79658030e2e897df34743d3",
+      "bytes": 2053,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1134793c60c1b9908eaf6e388f753860ee8917c4/qualification/cell-blind-panel-b2-20261118/COMMITMENT.json"
+    },
+    {
+      "key": "b2_release",
+      "sha256": "8dfa14870f674808e91be0fc204464a9f6d7de0db4a653bc45bb3a2f4820c3f4",
+      "bytes": 2159,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1134793c60c1b9908eaf6e388f753860ee8917c4/qualification/cell-blind-panel-b2-20261118/RELEASE.json"
+    },
+    {
+      "key": "e2_freeze",
+      "sha256": "77e12b3b0a5c4a7bcbbed4c386d53ce875823d67c96379da593007169abc6d9d",
+      "bytes": 19146,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d/qualification/cell-current-policy-credit-20261118/training-evidence/FREEZE.json"
+    },
+    {
+      "key": "e2_train_all",
+      "sha256": "e08d12f85bb618ccc233aa6174646e79eb114c085cf3fc126b706438330439e8",
+      "bytes": 945,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d/qualification/cell-current-policy-credit-20261118/training-evidence/training/all_observed/TRAINING.json"
+    },
+    {
+      "key": "e2_train_credit",
+      "sha256": "960c2277260386d648845923d6a75fe30a144181c40921ff8efb2e9e3278bba7",
+      "bytes": 952,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d/qualification/cell-current-policy-credit-20261118/training-evidence/training/verified_credit/TRAINING.json"
+    }
+  ],
+  "E1": {
+    "status": "COMPLETE",
+    "source": "992f2b3de51902448abf5743f94179bf40e11b6d",
+    "pr": 6699,
+    "evidence_commit": "462c651d349663d86f6ec88ed5d9eed453f218c0",
+    "outcomes": {
+      "all_actions": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 2,
+          "regressed": 3,
+          "selected": 5,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "final_only": {
+        "A_retention": {
+          "first": 3,
+          "last": 2,
+          "recovered": 0,
+          "regressed": 1,
+          "selected": 3,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "frozen": {
+        "A_retention": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      },
+      "retrieval": {
+        "A_retention": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        },
+        "B_upstream": {
+          "first": 0,
+          "last": 0,
+          "recovered": 0,
+          "regressed": 0,
+          "selected": 0,
+          "tasks": 6
+        }
+      }
+    },
+    "cost": {
+      "cost_scope": "sum of disjoint child stage windows; excludes owner checkpoint IO and prior engineering",
+      "energy_joules": null,
+      "evaluation_verifier_calls": 96,
+      "freeze_reference_verifier_calls": 12,
+      "full_system_cost_known": false,
+      "model_calls": 96,
+      "nested_training_or_evaluation_costs_must_not_be_added": true,
+      "optimizer_updates": 128,
+      "stage_child_cpu_seconds": 1304.468347,
+      "stage_child_wall_seconds": 1284.7401081619319,
+      "training_reference_verifier_calls": 12
+    },
+    "decision": "NoUpdate",
+    "decision_scope": "research candidate selection only",
+    "complete_native_NoUpdate": false,
+    "generalizable_gain_established": false
+  },
+  "E2": {
+    "status": "ACTUAL_EVALUATION_RUNNING",
+    "training_source": "6a7696b0c0c5a0a2ba0fb52160aabb191850b2d3",
+    "evaluation_source": "048014f8634059b65b24f49da7f00d5b1bb85737",
+    "training_evidence_commit": "1a75a7ccbc404b3d6f7baf2d9d7400b3c03a2b1d",
+    "pr": 6707,
+    "NoUpdate_parent": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
+    "training": {
+      "all_observed": {
+        "encoded_groups_digest": "5c317f3601504d2cb64958b832e3fb090ac80e00feb0028bfd650e656ac4597d",
+        "manifest_sha256": "01a5dece93e07144c7f853f8e33e15f338b7a410f3540389b991783f00809c7f",
+        "model_digest": "0585075a5277f7e8e5a7b7ad3f42bc718f17253f1dbf6c2b03e8248cfc1c1562",
+        "parameter_after": "c8236cef9d45d4bee3825352adc9327aeca3764c72c62f5b2e3175ff1ed18b11",
+        "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "training_sha256": "e08d12f85bb618ccc233aa6174646e79eb114c085cf3fc126b706438330439e8",
+        "steps": 64,
+        "cost": {
+          "cuda_peak_allocated_bytes": 4170159616,
+          "cuda_peak_reserved_bytes": 4594860032,
+          "energy_joules": null,
+          "full_system_cost_known": false,
+          "head_positions": 16094,
+          "input_tokens": 103815,
+          "model_backwards": 192,
+          "model_forwards": 192,
+          "nested_scopes_are_not_additive": true,
+          "padded_positions": 393216,
+          "self_cpu_seconds": 301.982987998,
+          "supervised_positions": 16094,
+          "wall_seconds": 297.7154378480045
+        },
+        "status": "COMPLETE"
+      },
+      "verified_credit": {
+        "encoded_groups_digest": "5c317f3601504d2cb64958b832e3fb090ac80e00feb0028bfd650e656ac4597d",
+        "manifest_sha256": "88f93eaca8b88eeec3ff426eb26d2ee472de7d1cd2c9e3388dea6750c1391005",
+        "model_digest": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1",
+        "parameter_after": "549ac578447c41d1ddc975f14468c54eeae12ba431f47bcd1a3da46fbc17ce8f",
+        "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "training_sha256": "960c2277260386d648845923d6a75fe30a144181c40921ff8efb2e9e3278bba7",
+        "steps": 64,
+        "cost": {
+          "cuda_peak_allocated_bytes": 4170159616,
+          "cuda_peak_reserved_bytes": 4594860032,
+          "energy_joules": null,
+          "full_system_cost_known": false,
+          "head_positions": 16094,
+          "input_tokens": 103815,
+          "model_backwards": 192,
+          "model_forwards": 192,
+          "nested_scopes_are_not_additive": true,
+          "padded_positions": 393216,
+          "self_cpu_seconds": 303.44909595499996,
+          "supervised_positions": 9780,
+          "wall_seconds": 299.0903187899967
+        },
+        "status": "COMPLETE"
+      }
+    },
+    "matched_step_shapes": true,
+    "physical_wall_energy_equality_claim": false,
+    "weights_frozen_sha256": "dabd5f13f8cc7392e8eb8b8eccbe1fd30dcc4da381d31a51e70818d255bc3bcd",
+    "weights_frozen_at_ns": "1795014995937998972",
+    "B2_read_before_weights_frozen": false,
+    "evaluation": {
+      "host": "desktop",
+      "job_id": "1a1ef401640-ffbe-455",
+      "idempotency_key": "e123-current-credit-eval-desktop-2e9b-001",
+      "owner": "/home/qian-qi/work/hepta-e2-current-credit-20261118-2e9b/owned-evaluation-1",
+      "planned_model_calls": 108,
+      "modes": [
+        "NoUpdate",
+        "all_observed",
+        "verified_credit"
+      ],
+      "panels": {
+        "A_retention": 6,
+        "B_exposed": 6,
+        "B2": 6
+      },
+      "calls_per_task": 2,
+      "selection_rule": "A-only fewer regressions without fewer recoveries or final successes versus all_observed; no B/B2 selection; research NoUpdate retained",
+      "scientific_gain_established": false
+    },
+    "B2": {
+      "pr": 6710,
+      "commitment_commit": "a6563725a6e8f17ee21d16e5d3fbf231cfb6bbff",
+      "release_commit": "1134793c60c1b9908eaf6e388f753860ee8917c4",
+      "commitment_sha256": "79dd9032c7f335711567e5e4ba2ad8b69a4c75f5f79658030e2e897df34743d3",
+      "release_sha256": "8dfa14870f674808e91be0fc204464a9f6d7de0db4a653bc45bb3a2f4820c3f4",
+      "released_at_ns": "1795015144605823075",
+      "release_after_actual_weights": true,
+      "records_sha256": "26b2e625c649a73a991c681bb1949cdaf91b995d8e4bc3402b924495797d42cb",
+      "tasks": 6,
+      "repositories": 3,
+      "maintainer_groups": 3,
+      "training_allowed": false,
+      "reference_checks": 6,
+      "negative_control_checks": 6,
+      "qualification_limits": "Material release after observed weight freeze; shared-workspace operational blinding, not authenticated independent custody. No learning success claim."
+    }
+  },
+  "E3": {
+    "status": "COMPLETE",
+    "source": "16f21699a4cd661ed998333369f3734a572caf96",
+    "pr": 6705,
+    "evidence_commit": "5e027a1d0c49a2b1408e90491b4cc0bc1660725f",
+    "teacher_1": {
+      "checkpoint": "Qwen2.5-Coder-1.5B-Instruct",
+      "first": 0,
+      "last": 0,
+      "model_digest": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+      "reused_calls": 12,
+      "selected": 0,
+      "tasks": 6
+    },
+    "teacher_2": {
+      "checkpoint": "Qwen3.8-Flash-Next-Uncensored-IQ4XS-NGQ4",
+      "first": 1,
+      "last": 1,
+      "new_calls": 12,
+      "recovered": 0,
+      "regressed": 0,
+      "selected": 1,
+      "tasks": 6,
+      "weight_sha256": "cedf1e08063f6df77926e1169f67b327dcc6301b5b329589615bdf09d4895f7e"
+    },
+    "union_selected": 1,
+    "gain_over_best_teacher": 0,
+    "mutual_complementarity_observed": false,
+    "physical_compute_matched": false,
+    "same_logical_information_and_call_caps": true,
+    "negative_transfer_measured": false,
+    "license_scope": "authorized internal private research; upstream community license/local Apache label conflict retained; external commercial rights not asserted",
+    "cost": {
+      "baseline_model_calls_reused": 12,
+      "baseline_recheck_verifier_calls": 12,
+      "baseline_recheck_wall_seconds": 0.011964878998696804,
+      "cancelled_readonly_watch_job": "1a1ef0f5a91-ffbe-3e4",
+      "energy_joules": null,
+      "first_hash_attempt_failed_before_weight_read": "1a1eefdc153-ffbe-3b4",
+      "full_system_cost_known": false,
+      "http_wall_seconds": 106.19503192626871,
+      "input_tokens": 5207,
+      "nested_windows_are_not_additive": true,
+      "new_candidate_verifier_calls": 12,
+      "new_model_calls": 12,
+      "output_limit_calls": 3,
+      "output_tokens": 2398,
+      "reference_verifier_calls": 6,
+      "service_compute_cost_known": false,
+      "successful_owner_stage_windows": [
+        {
+          "automatic_retry": false,
+          "client_cpu_seconds": 0.211382563,
+          "full_system_cost_known": false,
+          "model_calls": 6,
+          "observations": 5,
+          "runner_returned": true,
+          "status": "COMPLETE",
+          "wall_seconds": 111.32666154298931
+        },
+        {
+          "automatic_retry": false,
+          "child_system_cpu_seconds": 0.061699,
+          "child_user_cpu_seconds": 0.135738,
+          "service_cost_included": false,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "timed_out": false,
+          "wait_returncode": 0,
+          "wall_seconds": 55.589848316973075
+        }
+      ],
+      "superseded_zero_call_exit": {
+        "automatic_retry": false,
+        "child_system_cpu_seconds": 0.014782,
+        "child_user_cpu_seconds": 0.072855,
+        "service_cost_included": false,
+        "stderr_sha256": "19eae885941ea9bad40919d6b11d9ddbd90d92f13d85c67b40a6607ac35bd379",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "timed_out": false,
+        "wait_returncode": 1,
+        "wall_seconds": 0.16455749003216624
+      },
+      "verification_wall_seconds": 1.159541368993814,
+      "weight_bytes_hashed": 98403356224,
+      "weight_hash_cpu_seconds": 49.02022946,
+      "weight_hash_wall_seconds": 134.143754767
+    },
+    "original_archive_sha256": "0ee947fdd6833a46b52a1165795268ac697969c0f2b167ca261c1b71a0e5f132"
+  },
+  "E4": {
+    "status": "COMPLETE_ORIGINALS_VALIDATED",
+    "source": "41d273d06d0138ab4a747c5dc73bb2ee2a61e9ee",
+    "pr": 6704,
+    "evidence_commit": "7e0687b916dfbc8b87f1e3d3709856ed44dafbc2",
+    "groups": {
+      "native_CC": {
+        "business_executions": 2,
+        "first": 0,
+        "format_rejections": 10,
+        "input_tokens": 6114,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 948,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_CF": {
+        "business_executions": 2,
+        "first": 0,
+        "format_rejections": 10,
+        "input_tokens": 6114,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 995,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_FF": {
+        "business_executions": 4,
+        "first": 0,
+        "format_rejections": 8,
+        "input_tokens": 6290,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 1454,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_FF_retrieval": {
+        "business_executions": 10,
+        "first": 0,
+        "format_rejections": 2,
+        "input_tokens": 9831,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 760,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_F_one_call": {
+        "business_executions": 2,
+        "first": 0,
+        "format_rejections": 4,
+        "input_tokens": 2486,
+        "last": 0,
+        "model_calls": 6,
+        "output_tokens": 686,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 0,
+        "verifier_calls": 6
+      },
+      "native_TF": {
+        "business_executions": 8,
+        "first": 0,
+        "format_rejections": 4,
+        "input_tokens": 6193,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 1293,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_TF_no_answer": {
+        "business_executions": 8,
+        "first": 0,
+        "format_rejections": 4,
+        "input_tokens": 5573,
+        "last": 1,
+        "model_calls": 12,
+        "output_tokens": 1061,
+        "recovered": 1,
+        "regressed": 0,
+        "selected": 1,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_TF_no_feedback": {
+        "business_executions": 8,
+        "first": 0,
+        "format_rejections": 4,
+        "input_tokens": 5808,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 1259,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_TF_retrieval": {
+        "business_executions": 12,
+        "first": 0,
+        "format_rejections": 0,
+        "input_tokens": 9817,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 736,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_TT": {
+        "business_executions": 9,
+        "first": 0,
+        "format_rejections": 3,
+        "input_tokens": 6193,
+        "last": 0,
+        "model_calls": 12,
+        "output_tokens": 1371,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 6,
+        "verifier_calls": 12
+      },
+      "native_T_one_call": {
+        "business_executions": 4,
+        "first": 0,
+        "format_rejections": 2,
+        "input_tokens": 2486,
+        "last": 0,
+        "model_calls": 6,
+        "output_tokens": 596,
+        "recovered": 0,
+        "regressed": 0,
+        "selected": 0,
+        "tasks": 6,
+        "two_call_tasks": 0,
+        "verifier_calls": 6
+      }
+    },
+    "primary_cost": {
+      "business_executions": 69,
+      "format_rejections": 51,
+      "input_tokens": 66905,
+      "model_calls": 120,
+      "output_tokens": 11159,
+      "verifier_calls": 120
+    },
+    "total_model_and_verifier_cost": {
+      "business_executions": 79,
+      "format_rejections": 51,
+      "input_tokens": 68033,
+      "model_calls": 124,
+      "output_tokens": 11321,
+      "verifier_calls": 130
+    },
+    "actual_model_loads": {
+      "adapter_loads": 5,
+      "base_loads": 3,
+      "scope": "two cold A calibration Predictors, then one shared base with three adapters; engineering preflight loads excluded"
+    },
+    "owner_exit": {
+      "automatic_retry": false,
+      "cost_scope": "owned child and waited descendants; model/verifier costs are nested and not additive",
+      "energy_joules": null,
+      "exit_source": "subprocess.Popen.wait",
+      "failure_present": false,
+      "full_system_cost_known": false,
+      "monetary_cost": null,
+      "observed_child_system_cpu_seconds": 33.62439,
+      "observed_child_user_cpu_seconds": 1007.690309,
+      "pid": 3407974,
+      "result_present": true,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "69be7b9aa197b72380479b3b4cdf8fd114a5589854924abaec80a7860b8c07ac",
+      "timed_out": false,
+      "wait_returncode": 0,
+      "wall_seconds": 1034.6213283489924
+    },
+    "exposed_development_panel": true,
+    "matched_actual_cost_claim": false,
+    "archive_sha256": "cdd49201d8c62217ad2777cece0c33e3ec7043edb3a50718edf7527ad150d042",
+    "negative_transfer_scope": "One exposed TF versus TF_no_answer comparison; no population-effect claim.",
+    "retrieval_copy_scope": "22 of 24 retrieval outputs match unrelated A-reference AST; two are unparseable.",
+    "Circuit_necessity_established": false
+  },
+  "E5": {
+    "authenticated_new_users": 0,
+    "new_deduplicated_real_training_sources": 0,
+    "fixed_total_budget_growth_curve": null,
+    "fixed_per_source_budget_growth_curve": null,
+    "evaluation_projects_count_as_users": false
+  },
+  "E6": {
+    "original_owner_pr": 6700,
+    "published_v8_history": "7df70f327ef95dfa72f3036c3ec0f648e19f50f4",
+    "lineage_separate_from_joint": true,
+    "v8": {
+      "source": "f7e58512021c7481fa51809bb349f63d93bb1d6c",
+      "tree": "ef1ef15d5f2ef5dadefb5bdd0d73c255a7d0678f",
+      "finished": "2026-11-18T15:03:20.542397+00:00",
+      "source_unchanged": true,
+      "tracked_files": 15526,
+      "root_namespace_regression": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=authority_host_service::generation_initial::data_refusal::tests::root_completed_learning_refusal_preserves_bounded_original_identity)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ],
+        "errors": 0,
+        "execution_file": "root-completed-refusal-namespace.json",
+        "execution_sha256": "696a74a9522dfd41859e32696239f9bd71b178c90abe265455b2c21a62b066b4",
+        "failures": 0,
+        "job": null,
+        "junit_bytes": 581,
+        "junit_mtime_ns": 1795014137885045200,
+        "junit_sha256": "de4e8561ab777afcc4ea88454d1f1d054a3141a41e9f60f7554ca36c06628e2f",
+        "kind": "native-junit-collection",
+        "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "skipped_in_xml": 0,
+        "source_sha": "f7e58512021c7481fa51809bb349f63d93bb1d6c",
+        "source_tree": "ef1ef15d5f2ef5dadefb5bdd0d73c255a7d0678f",
+        "status": "passed",
+        "total_testcases": 1,
+        "collector_exit_code": 0,
+        "exact_parent_coverage": true
+      },
+      "whole_cold_NoUpdate": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ],
+        "errors": 0,
+        "execution_file": "ordinary-whole-cold-no-update.json",
+        "execution_sha256": "9e76b2f0ffbd03967812959de2b318f256157d303afa9475cc0a8bd68ce5a0c5",
+        "failures": 1,
+        "job": null,
+        "junit_bytes": 4370,
+        "junit_mtime_ns": 1795014199931441000,
+        "junit_sha256": "79abe8708befb3c40b128f82d3ee4601ad7c760162f2fd939c36ffa0f4755ca0",
+        "kind": "native-junit-collection",
+        "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "skipped_in_xml": 0,
+        "source_sha": "f7e58512021c7481fa51809bb349f63d93bb1d6c",
+        "source_tree": "ef1ef15d5f2ef5dadefb5bdd0d73c255a7d0678f",
+        "status": "retained-failed",
+        "total_testcases": 1,
+        "collector_exit_code": 1,
+        "exact_parent_coverage": true
+      },
+      "cleanup_passed": true,
+      "cost": {
+        "observed_wall_seconds": 221.9600886499975,
+        "cpu_seconds": null,
+        "gpu_seconds": null,
+        "energy_kwh": null,
+        "api_cost": null,
+        "monetary_cost": null,
+        "qualification": "incomplete; null means unmeasured, not zero; nested command and check elapsed times overlap"
+      }
+    },
+    "v9": {
+      "source": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+      "tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+      "finished": "2026-11-18T15:23:41.554192+00:00",
+      "source_unchanged": true,
+      "tracked_files": 15532,
+      "whole_cold_NoUpdate": {
+        "command": [
+          "just",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "codex-hepta-agentd",
+          "-p",
+          "codex-hepta-contracts",
+          "--lib",
+          "--run-ignored",
+          "only",
+          "--test-threads",
+          "1",
+          "-E",
+          "test(=neuron_generation_current::initial_root_tests::ordinary::cold_process::ordinary_main_cold_recovers_evaluated_no_update_c_after_actual_daemon_and_root_retirement)",
+          "--retries",
+          "0",
+          "--success-output",
+          "final",
+          "--failure-output",
+          "final",
+          "--no-tests",
+          "fail"
+        ],
+        "errors": 0,
+        "execution_file": "ordinary-whole-cold-no-update.json",
+        "execution_sha256": "fde4cb25a29806b7a7247cfd5082a3890110047a19a57a3e18f26817dc44269e",
+        "failures": 1,
+        "job": null,
+        "junit_bytes": 4443,
+        "junit_mtime_ns": 1795015416109325300,
+        "junit_sha256": "fb3e2a11e67ab39201353a06041ff49475433fe55cb0e548ca215c646fc0c34f",
+        "kind": "native-junit-collection",
+        "native_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/source/codex-rs/target/nextest/local/junit.xml",
+        "run_attempt": null,
+        "run_id": null,
+        "schema_version": 1,
+        "skipped_in_xml": 0,
+        "source_sha": "ad21d6401fa307831b629b3e71ea1b9c3a350f83",
+        "source_tree": "b7409917a4f2c0c411a6ff8dfb93196cebf1e8b0",
+        "status": "retained-failed",
+        "total_testcases": 1,
+        "collector_exit_code": 1,
+        "exact_parent_coverage": true
+      },
+      "stages_observed": [
+        "historical.observe_complete_task",
+        "historical.worker",
+        "cli.serve"
+      ],
+      "error": "Unavailable",
+      "change_scope": "Static error-only diagnostics; no predicate, control-flow, cleanup or deadline changes.",
+      "cleanup_passed": true,
+      "cost": {
+        "observed_wall_seconds": 236.32061227993108,
+        "full_system_cost_known": false
+      }
+    },
+    "minimal_namespace_fix": "Original 169-byte CompletedLearning owner key exceeded fixed128 bound; scoped Initial-identity digest key preserves full original record identities and target refusal.",
+    "publication_client_observation": "POLLIN|POLLHUP; Root pidfd revents=0; original deadline not elapsed. Underlying historical operation error precedes channel shutdown; no poll guard weakened.",
+    "complete_native_NoUpdate": false,
+    "native_adopt": false,
+    "cold_case_checks_retained_C_only": true,
+    "fresh_D_executed": false,
+    "independent_controller_authentication": false
+  },
+  "Chain": {
+    "repository": "TrillionniumFoundation/Trillionnium-Chain",
+    "old_evidence_pr": 958,
+    "original_small_window": {
+      "run": 44309944062,
+      "source": "974049daa4b72825332b07b59084cb70f4b4c8b5",
+      "window_seconds": 4,
+      "workers": 16,
+      "cpu_quota": 0.25,
+      "x64_seconds": 3.415648125,
+      "ARM64_seconds": 2.400575524,
+      "accepted_and_independently_replayed_each": 7
+    },
+    "original_F0": {
+      "run": 44315121617,
+      "source": "7e3e454f9b18d5d135e72cc5ea373e04fc5a2ef8",
+      "planned_confirmations": 6,
+      "thirty_second_successes": 1,
+      "four_second_successes": 0,
+      "root_successes": 0
+    },
+    "metadata_optimization_F0": {
+      "pr": 959,
+      "source": "eeef078c7dd12dd2456d6a202c2839f7b8af316d",
+      "tree": "44059af7054f72e3e1cb22691aee76932bfad836",
+      "run": 44328450170,
+      "artifact_id": 14440407162,
+      "thirty_second_successes": 0,
+      "four_second_successes": 0,
+      "planned_confirmations": 6,
+      "packet_exposures": {
+        "planned": 42,
+        "timely_ACK": 9,
+        "not_attempted": 32,
+        "attempted_without_timely_ACK": 1,
+        "ACK_is_not_confirmation": true
+      },
+      "complete_success": false,
+      "native_exit_code": 101,
+      "original_business_failure": "BASELINE_MUST_PASS",
+      "all_services_known_empty": true,
+      "archive_sha256": "ccc502e88fac262153d821eadb53dedd549c405d65fd8d331a687284295314d9",
+      "archive_bytes": 16750521,
+      "independent_readback_published": "e6af21fd47347ba900ef87842447ed6fe227a6f0",
+      "original_manifest_files_checked": 443,
+      "prepared_controls_checked": 7,
+      "history_cost": [
+        {
+          "attempts": [
+            {
+              "client_thread_cpu_ns": 662170042,
+              "history_index": 0,
+              "host_checkpoint_calls": 9265,
+              "host_checkpoint_cpu_ns": 574328718,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 3193197181,
+              "network_ended_ns": 3409065567
+            },
+            {
+              "client_thread_cpu_ns": 623296311,
+              "history_index": 1,
+              "host_checkpoint_calls": 8756,
+              "host_checkpoint_cpu_ns": 541496546,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 2791641237,
+              "network_ended_ns": 6607451775
+            },
+            {
+              "client_thread_cpu_ns": 623736908,
+              "history_index": 2,
+              "host_checkpoint_calls": 8763,
+              "host_checkpoint_cpu_ns": 541452900,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 2792410690,
+              "network_ended_ns": 9404068366
+            },
+            {
+              "client_thread_cpu_ns": 628896989,
+              "history_index": 3,
+              "host_checkpoint_calls": 8770,
+              "host_checkpoint_cpu_ns": 543810353,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 2796631925,
+              "network_ended_ns": 12201105507
+            },
+            {
+              "client_thread_cpu_ns": 626187096,
+              "history_index": 4,
+              "host_checkpoint_calls": 8777,
+              "host_checkpoint_cpu_ns": 540850027,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 2795872267,
+              "network_ended_ns": 15002128076
+            },
+            {
+              "client_thread_cpu_ns": 631794102,
+              "history_index": 5,
+              "host_checkpoint_calls": 8784,
+              "host_checkpoint_cpu_ns": 541703159,
+              "import_error": null,
+              "import_observed": true,
+              "import_wall_ns": 2797892262,
+              "network_ended_ns": 17802929731
+            },
+            {
+              "client_thread_cpu_ns": 2120413276,
+              "history_index": 6,
+              "host_checkpoint_calls": 28326,
+              "host_checkpoint_cpu_ns": 1755177629,
+              "import_error": "PUBLIC_REQUEST_DEADLINE",
+              "import_observed": true,
+              "import_wall_ns": 9396841924,
+              "network_ended_ns": 20605002949
+            }
+          ],
+          "client_thread_cpu_ns": 5916494724,
+          "history_calls": 7,
+          "host_checkpoint_calls": 81441,
+          "host_checkpoint_cpu_ns": 5038819332,
+          "observed_imports": 7,
+          "phase": "baseline",
+          "scope": "actual observed client imports; Host CPU is nested; do not add; not whole-process cost"
+        },
+        {
+          "attempts": [],
+          "client_thread_cpu_ns": 0,
+          "history_calls": 0,
+          "host_checkpoint_calls": 0,
+          "host_checkpoint_cpu_ns": 0,
+          "observed_imports": 0,
+          "phase": "valid-work-root",
+          "scope": "actual observed client imports; Host CPU is nested; do not add; not whole-process cost"
+        }
+      ],
+      "unknown_cost_dimensions": [
+        "concurrent whole-system RSS",
+        "storage byte-seconds",
+        "physical storage I/O",
+        "physical network bytes",
+        "GPU activity",
+        "energy",
+        "provider charges"
+      ]
+    },
+    "next_actual_native_delta": {
+      "pr": 960,
+      "source": "e6af21fd47347ba900ef87842447ed6fe227a6f0",
+      "tree": "af911ad472b7820f8c6c7d4c9a425097263d80ac",
+      "F0_run": 44335832525,
+      "business_result": "pending",
+      "scope": "Complete deltas from actual native authenticated execution on eligible path; full normalized readback and original other-path union retained."
+    },
+    "full_physical_cost_closed": false
+  },
+  "CI": {
+    "joint_all_checks_passed": false,
+    "mac_fixture_pr": 6708,
+    "mac_fixture_source": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f",
+    "repository_formatter_passed": true,
+    "mac_native_regression_passed": false,
+    "fixture_scope": "Canonical temporary input paths, including original Circuit database reopen; all negative controls and production custody unchanged.",
+    "Windows_original_positive_business_case_passed": false,
+    "cargo_deny_passed": false
+  },
+  "environment": {
+    "scratch_status": "unavailable",
+    "actual_remote_evaluation_continues": true,
+    "rerun_experiments_due_to_scratch_outage": false,
+    "readout_reconstruction": "Hash-matched published originals and original remote native records; no experiment recomputation."
+  },
+  "qualification": {
+    "whole_joint_native_or_numerical": false,
+    "independent_learning_gain": false,
+    "Circuit_necessity": false,
+    "native_original_owner_adoption": false,
+    "complete_native_NoUpdate": false,
+    "fresh_C_and_cold_fresh_D": false,
+    "FinalUse": false,
+    "settlement_eligible": false,
+    "production_eligible": false,
+    "full_system_cost_complete": false
+  },
+  "interpretation": "Preserve every actual source/model/runtime/protocol. Each false qualification flag means not established; it is not fabricated evidence of impossibility. Keep failures, NoUpdate, all actual costs and unknowns.",
+  "original_native_files": [
+    {
+      "path": "native-v8/RESULT.json",
+      "bytes": 19292,
+      "sha256": "d59b41c4f19ec53cb37a242904038ce909098dca4b2149dd48cdaf720f797b40",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v8/result.json"
+    },
+    {
+      "path": "native-v8/ordinary-whole-cold-no-update.xml",
+      "bytes": 4370,
+      "sha256": "79abe8708befb3c40b128f82d3ee4601ad7c760162f2fd939c36ffa0f4755ca0",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v8/ordinary-whole-cold-no-update.xml"
+    },
+    {
+      "path": "native-v8/root-completed-refusal-namespace.xml",
+      "bytes": 581,
+      "sha256": "de4e8561ab777afcc4ea88454d1f1d054a3141a41e9f60f7554ca36c06628e2f",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v8/root-completed-refusal-namespace.xml"
+    },
+    {
+      "path": "native-v9/RESULT.json",
+      "bytes": 13047,
+      "sha256": "dd9957abcc34623cfe9a40c90f79dd8b2b35a3988fc25329779b7a8616484d96",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v9/result.json"
+    },
+    {
+      "path": "native-v9/ordinary-whole-cold-no-update.xml",
+      "bytes": 4443,
+      "sha256": "fb3e2a11e67ab39201353a06041ff49475433fe55cb0e548ca215c646fc0c34f",
+      "original_path": "/home/qq/e6-owner-current-20261118-556e5fc18a5b/native-v9/ordinary-whole-cold-no-update.xml"
+    }
+  ]
+}
