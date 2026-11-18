@@ -1,0 +1,90 @@
+{
+  "schema": "independent-answer-ablation-input-review-v1",
+  "observed_at": "2026-11-18T13:19:59.203263+00:00",
+  "audit_sha256": "613ea3bee11bc5bc1048304a77315dcafeba80b6a72778e9bb40401c9eed32fe",
+  "checked_raw_files": 144,
+  "protocol_sha256": "f4111d887c9827156da1f6c4a6859cb3d9cef02b1c54a90f3af47004a036c7c1",
+  "rows": [
+    {
+      "record_id": "A-counter",
+      "effective": false,
+      "last_business_success": [
+        false,
+        false
+      ],
+      "selected_success": [
+        true,
+        true
+      ],
+      "review_pass": true
+    },
+    {
+      "record_id": "A-mse",
+      "effective": true,
+      "last_business_success": [
+        false,
+        true
+      ],
+      "selected_success": [
+        true,
+        true
+      ],
+      "review_pass": true
+    },
+    {
+      "record_id": "A-readout-score",
+      "effective": true,
+      "last_business_success": [
+        false,
+        true
+      ],
+      "selected_success": [
+        true,
+        true
+      ],
+      "review_pass": true
+    },
+    {
+      "record_id": "A-clipped-metrics",
+      "effective": true,
+      "last_business_success": [
+        false,
+        true
+      ],
+      "selected_success": [
+        true,
+        true
+      ],
+      "review_pass": true
+    },
+    {
+      "record_id": "A-pair-map",
+      "effective": true,
+      "last_business_success": [
+        false,
+        true
+      ],
+      "selected_success": [
+        true,
+        true
+      ],
+      "review_pass": true
+    },
+    {
+      "record_id": "A-colon-repair",
+      "effective": true,
+      "last_business_success": [
+        false,
+        false
+      ],
+      "selected_success": [
+        false,
+        false
+      ],
+      "review_pass": true
+    }
+  ],
+  "models_or_verifiers_executed": false,
+  "review_scope": "Original JSON bytes and claimed hashes; exact paired first request/answer/token IDs, original contract, actual second request equality after removing only answer; unchanged feedback/model/generation binding. Does not establish transfer beyond exposed old A tasks.",
+  "all_review_checks_pass": true
+}

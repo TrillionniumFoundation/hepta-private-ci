@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.host-cost-counter-availability.v1",
+  "observed_at_ns": 1795001065043016047,
+  "scope": "Capability observation during existing E2 work; not an experiment energy measurement.",
+  "full_system_cost_complete": false,
+  "gpu_energy_joules": null,
+  "nvidia_smi": {
+    "returncode": 0,
+    "stdout": "2026/11/18 06:24:25.089, 0, [N/A], 115.00, 39, 4506\n",
+    "stderr": "",
+    "power_limit_is_not_energy": true
+  },
+  "cpu_energy_counters": [
+    {
+      "path": "/sys/class/powercap/intel-rapl:0/energy_uj",
+      "name": "package-0",
+      "energy_uj": {
+        "error": "PermissionError",
+        "errno": 13
+      },
+      "max_energy_range_uj": "262143328850"
+    },
+    {
+      "path": "/sys/class/powercap/intel-rapl:1/energy_uj",
+      "name": "package-1",
+      "energy_uj": {
+        "error": "PermissionError",
+        "errno": 13
+      },
+      "max_energy_range_uj": "262143328850"
+    }
+  ]
+}

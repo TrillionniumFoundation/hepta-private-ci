@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.root-e4-original-readback.v1",
+  "method": "Root independently hashed both original archives and every inventoried JSON file, recomputed unique graph/call/token totals from archived rows, compared archived and exposed summaries, and read the paired-input audit. No model, verifier, training or native adoption calls.",
+  "archives": {
+    "e4-originals.tar.gz": {
+      "bytes": 2576143,
+      "sha256": "7e0a67d8c4cdfadbebf195591bbe30cce2e6ed9b524c46c6011b0cadcb8f3a32",
+      "regular_files": 3035
+    },
+    "e4-readout-originals.tar.gz": {
+      "bytes": 208335,
+      "sha256": "04b05b0762f928734903287b8dd3c0bdef78743d4cd4af471945c19337a7c837",
+      "regular_files": 19
+    }
+  },
+  "readout": {
+    "bytes": 1054217,
+    "sha256": "8599d61793f97da236afb53aab382eba9b0a072752705c053aca8264977c3a94",
+    "status": "COMPLETE",
+    "issues": [],
+    "original_json_byte_and_canonical_hashes_verified": 2787,
+    "unique_graph_paths_verified": 162,
+    "totals_recomputed": {
+      "business_executions": 147,
+      "format_rejections": 159,
+      "input_tokens": 110751,
+      "model_calls": 306,
+      "output_tokens": 26330,
+      "verifier_calls": 306
+    },
+    "eight_artifact_types_each_cover_calls": 306
+  },
+  "summary_sha256": "6df1aece6c45ebbc851c5da8e5550eed8d25f8ff5888dfaabb790b29fca56c19",
+  "answer_ablation_input_audit": {
+    "bytes": 39984,
+    "sha256": "613ea3bee11bc5bc1048304a77315dcafeba80b6a72778e9bb40401c9eed32fe",
+    "effective_pairs": 5,
+    "noop_pairs": 1,
+    "all_reported_checks_true": true
+  },
+  "scientific_qualification": false,
+  "full_system_cost_complete": false
+}

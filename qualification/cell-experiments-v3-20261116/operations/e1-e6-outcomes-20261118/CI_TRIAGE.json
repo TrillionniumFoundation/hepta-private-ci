@@ -1,0 +1,186 @@
+{
+  "schema": "hepta.e6-followup-ci-triage.v1",
+  "source_head": "1b0f2a428cf51d1dcdb35dccd49c4405ae828747",
+  "actual_merge": "b97e88e39a233d09ee4927e046779d00c8f3e65a",
+  "all_ci_passed": false,
+  "qualifications_added": false,
+  "observations": [
+    {
+      "job_id": 134744511193,
+      "job": "build-test",
+      "outcome": "FAILED",
+      "observed_reason": "Pinned Ruff full-tree check rejected existing online_v4 formatting.",
+      "paths": [
+        "scripts/cell_experiments/online_v4/circuit_contract.py",
+        "scripts/cell_experiments/online_v4/circuit_router.py",
+        "scripts/cell_experiments/online_v4/circuit_runtime.py",
+        "scripts/cell_experiments/online_v4/circuit_study.py",
+        "scripts/cell_experiments/online_v4/onpolicy_backend.py",
+        "scripts/cell_experiments/online_v4/onpolicy_contract.py",
+        "scripts/cell_experiments/online_v4/onpolicy_feedback.py",
+        "scripts/cell_experiments/online_v4/onpolicy_loop.py",
+        "scripts/cell_experiments/online_v4/onpolicy_rollout.py",
+        "scripts/cell_experiments/online_v4/onpolicy_train.py",
+        "scripts/cell_experiments/online_v4/reporting_v4.py",
+        "scripts/cell_experiments/online_v4/round03_cli.py",
+        "scripts/cell_experiments/online_v4/round03_jobs.py",
+        "scripts/cell_experiments/online_v4/round03_plan.py",
+        "scripts/cell_experiments/online_v4/round03_report.py",
+        "scripts/cell_experiments/online_v4/shared_pool_v4.py",
+        "scripts/cell_experiments/online_v4/test_circuit_router.py",
+        "scripts/cell_experiments/online_v4/test_circuit_runtime.py",
+        "scripts/cell_experiments/online_v4/test_onpolicy_cache.py",
+        "scripts/cell_experiments/online_v4/test_onpolicy_flow.py",
+        "scripts/cell_experiments/online_v4/test_onpolicy_tensor.py",
+        "scripts/cell_experiments/online_v4/test_reporting_v4.py",
+        "scripts/cell_experiments/online_v4/test_round03_plan.py",
+        "scripts/cell_experiments/online_v4/test_round03_report.py",
+        "scripts/cell_experiments/online_v4/test_shared_pool_cleanup.py",
+        "scripts/cell_experiments/online_v4/test_shared_pool_v4.py"
+      ],
+      "repair_scope": "Formatting only in a later candidate; complete AST equivalence is required."
+    },
+    {
+      "job_id": 134744510670,
+      "job": "sdk",
+      "outcome": "FAILED",
+      "test": "Codex > throws ThreadRunError on turn failures",
+      "source": "sdk/typescript/tests/run.test.ts:803",
+      "observed_reason": "Exceeded the existing 10000 ms test timeout.",
+      "tests_passed": 46,
+      "tests_failed": 1,
+      "root_cause": "UNDETERMINED: timeout observation alone does not establish why it occurred."
+    },
+    {
+      "job_id": 134744511293,
+      "job": "macOS Intel Bazel",
+      "outcome": "FAILED",
+      "failed_targets": [
+        "//codex-rs/hepta-matrix-sdk:hepta-matrix-sdk-store_version_migration-test",
+        "//codex-rs/hepta-agentd:hepta-agentd-unit-tests",
+        "//codex-rs/app-server:app-server-all-test"
+      ],
+      "agentd_failed_tests": [
+        "circuit_cell::tests::causal_tests::causal_readback_joins_original_clocks_and_survives_circuit_reopen_without_contact",
+        "learning_iteration_research_external_material::tests::research_material_reads_reject_leaf_ancestor_and_hardlink_aliases",
+        "learning_iteration_research_external_material::tests::research_material_size_reference_and_mutation_checks_use_actual_bytes",
+        "learning_iteration_research_external_material::tests::research_owner_concurrent_handles_cas_has_exactly_one_retained_winner",
+        "learning_iteration_research_external_material::tests::research_owner_initial_freeze_rejects_existing_training_or_evaluation",
+        "learning_iteration_research_external_material::tests::research_owner_partial_entries_are_observable_and_never_replaced",
+        "learning_iteration_research_external_material::tests::research_owner_publication_is_create_only_and_detects_directory_replacement"
+      ],
+      "observed_reasons": [
+        "Six research-material fixtures fail at original no-follow directory paths (ENOTDIR or expected-success assertion).",
+        "One causal readback fixture reports Invalid.",
+        "Encrypted state restart reports Initialization.",
+        "App-server executor-skills shards also fail."
+      ],
+      "interpretation": "Listed source and build inputs equal original baseline and actual tested merge. This establishes unchanged source inputs, not environment equivalence, a flaky classification, or a pass."
+    },
+    {
+      "job_id": 134736722862,
+      "job": "Windows Bazel",
+      "outcome": "FAILED",
+      "details": "windows-bazel-summary.json"
+    },
+    {
+      "job_id": 134744510592,
+      "job": "cargo-deny",
+      "outcome": "FAILED",
+      "observed_reason": "UNKNOWN: complete original log could not be retrieved.",
+      "details": "cargo-deny-incomplete-summary.json"
+    }
+  ],
+  "followup_repairs": {
+    "source_head": "078e88738a20bf4f7d44a31893df32b137e450ca",
+    "engineering": {
+      "job_id": 134762288096,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44292879926/job/134762288096",
+      "status": "PASS",
+      "tests": 185,
+      "skips": 0,
+      "seconds": 35.209
+    },
+    "codespell": {
+      "job_id": 134762289616,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44292880041/job/134762289616",
+      "status": "PASS"
+    },
+    "full_repository_build_test": {
+      "job_id": 134762585272,
+      "status": "CANCELLED",
+      "formatter_step": "SKIPPED",
+      "note": "The full CI formatter step did not run. The local pinned Ruff check passed all 27 online_v4 modules, with unchanged ASTs."
+    },
+    "all_ci_passed": false,
+    "full_check_observation": "FORMATTED_HEAD_CHECKS.json"
+  },
+  "retained_materials": [
+    {
+      "path": "134744510670.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 710733,
+      "sha256": "c3cb3c042e02121e08a4e90367e411880ff72d227648a6b059d8206473574513"
+    },
+    {
+      "path": "134744511193.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 241201,
+      "sha256": "c585cb7ac3201dfed658a2ef9a64a36d15e73524b3973e7e6b8608440e190be9"
+    },
+    {
+      "path": "134744511293.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 1208783,
+      "sha256": "5bd7f8c738a0d07b86b4ce53983ee8ffb3748e734c630f315ff8a2a2a731ecd4"
+    },
+    {
+      "path": "134762288096.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 81322,
+      "sha256": "09cac8ba633417457988c08ae103ddd42c146ef826f36dfa79c8c74f0a83fbb7"
+    },
+    {
+      "path": "134762289616.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 27900,
+      "sha256": "aa99fd0b07454906c2c5e1ba58f4f350117fee724aad06200ee2eec2e51595b4"
+    },
+    {
+      "path": "FORMATTED_HEAD_CHECKS.json",
+      "kind": "derived_or_observed_metadata",
+      "bytes": 15230,
+      "sha256": "e3cf5b3055d8e27f16d861710e9408cfd9089edb2b2f6061f2826bab6270b842"
+    },
+    {
+      "path": "cargo-deny-incomplete-summary.json",
+      "kind": "derived_or_observed_metadata",
+      "bytes": 13996,
+      "sha256": "28df2ead637b2c43d563522a7c28dc0c09e0217b4c875f8e88d4cff33c555fba"
+    },
+    {
+      "path": "source-tree-comparison-with-tested-merge.json",
+      "kind": "derived_or_observed_metadata",
+      "bytes": 13273,
+      "sha256": "ba5c3e8b5a26505036bfbe8c0c9e27ddc6555d47946e6d69b120a537944d644b"
+    },
+    {
+      "path": "source-tree-comparison.json",
+      "kind": "derived_or_observed_metadata",
+      "bytes": 4836,
+      "sha256": "eaf5ca1fe75511739e5c0d0e36baf2607db9bcaa0cf58e4413cf8b84be2eb02a"
+    },
+    {
+      "path": "windows-bazel-job-134736722862.log",
+      "kind": "retrieved_decoded_job_log",
+      "bytes": 508232,
+      "sha256": "3b0083dcfb9db32e94f8d83e636d9524db73d0cda5e4ab49245378bbcacfd7e1"
+    },
+    {
+      "path": "windows-bazel-summary.json",
+      "kind": "derived_or_observed_metadata",
+      "bytes": 3715,
+      "sha256": "6c2c226531c6e4b7996f67427ffc1094c8a2fcae84afc481f53f4ba17bb544b1"
+    }
+  ]
+}

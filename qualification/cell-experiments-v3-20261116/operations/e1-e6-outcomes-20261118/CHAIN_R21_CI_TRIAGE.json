@@ -1,0 +1,460 @@
+{
+  "audit_invoked_tests_or_validators": false,
+  "audit_mutated_source_or_workflows": false,
+  "audit_reran_or_cancelled_workflows": false,
+  "base": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+  "base_lanes": [
+    {
+      "conclusion": "success",
+      "full_log_preserved": true,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543281,
+      "log": {
+        "bytes": 150247,
+        "path": "logs/base/head_134798543281.log",
+        "sha256": "bc9213fdacf9ffbb3954b768ae77ae6fc10cf9a6f2a5d9dfa4f040a7c829f38b"
+      },
+      "name": "external-evidence-contract",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543281"
+    },
+    {
+      "conclusion": "success",
+      "full_log_preserved": false,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543506,
+      "log": null,
+      "name": "prospective-merge (fuzz-smoke)",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543506"
+    },
+    {
+      "conclusion": "success",
+      "full_log_preserved": true,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543510,
+      "log": {
+        "bytes": 69452,
+        "path": "logs/base/head_134798543510.log",
+        "sha256": "76ae98b37494a9cb4dbc73dd5ee41478aec89f6bdf3175f3d889366a9c00ec5f"
+      },
+      "name": "fuzz-smoke",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543510"
+    },
+    {
+      "conclusion": "success",
+      "full_log_preserved": true,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543533,
+      "log": {
+        "bytes": 1176149,
+        "path": "logs/base/head_134798543533.log",
+        "sha256": "d4d7fc1854cb4ee046aa6c3eedced2e2ee46c46285d8698f04d1a750c31432c0"
+      },
+      "name": "repository-truth",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543533"
+    },
+    {
+      "conclusion": "success",
+      "full_log_preserved": false,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543561,
+      "log": null,
+      "name": "prospective-merge (external-evidence-contract)",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543561"
+    },
+    {
+      "conclusion": "success",
+      "full_log_preserved": false,
+      "head_sha": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "job_id": 134798543570,
+      "log": null,
+      "name": "prospective-merge (repository-truth)",
+      "run_id": 44298913299,
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44298913299/job/134798543570"
+    }
+  ],
+  "base_run_id": 44298913299,
+  "causal_conclusion": "The r21 source changes introduced two current-source pin mismatches relative to base119c. The exact affected bytes matched the retained pins at base119c and no longer match at head27d6. The three corresponding base head lanes and three base merge lanes succeeded; the three current head and three current merge lanes fail on these exact mismatches. These are not inherited failures.",
+  "current_lanes": [
+    {
+      "actual_checkout": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "command": "bash scripts/ci/ci_job.sh repository-truth",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:45:15Z",
+          "conclusion": "failure",
+          "name": "Run actual repository-truth checks",
+          "number": 8,
+          "started_at": "2026-11-18T13:45:05Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_pq_source_hash",
+      "final_exit": {
+        "line": 713,
+        "text": "2026-11-18T13:45:15.0791397Z ##[error]Process completed with exit code 1."
+      },
+      "first_actual_failure": {
+        "line": 707,
+        "text": "2026-11-18T13:45:15.0699052Z pq_lifetime_current_v2.CurrentBudgetError: current correspondence source hash mismatch: trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs"
+      },
+      "job_id": 134837923430,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "head",
+      "lane": "repository-truth",
+      "log": {
+        "bytes": 92632,
+        "path": "logs/current/head_134837923430.log",
+        "sha256": "889188ed76abecdda2bc20e04a2942de5f7fadac5997947ba367faf3ab0e7187"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 330,
+          "text": "2026-11-18T13:44:57.0662043Z Ran 9 tests in 0.162s"
+        },
+        {
+          "line": 350,
+          "text": "2026-11-18T13:45:01.5779270Z Ran 89 tests in 4.302s"
+        },
+        {
+          "line": 435,
+          "text": "2026-11-18T13:45:05.9857803Z Ran 40 tests in 0.287s"
+        },
+        {
+          "line": 477,
+          "text": "2026-11-18T13:45:06.0880467Z Ran 37 tests in 0.031s"
+        },
+        {
+          "line": 498,
+          "text": "2026-11-18T13:45:09.0219820Z Ran 16 tests in 2.888s"
+        },
+        {
+          "line": 526,
+          "text": "2026-11-18T13:45:13.4436818Z Ran 23 tests in 4.364s"
+        },
+        {
+          "line": 541,
+          "text": "2026-11-18T13:45:13.5600187Z Ran 10 tests in 0.044s"
+        },
+        {
+          "line": 552,
+          "text": "2026-11-18T13:45:13.6527526Z Ran 6 tests in 0.022s"
+        },
+        {
+          "line": 582,
+          "text": "2026-11-18T13:45:13.8606957Z Ran 25 tests in 0.145s"
+        },
+        {
+          "line": 656,
+          "text": "2026-11-18T13:45:14.4451417Z Ran 69 tests in 0.519s"
+        },
+        {
+          "line": 692,
+          "text": "2026-11-18T13:45:14.8757715Z Ran 31 tests in 0.361s"
+        },
+        {
+          "line": 710,
+          "text": "2026-11-18T13:45:15.0699868Z Ran 58 tests in 0.133s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923430"
+    },
+    {
+      "actual_checkout": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "command": "bash scripts/ci/ci_job.sh fuzz-smoke",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:48:15Z",
+          "conclusion": "failure",
+          "name": "Run actual fuzz-smoke checks",
+          "number": 7,
+          "started_at": "2026-11-18T13:45:34Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_inline_git_blob",
+      "final_exit": {
+        "line": 568,
+        "text": "2026-11-18T13:48:15.7915942Z ##[error]Process completed with exit code 1."
+      },
+      "first_actual_failure": {
+        "line": 562,
+        "text": "2026-11-18T13:48:15.7706632Z ValueError: CI contract: inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99: trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs: expected 1f4dd178a9493b71340a8684a9338a7782e0760d, observed 7053c78e6a6626af763092fa4d8a031e48f6122e"
+      },
+      "job_id": 134837923468,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "head",
+      "lane": "fuzz-smoke",
+      "log": {
+        "bytes": 53167,
+        "path": "logs/current/head_134837923468.log",
+        "sha256": "5aaad95fd755ff0f690af3fabf633ce4c69ce18ace10bb5d1ea3e66a07398fa9"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 565,
+          "text": "2026-11-18T13:48:15.7707815Z Ran 58 tests in 160.896s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923468"
+    },
+    {
+      "actual_checkout": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "command": "bash scripts/ci/ci_job.sh external-evidence-contract",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:48:40Z",
+          "conclusion": "failure",
+          "name": "Run actual external-evidence-contract checks",
+          "number": 6,
+          "started_at": "2026-11-18T13:48:25Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_inline_git_blob",
+      "final_exit": {
+        "line": 406,
+        "text": "2026-11-18T13:48:40.9059599Z ##[error]Process completed with exit code 2."
+      },
+      "first_actual_failure": {
+        "line": 405,
+        "text": "2026-11-18T13:48:40.8681767Z Repository check failed: CI contract: inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99: trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs: expected 1f4dd178a9493b71340a8684a9338a7782e0760d, observed 7053c78e6a6626af763092fa4d8a031e48f6122e"
+      },
+      "job_id": 134837923743,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "head",
+      "lane": "external-evidence-contract",
+      "log": {
+        "bytes": 45495,
+        "path": "logs/current/head_134837923743.log",
+        "sha256": "4ac357560ca130d4a03d4c83434c9f51b0c22ddb3899d1e35de633aeed253552"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 402,
+          "text": "2026-11-18T13:48:31.5385258Z Ran 38 tests in 3.543s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923743"
+    },
+    {
+      "actual_checkout": "47ca6a986f5e6d8e01d9ec9558e3bf6d8653401f",
+      "command": "bash scripts/ci/ci_job.sh repository-truth",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:49:03Z",
+          "conclusion": "failure",
+          "name": "Execute the same lane on the prospective merge",
+          "number": 12,
+          "started_at": "2026-11-18T13:48:52Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_pq_source_hash",
+      "final_exit": {
+        "line": 712,
+        "text": "2026-11-18T13:49:03.8021093Z ##[error]Process completed with exit code 1."
+      },
+      "first_actual_failure": {
+        "line": 706,
+        "text": "2026-11-18T13:49:03.7910332Z pq_lifetime_current_v2.CurrentBudgetError: current correspondence source hash mismatch: trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs"
+      },
+      "job_id": 134837923596,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "merge",
+      "lane": "repository-truth",
+      "log": {
+        "bytes": 94154,
+        "path": "logs/current/merge_134837923596.log",
+        "sha256": "1f5df16cfde6c031cd623bb39a282182b682f99d2864f94dea1af281e3674422"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 345,
+          "text": "2026-11-18T13:48:47.3386563Z Ran 9 tests in 0.187s"
+        },
+        {
+          "line": 434,
+          "text": "2026-11-18T13:48:52.5442651Z Ran 40 tests in 0.363s"
+        },
+        {
+          "line": 476,
+          "text": "2026-11-18T13:48:52.6814888Z Ran 37 tests in 0.048s"
+        },
+        {
+          "line": 497,
+          "text": "2026-11-18T13:48:56.3236832Z Ran 16 tests in 3.580s"
+        },
+        {
+          "line": 525,
+          "text": "2026-11-18T13:49:01.7453089Z Ran 23 tests in 5.350s"
+        },
+        {
+          "line": 540,
+          "text": "2026-11-18T13:49:01.8749325Z Ran 10 tests in 0.041s"
+        },
+        {
+          "line": 551,
+          "text": "2026-11-18T13:49:01.9980519Z Ran 6 tests in 0.030s"
+        },
+        {
+          "line": 581,
+          "text": "2026-11-18T13:49:02.2588775Z Ran 25 tests in 0.186s"
+        },
+        {
+          "line": 655,
+          "text": "2026-11-18T13:49:03.0021139Z Ran 69 tests in 0.665s"
+        },
+        {
+          "line": 691,
+          "text": "2026-11-18T13:49:03.5420571Z Ran 31 tests in 0.456s"
+        },
+        {
+          "line": 709,
+          "text": "2026-11-18T13:49:03.7912421Z Ran 58 tests in 0.169s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923596"
+    },
+    {
+      "actual_checkout": "47ca6a986f5e6d8e01d9ec9558e3bf6d8653401f",
+      "command": "bash scripts/ci/ci_job.sh fuzz-smoke",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:52:46Z",
+          "conclusion": "failure",
+          "name": "Execute the same lane on the prospective merge",
+          "number": 12,
+          "started_at": "2026-11-18T13:49:06Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_inline_git_blob",
+      "final_exit": {
+        "line": 587,
+        "text": "2026-11-18T13:52:46.0132611Z ##[error]Process completed with exit code 1."
+      },
+      "first_actual_failure": {
+        "line": 581,
+        "text": "2026-11-18T13:52:45.9916502Z ValueError: CI contract: inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99: trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs: expected 1f4dd178a9493b71340a8684a9338a7782e0760d, observed 7053c78e6a6626af763092fa4d8a031e48f6122e"
+      },
+      "job_id": 134837923680,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "merge",
+      "lane": "fuzz-smoke",
+      "log": {
+        "bytes": 56075,
+        "path": "logs/current/merge_134837923680.log",
+        "sha256": "9e6ee6280f85bdbd801a7bf704e20ad7853a434527402723e1a41a01b4760c5d"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 584,
+          "text": "2026-11-18T13:52:45.9918000Z Ran 58 tests in 219.307s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923680"
+    },
+    {
+      "actual_checkout": "47ca6a986f5e6d8e01d9ec9558e3bf6d8653401f",
+      "command": "bash scripts/ci/ci_job.sh external-evidence-contract",
+      "conclusion": "failure",
+      "failed_step": [
+        {
+          "completed_at": "2026-11-18T13:47:12Z",
+          "conclusion": "failure",
+          "name": "Execute the same lane on the prospective merge",
+          "number": 12,
+          "started_at": "2026-11-18T13:46:59Z",
+          "status": "completed"
+        }
+      ],
+      "failure_family": "current_inline_git_blob",
+      "final_exit": {
+        "line": 416,
+        "text": "2026-11-18T13:47:12.5656741Z ##[error]Process completed with exit code 2."
+      },
+      "first_actual_failure": {
+        "line": 415,
+        "text": "2026-11-18T13:47:12.5290787Z Repository check failed: CI contract: inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99: trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs: expected 1f4dd178a9493b71340a8684a9338a7782e0760d, observed 7053c78e6a6626af763092fa4d8a031e48f6122e"
+      },
+      "job_id": 134837923712,
+      "job_metadata_head_sha": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "kind": "merge",
+      "lane": "external-evidence-contract",
+      "log": {
+        "bytes": 47601,
+        "path": "logs/current/merge_134837923712.log",
+        "sha256": "3f340f31d7db051c27db9e6c8e97aa350e4aac9beb0d787f1f2b4dfd4538fcc6"
+      },
+      "run_id": 44314787729,
+      "test_summary_lines": [
+        {
+          "line": 412,
+          "text": "2026-11-18T13:47:01.8312711Z Ran 38 tests in 0.486s"
+        }
+      ],
+      "url": "https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44314787729/job/134837923712"
+    }
+  ],
+  "current_run_id": 44314787729,
+  "exact_source_readback": {
+    "all_git_blobs_verified": true,
+    "executed_readonly_program": "remote/source_hash_program.py",
+    "github_source_files": 10,
+    "hash_report": "remote/source_hash_stdout.json",
+    "raw_pty_result": "remote/source_hash_pty_read.json",
+    "same_tree_remote_checkout": "cf54f385930258b601339777dc18da487a34d797"
+  },
+  "external_evidence_contract_fixture_note": "38 fixture tests pass before the subsequent actual repository check fails with exit2. Expected negative fixture messages are not counted as the cause.",
+  "failure_families": {
+    "current_inline_git_blob": {
+      "affected_path": "trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs",
+      "base_actual_git_blob": "1f4dd178a9493b71340a8684a9338a7782e0760d",
+      "base_matches_pin": true,
+      "error_substring": "inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99",
+      "expected_git_blob": "1f4dd178a9493b71340a8684a9338a7782e0760d",
+      "head_actual_git_blob": "7053c78e6a6626af763092fa4d8a031e48f6122e",
+      "head_matches_pin": false,
+      "pin_file_unchanged": true,
+      "pin_line": 99,
+      "pin_path": ".github/workflows/pon-recent-batch-acceptance.yml"
+    },
+    "current_pq_source_hash": {
+      "affected_path": "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+      "base_actual_sha256": "9b8abe32fa33e4144b4330e146877518d410941f0c8ba333516245e46a09733a",
+      "base_matches_pin": true,
+      "error_substring": "current correspondence source hash mismatch: trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+      "expected_sha256": "9b8abe32fa33e4144b4330e146877518d410941f0c8ba333516245e46a09733a",
+      "head_actual_sha256": "1d676ba96d3486be0822273268375015e0649457ba2f00abc810756c366c29e4",
+      "head_matches_pin": false,
+      "pin_and_validator_unchanged": true,
+      "pin_path": "config/pon/pq128-source-correspondence-current-v2.json",
+      "validator_path": "scripts/ci/pq_lifetime_current_v2.py"
+    }
+  },
+  "head": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+  "head_and_merge_tree": "bba212bffc9debcdf4a3f82fef7e1516ba7c8593",
+  "merge": "47ca6a986f5e6d8e01d9ec9558e3bf6d8653401f",
+  "pr_number": 956,
+  "qualification_note": "Business-window success does not establish these CI lanes passed. This audit makes no security, production-adoption, or whole-repository-green claim.",
+  "read_only": true,
+  "repair_boundary": "A future repair may rebind reviewed current-source metadata and current workflow source pins. Historical frozen manifests, source locks, HOLD, and false qualification flags must retain their existing semantics; this triage does not itself authorize or perform any mutation.",
+  "repository": "TrillionniumFoundation/Trillionnium-Chain",
+  "schema": "chain.r21.ci-failure-triage.v1",
+  "scope": "Six completed failing head/merge lanes; three complete prior head logs plus six prior job metadata results. Other jobs are outside this triage."
+}

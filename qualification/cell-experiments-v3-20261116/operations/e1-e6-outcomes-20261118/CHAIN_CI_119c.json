@@ -1,0 +1,129 @@
+{
+  "budget": {
+    "before_cases": [
+      {
+        "cases": [],
+        "driver": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+        "errors": [
+          "ValueError: IDENTICAL_GROUP_TESTS_LOCK_AND_PROFILE_REQUIRED"
+        ],
+        "mode": "pool-scan-before",
+        "native_campaign_executed": false,
+        "native_control_processes_started": 0,
+        "path": "119c-budget-pool-scan-native_report.json",
+        "result": "FAIL",
+        "sha256": "36fe43c3462a2e1f61f4d8f76517717720edd1f208189f263fcd22dd1212bc85",
+        "source_before_equals_after": true,
+        "subject": "ae657e262278ae4a058220f66a6a0495721eb9ad"
+      },
+      {
+        "cases": [],
+        "driver": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+        "errors": [
+          "ValueError: IDENTICAL_GROUP_TESTS_LOCK_AND_PROFILE_REQUIRED"
+        ],
+        "mode": "budget-before-v2",
+        "native_campaign_executed": false,
+        "native_control_processes_started": 0,
+        "path": "119c-budget-v2-native_report.json",
+        "result": "FAIL",
+        "sha256": "f806a14412ab411504731b3183f91f3b618f0bbee8904f2ad7485582498f556c",
+        "source_before_equals_after": true,
+        "subject": "89fb2269b0dd306fbd32c36f464842c3d7daee2b"
+      },
+      {
+        "cases": [],
+        "driver": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+        "errors": [
+          "ValueError: IDENTICAL_GROUP_TESTS_LOCK_AND_PROFILE_REQUIRED"
+        ],
+        "mode": "pool-before-v2",
+        "native_campaign_executed": false,
+        "native_control_processes_started": 0,
+        "path": "119c-pool-v2-native_report.json",
+        "result": "FAIL",
+        "sha256": "7f0c6eabad3ffd97439e00399684685a3d934e6911f88786350a88e665b98634",
+        "source_before_equals_after": true,
+        "subject": "84e68b4f7a9b2f48f9c47ed05c9a44229d186e30"
+      }
+    ],
+    "fixed_case_result": "success",
+    "interpretation": "Old-source comparisons are blocked before compilation/native execution by the unchanged identical group tests, lock, and profile guard. No native business measurement or old-source qualification was obtained.",
+    "run_id": 44298913431
+  },
+  "cleanup": {
+    "aggregate_jobs_passed": 2,
+    "capacity_notice": "Due to capacity constraints, jobs targeting macOS arm64 runners may experience longer queue times.",
+    "direct_annotation": "The job was not acquired by Runner of type hosted even after multiple attempts",
+    "infrastructure_failure": true,
+    "linux_jobs_passed": 4,
+    "mac_conclusion": "cancelled",
+    "mac_job_ids": [
+      134783137411,
+      134783137439
+    ],
+    "mac_steps_executed": 0,
+    "run_id": 44298913186
+  },
+  "head": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+  "observed_at_utc": "2026-11-18 12:12:24 UTC",
+  "original_7e4_pressure_result": {
+    "confirmed": 0,
+    "status": "FAILED",
+    "target": 1
+  },
+  "pq_source_pin_repair": {
+    "full_workflow_pass_claimed": false,
+    "full_workflow_status": "in_progress",
+    "retained_source_and_claim_gate": [
+      {
+        "job_id": 134783138349,
+        "name": "PQ network and witness (ubuntu-24.04, head)",
+        "step": {
+          "conclusion": "success",
+          "name": "Require retained source and claim controls",
+          "number": 4,
+          "status": "completed"
+        }
+      },
+      {
+        "job_id": 134783138463,
+        "name": "PQ network and witness (ubuntu-24.04-arm, head)",
+        "step": {
+          "conclusion": "success",
+          "name": "Require retained source and claim controls",
+          "number": 4,
+          "status": "completed"
+        }
+      },
+      {
+        "job_id": 134783138538,
+        "name": "PQ network and witness (ubuntu-24.04-arm, prospective-merge)",
+        "step": {
+          "conclusion": "success",
+          "name": "Require retained source and claim controls",
+          "number": 4,
+          "status": "completed"
+        }
+      },
+      {
+        "job_id": 134783138741,
+        "name": "PQ network and witness (ubuntu-24.04, prospective-merge)",
+        "step": {
+          "conclusion": "success",
+          "name": "Require retained source and claim controls",
+          "number": 4,
+          "status": "completed"
+        }
+      }
+    ],
+    "run_id": 44298913505
+  },
+  "qualification_changed": false,
+  "required_baseline": {
+    "new_business_measurement_available": false,
+    "run_id": 44298913299,
+    "status": "pending"
+  },
+  "schema": "chain.exact-head-ci-followup.v1"
+}

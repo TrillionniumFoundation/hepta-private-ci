@@ -1,0 +1,76 @@
+{
+  "schema": "hepta.root-model-registry-readback.v1",
+  "registry_sha256": "0014ce0bdc55633a254ec62554b868fe7cf1b925c309fbfd95bc255a9fa41c49",
+  "research_models": 9,
+  "base_models": 1,
+  "full_manifest_digests_and_original_training_bytes_verified": true,
+  "all_parent_links_resolved": true,
+  "adapter_file_sha_matches_manifest": true,
+  "durable_tensor_bytes_scope": "Previously verified exporter WEIGHTS map; root readback does not re-download tensor binaries",
+  "model_or_verifier_calls": 0,
+  "models": [
+    {
+      "asset_id": "run02_F",
+      "manifest_digest": "b8d926d13b45314e131514a4f5625aed9c7f902505b98f7d4b5b3d44c5fcc8db",
+      "parent": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+      "after": "e5d3d0a172a512fd1e8ed1c61326f5a38f1c8ca49c7b1b4052f6031ae8b84162",
+      "adapter_sha256": "9302613677cc0c4fa7066fd4dd862c5d390f01699c34ab7ca9677b4b6dfb6199"
+    },
+    {
+      "asset_id": "run02_T",
+      "manifest_digest": "4d9fedaa5e406cb2edac27e443ad0fdc1073631dd6f4e52f75875c67e50cd503",
+      "parent": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+      "after": "2da6848d90acb024a7ecac07e9ebedd67f66b5ff4b7d7ee11563ac2871227c59",
+      "adapter_sha256": "ac965d5b59da7e7cf5ceb0c8b9e366f217d92b74f59751ec6914270493f234e0"
+    },
+    {
+      "asset_id": "run02_C",
+      "manifest_digest": "518f2839f00fab5dfb2dfa386c8abb679465a2379b3335cc535eff1f3a33ee03",
+      "parent": "f63def6407c72c0b6e19647f5879582ab8ed35e4f6207352be931a9f417b0ff6",
+      "after": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+      "adapter_sha256": "89ed41ad3107b610380aff2dced65a6613f471fe859a09db659c5df1044a3b44"
+    },
+    {
+      "asset_id": "run03_teacher_000",
+      "manifest_digest": "3ca7016ba142ef83482312ae62493dae75addf1c0c2b4fcbbb877f04352b6719",
+      "parent": "b8d926d13b45314e131514a4f5625aed9c7f902505b98f7d4b5b3d44c5fcc8db",
+      "after": "6098dcefcec05255516f087007ad5e9b63079b4d2afd124fb8811e3995d59b6a",
+      "adapter_sha256": "31dcf29f46dffecaf461af05d20a787843c92db7cbed36d1cb3a64697644b5eb"
+    },
+    {
+      "asset_id": "run03_teacher_001",
+      "manifest_digest": "9c4c7d58a0f655043532b940faa9a2c80baa4223d26adc2fc3927cd837a3a409",
+      "parent": "3ca7016ba142ef83482312ae62493dae75addf1c0c2b4fcbbb877f04352b6719",
+      "after": "d00e1c495c41d5b3f462a9e28a5c4239b089005fbe9c34699eb6d2339fbbf13c",
+      "adapter_sha256": "39170c8f9af8b8fa5ed7a89457bf278b747025f3549764a2e3fab8ed45124cbf"
+    },
+    {
+      "asset_id": "run03_shadow_000",
+      "manifest_digest": "f696cd10647ed23e78e1324cfd213f0fd492aacddf8e71bfe031b72375ec472a",
+      "parent": "b8d926d13b45314e131514a4f5625aed9c7f902505b98f7d4b5b3d44c5fcc8db",
+      "after": "01223e79e49375ab51e58dad2cbec9e834015f3135aee2975bd1b128f654cc48",
+      "adapter_sha256": "e0add66b8d2d7db9656c2941dc567c60fb56fd340153f540795237995c5086bc"
+    },
+    {
+      "asset_id": "run03_shadow_001",
+      "manifest_digest": "4510e37ce1e4212f3434abdc2f45f95eb9c012c07327a67b9a69563f3fd4ba8f",
+      "parent": "f696cd10647ed23e78e1324cfd213f0fd492aacddf8e71bfe031b72375ec472a",
+      "after": "7f68a9d115888c08fe4a8b5756ab44a8115fcf08ddbd57343985e824a8cd983d",
+      "adapter_sha256": "307dadcbc264fa3e960cdefa7fb8cc560d2062a8d57b9dfc6dcf8641213e816b"
+    },
+    {
+      "asset_id": "run03_controlled_000",
+      "manifest_digest": "293c639fddad1573acf1975fe9c431c95d97290a7dcfecffd41f03246edb0576",
+      "parent": "b8d926d13b45314e131514a4f5625aed9c7f902505b98f7d4b5b3d44c5fcc8db",
+      "after": "a46318438fc22f737e424bc26f1a90826517c92af88ec0444c10d9ff04d6d1c4",
+      "adapter_sha256": "fd6c8db89c1124d18ef91b4e4d61aa0ef1b9381d3616f2fa95b521d3fdcd23b1"
+    },
+    {
+      "asset_id": "run03_controlled_001",
+      "manifest_digest": "798b54528c0f42246005cc9dd661736a6ecb250e7a18251d7dad5dd912a54329",
+      "parent": "293c639fddad1573acf1975fe9c431c95d97290a7dcfecffd41f03246edb0576",
+      "after": "836b8c7c15c13223090d9bdcf512579a2f0609fb5edfecabf0a479e1b78f6c9e",
+      "adapter_sha256": "80feda3dacd591572937c509e740bc623d6a86f9223b38809f37b2601aeaf9a1"
+    }
+  ]
+}

@@ -1,0 +1,663 @@
+{
+  "schema": "trnm-read-only-wait4-cost-review-v1",
+  "status": "PASS_FOR_SCOPED_COST_REPORTING",
+  "reviewer": "/root/e1_e3_learning",
+  "native_experiment_invocations": 0,
+  "model_or_gpu_invocations": 0,
+  "production_source_or_protocol_mutations": 0,
+  "scope": "Read retained R20/R21 original receipts and immutable measurement source; no re-execution of any native test, verifier, model, or pressure campaign. Descriptive single runs, not statistical or independent-operator qualification.",
+  "measurement_source": [
+    {
+      "path": "scripts/ci/replay_pinned_native.py",
+      "sha256": "d14d2f61ab98bb30b5932530437064dce5d3a330c05a9530988fe776cefea44a",
+      "bytes": 18571,
+      "same_119c_to_27d6": true,
+      "detail": "run_child calls os.wait4(Popen.pid,WNOHANG), then exit status and CPU user+system. Decimal conversion retains microsecond resolution. wall_ns starts before opening child stdout/stderr and spawning, ends after reaping and file close, before parent hash/read/process.json serialization."
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/tests/public_v3_from_zero.rs",
+      "sha256": "9f5fca310f6b68880c9980c641ed34f0ff4709e014f1fc9d142291a78fc64641",
+      "bytes": 79554,
+      "same_119c_to_27d6": true,
+      "detail": "Named test constructs false packets, mines seven honest packets, executes baseline then pressure, serializes final report with serde_json::to_vec_pretty, writes report.json, prints summary, then returns. Report serialization/write and destructors before child exit are included by whole-child wait4."
+    },
+    {
+      "path": "trillionnium/crates/trnm-pon-node/tests/public_v3_from_zero/phase_cost.rs",
+      "sha256": "222a64ff20bbeaa96ba3647f3a418b461b43d37071c324dcab5f61fe147d0de6",
+      "bytes": 7545,
+      "same_119c_to_27d6": true,
+      "detail": "CLOCK_PROCESS_CPUTIME_ID captures all threads between fixed boundaries. finish samples after disk/readback but before assembling its own cost value and final report serialization; these excluded tails are inside outer wait4."
+    },
+    {
+      "path": "scripts/ci/run_from_zero_host.py",
+      "sha256": "2840de7cc19626c32d165bcfd032479db27180f03516ba3cefb0dafdaf61f4eb",
+      "bytes": 28366,
+      "same_119c_to_27d6": true,
+      "detail": "inside() captures before, writes initial receipt, subprocess.run(command), captures after, then writes after/child-result. Wider parent cgroup interval includes all driver descendants and wrapper work between samples; excludes final after/child-result writes and external setup/archive/upload."
+    },
+    {
+      "path": "scripts/ci/run_from_zero_native.py",
+      "sha256": "87cf7fbeb89186b2c1207b232805094e6343224c543c4d210f63609d42bb24ba",
+      "bytes": 115879,
+      "same_119c_to_27d6": null,
+      "detail": "Current exact 27d6 tree source directly imports run_child and invokes selected binary with name --exact --nocapture --test-threads=1; report validators and manifest finalization run in parent after waited child exits."
+    }
+  ],
+  "source_read_provenance": {
+    "host": "rog",
+    "repo": "/home/qian-qi/work/chain-known-invalid-backpressure-20261118-392934",
+    "local_commit": "cf54f385930258b601339777dc18da487a34d797",
+    "exact_tree_equal_published_27d6": "bba212bffc9debcdf4a3f82fef7e1516ba7c8593",
+    "source_comparison_pty": "dpty-3e6243e0db14b0a37c1f9a51a33e26d06934493e60c11d7a87b57f738232efb6",
+    "source_comparison_output_sha256": "f47e5e43670a48154e2cd7e70daae7d80ea11215a3a8bcab1ac3b30b949a9c4c",
+    "parent_scope_pty": "dpty-0332fb35805377c72c2177b96ad08db98ad41eb3821445d4745c1a45972657f6",
+    "parent_scope_output_sha256": "748c834284d9c9d02a85c8bd6bbdd7ca1b31d46b55988b1ae4c1a99bdb2b145f",
+    "host_source_comparison_pty": "dpty-0821c5e177e6498b700f11392c8ac6ee45c18b633460118cf73c3e14642f9a59",
+    "host_source_comparison_output_sha256": "b4ccd9e36b908bbe47398585278ee3e63e1401c2efce133f3c0e29bc81b38f82"
+  },
+  "semantics": {
+    "whole_child_cpu": "Linux wait4 resource usage includes the waited child thread group and resource usage of terminated descendants propagated through intervening waits. Excludes the supervising Python parent and other unrelated processes. No claim that an unobserved orphan/unwaited descendant was included.",
+    "memory": "ru_maxrss is KiB on Linux. This is a per-process high-water/max across accounted descendants, not the simultaneous summed RSS of a process tree. Retains possible pre-exec image high-water; it is not Rust-only or pressure-phase-only RSS.",
+    "timing": "CPU is user+system consumed time; wall_ns is the parent launch-to-reap observation including scheduler/polling delay. 1000ns storage resolution does not imply nanosecond measurement precision.",
+    "nested_cost_rule": "Report exactly one chosen enclosing CPU scope, and use nested phase/actor/dispatch/Host counters only as breakdown diagnostics. Never add wait4 to phase totals, phase whole to its intervals, actor to containing process, or any of these to encompassing cgroup usage.",
+    "rss_rule": "Do not sum RSS high-water values across phases, actors or processes to claim simultaneous peak; memory.current boundary snapshots also are not a peak.",
+    "serialization": "Whole-child CPU covers final Rust report serialization and write system-call execution. It does not separately identify this CPU share or guarantee full physical storage flush cost. Parent hashing, JSON receipt writing and report acceptance occur after child exit and are not in this wait4 measurement.",
+    "cgroup_rule": "cpu.stat usage_usec delta is a different, wider interval around the complete native driver, not confirmation-only CPU. Use the independently recorded usage counter; user/system microsecond rounding can differ by 1us. Throttled time is not CPU usage and must not be added.",
+    "limits": "All eight before/after boundary snapshots exactly equal cpu.max=25000 100000, burst=0, memory.max=2147483648, memory.swap.max=0, pids.max=256. Same installed unit SHA and all eight actual-systemd before/after log bytes match. This is a 25ms CPU allowance per100ms period (0.25 CPU bandwidth), 2GiB memory, zero swap and256 kernel tasks/threads; not dedicated hardware."
+  },
+  "unknown_or_not_attributable": [
+    "CPU of supervising processes outside the measured cgroup interval, source/build preparation outside it, CI services, archive/upload and whole-host work",
+    "Exact CPU spent on final serialization, exclusive per-business transaction or original4s pressure window",
+    "Actual simultaneous process-tree/cgroup memory peak and Rust-only/phase-only high-water",
+    "Energy joules, monetary cost, physical network bytes and physical disk I/O/flush/peak storage",
+    "Unwaited/reparented descendants not proven accounted by wait4; process receipt omits numerical pid so report phase pid is not an independent wait4 pid binding",
+    "Independently operated WAN/participant validity, long-run saturation, tail-latency or statistically established cost improvement"
+  ],
+  "full_system_cost_complete": false,
+  "native_or_independent_qualification_promoted": false,
+  "authoritative_references": [
+    {
+      "url": "https://man7.org/linux/man-pages/man2/getrusage.2.html",
+      "ref": "turn138312938search0",
+      "supports": "Linux user/system CPU, waited descendants, KiB maxrss and max-not-tree-sum semantics"
+    },
+    {
+      "url": "https://www.man7.org/linux/man-pages/man2/wait4.2.html",
+      "ref": "turn138312938search3",
+      "supports": "wait4 selects child and returns resource accounting"
+    },
+    {
+      "url": "https://github.com/torvalds/linux/blob/master/kernel/exit.c",
+      "ref": "turn847690726search0",
+      "supports": "wait_task_zombie obtains RUSAGE_BOTH; group and previously reaped children accumulate"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/torvalds/linux/master/kernel/sys.c",
+      "ref": "turn166352357view1",
+      "supports": "RUSAGE_BOTH adds child CPU to thread-group CPU; maxrss takes maximum then converts pages/1024"
+    },
+    {
+      "url": "https://docs.kernel.org/7.0/admin-guide/cgroup-v2.html",
+      "ref": "turn619853840view0",
+      "supports": "cpu.stat microseconds and cpu.max allowance/period; memory bytes and hierarchical limits"
+    }
+  ],
+  "observations": [
+    {
+      "series": "119c-original-window",
+      "architecture": "x64",
+      "source_commit": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "source_tree": "5ce7481e5835091f07b8d21f8abf42cb0d88208b",
+      "originals": {
+        "process": {
+          "path": "119c-original-window/x64/from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+          "bytes": 950,
+          "sha256": "d389347c1a3e673a9748b3537a73009d75d3a876627f981dde1d621bb3bfc3ba"
+        },
+        "report": {
+          "path": "119c-original-window/x64/from-zero-native/confirmation/report.json",
+          "bytes": 15531477,
+          "sha256": "09b86544292d9d2e9e07ef1bf53e3dd07d57796a0249b0d2fd2f59506c75fa59"
+        },
+        "manifest": {
+          "path": "119c-original-window/x64/from-zero-native/manifest.json",
+          "bytes": 80656,
+          "sha256": "5c50ba631ed422a5a251f625c600e72cb16872e5b0434c86f83df4a4f91854b8"
+        },
+        "systemd_before": {
+          "path": "119c-original-window/x64/from-zero-native-host/actual-systemd-parent.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        },
+        "systemd_after": {
+          "path": "119c-original-window/x64/from-zero-native-host/actual-systemd-parent-after.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        }
+      },
+      "whole_waited_child": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_ns": 9309356648,
+        "user_cpu_ns": 970093000,
+        "system_cpu_ns": 1011224000,
+        "cpu_ns": 1981317000,
+        "max_rss_kib": 123456,
+        "wait4_cpu_resolution_ns": 1000,
+        "minor_faults": 30057,
+        "major_faults": 0,
+        "voluntary_switches": 17859,
+        "involuntary_switches": 968
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 0,
+          "process_id": 6623,
+          "whole_phase_cpu_ns": 726544581,
+          "whole_phase_wall_ns": 4031494523,
+          "interval_cpu_sum_ns": 726544581,
+          "first_process_counter_ns": 46649804,
+          "last_process_counter_ns": 773194385,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 2876945732
+        },
+        {
+          "mode": "from-zero-pressure",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 16,
+          "process_id": 6623,
+          "whole_phase_cpu_ns": 1105319569,
+          "whole_phase_wall_ns": 4440997838,
+          "interval_cpu_sum_ns": 1105319569,
+          "first_process_counter_ns": 776584906,
+          "last_process_counter_ns": 1881904475,
+          "finite_business_target_met": false,
+          "client_confirmed_transactions": 0,
+          "client_confirmation_latency_ns": null
+        }
+      ],
+      "wider_parent_cgroup_interval": {
+        "before_original": {
+          "path": "119c-original-window/x64/from-zero-native-host/inside-before.json",
+          "bytes": 1684,
+          "sha256": "178717c4b1762095e1d654a0c6c4cbec54702bf4edf3c8267923b871619e7d22"
+        },
+        "after_original": {
+          "path": "119c-original-window/x64/from-zero-native-host/inside-after.json",
+          "bytes": 1695,
+          "sha256": "c29f3edb01915ef956d3b5cb0bbfcb9c837cbef41c8ad115786669e6078744a4"
+        },
+        "usage_delta_usec": 12672861,
+        "user_delta_usec": 7931837,
+        "system_delta_usec": 4741025,
+        "throttled_delta_usec": 49232917,
+        "scope": "before/after host wrapper around the whole run_from_zero_native.py driver, five named tests and driver validation/finalization; includes this confirmation child, so do not add it to any nested child/phase costs",
+        "memory_current_before_bytes": 18010112,
+        "memory_current_after_bytes": 81260544,
+        "memory_peak_bytes": null,
+        "limits_before": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "limits_after": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "installed_unit_sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622",
+        "host_read_errors_before": {},
+        "host_read_errors_after": {},
+        "parent_path": "/sys/fs/cgroup/trnmponpublic.slice",
+        "inside_thread_cgroup": "0::/trnmponpublic.slice/trnm-from-zero-44298913299-1-cross-arch-cost-4262.service"
+      },
+      "read_only_original_consistency_checks": {
+        "process_matches_manifest_run": true,
+        "process_sha_matches_manifest": true,
+        "stdout_sha_matches_process_and_manifest": true,
+        "stderr_sha_matches_process_and_manifest": true,
+        "report_sha_matches_manifest": true,
+        "source_before_equals_after": true,
+        "binary_sha_before_equals_after": true,
+        "user_plus_system_equals_cpu": true,
+        "both_phase_interval_sums_match": true,
+        "sequential_nonoverlapping_phase_cpu_counters": true,
+        "same_phase_pid": true,
+        "before_after_limits_equal_original": true,
+        "same_installed_unit": true,
+        "no_boundary_read_errors": true
+      },
+      "phase_cpu_sum_ns": 1831864150,
+      "whole_child_minus_two_phase_cpu_ns": 149452850,
+      "residual_scope": "Descriptive difference of whole-child wait4 and two sequential CLOCK_PROCESS_CPUTIME_ID intervals. Includes construction, mining, between-phase work, cost/report serialization and process overhead plus differing clock/accounting scope; not measured serialization cost or a causal decomposition.",
+      "signed_packet_count": 7,
+      "signed_packet_vector_compact_json_sha256": "d35d10829820d2fc859a27645975f640101ff19d87ae331fc27aed2122885293",
+      "named_test_count_in_driver": 5,
+      "process_receipt_records_pid": false
+    },
+    {
+      "series": "119c-original-window",
+      "architecture": "arm64",
+      "source_commit": "119cbdc8b7060df28b74230fa9265ada7bc75541",
+      "source_tree": "5ce7481e5835091f07b8d21f8abf42cb0d88208b",
+      "originals": {
+        "process": {
+          "path": "119c-original-window/arm64/from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+          "bytes": 949,
+          "sha256": "a0b426da33ac2550a15a2dcdd7b50cd7a72ef7e2ee5f5ac760ccff89c1696faa"
+        },
+        "report": {
+          "path": "119c-original-window/arm64/from-zero-native/confirmation/report.json",
+          "bytes": 16394534,
+          "sha256": "c4de82efaefcdae5c139d4fbe9920757eb8098d7edb655d3702edda8ea324231"
+        },
+        "manifest": {
+          "path": "119c-original-window/arm64/from-zero-native/manifest.json",
+          "bytes": 80643,
+          "sha256": "e3ff87fd4b56956f936717b905858b2ad12f6570ee359eaf010eb868ccfaea5a"
+        },
+        "systemd_before": {
+          "path": "119c-original-window/arm64/from-zero-native-host/actual-systemd-parent.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        },
+        "systemd_after": {
+          "path": "119c-original-window/arm64/from-zero-native-host/actual-systemd-parent-after.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        }
+      },
+      "whole_waited_child": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_ns": 8977146602,
+        "user_cpu_ns": 848933000,
+        "system_cpu_ns": 849937000,
+        "cpu_ns": 1698870000,
+        "max_rss_kib": 119028,
+        "wait4_cpu_resolution_ns": 1000,
+        "minor_faults": 29972,
+        "major_faults": 0,
+        "voluntary_switches": 21789,
+        "involuntary_switches": 702
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 0,
+          "process_id": 6635,
+          "whole_phase_cpu_ns": 502196984,
+          "whole_phase_wall_ns": 4096133681,
+          "interval_cpu_sum_ns": 502196984,
+          "first_process_counter_ns": 44629784,
+          "last_process_counter_ns": 546826768,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 1815331154
+        },
+        {
+          "mode": "from-zero-pressure",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 16,
+          "process_id": 6635,
+          "whole_phase_cpu_ns": 1062818872,
+          "whole_phase_wall_ns": 4293706277,
+          "interval_cpu_sum_ns": 1062818872,
+          "first_process_counter_ns": 549584672,
+          "last_process_counter_ns": 1612403544,
+          "finite_business_target_met": false,
+          "client_confirmed_transactions": 0,
+          "client_confirmation_latency_ns": null
+        }
+      ],
+      "wider_parent_cgroup_interval": {
+        "before_original": {
+          "path": "119c-original-window/arm64/from-zero-native-host/inside-before.json",
+          "bytes": 1684,
+          "sha256": "d619cc225429d5468bb91d7d3226209bcbd6357427fb0b0ab801acc44ce56419"
+        },
+        "after_original": {
+          "path": "119c-original-window/arm64/from-zero-native-host/inside-after.json",
+          "bytes": 1695,
+          "sha256": "f887809d150bc62d60b19b515372549e36c366be1c6010d8bd820ff112dca0ce"
+        },
+        "usage_delta_usec": 11570216,
+        "user_delta_usec": 7772466,
+        "system_delta_usec": 3797749,
+        "throttled_delta_usec": 39613613,
+        "scope": "before/after host wrapper around the whole run_from_zero_native.py driver, five named tests and driver validation/finalization; includes this confirmation child, so do not add it to any nested child/phase costs",
+        "memory_current_before_bytes": 17784832,
+        "memory_current_after_bytes": 80523264,
+        "memory_peak_bytes": null,
+        "limits_before": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "limits_after": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "installed_unit_sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622",
+        "host_read_errors_before": {},
+        "host_read_errors_after": {},
+        "parent_path": "/sys/fs/cgroup/trnmponpublic.slice",
+        "inside_thread_cgroup": "0::/trnmponpublic.slice/trnm-from-zero-44298913299-1-cross-arch-cost-4290.service"
+      },
+      "read_only_original_consistency_checks": {
+        "process_matches_manifest_run": true,
+        "process_sha_matches_manifest": true,
+        "stdout_sha_matches_process_and_manifest": true,
+        "stderr_sha_matches_process_and_manifest": true,
+        "report_sha_matches_manifest": true,
+        "source_before_equals_after": true,
+        "binary_sha_before_equals_after": true,
+        "user_plus_system_equals_cpu": true,
+        "both_phase_interval_sums_match": true,
+        "sequential_nonoverlapping_phase_cpu_counters": true,
+        "same_phase_pid": true,
+        "before_after_limits_equal_original": true,
+        "same_installed_unit": true,
+        "no_boundary_read_errors": true
+      },
+      "phase_cpu_sum_ns": 1565015856,
+      "whole_child_minus_two_phase_cpu_ns": 133854144,
+      "residual_scope": "Descriptive difference of whole-child wait4 and two sequential CLOCK_PROCESS_CPUTIME_ID intervals. Includes construction, mining, between-phase work, cost/report serialization and process overhead plus differing clock/accounting scope; not measured serialization cost or a causal decomposition.",
+      "signed_packet_count": 7,
+      "signed_packet_vector_compact_json_sha256": "d35d10829820d2fc859a27645975f640101ff19d87ae331fc27aed2122885293",
+      "named_test_count_in_driver": 5,
+      "process_receipt_records_pid": false
+    },
+    {
+      "series": "r21-27d6-original-window",
+      "architecture": "x64",
+      "source_commit": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "source_tree": "bba212bffc9debcdf4a3f82fef7e1516ba7c8593",
+      "originals": {
+        "process": {
+          "path": "r21-27d6-original-window/x64/from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+          "bytes": 949,
+          "sha256": "cc6b564cd368bebd568c0d1eddd80feccbc87e62e9d0a1144b5e58a0e1414318"
+        },
+        "report": {
+          "path": "r21-27d6-original-window/x64/from-zero-native/confirmation/report.json",
+          "bytes": 8644635,
+          "sha256": "4d35f81acdbca0b43527efda09b798543e81a6a49fbfc5b27c1f0391b52b2890"
+        },
+        "manifest": {
+          "path": "r21-27d6-original-window/x64/from-zero-native/manifest.json",
+          "bytes": 81527,
+          "sha256": "b67fbf74e17c30f655593ef1c0ce9d1f829740af401944c3eef8d6ad41094704"
+        },
+        "systemd_before": {
+          "path": "r21-27d6-original-window/x64/from-zero-native-host/actual-systemd-parent.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        },
+        "systemd_after": {
+          "path": "r21-27d6-original-window/x64/from-zero-native-host/actual-systemd-parent-after.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        }
+      },
+      "whole_waited_child": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_ns": 9216716711,
+        "user_cpu_ns": 535921000,
+        "system_cpu_ns": 1179638000,
+        "cpu_ns": 1715559000,
+        "max_rss_kib": 67976,
+        "wait4_cpu_resolution_ns": 1000,
+        "minor_faults": 16009,
+        "major_faults": 0,
+        "voluntary_switches": 23291,
+        "involuntary_switches": 291
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 0,
+          "process_id": 6614,
+          "whole_phase_cpu_ns": 738410535,
+          "whole_phase_wall_ns": 4097965127,
+          "interval_cpu_sum_ns": 738410535,
+          "first_process_counter_ns": 48207446,
+          "last_process_counter_ns": 786617981,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 3050875408
+        },
+        {
+          "mode": "from-zero-pressure",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 16,
+          "process_id": 6614,
+          "whole_phase_cpu_ns": 877617668,
+          "whole_phase_wall_ns": 4380487203,
+          "interval_cpu_sum_ns": 877617668,
+          "first_process_counter_ns": 790126153,
+          "last_process_counter_ns": 1667743821,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 3346073556
+        }
+      ],
+      "wider_parent_cgroup_interval": {
+        "before_original": {
+          "path": "r21-27d6-original-window/x64/from-zero-native-host/inside-before.json",
+          "bytes": 1684,
+          "sha256": "b34bab22deb8186e3ad838cfc916cee27d8e52ae6ded66bb1140704f61d347f8"
+        },
+        "after_original": {
+          "path": "r21-27d6-original-window/x64/from-zero-native-host/inside-after.json",
+          "bytes": 1695,
+          "sha256": "d04007459c7ddd6ad202330668dbf74100cdd1e8f99e2a87994b8471e9cb7635"
+        },
+        "usage_delta_usec": 10958477,
+        "user_delta_usec": 6492156,
+        "system_delta_usec": 4466321,
+        "throttled_delta_usec": 39411706,
+        "scope": "before/after host wrapper around the whole run_from_zero_native.py driver, five named tests and driver validation/finalization; includes this confirmation child, so do not add it to any nested child/phase costs",
+        "memory_current_before_bytes": 18010112,
+        "memory_current_after_bytes": 59154432,
+        "memory_peak_bytes": null,
+        "limits_before": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "limits_after": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "installed_unit_sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622",
+        "host_read_errors_before": {},
+        "host_read_errors_after": {},
+        "parent_path": "/sys/fs/cgroup/trnmponpublic.slice",
+        "inside_thread_cgroup": "0::/trnmponpublic.slice/trnm-from-zero-44314787729-1-cross-arch-cost-4249.service"
+      },
+      "read_only_original_consistency_checks": {
+        "process_matches_manifest_run": true,
+        "process_sha_matches_manifest": true,
+        "stdout_sha_matches_process_and_manifest": true,
+        "stderr_sha_matches_process_and_manifest": true,
+        "report_sha_matches_manifest": true,
+        "source_before_equals_after": true,
+        "binary_sha_before_equals_after": true,
+        "user_plus_system_equals_cpu": true,
+        "both_phase_interval_sums_match": true,
+        "sequential_nonoverlapping_phase_cpu_counters": true,
+        "same_phase_pid": true,
+        "before_after_limits_equal_original": true,
+        "same_installed_unit": true,
+        "no_boundary_read_errors": true
+      },
+      "phase_cpu_sum_ns": 1616028203,
+      "whole_child_minus_two_phase_cpu_ns": 99530797,
+      "residual_scope": "Descriptive difference of whole-child wait4 and two sequential CLOCK_PROCESS_CPUTIME_ID intervals. Includes construction, mining, between-phase work, cost/report serialization and process overhead plus differing clock/accounting scope; not measured serialization cost or a causal decomposition.",
+      "signed_packet_count": 7,
+      "signed_packet_vector_compact_json_sha256": "d35d10829820d2fc859a27645975f640101ff19d87ae331fc27aed2122885293",
+      "named_test_count_in_driver": 5,
+      "process_receipt_records_pid": false
+    },
+    {
+      "series": "r21-27d6-original-window",
+      "architecture": "arm64",
+      "source_commit": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+      "source_tree": "bba212bffc9debcdf4a3f82fef7e1516ba7c8593",
+      "originals": {
+        "process": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native/from_zero_signed_business_reports_confirmation_in_original_pressure_window_against_same_packet_baseline/process.json",
+          "bytes": 948,
+          "sha256": "656dd65db1fa686b015f6f9236049b9143c4ff37e125a3fa5d79cae3aca91faf"
+        },
+        "report": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native/confirmation/report.json",
+          "bytes": 9109989,
+          "sha256": "c0531c2147ea03e0249424116ce40e3fbd64373f8e0bebd50d06c72d4880b30d"
+        },
+        "manifest": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native/manifest.json",
+          "bytes": 81459,
+          "sha256": "1bd936ae980d2dc5242adbaef7d26493ba07c0f8fbd142066ac585f52adb0e7e"
+        },
+        "systemd_before": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native-host/actual-systemd-parent.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        },
+        "systemd_after": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native-host/actual-systemd-parent-after.log",
+          "bytes": 200,
+          "sha256": "251aa282c289d7a152c48ec876369121b1ff818157cbbb4c1426dc89342501d3"
+        }
+      },
+      "whole_waited_child": {
+        "exit_code": 0,
+        "timed_out": false,
+        "wall_ns": 8500901661,
+        "user_cpu_ns": 494443000,
+        "system_cpu_ns": 754957000,
+        "cpu_ns": 1249400000,
+        "max_rss_kib": 70748,
+        "wait4_cpu_resolution_ns": 1000,
+        "minor_faults": 16757,
+        "major_faults": 0,
+        "voluntary_switches": 26934,
+        "involuntary_switches": 228
+      },
+      "phases": [
+        {
+          "mode": "attack-free-baseline",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 0,
+          "process_id": 6657,
+          "whole_phase_cpu_ns": 506234816,
+          "whole_phase_wall_ns": 4097779370,
+          "interval_cpu_sum_ns": 506234816,
+          "first_process_counter_ns": 45511328,
+          "last_process_counter_ns": 551746144,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 1815154207
+        },
+        {
+          "mode": "from-zero-pressure",
+          "requested_window_ns": 4000000000,
+          "attacker_workers": 16,
+          "process_id": 6657,
+          "whole_phase_cpu_ns": 647775000,
+          "whole_phase_wall_ns": 4078840779,
+          "interval_cpu_sum_ns": 647775000,
+          "first_process_counter_ns": 554915504,
+          "last_process_counter_ns": 1202690504,
+          "finite_business_target_met": true,
+          "client_confirmed_transactions": 1,
+          "client_confirmation_latency_ns": 2106682700
+        }
+      ],
+      "wider_parent_cgroup_interval": {
+        "before_original": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native-host/inside-before.json",
+          "bytes": 1685,
+          "sha256": "2181f4948013e54f75ea0ef6a3cdda718efc698f2453d86fe3b3ac7eb80e1267"
+        },
+        "after_original": {
+          "path": "r21-27d6-original-window/arm64/from-zero-native-host/inside-after.json",
+          "bytes": 1694,
+          "sha256": "1d28ded0c4de04e7736bb0cee9ef21c4ab74a52039670c38b1567d93fdf848f3"
+        },
+        "usage_delta_usec": 9617347,
+        "user_delta_usec": 6423812,
+        "system_delta_usec": 3193535,
+        "throttled_delta_usec": 31632817,
+        "scope": "before/after host wrapper around the whole run_from_zero_native.py driver, five named tests and driver validation/finalization; includes this confirmation child, so do not add it to any nested child/phase costs",
+        "memory_current_before_bytes": 17784832,
+        "memory_current_after_bytes": 58159104,
+        "memory_peak_bytes": null,
+        "limits_before": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "limits_after": {
+          "cpu.max": "25000 100000",
+          "cpu.max.burst": "0",
+          "memory.max": "2147483648",
+          "memory.swap.max": "0",
+          "pids.max": "256"
+        },
+        "installed_unit_sha256": "74eb36a63559bf8603c15ddd3753a1db143684a2cefd84cce5aff10a76bbd622",
+        "host_read_errors_before": {},
+        "host_read_errors_after": {},
+        "parent_path": "/sys/fs/cgroup/trnmponpublic.slice",
+        "inside_thread_cgroup": "0::/trnmponpublic.slice/trnm-from-zero-44314787729-1-cross-arch-cost-4342.service"
+      },
+      "read_only_original_consistency_checks": {
+        "process_matches_manifest_run": true,
+        "process_sha_matches_manifest": true,
+        "stdout_sha_matches_process_and_manifest": true,
+        "stderr_sha_matches_process_and_manifest": true,
+        "report_sha_matches_manifest": true,
+        "source_before_equals_after": true,
+        "binary_sha_before_equals_after": true,
+        "user_plus_system_equals_cpu": true,
+        "both_phase_interval_sums_match": true,
+        "sequential_nonoverlapping_phase_cpu_counters": true,
+        "same_phase_pid": true,
+        "before_after_limits_equal_original": true,
+        "same_installed_unit": true,
+        "no_boundary_read_errors": true
+      },
+      "phase_cpu_sum_ns": 1154009816,
+      "whole_child_minus_two_phase_cpu_ns": 95390184,
+      "residual_scope": "Descriptive difference of whole-child wait4 and two sequential CLOCK_PROCESS_CPUTIME_ID intervals. Includes construction, mining, between-phase work, cost/report serialization and process overhead plus differing clock/accounting scope; not measured serialization cost or a causal decomposition.",
+      "signed_packet_count": 7,
+      "signed_packet_vector_compact_json_sha256": "d35d10829820d2fc859a27645975f640101ff19d87ae331fc27aed2122885293",
+      "named_test_count_in_driver": 5,
+      "process_receipt_records_pid": false
+    }
+  ]
+}

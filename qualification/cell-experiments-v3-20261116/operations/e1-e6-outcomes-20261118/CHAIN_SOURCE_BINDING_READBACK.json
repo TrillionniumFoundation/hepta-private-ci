@@ -1,0 +1,137 @@
+{
+  "schema": "hepta.chain.source-binding-publication-readback.v1",
+  "head": "31bab0859421aa2666a51d295a190e32b91d32b6",
+  "tree": "1268336b9df42ed23b8e4526262cce495f5d64c2",
+  "parent": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+  "pull_request": 957,
+  "draft": true,
+  "live_ref_matches": true,
+  "exact_five_reviewed_source_blobs_match": true,
+  "other_changed_files_are_seven_additive_evidence_files": true,
+  "published_evidence_files": [
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/INDEPENDENT_PIN_REVIEW.json",
+      "bytes": 5747,
+      "sha256": "dd53bac8ec981a8383298a7901f738e58273e98e9812ba450210de93b1abcb0c",
+      "git_blob": "b4fe0988ac63b7731b20b9ea8d466741e0b5e0b6"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/README.md",
+      "bytes": 3390,
+      "sha256": "f66a55ecc46b85462a3163301ca0dbfa8ddd2ac302d501e9a747d8655ee0e1da",
+      "git_blob": "571409282ce9fc65dc3ee86148001c85ebedaec1"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/TRIAGE.json",
+      "bytes": 18947,
+      "sha256": "0b0268919b09d32ac265384864c4a269d952fc44e519eb245d57c6e913d9c3cd",
+      "git_blob": "645e08ed20364f2bf5a2a26b7a689783bff22f32"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/VALIDATION.json",
+      "bytes": 8146,
+      "sha256": "5107c68cf1acb6f17cf189ed0474fefbee28fc87491682f8ca044f9a6d78fee2",
+      "git_blob": "3592c545103372635f808b5aa5e8655ab9bc9f02"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/chain-r21-ci-failure-originals.tar.gz",
+      "bytes": 621999,
+      "sha256": "cbc90fafca00dc9ddc462b6af968906b0c73c19b8cf22dc02df2a9174fed0465",
+      "git_blob": "3abbb1d72d8c1217b0ac919197f955e8df0e1f2a"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/chain-r21-pin-repair-review.tar.gz",
+      "bytes": 173751,
+      "sha256": "e9a6eb19a0285cfd324c6a599b82a805d8686fe56c12200dc9aee77561e43b23",
+      "git_blob": "b5c640babc1060051b4e1fcfd95d239d34c401f6"
+    },
+    {
+      "path": "docs/development/evidence/chain-r21-source-pin-repair-20261118/targeted-validation-originals.tar.xz",
+      "bytes": 7976,
+      "sha256": "58f1833b230da1768e22017f61df981d6f2a1dc596048ab346e4bc799ae86a68",
+      "git_blob": "4722cf0a47d23e36a6ccd66017fc91ff05914998"
+    }
+  ],
+  "targeted_archive_original_members": 46,
+  "all_original_name_size_sha256_checks_match": true,
+  "tests_from_original_exit_and_stdout_stderr": [
+    {
+      "name": "green-ci-contract",
+      "exit_code": 0,
+      "test_count": null,
+      "actual_output_summary": []
+    },
+    {
+      "name": "green-ci-source-integrity-negatives",
+      "exit_code": 0,
+      "test_count": 43,
+      "actual_output_summary": [
+        "Ran 43 tests in 1.815s",
+        "OK"
+      ]
+    },
+    {
+      "name": "green-diff-check",
+      "exit_code": 0,
+      "test_count": null,
+      "actual_output_summary": []
+    },
+    {
+      "name": "green-pq-budget",
+      "exit_code": 0,
+      "test_count": 58,
+      "actual_output_summary": [
+        "Ran 58 tests in 0.100s",
+        "OK"
+      ]
+    },
+    {
+      "name": "green-pq-composition-negatives",
+      "exit_code": 0,
+      "test_count": 60,
+      "actual_output_summary": [
+        "Ran 60 tests in 0.428s",
+        "OK"
+      ]
+    },
+    {
+      "name": "green-pq-current-negatives",
+      "exit_code": 0,
+      "test_count": 25,
+      "actual_output_summary": [
+        "Ran 25 tests in 0.077s",
+        "OK"
+      ]
+    },
+    {
+      "name": "green-source-inventory",
+      "exit_code": 0,
+      "test_count": null,
+      "actual_output_summary": []
+    },
+    {
+      "name": "red-ci-contract",
+      "exit_code": 1,
+      "test_count": null,
+      "actual_output_summary": [
+        "    require(actual == expected, f'inline source pin differs: {context}: {path}: '",
+        "ValueError: CI contract: inline source pin differs: .github/workflows/pon-recent-batch-acceptance.yml:99: trillionnium/crates/trnm-pon-node/tests/public_v3_multiprocess.rs: expected 1f4dd178a9493b71340a8684a9338a7782e0760d, observed 7053c78e6a6626af763092fa4d8a031e48f6122e"
+      ]
+    },
+    {
+      "name": "red-pq-budget",
+      "exit_code": 1,
+      "test_count": 58,
+      "actual_output_summary": [
+        "            \"current correspondence source hash mismatch: \" + path)",
+        "pq_lifetime_current_v2.CurrentBudgetError: current correspondence source hash mismatch: trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs",
+        "Ran 58 tests in 0.105s",
+        "FAILED (errors=1)"
+      ]
+    }
+  ],
+  "green_test_count": 186,
+  "native_measurements_reassigned": false,
+  "remote_automatic_CI_status": "PENDING_AT_THIS_READBACK",
+  "automatic_CI_run": 44325491402
+}

@@ -1,0 +1,202 @@
+{
+  "actual_lifetime_security_bound": null,
+  "all_ci_green_claim": false,
+  "code_scope": "Five files with exact current hash-literal replacements only; native Rust, original tests/workload, historical manifests/locks, qualification flags and strict validation flow unchanged.",
+  "green_unit_test_count": 186,
+  "independent_artifacts": {
+    "INDEPENDENT_PIN_REVIEW.json": "dd53bac8ec981a8383298a7901f738e58273e98e9812ba450210de93b1abcb0c",
+    "TRIAGE.json": "0b0268919b09d32ac265384864c4a269d952fc44e519eb245d57c6e913d9c3cd",
+    "chain-r21-ci-failure-originals.tar.gz": "cbc90fafca00dc9ddc462b6af968906b0c73c19b8cf22dc02df2a9174fed0465",
+    "chain-r21-pin-repair-review.tar.gz": "e9a6eb19a0285cfd324c6a599b82a805d8686fe56c12200dc9aee77561e43b23"
+  },
+  "native_campaign_executed_for_new_candidate": false,
+  "parent_source": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+  "patch": {
+    "changed_current_declared_paths": [
+      "trillionnium/crates/trnm-pon-node/src/ingress/public_v3.rs"
+    ],
+    "current_map_after_sha256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb",
+    "current_map_before_sha256": "5328f618642aa14125b6325ebcc2285f8be85cf39843a11c6d9157863a0c27c6",
+    "current_public_v3_after_sha256": "1d676ba96d3486be0822273268375015e0649457ba2f00abc810756c366c29e4",
+    "current_public_v3_before_sha256": "9b8abe32fa33e4144b4330e146877518d410941f0c8ba333516245e46a09733a",
+    "current_snapshot_after_sha256": "a576e79285e1d9b592de4b54acd7c0f9d97df19df7a82d448358e8f8ac9d26a6",
+    "current_snapshot_before_sha256": "f9991545b8b43b870559106d7be807d286f4b2ac555a2a10dbaf6c6e850ac8fd",
+    "files": [
+      {
+        "after_sha256": "9f75a63c861384d355e39f4decca5e8c414d6ec7ac69530a95271df288286deb",
+        "before_sha256": "5328f618642aa14125b6325ebcc2285f8be85cf39843a11c6d9157863a0c27c6",
+        "path": "config/pon/pq128-source-correspondence-current-v2.json"
+      },
+      {
+        "after_sha256": "dd4b5bb5ba3ff8fd312fa9a48f06d36ed35d2526a1ee12036e14f8a5be866d8c",
+        "before_sha256": "28b5c4e0358147444cc18317b235b05f228ebd10e0cfdcecf1c9f8c25b6c5826",
+        "path": "scripts/ci/pq_lifetime_current_v2.py"
+      },
+      {
+        "after_sha256": "3c7181dbcf4372b4d62375282c3ef87fe226aa0486111211de9373d877f5deb9",
+        "before_sha256": "f10a1e7d75c45c7e0ce7d989827c163c54b2e7951fd3e9e42e836978be37a970",
+        "path": "config/pon/pq128-lifetime-composition-current-v3.json"
+      },
+      {
+        "after_sha256": "c803b0d712a45f775caa9bec993956a1a62acc1127a0d9b206a671c338010323",
+        "before_sha256": "22d71e1563b37472649da7fd1b72bb30247aff5193cb6b6caaf0ad3b52d6b8ae",
+        "path": "scripts/ci/pq_lifetime_composition.py"
+      },
+      {
+        "after_sha256": "1a581939adf0bc585bb9966779bd90cf2cde7775770c0f28d37a3316e453170d",
+        "before_sha256": "1b779ec937567eda42060477a664965602dbbfbcee0759614fb5369b569f5f65",
+        "path": ".github/workflows/pon-recent-batch-acceptance.yml"
+      }
+    ],
+    "frozen_model_and_qualification_equal": true,
+    "inline_test_after_git_blob": "7053c78e6a6626af763092fa4d8a031e48f6122e",
+    "inline_test_before_git_blob": "1f4dd178a9493b71340a8684a9338a7782e0760d",
+    "native_source_mutated": false,
+    "parent": "27d6a4b19ff58de78f3f5804e44ccae41857c794",
+    "reader_ast_equal_after_reverting_only_two_hash_literals": true,
+    "schema": "chain-r21-current-pin-repair-v1"
+  },
+  "patch_diff_sha256": "fa67cb5aa6dc747cc6734f3812c02194824700ae216ce049460a06d64c2bae2b",
+  "production_activation": false,
+  "public_network_ready": false,
+  "schema": "chain-r21-pin-repair-validation-v1",
+  "source_27d6_evidence_commit": "0f152b34ae7b4c406cbd9adf84ab23a8bb638586",
+  "source_27d6_original_window_outcome": "Both architectures actually confirmed 1/1 within the original four-second window; remains bound to 27d6, not relabeled as this subsequent source-pin candidate.",
+  "targeted_originals": {
+    "bytes": 7976,
+    "file": "targeted-validation-originals.tar.xz",
+    "inventory_members": 1,
+    "original_members": 46,
+    "sha256": "58f1833b230da1768e22017f61df981d6f2a1dc596048ab346e4bc799ae86a68"
+  },
+  "tests": [
+    {
+      "command": [
+        "python3",
+        "scripts/ci/check_ci_contract.py"
+      ],
+      "exit": {
+        "elapsed_ns": 81719286,
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "04a27d4ea2af1ccbbf7ed70f56bad64b02ba958a2645254d6d547d8a28102c55"
+      },
+      "name": "green-ci-contract",
+      "unit_test_count": null
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_ci_source_integrity.py"
+      ],
+      "exit": {
+        "elapsed_ns": 1875000634,
+        "exit_code": 0,
+        "stderr_sha256": "da6dedbd5ea9a8fe228719ea791cf6212ecf9043dff8def5bf428afd19185b0a",
+        "stdout_sha256": "2ef3d5da52e31e647c5671ccaec8c4fed788c78b3cb9a735074cfe0f18e5c60e"
+      },
+      "name": "green-ci-source-integrity-negatives",
+      "unit_test_count": 43
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": {
+        "elapsed_ns": 132236799,
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "green-diff-check",
+      "unit_test_count": null
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_pq_lifetime_budget.py"
+      ],
+      "exit": {
+        "elapsed_ns": 149040283,
+        "exit_code": 0,
+        "stderr_sha256": "32dc7d043ca2a3ba0e520ff3581717f3c7cf8009a31430227b4daccee42f9a41",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "green-pq-budget",
+      "unit_test_count": 58
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_pq_lifetime_composition.py"
+      ],
+      "exit": {
+        "elapsed_ns": 480834526,
+        "exit_code": 0,
+        "stderr_sha256": "7ecb4cf07f9bd71433395206c5e02393b94af37deca00acbc64056b2a18f3012",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "green-pq-composition-negatives",
+      "unit_test_count": 60
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_pq_lifetime_current_v2.py"
+      ],
+      "exit": {
+        "elapsed_ns": 133524580,
+        "exit_code": 0,
+        "stderr_sha256": "e600d32f25cb4dc8dab461d11e49246d318f976a68253a30af86d0e37ce882e6",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "green-pq-current-negatives",
+      "unit_test_count": 25
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/refresh_distributed_source_inventory.py",
+        "--check"
+      ],
+      "exit": {
+        "elapsed_ns": 46077518,
+        "exit_code": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_sha256": "8bd8670851048e151182dd0f0bc26834d54e151f39ca53f06c98e06c4479c51a"
+      },
+      "name": "green-source-inventory",
+      "unit_test_count": null
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/check_ci_contract.py"
+      ],
+      "exit": {
+        "elapsed_ns": 123098509,
+        "exit_code": 1,
+        "stderr_sha256": "7a0155ee977dba0e23ef34fe2cc4ca88c98e0cd1aacbda21d5a39ecc7774f11c",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "red-ci-contract",
+      "unit_test_count": null
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/ci/test_pq_lifetime_budget.py"
+      ],
+      "exit": {
+        "elapsed_ns": 153031908,
+        "exit_code": 1,
+        "stderr_sha256": "debb62b77098f9e7a3445338069f2dedbc0ff16bacdcf07582ec7d0648cfce61",
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "name": "red-pq-budget",
+      "unit_test_count": 58
+    }
+  ]
+}

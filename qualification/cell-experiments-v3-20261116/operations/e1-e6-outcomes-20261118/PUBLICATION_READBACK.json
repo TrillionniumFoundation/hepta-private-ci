@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.publication-readback.v1",
+  "source": "direct GitHub PR metadata, exact raw EVIDENCE text, and directory entries compared with local retained artifact",
+  "e2_publication": {
+    "pr": 6678,
+    "draft": true,
+    "head": "d0070b6985f54bc2d72e4bf82153b9872e31eb52",
+    "base": "b2d1fceeb779b9392c2842bfa32e16feb1079024",
+    "changed_files": 5,
+    "additions": 443,
+    "deletions": 0,
+    "evidence_text_equal": true,
+    "evidence_sha256": "308341a471f84b63720d15fa472e4f050585d79a6fabcfc491c4732505cd34ef",
+    "files": [
+      {
+        "name": "EVIDENCE.json",
+        "bytes": 44377,
+        "git_blob": "511e1ade65a91e08ff029aa3d4e8d6321fc12530"
+      },
+      {
+        "name": "FORMAT.json",
+        "bytes": 1336,
+        "git_blob": "18a084235b35088c6b690c6e058099c6ac69d188"
+      },
+      {
+        "name": "OFFLINE_REPLAY.json",
+        "bytes": 1225,
+        "git_blob": "dc9c234e63419a0409ca7f512b846cd48caa2dcc"
+      },
+      {
+        "name": "RAW_EVIDENCE.tar.gz",
+        "bytes": 2056539,
+        "git_blob": "f58a8a36fa8582560549aab3b8a302ac7cedef62"
+      },
+      {
+        "name": "README.md",
+        "bytes": 12006,
+        "git_blob": "7652f0b8309120573df8e4a0b69140fb730d43b0"
+      }
+    ]
+  },
+  "e4_first_attempt": {
+    "pr": 6679,
+    "head": "bc53d6974d9dc4ddcd1baec1b4db4c4abeef1b9d",
+    "protocol_sha256": "951c24b55bf1afcc9e4e6dc57aaf746bf52f7c4836da0d57c3f9acd386612b8e",
+    "archive_bytes": 691623,
+    "archive_sha256": "86268f5af2e7855bd5d864cf236d46f47e893f34106be39097d6318049b8a27f",
+    "archive_git_blob": "a443d37efe40d506ad04d7cec4205f51bb1b097b",
+    "local_archive_git_blob_equal_to_remote": true,
+    "readout_status": "INCOMPLETE",
+    "original_training_hash_gate_preserved": true,
+    "qualification": false
+  }
+}

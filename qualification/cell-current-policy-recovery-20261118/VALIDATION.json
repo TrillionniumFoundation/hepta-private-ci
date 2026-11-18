@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.current-policy-recovery-validation.v1",
+  "upstream_commit": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+  "tests": {
+    "tests": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "terminal_id": "dpty-96c4956c8019be576814409195c376b8ab7dcc5ef8e7c9593717e1bcfecc30af",
+    "exit_code": 0,
+    "raw_output_sha256": "7ba7ad058f0df5b3cac70da87782dc3a19fcbcd436c78e2ca847ca68cdf058e9",
+    "source": [
+      {
+        "path": "onpolicy_readout_v4.py",
+        "sha256": "c42ce1dfb92d9f88722cb839168f18af6832cbb179ca1dd9b58a53b8638a3585"
+      },
+      {
+        "path": "test_onpolicy_readout_v4.py",
+        "sha256": "08cb74f1ef870deca83ba3a64d6cbe8d0538b6554d4feb0d107ac93172ce106f"
+      }
+    ],
+    "scope": "Scripted model outputs with actual repository business verifiers. These are engineering regression tests, not learning evidence."
+  },
+  "format": {
+    "AST_unchanged": true,
+    "command": [
+      "just",
+      "fmt"
+    ],
+    "exit_code": 0,
+    "files": [
+      {
+        "path": "scripts/cell_experiments/onpolicy_readout_v4.py",
+        "sha256": "c500de29eee6f1d82247efb1a1e0ea4cecad81bc8939e3d23ef8482a65988c96"
+      },
+      {
+        "path": "scripts/cell_experiments/test_onpolicy_readout_v4.py",
+        "sha256": "56cdbb23dba1a19c07003cd115f8c878142e4863d81be48578ad9063f5fddede"
+      }
+    ],
+    "python": "Python 3.14.3",
+    "scope": "exact upstream formatter configuration in isolated snapshot",
+    "stderr": "",
+    "stdout": "",
+    "upstream": "eb56c51e4e73b0d466795b257a547ab93a0baa63",
+    "wall_seconds": 3.3802357080000003
+  },
+  "scientific_confirmation_qualified": false,
+  "independent_sample_increment": 0,
+  "new_external_teachers": 0
+}

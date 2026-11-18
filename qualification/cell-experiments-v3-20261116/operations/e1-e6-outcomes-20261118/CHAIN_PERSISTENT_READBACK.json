@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.chain.persistent-evidence-readback.v1",
+  "read_method": "Independent GitHub commit/ref and eight UTF-8 file fetches; all nine file sizes and Git blob hashes recomputed from local bytes, including the archive already held locally. This does not claim a second archive download.",
+  "evidence_commit": "0f152b34ae7b4c406cbd9adf84ab23a8bb638586",
+  "evidence_tree": "ff838207d012edceefdbd9ef7f6f324fcc0bdbed",
+  "parent": "29b52507a479373a080d59d72e8879440bce8b41",
+  "ref": "refs/heads/evidence/chain-original-records-20261118-392934",
+  "ref_points_to_evidence_commit": true,
+  "files": [
+    {
+      "file": "27d6-ARCHIVE.json",
+      "bytes": 452,
+      "sha256": "d0e8187a26781375e3d7e13d6c36ec25126745a7ea45303c629c655a1207d2d6",
+      "git_blob": "2c20e87c53b668ce21e9b53d7ea47849387b7bb2",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "27d6-MEMBERS.json",
+      "bytes": 90268,
+      "sha256": "b9e39efbb067c0958e26a3b60ecdf7ecba02fc2bddc0f2c8ed9e60a0045f0a09",
+      "git_blob": "e425ab4a60c716adbb0a5f0aa674762334a953c7",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "27d6-full-records.tar.xz",
+      "bytes": 2020984,
+      "sha256": "532b1302e7297c14da65f0c5b1c0f7361604087b905aa5a34868799b542f3dfc",
+      "git_blob": "21455097150e21c26f9747ccc7f2918af519e93e",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "ARCHIVE_VERIFIED.json",
+      "bytes": 1468,
+      "sha256": "77a89249026ede752b497fd5a960c0b5827ae1eba68b62163b0e099eede81b49",
+      "git_blob": "7c37eaaf1c40d4f3090346f7a1c62988c71ebf39",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": false
+    },
+    {
+      "file": "CI_STATUS_OBSERVED.json",
+      "bytes": 47443,
+      "sha256": "eed196a80b551d5ca09e68b4dc27809d42309b550889f0e00a5fa506a1bebcb0",
+      "git_blob": "fee6676e5a8625c5a5345e8ad92ae8e5f571a7f7",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "INDEPENDENT_WAIT4_REVIEW.json",
+      "bytes": 33320,
+      "sha256": "7a3b0242cc1b16e1220f9c26f4f904d3274cace22e646d9339b7b2397ffe5193",
+      "git_blob": "e67c9fb19201fcaf54fe5acd8679d75030b1889a",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "R21_READBACK.json",
+      "bytes": 26814,
+      "sha256": "31417b1d634b2c0915e021871a02cd026a3fe1a7ebb292bad6459f3ce752f880",
+      "git_blob": "6b7deae4080ea902a5901df1af64dde9d3da5e9b",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "README.md",
+      "bytes": 7644,
+      "sha256": "e98f3f8d5a1c01cffa3e3bf24b22d23bfbaee6abea05685ee6bf46b4dbe69e9f",
+      "git_blob": "d1843524d7987601f9118902315b77bda6363b93",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    },
+    {
+      "file": "SUMMARY.json",
+      "bytes": 94320,
+      "sha256": "181e7696fe7874437a9d3f4c17a75485f44c931d0d6a776d3145b596f80da906",
+      "git_blob": "d2afd55f3aa8872af46dab2dbbc576b727e4c998",
+      "matches_GitHub_size_and_blob": true,
+      "matches_existing_local_original": true
+    }
+  ],
+  "archive_member_verification": {
+    "included_original_regular_files": 312,
+    "total_archive_regular_files_including_index": 313,
+    "included_original_raw_bytes": 83333163,
+    "embedded_MEMBERS_json_byte_equal_to_published_index": true,
+    "exact_original_member_name_size_sha256_agreement": true,
+    "omitted_ELF_members": 12,
+    "omitted_bytes_claimed_persisted": false,
+    "review_note": "Initial membership-only assertion omitted the embedded MEMBERS.json; inspection identified that one exact published index and final check requires it plus exactly the 312 indexed originals."
+  }
+}
