@@ -1,0 +1,35 @@
+2026-11-18T14:18:26.1617119Z ==> Python scripts formatter failed
+2026-11-18T14:18:26.1619681Z $ uv run --frozen --project scripts ruff format --check scripts .github
+2026-11-18T14:18:26.1620109Z Using CPython 3.12.3 interpreter at: /usr/bin/python3
+2026-11-18T14:18:26.1620423Z Creating virtual environment at: scripts/.venv
+2026-11-18T14:18:26.1620690Z Downloading ruff (10.9MiB)
+2026-11-18T14:18:26.1620887Z  Downloaded ruff
+2026-11-18T14:18:26.1621093Z Installed 1 package in 1ms
+2026-11-18T14:18:26.1621407Z Would reformat: scripts/cell_experiments/online_v4/circuit_contract.py
+2026-11-18T14:18:26.1621839Z Would reformat: scripts/cell_experiments/online_v4/circuit_router.py
+2026-11-18T14:18:26.1622237Z Would reformat: scripts/cell_experiments/online_v4/circuit_runtime.py
+2026-11-18T14:18:26.1622618Z Would reformat: scripts/cell_experiments/online_v4/circuit_study.py
+2026-11-18T14:18:26.1622998Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_backend.py
+2026-11-18T14:18:26.1623407Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_contract.py
+2026-11-18T14:18:26.1623799Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_feedback.py
+2026-11-18T14:18:26.1624257Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_loop.py
+2026-11-18T14:18:26.1624680Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_rollout.py
+2026-11-18T14:18:26.1625180Z Would reformat: scripts/cell_experiments/online_v4/onpolicy_train.py
+2026-11-18T14:18:26.1625812Z Would reformat: scripts/cell_experiments/online_v4/reporting_v4.py
+2026-11-18T14:18:26.1626201Z Would reformat: scripts/cell_experiments/online_v4/round03_cli.py
+2026-11-18T14:18:26.1626806Z Would reformat: scripts/cell_experiments/online_v4/round03_jobs.py
+2026-11-18T14:18:26.1627169Z Would reformat: scripts/cell_experiments/online_v4/round03_plan.py
+2026-11-18T14:18:26.1627536Z Would reformat: scripts/cell_experiments/online_v4/round03_report.py
+2026-11-18T14:18:26.1627932Z Would reformat: scripts/cell_experiments/online_v4/test_circuit_router.py
+2026-11-18T14:18:26.1628332Z Would reformat: scripts/cell_experiments/online_v4/test_circuit_runtime.py
+2026-11-18T14:18:26.1628733Z Would reformat: scripts/cell_experiments/online_v4/test_onpolicy_cache.py
+2026-11-18T14:18:26.1629127Z Would reformat: scripts/cell_experiments/online_v4/test_onpolicy_flow.py
+2026-11-18T14:18:26.1629519Z Would reformat: scripts/cell_experiments/online_v4/test_onpolicy_tensor.py
+2026-11-18T14:18:26.1629916Z Would reformat: scripts/cell_experiments/online_v4/test_reporting_v4.py
+2026-11-18T14:18:26.1630714Z Would reformat: scripts/cell_experiments/online_v4/test_round03_plan.py
+2026-11-18T14:18:26.1631188Z Would reformat: scripts/cell_experiments/online_v4/test_round03_report.py
+2026-11-18T14:18:26.1631831Z Would reformat: scripts/cell_experiments/online_v4/test_shared_pool_cleanup.py
+2026-11-18T14:18:26.1632553Z 24 files would be reformatted, 488 files already formatted
+2026-11-18T14:18:41.4951138Z Formatting failed: Python scripts
+2026-11-18T14:18:41.5063173Z error: recipe `fmt-check` failed on line 55 with exit code 1
+2026-11-18T14:18:41.5073600Z ##[error]Process completed with exit code 1.

@@ -30,31 +30,51 @@ class LoadCacheTests(unittest.TestCase):
             self.assertEqual(root, "/fixture-root")
             return expected
 
-        torch = SimpleNamespace(cuda=SimpleNamespace(is_available=availability, empty_cache=empty))
-        with patch.object(training.gc, "collect", side_effect=lambda: events.append("collect")), \
-                patch.object(training.probe, "_libraries", return_value=(torch, None)), \
-                patch.object(training, "Predictor", side_effect=load) as constructor:
+        torch = SimpleNamespace(
+            cuda=SimpleNamespace(is_available=availability, empty_cache=empty)
+        )
+        with (
+            patch.object(
+                training.gc, "collect", side_effect=lambda: events.append("collect")
+            ),
+            patch.object(training.probe, "_libraries", return_value=(torch, None)),
+            patch.object(training, "Predictor", side_effect=load) as constructor,
+        ):
             if cache_error:
                 with self.assertRaises(RuntimeError) as caught:
                     training.load_predictor(manifest, "/fixture-root")
                 self.assertIs(caught.exception, cache_error)
                 constructor.assert_not_called()
             else:
-                self.assertIs(training.load_predictor(manifest, "/fixture-root"), expected)
+                self.assertIs(
+                    training.load_predictor(manifest, "/fixture-root"), expected
+                )
                 constructor.assert_called_once()
         self.assertEqual(manifest, original)
         return events
 
     def test_unused_process_cache_is_released_before_predictor_admission(self):
-        self.assertEqual(self.exercise(True), ["collect", "cuda_available",
-                                              "empty_unused_process_cache", "unchanged_predictor_admission"])
+        self.assertEqual(
+            self.exercise(True),
+            [
+                "collect",
+                "cuda_available",
+                "empty_unused_process_cache",
+                "unchanged_predictor_admission",
+            ],
+        )
 
     def test_cpu_availability_branch_skips_cuda_empty_but_keeps_admission(self):
-        self.assertEqual(self.exercise(False), ["collect", "cuda_available", "unchanged_predictor_admission"])
+        self.assertEqual(
+            self.exercise(False),
+            ["collect", "cuda_available", "unchanged_predictor_admission"],
+        )
 
     def test_cleanup_failure_cannot_bypass_admission_or_start_loading(self):
-        self.assertEqual(self.exercise(True, RuntimeError("cache cleanup failed")),
-                         ["collect", "cuda_available", "empty_unused_process_cache"])
+        self.assertEqual(
+            self.exercise(True, RuntimeError("cache cleanup failed")),
+            ["collect", "cuda_available", "empty_unused_process_cache"],
+        )
 
 
 if __name__ == "__main__":
