@@ -1,4 +1,5 @@
 mod arg0_exec_helper;
+mod authorized_read_error;
 mod capability_discovery;
 mod capability_discovery_cache;
 mod client;

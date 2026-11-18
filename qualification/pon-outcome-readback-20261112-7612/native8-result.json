@@ -1,0 +1,38 @@
+{
+  "label": "native8",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_actual_trainer_no_update_requires_published_retained_task_and_committed_distinct_input_after_reopen)",
+    "--no-capture"
+  ],
+  "exit": 0,
+  "started_at": "2026-11-12T00:35:26.091558+00:00",
+  "finished_at": "2026-11-12T00:35:34.274321+00:00",
+  "elapsed_seconds": 8.182782001094893,
+  "log": "/home/qian-qi/work/hepta-pon-outcome-7612-native-evidence/native8.log",
+  "log_sha256": "bf752718b91d313dfd2a626e998f52c95dcb5e41d4a63705a4f63fbf9b1b375e",
+  "log_bytes": 31925,
+  "source_head": "93fc43f6e87c4514485adcb01a7ffec8ad3b632f",
+  "source_tree": "1de575fdbba23d25c483f539a15b455c9e8859cb",
+  "status_after": "",
+  "head_after": "93fc43f6e87c4514485adcb01a7ffec8ad3b632f",
+  "tree_after": "1de575fdbba23d25c483f539a15b455c9e8859cb",
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/hepta-learn-ce434-target",
+    "CARGO_BUILD_JOBS": "4",
+    "HEPTA_GENERATION_LEARNING_READBACK_STDOUT": "1",
+    "RUST_BACKTRACE": "1"
+  },
+  "complete_ack_join_claimed": false,
+  "output_ack_event_verified": false,
+  "authority": "DENY_ALL",
+  "production_qualification": "HOLD_NO_GO"
+}

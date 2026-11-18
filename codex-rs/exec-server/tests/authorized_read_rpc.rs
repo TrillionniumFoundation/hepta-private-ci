@@ -66,6 +66,8 @@ async fn authorized_read_rpc_is_capability_gated_and_denies_outside_root() -> Re
 
     let sandbox = read_only_sandbox(&allowed_dir)?;
     let info = client.environment_info().await?;
+    #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
+    assert!(info.capabilities.stable_handle_authorized_read);
     let allowed = client
         .fs_read_file_authorized(FsReadFileAuthorizedParams {
             path: PathUri::from_host_native_path(&allowed_file)?,

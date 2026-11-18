@@ -1,0 +1,101 @@
+name: Hepta Windows previously failing regressions (qualification only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/hepta-automation/src/migration_convergence_tests.rs"
+      - "codex-rs/hepta-fleet/src/registry_tests.rs"
+      - "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs"
+      - "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      - ".github/workflows/hepta-windows-regression-fixtures.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-regressions-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-windows-regression:
+    name: Windows native ${{ matrix.owner }} / exact failing test
+    runs-on: windows-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - owner: git-descendants
+            package: codex-git-utils
+            target: lib
+            filter: "git_process::tests::timed_out_"
+          - owner: automation-migrations
+            package: codex-hepta-automation
+            target: lib
+            filter: "migration_convergence_tests::"
+          - owner: fleet-canonical-paths
+            package: codex-hepta-fleet
+            target: lib
+            filter: "workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths"
+          - owner: supervisor-budget
+            package: codex-hepta-supervisor
+            target: restart_budget_recovery
+            filter: "restart_budget_survives_repeated_supervisord_recovery"
+          - owner: federated-recall
+            package: codex-hepta-memory-extension
+            target: lib
+            filter: "revoke_removes_prepared_federated_context_from_next_physical_send"
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Check out exact candidate without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Record source and pinned Windows toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          rustc --version --verbose
+          cargo --version
+          cargo fmt --version
+      - name: Verify selected crate formatting
+        shell: bash
+        env:
+          PACKAGE: ${{ matrix.package }}
+        run: |
+          set -euo pipefail
+          cargo fmt --package "$PACKAGE" -- --check
+      - name: Execute the original failing test, no fixture bypass
+        shell: bash
+        env:
+          PACKAGE: ${{ matrix.package }}
+          FILTER: ${{ matrix.filter }}
+          TEST_TARGET: ${{ matrix.target }}
+        run: |
+          set -euo pipefail
+          if [[ "$TEST_TARGET" == "lib" ]]; then
+            cargo test --locked -p "$PACKAGE" --lib "$FILTER" -- --nocapture
+          else
+            cargo test --locked -p "$PACKAGE" --test "$TEST_TARGET" "$FILTER" -- --nocapture
+          fi
+      - name: Preserve source identity on every exit path
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

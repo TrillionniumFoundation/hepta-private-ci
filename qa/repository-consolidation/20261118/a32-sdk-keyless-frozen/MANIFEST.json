@@ -1,0 +1,51 @@
+{
+  "schema": "a32-sdk-keyless-frozen-v1",
+  "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+  "source_parent": "a32d73f00cfc292ff1ed4ac5cef958ca9f238020",
+  "source_parent_tree": "603a3e5b69258e37653a828dda625efe45365d7e",
+  "original_carriers": [
+    {
+      "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+      "original_path": ".github/scripts/sdk_diagnostic.py",
+      "retained_path": "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/scripts/sdk_diagnostic.py",
+      "git_blob": "b5a0823b16fbfc0565946df63ddc8e40ac2bed40",
+      "bytes": 18309,
+      "sha256": "a900deb39dba6db1f39ba3d911016436131174245b79acbdf38b446ce7b5b802"
+    },
+    {
+      "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+      "original_path": ".github/sdk-diagnostic/source.json",
+      "retained_path": "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/sdk-diagnostic/source.json",
+      "git_blob": "d5311e9890d4afa74cbf17c321a97b6465077c42",
+      "bytes": 822,
+      "sha256": "9eb67cd7fc16942b6cf3b4da5ffa77e301dba5bba34ea4c72d129aa7f70ab2c1"
+    },
+    {
+      "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+      "original_path": ".github/sdk-diagnostic/tools.json",
+      "retained_path": "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/sdk-diagnostic/tools.json",
+      "git_blob": "15316a81336a0646a16dce60f04cf13ad55ec561",
+      "bytes": 1247,
+      "sha256": "394c568da25bffe4a98e20bf07910a3add13aa9ff3a4ca28acd5f496280881e0"
+    },
+    {
+      "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+      "original_path": ".github/workflows/a32-sdk-keyless-diagnostic.yml",
+      "retained_path": "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/workflows/a32-sdk-keyless-diagnostic.yml",
+      "git_blob": "f3fdd63ee8c97a91ad93c23b7571b68260242d77",
+      "bytes": 8730,
+      "sha256": "63cd34fb6dedeb571f4055853e35a1f4b3a9d6a7ed8ade030028ab600f8877bc"
+    },
+    {
+      "source_head": "9f1b330e90197d25e7524864d01129b28a0a3d44",
+      "original_path": ".github/workflows/sdk.yml",
+      "retained_path": "qa/repository-consolidation/20261118/a32-sdk-keyless-frozen/.github/workflows/sdk.yml",
+      "git_blob": "86646d2848b29c76630cb12f132373410f4fa40c",
+      "bytes": 8059,
+      "sha256": "99636bf85929b0ff21aa621e0588ed43d8241f928e97ab1a5e036dd93d820244"
+    }
+  ],
+  "current_resolution": "Current sdk.yml already retains both real CI repairs. Preserve this original strict capability-gated source-bound diagnostic separately from the current policy-only observer; do not broaden historical branch triggers or relabel merged main as the frozen one-parent source.",
+  "native_execution_performed_for_merge": false,
+  "new_automatic_workflow": false
+}

@@ -13,7 +13,6 @@ path = "src/lib.rs"
 workspace = true
 
 [dependencies]
-chrono = { workspace = true }
 codex-utils-absolute-path = { workspace = true }
 codex-utils-string = { workspace = true }
 codex-api = { workspace = true }
@@ -45,6 +44,7 @@ opentelemetry_sdk = { workspace = true, features = [
     "trace",
 ] }
 http = { workspace = true }
+jiff = { workspace = true }
 os_info = { workspace = true }
 reqwest = { workspace = true, features = ["blocking", "rustls-tls"] }
 serde = { workspace = true, features = ["derive"] }

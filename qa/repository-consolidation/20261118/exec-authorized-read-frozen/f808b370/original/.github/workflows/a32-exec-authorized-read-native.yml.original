@@ -1,0 +1,108 @@
+name: a32 Exec authorized-read native diagnostic
+
+# LOCAL REVIEW PROPOSAL; source manifest rejects execution until independently frozen.
+on:
+  push:
+    branches: [diagnostic/a32-exec-closure-refreeze-20261022]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: a32-exec-authorized-read-native-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  RUSTUP_TOOLCHAIN: "1.95.0"
+  CARGO_TERM_COLOR: never
+  PYTHONUTF8: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  native-macos-arm:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push' && github.ref == 'refs/heads/diagnostic/a32-exec-closure-refreeze-20261022'
+    runs-on: macos-15
+    timeout-minutes: 100
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Initialize immutable-attempt identity and preserve raw checkout bytes
+        id: bootstrap
+        run: |
+          mkdir -p "$RUNNER_TEMP/a32-exec-native"
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          keys = ('GITHUB_SHA', 'GITHUB_REF', 'GITHUB_REPOSITORY', 'GITHUB_EVENT_NAME', 'GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'RUNNER_OS', 'RUNNER_ARCH', 'ImageOS', 'ImageVersion')
+          p = Path(os.environ['RUNNER_TEMP']) / 'a32-exec-native/job-input.json'
+          p.write_text(json.dumps({k: os.environ.get(k) for k in keys}, indent=2) + '\n')
+          PY
+          git config --global core.autocrlf false
+      - name: Check out exact event source without persistent credentials
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Set up pinned Python
+        id: python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.10"
+      - name: Verify immutable source, complete index, raw bytes and native host
+        id: preflight
+        run: |
+          python3 -I -B .github/scripts/a32_exec_authorized_read_native.py preflight \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --out "$RUNNER_TEMP/a32-exec-native/preflight" \
+            --artifact-root "$RUNNER_TEMP/a32-exec-native"
+      - name: Install pinned Rust 1.95 host tools
+        id: rust
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          components: rustfmt
+      - name: Install pinned Bazelisk with isolated output paths
+        id: bazel
+        uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: 1.28.1
+          output-base: ${{ runner.temp }}/a32-exec-bazel/output
+      - name: Verify pinned native DotSlash asset
+        id: dotslash
+        run: |
+          python3 -I -B .github/scripts/a32_exec_authorized_read_native.py install-tools \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --out "$RUNNER_TEMP/a32-exec-native/tools" \
+            --artifact-root "$RUNNER_TEMP/a32-exec-native"
+          sudo install -m 755 "$RUNNER_TEMP/a32-exec-tools/dotslash" /usr/local/bin/dotslash
+      - name: Format, bind generated source, audit configured closure, compile and run full native owners
+        id: native
+        run: |
+          python3 -I -B .github/scripts/a32_exec_authorized_read_native.py run \
+            --repo "$GITHUB_WORKSPACE" --source-sha "$SOURCE_SHA" \
+            --out "$RUNNER_TEMP/a32-exec-native/native" \
+            --artifact-root "$RUNNER_TEMP/a32-exec-native"
+      - name: Preserve terminal step outcomes, including setup failures
+        if: always()
+        env:
+          STEP_OUTCOMES: ${{ toJSON(steps) }}
+        run: |
+          python3 -I -B - <<'PY'
+          import json, os
+          from pathlib import Path
+          p = Path(os.environ['RUNNER_TEMP']) / 'a32-exec-native/step-outcomes.json'
+          p.parent.mkdir(parents=True, exist_ok=True)
+          p.write_text(json.dumps(json.loads(os.environ['STEP_OUTCOMES']), indent=2) + '\n')
+          PY
+      - name: Upload immutable evidence snapshots, never live command destinations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: a32-exec-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/a32-exec-native
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

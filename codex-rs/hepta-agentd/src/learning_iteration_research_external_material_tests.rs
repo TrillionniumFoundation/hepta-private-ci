@@ -3,8 +3,35 @@
 //! separately checks the new real candidate and durable owner through cold use.
 
 use super::*;
+use anyhow::Context as _;
 use std::fs;
 use std::os::unix::fs::symlink;
+
+// The material reader intentionally refuses symlinked ancestors. macOS TMPDIR
+// may be spelled through /var -> /private/var. Resolve only the trusted test
+// fixture parent before creating it; do not relax production NOFOLLOW.
+fn physical_tempdir() -> anyhow::Result<tempfile::TempDir> {
+    let parent = std::env::temp_dir()
+        .canonicalize()
+        .context("physical temporary test parent")?;
+    tempfile::Builder::new()
+        .prefix("hepta-material-")
+        .tempdir_in(parent)
+        .context("physical temporary test fixture")
+}
+
+#[test]
+fn research_material_fixture_root_is_physical_and_readable() -> anyhow::Result<()> {
+    let temp = physical_tempdir()?;
+    assert_eq!(
+        temp.path(),
+        temp.path()
+            .canonicalize()
+            .context("canonical fixture path")?
+    );
+    assert!(directory(temp.path()).is_ok());
+    Ok(())
+}
 
 fn tensor_file(header: &Value, payload: &[u8]) -> anyhow::Result<Vec<u8>> {
     let header = canonical(header)?;

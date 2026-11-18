@@ -56,6 +56,7 @@ codex_rust_crate(
         "//scripts/memory_cell_native:native_tick_interop.py",
         "//scripts/memory_cell_network:model_child.py",
     ],
+    test_shard_counts = {"hepta-agentd-unit-tests": 4},
     unit_test_dependency_replacements = _UNIT_TEST_DEPENDENCIES,
     unit_test_extra_binaries = [
         "//codex-rs/cli:codex",
@@ -63,6 +64,7 @@ codex_rust_crate(
         "//codex-rs/hepta-infer-worker-host:hepta-joint-propose",
     ],
     unit_test_extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+    unit_test_flaky = False,
 )
 
 v13_acceptance_example()

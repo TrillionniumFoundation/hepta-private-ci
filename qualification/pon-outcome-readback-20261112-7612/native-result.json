@@ -1,0 +1,60 @@
+{
+  "status": "FINISHED",
+  "source_head": "93fc43f6e87c4514485adcb01a7ffec8ad3b632f",
+  "source_tree": "1de575fdbba23d25c483f539a15b455c9e8859cb",
+  "base": "3c8dabe46598599e91b2b8b80081e09069ff9426",
+  "source": "/home/qian-qi/work/hepta-pon-outcome-7612-native",
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(qualified_local_retention_reaches_actual_parent_use_and_cold_recovery) | test(qualified_local_adoption_reaches_actual_candidate_and_keeps_decision_operation) | test(ordinary_actor_reads_actual_use_and_cold_recovery_without_reexecution) | test(updated_candidate_uses_original_actor_and_recovers_without_another_reset) | test(q24_native_sgd_reports_no_update_when_actual_quantized_bytes_stay_equal) | test(q24_training_owner_cold_readback_preserves_candidate_and_no_update) | test(original_training_stage_runs_both_outcomes_and_reopens_exactly)",
+    "--no-capture"
+  ],
+  "environment": {
+    "RUSTUP_TOOLCHAIN": "1.96.0",
+    "CARGO_TARGET_DIR": "/home/qian-qi/hepta-learn-ce434-target",
+    "CARGO_BUILD_JOBS": "4",
+    "HEPTA_GENERATION_LEARNING_READBACK_STDOUT": "1",
+    "RUST_BACKTRACE": "1"
+  },
+  "versions": {
+    "rustc": {
+      "exit": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\nbinary: rustc\ncommit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96\ncommit-date: 2026-05-25\nhost: x86_64-unknown-linux-gnu\nrelease: 1.96.0\nLLVM version: 22.1.2\n",
+      "stderr": ""
+    },
+    "cargo": {
+      "exit": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+      "stderr": ""
+    },
+    "just": {
+      "exit": 0,
+      "stdout": "just 1.51.0\n",
+      "stderr": ""
+    },
+    "nextest": {
+      "exit": 0,
+      "stdout": "cargo-nextest 0.9.137 (75ddba7e9 2026-05-26)\nrelease: 0.9.137\ncommit-hash: 75ddba7e911b44c5c0700dac0415d824403de9bd\ncommit-date: 2026-05-26\nhost: x86_64-unknown-linux-gnu\n",
+      "stderr": ""
+    }
+  },
+  "started_at": "2026-11-12T00:02:17.147632+00:00",
+  "cargo_lock_sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69",
+  "authority": "DENY_ALL",
+  "production_qualification": "HOLD_NO_GO",
+  "exit": 0,
+  "elapsed_seconds": 798.0185151100159,
+  "finished_at": "2026-11-12T00:15:35.170496+00:00",
+  "log_sha256": "3e7ee2dcd9019949256a2987a3c8612d976952a58503d7050198adaab11a5261",
+  "log_bytes": 235411,
+  "head_after": "93fc43f6e87c4514485adcb01a7ffec8ad3b632f",
+  "tree_after": "1de575fdbba23d25c483f539a15b455c9e8859cb",
+  "status_after": ""
+}

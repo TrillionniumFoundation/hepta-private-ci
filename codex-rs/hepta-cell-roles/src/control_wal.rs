@@ -729,14 +729,69 @@ mod tests {
     }
 
     fn root() -> PathBuf {
-        std::env::temp_dir().join(format!(
-            "hepta-control-scope-wal-{}-{}",
-            std::process::id(),
+        root_at(
             std::time::SystemTime::now()
                 .duration_since(std::time::UNIX_EPOCH)
                 .expect("clock")
                 .as_nanos(),
-        ))
+        )
+    }
+
+    fn root_at(tick: u128) -> PathBuf {
+        use std::sync::atomic::AtomicU64;
+        use std::sync::atomic::Ordering;
+
+        static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
+        loop {
+            let sequence = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
+            let directory = std::env::temp_dir().join(format!(
+                "hepta-control-scope-wal-{}-{tick}-{sequence}",
+                std::process::id(),
+            ));
+            let builder = fs::DirBuilder::new();
+            #[cfg(unix)]
+            let builder = {
+                use std::os::unix::fs::DirBuilderExt;
+                let mut builder = builder;
+                builder.mode(0o700);
+                builder
+            };
+            // Exclusive creation also avoids reusing a stale fixture after PID
+            // reuse. Only name collisions retry; real I/O errors remain errors.
+            match builder.create(&directory) {
+                Ok(()) => return directory,
+                Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+                Err(error) => panic!("create private scope-WAL fixture: {error}"),
+            }
+        }
+    }
+
+    #[test]
+    fn scope_wal_same_clock_fixtures_have_independent_writers() {
+        // Coarse platform clocks may return the same tick to concurrent tests.
+        // Both fixtures must own independent lanes, even with identical IDs.
+        let first_directory = root_at(0);
+        let second_directory = root_at(0);
+        let scope = digest("same-clock-scope");
+        let mut first = ScopedControlWalOwnerV1::open(&first_directory, id("cell-one"), scope)
+            .expect("first fixture writer");
+        let mut second = ScopedControlWalOwnerV1::open(&second_directory, id("cell-one"), scope)
+            .expect("independent same-clock fixture writer");
+        assert_ne!(first.path(), second.path());
+        first.set_now_ms(10).expect("first clock");
+        second.set_now_ms(20).expect("second clock");
+        drop(first);
+        drop(second);
+        let first = ScopedControlWalOwnerV1::open(&first_directory, id("cell-one"), scope)
+            .expect("reopen first fixture");
+        let second = ScopedControlWalOwnerV1::open(&second_directory, id("cell-one"), scope)
+            .expect("reopen second fixture");
+        assert_eq!(first.inner.now_ms, 10);
+        assert_eq!(second.inner.now_ms, 20);
+        drop(first);
+        drop(second);
+        fs::remove_dir_all(first_directory).expect("cleanup first fixture");
+        fs::remove_dir_all(second_directory).expect("cleanup second fixture");
     }
 
     fn intent(scope: Digest32) -> ControlDispatchIntentV1 {

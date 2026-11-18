@@ -198,6 +198,20 @@ async fn public_outcome_strings_cannot_create_native_terminal_provenance_or_reti
         .writer
         .mark_indeterminate(OPERATION, "caller says NotSeen")
         .await?;
+    for outcome in [
+        LocalReconcileOutcome::Committed,
+        LocalReconcileOutcome::Rejected,
+    ] {
+        let structured = fixture
+            .writer
+            .lease
+            .reconcile_with_payload(OPERATION.to_string(), outcome, forged.clone())
+            .await;
+        assert!(matches!(
+            structured,
+            Err(LocalLeaseOutboxError::AccessDenied(_))
+        ));
+    }
     assert!(
         fixture
             .writer

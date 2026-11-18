@@ -1,0 +1,71 @@
+name: a32 Wine read-only-host diagnostic
+on:
+  push:
+    branches:
+      - diagnostic/a32-wine-readonly-native-20261022
+permissions:
+  contents: read
+concurrency:
+  group: a32-wine-readonly-native-${{ github.ref }}
+  cancel-in-progress: false
+env:
+  SOURCE_SHA: ${{ github.sha }}
+  # Process-local Git option; no global/user configuration write.
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: "false"
+jobs:
+  original:
+    name: Original parallel Wine suite (existing host policy)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      A32_WINE_CASE: full-original-parallelism
+    steps:
+      - name: Verify process-local checkout byte setting
+        id: checkout_bytes
+        run: test "$(git config --get core.autocrlf)" = false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        id: checkout
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 2
+          persist-credentials: false
+          set-safe-directory: false
+      - name: Guard exact a32 product and input commit
+        id: guard
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py init-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Verify and record existing host Python (no installer fallback)
+        id: python
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py host "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Harness contract tests (not native Wine tests)
+        id: contracts
+        run: /usr/bin/python3 -I -B -X utf8 -m unittest discover -s .github/scripts -p test_a32_wine_diagnostic.py -v
+      - name: Admit existing host capabilities and create ordinary job-local directories
+        id: build
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py admit "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Install checksum-pinned DotSlash 0.5.9 in job-local test PATH
+        id: dotslash
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py dotslash "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Install official checksum-pinned Bazel 9.3.0 (no version discovery)
+        id: bazel
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py bazel "$RUNNER_TEMP/a32-wine-evidence"
+      - name: One original-parallel 13-case native attempt
+        id: native
+        timeout-minutes: 32
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py run-job "$RUNNER_TEMP/a32-wine-evidence"
+      - name: Guard final inputs and freeze complete or partial evidence
+        id: collect
+        if: always() && steps.checkout.outcome == 'success'
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: /usr/bin/python3 -I -B -X utf8 .github/scripts/a32_wine_diagnostic.py collect-job "$RUNNER_TEMP/a32-wine-evidence"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        id: artifact
+        if: always()
+        with:
+          name: a32-wine-readonly-evidence-${{ github.run_id }}-${{ github.run_attempt }}-original
+          path: ${{ runner.temp }}/a32-wine-frozen
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7

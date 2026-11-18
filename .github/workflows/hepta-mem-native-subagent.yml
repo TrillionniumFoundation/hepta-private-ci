@@ -1,0 +1,101 @@
+name: MEM V2 subagent native regressions (exact source)
+
+on:
+  push:
+    branches: ["codex/mem8-native-subagent-v10-20261111-ed353817"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: mem-native-subagent-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  RUSTUP_TOOLCHAIN: "1.96.0"
+  CARGO_BUILD_JOBS: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_TERM_COLOR: never
+  PYTHONDONTWRITEBYTECODE: "1"
+  PYTHONUTF8: "1"
+  GIT_CONFIG_COUNT: "1"
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: "false"
+
+jobs:
+  native-subagent:
+    if: github.ref == 'refs/heads/codex/mem8-native-subagent-v10-20261111-ed353817'
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Record this original job's observed budget anchor
+        id: anchor
+        shell: pwsh
+        env:
+          MEM_NATIVE_RECORDS: ${{ runner.temp }}/mem-native-subagent-records-${{ github.run_id }}-${{ github.run_attempt }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/mem-native-subagent-target-${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          $ErrorActionPreference = "Stop"
+          if (Test-Path -LiteralPath $env:MEM_NATIVE_RECORDS) { throw "Evidence identity already exists" }
+          New-Item -ItemType Directory -Path $env:MEM_NATIVE_RECORDS | Out-Null
+          $anchor = [ordered]@{
+            schema = "mem-native-subagent-job-anchor-v1"
+            first_step_started_at = [DateTimeOffset]::UtcNow.ToString("o")
+            job_timeout_minutes = 65
+            run_id = $env:GITHUB_RUN_ID
+            run_attempt = $env:GITHUB_RUN_ATTEMPT
+            harness_sha = $env:GITHUB_SHA
+            source_head = "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+            source_tree = "658fa040046285116b1fd81b94ff8c96444072ad"
+            boundary = "Observed first-step time only; the earlier Actions job deadline remains authoritative. No phase receives a fresh 65-minute budget."
+          }
+          $anchor | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $env:MEM_NATIVE_RECORDS "JOB_ANCHOR.json") -Encoding utf8NoBOM
+          "MEM_NATIVE_RECORDS=$env:MEM_NATIVE_RECORDS" >> $env:GITHUB_ENV
+          "CARGO_TARGET_DIR=$env:CARGO_TARGET_DIR" >> $env:GITHUB_ENV
+      - name: Checkout the exact harness event commit
+        id: harness
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          path: harness
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Checkout the independently frozen formatted source
+        id: source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+          path: source
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Install the same pinned native compiler and scoped lint component
+        uses: dtolnay/rust-toolchain@d86e0fa8f147d6539442c26a61ebba8becc19489
+        with:
+          toolchain: "1.96.0"
+          components: clippy
+      - name: Install the repository's pinned test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Build real helpers, qualify the two cases and retain independent scoped lint
+        shell: pwsh
+        run: |
+          python harness/.github/scripts/mem_native_subagent.py run --source source --records "$env:MEM_NATIVE_RECORDS"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Collect original results without inventing an interrupted exit
+        if: always() && steps.harness.outcome == 'success' && steps.anchor.outcome == 'success'
+        shell: pwsh
+        run: |
+          python harness/.github/scripts/mem_native_subagent.py collect --source source --records "$env:MEM_NATIVE_RECORDS"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Retain every original intent, raw log, JUnit and source rewrite
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: mem-native-subagent-d0f6507e08f7f5c5855f5164d07c049a34d1a6d9-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/mem-native-subagent-records-${{ github.run_id }}-${{ github.run_attempt }}/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

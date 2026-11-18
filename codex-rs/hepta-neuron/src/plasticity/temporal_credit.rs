@@ -104,10 +104,34 @@ pub struct TemporalCreditReceiptV1 {
     pub matched_feedback_count: u32,
     pub expired_feedback_count: u32,
     pub withheld_future_feedback_count: u32,
-    /// Actions with no supplied effect receipt (not zero-valued successes).
+    /// Actions with no effect available **at the frozen cutoff**, including future receipts.
     pub unobserved_action_count: u32,
     pub projection_count: u32,
+    /// Complete supplied-input audit digest; may commit to post-cutoff labels and
+    /// therefore MUST NOT be a feature, key or selection signal at the cutoff.
     pub transcript_digest: Digest32,
+    /// Frozen-prefix digest: depends only on actions and feedback available by
+    /// cutoff, never on a future label or the number of supplied future labels.
+    /// This remains self-declared, NOT independently owner-attested.
+    pub causal_training_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+/// Restricted **shadow-only** selector input for a frozen training prefix.
+///
+/// This is NOT a verified Owner receipt. A caller MUST supply only feedback
+/// that its real Owner made observable by the cutoff. Unlike the forensic
+/// TemporalCreditReceiptV1, this type cannot disclose post-cutoff transcript
+/// identity or how many future feedback records were provided.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FrozenTemporalCreditProposalV1 {
+    pub arm: TemporalCreditArmV1,
+    pub group_deltas: Vec<TemporalGroupDeltaV1>,
+    pub matched_feedback_count: u32,
+    pub expired_feedback_count: u32,
+    pub unobserved_action_count: u32,
+    pub projection_count: u32,
+    pub causal_training_digest: Digest32,
     pub authority: AuthorityPosture,
 }
 
@@ -120,6 +144,7 @@ pub enum TemporalCreditError {
     DuplicateFeedback,
     UnknownAction,
     FutureAction,
+    FutureFeedback,
     FeedbackBeforeAction,
     /// The online training input contains a receipt not yet visible at cutoff.
     FutureFeedbackNotAvailable,
@@ -304,6 +329,7 @@ pub(super) fn accumulate_credit_with_decay(
     });
     let mut seen_receipts = BTreeSet::new();
     let mut seen_targets = BTreeSet::new();
+    let mut observed_targets = BTreeSet::new();
     let mut sums = vec![0_i128; groups.len()];
     let mut matched = 0_u32;
     let mut expired = 0_u32;
@@ -345,6 +371,7 @@ pub(super) fn accumulate_credit_with_decay(
             withheld += 1;
             continue;
         }
+        observed_targets.insert(item.action_id.clone());
         if lag > contract.maximum_feedback_lag {
             expired += 1;
             continue;
@@ -385,7 +412,7 @@ pub(super) fn accumulate_credit_with_decay(
         }
     }
 
-    let unobserved = u32::try_from(actions.len() - seen_targets.len())
+    let unobserved = u32::try_from(actions.len() - observed_targets.len())
         .map_err(|_| TemporalCreditError::Arithmetic)?;
     let mut projection_count = 0_u32;
     let mut deltas = Vec::with_capacity(groups.len());
@@ -450,6 +477,21 @@ pub(super) fn accumulate_credit_with_decay(
         canonical.extend_from_slice(&action.sequence.to_be_bytes());
         push_q24(&mut canonical, &action.eligibility_q24);
     }
+    // Keep a complete-input audit separately from the causally available
+    // prefix. A later feedback receipt must not change the frozen training key.
+    let mut causal = canonical.clone();
+    causal.extend_from_slice(b"\0cutoff-only-v1");
+    let prefix_feedback = feedback_sorted
+        .iter()
+        .filter(|item| item.available_sequence <= contract.cutoff_sequence)
+        .collect::<Vec<_>>();
+    causal.extend_from_slice(&(prefix_feedback.len() as u64).to_be_bytes());
+    for item in &prefix_feedback {
+        push_id(&mut causal, &item.action_id);
+        causal.extend_from_slice(item.feedback_receipt_digest.as_array());
+        causal.extend_from_slice(&item.available_sequence.to_be_bytes());
+        push_q24(&mut causal, &item.modulator_q24);
+    }
     canonical.extend_from_slice(&(feedback_sorted.len() as u64).to_be_bytes());
     for item in &feedback_sorted {
         push_id(&mut canonical, &item.action_id);
@@ -460,9 +502,14 @@ pub(super) fn accumulate_credit_with_decay(
     for group in &deltas {
         push_id(&mut canonical, &group.group_id);
         canonical.extend_from_slice(&group.delta_q24.to_be_bytes());
+        push_id(&mut causal, &group.group_id);
+        causal.extend_from_slice(&group.delta_q24.to_be_bytes());
     }
     for count in [matched, expired, withheld, unobserved, projection_count] {
         canonical.extend_from_slice(&count.to_be_bytes());
+    }
+    for count in [matched, expired, unobserved, projection_count] {
+        causal.extend_from_slice(&count.to_be_bytes());
     }
 
     Ok(TemporalCreditReceiptV1 {
@@ -474,7 +521,53 @@ pub(super) fn accumulate_credit_with_decay(
         unobserved_action_count: unobserved,
         projection_count,
         transcript_digest: Digest32::of_bytes(&canonical),
+        causal_training_digest: Digest32::of_bytes(&causal),
         authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+/// Construct an explicitly frozen, causal-prefix proposal only.
+///
+/// Reject *every* post-cutoff feedback input instead of silently returning a
+/// future-dependent complete-audit surface. The original reference remains
+/// available to a separate forensic caller but its full transcript digest is
+/// never returned here. All input identities and availability sequences
+/// remain caller declarations: no producer authentication, signed source,
+/// StageOwner authority, real effect, or adoption permission is conferred.
+pub fn accumulate_frozen_temporal_credit_q24(
+    actions: &[TemporalEligibilityActionV1],
+    declared_visible_feedback: &[TemporalFeedbackV1],
+    parameter_groups: &[ParameterGroupMapV1],
+    contract: TemporalCreditContractV1,
+    arm: TemporalCreditArmV1,
+) -> Result<FrozenTemporalCreditProposalV1, TemporalCreditError> {
+    if declared_visible_feedback
+        .iter()
+        .any(|feedback| feedback.available_sequence > contract.cutoff_sequence)
+    {
+        return Err(TemporalCreditError::FutureFeedback);
+    }
+    let receipt = accumulate_temporal_credit_q24(
+        actions,
+        declared_visible_feedback,
+        parameter_groups,
+        contract,
+        arm,
+    )?;
+    // Defensive invariant: callers must never receive a complete-audit
+    // future field, even if the full reference changes independently.
+    if receipt.withheld_future_feedback_count != 0 {
+        return Err(TemporalCreditError::FutureFeedback);
+    }
+    Ok(FrozenTemporalCreditProposalV1 {
+        arm: receipt.arm,
+        group_deltas: receipt.group_deltas,
+        matched_feedback_count: receipt.matched_feedback_count,
+        expired_feedback_count: receipt.expired_feedback_count,
+        unobserved_action_count: receipt.unobserved_action_count,
+        projection_count: receipt.projection_count,
+        causal_training_digest: receipt.causal_training_digest,
+        authority: receipt.authority,
     })
 }
 

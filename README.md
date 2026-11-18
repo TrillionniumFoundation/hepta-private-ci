@@ -15,6 +15,27 @@ The guides distinguish target designs from current native implementations. Docum
 
 The readiness index describes coding-entry contracts and evidence boundaries. Documentation readiness does not imply source implementation, runtime activation, production authority, independent acceptance, or release.
 
+## Implementation readiness records
+
+The machine-readable records expose the closed-world specification registry,
+status vocabulary, typed protocols and bounded gaps:
+
+- [READINESS.json](docs/readiness/READINESS.json)
+- [STATUS_MODEL.json](docs/readiness/STATUS_MODEL.json)
+- [PROTOCOLS.json](docs/readiness/PROTOCOLS.json)
+- [GAPS.json](docs/readiness/GAPS.json)
+- [Generated status](docs/STATUS.md)
+
+Verify these records from the repository root:
+
+```sh
+python3 scripts/hepta-readiness.py verify
+```
+
+This check validates the documentation registry and discovery links. It does
+not certify deployed behavior, hardware performance, model efficacy or release
+qualification.
+
 ## Verify the development documentation
 
 Run from the repository root:

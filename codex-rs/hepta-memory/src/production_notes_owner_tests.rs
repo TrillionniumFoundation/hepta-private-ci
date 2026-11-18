@@ -335,6 +335,23 @@ async fn generic_terminal_outcomes_cannot_replace_notes_application_evidence() -
         writer
             .reconcile(&operation, LocalReconcileOutcome::StillIndeterminate)
             .await?;
+        for outcome in [
+            LocalReconcileOutcome::Committed,
+            LocalReconcileOutcome::Rejected,
+        ] {
+            let structured = writer
+                .lease
+                .reconcile_with_payload(
+                    operation.clone(),
+                    outcome,
+                    "unverified structured terminal observation".to_string(),
+                )
+                .await;
+            assert!(matches!(
+                structured,
+                Err(LocalLeaseOutboxError::AccessDenied(_))
+            ));
+        }
         let result = match route {
             "reconcile_committed" => {
                 writer

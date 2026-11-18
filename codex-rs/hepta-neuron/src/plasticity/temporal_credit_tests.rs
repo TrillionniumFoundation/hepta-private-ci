@@ -183,6 +183,7 @@ fn withheld_future_does_not_change_numerical_candidate() {
     ));
     assert_eq!(result.matched_feedback_count, 0);
     assert_eq!(result.withheld_future_feedback_count, 2);
+    assert_eq!(result.unobserved_action_count, 2);
     assert!(result.group_deltas.iter().all(|group| group.delta_q24 == 0));
 }
 
@@ -561,4 +562,198 @@ fn online_prefix_denies_single_future_receipt_mixed_with_valid_earlier_data() {
     assert_eq!(prefix.group_deltas[0].delta_q24, Q / 8);
     assert_eq!(prefix.group_deltas[1].delta_q24, 0);
     assert!(!prefix.authority.grants_any());
+}
+
+#[test]
+fn future_labels_neither_observe_past_actions_nor_change_frozen_training_digest() {
+    let mut context = contract();
+    context.cutoff_sequence = 2;
+    let actions = actions();
+    let groups = groups();
+    let absent = good(credit(
+        &actions,
+        &[],
+        &groups,
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    let supplied = good(credit(
+        &actions,
+        &feedback(),
+        &groups,
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(supplied.withheld_future_feedback_count, 2);
+    assert_eq!(supplied.unobserved_action_count, 2);
+    assert_eq!(absent.unobserved_action_count, 2);
+    assert_eq!(
+        supplied.causal_training_digest,
+        absent.causal_training_digest
+    );
+    assert_ne!(supplied.transcript_digest, absent.transcript_digest);
+
+    let mut later_labels = feedback();
+    later_labels[0].modulator_q24 = vec![-Q, 0];
+    later_labels[1].modulator_q24 = vec![Q, 0];
+    later_labels[0].feedback_receipt_digest = hash(b"different-future-receipt-1");
+    later_labels[1].feedback_receipt_digest = hash(b"different-future-receipt-2");
+    let changed = good(credit(
+        &actions,
+        &later_labels,
+        &groups,
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(
+        changed.causal_training_digest,
+        absent.causal_training_digest
+    );
+    assert_eq!(changed.group_deltas, absent.group_deltas);
+    assert_ne!(changed.transcript_digest, supplied.transcript_digest);
+    assert!(!changed.authority.grants_any());
+
+    // Once the cutoff advances, real available feedback must change the
+    // prefix key; a forged post-cutoff event must not influence an earlier key.
+    let current = good(credit(
+        &actions,
+        &feedback(),
+        &groups,
+        contract(),
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_ne!(
+        current.causal_training_digest,
+        absent.causal_training_digest
+    );
+    assert_eq!(current.unobserved_action_count, 0);
+}
+
+#[test]
+fn expired_but_available_feedback_counts_as_observed_without_training_credit() {
+    let mut context = contract();
+    context.maximum_feedback_lag = 1;
+    let result = good(credit(
+        &actions(),
+        &feedback(),
+        &groups(),
+        context,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(result.expired_feedback_count, 2);
+    assert_eq!(result.unobserved_action_count, 0);
+    assert_eq!(result.matched_feedback_count, 0);
+}
+
+#[test]
+fn frozen_native_prefix_rejects_post_cutoff_receipts_before_returning_candidate() {
+    let mut run = contract();
+    run.cutoff_sequence = 2;
+    let result = accumulate_frozen_temporal_credit_q24(
+        &actions(),
+        &feedback(),
+        &groups(),
+        run,
+        TemporalCreditArmV1::Routed,
+    );
+    assert_eq!(result, Err(TemporalCreditError::FutureFeedback));
+}
+
+#[test]
+fn frozen_native_prefix_no_feedback_is_explicitly_unobserved_and_deny_all() {
+    let mut run = contract();
+    run.cutoff_sequence = 2;
+    let frozen = good(accumulate_frozen_temporal_credit_q24(
+        &actions(),
+        &[],
+        &groups(),
+        run,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(frozen.matched_feedback_count, 0);
+    assert_eq!(frozen.expired_feedback_count, 0);
+    assert_eq!(frozen.unobserved_action_count, 2);
+    assert!(frozen.group_deltas.iter().all(|g| g.delta_q24 == 0));
+    assert!(!frozen.authority.grants_any());
+
+    // A full forensic audit may see later receipts. The training key must
+    // agree, while the frozen type excludes any complete-input audit digest.
+    let full = good(credit(
+        &actions(),
+        &feedback(),
+        &groups(),
+        run,
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(full.withheld_future_feedback_count, 2);
+    assert_eq!(frozen.causal_training_digest, full.causal_training_digest);
+    assert_eq!(frozen.group_deltas, full.group_deltas);
+}
+
+#[test]
+fn frozen_native_prefix_matches_visible_reference_and_canonical_order() {
+    let proposal = good(accumulate_frozen_temporal_credit_q24(
+        &actions(),
+        &feedback(),
+        &groups(),
+        contract(),
+        TemporalCreditArmV1::Routed,
+    ));
+    let forensic = good(credit(
+        &actions(),
+        &feedback(),
+        &groups(),
+        contract(),
+        TemporalCreditArmV1::Routed,
+    ));
+    assert_eq!(
+        proposal.causal_training_digest,
+        forensic.causal_training_digest
+    );
+    assert_eq!(proposal.group_deltas, forensic.group_deltas);
+    assert_eq!(proposal.matched_feedback_count, 2);
+    let mut a = actions();
+    let mut f = feedback();
+    let mut g = groups();
+    a.reverse();
+    f.reverse();
+    g.reverse();
+    assert_eq!(
+        good(accumulate_frozen_temporal_credit_q24(
+            &a,
+            &f,
+            &g,
+            contract(),
+            TemporalCreditArmV1::Routed,
+        )),
+        proposal
+    );
+}
+
+#[test]
+fn frozen_native_prefix_preserves_owner_drift_and_eval_split_refusal() {
+    let mut bad = feedback();
+    bad[0].model_digest = hash(b"other-model");
+    assert_eq!(
+        accumulate_frozen_temporal_credit_q24(
+            &actions(),
+            &bad,
+            &groups(),
+            contract(),
+            TemporalCreditArmV1::Routed,
+        ),
+        Err(TemporalCreditError::OwnerOrModelDrift)
+    );
+    bad = feedback();
+    bad[0].split = TemporalSplitV1::FrozenEvaluation;
+    assert_eq!(
+        accumulate_frozen_temporal_credit_q24(
+            &actions(),
+            &bad,
+            &groups(),
+            contract(),
+            TemporalCreditArmV1::Routed,
+        ),
+        Err(TemporalCreditError::FrozenEvaluationLeak)
+    );
 }

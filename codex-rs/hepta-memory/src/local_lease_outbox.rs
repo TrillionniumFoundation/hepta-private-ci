@@ -49,7 +49,10 @@ pub(crate) use hos2_ordering::validate_hos2_predecessor;
 
 #[derive(Clone, Copy)]
 enum ReconciliationEvidence<'a> {
-    General(LocalReconcileOutcome),
+    General {
+        outcome: LocalReconcileOutcome,
+        payload: Option<&'a str>,
+    },
     Hos2Terminal(&'a Hos2TerminalReceipt),
     NotesTerminal(&'a crate::production_notes::NotesTerminalReceipt),
     NotesPreDispatchRejected(&'a crate::production_writer::NotesPreDispatchRejection),
@@ -2366,7 +2369,28 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         self.append_reconciliation(
             occurrence_key.into(),
-            ReconciliationEvidence::General(outcome),
+            ReconciliationEvidence::General {
+                outcome,
+                payload: None,
+            },
+        )
+        .await
+    }
+
+    /// Retain an owner-validated observation in the same event and transaction
+    /// as its outcome. The ordinary reconciliation API keeps its legacy payload.
+    pub(crate) async fn reconcile_with_payload(
+        &self,
+        occurrence_key: String,
+        outcome: LocalReconcileOutcome,
+        payload: String,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        self.append_reconciliation(
+            occurrence_key,
+            ReconciliationEvidence::General {
+                outcome,
+                payload: Some(&payload),
+            },
         )
         .await
     }
@@ -2448,7 +2472,7 @@ impl LocalLeaseOutbox {
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         let outcome = match evidence {
-            ReconciliationEvidence::General(outcome) => outcome,
+            ReconciliationEvidence::General { outcome, .. } => outcome,
             ReconciliationEvidence::Hos2Terminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesTerminal(receipt) => receipt.outcome(),
             ReconciliationEvidence::NotesPreDispatchRejected(_) => LocalReconcileOutcome::Rejected,
@@ -2492,7 +2516,9 @@ impl LocalLeaseOutbox {
             ReconciliationEvidence::Hos2ProtocolConflict(conflict) => {
                 conflict.to_json().map_err(LocalLeaseOutboxError::Invalid)?
             }
-            ReconciliationEvidence::General(outcome) => outcome.as_str().to_string(),
+            ReconciliationEvidence::General { outcome, payload } => {
+                payload.unwrap_or_else(|| outcome.as_str()).to_string()
+            }
         };
         validate_text(
             &payload,
@@ -2547,10 +2573,14 @@ impl LocalLeaseOutbox {
                         "application evidence targets HOS2".to_string(),
                     ));
                 }
-                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
-                ReconciliationEvidence::General(
-                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
-                ) => {
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::StillIndeterminate,
+                    ..
+                } => {}
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                    ..
+                } => {
                     return Err(LocalLeaseOutboxError::AccessDenied(
                         "HOS2 terminal settlement requires the native observation owner"
                             .to_string(),
@@ -2574,10 +2604,14 @@ impl LocalLeaseOutbox {
                         ));
                     }
                 }
-                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
-                ReconciliationEvidence::General(
-                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
-                ) => {
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::StillIndeterminate,
+                    ..
+                } => {}
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                    ..
+                } => {
                     return Err(LocalLeaseOutboxError::AccessDenied(
                         "Notes terminal settlement requires the original observation owner"
                             .to_string(),
@@ -2609,10 +2643,14 @@ impl LocalLeaseOutbox {
                         ));
                     }
                 }
-                ReconciliationEvidence::General(LocalReconcileOutcome::StillIndeterminate) => {}
-                ReconciliationEvidence::General(
-                    LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
-                ) => {
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::StillIndeterminate,
+                    ..
+                } => {}
+                ReconciliationEvidence::General {
+                    outcome: LocalReconcileOutcome::Committed | LocalReconcileOutcome::Rejected,
+                    ..
+                } => {
                     return Err(LocalLeaseOutboxError::AccessDenied(
                         "Calculator terminal settlement requires the original observation owner"
                             .into(),
@@ -2627,7 +2665,7 @@ impl LocalLeaseOutbox {
                     ));
                 }
             }
-        } else if !matches!(evidence, ReconciliationEvidence::General(_)) {
+        } else if !matches!(evidence, ReconciliationEvidence::General { .. }) {
             return Err(LocalLeaseOutboxError::Invalid(
                 "typed observation targets a different outbox".to_string(),
             ));

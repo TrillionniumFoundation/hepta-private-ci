@@ -30,6 +30,10 @@ env:
   FULL_QUALIFICATION: ${{ inputs.full_qualification && 'true' || 'false' }}
 
 jobs:
+  windows-fixture-regressions:
+    name: Windows original fixture regressions
+    if: inputs.full_qualification
+    uses: ./.github/workflows/hepta-windows-regression-fixtures.yml
   workspace-regression:
     name: Workspace regression for shared core changes
     runs-on: ubuntu-24.04-arm

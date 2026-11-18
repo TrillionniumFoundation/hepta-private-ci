@@ -6,6 +6,9 @@ on:
 permissions:
   contents: read
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 jobs:
   python-sdk:
     runs-on: ubuntu-24.04
@@ -14,7 +17,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+
+      - name: Verify exact SDK source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
       - name: Test Python SDK
         shell: bash
@@ -66,7 +74,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+
+      - name: Verify exact SDK source
+        shell: bash
+        run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
 
       - name: Install Linux bwrap build dependencies
         shell: bash
@@ -119,7 +132,7 @@ jobs:
             --remote-download-toplevel \
             -- \
             build \
-            --build_metadata=COMMIT_SHA=${GITHUB_SHA} \
+            --build_metadata=COMMIT_SHA=${SOURCE_SHA} \
             --build_metadata=TAG_job=sdk \
             -- \
             "${codex_target}" \

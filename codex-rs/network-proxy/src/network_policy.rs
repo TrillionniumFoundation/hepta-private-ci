@@ -4,8 +4,6 @@ use crate::runtime::HostBlockDecision;
 use crate::runtime::HostBlockReason;
 use crate::state::NetworkProxyState;
 use anyhow::Result;
-use chrono::SecondsFormat;
-use chrono::Utc;
 use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -306,7 +304,7 @@ fn emit_policy_audit_event(state: &NetworkProxyState, args: PolicyAuditEventArgs
 }
 
 fn audit_timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    format!("{:.3}", jiff::Timestamp::now())
 }
 
 /// Decide whether a network request should be allowed.

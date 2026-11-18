@@ -15,14 +15,42 @@ runs:
     - id: setup_ci
       uses: ./.github/actions/setup-ci
 
-    - name: Set up Bazel
+    # Isolated macOS x86_64 bootstrap: setup-bazel 0.19.0 could not resolve
+    # the existing v1.28.1 Bazelisk asset (run 39788351726, job 119938624103).
+    # Do not substitute an unpinned binary, lower the Bazel gate, or skip tests.
+    - name: Install SHA-pinned macOS Intel Bazelisk 1.28.1
+      if: runner.os == 'macOS' && runner.arch == 'X64'
+      shell: bash
+      env:
+        PINNED_SHA256: 023225736cea5dc88f2b0807d5b1af4eb0f69a4ed45e3994b2c18c263bc80e48
+      run: |
+        set -euo pipefail
+        pin_dir="${RUNNER_TEMP}/hepta-bazelisk-pinned"
+        mkdir -p "$pin_dir"
+        url="https://github.com/bazelbuild/bazelisk/releases/download/v1.28.1/bazelisk-darwin-amd64"
+        curl --fail --location --silent --show-error --retry 3 --retry-delay 2 --connect-timeout 20 --max-time 180 --proto "=https" --proto-redir "=https" "$url" --output "$pin_dir/bazel.tmp"
+        printf '%s  %s\n' "$PINNED_SHA256" "$pin_dir/bazel.tmp" | shasum -a 256 -c -
+        mv "$pin_dir/bazel.tmp" "$pin_dir/bazel"
+        chmod 755 "$pin_dir/bazel"
+        ln -s "$pin_dir/bazel" "$pin_dir/bazelisk"
+        printf '%s\n' "$pin_dir" >> "$GITHUB_PATH"
+
+    - name: Set up Bazel (macOS Intel verified pin)
+      if: runner.os == 'macOS' && runner.arch == 'X64'
       uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
-      # Without an explicit Bazelisk version, setup-bazel leaves PATH unchanged
-      # and Windows can use the runner's standalone Bazel, ignoring .bazelversion.
+      with:
+        # A verified pinned launcher is already first on PATH. Passing a
+        # version here would trigger the failing secondary resolution step.
+        output-base: ${{ steps.setup_ci.outputs.bazel-output-base }}
+
+    - name: Set up Bazel (other platforms)
+      if: runner.os != 'macOS' || runner.arch != 'X64'
+      uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86 # 0.19.0
+      # Preserve existing pinned download, especially on Windows where the
+      # standalone runner Bazel might ignore the repository .bazelversion.
       with:
         bazelisk-version: 1.28.1
-        # setup-bazel writes an explicit output_base, which otherwise overrides
-        # BAZEL_OUTPUT_USER_ROOT and leaves Bazel's I/O-heavy trees on C:.
+        # Preserve explicit output-base relocation for all other platforms.
         output-base: ${{ steps.setup_ci.outputs.bazel-output-base }}
 
     - name: Configure Bazel repository cache

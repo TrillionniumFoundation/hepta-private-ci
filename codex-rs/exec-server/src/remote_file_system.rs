@@ -25,6 +25,7 @@ use crate::RemoveOptions;
 use crate::WalkOptions;
 use crate::WalkOutcome;
 use crate::WriteFileOptions;
+use crate::authorized_read_error::AuthorizedReadRpcError;
 use crate::client::LazyRemoteExecServerClient;
 use crate::protocol::FsCanonicalizeParams;
 use crate::protocol::FsCopyParams;
@@ -128,13 +129,13 @@ impl RemoteFileSystem {
             return Err(unsupported_authorized_read());
         }
         let response = client
-            .fs_read_file_authorized(FsReadFileAuthorizedParams {
+            .fs_read_file_authorized_classified(FsReadFileAuthorizedParams {
                 path: path.clone(),
                 sandbox: sandbox.clone().drop_cwd_if_unused(),
                 max_bytes: max_bytes_u64,
             })
             .await
-            .map_err(map_authorized_read_remote_error)?;
+            .map_err(map_classified_authorized_read_remote_error)?;
         let max_encoded_len = max_bytes
             .checked_add(2)
             .and_then(|len| (len / 3).checked_mul(4))
@@ -507,6 +508,13 @@ fn unsupported_authorized_read() -> io::Error {
         io::ErrorKind::Unsupported,
         "remote exec-server does not support stable-handle authorized reads",
     )
+}
+
+fn map_classified_authorized_read_remote_error(error: AuthorizedReadRpcError) -> io::Error {
+    match error.failure {
+        Some(failure) => failure.into_io_error(),
+        None => map_authorized_read_remote_error(error.error),
+    }
 }
 
 fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {

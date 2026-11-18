@@ -1,0 +1,13 @@
+{
+  "schema": "windows-fixture-workflow-history-v1",
+  "source_head": "976cd244905fb4213cae5229ec369225f0752681",
+  "original_path": ".github/workflows/hepta-windows-regression-fixtures.yml",
+  "original_git_blob": "adb59ad463d111ce85e04fd5f013e9f9b98c789c",
+  "original_bytes": 3624,
+  "original_sha256": "176b07f71d6f623f3a2f8411a4f93a7d1113511258ffe18d0ffb25d8eab5b62d",
+  "retained_original_path": "qa/repository-consolidation/20261118/windows-fixture-workflow-history/original-hepta-windows-regression-fixtures.yml",
+  "resolution": "Keep all five original test groups in a workflow_call/workflow_dispatch qualification. The existing consolidated-source workflow calls it only when full_qualification is true. Automatic PR/main fan-out remains with the aggregates.",
+  "empty_filter": "just/nextest --no-tests fail",
+  "retries": 0,
+  "native_windows_run_performed": false
+}

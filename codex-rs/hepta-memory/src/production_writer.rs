@@ -57,6 +57,11 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_terminal_journal.rs"]
+mod terminal_journal;
+
+use terminal_journal::TerminalObservation;
+
 #[path = "production_episodic.rs"]
 mod episodic;
 
@@ -1150,8 +1155,11 @@ impl ProductionDurableWriter {
                         )
                         .await?;
                     } else {
-                        self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
-                            .await?;
+                        self.reconcile_terminal_observation(
+                            &request,
+                            TerminalObservation::Committed { receipt: &receipt },
+                        )
+                        .await?;
                     }
                     reconciled += 1;
                 }
@@ -1178,18 +1186,31 @@ impl ProductionDurableWriter {
                         )
                         .await?;
                     } else {
-                        self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
-                            .await?;
+                        self.reconcile_terminal_observation(
+                            &request,
+                            TerminalObservation::NotApplied { reason: &reason },
+                        )
+                        .await?;
                     }
                     reconciled += 1;
                 }
-                ProductionTerminalObservation::Quarantined { .. } => {
-                    let outcome = if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
-                        LocalReconcileOutcome::StillIndeterminate
+                ProductionTerminalObservation::Quarantined { reason } => {
+                    if request.topic == crate::HOS2_INSTALL_TOPIC_V1 {
+                        self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
+                            .await?;
+                    } else if matches!(
+                        request.topic.as_str(),
+                        crate::NOTES_REPLACE_TOPIC_V1 | crate::CALCULATOR_EVALUATE_TOPIC_V1
+                    ) {
+                        self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                            .await?;
                     } else {
-                        LocalReconcileOutcome::Rejected
-                    };
-                    self.reconcile(&operation_id, outcome).await?;
+                        self.reconcile_terminal_observation(
+                            &request,
+                            TerminalObservation::Quarantined { reason: &reason },
+                        )
+                        .await?;
+                    }
                     reconciled += 1;
                 }
                 ProductionTerminalObservation::Indeterminate { .. } => {
@@ -1907,8 +1928,11 @@ impl ProductionDurableWriter {
                     )
                     .await?
                 } else {
-                    self.reconcile(occurrence_key, LocalReconcileOutcome::Committed)
-                        .await?
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Committed { receipt: &receipt },
+                    )
+                    .await?
                 };
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1935,8 +1959,11 @@ impl ProductionDurableWriter {
                     )
                     .await?
                 } else {
-                    self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
-                        .await?
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::NotApplied { reason: &reason },
+                    )
+                    .await?
                 };
                 Ok(ProductionDispatchReceipt {
                     request,
@@ -1949,9 +1976,21 @@ impl ProductionDurableWriter {
                 })
             }
             ProductionTargetOutcome::Rejected { reason } => {
-                let local = self
-                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
-                    .await?;
+                let local = if matches!(
+                    request.topic.as_str(),
+                    crate::HOS2_INSTALL_TOPIC_V1
+                        | crate::NOTES_REPLACE_TOPIC_V1
+                        | crate::CALCULATOR_EVALUATE_TOPIC_V1
+                ) {
+                    self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                        .await?
+                } else {
+                    self.reconcile_terminal_observation(
+                        &request,
+                        TerminalObservation::Rejected { reason: &reason },
+                    )
+                    .await?
+                };
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -4400,7 +4439,8 @@ mod final_use_dispatch_tests {
     }
 
     #[tokio::test]
-    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use()
+    -> Result<(), Box<dyn std::error::Error>> {
         let temp = TempDir::new().expect("temp");
         let store = store(&temp).await.expect("fixture store");
         let owner = store.owner_agent_id().clone();
@@ -4528,5 +4568,34 @@ mod final_use_dispatch_tests {
             max_attempt, 2,
             "successor takeover must advance the durable dispatch attempt"
         );
+        let (generation, payload): (i64, String) = sqlx::query_as(
+            "SELECT generation, payload_json FROM cognitive_local_events
+             WHERE occurrence_key = 'occurrence:queued-handoff'
+               AND event_kind = 'reconcile_committed'",
+        )
+        .fetch_one(&successor.store.pool)
+        .await?;
+        let expected = serde_json::json!({
+            "schema_version": 1,
+            "namespace": "production_terminal_observation",
+            "lease_id": result.request.lease_id,
+            "operation_id": result.request.occurrence_key,
+            "destination_id": result.request.operation_destination_id,
+            "operation_semantic_sha256": result.request.operation_semantic_sha256,
+            "payload_sha256": result.request.payload_sha256,
+            "operation_digest": result.request.operation_digest,
+            "observation": {
+                "disposition": "committed",
+                "receipt": "target:committed",
+            },
+        });
+        pretty_assertions::assert_eq!(
+            (
+                generation,
+                serde_json::from_str::<serde_json::Value>(&payload)?
+            ),
+            (2, expected)
+        );
+        Ok(())
     }
 }
