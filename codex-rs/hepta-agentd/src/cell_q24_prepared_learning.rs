@@ -207,7 +207,18 @@ impl CellQ24PreparedLearningV1 {
         initial: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<(), Error> {
-        self.revalidate_source()?;
+        self.with_original_prepared_operation(|read| {
+            self.require_initial_in_operation(initial, scope, read)
+        })?
+    }
+
+    fn require_initial_in_operation(
+        &self,
+        initial: &LearningIterationSnapshotV1,
+        scope: &FrozenLearningScopeV2,
+        read: &OriginalPreparedReadV1<'_>,
+    ) -> Result<(), Error> {
+        OriginalPreparedReadV1::require_prepared(read, self)?;
         if initial != &self.initial || scope != &self.scope {
             return Err(Error::Binding(
                 "original empty initial and frozen row scope",
@@ -224,22 +235,31 @@ impl CellQ24PreparedLearningV1 {
         if now()? >= self.initial.request.envelope.expiry_unix_seconds {
             return Err(Error::Binding("new Root enrollment deadline"));
         }
-        self.revalidate_source()?;
-        let rule = cell_q24_single_head_update_rule_v1(
-            &self.config.request.selected_bundle,
-            self.config.head,
-            self.config.rule.digest(&self.batch)?,
-        )?;
-        let profile = HostAuthorityLearningProfileV1::new_scoped_v2(
-            identity,
-            original_writer_proof,
-            self.initial.request.clone(),
-            self.initial.owners.clone(),
-            LearningUpdateScopeV2::Cell,
-            rule,
-        )?;
-        self.require_profile(&profile, identity, original_writer_proof)?;
-        Ok(profile)
+        self.with_original_prepared_operation(|read| {
+            OriginalPreparedReadV1::require_prepared(read, self)?;
+            let rule = cell_q24_single_head_update_rule_v1(
+                &self.config.request.selected_bundle,
+                self.config.head,
+                self.config.rule.digest(&self.batch)?,
+            )?;
+            let profile = HostAuthorityLearningProfileV1::new_scoped_v2(
+                identity,
+                original_writer_proof,
+                self.initial.request.clone(),
+                self.initial.owners.clone(),
+                LearningUpdateScopeV2::Cell,
+                rule,
+            )?;
+            let initial = profile.require_binding(
+                identity,
+                &Digest32::from_array(original_writer_proof).to_string(),
+            )?;
+            let scope = profile
+                .frozen_scope(&initial)?
+                .ok_or(Error::Binding("scoped Root profile required"))?;
+            self.require_initial_in_operation(&initial, &scope, read)?;
+            Ok(profile)
+        })?
     }
 
     pub(crate) fn require_profile(

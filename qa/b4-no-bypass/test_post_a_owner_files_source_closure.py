@@ -49,13 +49,47 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
             "phase\n            .authorize_and_materialize(&mut owner)", "drop(owner)"))
 
     def test_all_new_stage_files_are_checked_before_witnesses_initialize(self):
-        for occurrence in (0, 1, 2):
-            self.reject_removal(FILES, "fn into_original_inputs(", "prepared.revalidate_source()", occurrence)
+        for occurrence in (0, 1):
+            self.reject_removal(FILES, "fn into_original_inputs(",
+                                "OriginalPreparedReadV1::require_prepared(read, &prepared)", occurrence)
         self.check_markers(FILES, "fn into_original_inputs(", (
-            "self.experience\n                .open_original(", "self.dataset\n                .open_original(",
-            "JournalData::open(&self.training, files, objective, self.mode)?", "self.training_receipt.open_original(",
-            "self.local\n                .open_original(", "experience.open_witness()?", "dataset.open_witness()?",
-            "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?"))
+            ".with_original_prepared_operation(", "self.experience.open_original(",
+            "self.dataset.open_original(",
+            "JournalData::open(&self.training, files, objective, self.mode)?",
+            "self.training_receipt.open_original(", "self.local",
+            ".map_err(refused)??;", "experience.open_witness()?", "dataset.open_witness()?",
+            "training.open_witness()?", "receipts.open_witness()?", "local.open_witness()?",
+            "prepared.revalidate_source()"))
+
+    def test_stage_operation_cannot_initialize_a_witness_before_physical_postread(self):
+        def check(source):
+            code = component.PROOF._strip_rust_non_code(source)
+            start = code.index("fn into_original_inputs(")
+            end = component.PROOF._rust_item_end(code, start)
+            self.assertIsNotNone(end)
+            body = code[start:end + 1]
+            self.assertEqual(body.count(".with_original_prepared_operation("), 1)
+            self.assertEqual(body.count(".map_err(refused)??;"), 1)
+            before, after = body.split(".map_err(refused)??;")
+            self.assertEqual(before.count(
+                "OriginalPreparedReadV1::require_prepared(read, &prepared)"), 2)
+            self.assertNotIn(".open_witness(", before)
+            self.assertEqual(after.count(".open_witness()?"), 5)
+            self.assertEqual(after.count("prepared.revalidate_source()"), 1)
+            self.assertLess(after.rindex(".open_witness()?"),
+                            after.index("prepared.revalidate_source()"))
+        source = (ROOT / FILES).read_text()
+        check(source)
+        marker = "                Ok(("
+        self.assertEqual(source.count(marker), 1)
+        for mutation in (
+            source.replace(marker, "                experience.open_witness()?;\n" + marker, 1),
+            source.replace(".map_err(refused)??;", ".map_err(refused)?;", 1),
+            source.replace("prepared.revalidate_source().map_err(refused)?;", "", 1),
+        ):
+            with self.subTest(mutation=mutation != source):
+                with self.assertRaises(AssertionError):
+                    check(mutation)
 
     def test_deployment_cannot_supply_current_request_or_model_bytes(self):
         path = AGENT + "production_post_a_q24_deployment.rs"
