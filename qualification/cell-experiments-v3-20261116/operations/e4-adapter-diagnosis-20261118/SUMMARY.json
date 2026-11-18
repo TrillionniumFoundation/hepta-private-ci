@@ -1,0 +1,158 @@
+{
+  "energy_joules": null,
+  "full_system_cost_known": false,
+  "monetary_cost": null,
+  "production_gate_changed": false,
+  "qualification": false,
+  "runs": [
+    {
+      "generation_calls": 0,
+      "intent_sha256": "85e8da3f48b25c111042db144c2f78e7867c99f65c58c9e39307e18951646a20",
+      "observations": [
+        {
+          "actual_normalized_hash": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "byte_identical_tensors": 112,
+          "expected_training_after": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "label": "cell_0",
+          "load_is_trainable": false,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "tensor_count": 112
+        },
+        {
+          "actual_normalized_hash": "a4cb6967e1e9bebb9b46e0f5ffb26080bb3371726565a9c087058dc0f5b39750",
+          "byte_identical_tensors": 0,
+          "expected_training_after": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "label": "default",
+          "load_is_trainable": false,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "tensor_count": 112
+        },
+        {
+          "actual_normalized_hash": "a4cb6967e1e9bebb9b46e0f5ffb26080bb3371726565a9c087058dc0f5b39750",
+          "byte_identical_tensors": 0,
+          "expected_training_after": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "label": "cell_1",
+          "load_is_trainable": true,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "tensor_count": 112
+        }
+      ],
+      "result_sha256": "c58cf724dce8b312ca8e002b620ed81741d70f50c0849beb64ff80d7104b0d57",
+      "roundtrip": {
+        "generation_calls": 0,
+        "rows": [
+          {
+            "label": "cell_0",
+            "loaded_bytes_equal_saved_F32_to_BF16_to_F32": 0,
+            "max_observed_absolute_difference": 0.0,
+            "tensor_count": 112
+          },
+          {
+            "label": "default",
+            "loaded_bytes_equal_saved_F32_to_BF16_to_F32": 112,
+            "max_observed_absolute_difference": 0.00012206286191940308,
+            "tensor_count": 112
+          },
+          {
+            "label": "cell_1",
+            "loaded_bytes_equal_saved_F32_to_BF16_to_F32": 112,
+            "max_observed_absolute_difference": 0.00012206286191940308,
+            "tensor_count": 112
+          }
+        ],
+        "scope": "CPU-only comparison of actual per-tensor byte hashes to serialized C weights after a BF16 roundtrip"
+      },
+      "roundtrip_check_sha256": "d22a61aa11b94441058ba4c677d2a9f9ad6ece80ef15841cbed566b2412a1300",
+      "run": "run-01",
+      "training_steps": 0,
+      "wall_seconds": 24.58157947100699
+    },
+    {
+      "generation_calls": 0,
+      "intent_sha256": "1347a78a96d86bc476a623ce29726a86fa6fdef0a1a49be341b3f2ef14eab4e5",
+      "observations": [
+        {
+          "actual_normalized_hash": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "byte_identical_tensors": 112,
+          "expected_training_after": "e268d2763aae2ecba6d145c1db16b1c7f817c4a9167e9baa945d09ffdc16eb53",
+          "label": "cell_0",
+          "load_is_trainable": false,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "mode": "controlled_correction",
+          "tensor_count": 112
+        },
+        {
+          "actual_normalized_hash": "dca57064e275a7be3e32f0cfa6084b283cab1ca07fd937f75b82d699fbd553fe",
+          "byte_identical_tensors": 0,
+          "expected_training_after": "e5d3d0a172a512fd1e8ed1c61326f5a38f1c8ca49c7b1b4052f6031ae8b84162",
+          "label": "cell_1",
+          "load_is_trainable": false,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "mode": "final_answer",
+          "tensor_count": 112
+        },
+        {
+          "actual_normalized_hash": "888850fcb79e386fc6b3e4cb13ac0e72fcb93e3b0912b4461f62e8eb37f84b44",
+          "byte_identical_tensors": 0,
+          "expected_training_after": "2da6848d90acb024a7ecac07e9ebedd67f66b5ff4b7d7ee11563ac2871227c59",
+          "label": "cell_2",
+          "load_is_trainable": false,
+          "loaded_dtypes": {
+            "torch.float32": 112
+          },
+          "mode": "trajectory",
+          "tensor_count": 112
+        }
+      ],
+      "result_sha256": "103d358d29171c328dbc2166ff4e2b72a3434b943cff07cdfddcc935c7447c0f",
+      "roundtrip": {
+        "generation_calls": 0,
+        "observations": [
+          {
+            "exact_bf16_roundtrip_tensors": 0,
+            "label": "cell_0",
+            "maximum_absolute_difference": 0.0,
+            "mode": "controlled_correction",
+            "tensor_count": 112,
+            "tensor_receipt_sha256": "f6dbeb97eaed401ddeae0292d3e8764b965dea37687db96af284cd7f3661df04"
+          },
+          {
+            "exact_bf16_roundtrip_tensors": 112,
+            "label": "cell_1",
+            "maximum_absolute_difference": 0.00012205541133880615,
+            "mode": "final_answer",
+            "tensor_count": 112,
+            "tensor_receipt_sha256": "4f07d6b739fddd4750a261cde822c407a91a3e628d90d1799df160aa73641228"
+          },
+          {
+            "exact_bf16_roundtrip_tensors": 112,
+            "label": "cell_2",
+            "maximum_absolute_difference": 0.00012206286191940308,
+            "mode": "trajectory",
+            "tensor_count": 112,
+            "tensor_receipt_sha256": "a9dd09bc6f3d7cb1207fc010eeaac0c5102ccb444f3fcb658b6537ac18cc11c2"
+          }
+        ],
+        "source_operation": "read-only CPU tensor roundtrip comparison",
+        "training_steps": 0,
+        "wall_seconds": 0.05078344896901399
+      },
+      "roundtrip_check_sha256": "5e4613e896046f43b81a523c3e77a2684a14ddee8da8936563745fc89128458e",
+      "run": "run-02",
+      "training_steps": 0,
+      "wall_seconds": 22.870047249947675
+    }
+  ],
+  "schema": "hepta.e4-adapter-precision-diagnostics.v1",
+  "wall_scopes": "each run includes its own admission and inspection; do not add nested scopes"
+}
