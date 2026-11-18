@@ -9,12 +9,12 @@ results stay pending and require explicit host readback; they are never rerun.
 from dataclasses import asdict
 import hashlib
 import json
-import sqlite3
 import time
 from typing import Callable
 
 from .population_owner import PopulationPolicy
 from .owner_control import OwnerControl
+from .owner_store import open_owner_store
 
 from .component_types import (
     Budget as Budget,
@@ -61,40 +61,8 @@ class CellOwner(OwnerControl):
     ):
         if limits is not None and not isinstance(limits, OwnerLimits):
             raise CellError("limits must be OwnerLimits")
-        self.db = sqlite3.connect(str(database), isolation_level=None)
-        self.db.row_factory = sqlite3.Row
+        self.db = open_owner_store(database, limits)
         self.qualify = qualify
-        self.db.executescript("""
-            PRAGMA journal_mode=WAL;
-            PRAGMA synchronous=FULL;
-            CREATE TABLE IF NOT EXISTS cells(
-                partition TEXT PRIMARY KEY, identity TEXT NOT NULL, generation INTEGER NOT NULL,
-                sequence INTEGER NOT NULL, state TEXT NOT NULL, view TEXT NOT NULL,
-                budget TEXT NOT NULL, remaining INTEGER NOT NULL);
-            CREATE TABLE IF NOT EXISTS intents(
-                partition TEXT NOT NULL, request TEXT NOT NULL, fingerprint TEXT NOT NULL,
-                payload TEXT NOT NULL, generation INTEGER NOT NULL, status TEXT NOT NULL,
-                reserved INTEGER NOT NULL, identity TEXT NOT NULL, view TEXT NOT NULL,
-                budget TEXT NOT NULL, receipt TEXT,
-                PRIMARY KEY(partition,request));
-            CREATE TABLE IF NOT EXISTS attempts(
-                partition TEXT NOT NULL, request TEXT NOT NULL, phase TEXT NOT NULL,
-                elapsed_ns INTEGER, work_units INTEGER, outcome TEXT NOT NULL, readback_elapsed_ns INTEGER);
-            CREATE TABLE IF NOT EXISTS history(
-                partition TEXT NOT NULL, generation INTEGER NOT NULL, identity TEXT NOT NULL,
-                PRIMARY KEY(partition,generation));
-            CREATE TABLE IF NOT EXISTS checkpoints(
-                digest TEXT PRIMARY KEY, partition TEXT NOT NULL, snapshot TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS owner_settings(
-                singleton INTEGER PRIMARY KEY CHECK(singleton=1), limits TEXT NOT NULL);
-            CREATE TABLE IF NOT EXISTS cancellations(
-                partition TEXT NOT NULL, request TEXT NOT NULL, identity TEXT NOT NULL,
-                PRIMARY KEY(partition,request));
-            CREATE TABLE IF NOT EXISTS migrations(
-                partition TEXT NOT NULL, operation TEXT NOT NULL, fingerprint TEXT NOT NULL,
-                receipt TEXT NOT NULL, PRIMARY KEY(partition,operation));
-        """)
-        self._begin()
         try:
             self._population = PopulationPolicy(self.db, population)
             saved = self.db.execute(
