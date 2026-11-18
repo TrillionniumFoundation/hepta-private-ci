@@ -22,6 +22,7 @@ from package_hia_cell_candidate import git, read_file, relative
 from hepta_cells.bundle import Bundle, REQUIRED, OPTIONAL
 from hepta_cells.component_types import Budget, Partition, PendingExecution, digest
 from hepta_cells.hia_component import HiaCellComponent
+from hepta_cells.joint_concurrency import run_joint_readbacks
 from hepta_cells.lifecycle import CellOwner
 from hepta_cells.owner_hia_controls import (
     run_native_binding_controls,
@@ -480,31 +481,46 @@ def run(hia_root, output, *, allow_dirty=False):
         output,
         "fault-cancel-before-result",
     )
-    from concurrent.futures import ThreadPoolExecutor
-
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        futures = [
-            pool.submit(
-                child,
-                candidate,
-                fault_db,
-                request,
-                output,
-                "fault-cold-original-result-" + str(i),
-            )
-            for i in range(2)
-        ]
-        concurrent = [future.result() for future in futures]
-    (recovered, cost), (also_recovered, other_cost) = concurrent
+    concurrency = run_joint_readbacks(candidate, fault_db, request, output)
+    admission = concurrency["admission"]
+    assert admission["error"] is None, concurrency
+    assert admission["start_released"] and admission["resume_released"], concurrency
+    assert (
+        admission["expected_workers"],
+        admission["launched_workers"],
+        len(admission["admitted"]),
+        len(admission["readback_ready"]),
+    ) == (2, 2, 2, 2), concurrency
+    assert len(concurrency["processes"]) == 2, concurrency
+    cost, other_cost = concurrency["processes"]
+    assert all(
+        item["exit_code"] == 0 and item["timed_out"] is False
+        for item in (cost, other_cost)
+    ), concurrency
+    recovered, also_recovered = (
+        json.loads(item["stdout"]) for item in (cost, other_cost)
+    )
     records.extend((cost, other_cost))
     assert recovered["result"] == also_recovered["result"]
     assert recovered["result"]["sequence"] == 1
     assert recovered["result"]["output"]["cell"]["cursor"] == 1
     assert recovered["continuation"]["phase"] == "completed"
+    owner = CellOwner(fault_db)
+    try:
+        attempts = owner.attempts(partition, request["request_id"])
+        assert sum(item["phase"] == "readback" for item in attempts) == 2
+        assert sum(item["phase"] == "settled" for item in attempts) == 1
+        status = owner.status(partition)
+        assert status["sequence"] == 1 and not status["pending"]
+        assert status["remaining_work_units"] == (
+            value["total_work_units"] - recovered["result"]["work_units"]
+        )
+    finally:
+        owner.close()
     checks += [
         "retained-result-before-caught-reply-error",
         "cold-hia-resume-original-result",
-        "concurrent-readback-one-terminal",
+        "two-admitted-pending-readbacks-one-terminal",
         "late-result-preserved-after-cancel-request",
     ]
     crash_program = r"""
@@ -646,6 +662,13 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
         "candidate_sha256": candidate_hash,
         "checks_passed": checks,
         "candidate_sources_unchanged": True,
+        "native_readback_concurrency": {
+            "protocol": "serial_admission_then_two_pending_readbacks.v1",
+            "result_sha256": sha(output / "joint-readback-admission/RESULT.json"),
+            "readback_attempts": 2,
+            "terminal_settlements": 1,
+            "cold_open_race_qualified": False,
+        },
         "native_retained_bytes_controls": {
             "result_sha256": sha(output / "native-retained-bytes-controls/RESULT.json"),
             "positive_controls": len(retained["positive_controls"]),
@@ -670,6 +693,8 @@ owner.step(p, c, "hard-death", {"operation":"observe", "cursor":0, "observation"
             "compile_wall_ns": build["compile_wall_ns"],
             "energy_joules": None,
             "max_inflight": 1,
+            "max_inflight_scope": "one original invocation; two admitted readbacks of its retained result",
+            "readback_barrier_wait_included": True,
         },
         "claims": {
             "native_hia_real_cell_local_bridge": True,
