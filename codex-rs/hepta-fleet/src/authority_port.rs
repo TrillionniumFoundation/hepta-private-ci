@@ -48,12 +48,15 @@ impl FleetAuthorityPort {
 
     /// Same concrete owner mutation as `issue`, but returns the canonical
     /// non-authorizing audit witness for durable evidence composition.
+    ///
+    /// The legacy caller clock is not authoritative. Allocation expiry and
+    /// capacity checks use the independently verified final dispatch time.
     pub fn issue_with_witness(
         &self,
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
+        _caller_now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
@@ -62,8 +65,8 @@ impl FleetAuthorityPort {
             .verify_use(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
         let (result, witness) =
-            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |_| {
-                ledger.issue(now_ms, grant)
+            dispatch_authority_lease_with_witness(&self.verifier, token, &binding, |witness| {
+                ledger.issue(witness.verified_at_unix_ms, grant)
             })
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
@@ -285,3 +288,7 @@ mod tests {
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_port_clock_tests.rs"]
+mod clock_tests;

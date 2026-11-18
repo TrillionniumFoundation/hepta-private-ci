@@ -188,3 +188,43 @@ fn new_metrics_wal_excludes_group_and_other_permissions() {
     drop(writer);
     std::fs::remove_file(p).expect("fixture cleanup");
 }
+
+#[cfg(unix)]
+#[test]
+fn metric_wal_rejects_symlinks_and_hardlink_aliases_before_writes() {
+    let target = path("alias-target");
+    let symlink = path("alias-symlink");
+    let hardlink = path("alias-hardlink");
+    let missing_target = path("missing-symlink-target");
+    let dangling = path("dangling-symlink");
+    let sentinel = b"external-file-must-not-be-rewritten";
+    std::fs::write(&target, sentinel).expect("write protected target");
+
+    std::os::unix::fs::symlink(&target, &symlink).expect("create symlink");
+    assert!(matches!(
+        NeuronMetricsGroupCommitWriterV1::open(&symlink, digest("scope"), generation(/*value*/ 1)),
+        Err(MetricsError::NotRegular)
+    ));
+    assert_eq!(std::fs::read(&target).expect("read target"), sentinel);
+
+    std::fs::hard_link(&target, &hardlink).expect("create hardlink");
+    assert!(matches!(
+        NeuronMetricsGroupCommitWriterV1::open(&hardlink, digest("scope"), generation(/*value*/ 1)),
+        Err(MetricsError::NotRegular)
+    ));
+    assert_eq!(std::fs::read(&target).expect("read target"), sentinel);
+
+    std::os::unix::fs::symlink(&missing_target, &dangling).expect("create dangling symlink");
+    assert!(matches!(
+        NeuronMetricsGroupCommitWriterV1::open(&dangling, digest("scope"), generation(/*value*/ 1)),
+        Err(MetricsError::NotRegular)
+    ));
+    assert!(
+        !missing_target.exists(),
+        "an alias must never create its target"
+    );
+
+    for file in [symlink, hardlink, dangling, target] {
+        std::fs::remove_file(file).expect("cleanup");
+    }
+}

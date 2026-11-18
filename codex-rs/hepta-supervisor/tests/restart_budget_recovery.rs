@@ -464,12 +464,36 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     );
     assert_eq!(control.spawn_count(&agent_id), 4);
 
-    // Recover once more after exhaustion: the durable terminal state must not
-    // reset the budget or resurrect the failed child in a new Supervisor.
+    // Inactivity alone cannot prove that recovery retained the spent budget:
+    // losing its journal would also leave no pending automatic spawn. Exercise
+    // the original public claim path and preserve the exact durable record.
+    let journal_path = run_root.join("supervisor-restart-budget.json");
+    let exhausted_bytes = std::fs::read(&journal_path)?;
+    let exhausted_record: serde_json::Value =
+        serde_json::from_slice(&exhausted_bytes).expect("canonical restart record");
+    assert_eq!(exhausted_record["schema_version"], 2);
+    let assert_spent_claim = |supervisor: &mut Supervisor<FakeDriver>, claim_at: Instant| {
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        assert!(matches!(
+            supervisor.restart(&agent_id, claim_at),
+            Err(SupervisorError::RestartBudgetExhausted(ref actual)) if actual == &agent_id
+        ));
+        assert_eq!(std::fs::read(&journal_path)?, exhausted_bytes);
+        Ok::<(), SupervisorError>(())
+    };
+    // Instant advances below schedule ticks only. The journal uses SystemTime;
+    // this is not a test of wall-clock expiry or rollback of the 300s window.
+
+    // Reconstruct Supervisor in the same OS process with the shared FakeDriver.
+    // The durable terminal state must not reset the budget or resurrect the child.
     drop(supervisor);
     let after_exhaustion = now + Duration::from_secs(10);
-    let (mut supervisor, recovered) =
-        Supervisor::recover(registry, control.driver(), config(), after_exhaustion)?;
+    let (mut supervisor, recovered) = Supervisor::recover(
+        registry.clone(),
+        control.driver(),
+        config(),
+        after_exhaustion,
+    )?;
     assert_eq!(recovered, TickReport::default());
     assert!(!supervisor.snapshot(&agent_id).expect("snapshot").active);
     assert_eq!(
@@ -479,8 +503,39 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             pending: false,
         }
     );
+    assert_spent_claim(&mut supervisor, after_exhaustion + Duration::from_secs(1))?;
     assert_eq!(
         supervisor.tick(after_exhaustion + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 4);
+
+    // A second same-process recovery, still inside the restart window, must not
+    // re-arm the exhausted child or create a fifth process.
+    drop(supervisor);
+    let (mut supervisor, recovered) = Supervisor::recover(
+        registry,
+        control.driver(),
+        config(),
+        after_exhaustion + Duration::from_secs(2),
+    )?;
+    assert_eq!(recovered, TickReport::default());
+    assert!(
+        !supervisor
+            .snapshot(&agent_id)
+            .expect("snapshot after repeated post-exhaustion recovery")
+            .active
+    );
+    assert_eq!(
+        persisted_restart_budget(&run_root)?,
+        RestartBudgetProjection {
+            attempts: 3,
+            pending: false,
+        }
+    );
+    assert_spent_claim(&mut supervisor, after_exhaustion + Duration::from_secs(3))?;
+    assert_eq!(
+        supervisor.tick(after_exhaustion + Duration::from_secs(3)),
         TickReport::default()
     );
     assert_eq!(control.spawn_count(&agent_id), 4);

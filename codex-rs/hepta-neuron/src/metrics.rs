@@ -120,6 +120,80 @@ impl Drop for LockedMetricFile {
     }
 }
 
+fn open_host_owned_metrics_file(path: &Path) -> Result<File, MetricsError> {
+    // File enrollment is still the host's responsibility. A metrics writer
+    // must nevertheless never follow an untrusted final-component symlink
+    // or append to an aliased inode.
+    let previous = match path.symlink_metadata() {
+        Ok(metadata) => {
+            if !metadata.file_type().is_file() {
+                return Err(MetricsError::NotRegular);
+            }
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::MetadataExt;
+                if metadata.nlink() != 1 {
+                    return Err(MetricsError::NotRegular);
+                }
+            }
+            Some(metadata)
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        Err(error) => return Err(error.into()),
+    };
+
+    // Exclusive create never follows a pre-existing symlink, even when its
+    // destination does not exist. Existing files are only opened without
+    // O_CREAT, and nothing is written before identity checks complete.
+    // Retain the consolidated Unix O_NOFOLLOW fence on both open paths.
+    let mut create = OpenOptions::new();
+    create.read(true).write(true).create_new(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        create.mode(0o600).custom_flags(libc::O_NOFOLLOW);
+    }
+    let file = match create.open(path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            let mut existing = OpenOptions::new();
+            existing.read(true).write(true).truncate(false);
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::OpenOptionsExt;
+                existing.custom_flags(libc::O_NOFOLLOW);
+            }
+            existing.open(path)?
+        }
+        Err(error) => return Err(error.into()),
+    };
+    let opened = file.metadata()?;
+    let current = path.symlink_metadata()?;
+    if !opened.is_file() || !current.file_type().is_file() {
+        return Err(MetricsError::NotRegular);
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        // Before/after inode binding fences path replacement between the
+        // enrollment check and open. The owner must still trust its parent
+        // directory and prevent hostile mutation after enrollment.
+        if opened.nlink() != 1
+            || current.nlink() != 1
+            || opened.dev() != current.dev()
+            || opened.ino() != current.ino()
+            || previous
+                .as_ref()
+                .is_some_and(|before| before.dev() != opened.dev() || before.ino() != opened.ino())
+        {
+            return Err(MetricsError::NotRegular);
+        }
+    }
+    #[cfg(not(unix))]
+    let _ = previous;
+    Ok(file)
+}
+
 /// A single scope/generation owner. Each append_group call performs at most
 /// one sync for its new records and returns non-authorizing receipts.
 pub struct NeuronMetricsGroupCommitWriterV1 {
@@ -140,16 +214,7 @@ impl NeuronMetricsGroupCommitWriterV1 {
             return Err(MetricsError::InvalidScope);
         }
         let path = path.as_ref();
-        let mut options = OpenOptions::new();
-        options.read(true).write(true).create(true).truncate(false);
-        // The caller owns a trusted parent. Protect the final component and
-        // reject aliased inodes before writing a header or repairing a tail.
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::OpenOptionsExt;
-            options.custom_flags(libc::O_NOFOLLOW).mode(0o600);
-        }
-        let file = options.open(path)?;
+        let file = open_host_owned_metrics_file(path)?;
         let mut locked = LockedMetricFile::acquire(file)?;
         #[cfg(unix)]
         {

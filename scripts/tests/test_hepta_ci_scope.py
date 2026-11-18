@@ -1,6 +1,7 @@
 import os
 import subprocess
 import tempfile
+import tomllib
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -78,6 +79,29 @@ class ScopeTests(unittest.TestCase):
         self.assertFalse(scope["learning"])
         self.assertFalse(scope["objective"])
         self.assertFalse(scope["full_repo"])
+
+    def test_locked_rustix_v1_resolution_is_unified(self):
+        # Keep compatible rustix 1.x dependency edges on the repository's
+        # unified locked resolution as direct and transitive consumers evolve.
+        lock = tomllib.loads(
+            (Path(__file__).resolve().parents[2] / "codex-rs/Cargo.lock").read_text()
+        )
+        packages = lock["package"]
+        versions = {
+            package["version"]
+            for package in packages
+            if package["name"] == "rustix" and package["version"].startswith("1.")
+        }
+        self.assertEqual(len(versions), 1, f"split rustix v1 lock entries: {versions}")
+        (resolved_version,) = versions
+        for package in packages:
+            for dependency in package.get("dependencies", []):
+                if dependency.startswith("rustix 1."):
+                    self.assertEqual(
+                        dependency,
+                        f"rustix {resolved_version}",
+                        f"{package['name']} carries a stale rustix v1 edge",
+                    )
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in [

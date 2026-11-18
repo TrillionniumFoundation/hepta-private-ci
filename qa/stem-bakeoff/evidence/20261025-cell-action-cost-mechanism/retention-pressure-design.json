@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.cell-parameter-field.retention-pressure-design.v1",
+  "status": "proposed_not_executed",
+  "purpose": "Identify active retention constraints and bounded feasibility under actual training pressure; this document does not report a new experiment.",
+  "source_evidence_commit": "a062749d768ea09838921c7f3bfd8b644541b873",
+  "source_execution_commit": "c69e4e7ab55456e75476be4ca9a3bcaeaea1934c",
+  "scope": {
+    "encoder": "Keep the existing frozen Encoder and feature projection.",
+    "heads": "Keep Linear and Gated Heads and their parameter counts.",
+    "observations": "Keep existing myopic, Loss2 and Full definitions; add no observation or memory feature.",
+    "topology": "Keep one Cell.",
+    "optimizer": "Keep the existing Adam protocol and full-batch data semantics.",
+    "authority": "DENY_ALL",
+    "production_authority": false
+  },
+  "development_inputs": {
+    "permitted": "Previously exposed V3 train/probe sources may be used for development-only mechanisms.",
+    "selection_data": "Only control old_probe on the ordinary current_train path determines event anchors.",
+    "forbidden_for_selection": "Do not use V1/V2/V3 validation or final outcomes to choose pressure states, budgets or methods.",
+    "scientific_retention_anchor": "Keep the original old-probe loss at the end of old-task warmup.",
+    "scientific_retention_margin": 0.0,
+    "numerical_feasibility_tolerance": 1e-9
+  },
+  "natural_pressure": {
+    "path": "Ordinary current-task Adam with zero extra intervention, starting from each complete old-warmup state.",
+    "crossing_search_max_steps": 256,
+    "tau": "First t in 1..256 with L_old_probe(zero_state_t) > L_old_probe(warmup) + 1e-9.",
+    "prevention_anchor": "t_before = max(0, tau - 8); initial state has not crossed, but the ordinary H8 path crosses.",
+    "recovery_anchor": "t_after = tau; inherited initial violation is explicitly recorded and this stratum tests recovery.",
+    "common_checkpoint_rule": "Every method and budget comparison starts from the identical saved complete state for its anchor.",
+    "no_crossing": "Record no_pressure_crossing and unavailable event anchors if tau does not exist; retain the condition and do not alter the threshold or extend the search after seeing results.",
+    "dependent_state_scope": "Event-selected anchors are development stress states, not independent randomly sampled tasks."
+  },
+  "action_and_candidates": {
+    "actual_horizon": 8,
+    "h": 0.02,
+    "action": "One post-Adam parameter intervention h*u followed by seven zero-extra-intervention updates; no direct moment intervention and no execution clipping.",
+    "positive_budget_multipliers": [0.25, 1.0, 4.0],
+    "coordinate_bound": "abs(u_j) <= B/sqrt(p)",
+    "physical_norm_upper_bounds": [0.005, 0.02, 0.08],
+    "zero_budget_diagnostic": "B=0 has the single zero action; use the actual ordinary trajectory, without redundant optimizer claims.",
+    "candidate_methods": ["zero", "myopic_h1_direct_soft", "loss2_h8_direct_soft", "loss2_h8_direct_hard", "full_h8_direct_soft", "full_h8_direct_hard"],
+    "objective": "Keep the direct current-risk coefficient, old-loss penalty and effort price fixed; only the explicit hard constraint differs within each soft/hard pair.",
+    "constraint_horizon": "Old-probe constraints apply at future steps 1..8; initial excess is reported separately.",
+    "large_budget_limit": "B=4 is a capacity diagnostic. V3 small-perturbation tangent accuracy cannot be assumed at this budget; measure real same-action error."
+  },
+  "necessary_design_checks": {
+    "zero_feasible_budget_fact": "If u=0 is feasible, every nested action box that contains zero remains feasible. Shrinking the budget cannot create hard infeasibility in that condition, though it may change the soft optimum.",
+    "threshold_fact": "Replacing the warmup threshold by warmup-minus-delta changes zero-forgetting into a required-improvement task; do not use this to manufacture apparent retention pressure.",
+    "pressure_rule": "Generate pressure through the actual training path. No synthetic label remapping or new task is included in this proposal.",
+    "prevention_vs_recovery": "Failure to restore an already violated warmup threshold in one bounded step is not evidence of inability to prevent forgetting."
+  },
+  "required_reporting": {
+    "retain_every_registered_condition": true,
+    "retain_missing_anchors_and_failures": true,
+    "categories": ["inactive_constraint", "soft_violation_hard_actual_retention", "predicted_feasible_actual_violation", "certified_tangent_infeasible", "real_feasible_candidate_found", "no_feasible_registered_candidate_found", "numerically_unresolved", "no_pressure_crossing"],
+    "metrics": ["initial_old_excess", "maximum_future_mean_old_excess", "constraint_activity_and_slack", "same_action_prediction_error", "current_risk_component", "old_penalty_component", "effort_component", "action_budget_use", "complete_state_replay"],
+    "infeasibility_boundary": "A tangent Farkas witness concerns the declared tangent problem. Failure of all registered real candidates does not prove infeasibility over the continuous nonlinear action space."
+  },
+  "optional_future_diagnostic": {
+    "implemented": false,
+    "executed": false,
+    "idea": "A whole-action-box lower bound on actual first-step old loss could certify a necessary obstruction to satisfying all eight retention constraints.",
+    "qualification": "Rigorous numerical certification needs outward rounding or a validated error bound; ordinary floating bounds must be labeled as floating evidence. The existing probability clipping must be accounted for."
+  },
+  "fresh_confirmation_requirements": [
+    "Freeze methods, event-anchor rules, budgets, objectives, contrasts and failure handling before independent confirmation.",
+    "Use new independent old-validation, old-test, current-validation and future source components excluding all previously exposed V1/V2/V3 components.",
+    "For task-level generalization, include new old/current training task instances rather than only new rows around the old fitted tasks.",
+    "If new validation results select a method, freeze that selection before opening final sources.",
+    "Previously opened final labels remain descriptive/mechanism evidence and cannot provide independent confirmation of a newly selected method."
+  ]
+}
