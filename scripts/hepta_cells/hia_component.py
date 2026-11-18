@@ -7,6 +7,7 @@ never repeats inference. This is not the Rust daemon's adoption authority.
 from dataclasses import asdict, replace
 import hashlib
 import json
+from .owner_hia_store import enable_hia_profile
 from .component_types import (
     CellError,
     ComponentIdentity,
@@ -27,12 +28,7 @@ class HiaCellComponent:
         _hex(image_sha256)
         self.owner, self.inner, self.native = owner, inner, native
         self.candidate_sha256, self.image_sha256 = candidate_sha256, image_sha256
-        owner.db.execute("""CREATE TABLE IF NOT EXISTS hia_cell_calls(
-            partition TEXT NOT NULL, request TEXT NOT NULL,
-            identity TEXT NOT NULL, fingerprint TEXT NOT NULL,
-            binding TEXT NOT NULL, state BLOB NOT NULL, phase TEXT NOT NULL,
-            inner_result TEXT, result TEXT, native_ns INTEGER NOT NULL,
-            error TEXT, PRIMARY KEY(partition, request))""")
+        enable_hia_profile(owner.db)
 
     @property
     def identity(self):
@@ -97,6 +93,15 @@ class HiaCellComponent:
             (partition.digest, request),
         ).fetchone()
         return dict(row) if row else None
+
+    def _binding(self, row):
+        binding = self.native.binding_from_dict(json.loads(row["binding"]))
+        if (
+            binding.candidate_sha256 != self.candidate_sha256
+            or binding.cell_sha256 != self.inner.identity.digest
+        ):
+            raise CellError("native continuation differs from the frozen wrapper")
+        return binding
 
     def step(self, payload, state, context):
         if context.identity != self.identity:
@@ -181,6 +186,10 @@ class HiaCellComponent:
         row = self._row(partition, request)
         if row["identity"] != self.identity.digest or row["inner_result"] is None:
             raise PendingExecution("no exact retained Cell result")
+        if _bounded_json(self._binding(row).to_dict()) != _bounded_json(
+            binding.to_dict()
+        ):
+            raise CellError("native continuation binding changed before completion")
         if row["result"] is not None:
             return StepResult(**json.loads(row["result"]))
         raw = row["inner_result"].encode()
@@ -230,7 +239,7 @@ class HiaCellComponent:
             or row["fingerprint"] != pending.request_digest
         ):
             raise CellError("readback differs from durable Cell intent")
-        binding = self.native.binding_from_dict(json.loads(row["binding"]))
+        binding = self._binding(row)
         if row["inner_result"] is None:
             self.owner._begin()
             try:
@@ -286,7 +295,7 @@ class HiaCellComponent:
             return
         if row["identity"] != self.identity.digest:
             raise CellError("cancellation candidate differs from original invocation")
-        binding = self.native.binding_from_dict(json.loads(row["binding"]))
+        binding = self._binding(row)
         step = self.native.cancel(bytes(row["state"]), binding=binding)
         self.owner.db.execute(
             "UPDATE hia_cell_calls SET state=?,phase='cancel_requested',native_ns=native_ns+? "

@@ -19,6 +19,7 @@ import tempfile
 
 from .component_types import CellError, OwnerLimits
 from .owner_history import validate_owner_history
+from .owner_hia_store import HIA_SCHEMA, validate_hia_profile
 
 
 _SCHEMA = """
@@ -64,11 +65,13 @@ def _schema(db):
     )
 
 
-@lru_cache(maxsize=1)
-def _expected_schema():
+@lru_cache(maxsize=2)
+def _expected_schema(profile="base"):
     db = sqlite3.connect(":memory:")
     try:
         db.executescript(_SCHEMA)
+        if profile == "hia":
+            db.execute(HIA_SCHEMA)
         return _schema(db)
     finally:
         db.close()
@@ -76,7 +79,8 @@ def _expected_schema():
 
 def _validate(db, limits):
     schema = _schema(db)
-    if schema != _expected_schema():
+    hia = schema == _expected_schema("hia")
+    if not hia and schema != _expected_schema():
         if not {row[1] for row in _expected_schema()} <= {row[1] for row in schema}:
             raise CellError(
                 "owner schema is incomplete; retained tables lost their original policy"
@@ -97,6 +101,7 @@ def _validate(db, limits):
     if [tuple(row) for row in db.execute("PRAGMA integrity_check")] != [("ok",)]:
         raise CellError("owner integrity check failed")
     validate_owner_history(db)
+    validate_hia_profile(db, enabled=hia)
 
 
 def _files(path):
