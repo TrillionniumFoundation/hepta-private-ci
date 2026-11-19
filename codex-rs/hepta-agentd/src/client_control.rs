@@ -114,9 +114,9 @@ impl AgentdClient {
             let connection = UnixStream::connect(&self.socket_path);
             connection
         })
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
-            .map_err(AgentdError::from)?;
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
+        .map_err(AgentdError::from)?;
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request).map_err(AgentdError::from)?;
         bytes.push(b'\n');
