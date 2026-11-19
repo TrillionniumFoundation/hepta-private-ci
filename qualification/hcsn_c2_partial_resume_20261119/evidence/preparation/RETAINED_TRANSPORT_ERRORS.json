@@ -1,0 +1,16 @@
+{
+  "model_calls": 0,
+  "optimizer_calls": 0,
+  "errors": [
+    {
+      "operation": "bounded h_read_multiple_files on original train/development manifest",
+      "outcome": "INVALID_ARGUMENT: complete-file read could not complete",
+      "followup": "A distinct zero-model stdlib roster reader verified the exact complete manifest SHA256 and returned train episode id/event counts; no source or data was changed."
+    },
+    {
+      "operation": "base64 encode native launch receipt for an immutable remote copy",
+      "outcome": "ReferenceError: btoa is not defined after the already successful native process_start",
+      "followup": "Python base64 encoded the already saved exact RUN_LAUNCH.json. h_binary_write created the remote receipt once. Training was not restarted, rekeyed or modified."
+    }
+  ]
+}
