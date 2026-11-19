@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.supervisor-authority-helper-review.v1",
+  "baseline_commit": "f8c5a4dd99564525a6ce139560f82139501508aa",
+  "path": "codex-rs/hepta-supervisor/tests/authority_distribution.rs",
+  "original_test_names": [
+    "signer_rotation_rejects_previous_epoch_and_accepts_current_epoch",
+    "wrong_signer_and_expired_grant_fail_closed",
+    "authority_epoch_rollover_requires_a_fresh_grant"
+  ],
+  "change": "Four private fixture helpers return anyhow::Result with original diagnostic text retained as Context; their original three tests propagate setup errors with ? and end with Ok(()).",
+  "preserved_original_assertions": {
+    "negative_assert_blocks_byte_identical": 4,
+    "positive_verification_expect_lines_byte_identical": 2
+  },
+  "forbidden_shortcuts_added": [],
+  "dependency_changes": false,
+  "helper_expect_sites_removed": 9,
+  "ci_reported_diagnostic_locations": 8,
+  "note": "The chained H7 signer/envelope helper contained two expect calls at one reported starting span. Existing positive assertions inside #[test] functions remain unchanged. Source review is not a test pass; native qualification is still running."
+}

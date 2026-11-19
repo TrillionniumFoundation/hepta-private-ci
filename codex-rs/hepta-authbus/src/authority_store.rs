@@ -78,6 +78,7 @@ impl AuthBusAuthorityStore {
         crate::authority_store::commit_with_time(tx, &time).await
     }
 
+    #[cfg(test)]
     pub async fn last_trusted_time(
         &self,
     ) -> Result<Option<TrustedTimeSample>, AuthBusAuthorityError> {

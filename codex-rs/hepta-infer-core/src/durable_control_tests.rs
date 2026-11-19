@@ -215,8 +215,10 @@ fn qualification_observes_physical_same_length_changes_and_retains_the_lock_and_
         options.mode(0o600);
     }
     let file = options.open(&path).expect("read/write fixture");
-    let mut control =
-        DurableInferenceControl::replay_file(file, &path, /*capacity*/ 32).expect("owner");
+    let mut control = DurableInferenceControl::replay_file(
+        file, &path, /*capacity*/ 32, /*writer_lock*/ None,
+    )
+    .expect("owner");
     control.submit(/*now_ms*/ 100, request()).expect("submit");
     let cached = control.get("request.1").cloned();
     let original = control
