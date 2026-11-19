@@ -14,6 +14,7 @@ from torch import nn
 from torch.nn import functional as F
 
 from .tensor import HXParams, hx_boundary, hx_equity, first_passage_cdf, simple_equity_ratio
+from .tensor import prepare_hx_equity, prepared_hx_equity
 
 
 class ValueKernelCell(nn.Module):
@@ -25,7 +26,7 @@ class ValueKernelCell(nn.Module):
     """
 
     def __init__(self, input_size, hidden_size, *, channel="dual", boundary="conditional",
-                 kernel="hx", recovery=True):
+                 kernel="hx", recovery=True, equity_evaluation="direct"):
         super().__init__()
         if channel not in {"call", "risk", "dual"}:
             raise ValueError("channel must be call, risk, or dual")
@@ -33,10 +34,13 @@ class ValueKernelCell(nn.Module):
             raise ValueError("boundary must be fixed or conditional")
         if kernel not in {"hx", "no_rollover", "softplus"}:
             raise ValueError("kernel must be hx, no_rollover, or softplus")
+        if equity_evaluation not in {"direct", "prepared"}:
+            raise ValueError("equity_evaluation must be direct or prepared")
         if min(input_size, hidden_size) <= 0:
             raise ValueError("input_size and hidden_size must be positive")
         self.hidden_size, self.channel = hidden_size, channel
         self.boundary_mode, self.kernel, self.use_recovery = boundary, kernel, recovery
+        self.equity_evaluation = equity_evaluation
         # The conservative coefficient box is checked at its 64 corners;
         # wider liquidity ranges can give inadmissible negative equity near b.
         self.raw_financial = nn.Parameter(torch.zeros(6, hidden_size))
@@ -78,7 +82,7 @@ class ValueKernelCell(nn.Module):
         carry = (1-params.tax)*params.coupon
         return carry/params.r * gamma/(1+gamma)
 
-    def _features(self, inputs, memory, params, base_boundary):
+    def _features(self, inputs, memory, params, base_boundary, *, equity_context=None):
         # V is anchored to face value, independently of the learned boundary.
         # Anchoring V to base_boundary would cancel all boundary sensitivity
         # from log(V/b), including the risk channel's liquidity gradient.
@@ -101,7 +105,11 @@ class ValueKernelCell(nn.Module):
                 local = replace(params, coupon=params.coupon*scale, principal=params.principal*scale)
                 bound = base_boundary*scale
                 if self.kernel == "hx":
-                    call = hx_equity(x, local, boundary=bound, validate=False)/value
+                    # Joint scaling of coupon, principal and boundary is
+                    # degree-one homogeneous in full HX equity, including
+                    # its boundary expansion and all parameter derivatives.
+                    call = (hx_equity(x, local, boundary=bound, validate=False) if equity_context is None
+                            else scale*prepared_hx_equity(x, equity_context, validate=False))/value
                 else:
                     mu = params.r - params.delta - params.sigma.square()/2
                     gamma = (mu + torch.sqrt(mu.square()+2*params.r*params.sigma.square()))/params.sigma.square()
@@ -111,14 +119,15 @@ class ValueKernelCell(nn.Module):
                 risk = first_passage_cdf(x, params.maturity, mu, params.sigma, validate=False)
         return torch.stack((call, risk), dim=0)
 
-    def step(self, inputs, state, dt=0.1, *, params=None, base_boundary=None):
+    def step(self, inputs, state, dt=0.1, *, params=None, base_boundary=None, equity_context=None):
         """Advance one frozen-input interval, preserving bounded state at any dt."""
         if not isinstance(dt, (int, float)) or not math.isfinite(dt) or dt < 0:
             raise ValueError("dt must be a finite nonnegative scalar")
         memory, recovery = state
         params = self.financial_parameters() if params is None else params
         base_boundary = self._base_boundary(params) if base_boundary is None else base_boundary
-        features = self._features(inputs, memory, params, base_boundary)
+        features = (self._features(inputs, memory, params, base_boundary) if equity_context is None else
+                    self._features(inputs, memory, params, base_boundary, equity_context=equity_context))
         rate = 0.1 + 4.9*torch.sigmoid(self.rate_input(inputs) +
                                       (features*self.rate_features[:, None, :]).sum(0))
         inhibition = (torch.sigmoid(self.recovery_strength)*recovery
@@ -140,9 +149,15 @@ class ValueKernelCell(nn.Module):
         # Validate the learned financial domain once per sequence; subsequent
         # kernel features reuse this boundary without per-step validation.
         base_boundary = self._base_boundary(params)
+        # Preserve subclass feature hooks (e.g. MatchedGateCell). Context is
+        # local to this forward graph and rebuilt after every weight update.
+        equity_context = (prepare_hx_equity(params, base_boundary, validate=False)
+                          if self.equity_evaluation == "prepared" and self.kernel == "hx" and self.channel != "risk"
+                          and type(self)._features is ValueKernelCell._features else None)
         state = self.initial_state(sequence.shape[0], like=sequence)
         outputs = []
         for inputs in sequence.unbind(dim=1):
-            state = self.step(inputs, state, dt, params=params, base_boundary=base_boundary)
+            state = self.step(inputs, state, dt, params=params, base_boundary=base_boundary,
+                              equity_context=equity_context)
             outputs.append(state[0])
         return torch.stack(outputs, dim=1)
