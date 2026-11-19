@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "qualification/hcsn_currentstate_n256_corrected_t0_contract/**"
+      - "qualification/hcsn_consolidated_readback/**"
+      - "qualification/hcsn_currentstate_n256_terminal_publication_intent/REQUEST.json"
       - ".github/workflows/hcsn-currentstate-n256-corrected-t0-contract.yml"
   workflow_dispatch:
 
@@ -36,7 +38,7 @@ jobs:
             --source "$package/contract.py" \
             --request "$package/REQUEST.json" \
             > "$package/ci-artifact/REPORT.json"
-          python "$package/verify_source.py" > "$package/ci-artifact/VERIFY.txt"
+          python -m qualification.hcsn_consolidated_readback.readback --case corrected-contract > "$package/ci-artifact/VERIFY.txt"
           python -m compileall -q "$package"
           python - <<'PY'
           import json
