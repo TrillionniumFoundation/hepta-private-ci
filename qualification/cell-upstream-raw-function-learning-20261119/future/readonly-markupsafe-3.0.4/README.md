@@ -1,0 +1,5 @@
+# Existing readonly Jinja dependency
+
+The first real Jinja reference children failed before pytest because the original project declares MarkupSafe>=2.0 and the native test venv lacks it. This retained bundle copies the already configured model-runtime MarkupSafe 3.0.4 package plus required distribution metadata and BSD-3-Clause license, with per-file installed RECORD hashes verified. It is not represented as a newly downloaded or fully authenticated original PyPI wheel. Installation-specific direct_url.json, INSTALLER and REQUESTED contents were not read or copied.
+
+Both existing venvs remain unchanged. The 13-member complete retained bundle was checked by whole-archive and every-member SHA and is mounted read-only through the existing frozen native-source-v4 dependency interface. No installation hooks, package imports, network calls, model loads or generation occurred in acquisition. Dependency exposure is recorded for the original Jinja environment; these files are not a new maintenance task, user trajectory or training source. All original failed child receipts remain valid. New native before/after qualification follows this publication.
