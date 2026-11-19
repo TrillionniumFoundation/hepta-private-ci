@@ -71,3 +71,9 @@ the original 82-test result is never reused as proof for these sources.
 The current JSON report has schema `hcsn-hpca-joint-check-result-v2` and records
 both manifest identities. This update does not change the historical model
 outputs, their original source pins, or any qualification and authority fields.
+
+## Current source revision, 2026-11-19
+
+The reviewed ordinary Windows merge expands the terminal suite to 51 cases. The current manifest binds the actual source commit `1bba6e39258a86945c83109e869152b23007d3b7` and all current C2 Python files, including the added stopping arithmetic and its tests. Previous current-source metadata is retained as `CURRENT.pre-windows-20261119.json`.
+
+The incoming stopping revision already has a different historical `MANIFEST.json`; its exact bytes remain at that path. The original assembly manifest (Git blob `f963f53492fbbfbdc6e24d6305a85e753c77b5ea`) is separately retained as `MANIFEST.original-20261112.json`. The runner reads the explicit historical filename in the current manifest and verifies its original hash. Neither historical manifest is rewritten or treated as a receipt for the current assembly. New executions are stored separately.
