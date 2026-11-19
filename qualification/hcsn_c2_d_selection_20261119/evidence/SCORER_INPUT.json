@@ -1,0 +1,123 @@
+{
+  "D_temperature_receipts": null,
+  "E_data_opened": false,
+  "automatic_trigger": false,
+  "execution_authorized": false,
+  "feature_manifest": null,
+  "feature_role_allowlist": [
+    "features",
+    "delta_ticks",
+    "lengths",
+    "valid_mask",
+    "episode_order",
+    "row_order"
+  ],
+  "isolated_labels_artifact": null,
+  "label_access_requires_all_21_frozen_predictions": true,
+  "metadata_validator": {
+    "bytes": 3700,
+    "path": "scorer_contract.py",
+    "sha256": "01cb7debab530a2a08268b956cca1ad663e57bd85c1d512de13c4d59e19b03f4"
+  },
+  "model_bindings": [
+    {
+      "model_binding_sha256": "7b937611b93696a4790130199ef96b72403f611e63a326cd1038c59e586b7027",
+      "name": "gru-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "c3726a228c60de9c14d32e3af6de6600c36dab934a7d2bb2c689a658cf7a24e7",
+      "name": "gru-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "234edb457c46ab44b4ff1611956edbf83fd1b5d0b44d9ca8b357aaae357290da",
+      "name": "gru-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "3842d7cf68444051e6473f89cff769b702c941bc9383dd2c6e857365fc229cf9",
+      "name": "cfc-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "d6acc5f597ab1c5007e274e85375b0d7c40eb5710e86052a677140f998ba9f41",
+      "name": "cfc-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "800f02ef7bfa5a3796279238626c5d5a45b3da79d2ca93b2d3a66d566fc71d60",
+      "name": "cfc-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "3da9af8aedefdaa369239f294a136814f7f9fea0d5dc56bb95461774cbcbcdf0",
+      "name": "snn_plif-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "b0bbbf66f7a3a51f1197c91f792c33dd461d05a3587ee31bfb40cc91df98cc3c",
+      "name": "snn_plif-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "0e6e75d4316e639e2de802c4841b1c98012dcea8e2068332a4b79f13893a6447",
+      "name": "snn_plif-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "fe56e7b2c4b351407e9edce75e258bb2a8059cbd4d2de98da2855982a0967140",
+      "name": "event_time_lif-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "a5059e7507c17ffa67a00acd1e0f935f0560e357e3f5b402fda265937ed70150",
+      "name": "event_time_lif-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "57ac7c77dd82fbf652524a1328826aa00c2819161d246a7f0f890af244ab35dc",
+      "name": "event_time_lif-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "49f5180e61c3ff047edc20dbc4369cb911ff7242c01e07a59547ffe939eb6538",
+      "name": "ssm_s4d-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "510af133083636ddb25ce34f85528e0e2da979553a0f4dd81d54fa04e54079d7",
+      "name": "ssm_s4d-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "96088987ffcd02fce41578dae4f380d8046007aadea3f22bd69c379d15062a27",
+      "name": "ssm_s4d-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "c892f0865bcee12756baa1c7c25584a8e606c2e13b6d16831f8ea67b90cfc1bc",
+      "name": "attention-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "d23fd234ba65e5dbf6ac6afd1a18826190627d0265426091608b20c9dd412e41",
+      "name": "attention-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "8f7ffcde824104f2040fd69e60f8304fb897773ab717dc27e7ba6cf603a6263b",
+      "name": "attention-s307-lr0.003"
+    },
+    {
+      "model_binding_sha256": "298e433f294aa2d9942fbc3ec82eb5797d1f81374ae89255e0371958ad36f44e",
+      "name": "hcsn-s101-lr0.003"
+    },
+    {
+      "model_binding_sha256": "615e857770cbff59ce5fc63e14e1fca6c8a53d41ea159f00b43f1fcb18503a86",
+      "name": "hcsn-s211-lr0.003"
+    },
+    {
+      "model_binding_sha256": "9d282563626f5bcdcbc27ab89e6729f0f6c8596193ae719f91aaf93933cbc560",
+      "name": "hcsn-s307-lr0.003"
+    }
+  ],
+  "prediction_receipts": null,
+  "remaining_exact_artifacts": [
+    "21 D temperature optimization receipts under the original bounds and solver",
+    "separate hashed E-only feature and label artifacts plus row order",
+    "all 21 complete immutable prediction receipts before label access",
+    "separate final source/runtime/checkpoint/selection/budget admission satisfying the original E plan"
+  ],
+  "schema": "hcsn-E-scorer-input-contract-unexecuted-v1",
+  "scope": "Hash bindings and metadata-only rejection contract; no E feature preparation, inference, calibration or scoring performed.",
+  "selection_ledger": {
+    "bytes": 55579,
+    "path": "evidence/LEDGER.json",
+    "sha256": "5e3e64f332d9a03389c8ac0e4f3de478e9f7c612124e9bec2b4d82c21d3f263b"
+  },
+  "status": "BLOCKED_NO_E_ARTIFACTS_OR_LABEL_ACCESS"
+}

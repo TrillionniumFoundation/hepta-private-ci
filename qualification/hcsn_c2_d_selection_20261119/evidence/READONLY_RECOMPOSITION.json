@@ -1,0 +1,16 @@
+{
+  "E_payload_or_labels_accessed": false,
+  "artifact_write_operations": 0,
+  "command": "python qualification/hcsn_c2_d_selection_20261119/finalize.py --verify-existing",
+  "cost_scope": "exec_command reported elapsed time for the one read-only verification invocation, separate from native body costs; no CPU timer was recorded.",
+  "existing_artifact_sha256": {
+    "LEDGER.json": "5e3e64f332d9a03389c8ac0e4f3de478e9f7c612124e9bec2b4d82c21d3f263b",
+    "SCORER_INPUT.json": "61c5af8597b77115d5b80f09bd1cca6f12b825117d18b0919b428d91a149aec5"
+  },
+  "exit_code": 0,
+  "finalizer_sha256": "ff789442b333b58ce9d6f6f5842113357a1ea1578cb1b0df48d87809d94a9bc3",
+  "model_forward_backward_optimizer_calls": 0,
+  "schema": "D-only-ledger-readonly-recomposition-v1",
+  "status": "EXACT_EXISTING_OUTPUT_BYTES_MATCH",
+  "tool_observed_wall_seconds": 2.082718687
+}

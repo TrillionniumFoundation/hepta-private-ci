@@ -1,0 +1,87 @@
+{
+  "E_payload_or_labels_accessed": false,
+  "body_cpu_seconds": 0.04299217600000001,
+  "body_wall_seconds": 0.04299272700154688,
+  "cases": [
+    {
+      "case": "actual_42_to_21_selection",
+      "passed": true
+    },
+    {
+      "case": "missing_seed",
+      "reason": "all 42 unique opportunities",
+      "rejected": true
+    },
+    {
+      "case": "duplicate_fit",
+      "reason": "all 42 unique opportunities",
+      "rejected": true
+    },
+    {
+      "case": "nonfinite_quality",
+      "reason": "strict candidate types and finite quality",
+      "rejected": true
+    },
+    {
+      "case": "boolean_quality",
+      "reason": "strict candidate types and finite quality",
+      "rejected": true
+    },
+    {
+      "case": "exact_tie_lower_common_LR",
+      "passed": true
+    },
+    {
+      "case": "higher_mean_inadequate_LR_remains_winner_and_blocked",
+      "passed": true
+    },
+    {
+      "case": "complete_synthetic_metadata_has_no_execution_authority",
+      "passed": true
+    },
+    {
+      "case": "missing_prediction",
+      "reason": "all 21 distinct prediction receipts",
+      "rejected": true
+    },
+    {
+      "case": "duplicate_prediction",
+      "reason": "all 21 distinct prediction receipts",
+      "rejected": true
+    },
+    {
+      "case": "changed_selected_model",
+      "reason": "exact selected model binding",
+      "rejected": true
+    },
+    {
+      "case": "changed_feature_order",
+      "reason": "same feature and row-order binding",
+      "rejected": true
+    },
+    {
+      "case": "labels_in_feature_roles",
+      "reason": "only six allowed feature roles",
+      "rejected": true
+    },
+    {
+      "case": "prediction_after_label_access",
+      "reason": "complete prior prediction contract",
+      "rejected": true
+    },
+    {
+      "case": "boolean_artifact_size",
+      "reason": "positive artifact bytes",
+      "rejected": true
+    }
+  ],
+  "model_forward_backward_optimizer_calls": 0,
+  "passed": 15,
+  "schema": "hcsn-D-selection-contract-controls-v1",
+  "scope": "Actual D selection plus synthetic metadata rejection; no E features, labels, logits or model results generated.",
+  "source_sha256": {
+    "build_selection.py": "3a1544d8a64b25e8de55a20854bb5d8db45d750e247697e28a3142f9b847f19a",
+    "controls.py": "51774198a3ac0ed351a9ed3604ebe60265b5d2c747079b30eceeb5d500bf8442",
+    "scorer_contract.py": "01cb7debab530a2a08268b956cca1ad663e57bd85c1d512de13c4d59e19b03f4"
+  }
+}

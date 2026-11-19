@@ -1,0 +1,1144 @@
+{
+  "C1_limit": "ssm_s4d seed211 selected C1 checkpoint retains the prior absent direct resume-start witness limitation.",
+  "all_selected_recorded_adequacy": true,
+  "automatic_trigger": false,
+  "confirmation_E_payload_or_labels_accessed": false,
+  "cost_limit": "All original42/C1 observation costs and source receipts are retained; prior UNKNOWN intervals and full lifetime cost remain incomplete. No inner/outer timer double count or historical refunds.",
+  "current_readable_selected_artifacts": 21,
+  "exact_recovered_aliases": 8,
+  "families": [
+    {
+      "arm": "gru",
+      "candidates": [
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.001,
+          "members": [
+            "gru-s101-lr0.001",
+            "gru-s211-lr0.001",
+            "gru-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.22946824670467578
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "gru-s101-lr0.003",
+            "gru-s211-lr0.003",
+            "gru-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.4249747469246391
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.4249747469246391
+    },
+    {
+      "arm": "cfc",
+      "candidates": [
+        {
+          "adequate_count": 2,
+          "learning_rate": 0.001,
+          "members": [
+            "cfc-s101-lr0.001",
+            "cfc-s211-lr0.001",
+            "cfc-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.26743966294056803
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "cfc-s101-lr0.003",
+            "cfc-s211-lr0.003",
+            "cfc-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.3490250771880906
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.3490250771880906
+    },
+    {
+      "arm": "snn_plif",
+      "candidates": [
+        {
+          "adequate_count": 1,
+          "learning_rate": 0.001,
+          "members": [
+            "snn_plif-s101-lr0.001",
+            "snn_plif-s211-lr0.001",
+            "snn_plif-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.11633879909503811
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "snn_plif-s101-lr0.003",
+            "snn_plif-s211-lr0.003",
+            "snn_plif-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.14997869521819712
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.14997869521819712
+    },
+    {
+      "arm": "event_time_lif",
+      "candidates": [
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.001,
+          "members": [
+            "event_time_lif-s101-lr0.001",
+            "event_time_lif-s211-lr0.001",
+            "event_time_lif-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.16259649473582516
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "event_time_lif-s101-lr0.003",
+            "event_time_lif-s211-lr0.003",
+            "event_time_lif-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.3130305208406941
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.3130305208406941
+    },
+    {
+      "arm": "ssm_s4d",
+      "candidates": [
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.001,
+          "members": [
+            "ssm_s4d-s101-lr0.001",
+            "ssm_s4d-s211-lr0.001",
+            "ssm_s4d-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.32435676821803466
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "ssm_s4d-s101-lr0.003",
+            "ssm_s4d-s211-lr0.003",
+            "ssm_s4d-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.3668656108888712
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.3668656108888712
+    },
+    {
+      "arm": "attention",
+      "candidates": [
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.001,
+          "members": [
+            "attention-s101-lr0.001",
+            "attention-s211-lr0.001",
+            "attention-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.39774630632812225
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "attention-s101-lr0.003",
+            "attention-s211-lr0.003",
+            "attention-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.4026165224488075
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.4026165224488075
+    },
+    {
+      "arm": "hcsn",
+      "candidates": [
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.001,
+          "members": [
+            "hcsn-s101-lr0.001",
+            "hcsn-s211-lr0.001",
+            "hcsn-s307-lr0.001"
+          ],
+          "three_seed_mean": 0.3548966088884725
+        },
+        {
+          "adequate_count": 3,
+          "learning_rate": 0.003,
+          "members": [
+            "hcsn-s101-lr0.003",
+            "hcsn-s211-lr0.003",
+            "hcsn-s307-lr0.003"
+          ],
+          "three_seed_mean": 0.3762526948891313
+        }
+      ],
+      "selected_all_three_adequate": true,
+      "selected_learning_rate": 0.003,
+      "selected_three_seed_mean": 0.3762526948891313
+    }
+  ],
+  "independent_original_full_training_replays": "0/6",
+  "native_inventory_measurements": [
+    {
+      "body_cpu_seconds": 2.867870224,
+      "body_wall_seconds": 4.081034067028668,
+      "cost_scope": "Main entry including NumPy/Torch imports; native process startup and orchestration not fully measured.",
+      "peak_rss_kib": 221868,
+      "scope": "inventory"
+    },
+    {
+      "body_cpu_seconds": 1.75401993,
+      "body_wall_seconds": 1.783718231949024,
+      "cost_scope": "Main entry including NumPy/Torch imports; native process startup and orchestration not fully measured.",
+      "peak_rss_kib": 219976,
+      "scope": "supplement"
+    },
+    {
+      "body_cpu_seconds": 1.824593304,
+      "body_wall_seconds": 1.9195840829634108,
+      "cost_scope": "Main entry including NumPy/Torch imports; native process startup and orchestration not fully measured.",
+      "peak_rss_kib": 218488,
+      "scope": "parent-target"
+    }
+  ],
+  "original_controller_terminal": "UNKNOWN",
+  "original_path_matches": 80,
+  "roster": [
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s101-lr0.003/development_logits.pt",
+        "sha256": "40426f7eb41e84e16188778be50bfc21c8249bfa99f572e8d9113362115176a6"
+      },
+      "D_logits_array_sha256": "5c6dce923dd11d638c27e7ced3ff7a4a94e047f9bd0d0840832f6894b28fcc89",
+      "D_macro_f1_recomputed": 0.4323336875767939,
+      "D_macro_f1_recorded": 0.4323336875767939,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "gru",
+      "checkpoint": {
+        "bytes": 68556,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s101-lr0.003/best.pt",
+        "sha256": "298f02990997e52415c639b6de31a5b310335c66772d84044b2ed98da463be2a"
+      },
+      "configuration_canonical_sha256": "04f25c96971394ea93f88744a907e37a894822dae1f69446ecdad5a37a355331",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5455,
+        "path": "evidence/inventory/gru-s101-lr0.003.json",
+        "sha256": "9474d08ff78e9a2f6b5f313949c966acbbabe60e50530ff36f48c8453eae483a"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "7b937611b93696a4790130199ef96b72403f611e63a326cd1038c59e586b7027",
+      "model_tensor_manifest_sha256": "e7917847c6ab50c89db397bcf302cd7fadeac49f8c6479fde3d532c94e625f15",
+      "name": "gru-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 229370,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s101-lr0.003/result.json",
+        "sha256": "7c1936498f0367cbf40222c1c90a94d676ae5b49fa85b6262274151b8926cc66"
+      },
+      "seed": 101,
+      "selected_epoch": 52,
+      "source_map_canonical_sha256": "761953380733346563d4de370ca26987bfb4ecff6acabebd4bb3c2186c536650"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/development_logits.pt",
+        "sha256": "d3c0a83bcc74189ce641da2fe0a081c45cec9b3edefb8a9235ad2bad7bc5f5d8"
+      },
+      "D_logits_array_sha256": "e3b2df64d67e1062a15ec88d7acd794e05a38a4020c30e7d657893143d50688b",
+      "D_macro_f1_recomputed": 0.4120451582007052,
+      "D_macro_f1_recorded": 0.4120451582007052,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "gru",
+      "checkpoint": {
+        "bytes": 68556,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/best.pt",
+        "sha256": "52ccfebae7af4a6f61e389bddda37e7b906c0450d6017e4e0c969630abd16747"
+      },
+      "configuration_canonical_sha256": "e0d77e182a4d09ef238759374e6daddad562b2e00258c8622f984e4074157e9a",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5455,
+        "path": "evidence/inventory/gru-s211-lr0.003.json",
+        "sha256": "6d7ffa81d3adc413bd2ceccc3af8ca592756f79be4322f5a8eac85dce9f57e27"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "c3726a228c60de9c14d32e3af6de6600c36dab934a7d2bb2c689a658cf7a24e7",
+      "model_tensor_manifest_sha256": "0661137c6b2b63e67fef890cf5781dc075aa5a5cd27fda805397f20dacbc1094",
+      "name": "gru-s211-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 195671,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/result.json",
+        "sha256": "6b24156ddbf4d5348769b58fd23df3e9edbf6adcd7cf6da728af764860a896f4"
+      },
+      "seed": 211,
+      "selected_epoch": 38,
+      "source_map_canonical_sha256": "761953380733346563d4de370ca26987bfb4ecff6acabebd4bb3c2186c536650"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s307-lr0.003/development_logits.pt",
+        "sha256": "898d45019754af83deb2afc37768f8bccd8a53d1c8110af1efed666ef1c9ab79"
+      },
+      "D_logits_array_sha256": "9b533fc696c76c9fd6d69fda88a7ac032f0487bf8a9464f546ed1050f40fe6f5",
+      "D_macro_f1_recomputed": 0.43054539499641825,
+      "D_macro_f1_recorded": 0.43054539499641825,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "gru",
+      "checkpoint": {
+        "bytes": 68556,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s307-lr0.003/best.pt",
+        "sha256": "8741042107ca31f1b5d883b383f6ddd4e192e92b7d01931d613ca8c296a26bbf"
+      },
+      "configuration_canonical_sha256": "f114dd7e3c5754e50ef60a20e2400e61cc1dd8c11b4a7480a2c1f39a890a2d14",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5457,
+        "path": "evidence/inventory/gru-s307-lr0.003.json",
+        "sha256": "831d4af0c0d58483ff3b084e78207823ba59479376b91d8478b07b70e2901d95"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "234edb457c46ab44b4ff1611956edbf83fd1b5d0b44d9ca8b357aaae357290da",
+      "model_tensor_manifest_sha256": "524002b95b472c3888a298923f5e16693fe2d9ebe96423e997c3d442c8a238a4",
+      "name": "gru-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 308989,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s307-lr0.003/result.json",
+        "sha256": "74c31c9e4643857a3f380072c7eca33ba094c81d98b193bd1b3f5bd6ac0cf5aa"
+      },
+      "seed": 307,
+      "selected_epoch": 77,
+      "source_map_canonical_sha256": "761953380733346563d4de370ca26987bfb4ecff6acabebd4bb3c2186c536650"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s101-lr0.003/development_logits.pt",
+        "sha256": "1895a2fefb51ab2123fc5cb5733ead998bca6a0c60f0acd2032dec8145b58cfe"
+      },
+      "D_logits_array_sha256": "0eb9c521e21f2da7ebf4a70348b250aecf5c8a58797c8c13772b8ef95c4f7467",
+      "D_macro_f1_recomputed": 0.36034167105692955,
+      "D_macro_f1_recorded": 0.36034167105692955,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "cfc",
+      "checkpoint": {
+        "bytes": 186820,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s101-lr0.003/best.pt",
+        "sha256": "37b9610f174a6dccdd929e2928aba51c4f9b30a555e01699ee139949161b9106"
+      },
+      "configuration_canonical_sha256": "4e65ab46dfa209b9d478ba59acc7a412fa6975d19955ccb60a439684c99d60ab",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6832,
+        "path": "evidence/inventory/cfc-s101-lr0.003.json",
+        "sha256": "875bca35d32fea519a7b327c7923ce79550b22d8f071566dd79f376b9ced67a4"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "3842d7cf68444051e6473f89cff769b702c941bc9383dd2c6e857365fc229cf9",
+      "model_tensor_manifest_sha256": "e4b9ca2e8deafe8383cc765341045468ede6faac4a36979ba8e8393fd4fb0d81",
+      "name": "cfc-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 247744,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s101-lr0.003/result.json",
+        "sha256": "cf652d5793d271eb824c6e04ce204bf0a53f579e400b975b6065cc520068b7aa"
+      },
+      "seed": 101,
+      "selected_epoch": 56,
+      "source_map_canonical_sha256": "e13611c1657a059d837b5a13f6d02a072db0585fc244f21863a0d060f9a698b3"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s211-lr0.003/development_logits.pt",
+        "sha256": "d17b027c2e149a06546fda0c350c573342ddbed21c76c4e2786144c6f4964f47"
+      },
+      "D_logits_array_sha256": "7b99ab442e6bbb406429a5182dda819fc686cb3098e6d69ba95d1c7aa5952f01",
+      "D_macro_f1_recomputed": 0.3306016097654832,
+      "D_macro_f1_recorded": 0.33060160976548325,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "cfc",
+      "checkpoint": {
+        "bytes": 186820,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s211-lr0.003/best.pt",
+        "sha256": "cbf266ef3df4ae572b8e64e0410319fada7b37f84355b77a16a3050207bfe178"
+      },
+      "configuration_canonical_sha256": "137d316608fbed1f115bf1a50529251db547937e11f10a805ff24cfce4417f9b",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6849,
+        "path": "evidence/inventory/cfc-s211-lr0.003.json",
+        "sha256": "7b1711e3c3fa725a90f2d5385c1b2f16afeb2e0a9967047fc562d494e8ae6027"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "d6acc5f597ab1c5007e274e85375b0d7c40eb5710e86052a677140f998ba9f41",
+      "model_tensor_manifest_sha256": "d743a695d871527908610d53d4198c4552525253884d8ad4184ff22bf5a63855",
+      "name": "cfc-s211-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 192121,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s211-lr0.003/result.json",
+        "sha256": "045ba9d5fa06a2d423aa22cc32a7cd8fe998e4d1ddabb22de5633eaa2ee19a54"
+      },
+      "seed": 211,
+      "selected_epoch": 34,
+      "source_map_canonical_sha256": "e13611c1657a059d837b5a13f6d02a072db0585fc244f21863a0d060f9a698b3"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s307-lr0.003/development_logits.pt",
+        "sha256": "242f664b0d81896cef7f5d7bc565a94a42ae3ca75a9965e2b636c27025a4ea25"
+      },
+      "D_logits_array_sha256": "0a88068b5f542b7fd1450615a169deab4668466ebb00ee631aa7f3d95e3c6a37",
+      "D_macro_f1_recomputed": 0.35613195074185905,
+      "D_macro_f1_recorded": 0.35613195074185905,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "cfc",
+      "checkpoint": {
+        "bytes": 186820,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s307-lr0.003/best.pt",
+        "sha256": "83229524be1df8364203da1f1ab5d715ce429273f35e5cc1155a0c0d5f52eb5c"
+      },
+      "configuration_canonical_sha256": "afe3effc8336e68375fa69a7406747cf915cc9c32f4e6217aba31e96f2140e34",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6832,
+        "path": "evidence/inventory/cfc-s307-lr0.003.json",
+        "sha256": "f486386759f16b98efbbead72ddcb7fdf5048dbb7c371f94e466c3368146bb87"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "800f02ef7bfa5a3796279238626c5d5a45b3da79d2ca93b2d3a66d566fc71d60",
+      "model_tensor_manifest_sha256": "3a22a99983cbdf40e28eb2ade1d00c9dd5230bd80fb0983d4214f3b33647bb9c",
+      "name": "cfc-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 192300,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/cfc-s307-lr0.003/result.json",
+        "sha256": "50e87a92465d84f937f899746a964a93576e84c367f6fc57d6e1d2ff9fb04926"
+      },
+      "seed": 307,
+      "selected_epoch": 38,
+      "source_map_canonical_sha256": "e13611c1657a059d837b5a13f6d02a072db0585fc244f21863a0d060f9a698b3"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s101-lr0.003/development_logits.pt",
+        "sha256": "03f1f00a66a4c467ba60543ff6caac0a392c3df4eb47c0922044104c5fd83aed"
+      },
+      "D_logits_array_sha256": "ed6c3d120cbae34715f5388954b0c8e9485e57a4a714f180afce9329e0c4a3b7",
+      "D_macro_f1_recomputed": 0.16931778249038473,
+      "D_macro_f1_recorded": 0.1693177824903847,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "snn_plif",
+      "checkpoint": {
+        "bytes": 42380,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s101-lr0.003/best.pt",
+        "sha256": "c951174dc1bcb185e8ff31087b4f9b057ecb9107a2ca3374d2e0210d8a558131"
+      },
+      "configuration_canonical_sha256": "bdb1245e99c7592965ad153ffb07d991ff1dd06e307e6ef66547c0bbafdabaaa",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5657,
+        "path": "evidence/inventory/snn_plif-s101-lr0.003.json",
+        "sha256": "6ed41a108533de30a5872c8f0417aab95e50a7134f330b4fda35b9b8b5756a6a"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "3da9af8aedefdaa369239f294a136814f7f9fea0d5dc56bb95461774cbcbcdf0",
+      "model_tensor_manifest_sha256": "26b235b42a0c7445c780236fd119badffe8b419a47d22531adae14739b2458ae",
+      "name": "snn_plif-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 196398,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s101-lr0.003/result.json",
+        "sha256": "318ef04d3afb8e9ed3bf8cf7fbff7e1df6376bf4f7984a45a6d8aa068fb52af0"
+      },
+      "seed": 101,
+      "selected_epoch": 31,
+      "source_map_canonical_sha256": "38a9ee604f3dc155ef399982fd9ca23f657f979995ab0fc5ce39f720e111ff48"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s211-lr0.003/development_logits.pt",
+        "sha256": "3e8cf2ca7162fd93ddcf18e5f02ec1979a98d50d0b2d19b23f1373923c0be505"
+      },
+      "D_logits_array_sha256": "6f82d73527a2b10ec465dda766f529689e20d29a6d00d5254c6de6a730ae9f8c",
+      "D_macro_f1_recomputed": 0.11265936958100765,
+      "D_macro_f1_recorded": 0.11265936958100765,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "snn_plif",
+      "checkpoint": {
+        "bytes": 42380,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s211-lr0.003/best.pt",
+        "sha256": "3ebdbf576b67a2e99ca9c0da1cc737d2fd37491baa185a4f42decf3a44d1c69b"
+      },
+      "configuration_canonical_sha256": "581f33bf0ccb4d92f2b56f7fabd826defeca9e6c17c297ffe8a7425c324ac50f",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5639,
+        "path": "evidence/inventory/snn_plif-s211-lr0.003.json",
+        "sha256": "6475f21ef0c1f36a3a6c9c1573a7e5d9466da2d383de11ac520d3a4a91ee67d5"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "b0bbbf66f7a3a51f1197c91f792c33dd461d05a3587ee31bfb40cc91df98cc3c",
+      "model_tensor_manifest_sha256": "b3d350abf0f7e43be2f4dc3dc0ad24a76b2b59de84841a5342476579b7287fed",
+      "name": "snn_plif-s211-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 157399,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s211-lr0.003/result.json",
+        "sha256": "f5f4e5e5a30ec4a9bafbcf333789fe8623ed32aa1c0abc0ac4c819dc29d90f12"
+      },
+      "seed": 211,
+      "selected_epoch": 26,
+      "source_map_canonical_sha256": "38a9ee604f3dc155ef399982fd9ca23f657f979995ab0fc5ce39f720e111ff48"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s307-lr0.003/development_logits.pt",
+        "sha256": "82cd0e107bb141284737ec476f48dec66603b21640426fa8816cb4441adfc24e"
+      },
+      "D_logits_array_sha256": "dc1a3191a179361d07c062c2ba35a579aaac781dd4c3e6087e9848d39d9c5875",
+      "D_macro_f1_recomputed": 0.16795893358319897,
+      "D_macro_f1_recorded": 0.167958933583199,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "snn_plif",
+      "checkpoint": {
+        "bytes": 42380,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s307-lr0.003/best.pt",
+        "sha256": "2ebd7d23160eaacf91934b6a7a71827928aa1ea187cd76c57478004056ca7149"
+      },
+      "configuration_canonical_sha256": "533e1fb398101e9cca001861e0bd1d89cfc366ee9d4b334d7263fa03651f9535",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5655,
+        "path": "evidence/inventory/snn_plif-s307-lr0.003.json",
+        "sha256": "d72e1b8cbf4508b6259cc19ffe41178dbff6048b78a5dc6846f03a2f8500199f"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "0e6e75d4316e639e2de802c4841b1c98012dcea8e2068332a4b79f13893a6447",
+      "model_tensor_manifest_sha256": "2def36f29c70a8802b161f46e3e93c24ba28c3625cd0be6fd618cf77842cdf09",
+      "name": "snn_plif-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 201282,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/snn_plif-s307-lr0.003/result.json",
+        "sha256": "105a5482d85cfe1c60184e94a5e264eddefc4144909615c601a265474606828d"
+      },
+      "seed": 307,
+      "selected_epoch": 41,
+      "source_map_canonical_sha256": "38a9ee604f3dc155ef399982fd9ca23f657f979995ab0fc5ce39f720e111ff48"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s101-lr0.003/development_logits.pt",
+        "sha256": "f2e8c08b2ff8a6bee84ecffdc5dffbebb0670deb444f477042793b8b50a59001"
+      },
+      "D_logits_array_sha256": "a10dc0ce29ea6bc524ee8061dd8d12b2eeb552a32c5e4d01deb8c8f81f7e99ce",
+      "D_macro_f1_recomputed": 0.3609448591863218,
+      "D_macro_f1_recorded": 0.3609448591863218,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "event_time_lif",
+      "checkpoint": {
+        "bytes": 36684,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s101-lr0.003/best.pt",
+        "sha256": "71a94bbbed57941025e0d0ec15b5e472789efc1bd3d33e80f3d7a500d18b1c4c"
+      },
+      "configuration_canonical_sha256": "d6257af14ea02e25fe6016bc652543e61bc1e93812602dc0396040065ccfcac2",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5555,
+        "path": "evidence/inventory/event_time_lif-s101-lr0.003.json",
+        "sha256": "0aff70ba5578ec8ccbad03708e0774c8baaa2abebda058ba8816e687bd51df01"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "fe56e7b2c4b351407e9edce75e258bb2a8059cbd4d2de98da2855982a0967140",
+      "model_tensor_manifest_sha256": "4ed19da9e8ccc04d5e0796bd16c0a22ffdc92ba94bd54198c14b565eaef3dc1a",
+      "name": "event_time_lif-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 319398,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s101-lr0.003/result.json",
+        "sha256": "6d6b419d96b588a85ef193721d4bf7697c84fcd8a232151db221f73a76a271fd"
+      },
+      "seed": 101,
+      "selected_epoch": 88,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s211-lr0.003/development_logits.pt",
+        "sha256": "ed27b7fae589f1a3f8b8456594166576c19f0fcf7cba180a212347c14a45b4b0"
+      },
+      "D_logits_array_sha256": "7f56485f23c2391cf15e585342b3be3b4e00b4aa341c02b3be5954318325c779",
+      "D_macro_f1_recomputed": 0.2950658826247449,
+      "D_macro_f1_recorded": 0.295065882624745,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "event_time_lif",
+      "checkpoint": {
+        "bytes": 36684,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s211-lr0.003/best.pt",
+        "sha256": "68df54a2398aad21883b9c228e632fcbeafe9a0dc37fb29e887ff24ff7e1c2ff"
+      },
+      "configuration_canonical_sha256": "7b555d0e18a9d6a5254a830bd897b74c8606513e1eb3ee3a01bd88aeec72b7ae",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5572,
+        "path": "evidence/inventory/event_time_lif-s211-lr0.003.json",
+        "sha256": "d2b1d198462e29dc9344a88ebb54f7400ac6594fecedbe8c2b7e7fa03b59f61b"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "a5059e7507c17ffa67a00acd1e0f935f0560e357e3f5b402fda265937ed70150",
+      "model_tensor_manifest_sha256": "bdf99cc204dda1f5339d582c2ebc8ee3ad489128e672248fabfecc61877b0950",
+      "name": "event_time_lif-s211-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 208831,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s211-lr0.003/result.json",
+        "sha256": "dc70abacda1d3aea742b2da52ec7dd2603e84615695c91c7d638abee9100e24b"
+      },
+      "seed": 211,
+      "selected_epoch": 42,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s307-lr0.003/development_logits.pt",
+        "sha256": "f64bd4404056b65abea961149486badf96611fc7facaf2a4a631efe3c2979e95"
+      },
+      "D_logits_array_sha256": "fb84f024bfac52aa7bd7dffa697a2ce5ff2d230e9bd93ce7f0b987ad58669205",
+      "D_macro_f1_recomputed": 0.2830808207110156,
+      "D_macro_f1_recorded": 0.2830808207110156,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "event_time_lif",
+      "checkpoint": {
+        "bytes": 36748,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s307-lr0.003/best.pt",
+        "sha256": "7673970ecb8f0a2546cc85fc4293ad3c1bb3314aa857edea0f557d489d03f347"
+      },
+      "configuration_canonical_sha256": "007ceca183c1fab2705320ec7efcc2f58caddf7a43426afba53c1fb12d480b0d",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 5554,
+        "path": "evidence/inventory/event_time_lif-s307-lr0.003.json",
+        "sha256": "570b62ff22cd257c25e025bc8c656603fa75c0f1c5252bc0228ac834b65105e4"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "57ac7c77dd82fbf652524a1328826aa00c2819161d246a7f0f890af244ab35dc",
+      "model_tensor_manifest_sha256": "39e31870d1f498679b5e0fd6b0f99f402b830bec0b807a7db2192956bbc7da55",
+      "name": "event_time_lif-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 288184,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/event_time_lif-s307-lr0.003/result.json",
+        "sha256": "4b7be093663602326acae7aecd01b487e23c01530c545ddc6e74722a884e87ac"
+      },
+      "seed": 307,
+      "selected_epoch": 77,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s101-lr0.003/development_logits.pt",
+        "sha256": "ceb6aeaa4666f13f256aeed7ed01d3a18a5e27d39adb90a9cf8bee2b197156bc"
+      },
+      "D_logits_array_sha256": "53d9780e9fe97098cdf9992c79c718b0744cd91e39a5697fb930c71d43ae792a",
+      "D_macro_f1_recomputed": 0.3477511741384463,
+      "D_macro_f1_recorded": 0.34775117413844636,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "ssm_s4d",
+      "checkpoint": {
+        "bytes": 58920,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s101-lr0.003/best.pt",
+        "sha256": "34dda39e21c0e916c8d4c47d88cc0b7f478945fe88f70993fbed15d0d5749dae"
+      },
+      "configuration_canonical_sha256": "ea1297f918ad9f779e5e76a8a4a238c2b2ef9591f2d6fa87ad512ff226f991af",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6215,
+        "path": "evidence/inventory/ssm_s4d-s101-lr0.003.json",
+        "sha256": "274c54db5e7571e3814ea3fb7b8cd14c50b0033dc83e3fe99cc4006e10762883"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "49f5180e61c3ff047edc20dbc4369cb911ff7242c01e07a59547ffe939eb6538",
+      "model_tensor_manifest_sha256": "8600cdddb814a043d780ba1cd8acc034121e3c5ec32e42218c1e79209a100461",
+      "name": "ssm_s4d-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 292067,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s101-lr0.003/result.json",
+        "sha256": "80e35ab9d8ed2021086df3f7e6708e3a1d03779b0e99d9606077d9c5f468fb2b"
+      },
+      "seed": 101,
+      "selected_epoch": 78,
+      "source_map_canonical_sha256": "aad0e46095a54578f97a39b3e12e8f7e4244307613db0786a32c1909ccef3e80"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/development_logits.pt",
+        "sha256": "01027d402c65ba39c1ecf8c31531c5e6df18cbbfbd7e71558f26a09d1e56e6ce"
+      },
+      "D_logits_array_sha256": "970e6e5c6b5b6ee5095c884f4ebd721361fcb08ed41c57c4af50f69fafa6c245",
+      "D_macro_f1_recomputed": 0.3941618595113974,
+      "D_macro_f1_recorded": 0.3941618595113974,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "ssm_s4d",
+      "checkpoint": {
+        "bytes": 58920,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/best.pt",
+        "sha256": "47aea1b3530c6a15a1048a1c8d408a4e555575a301c53147e37d01493f1345e6"
+      },
+      "configuration_canonical_sha256": "1fc26e3985fa0229efe8ff793f93942f784f42f010a09f505aa516eea03d837f",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6248,
+        "path": "evidence/inventory/ssm_s4d-s211-lr0.003.json",
+        "sha256": "5da44d3d9e6e3732601d05fb1bcba55f21e9e8e683314fb2c191f441621598f8"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "510af133083636ddb25ce34f85528e0e2da979553a0f4dd81d54fa04e54079d7",
+      "model_tensor_manifest_sha256": "42dee478c83c42fbcaac892dc2c7d3d137ad7e0391d401fa527e6725fb0550e5",
+      "name": "ssm_s4d-s211-lr0.003",
+      "producer_runtime_recorded_fields": {},
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 171980,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2-continuation-c1/ssm_s4d-s211-lr0.003/result.json",
+        "sha256": "03c23476b1be3fada1f813a8e4264ce40b45689c0d24f4a6969782559f547c99"
+      },
+      "seed": 211,
+      "selected_epoch": 139,
+      "source_map_canonical_sha256": "60d2efe13c4c3552e80b0dc56c25aa7abcbddc96f038c558e5c7595a31926557"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s307-lr0.003/development_logits.pt",
+        "sha256": "2b026bf97f80db40c57b30329e98ab19d335e418362c8281a0c48983a7a39e46"
+      },
+      "D_logits_array_sha256": "53223e2d2edbe42ea7d96317ca410b3f2d6d101fa83439e8c37b284290547931",
+      "D_macro_f1_recomputed": 0.35868379901676983,
+      "D_macro_f1_recorded": 0.35868379901676983,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "ssm_s4d",
+      "checkpoint": {
+        "bytes": 58984,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s307-lr0.003/best.pt",
+        "sha256": "83a91f6756cbf32b52e868a481f8f29ba29fb7428130c71e394cf7be99dd1b25"
+      },
+      "configuration_canonical_sha256": "cffa3253ffd80ff18ff0b63ed1ec268dd5da5f7ed3a81ddc1530c0ddee58864a",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 6199,
+        "path": "evidence/inventory/ssm_s4d-s307-lr0.003.json",
+        "sha256": "660395f407ffef6b3a844586780562daac31a91a08165b4ed184241d8d8796cf"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "96088987ffcd02fce41578dae4f380d8046007aadea3f22bd69c379d15062a27",
+      "model_tensor_manifest_sha256": "72df203f1cc3831c9f7fd88d5cf4e2c03142e5b98600c29171dcc3b75166c6b5",
+      "name": "ssm_s4d-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 337869,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/ssm_s4d-s307-lr0.003/result.json",
+        "sha256": "51971622e670765e45c46c535568efb4272d36e7e6997a84a39d901a7a501a84"
+      },
+      "seed": 307,
+      "selected_epoch": 85,
+      "source_map_canonical_sha256": "aad0e46095a54578f97a39b3e12e8f7e4244307613db0786a32c1909ccef3e80"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s101-lr0.003/development_logits.pt",
+        "sha256": "2961241a17fb8b5255944634646460d94d03bb7f228eb2bc096a2e1035505081"
+      },
+      "D_logits_array_sha256": "22f45a1a2bf1dfff14395655a21f3dae6a2abee545fc1ef85153db1a7df1fa51",
+      "D_macro_f1_recomputed": 0.4324502923711034,
+      "D_macro_f1_recorded": 0.4324502923711035,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "attention",
+      "checkpoint": {
+        "bytes": 117228,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s101-lr0.003/best.pt",
+        "sha256": "0c407a14771f0df030dca1508993ec9db62e868d478f97b051cca88c023cae95"
+      },
+      "configuration_canonical_sha256": "0f85e6cbeba4523d29fd5dbe4ca138dfa3b5ab5ef13b31e124dc52d55354cbbd",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 7394,
+        "path": "evidence/inventory/attention-s101-lr0.003.json",
+        "sha256": "8256a77a3f55fe29f636c09be32b6d16b2366c126dee3fef5d199dd0b8e839d0"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "c892f0865bcee12756baa1c7c25584a8e606c2e13b6d16831f8ea67b90cfc1bc",
+      "model_tensor_manifest_sha256": "b88250eb895018d7eba4247bc2b68f12d8f38a43bdaf16825f2fe6db867e2860",
+      "name": "attention-s101-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 271759,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s101-lr0.003/result.json",
+        "sha256": "83f6d0bb4af2707a1e7257d5eb9b72dbc31ba9ffec8259ad672abbb13269285b"
+      },
+      "seed": 101,
+      "selected_epoch": 65,
+      "source_map_canonical_sha256": "6f14063b857b1bf877b087963d3213fc21ed6831c33e03ee1429661b545b837f"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s211-lr0.003/development_logits.pt",
+        "sha256": "983e384b613cbabc91680e41896d956baaa5c244e60cc1542849292a1076a3b7"
+      },
+      "D_logits_array_sha256": "d8c720722d2c7ac511079e77db47a67b7ace231808f64591c4345abe79dd0c2f",
+      "D_macro_f1_recomputed": 0.3464410414846188,
+      "D_macro_f1_recorded": 0.34644104148461874,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "attention",
+      "checkpoint": {
+        "bytes": 117228,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s211-lr0.003/best.pt",
+        "sha256": "54a17f3d0d805d84d7417877d52ee7414e93016dd5894f3779f3bc8a1db11685"
+      },
+      "configuration_canonical_sha256": "b3f7e7ec52fd2da687e66938f317508d0372fc0301087d0819c6b3363f821fa3",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 7395,
+        "path": "evidence/inventory/attention-s211-lr0.003.json",
+        "sha256": "33d50e3bda52adc8698605f846814f1ba3648537d7d2e2c652a5db3926815d2b"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "d23fd234ba65e5dbf6ac6afd1a18826190627d0265426091608b20c9dd412e41",
+      "model_tensor_manifest_sha256": "d75b743e2aea1d53235da0bf0b2951b43c0bb7326420af074ceaa213bcbea431",
+      "name": "attention-s211-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 176472,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s211-lr0.003/result.json",
+        "sha256": "95b0bef3f38339b65e6c223f1605092a7ad106d1c91609dfa2d67780027d0531"
+      },
+      "seed": 211,
+      "selected_epoch": 34,
+      "source_map_canonical_sha256": "6f14063b857b1bf877b087963d3213fc21ed6831c33e03ee1429661b545b837f"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071293,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s307-lr0.003/development_logits.pt",
+        "sha256": "3765bb10212e384729a980225d05d5727b7bbddf2b5db8d82372a88717cfbd26"
+      },
+      "D_logits_array_sha256": "78ce866a2b53225e29bf09a69bec190b545cb7ff6aa03224c8529d9e81fa3a01",
+      "D_macro_f1_recomputed": 0.4289582334907003,
+      "D_macro_f1_recorded": 0.4289582334907003,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "attention",
+      "checkpoint": {
+        "bytes": 117164,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s307-lr0.003/best.pt",
+        "sha256": "2070bf2ca292a82e8b20af95bc74ffa78ec7c64226d16b38e44ffd0a963838d7"
+      },
+      "configuration_canonical_sha256": "27b2658eed2bbb57c038dbb8c363999b4e9fd278afefd2f64a1695854d630315",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 7376,
+        "path": "evidence/inventory/attention-s307-lr0.003.json",
+        "sha256": "12445b28c85a59553ba0b9a1323daa717b7f6a8da4aaa863a96f5f64cca30c57"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "8f7ffcde824104f2040fd69e60f8304fb897773ab717dc27e7ba6cf603a6263b",
+      "model_tensor_manifest_sha256": "ac9ec9dfa9855e93ca7644570af7b9fbbe80493538d49190f3f406f8ba8d882d",
+      "name": "attention-s307-lr0.003",
+      "producer_runtime_recorded_fields": {
+        "device": "cpu",
+        "dtype": "float64"
+      },
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 295922,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/attention-s307-lr0.003/result.json",
+        "sha256": "d582ed5f050ea1e4f4333117d574610ca6510c8b4c044fe434df68681a6a6e8e"
+      },
+      "seed": 307,
+      "selected_epoch": 73,
+      "source_map_canonical_sha256": "6f14063b857b1bf877b087963d3213fc21ed6831c33e03ee1429661b545b837f"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/development_logits.pt",
+        "sha256": "b8628531ef192335bc08a0adb1946cb6d17cdee9d7f2f6dddcade9246957d3a5"
+      },
+      "D_logits_array_sha256": "8a90f5f1ebe3c3607c8461cd19e8634f35db67a1f2071172ef84fbcbc714e8dd",
+      "D_macro_f1_recomputed": 0.38783425965779494,
+      "D_macro_f1_recorded": 0.38783425965779483,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450616,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0074.pt",
+        "sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8"
+      },
+      "configuration_canonical_sha256": "8a40d93f3f84abb399c69a9c2f83663f17f8131df679a73327d1b0f89826db31",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 9071,
+        "path": "evidence/supplement/hcsn-s101-lr0.003.json",
+        "sha256": "20a27d1bdd9031ed5b220961dbc99b1894d4666d09253951bea814d29eff7f5d"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "298e433f294aa2d9942fbc3ec82eb5797d1f81374ae89255e0371958ad36f44e",
+      "model_tensor_manifest_sha256": "3bc8160f720195f3d76595a0033743551c289d234e9d83eac04559907fae6626",
+      "name": "hcsn-s101-lr0.003",
+      "producer_runtime_recorded_fields": {},
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 578890,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/result.json",
+        "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+      },
+      "seed": 101,
+      "selected_epoch": 74,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/development_logits.pt",
+        "sha256": "266271d344df152a4aea33f2becfbad6d9b134fe6563a2e318c43e21427c61b0"
+      },
+      "D_logits_array_sha256": "5e4520ee37692dfa63309281d81aa298015c8b72292dc27728e5353d1e7a1abb",
+      "D_macro_f1_recomputed": 0.3910932361454862,
+      "D_macro_f1_recorded": 0.3910932361454862,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/best.pt",
+        "sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c"
+      },
+      "configuration_canonical_sha256": "5db0c6e91a767088aa954d16b6be27aaf1f0a6a2055f85f6192a9013e1d1b415",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 8954,
+        "path": "evidence/parent-target/hcsn-s211-lr0.003.json",
+        "sha256": "003e879afc8f1c36972cef31a33ad9dadae0f5d44257a87d126bd6c3bcc939f2"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "615e857770cbff59ce5fc63e14e1fca6c8a53d41ea159f00b43f1fcb18503a86",
+      "model_tensor_manifest_sha256": "066bada5acedcde6694e25ebc9ad56625ec6b73e2ccaaba2d3f1737a00f9e635",
+      "name": "hcsn-s211-lr0.003",
+      "producer_runtime_recorded_fields": {},
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 360283,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/result.json",
+        "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+      },
+      "seed": 211,
+      "selected_epoch": 40,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    },
+    {
+      "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+      "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/development_logits.pt",
+        "sha256": "d46b6e8b2ea022235e6de33d1d14ad08ba37bef3be087a41a472370eb8363087"
+      },
+      "D_logits_array_sha256": "3a132e05766fdb3730ce2599bbc265cea7f7303949d378dd1affda31fea627ad",
+      "D_macro_f1_recomputed": 0.3498305888641129,
+      "D_macro_f1_recorded": 0.3498305888641129,
+      "D_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0062.pt",
+        "sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe"
+      },
+      "configuration_canonical_sha256": "644c03f86be887c6f330ee9cb0298e82b50498423f18ad69046852174a74b820",
+      "independent_complete_training_replay": false,
+      "inventory_receipt": {
+        "bytes": 9050,
+        "path": "evidence/supplement/hcsn-s307-lr0.003.json",
+        "sha256": "41504c4b080e8d447c5928e2ed6350e9e2dc3f93aa56f4b94c9cdcd2d73e5279"
+      },
+      "learning_rate": 0.003,
+      "model_binding_sha256": "9d282563626f5bcdcbc27ab89e6729f0f6c8596193ae719f91aaf93933cbc560",
+      "model_tensor_manifest_sha256": "553e49060ac5b258c27e77e5604dd2ed577e1b53901c2766463c0151cd76e230",
+      "name": "hcsn-s307-lr0.003",
+      "producer_runtime_recorded_fields": {},
+      "recorded_training_adequacy": true,
+      "report": {
+        "bytes": 436682,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/result.json",
+        "sha256": "720e09baa3bb77458c17af00025b53cfd93ee336ce6a4f6e23d7d776251bcd7a"
+      },
+      "seed": 307,
+      "selected_epoch": 62,
+      "source_map_canonical_sha256": "be6f888a5316d26dfb6d75327b0247fd36706de538d51c03292c2ef038bf0a78"
+    }
+  ],
+  "runtime_limit": "Original cu128 compiled runtime was not restored or inferred from matching Python source. Actual inventory used 2.8.0+cpu without inference. Future evaluation runtime still needs binding and admission.",
+  "schema": "hcsn-21-model-D-only-selection-ledger-v1",
+  "scientific_admission": "HOLD",
+  "selection": {
+    "bytes": 1199262,
+    "path": "evidence/SELECTION.json",
+    "sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b"
+  },
+  "source_aliases": {
+    "bytes": 6707,
+    "path": "evidence/recovered-source/ALIASES.json",
+    "sha256": "b8d3e87e065dbd709fe60bba13678544877c307328fc8cf392a5de2130feb075"
+  },
+  "source_custody": "Three absent Python files from PR6214 original archive; five existing local installed copies match the original historical SHA exactly. No original path or environment modified.",
+  "source_parent_commit": "865e8f4960577f7e4774aa6c24df85fe5b3d5cb6",
+  "source_python_bytes_bound": 88,
+  "status": "D_SELECTION_AND_ACTUAL_BYTE_BINDINGS_COMPLETE_E_BLOCKED",
+  "training_forward_backward_optimizer_calls": 0
+}
