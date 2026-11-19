@@ -1,3 +1,7 @@
+#[cfg(test)]
+#[path = "hia_native_example_validation_candidate.rs"]
+mod hia_native_example_validation_candidate;
+
 pub(crate) mod amend;
 pub(crate) mod decision;
 pub(crate) mod error;
