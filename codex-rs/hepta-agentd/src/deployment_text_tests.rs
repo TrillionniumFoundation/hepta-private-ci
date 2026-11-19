@@ -79,12 +79,16 @@ fn retained_text_signature_uses_original_key_store_and_sequence_after_reopen() {
     let claims = crate::authbus_text_claims(&owner.agent_id, &first).unwrap();
     let message = SignedMessage {
         claims,
-        signature: crate::authbus_trust::hex_bytes(&first.signature_hex).unwrap(),
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(
+            crate::authbus_trust::hex_bytes(&first.signature_hex).unwrap(),
+        ),
     };
     let registration = IssuerRegistration {
         issuer_id: StableId::new(&first.issuer_id).unwrap(),
         key_epoch: Generation::new(first.key_epoch).unwrap(),
-        verifying_key: VerifyingKey::from_bytes(&public.verifying_key).unwrap(),
+        verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+            VerifyingKey::from_bytes(&public.verifying_key).unwrap(),
+        ),
         revoked: false,
     };
     assert!(

@@ -91,7 +91,9 @@ fn deployment_writer_objective_uses_original_claims_and_caps_expiry_to_the_live_
     let registration = IssuerRegistration {
         issuer_id: message.claims.issuer_id.clone(),
         key_epoch: message.claims.key_epoch,
-        verifying_key: VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+        verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+            VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+        ),
         revoked: false,
     };
     assert!(

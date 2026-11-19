@@ -143,7 +143,9 @@ fn signed_message(fixture: &Fixture, request: &AuthBusObjectiveIngress) -> Signe
         .collect();
     SignedMessage {
         claims: authbus_objective_claims(fixture.config.identity(), request).expect("claims"),
-        signature: bytes.try_into().expect("64-byte original signature"),
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(
+            bytes.try_into().expect("64-byte original signature"),
+        ),
     }
 }
 
@@ -156,7 +158,9 @@ fn deployment_authbus_uses_original_signature_and_registered_host_identity() {
     let registration = IssuerRegistration {
         issuer_id: message.claims.issuer_id.clone(),
         key_epoch: message.claims.key_epoch,
-        verifying_key: VerifyingKey::from_bytes(&trust.verifying_key).expect("public key"),
+        verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+            VerifyingKey::from_bytes(&trust.verifying_key).expect("public key"),
+        ),
         revoked: false,
     };
     let authenticated = message

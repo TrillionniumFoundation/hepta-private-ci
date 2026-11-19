@@ -35,7 +35,9 @@ fn objective_independent_issuer_revocation_refuses_new_canonical_signature() {
             &IssuerRegistration {
                 issuer_id: message.claims.issuer_id.clone(),
                 key_epoch: message.claims.key_epoch,
-                verifying_key: VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+                    VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                ),
                 revoked: false,
             },
             objective_scope(f.base.config.identity()),
@@ -112,7 +114,9 @@ fn original_text_body(f: &WriterFixture) -> crate::AuthBusTextBody {
 fn authenticate_original_text(f: &WriterFixture, signed: &crate::AuthBusTextIngress) {
     let message = SignedMessage {
         claims: crate::authbus_text_claims(&f.base.config.identity().agent_id, signed).unwrap(),
-        signature: crate::authbus_trust::hex_bytes(&signed.signature_hex).unwrap(),
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(
+            crate::authbus_trust::hex_bytes(&signed.signature_hex).unwrap(),
+        ),
     };
     let trust = f.base.issuer.trust_key().unwrap();
     message
@@ -120,7 +124,9 @@ fn authenticate_original_text(f: &WriterFixture, signed: &crate::AuthBusTextIngr
             &IssuerRegistration {
                 issuer_id: message.claims.issuer_id.clone(),
                 key_epoch: message.claims.key_epoch,
-                verifying_key: VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+                    VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                ),
                 revoked: false,
             },
             message.claims.scope_digest,
