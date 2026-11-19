@@ -1,0 +1,52 @@
+{
+  "artifact_sha256": "ed431ff60f5f14bcc1725f2570aca20d4a9e648a8d73a280a58b17e3cdaf3458",
+  "final_loss": 1.748380655708663e-07,
+  "initial_loss": 0.0007008358369839234,
+  "max_dde_error": 2.631272977282606e-11,
+  "max_mass_error": 1.1102230246251565e-15,
+  "members": {
+    "RESET_SNAPSHOT_STDERR.txt": {
+      "bytes": 470,
+      "sha256": "2be1b87e8224d233db5badeab85ee95a90f2a98e932c3218f04a201e1f5a508d"
+    },
+    "RESET_SNAPSHOT_STDOUT.txt": {
+      "bytes": 235,
+      "sha256": "5c5839cbdd3e0e93234ae456171da705bf4d7025f3444b12cc2affc6fd46089d"
+    },
+    "RUNTIME.txt": {
+      "bytes": 196,
+      "sha256": "10a5b4d6ffaf90707f63615ff7056fe0c193cd78afbfe7e6e423c9cd8ff4dae3"
+    },
+    "SOURCE_HEAD.txt": {
+      "bytes": 41,
+      "sha256": "69cd2615a0506ff9b74dcdf225180da04d043a7e50797d15f1a3706368efb3ae"
+    },
+    "STDERR.txt": {
+      "bytes": 1244,
+      "sha256": "c403ed5ed853e8d7c69029443571ff8ccfb629291f36f530aef39c1f56020377"
+    },
+    "STDOUT.txt": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "STUDY.json": {
+      "bytes": 3452,
+      "sha256": "c52bb42704eaf624b5e46fa4d906603d5aedacc587d7d134ece38edba995d41e"
+    }
+  },
+  "optimizer_steps": 60,
+  "peak_rss_kib": 407820,
+  "reader_model_calls": 0,
+  "reader_optimizer_calls": 0,
+  "source_head": "972a5b72c158761bc4dd7729b5d06bc50e1a8c53",
+  "source_sha256": {
+    "differentiable.py": "6dfcef11fa6ee43163bb72e661a8aec0c33453cfd2d353668049d2b0ad24be5e",
+    "study_differentiable.py": "d649f1f08e5f4f85cce5ee57a1c0ddfda1108032db8902d25d30364adb02613b",
+    "test_differentiable.py": "21a32527846660babb614dc212e4416998aa1bda245e6099a5699acc6dc0314b"
+  },
+  "study_main_cpu_seconds": 2.911521822,
+  "study_main_wall_seconds": 2.9123821129999925,
+  "tests_original": 6,
+  "tests_reset_snapshot": 2,
+  "timing_scope": "study body after numerical imports; not complete process or workflow cost"
+}

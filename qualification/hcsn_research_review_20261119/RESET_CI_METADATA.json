@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "workflow_run": 44481454177,
+  "artifact": {
+    "id": 14508981004,
+    "name": "differentiable-currentstate-44481454177-1",
+    "size_in_bytes": 3326,
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14508981004",
+    "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/14508981004/zip",
+    "expired": false,
+    "created_at": "2026-11-19T07:42:06Z",
+    "expires_at": "2027-02-17T07:40:41Z",
+    "updated_at": "2026-11-19T07:42:06Z",
+    "digest": "sha256:ed431ff60f5f14bcc1725f2570aca20d4a9e648a8d73a280a58b17e3cdaf3458",
+    "workflow_run": {
+      "id": 44481454177,
+      "repository_id": 1320694176,
+      "head_repository_id": 1320694176,
+      "head_branch": "research/hcsn-event-reset-snapshot-20261119-d741",
+      "head_sha": "972a5b72c158761bc4dd7729b5d06bc50e1a8c53"
+    }
+  },
+  "jobs": [
+    {
+      "id": 135414407243,
+      "name": "differentiable-currentstate",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Install the bounded CPU study dependencies",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Record the tested source and runtime",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify event-time reset snapshots and gradients",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify complete state, gradients and independent-target learning",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check clean executing source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 135414407638,
+      "name": "retained-currentstate-arithmetic",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify retained current-state evidence only",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Check clean executing source",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "head": "972a5b72c158761bc4dd7729b5d06bc50e1a8c53",
+  "independent_review_model_calls": 0
+}
