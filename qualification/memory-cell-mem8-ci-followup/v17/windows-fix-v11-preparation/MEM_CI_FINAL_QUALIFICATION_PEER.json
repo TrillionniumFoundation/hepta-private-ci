@@ -1,0 +1,68 @@
+{
+  "actions": {
+    "host_calls": 0,
+    "models": 0,
+    "native_execution": 0,
+    "refs_changed": false,
+    "workflow_admission": false
+  },
+  "files": [
+    {
+      "byte_identical_to_prior_peer": true,
+      "bytes": 15877,
+      "git_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "sha256": "3b6f63c55d18463ef12b5c35c456f52d720cff406615c616aa59e5514905b75f"
+    },
+    {
+      "byte_identical_to_prior_peer": true,
+      "bytes": 6574,
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+    },
+    {
+      "byte_identical_to_prior_peer": true,
+      "bytes": 4517,
+      "git_blob": "cfd269de944d445e4772cd943bc95695c595d3d9",
+      "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "sha256": "5fbb8a90e0666674f11afbd901f7ca96ba682d83d475c9e3912df808f20dd836"
+    },
+    {
+      "bytes": 7149,
+      "changed_field_only": "source_only_qualification",
+      "git_blob": "30da23e724b6dca96ec9f17477fe045757308925",
+      "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "sha256": "cb6493b284fb9c6ead6d49dfc2201baf24a9d05fc6f3812c34e15f7bcc59986b"
+    }
+  ],
+  "independent_checks": {
+    "actual_run_job_attempt_bound": true,
+    "all_20_dependency_pin_objects_unchanged": true,
+    "only_one_plan_field_changed": true,
+    "original_65min_and_one_fix_argv_unchanged": true,
+    "original_source_gate_root_audit_full_bytes_and_hash": {
+      "bytes": 1513,
+      "git_blob": "f6eca22113eb2612e5a88ff47b5d18124b64a11a",
+      "sha256": "cd82e07467d57c30e6174aea67d394e2935ab657e6111570400a12f730d58e82"
+    },
+    "other_three_full_objects_byte_identical": true,
+    "source_tree_no_formatter_delta_bound": true
+  },
+  "limits": [
+    "New Windows lint outcome remains unknown until its own exact-source run.",
+    "The source-only result does not close any native, protection, owner custody or scientific adoption gate."
+  ],
+  "prior_peer": {
+    "bytes": 2854,
+    "git_blob": "76618e120bb43e1894b201a9066c5c01458b7d56",
+    "sha256": "a1b305ba8184cb207cb7eb148a385c02c939931f61a40c4bc1a606b6b3f217f3"
+  },
+  "qualification_scope": "The root replay records the real V11 source-only gate. This review verifies its exact metadata binding; it does not reexecute that gate or the Windows lint. Original V10 dirty-source FAIL remains unchanged.",
+  "reviewed_at": "2026-11-11T17:52:05.386874+00:00",
+  "schema": "mem8.windows-sandbox-lint.v11.final-binding-peer.v1",
+  "scope": "final qualification binding delta only; original independent mechanical peer retained",
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+  "verdict": "NO_STATIC_MUST_FIX"
+}

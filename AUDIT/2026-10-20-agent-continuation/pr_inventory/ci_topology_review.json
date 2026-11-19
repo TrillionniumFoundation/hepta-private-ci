@@ -1,0 +1,62 @@
+{
+  "reviewer": "/root/pr_inventory (engineering review; not a production signer or operator)",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_reviewed": "ca5b70d2684fb96063f5b70bb276525906dae7b6",
+  "fixture_source": "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d",
+  "read_only_scope_validation": {
+    "exact_original_fixture_diff": [
+      "codex-rs/hepta-fleet/src/registry_tests.rs"
+    ],
+    "original_scope": {
+      "effects": false,
+      "inference": false,
+      "learning": false,
+      "lifecycle": true,
+      "objective": false,
+      "native": true,
+      "derived": false,
+      "full_repo": false
+    },
+    "proposed_A_scope": {
+      "effects": true,
+      "inference": true,
+      "learning": true,
+      "lifecycle": true,
+      "objective": true,
+      "native": true,
+      "derived": true,
+      "full_repo": true
+    },
+    "proposed_B_scope": {
+      "effects": false,
+      "inference": false,
+      "learning": false,
+      "lifecycle": true,
+      "objective": false,
+      "native": true,
+      "derived": false,
+      "full_repo": false
+    }
+  },
+  "proposed_topology": {
+    "A": "New independent ref on ca5b70; only three low-disk Cargo profile env settings and non-mutating df/inode diagnostics in blocking-ci",
+    "B": "New independent ref on A; replay only exact #2919 registry_tests.rs blob"
+  },
+  "decision": "SUPPORTED_FOR_ENGINEERING_VALIDATION; not evidence of execution or production qualification",
+  "preserved_boundaries": [
+    "A full-repo required jobs still apply",
+    "B uses the original exact before/after dependency planner and complete reverse-consumer selection",
+    "No modification to test selectors, advisory policy, authorization or source/merge gate definitions",
+    "Distinct head refs prevent mutual cancellation for blocking-ci, architecture convergence and V8; distinct PRs isolate signed-admission concurrency"
+  ],
+  "conditions": [
+    "Freeze both source refs and base A after publication; capture source/base/merge SHAs for every attempt",
+    "B must contain only the exact registry_tests.rs change relative to A so that native=true/full_repo=false remains true",
+    "Preserve native test return status and failure artifacts; after-resource sampling must use if: always() and must not rewrite test outcome",
+    "Require nonzero selected packages and actual executed tests; cancelled/skipped or compile-only output do not close ENOSPC",
+    "B scoped success is not same-source full-repo, Windows/Bazel, main integration or production qualification",
+    "Any later A or B update invalidates assumed inheritance and needs refreshed exact-source evidence"
+  ],
+  "rationale": "Workflow-only changes deliberately route A to the existing full-repo boundary. The separate B child creates a real Rust-owner change while inheriting A's low-disk native configuration, exercising the previously skipped lane without weakening the scope selector.",
+  "permission_posture": "DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO"
+}

@@ -2340,6 +2340,7 @@ pub enum ContextCompilerV2Error {
     SerializationMismatch,
     AttachmentMismatch,
     DeliveryMismatch,
+    DeliveryEvidenceEncodingFailed,
     MissingProviderInputBinding,
     MissingProviderInputWitness,
     ProviderModelProfileMismatch,

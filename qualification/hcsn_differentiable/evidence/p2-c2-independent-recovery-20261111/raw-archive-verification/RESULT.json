@@ -1,0 +1,106 @@
+{
+  "archive": {
+    "bytes": 4368037,
+    "part_order_offsets_sizes_and_hashes_match": true,
+    "parts_checked": 10,
+    "sha256": "a1f624d88b3e240b3e583987210a1422c47cbab92ecd59beee5a1c6b28b2d92b"
+  },
+  "archive_directory": "/workspace/scratch/3b200f7a9475/hcsn-candidate/qualification/hcsn_differentiable/evidence/p2-c2-independent-recovery-20261111/original-selected-state",
+  "checkpoint_deserialization_performed": false,
+  "checks_passed": 2683,
+  "completed_at_utc": "2026-11-11T05:20:18.984879+00:00",
+  "cpu_seconds": 0.15816591,
+  "errors": [],
+  "input_bytes_unchanged": true,
+  "input_files": {
+    "ARCHIVE-PARTS.json": {
+      "bytes": 2733,
+      "sha256": "ecf077ee53c88a044bc722b857ae6beac5b40af36bc9c8ce057331f2062fe990"
+    },
+    "ORIGINAL-SOURCE-MANIFEST.json": {
+      "bytes": 75210,
+      "sha256": "f82667a9edf34646cb760c315bfaa10b1102e76abbad7a015c8d0c0cd2d75ae5"
+    },
+    "README.md": {
+      "bytes": 907,
+      "sha256": "0f804e3177433ea730e6c628aca19bace2ca99c7b2a2ef58fd349e9775e87a92"
+    },
+    "original-c2-selected-state.zip.part-00": {
+      "bytes": 450000,
+      "sha256": "48a8503a465db553547bdd97b7d2fa8c77ee6d646c1a840eaca611a81e08545d"
+    },
+    "original-c2-selected-state.zip.part-01": {
+      "bytes": 450000,
+      "sha256": "eff0a95544930ec610cb77ba600200effb2a7807f2434020b8943f3d866f9827"
+    },
+    "original-c2-selected-state.zip.part-02": {
+      "bytes": 450000,
+      "sha256": "3a036268433f5b69763765781fcb527c016301206b0ef6b0f52243ee4a3b0dc0"
+    },
+    "original-c2-selected-state.zip.part-03": {
+      "bytes": 450000,
+      "sha256": "1403830ae742785353587c01b011d7a6c1cc0f8f9a6867e66c2ccd65bf4a794d"
+    },
+    "original-c2-selected-state.zip.part-04": {
+      "bytes": 450000,
+      "sha256": "9f0bfcb8068605adb01183b0cc4a59490990acbe99ef0657256fe9fe4034ca58"
+    },
+    "original-c2-selected-state.zip.part-05": {
+      "bytes": 450000,
+      "sha256": "21f52fb2a7d0a60e13cd6cc1c7a5535024121998cb02a28c3e33999b23228474"
+    },
+    "original-c2-selected-state.zip.part-06": {
+      "bytes": 450000,
+      "sha256": "adea2906f12d91d7ca12978f917c4ad26eeeecc2ad0e230b536898ee8582af38"
+    },
+    "original-c2-selected-state.zip.part-07": {
+      "bytes": 450000,
+      "sha256": "89fdc8c743d8a4dc64a915214648504e04c0268e6360d43b33b41e0619d5a396"
+    },
+    "original-c2-selected-state.zip.part-08": {
+      "bytes": 450000,
+      "sha256": "c25614cb5b74c772ce71fe7632350bcb63108427666ff331a9491559cf284d25"
+    },
+    "original-c2-selected-state.zip.part-09": {
+      "bytes": 318037,
+      "sha256": "8f9ec6a4c7ec9a3acf17faaf9c65a6360e77c54b61847909d3fe665c3002a8da"
+    }
+  },
+  "original_controller_terminal": "unknown",
+  "original_controller_terminal_inferred": false,
+  "qualification": "HOLD_NO_GO",
+  "runtime": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "implementation": "CPython",
+    "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+    "python": "3.12.14"
+  },
+  "schema": "hcsn-original-c2-selected-archive-independent-verification-v1",
+  "scope": "Independent byte-integrity verification only; no extraction, checkpoint deserialization, training, or adoption.",
+  "script_sha256": "84bbd69df3104cdc594da3e0c8b431f67785d0f4e975c30a7044783fc8e4ee91",
+  "selected_content_counts": {
+    "immutable_epoch_commit_records": 289,
+    "nonempty_best_checkpoints": 4,
+    "nonempty_checkpoint_payloads": 6,
+    "nonempty_last_checkpoints": 2,
+    "zero_byte_source_members": 16
+  },
+  "started_at_utc": "2026-11-11T05:20:18.821841+00:00",
+  "status": "PASS",
+  "verified_source_inventory_sha256": "348e461156cdf0cdab83c644991e3798783022e7fcb265fca5ea412d0902a1fa",
+  "verifier_source_unchanged": true,
+  "wall_seconds": 0.1581592990005447,
+  "zip": {
+    "all_member_crc_checks_passed": true,
+    "embedded_manifest_bytes": 75210,
+    "embedded_manifest_matches_external_bytes": true,
+    "embedded_manifest_sha256": "f82667a9edf34646cb760c315bfaa10b1102e76abbad7a015c8d0c0cd2d75ae5",
+    "explanatory_metadata_member": "MANIFEST.json",
+    "missing_source_members": [],
+    "source_bytes_checked": 16003349,
+    "source_members_checked": 368,
+    "total_members": 369,
+    "total_uncompressed_bytes": 16078559,
+    "unexpected_members": []
+  }
+}

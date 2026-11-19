@@ -255,6 +255,18 @@ pub trait FinalHoldoutProviderV1 {
     ) -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1> {
         Err(ProductProviderErrorV1::Rejected)
     }
+
+    /// Release independently admitted paired inputs while borrowing and
+    /// re-reading the same original owner as the shared-behavior path.
+    fn release_paired_after_original_consumption(
+        &mut self,
+        consumed: OriginalFinalHoldoutConsumptionV1<'_>,
+        pairing: &OnPolicyPairingContractV1,
+    ) -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1> {
+        consumed.with_current_paired_consumption(|_, _, receipt| {
+            self.release_paired_after_consumption(receipt, pairing)
+        })
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

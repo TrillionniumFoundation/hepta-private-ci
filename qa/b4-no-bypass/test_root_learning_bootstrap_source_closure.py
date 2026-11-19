@@ -240,8 +240,19 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
     def test_unassembled_stage_owners_are_refused_before_runtime_side_effects(self):
         self.rejects(CONFIG, "fn require_root_learning_assembled(", "self.root_learning_inputs.is_some()")
         self.rejects(LAUNCHER, "fn run(", "config.require_root_learning_assembled()?")
-        self.rejects(AGENT + "runtime.rs", "fn run_with_shutdown(", "config.require_root_learning_assembled()?")
+        self.rejects(AGENT + "runtime.rs", "fn run_composed_with_shutdown(", "config.require_root_learning_assembled()?")
         self.rejects(CONFIG, "fn with_root_learning_stage_owners(", "inputs.into_learning_runtime(stages, verifier, capacity)?")
+
+    def test_original_shutdown_entry_delegates_to_guarded_composition(self):
+        runtime = AGENT + "runtime.rs"
+        self.rejects(
+            runtime, "fn run(",
+            "run_with_shutdown(config, arg0_paths, shutdown_signal()).await",
+        )
+        self.rejects(
+            runtime, "fn run_with_shutdown(",
+            "run_composed_with_shutdown(config, arg0_paths, shutdown, /*memory_bootstrap*/ None).await",
+        )
 
     def test_original_source_scope_requires_registered_membership(self):
         function = "fn require_circuit_learning_source("
@@ -319,7 +330,7 @@ class RootLearningBootstrapSourceClosureTests(unittest.TestCase):
 
     def test_pending_guard_must_execute_at_top_level(self):
         guard = "config.require_root_learning_assembled()?;"
-        for path, function in ((LAUNCHER, "fn run("), (AGENT + "runtime.rs", "fn run_with_shutdown(")):
+        for path, function in ((LAUNCHER, "fn run("), (AGENT + "runtime.rs", "fn run_composed_with_shutdown(")):
             for replacement in ("if false { " + guard + " }", "fn unused() { " + guard + " }"):
                 with self.subTest(path=path, replacement=replacement):
                     self.rejects(path, function, guard, replacement=replacement)

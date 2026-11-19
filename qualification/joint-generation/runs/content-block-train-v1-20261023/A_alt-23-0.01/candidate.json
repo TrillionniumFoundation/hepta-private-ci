@@ -1,0 +1,40 @@
+{
+  "artifact": {
+    "digest": "3d956887a6a7bb694dd353ebb3a1759a4327ed3189a9e23c7ebb0debc7c0d5f8",
+    "file": "model.npz",
+    "serialization_cpu_seconds": 0.005728786999998903,
+    "sha256": "efa3c3b60cfdb8c2bd3f790d198b82be2139f92a3d7a3668a0193bba23e22f57"
+  },
+  "clocks": {
+    "bias": 256,
+    "encoder": 256,
+    "image": 512,
+    "image_bias": 512,
+    "text": 512,
+    "text_bias": 512
+  },
+  "first_head_skip": {
+    "after_sha256": "e7c2cb69772f45647de7a1694a0b8c1642a95730990e3ea77744842f2080fd78",
+    "before_sha256": "e7c2cb69772f45647de7a1694a0b8c1642a95730990e3ea77744842f2080fd78"
+  },
+  "lr": 0.01,
+  "name": "A_alt-23-0.01",
+  "pair_units": 3469436,
+  "quota_cpu": 0.6244312643333334,
+  "quota_units": 890158752,
+  "seed": 23,
+  "training_cpu": 0.4375555640000002,
+  "training_units": 888183696,
+  "update_types": {
+    "heads": 256,
+    "joint": 256
+  },
+  "updates": 512,
+  "validation": {
+    "consistency": 0.980332873512434,
+    "greedy_joint_success": 0.9856770833333334,
+    "joint_success": 0.9697777500394125,
+    "pixel_mse": 0.0006789929709978465,
+    "task_utility": 0.9714461707928136
+  }
+}

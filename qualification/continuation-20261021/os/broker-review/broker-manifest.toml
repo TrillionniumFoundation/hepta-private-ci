@@ -1,0 +1,11 @@
+[package]
+name = "trill-ui-broker"
+version = "0.1.0"
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+trill-ui-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true

@@ -64,8 +64,10 @@ EXPECTED = {
     "learning_original_training_command_model_recover": ("codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs",),
     "learning_original_training_command_model_commit": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
     "learning_original_training_command_model_readback": ("codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs", "codex-rs/hepta-agentd/src/cell_q24_model_read_host_operation.rs",),
-    "cell_q24_model_material_digest": ('codex-rs/hepta-agentd/src/cell_q24_model_projection.rs',
- 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_verify.rs'),
+    "cell_q24_model_material_digest": (
+        AGENT + "cell_q24_model_projection.rs",
+        AGENT + "neuron_cell_evaluation_model_material_verify.rs",
+    ),
     "root_resident_gate_effect_current": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_evaluation.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_readback.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
     "root_resident_gate_training_cancel": ("codex-rs/hepta-agentd/src/cell_q24_candidate_stage_adoption.rs", "codex-rs/hepta-agentd/src/cell_q24_candidate_stage_model.rs", "codex-rs/hepta-agentd/src/cell_q24_no_update_stage_execute.rs",),
     "root_resident_concrete_stages_initial": ("codex-rs/hepta-agentd/src/authority_host_learning_resident_runtime.rs", "codex-rs/hepta-agentd/src/authority_host_learning_resident_auth.rs",),
@@ -292,7 +294,7 @@ class OriginalModelRootClosureTests(unittest.TestCase):
             "common.original_training.as_ref() != Some(&self.training)",
             "common.records.get(..3) != Some(self.records.as_slice())",
             "auth::require_clock(self.started, fresh)?",
-            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
+            "auth::verify_prefix(&self.owners.common.material, &self.training_cut, common, fresh)?",
         ):
             self.rejects(OPERATION, "fn close(", marker)
         self.rejects(OPERATION, "fn authenticate_result(",

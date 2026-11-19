@@ -1,0 +1,115 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.27
+   Compiling libc v0.2.191
+   Compiling predicates-core v1.0.10
+   Compiling syn v3.0.9
+   Compiling memchr v2.8.3
+   Compiling assert_cmd v2.2.2
+   Compiling anstyle v1.0.14
+   Compiling thiserror v2.0.21
+   Compiling difflib v0.4.0
+   Compiling regex-automata v0.4.18
+   Compiling termtree v0.5.1
+   Compiling predicates-tree v1.0.13
+   Compiling thiserror-impl v2.0.21
+   Compiling bstr v1.13.1
+   Compiling predicates v3.1.4
+   Compiling wait-timeout v0.2.1
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/utils/cargo-bin)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 5.63s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 53cbdc0f-b7e7-414b-b175-29bff3a41686 with nextest profile: local
+    Starting 2 tests across 1 binary
+        FAIL [   0.005s] codex-utils-cargo-bin::manifest_only unrelated_bazel_binary_does_not_enable_cargo_fallback
+  stdout ───
+
+    running 1 test
+    test unrelated_bazel_binary_does_not_enable_cargo_fallback ... FAILED
+
+    failures:
+
+    failures:
+        unrelated_bazel_binary_does_not_enable_cargo_fallback
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'unrelated_bazel_binary_does_not_enable_cargo_fallback' (534) panicked at utils/cargo-bin/tests/manifest_only.rs:38:5:
+    child exited with exit status: 101
+    stdout:
+
+    running 1 test
+    test unrelated_bazel_binary_does_not_enable_cargo_fallback ... FAILED
+
+    failures:
+
+    failures:
+        unrelated_bazel_binary_does_not_enable_cargo_fallback
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+    stderr:
+
+    thread 'unrelated_bazel_binary_does_not_enable_cargo_fallback' (536) panicked at /tmp/hepta-wave2-tools/cargo-deny-cache/registry/src/index.crates.io-1949cf8c6b5b557f/assert_cmd-2.2.2/src/cargo.rs:232:5:
+    `CARGO_BIN_EXE_codex-code-mode-host` is unset
+    help: available binary names are "codex"
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        FAIL [   0.007s] codex-utils-cargo-bin::manifest_only undeclared_bazel_binary_returns_not_found
+  stdout ───
+
+    running 1 test
+    test undeclared_bazel_binary_returns_not_found ... FAILED
+
+    failures:
+
+    failures:
+        undeclared_bazel_binary_returns_not_found
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'undeclared_bazel_binary_returns_not_found' (537) panicked at utils/cargo-bin/tests/manifest_only.rs:38:5:
+    child exited with exit status: 101
+    stdout:
+
+    running 1 test
+    test undeclared_bazel_binary_returns_not_found ... FAILED
+
+    failures:
+
+    failures:
+        undeclared_bazel_binary_returns_not_found
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+
+
+    stderr:
+
+    thread 'undeclared_bazel_binary_returns_not_found' (539) panicked at /tmp/hepta-wave2-tools/cargo-deny-cache/registry/src/index.crates.io-1949cf8c6b5b557f/assert_cmd-2.2.2/src/cargo.rs:232:5:
+    `CARGO_BIN_EXE_codex` is unset
+    help: if this is running within a unit test, move it to an integration test to gain access to `CARGO_BIN_EXE_codex`
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+────────────
+     Summary [   0.009s] 2 tests run: 0 passed, 2 failed, 0 skipped
+        FAIL [   0.007s] codex-utils-cargo-bin::manifest_only undeclared_bazel_binary_returns_not_found
+        FAIL [   0.005s] codex-utils-cargo-bin::manifest_only unrelated_bazel_binary_does_not_enable_cargo_fallback
+error: test run failed
+error: recipe `test` failed on line 89 with exit code 100

@@ -24,7 +24,6 @@ use std::fmt::Write;
 use std::ptr;
 
 use allocative::Allocative;
-use derivative::Derivative;
 use derive_more::Display;
 use dupe::Dupe;
 use starlark_derive::NoSerialize;
@@ -331,8 +330,7 @@ pub(crate) struct CopySlotFromParent {
 }
 
 /// Static info for `def`, `lambda` or module.
-#[derive(Derivative, Display, StarlarkPagable)]
-#[derivative(Debug)]
+#[derive(Display, StarlarkPagable)]
 #[display("DefInfo")]
 pub(crate) struct DefInfo {
     pub(crate) name: FrozenStringValue,
@@ -354,11 +352,9 @@ pub(crate) struct DefInfo {
     /// Module-level identifiers are not copied over, to avoid excess copying.
     pub(crate) parent: FrozenAnyArray<CopySlotFromParent>,
     /// Statement compiled for non-frozen def.
-    #[derivative(Debug = "ignore")]
     stmt_compiled: Bc,
     // The compiled expression for the body of this definition, to be run
     // after the parameters are evaluated.
-    #[derivative(Debug = "ignore")]
     body_stmts: StmtsCompiled,
     /// How to compile the statement on freeze.
     stmt_compile_context: StmtCompileContext,
@@ -367,6 +363,24 @@ pub(crate) struct DefInfo {
     /// Globals captured during function or module creation.
     /// Only needed for debugger evaluation.
     pub(crate) globals: FrozenAnyValue<Globals>,
+}
+
+impl std::fmt::Debug for DefInfo {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DefInfo")
+            .field("name", &self.name)
+            .field("signature_span", &self.signature_span)
+            .field("parameter_captures", &self.parameter_captures)
+            .field("ty", &self.ty)
+            .field("codemap", &self.codemap)
+            .field("docstring", &self.docstring)
+            .field("used", &self.used)
+            .field("parent", &self.parent)
+            .field("stmt_compile_context", &self.stmt_compile_context)
+            .field("inline_def_body", &self.inline_def_body)
+            .field("globals", &self.globals)
+            .finish()
+    }
 }
 
 impl DefInfo {
@@ -530,10 +544,7 @@ impl Compiler<'_, '_, '_, '_> {
 
 /// Starlark function internal representation and implementation of
 /// [`StarlarkValue`].
-#[derive(
-    Derivative, NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable,
-)]
-#[derivative(Debug)]
+#[derive(NoSerialize, ProvidesStaticType, Trace, Allocative, starlark_derive::StarlarkPagable)]
 pub(crate) struct DefGen<V> {
     pub(crate) parameters: ParametersSpec<V>, // The parameters, **kwargs etc including defaults (which are evaluated afresh each time)
     /// Indices of parameters, which are captured in nested defs.
@@ -552,20 +563,31 @@ pub(crate) struct DefGen<V> {
     /// [`ValueCaptured`] or [`FrozenValueCaptured`].
     captured: Vec<V>,
     // Important to ignore these field as it probably references DefGen in a cycle
-    #[derivative(Debug = "ignore")]
     /// A reference to the module where the function is defined after the module has been frozen.
     /// When the module is not frozen yet, this field contains `None`, and function's module
     /// can be accessed from evaluator's module.
     #[allocative(skip)]
     pub(crate) module: AtomicFrozenAnyValueOption<FrozenModuleData>,
     /// This field is only used in `FrozenDef`. It is populated in `post_freeze`.
-    #[derivative(Debug = "ignore")]
     #[allocative(skip)]
     #[starlark_pagable(
         serialize_with = "serialize_optimized_on_freeze_stmt",
         deserialize_with = "deserialize_optimized_on_freeze_stmt"
     )]
     optimized_on_freeze_stmt: StmtCompiledCell,
+}
+
+impl<V: std::fmt::Debug> std::fmt::Debug for DefGen<V> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("DefGen")
+            .field("parameters", &self.parameters)
+            .field("parameter_captures", &self.parameter_captures)
+            .field("parameter_types", &self.parameter_types)
+            .field("return_type", &self.return_type)
+            .field("def_info", &self.def_info)
+            .field("captured", &self.captured)
+            .finish()
+    }
 }
 
 fn serialize_optimized_on_freeze_stmt(

@@ -11,6 +11,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
@@ -104,10 +106,10 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
         assert end is not None
-        body = source[start : end + 1]
-        self.assertEqual(body.count(marker), 1, (function, marker))
-        offset = start + body.index(marker)
-        self.rejects_source(source[:offset] + replacement + source[offset + len(marker) :], path)
+        offset, after = source_marker_span(source, marker, start, end + 1)
+        with self.assertRaises(ValueError):
+            source_marker_span(source, marker, after, end + 1)
+        self.rejects_source(source[:offset] + replacement + source[after:], path)
 
     def reject_unregistered_caller(self, row):
         method = row.symbol.rsplit("::", 1)[-1]
@@ -149,6 +151,8 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             # and deletion mutants below; only the real stage is an outside caller.
             "evaluation_original_sources_attest": (EVALUATION_STAGE,),
             "evaluation_original_sources_readback": (EVALUATION_STAGE,),
+            "learning_original_evaluation_receipt_operation_attest": (HOST,),
+            "learning_original_evaluation_receipt_operation_read": (HOST,),
         }
         for identifier, expected in ports.items():
             with self.subTest(boundary=identifier):
@@ -218,10 +222,11 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
 
     def test_current_original_sources_and_durable_pending_precede_exact_signature(self):
         self.rejects("fn attest_original_completion<", "self.attest_original_sources(source.into()).await")
+        self.rejects("fn attest_original_sources<", "self.attest_sources_with_training(source, TrainingRead::Independent)")
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "let prepared = self.prepare(&mut source)?",
-            ".receipt_evidence(source.trainer, source.snapshot, &self.config)",
+            ".original_training_evidence(source.trainer, source.snapshot, training)",
             "self.authenticate_roles(&source, &prepared.1, &observed_training)?",
             "if self.prepare(&mut source)? != prepared",
             "learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
@@ -234,13 +239,13 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
             "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn attest_with_training<", marker, path=OPERATION)
+                self.rejects("fn attest_sources_with_training<", marker, path=OPERATION)
         for marker in (
             "if now()? >= self.config.training.request.envelope.expiry_unix_seconds",
             "if issued_at >= self.config.training.request.envelope.expiry_unix_seconds",
         ):
             with self.subTest(deadline=marker):
-                self.rejects("fn attest_with_training<", marker, marker.replace(">=", ">"), path=OPERATION)
+                self.rejects("fn attest_sources_with_training<", marker, marker.replace(">=", ">"), path=OPERATION)
 
     def test_actual_time_full_principals_and_controller_separation_remain_required(self):
         for marker in (
@@ -268,17 +273,18 @@ class OriginalEvaluationReceiptOwnerSourceClosureTests(unittest.TestCase):
 
     def test_original_signature_readback_revalidates_sources_and_witness_before_ack(self):
         self.rejects("fn readback<", "self.readback_sources(source.into()).await")
+        self.rejects("fn readback_sources<", "self.readback_sources_with_training(source, TrainingRead::Independent)")
         for marker in (
             "let prepared = self.prepare(&mut source)?",
             "let bytes = self.journal.read(&self.saved)?",
             "self.authenticate_completed(&mut source, prepared, &bytes, training)",
         ):
             with self.subTest(marker=marker):
-                self.rejects("fn readback_with_training<", marker, path=OPERATION)
+                self.rejects("fn readback_sources_with_training<", marker, path=OPERATION)
         for marker in (
             "learning_owner_evidence::decode(bytes)?",
             "if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)?",
-            ".receipt_evidence(source.trainer, source.snapshot, &self.config)",
+            ".original_training_evidence(source.trainer, source.snapshot, training)",
             "if self.prepare(source)? != prepared",
             "self.authenticate_roles(source, &prepared.1, &observed_training)?",
             ".verify(LearningEvidenceRoleV1::Evaluator, &signed, &payload, now()?)?",

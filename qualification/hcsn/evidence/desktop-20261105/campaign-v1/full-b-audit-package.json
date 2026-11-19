@@ -1,0 +1,81 @@
+{
+  "schema": "hcsn-external-full-b-cuda-audit-package-v1",
+  "prepared_at_utc": "2026-11-05T16:54:55.700268+00:00",
+  "status": "prepared-only; no Torch numerical or CUDA execution by this preparation",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original_baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "parent_reported_candidate_commit": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+  "executable_files": [
+    "audit_full_b_cuda.py",
+    "PROTOCOL.json"
+  ],
+  "files_sha256": {
+    "audit_full_b_cuda.py": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+    "PROTOCOL.json": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+    "check_non_torch.py": "c71d068df91fc871edc6713275f6dbe5bdd02f838211f4fb5eff25ce78d4c849",
+    "README.md": "7b84c9b56118c3418e6a5b8ee9980e45c2286d2c2fbccba69019b092ad2f99b0",
+    "independent-static-review-v2.json": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e",
+    "negative-controls-v1/RESULT.json": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587",
+    "negative-controls-v1/checkpoint_hash_mismatch/output.json": "88359c20ceaa25385d4e8a2b434cf5f6b6fd4b4fec48c0481bf09225373b18a7",
+    "negative-controls-v1/checkpoint_path_escape/output.json": "9d80479436e8609e077c999ddd0f97492451e935804460c7e3346849b220d4e7",
+    "negative-controls-v1/coverage_policy0/output.json": "bffb90168317781db67ce007d7406ddf1a2fce2d988aaf1f3ec031f4caa33ba4",
+    "negative-controls-v1/coverage_policy1/output.json": "ccbe94c912162bbbfee07405422206d00de57570bde21ac8b9d6cdc1fa501cfa",
+    "negative-controls-v1/duplicate_identity/output.json": "d73fd4659fe89add6ab4f5d8c732a4417860f0cf7b501c8ddcd4d49242e95947",
+    "negative-controls-v1/existing_output/output.json": "77e7a00ad4ad5919ae6b41dcc953d745ef073474ecd640d60efc5a4412252e83",
+    "negative-controls-v1/launch_arguments_mismatch/output.json": "1ace8d85729e8687913594a118285b4f0a5d7e59694f436e6b9d027658420ddf",
+    "negative-controls-v1/launch_binding_coverage/output.json": "163ee1f5f8315ac0c7ee83bfb99e23cd3ba739c13b3ecd16a3e73bfaf9362490",
+    "negative-controls-v1/launch_entry_hash_mismatch/output.json": "ca5f81f3c2c59ac4cb4943a69293c4b6748c08c1d99f0052c840e1554b147ef1",
+    "negative-controls-v1/launch_stale_pid/output.json": "a898d1f1733cc80d3c0592cff76ad93d61b4d65a57b1eb7326da599b9152f735",
+    "negative-controls-v1/missing_cublas_environment/output.json": "bd47477896d85eec563cae1a23b14a1d254801aec6cb8027b476bb36fe8c4535",
+    "negative-controls-v1/missing_identity/output.json": "14520429ab6d9e3f74c9a1c8a96d84064c87c03b3ad90e9f30e8a13b89d5dea4",
+    "negative-controls-v1/package_config_drift/output.json": "693797e0540f4c5750d123e1fe301bdcec45a7b3b6f20cff497fe37fee5ab73f",
+    "negative-controls-v1/preimport_without_launch_profile/output.json": "c0dc74f64dc08037582e5bd93e2edc97f08c067dd6343780b888b40719e8f18a",
+    "negative-controls-v1/protocol_drift/output.json": "7c604edbf84fef292cb5623768f83cd42a06abe52b36cb7aaf4c0cf6127729d3",
+    "negative-controls-v1/report_source_drift/output.json": "0efe246b44ed37f0abcb2ec12549e1eed03db8fbe26739b7ab4498fd6027f588",
+    "negative-controls-v1/runtime_flags_drift/output.json": "1cc2e95df547aca8abfbc449d4b738c41ee34dc6c2756271ce21c1e1fd47f6ae",
+    "negative-controls-v1/runtime_link_mismatch/output.json": "10ce2fa64551cb666401b874ee33cc79a0029f2539869ad12bbd4314ffb8f560",
+    "negative-controls-v1/selected_budget_drift/output.json": "15e1e9e01db370d707c847edcf44408b8e57c623b31a76ce8481e9f883b18322",
+    "negative-controls-v1/source_drift/output.json": "6849ba0a12d6496d1a9c4ff5c9b3e51c9051b938371c598d4070058ec2f634ed"
+  },
+  "frozen_execution_manifest_sha256": "ee1068a36159db68a4e5b08c2046c2ef520fe175d7a0c19b63e29de72cac47d8",
+  "frozen_candidate_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+  "frozen_candidate_package_files_verified": 32,
+  "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "original_baseline_package_files_verified": 28,
+  "original_baseline_package_verified_against": "frozen Git blob SHA-1 and SHA-256 map",
+  "protected_files_unchanged": {
+    "cuda-preflight/probe.py": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+    "cuda-preflight/probe-rematerialized.py": "f8a2b7c193d2750cafb95446eff314195ca54ebb0305c008a35336f6bd874e08",
+    "remat-candidate/qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "remat-candidate/check_rematerialization.py": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509",
+    "remat-candidate/CANDIDATE.json": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b",
+    "numeric-audit/smoke-replay/smoke.json": "42d9224251fcee5e5a71f9da88542f72c06636fabd335986785b6fda7b412aae",
+    "numeric-audit/audit_population_separable.py": "3cc52d2f45f6d2917559da4187cd73093bfa4c348fa5a96a52845a9fc293ff9b",
+    "numeric-audit/smoke-replay/smoke.runs/87bbb2ae0e83b6d311dc58683517212df4f26855a0eb62d1aef53ac791521bb8.attempts/96295eb2a6b04435b27c26748c8eec64.pt": "400981bf6b6b266a0ac469cdd83a4ea834c66e2765237afc0f8ffd7a4313cfc8",
+    "numeric-audit/smoke-replay/smoke.runs/835c7fc476fb80cd6c1702aa71452e0e83522040a44d49dea8d36d2a3192685c.attempts/742cd66852b048a99b16909d1e7e3075.pt": "e9088c5778049de93dc2afd5bb532c46c5583f02e9dcc5fcf58a5e1ce860d110",
+    "numeric-audit/smoke-replay/smoke.runs/70537658fdcd50c83cee943c2e0e34ed1343d138e3ba252fe118879d2792d02a.attempts/99591914a4da49b4a4f843aeb039569e.pt": "a5d0f1d9edba126f0c23c615494a83092da31219f71b570ce393ae8d1fcdcfb6"
+  },
+  "preparation_controls": {
+    "status": "passed",
+    "passed": 21,
+    "failed": 0,
+    "torch_numerical_execution": false,
+    "cuda_execution": false,
+    "synthetic_preimport_placeholder_only": true
+  },
+  "independent_review": {
+    "path": "independent-static-review-v2.json",
+    "sha256": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e",
+    "scope": "static interface/protocol/measurement review; no Torch or CUDA execution"
+  },
+  "original_matrix_denominator": 170,
+  "requested_b_runs": 20,
+  "allowed_policies": [
+    0,
+    1
+  ],
+  "counts_toward_170_runs": false,
+  "research_convergence_qualified": null,
+  "no_change_to_frozen_package_or_previous_diagnostics": true,
+  "deployment": "Parent supervisor may copy executable files without changing their bytes; PROTOCOL.json must stay beside the script. Actual launch remains gated by real runtime receipts."
+}

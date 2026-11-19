@@ -1,0 +1,47 @@
+{"official_index_sha256": "cb9a8ba8137ab24e36bf1742cb79a1294bd374db570f09fc15a5e1318160db4e", "verified_sha256": "cb9a8ba8137ab24e36bf1742cb79a1294bd374db570f09fc15a5e1318160db4e", "bytes": 183914597, "initial_official_url": "https://download-r2.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", "final_range_official_url": "https://download.pytorch.org/whl/cpu/torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl", "final_range": [102680576, 104777727], "final_range_sha256": "acc26c109fbf938298fce2c6cc0dccc87687174018eef5b93f1be4a4a93a60f0", "prior_failed_jobs": ["1a1f24892ee-ffbe-aba", "1a1f253ff32-ffbe-adc", "1a1f25ec4c6-ffbe-af9"], "all_retained_bytes_verified_by_complete_sha256": true, "wheel": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/wheels/torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl", "optimizer_calls": 0}
+Processing ./hepta-c2-cold-resume-20261119-d741/wheels/torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl
+Collecting numpy==2.3.5
+  Using cached numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+Collecting mpmath==1.3.0
+  Using cached mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting einops==0.8.1
+  Downloading einops-0.8.1-py3-none-any.whl.metadata (13 kB)
+Collecting filelock (from torch==2.8.0+cpu)
+  Downloading filelock-4.2.12-py3-none-any.whl.metadata (2.3 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.8.0+cpu)
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting setuptools (from torch==2.8.0+cpu)
+  Downloading setuptools-84.2.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting sympy>=1.13.3 (from torch==2.8.0+cpu)
+  Using cached sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+Collecting networkx (from torch==2.8.0+cpu)
+  Using cached networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+Collecting jinja2 (from torch==2.8.0+cpu)
+  Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec (from torch==2.8.0+cpu)
+  Using cached fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch==2.8.0+cpu)
+  Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Using cached numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 17.2 kB/s eta 0:00:00
+Downloading einops-0.8.1-py3-none-any.whl (64 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 64.4/64.4 kB 53.6 kB/s eta 0:00:00
+Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 91.9 kB/s eta 0:00:00
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 171.1 kB/s eta 0:00:00
+Downloading filelock-4.2.12-py3-none-any.whl (222 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 222.4/222.4 kB 35.0 kB/s eta 0:00:00
+Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 221.7/221.7 kB 37.1 kB/s eta 0:00:00
+Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.9/134.9 kB 30.7 kB/s eta 0:00:00
+Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 63.8 kB/s eta 0:00:00
+Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 38.9 kB/s eta 0:00:00
+Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Installing collected packages: mpmath, typing-extensions, sympy, setuptools, numpy, networkx, MarkupSafe, fsspec, filelock, einops, jinja2, torch
+Successfully installed MarkupSafe-3.0.4 einops-0.8.1 filelock-4.2.12 fsspec-2026.9.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.7 numpy-2.3.5 setuptools-84.2.1 sympy-1.14.0 torch-2.8.0+cpu typing-extensions-4.16.0
+2.8.0+cpu 2.3.5

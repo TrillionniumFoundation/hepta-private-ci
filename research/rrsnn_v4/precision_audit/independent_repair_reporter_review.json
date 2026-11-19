@@ -1,0 +1,23 @@
+{
+  "schema": "rrsnn.v4.independent-precision-reporter-review.v1",
+  "reviewer": "/root/r5_real_execution",
+  "created_at_utc": "2026-10-29T15:56:05.143950+00:00",
+  "status": "reporter_source_review_passed_full_matrix_result_pending",
+  "source_sha256": "6813393371ab5d3dd4264c31afda96fed017533da8117e41125f6e349421e3ea",
+  "remaining_source_blockers": [],
+  "comparison_direction": "repair versus fixed original Brent; old Lambert versus the same original Brent",
+  "counting_review": "Per-row0/1 disagreements sum to256 rows per matrix item,5120 per dataset,15360 across60 items; maximum absolute differences aggregate by maxima, not sums.",
+  "independent_synthetic_checks": {
+    "all256_type_mismatches_preserve_null_maximum_aligned_time_error_and_fail": true,
+    "first_type_aligned_zero_error_row_changes_null_to_zero": true,
+    "half_tolerance_time_change_reports_nonexact_bits_but_passes_original_tolerance": true,
+    "two_times_tolerance_time_change_fails": true
+  },
+  "original_event_time_tolerance": 1e-07,
+  "counts_and_actual_per_neuron_event_consistency_checked_by_reporter": true,
+  "all_completed_and_all_comparisons_passed_separate": true,
+  "full_state_rng_equivalence_explicitly_not_verified": true,
+  "actual_final_60_case_report_reviewed": false,
+  "original_or_published_runner_files_changed_by_reviewer": false,
+  "qualification": "This approves reporter aggregation semantics and the repaired no-type-aligned-row boundary, not the unfinished60 comparison results or arbitrary-file tamper resistance."
+}

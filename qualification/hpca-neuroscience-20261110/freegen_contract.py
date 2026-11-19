@@ -14,6 +14,7 @@ NEUTRAL = {
     "num_beam_groups": (1,), "num_return_sequences": (1,),
     "min_length": (0,), "min_new_tokens": (None, 0), "max_time": (None,),
     "stop_strings": (None,), "penalty_alpha": (None,),
+    "is_assistant": (False,),
     "repetition_penalty": (1.0,), "encoder_repetition_penalty": (1.0,),
     "no_repeat_ngram_size": (0,), "encoder_no_repeat_ngram_size": (0,),
     "bad_words_ids": (None,), "force_words_ids": (None,), "constraints": (None,),

@@ -149,6 +149,27 @@ jobs:
           node --test apps/hepta-control-ui/test/font-diagnostic-browser-identity.test.mjs
           node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs apps/hepta-control-ui/test/hold-owner-response.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
+      - name: Configure reliable Ubuntu package downloads
+        run: |
+          sudo python3 - <<'PYAPT'
+          from pathlib import Path
+          # The hosted image's mirrorlist selected an unavailable Azure HTTP
+          # endpoint in both lanes. Preserve its signed Ubuntu suites and keys
+          # while selecting the canonical archive over HTTPS.
+          mirrors = Path("/etc/apt/apt-mirrors.txt")
+          if mirrors.is_file():
+              source = mirrors.read_text()
+              source = source.replace(
+                  "http://azure.archive.ubuntu.com/ubuntu",
+                  "https://archive.ubuntu.com/ubuntu",
+              )
+              mirrors.write_text(source)
+          Path("/etc/apt/apt.conf.d/80hepta-ci-downloads").write_text(
+              'Acquire::Retries "3";\n'
+              'Acquire::http::Timeout "30";\n'
+              'Acquire::https::Timeout "30";\n'
+          )
+          PYAPT
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
         run: |

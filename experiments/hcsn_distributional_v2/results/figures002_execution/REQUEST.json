@@ -1,0 +1,24 @@
+{
+  "command": [
+    "python",
+    "-m",
+    "experiments.hcsn_distributional_v2.evidence_figures",
+    "--output",
+    "experiments/hcsn_distributional_v2/results/figures002",
+    "--content",
+    "experiments/hcsn_distributional_v2/results/content_analysis_supplement001/ANALYSIS.json",
+    "--scaling",
+    "experiments/hcsn_distributional_v2/results/scaling002_summary_repair001/SUMMARY.json"
+  ],
+  "cwd": "/workspace/scratch/58af017d4789/hepta-csn",
+  "environment_contract": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "schema": "hcsn-measured-support-request.v1",
+  "source_sha256": "c0f774ddcfeec9cb68062db0d56a15be4201fcd73ac50461e3394b105057d7f7",
+  "started_utc": "2026-10-30T05:52:54.492289+00:00"
+}

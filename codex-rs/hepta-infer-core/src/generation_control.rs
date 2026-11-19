@@ -15,6 +15,9 @@ use super::validate_identity;
 pub const MAX_GENERATION_PAYLOAD_BYTES: usize = 2 * 1024 * 1024;
 pub const MAX_GENERATION_RESULT_BYTES: usize = 1024 * 1024;
 pub(super) const JOURNAL_PREFIX: &str = "generation-v1|";
+pub(super) const CHECKPOINT_PREFIX: &str = "generation-checkpoint-v1|";
+#[path = "generation_checkpoint.rs"]
+mod checkpoint;
 // JSON u8 arrays use at most four bytes per element. Metadata reserves also
 // cover the longest permitted ID, digest, timestamp and event discriminant.
 const METADATA_RESERVE: u64 = 1024;
@@ -363,13 +366,13 @@ impl GenerationJournal {
         })
     }
 
-    pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
+    pub(super) fn replay(&mut self, json: &str) -> Result<String, Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("generation decode"))?;
         let record = self.next_record(event)?;
-        self.records
-            .insert(record.binding.request_id.clone(), record);
-        Ok(())
+        let request_id = record.binding.request_id.clone();
+        self.records.insert(request_id.clone(), record);
+        Ok(request_id)
     }
 
     fn next_record(&self, event: Event) -> Result<GenerationRecordV1, Error> {

@@ -17,6 +17,9 @@ from qualification.hcsn_differentiable.contract import GridSpec
 from qualification.hcsn_differentiable.operator import DifferentiableDistributionOperator
 
 SOURCE_SHA256 = "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1"
+# This exact approved source only changes backward differentiation; the
+# no_grad forward regression below does not relabel the historical result.
+CURRENT_FORWARD_SOURCE_SHA256 = "3db9a92fffc0d465343e598ec725db631e676dee096a2f999593c7a40038e734"
 GRID = GridSpec(active_cells=16, endpoint=4.8, phase_cells=8,
                 refractory=0.2, tail_rate=1.0, quadrature_order=16,
                 initial_log_std=0.08)
@@ -57,8 +60,14 @@ class TestHistoricalSubstepCounterexample(unittest.TestCase):
         actual = hashlib.sha256(
             Path("qualification/hcsn_differentiable/operator.py").read_bytes()
         ).hexdigest()
-        if actual != SOURCE_SHA256:
+        if actual not in (SOURCE_SHA256, CURRENT_FORWARD_SOURCE_SHA256):
             raise RuntimeError("pinned operator source changed; do not relabel result")
+        print("SUBSTEP_SOURCE_BINDING=" + json.dumps({
+            "historical_reference_sha256": SOURCE_SHA256,
+            "executed_source_sha256": actual,
+            "scope": ("historical_source_reproduction" if actual == SOURCE_SHA256
+                      else "current_forward_regression_only"),
+        }, sort_keys=True), flush=True)
         cls.rows = {mu: observe(mu, DifferentiableDistributionOperator(GRID))
                     for mu in DRIFTS}
         print("SUBSTEP_OBSERVATIONS=" + json.dumps(cls.rows, sort_keys=True),

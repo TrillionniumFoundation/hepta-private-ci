@@ -26,6 +26,9 @@ use crate::RuntimeTasks;
 use crate::app_runtime::run_app_server;
 use crate::automation::spawn_automation_service;
 
+#[path = "memory_runtime_bootstrap.rs"]
+mod memory_bootstrap;
+
 #[cfg(target_os = "linux")]
 #[path = "runtime_source_capture.rs"]
 pub(crate) mod source_capture;
@@ -48,9 +51,26 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
 /// same as `run`; completing the future requests the existing drain sequence
 /// and does not bypass outstanding owners or grant model/effect authority.
 pub async fn run_with_shutdown(
+    config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+    shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
+) -> Result<(), AgentdError> {
+    run_composed_with_shutdown(config, arg0_paths, shutdown, /*memory_bootstrap*/ None).await
+}
+
+async fn run_composed(
+    config: AgentdConfig,
+    arg0_paths: Arg0DispatchPaths,
+    memory_bootstrap: Option<memory_bootstrap::MemoryRuntimeBootstrapV1>,
+) -> Result<(), AgentdError> {
+    run_composed_with_shutdown(config, arg0_paths, shutdown_signal(), memory_bootstrap).await
+}
+
+async fn run_composed_with_shutdown(
     mut config: AgentdConfig,
     arg0_paths: Arg0DispatchPaths,
     shutdown: impl Future<Output = Result<(), AgentdError>> + Send,
+    mut memory_bootstrap: Option<memory_bootstrap::MemoryRuntimeBootstrapV1>,
 ) -> Result<(), AgentdError> {
     #[cfg(target_os = "linux")]
     config.require_root_learning_assembled()?;
@@ -423,8 +443,14 @@ pub async fn run_with_shutdown(
         state.refresh_generation()?;
         state.attach_automation_effect_host(Arc::new(host))?;
     }
+    if let Some(bootstrap) = memory_bootstrap.as_mut() {
+        // Restore cannot reuse a selected cache without current source, trust,
+        // citation, fleet and registry checks. No control or app task exists yet.
+        bootstrap.preflight(&state).await?;
+    }
     state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
+    let memory_ready = memory_bootstrap::startup_readiness_gate_v1();
     let _native_memory_registration_lifetime = native_memory_registration
         .map(|registration| {
             let writer = production_writer_host.as_ref().ok_or_else(|| {
@@ -479,6 +505,12 @@ pub async fn run_with_shutdown(
         .transpose()?;
     let mut tasks = RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)?;
     let startup: Result<(), AgentdError> = async {
+        if let Some(mut bootstrap) = memory_bootstrap {
+            // The memory factory remains gated while any startup registration
+            // can still fail. Its already-queued requests cannot run early.
+            bootstrap.preflight(&state).await?;
+            bootstrap.attach(&mut tasks, memory_ready.clone())?;
+        }
         if let Some(owner) = circuit_task {
             tasks.spawn_required(
                 "circuit-task-owner",
@@ -620,6 +652,13 @@ pub async fn run_with_shutdown(
         tasks.shutdown().await;
         return Err(error);
     }
+    if let Err(error) = state.refresh_generation() {
+        tasks.shutdown().await;
+        return Err(error);
+    }
+    // Release only after all registrations and a final process fence. Every
+    // memory request still needs current owners and independent final-use proof.
+    memory_ready.cancel();
     #[cfg(target_os = "linux")]
     if let Some((capture, close)) = original_source_capture {
         let joined = original_control_join.ok_or_else(|| {
@@ -800,7 +839,7 @@ async fn run_operation_reconciler(
     }
 }
 
-async fn monitor_runtime(
+pub(crate) async fn monitor_runtime(
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
@@ -886,6 +925,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.active_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -901,6 +941,7 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
         if state.unresolved_run_count()? == 0
             && state.neuron_generation_drain_blockers()? == 0
             && state.circuit_task_drain_blockers().await? == 0
+            && state.episodic_import_drain_clear()
         {
             return Ok(());
         }
@@ -913,11 +954,13 @@ pub(crate) async fn drain_runtime(state: Arc<AgentdState>) -> Result<(), AgentdE
     let unresolved = state.unresolved_run_count()?;
     let generation_blockers = state.neuron_generation_drain_blockers()?;
     let circuit_blockers = state.circuit_task_drain_blockers().await?;
-    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 {
+    let episodic_pending = state.episodic_import_pending_count();
+    let episodic_settled = state.episodic_import_drain_clear();
+    if unresolved == 0 && generation_blockers == 0 && circuit_blockers == 0 && episodic_settled {
         Ok(())
     } else {
         Err(AgentdError::Protocol(format!(
-            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s) and {circuit_blockers} Circuit blocker(s); owner recovery is required"
+            "agentd shutdown left {unresolved} indeterminate run(s), {generation_blockers} generation service blocker(s), {circuit_blockers} Circuit blocker(s) and {episodic_pending} pending episodic import(s) (episodic settled: {episodic_settled}); owner recovery is required"
         )))
     }
 }

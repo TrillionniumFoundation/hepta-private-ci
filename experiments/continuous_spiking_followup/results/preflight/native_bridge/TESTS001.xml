@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="4" skipped="0" tests="5" time="2.208" timestamp="2026-10-28T06:45:30.502643-05:00" hostname="a58ae0fb0594"><testcase classname="experiments.continuous_spiking_followup.tests.test_bridge" name="test_typed_probabilities_and_q24_domain_are_not_silently_clipped" time="0.011" /><testcase classname="experiments.continuous_spiking_followup.tests.test_bridge.TestActualNativeOwner" name="test_actual_activations_values_retry_and_terminal_guard" time="0.020"><failure message="RuntimeError: InvalidConfig">self = &lt;test_bridge.TestActualNativeOwner object at 0x7f572f767560&gt;
+tmp_path = PosixPath('/dev/shm/hcsn-followup-native-20261028/pytest001/test_actual_activations_values0')
+
+    def test_actual_activations_values_retry_and_terminal_guard(self, tmp_path):
+&gt;       with client(tmp_path / "owner") as native:
+
+experiments/continuous_spiking_followup/tests/test_bridge.py:66: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+experiments/continuous_spiking_followup/tests/test_bridge.py:27: in client
+    return NativeClient(
+experiments/continuous_spiking_followup/bridge.py:144: in __init__
+    self.native.load_profile(self.profile_path, self.profile_sha256)
+experiments/continuous_spiking_followup/native_reference.py:215: in load_profile
+    self.rpc({"command": "LoadProfile", "path": str(path), "sha256": actual})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;hcsn_verified_native_reference.NativeBridge object at 0x7f572f768bc0&gt;
+request = {'command': 'LoadProfile', 'path': '/dev/shm/hcsn-followup-native-20261028/pytest001/test_actual_activations_values0/o...94bc0fe54878351216c32220cab8075d7c.json', 'sha256': '453d95cb343c2495036eab25fc9ab494bc0fe54878351216c32220cab8075d7c'}
+
+    def rpc(self, request, *, allow_error=False):
+        raw = json.dumps(request, separators=(",", ":"), allow_nan=False) + "\n"
+        if len(raw.encode()) &gt; 16 * 1024 * 1024:
+            raise ValueError("Bounded native request exceeded")
+        started = time.perf_counter_ns()
+        self.process.stdin.write(raw)
+        self.process.stdin.flush()
+        response = self.process.stdout.readline()
+        self.counters["python_roundtrip_ns"] += time.perf_counter_ns() - started
+        self.counters["request_bytes"] += len(raw.encode())
+        self.counters["response_bytes"] += len(response.encode())
+        self.counters["rpc_calls"] += 1
+        if not response:
+            raise RuntimeError(
+                f"Native host exited; inspect {self.root / 'native.stderr.log'}"
+            )
+        envelope = json.loads(response)
+        self.counters["native_physical_rpc_micros"] += envelope["physical_rpc_micros"]
+        if not envelope["ok"]:
+            self.counters["native_errors"] += 1
+            if allow_error:
+                return envelope
+&gt;           raise RuntimeError(envelope["error"])
+E           RuntimeError: InvalidConfig
+
+experiments/continuous_spiking_followup/native_reference.py:193: RuntimeError</failure></testcase><testcase classname="experiments.continuous_spiking_followup.tests.test_bridge.TestActualNativeOwner" name="test_cold_process_restore_identity_and_frontier" time="0.014"><failure message="RuntimeError: InvalidConfig">self = &lt;test_bridge.TestActualNativeOwner object at 0x7f572f7c0c50&gt;
+tmp_path = PosixPath('/dev/shm/hcsn-followup-native-20261028/pytest001/test_cold_process_restore_iden0')
+
+    def test_cold_process_restore_identity_and_frontier(self, tmp_path):
+        root = tmp_path / "owner"
+&gt;       with client(root) as first:
+
+experiments/continuous_spiking_followup/tests/test_bridge.py:98: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+experiments/continuous_spiking_followup/tests/test_bridge.py:27: in client
+    return NativeClient(
+experiments/continuous_spiking_followup/bridge.py:144: in __init__
+    self.native.load_profile(self.profile_path, self.profile_sha256)
+experiments/continuous_spiking_followup/native_reference.py:215: in load_profile
+    self.rpc({"command": "LoadProfile", "path": str(path), "sha256": actual})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;hcsn_verified_native_reference.NativeBridge object at 0x7f572f7c1fa0&gt;
+request = {'command': 'LoadProfile', 'path': '/dev/shm/hcsn-followup-native-20261028/pytest001/test_cold_process_restore_iden0/o...94bc0fe54878351216c32220cab8075d7c.json', 'sha256': '453d95cb343c2495036eab25fc9ab494bc0fe54878351216c32220cab8075d7c'}
+
+    def rpc(self, request, *, allow_error=False):
+        raw = json.dumps(request, separators=(",", ":"), allow_nan=False) + "\n"
+        if len(raw.encode()) &gt; 16 * 1024 * 1024:
+            raise ValueError("Bounded native request exceeded")
+        started = time.perf_counter_ns()
+        self.process.stdin.write(raw)
+        self.process.stdin.flush()
+        response = self.process.stdout.readline()
+        self.counters["python_roundtrip_ns"] += time.perf_counter_ns() - started
+        self.counters["request_bytes"] += len(raw.encode())
+        self.counters["response_bytes"] += len(response.encode())
+        self.counters["rpc_calls"] += 1
+        if not response:
+            raise RuntimeError(
+                f"Native host exited; inspect {self.root / 'native.stderr.log'}"
+            )
+        envelope = json.loads(response)
+        self.counters["native_physical_rpc_micros"] += envelope["physical_rpc_micros"]
+        if not envelope["ok"]:
+            self.counters["native_errors"] += 1
+            if allow_error:
+                return envelope
+&gt;           raise RuntimeError(envelope["error"])
+E           RuntimeError: InvalidConfig
+
+experiments/continuous_spiking_followup/native_reference.py:193: RuntimeError</failure></testcase><testcase classname="experiments.continuous_spiking_followup.tests.test_bridge.TestActualNativeOwner" name="test_bad_observation_fails_without_advancing_owner" time="0.018"><failure message="RuntimeError: InvalidConfig">self = &lt;test_bridge.TestActualNativeOwner object at 0x7f572f7c0cb0&gt;
+tmp_path = PosixPath('/dev/shm/hcsn-followup-native-20261028/pytest001/test_bad_observation_fails_wit0')
+
+    def test_bad_observation_fails_without_advancing_owner(self, tmp_path):
+&gt;       with client(tmp_path / "owner") as native:
+
+experiments/continuous_spiking_followup/tests/test_bridge.py:123: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+experiments/continuous_spiking_followup/tests/test_bridge.py:27: in client
+    return NativeClient(
+experiments/continuous_spiking_followup/bridge.py:144: in __init__
+    self.native.load_profile(self.profile_path, self.profile_sha256)
+experiments/continuous_spiking_followup/native_reference.py:215: in load_profile
+    self.rpc({"command": "LoadProfile", "path": str(path), "sha256": actual})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;hcsn_verified_native_reference.NativeBridge object at 0x7f572f7c3c80&gt;
+request = {'command': 'LoadProfile', 'path': '/dev/shm/hcsn-followup-native-20261028/pytest001/test_bad_observation_fails_wit0/o...94bc0fe54878351216c32220cab8075d7c.json', 'sha256': '453d95cb343c2495036eab25fc9ab494bc0fe54878351216c32220cab8075d7c'}
+
+    def rpc(self, request, *, allow_error=False):
+        raw = json.dumps(request, separators=(",", ":"), allow_nan=False) + "\n"
+        if len(raw.encode()) &gt; 16 * 1024 * 1024:
+            raise ValueError("Bounded native request exceeded")
+        started = time.perf_counter_ns()
+        self.process.stdin.write(raw)
+        self.process.stdin.flush()
+        response = self.process.stdout.readline()
+        self.counters["python_roundtrip_ns"] += time.perf_counter_ns() - started
+        self.counters["request_bytes"] += len(raw.encode())
+        self.counters["response_bytes"] += len(response.encode())
+        self.counters["rpc_calls"] += 1
+        if not response:
+            raise RuntimeError(
+                f"Native host exited; inspect {self.root / 'native.stderr.log'}"
+            )
+        envelope = json.loads(response)
+        self.counters["native_physical_rpc_micros"] += envelope["physical_rpc_micros"]
+        if not envelope["ok"]:
+            self.counters["native_errors"] += 1
+            if allow_error:
+                return envelope
+&gt;           raise RuntimeError(envelope["error"])
+E           RuntimeError: InvalidConfig
+
+experiments/continuous_spiking_followup/native_reference.py:193: RuntimeError</failure></testcase><testcase classname="experiments.continuous_spiking_followup.tests.test_bridge.TestActualNativeOwner" name="test_stream_and_native_frontiers_resume_together" time="1.927"><failure message="RuntimeError: InvalidConfig">self = &lt;test_bridge.TestActualNativeOwner object at 0x7f572f7c0e30&gt;
+tmp_path = PosixPath('/dev/shm/hcsn-followup-native-20261028/pytest001/test_stream_and_native_frontie0')
+
+    def test_stream_and_native_frontiers_resume_together(self, tmp_path):
+        import torch
+    
+        from experiments.continuous_spiking_network.models import SequenceClassifier
+        from experiments.continuous_spiking_followup.streaming import StreamingClassifier
+    
+        torch.set_num_threads(1)
+        model = SequenceClassifier(4, 2, 4, 1, "hcsn", 9221).eval()
+        stream = StreamingClassifier(model).reset(1)
+        inputs = torch.arange(12, dtype=torch.float32).reshape(3, 1, 4) / 16
+        root = tmp_path / "owner"
+&gt;       with client(root, stream.model_sha256) as first:
+
+experiments/continuous_spiking_followup/tests/test_bridge.py:145: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+experiments/continuous_spiking_followup/tests/test_bridge.py:27: in client
+    return NativeClient(
+experiments/continuous_spiking_followup/bridge.py:144: in __init__
+    self.native.load_profile(self.profile_path, self.profile_sha256)
+experiments/continuous_spiking_followup/native_reference.py:215: in load_profile
+    self.rpc({"command": "LoadProfile", "path": str(path), "sha256": actual})
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;hcsn_verified_native_reference.NativeBridge object at 0x7f56ff2b6720&gt;
+request = {'command': 'LoadProfile', 'path': '/dev/shm/hcsn-followup-native-20261028/pytest001/test_stream_and_native_frontie0/o...2467dadf6b02755c26980699919964faed.json', 'sha256': '5529645a4b13b280c1981a6e9a18162467dadf6b02755c26980699919964faed'}
+
+    def rpc(self, request, *, allow_error=False):
+        raw = json.dumps(request, separators=(",", ":"), allow_nan=False) + "\n"
+        if len(raw.encode()) &gt; 16 * 1024 * 1024:
+            raise ValueError("Bounded native request exceeded")
+        started = time.perf_counter_ns()
+        self.process.stdin.write(raw)
+        self.process.stdin.flush()
+        response = self.process.stdout.readline()
+        self.counters["python_roundtrip_ns"] += time.perf_counter_ns() - started
+        self.counters["request_bytes"] += len(raw.encode())
+        self.counters["response_bytes"] += len(response.encode())
+        self.counters["rpc_calls"] += 1
+        if not response:
+            raise RuntimeError(
+                f"Native host exited; inspect {self.root / 'native.stderr.log'}"
+            )
+        envelope = json.loads(response)
+        self.counters["native_physical_rpc_micros"] += envelope["physical_rpc_micros"]
+        if not envelope["ok"]:
+            self.counters["native_errors"] += 1
+            if allow_error:
+                return envelope
+&gt;           raise RuntimeError(envelope["error"])
+E           RuntimeError: InvalidConfig
+
+experiments/continuous_spiking_followup/native_reference.py:193: RuntimeError</failure></testcase></testsuite></testsuites>

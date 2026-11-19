@@ -1,0 +1,192 @@
+{
+  "source_commit": "505e03b49c4ff0a4630751dbe05664b93fc87320",
+  "source_tree": "0cbd1592344ad62114c1e1d160837f4107835a86",
+  "suite_counts": {
+    "test_skill_lifecycle": 9,
+    "test_file_family": 3,
+    "test_durable_lifecycle": 9,
+    "test_durable_async_owner": 5,
+    "test_recurrent_lifecycle": 8,
+    "test_recurrent_lifecycle_adversarial": 12
+  },
+  "all_46_identities_started_and_passed": true,
+  "source_unchanged": true,
+  "databases": [
+    {
+      "path": "originals/test_durable_async_owner/test_controller_death_before_release_never_replays/session/control.db",
+      "revision": 5,
+      "raw_state_sha256": "d8fd541cf85b39eadacff8bc1183ec49f22d4f99c3dbada39f28e2d40f6dd952",
+      "source_binding_verified": true,
+      "recurrent": false
+    },
+    {
+      "path": "originals/test_durable_async_owner/test_original_caller_mutation_cannot_change_frozen_worker_goal/session/control.db",
+      "revision": 4,
+      "raw_state_sha256": "78aae39c9e1a94e666bb53fd155beb9a90d8e9e2230ca2876661869f82f08829",
+      "source_binding_verified": true,
+      "recurrent": false
+    },
+    {
+      "path": "originals/test_durable_async_owner/test_pause_and_expiry_never_release_original/session/control.db",
+      "revision": 9,
+      "raw_state_sha256": "7dad9665b69fb28e609da71732d5081ad7ea7da035aef3d6c0dcfc7d35016546",
+      "source_binding_verified": true,
+      "recurrent": false
+    },
+    {
+      "path": "originals/test_durable_async_owner/test_released_original_completes_only_after_controller_death/session/control.db",
+      "revision": 9,
+      "raw_state_sha256": "a695bb5ef1b0bee4c2328d27c3a7787ca5845848293f756640352fc68e9a4a9e",
+      "source_binding_verified": true,
+      "recurrent": false
+    },
+    {
+      "path": "originals/test_durable_async_owner/test_writer_binding_and_observation_budget_survive_reopen/session/control.db",
+      "revision": 6,
+      "raw_state_sha256": "3ce19645c1745c25bee2c75bfc2de4004b688689534e59f1c508abf2043738c1",
+      "source_binding_verified": true,
+      "recurrent": false
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_after_publish_real_sigkill_reconciles_only_original_key/session/control.db",
+      "revision": 23,
+      "raw_state_sha256": "cd650c0648c0cb77e1dd7d8a4853b839c3ca71b01c9341de2d7b1c656c6e3a58",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_different_real_model_is_rejected_without_checkpoint_write/session/control.db",
+      "revision": 7,
+      "raw_state_sha256": "abb59416abb95d28749a30903c914176cb602aafa0f0cdc31aa16062f38c8c6f",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_entered_real_sigkill_before_apply_remains_unknown_without_resend/session/control.db",
+      "revision": 29,
+      "raw_state_sha256": "ac60c76246e5a8fa50a8a5de98d624126d56d973d1451ec1fa38d6531c650188",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_exhausted_budget_is_not_refunded_and_cannot_advance_hidden/session/control.db",
+      "revision": 33,
+      "raw_state_sha256": "4acee3472f4251ab2f3403dcb1fd6d3971c91058c70210ed365a853f356e8a32",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_opaque_published_effect_preserves_unknown_and_hidden/session/control.db",
+      "revision": 22,
+      "raw_state_sha256": "af3865fc0753def548faedbcd65a9880a0f477a4a2ee0a9fb445e5e211561da4",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_pause_and_elapsed_original_deadline_preserve_hidden_without_inference/session/control.db",
+      "revision": 12,
+      "raw_state_sha256": "3c08e0afbca384b6955a5739b025242c921d90fd72cf2341df71256c841cb985",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_prepared_real_sigkill_consumes_original_decision_without_inference/session/control.db",
+      "revision": 22,
+      "raw_state_sha256": "45125b00460098204d19a6bec83a5c5295bac225e081a19660fa20bd1ef7aac8",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_prepared_resume_matches_uninterrupted_learned_policy_and_goal/reference/control.db",
+      "revision": 32,
+      "raw_state_sha256": "5d9832489c71dd8e8cd9a3cd22efb6fcdb8da91fb1657b2d5b9b8c3c95aed1b1",
+      "source_binding_verified": true,
+      "recurrent": true
+    },
+    {
+      "path": "originals/test_recurrent_lifecycle/test_prepared_resume_matches_uninterrupted_learned_policy_and_goal/session/control.db",
+      "revision": 34,
+      "raw_state_sha256": "7f293528aabd9aa1c8c27666a5434fdcb08f92c073ec348d11e7a40c3bbbc0fa",
+      "source_binding_verified": true,
+      "recurrent": true
+    }
+  ],
+  "sigkill_observations": [
+    {
+      "test": "test_after_publish_real_sigkill_reconciles_only_original_key",
+      "cut": "after_publish",
+      "observed_sigkill_returncode": -9,
+      "original_pid": 55,
+      "hidden_and_pending_verified": true,
+      "restored": [
+        {
+          "pid": 56,
+          "effect_count": 1,
+          "effect_knowledge": "CONFIRMED_INCOMPLETE",
+          "claimed_success": false
+        }
+      ]
+    },
+    {
+      "test": "test_entered_real_sigkill_before_apply_remains_unknown_without_resend",
+      "cut": "before_apply",
+      "observed_sigkill_returncode": -9,
+      "original_pid": 57,
+      "hidden_and_pending_verified": true,
+      "restored": [
+        {
+          "pid": 58,
+          "effect_count": 0,
+          "effect_knowledge": "UNKNOWN",
+          "claimed_success": false
+        },
+        {
+          "pid": 59,
+          "effect_count": 0,
+          "effect_knowledge": "UNKNOWN",
+          "claimed_success": false
+        }
+      ]
+    },
+    {
+      "test": "test_opaque_published_effect_preserves_unknown_and_hidden",
+      "cut": "after_publish",
+      "observed_sigkill_returncode": -9,
+      "original_pid": 60,
+      "hidden_and_pending_verified": true,
+      "restored": [
+        {
+          "pid": 61,
+          "effect_count": 1,
+          "effect_knowledge": "UNKNOWN",
+          "claimed_success": false
+        }
+      ]
+    },
+    {
+      "test": "test_prepared_real_sigkill_consumes_original_decision_without_inference",
+      "cut": "prepared",
+      "observed_sigkill_returncode": -9,
+      "original_pid": 62,
+      "hidden_and_pending_verified": true,
+      "restored": [
+        {
+          "pid": 63,
+          "effect_count": 1,
+          "effect_knowledge": "CONFIRMED_COMPLETE",
+          "claimed_success": false
+        }
+      ]
+    },
+    {
+      "test": "test_prepared_resume_matches_uninterrupted_learned_policy_and_goal",
+      "cut": "prepared",
+      "observed_sigkill_returncode": -9,
+      "original_pid": 64,
+      "hidden_and_pending_verified": true,
+      "restored": []
+    }
+  ],
+  "complete_prepared_resume_reference_equivalence": true,
+  "scope": "Read-only independent audit of retained local originals. No reboot/common rollback/production/efficacy claim."
+}

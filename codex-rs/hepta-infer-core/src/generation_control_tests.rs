@@ -388,11 +388,22 @@ fn real_file_capacity_preserves_cancel_dispatch_and_maximal_result_space() -> Re
         "status":"completed", "output":"\u{0}".repeat(1_000_000), "observed_output_tokens":0,
         "terminal_observed":true, "stop_reason":null
     })).map_err(|_| Error::CorruptJournal("test output"))?;
-    // Genuine native usage refinements append ~6 MB each, without fake byte
-    // counters, invalid padding, or manufacturing generation terminal results.
+    // Keep ten distinct terminal bodies, which compaction cannot discard.
+    // Small RefineUsage records no longer manufacture repeated full bodies.
     for observed in 1..=10 {
+        let id = if observed == 1 {
+            "large-native".to_string()
+        } else {
+            let id = format!("retained-native-{observed}");
+            control.reserve_native(native(&id), /*maximum_in_flight*/ 1)?;
+            let dispatch: NativeDispatch = serde_json::from_value(serde_json::json!({
+                "thread_id":"thread.1", "model_provider":"provider.1", "context_digest":"2".repeat(64)
+            })).map_err(|_| Error::CorruptJournal("test dispatch"))?;
+            control.dispatch_native(&id, dispatch)?;
+            id
+        };
         output.observed_output_tokens = Some(observed);
-        control.settle_native("large-native", output.clone())?;
+        control.settle_native(&id, output.clone())?;
     }
     let mut request = binding("reserved");
     request.result_limit_bytes = MAX_GENERATION_RESULT_BYTES as u32;
@@ -401,10 +412,14 @@ fn real_file_capacity_preserves_cancel_dispatch_and_maximal_result_space() -> Re
     let before = fs::metadata(fixture.path())?.len();
     assert!(before + 6_100_000 < super::super::MAX_JOURNAL_BYTES);
     output.observed_output_tokens = Some(11);
-    assert_eq!(
-        control.settle_native("large-native", output),
-        Err(Error::CapacityExceeded)
+    let full_frame = format!(
+        "{}{}\n",
+        super::super::native::JOURNAL_PREFIX,
+        serde_json::json!({"Observe": {"request_id": "large-native", "output": output}})
     );
+    // Retain the original full-frame capacity rejection. Monotonic usage alone
+    // now has its separate successful small-delta regression in native tests.
+    assert_eq!(control.append(&full_frame), Err(Error::CapacityExceeded));
     let mut extra = request.clone();
     extra.request_id = "overflow".into();
     assert!(matches!(
@@ -536,3 +551,6 @@ fn failed_generation_append_fences_without_installing_staged_state() -> Result<(
     }
     Ok(())
 }
+
+#[path = "generation_checkpoint_tests.rs"]
+mod checkpoint_tests;

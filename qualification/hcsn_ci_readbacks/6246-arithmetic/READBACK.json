@@ -1,0 +1,50 @@
+{
+  "schema": "hcsn-hosted-retained-arithmetic-readback-v1",
+  "source_head": "e76e9dbccecbb7fa4cae4cacdd05b116f6ec6546",
+  "run_id": 43211637802,
+  "job_id": 131160452291,
+  "artifact_id": 13941387328,
+  "artifact_zip_bytes": 188380,
+  "artifact_zip_sha256": "4cd532648c72f6caaf6cde87a1941a739fe7268706b6688d616f48f47cbe060d",
+  "zip_members": 12,
+  "original_zip_crc_check": "12 of 12 passed in restored root executor",
+  "retained_scalar_comparisons": 345,
+  "retained_comparison_failures": 0,
+  "source_before_after_maps_equal": true,
+  "checked_source_input_workflow_files": 16,
+  "review_sha256": "1a20a67814285fe382974e602ce9c13348d0a9d9094788e5a813cf70f9ec0db6",
+  "review_wall_seconds": 0.28377031200000147,
+  "review_cpu_seconds": 0.172401627,
+  "cost_scope": "Existing CI inspector arithmetic only; timings exclude complete hosted setup. Original adjoint-stage cost remains separate in REVIEW.json.",
+  "retained_format_alias_extra_final_lf": true,
+  "source_workflow": ".github/workflows/hcsn-initial-adjoint-arithmetic.yml",
+  "source_workflow_git_blob_sha1": "7acdc0c77717d6552858f7559387698f5e5585f5",
+  "prior_red": {
+    "run_id": 43210615842,
+    "job_id": 131156949772,
+    "cause": "Review package FORMAT has exactly one extra final LF relative to canonical FORMAT; inspector did not start.",
+    "original_evidence_preserved_in_source_head": true
+  },
+  "archiver_new_candidate_calls": 0,
+  "archiver_new_adjoint_calls": 0,
+  "archiver_new_forward_dde_calls": 0,
+  "archiver_new_matrix_exponentials": 0,
+  "archiver_new_static_solves": 0,
+  "archiver_new_torch_calls": 0,
+  "archiver_new_optimizer_calls": 0,
+  "existing_ci_execution_counters": {
+    "candidate_imports": 0,
+    "adjoint_calls": 0,
+    "forward_dde_calls": 0,
+    "matrix_exponentials": 0,
+    "static_solves": 0,
+    "torch_calls": 0,
+    "optimizer_updates": 0
+  },
+  "admission": "HOLD_NO_GO",
+  "limits": [
+    "No candidate or retained inspector was re-executed by this archiver; whole bytes, original JSON identities, checksum and comparison accounting are checked.",
+    "Existing 345 retained arithmetic comparisons add no new adjoint/DDE/exponential/static/Torch/optimizer execution.",
+    "Adaptive-program reverse, Torch adapter/guards, large meshes and broad-domain/scientific admission remain unqualified."
+  ]
+}

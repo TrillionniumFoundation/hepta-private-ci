@@ -1,0 +1,8 @@
+{
+  "error": "shared:shared_preparation_complete actual CPU 12.274880402s exceeds frozen cap 10.000000000s",
+  "error_type": "BudgetExceeded",
+  "freeze_sha256": "5df6eba7dc7c5059fe3fa9623ba48a61c9e7ff8a206403bd29041b6a8dfb0654",
+  "source_commit": "d0b99c25a26739c52e5695433625ac1b966f25a4",
+  "test_opened": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 643, in train\n    guard_cpu_budget(\"shared\", plan, run, shared,\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 133, in guard_cpu_budget\n    raise error\nindependent.accounting.BudgetExceeded: shared:shared_preparation_complete actual CPU 12.274880402s exceeds frozen cap 10.000000000s\n"
+}

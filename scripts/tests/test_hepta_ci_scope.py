@@ -243,7 +243,7 @@ class ScopeTests(unittest.TestCase):
 
     def test_required_workflow_concurrency_is_scoped_by_source_repository(self):
         # Branch names are not globally unique: two forks can both use "fix".
-        # Keep push/PR coalescing within a repository, never across forks.
+        # Keep repositories isolated; exact-source PR lanes also bind PR and SHA.
         root = Path(__file__).resolve().parents[2]
         workflows = (
             "blocking-ci.yml",
@@ -251,6 +251,16 @@ class ScopeTests(unittest.TestCase):
             "automation-taskflow-focused.yml",
             "hepta-architecture-convergence.yml",
         )
+        source_identities = {
+            "blocking-ci.yml": (
+                "${{ github.event.pull_request.number || github.ref_name }}::"
+                "${{ github.event.pull_request.head.sha || 'main' }}"
+            ),
+            "hepta-architecture-convergence.yml": (
+                "${{ github.event.pull_request.number || github.ref_name }}::"
+                "${{ github.event.pull_request.head.sha || 'manual' }}"
+            ),
+        }
         for name in workflows:
             with self.subTest(workflow=name):
                 content = (root / ".github" / "workflows" / name).read_text(
@@ -268,7 +278,10 @@ class ScopeTests(unittest.TestCase):
                     key,
                 )
                 self.assertIn(
-                    "${{ github.event.pull_request.head.ref || github.ref_name }}",
+                    source_identities.get(
+                        name,
+                        "${{ github.event.pull_request.head.ref || github.ref_name }}",
+                    ),
                     key,
                 )
 

@@ -154,8 +154,7 @@ impl OriginalCellQ24RetainedLearningSourceV1 {
         initial: &LearningIterationSnapshotV1,
         scope: &FrozenLearningScopeV2,
     ) -> Result<Arc<RegisteredCellQ24RetainedSourceV1>, AgentdError> {
-        self.prepared
-            .require_initial(initial, scope)
+        CellQ24PreparedLearningV1::require_initial(self.prepared.as_ref(), initial, scope)
             .map_err(refused)?;
         if consumer.agent_id != self.producer.identity.agent_id || consumer.spawn_generation == 0 {
             return Err(refused(

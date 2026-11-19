@@ -1,0 +1,218 @@
+name: Hepta P2.3 original MultiRC 48-case real Ettin/Laya Head (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-replacement-p0/original_48_pilot.py"
+      - "qualification/stem-replacement-p0/test_original_48_pilot.py"
+      - "qualification/stem-replacement-p0/ORIGINAL_48_P23.md"
+      - ".github/workflows/hepta-stem-multirc-48-original-p23.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-original-multirc-48-p23-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-first-deny-all:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Real Torch CPU installed, source-only adversarial fixtures
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          OPENBLAS_NUM_THREADS: "1"
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "numpy==2.2.6"
+          python -m pip check
+          cd qualification/stem-replacement-p0
+          python -m py_compile original_48_pilot.py test_original_48_pilot.py
+          python -m unittest -q test_original_48_pilot
+          python -O -m unittest -q test_original_48_pilot
+          python - <<'PY'
+          import original_48_pilot as p
+          assert p.SOURCE_SHA == '598dc04a67bc8e536589cfd68224a7b8b59a45e094ac4a2a5b51a5ac786c235a'
+          assert p.MODELS == ('ettin400','laya421')
+          print('tiny_adversarial_fixture_only=true human_original_scored=false production=false')
+          PY
+
+  physical-original-frozen-head:
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'research/ettin400-multirc-48-physical-p23-20261017') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/research/ettin400-multirc-48-physical-p23-20261017')
+    needs: source-first-deny-all
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [ettin400, laya421]
+    env:
+      STEM_MODEL: ${{ matrix.model }}
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      OPENBLAS_NUM_THREADS: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Freeze current exact checkout and original P0 source-author bytes
+        env:
+          CHECKED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CHECKED_SHA"
+          test "$(git status --porcelain)" = ""
+          git fetch --no-tags --depth=1 origin 883b7c107348675153aece3db40a1d00e41c0a09
+          git show 883b7c107348675153aece3db40a1d00e41c0a09:experiments/shared_stem_cell/p0_multirc_semantic_material.py > "$RUNNER_TEMP/original_multirc_owner.py"
+          test "$(git hash-object "$RUNNER_TEMP/original_multirc_owner.py")" = "637a73a8735ff706ac256dca13a0614373255da1"
+      - name: Install fixed original CPU, tokenizer, source/Parquet and model loader libraries
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "huggingface_hub==0.36.0" "pyarrow==21.0.0" "numpy==2.2.6" "transformers==4.57.6" "safetensors==0.8.0"
+          if [ "$STEM_MODEL" = "laya421" ]; then
+            python -m pip install --no-deps "laya==0.3.20"
+          fi
+          python -m pip check
+      - name: Reacquire exact original human Parquet train/validation bytes
+        run: |
+          set -euo pipefail
+          mkdir -m 0700 "$RUNNER_TEMP/human-parquet"
+          python - <<'PY'
+          import hashlib, os, pathlib, shutil
+          from huggingface_hub import HfApi, hf_hub_download
+          repo='aps/super_glue';rev='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          info=HfApi().dataset_info(repo_id=repo,revision=rev,files_metadata=True)
+          assert info.sha==rev, 'wrong original public publisher source revision'
+          files={entry.rfilename:entry for entry in info.siblings}
+          expected={
+            'train':('multirc/train-00000-of-00001.parquet','ced6d731a335a0e4fbd29f6f382f291518952c0f449448361d294000c39e6728'),
+            'validation':('multirc/validation-00000-of-00001.parquet','5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada'),
+          }
+          for split,(rel,sha) in expected.items():
+            file=files[rel]
+            lfs=file.lfs
+            upstream=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+            assert upstream==sha,'original upstream Parquet source SHA drift'
+            src=pathlib.Path(hf_hub_download(repo_id=repo,repo_type='dataset',revision=rev,filename=rel))
+            assert hashlib.sha256(src.read_bytes()).hexdigest()==sha,'publisher Parquet source byte drift'
+            destination=pathlib.Path(os.environ['RUNNER_TEMP'])/'human-parquet'/(split+'.parquet')
+            with destination.open('xb') as out:
+              with src.open('rb') as inp:shutil.copyfileobj(inp,out)
+            assert hashlib.sha256(destination.read_bytes()).hexdigest()==sha
+            (destination.parent/(split+'.sha256')).write_text(sha)
+            print(f'{split}: pinned_original_human_parquet_verified=true sha256={sha}')
+          PY
+      - name: Rebuild FIT/CAL/TEST original-human material with source code owner
+        run: |
+          set -euo pipefail
+          python "$RUNNER_TEMP/original_multirc_owner.py" \
+            --train-parquet "$RUNNER_TEMP/human-parquet/train.parquet" \
+            --validation-parquet "$RUNNER_TEMP/human-parquet/validation.parquet" \
+            --train-sha256 "$(cat "$RUNNER_TEMP/human-parquet/train.sha256")" \
+            --validation-sha256 "$(cat "$RUNNER_TEMP/human-parquet/validation.sha256")" \
+            --output "$RUNNER_TEMP/original-p0"
+          mkdir -m 0700 "$RUNNER_TEMP/private-fit"
+          cd qualification/stem-replacement-p0
+          python multirc_source_bridge.py \
+            --fit "$RUNNER_TEMP/original-p0/fit.json" \
+            --blind "$RUNNER_TEMP/original-p0/blind.json" \
+            --public-out "$RUNNER_TEMP/label-blind-p2" \
+            --fit-labels-out "$RUNNER_TEMP/private-fit/fit-only.json"
+          python - <<'PY'
+          import gate,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'label-blind-p2'
+          panel=gate.strict_load(root/'panel.json')
+          assert gate.digest(panel)=='598dc04a67bc8e536589cfd68224a7b8b59a45e094ac4a2a5b51a5ac786c235a'
+          assert len(panel['cases'])==48
+          print('same_hosted_original_source_identity_verified=true complete_original_48=true')
+          PY
+      - name: Acquire pinned original checkpoint, independently review actual bytes
+        env:
+          HF_HUB_DOWNLOAD_TIMEOUT: "120"
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python source_bytes.py --model "$STEM_MODEL" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --out "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json"
+          python review_bytes.py \
+            --receipt "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --out "$RUNNER_TEMP/hepta-reviewed-$STEM_MODEL.json"
+          export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+          mkdir -m 0700 "$RUNNER_TEMP/private-48"
+          python original_48_pilot.py produce --model "$STEM_MODEL" \
+            --panel "$RUNNER_TEMP/label-blind-p2/panel.json" \
+            --views "$RUNNER_TEMP/label-blind-p2/views.json" \
+            --fit "$RUNNER_TEMP/private-fit/fit-only.json" \
+            --receipt "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --directory "$RUNNER_TEMP/private-48/$STEM_MODEL"
+      - name: Independently replay all 40 SGD updates in separate NumPy process
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python original_48_pilot.py audit --model "$STEM_MODEL" \
+            --panel "$RUNNER_TEMP/label-blind-p2/panel.json" \
+            --fit "$RUNNER_TEMP/private-fit/fit-only.json" \
+            --directory "$RUNNER_TEMP/private-48/$STEM_MODEL" \
+            --receipt "$RUNNER_TEMP/hepta-producer-$STEM_MODEL.json" \
+            --stage "$RUNNER_TEMP/hepta-source-$STEM_MODEL" \
+            --out "$RUNNER_TEMP/independent-head-$STEM_MODEL.json"
+      - name: Separately read held original human labels only after Head seal/replay
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python original_48_pilot.py observe --model "$STEM_MODEL" \
+            --panel "$RUNNER_TEMP/label-blind-p2/panel.json" \
+            --fit "$RUNNER_TEMP/private-fit/fit-only.json" \
+            --original-fit "$RUNNER_TEMP/original-p0/fit.json" \
+            --original-blind "$RUNNER_TEMP/original-p0/blind.json" \
+            --original-owner "$RUNNER_TEMP/original-p0/owner-only-human-labels.json" \
+            --directory "$RUNNER_TEMP/private-48/$STEM_MODEL" \
+            --audit "$RUNNER_TEMP/independent-head-$STEM_MODEL.json" \
+            --out "$RUNNER_TEMP/descriptive-$STEM_MODEL.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          m=os.environ['STEM_MODEL'];t=Path(os.environ['RUNNER_TEMP'])
+          doc=json.loads((t/f'descriptive-{m}.json').read_text())
+          assert doc['model']==m and doc['test']['cases']==16 and doc['calibration']['cases']==8
+          assert doc['head_params']==4161 and doc['head_steps']==40 and doc['test_independent_source_groups']==8
+          assert doc['original_publisher_signature_verified'] is False
+          assert doc['chronological_future_window_verified'] is False
+          assert doc['negative_transfer_verified'] is False
+          assert doc['production_promotion_permitted'] is False and doc['model_selected'] is None
+          assert doc['physical_cell_split_permitted'] is False and doc['disposition']=='HOLD_NO_GO'
+          print(f'{m}: descriptive original human outcomes only, no model selection or production')
+          PY
+      - name: Retain tiny aggregated/no-authority receipts only, never labels or features
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-p23-aggregate-${{ matrix.model }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ${{ runner.temp }}/independent-head-${{ matrix.model }}.json
+            ${{ runner.temp }}/descriptive-${{ matrix.model }}.json
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 0

@@ -48,7 +48,7 @@ jobs:
           python -B - <<'PY' 2>&1 | tee "$RUNNER_TEMP/memory-budget-checks/tests.log"
           import unittest
           suite = unittest.defaultTestLoader.discover("scripts/memory_cell_budget", pattern="test_*.py")
-          assert suite.countTestCases() == 29, suite.countTestCases()
+          assert suite.countTestCases() == 37, suite.countTestCases()
           result = unittest.TextTestRunner(verbosity=2).run(suite)
           raise SystemExit(0 if result.wasSuccessful() else 1)
           PY

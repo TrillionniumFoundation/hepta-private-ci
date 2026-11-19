@@ -34,9 +34,15 @@ EXPECTED = {
     "learning_original_evaluation_operation_finish": (HOST, EXPORT),
     "learning_original_evaluation_operation_member": ("codex-rs/hepta-agentd/src/neuron_cell_evaluation_panel_member.rs", "codex-rs/hepta-agentd/src/neuron_cell_evaluation_model_material_export.rs",),
     "learning_original_evaluation_operation_qualification": (SOURCE,),
-    "learning_original_evaluation_operation_receipt": (RECEIPT,),
-    "learning_original_evaluation_receipt_operation_attest": (OWNER, HOST),
-    "learning_original_evaluation_receipt_operation_read": (OWNER, HOST),
+    "learning_original_evaluation_operation_receipt": (
+        OWNER,
+    ),
+    "learning_original_evaluation_receipt_operation_attest": (
+        HOST,
+    ),
+    "learning_original_evaluation_receipt_operation_read": (
+        HOST,
+    ),
     "learning_original_evaluation_panel_operation_current": (HOST,),
     "learning_original_evaluation_shared_training_host": (),
     "learning_original_evaluation_model_read_begin": ('codex-rs/hepta-agentd/src/cell_q24_model_command_host.rs', 'codex-rs/hepta-agentd/src/cell_q24_model_command_effect.rs'),
@@ -128,8 +134,8 @@ class OriginalEvaluationOperationClosureTests(unittest.TestCase):
         self.mutate_function_rules(SOURCE, {"fn read_training("})
         source = (ROOT / OWNER).read_text()
         for call in (
-            'self.attest_with_training(source, TrainingRead::Independent)\n            .await',
-            'self.readback_with_training(source, TrainingRead::Independent)\n            .await',
+            "self.attest_sources_with_training(source, TrainingRead::Independent)\n            .await",
+            "self.readback_sources_with_training(source, TrainingRead::Independent)\n            .await",
         ):
             self.assertEqual(source.count(call), 1)
             self.reject_change(OWNER, source.replace(call, "unchecked_original()"))

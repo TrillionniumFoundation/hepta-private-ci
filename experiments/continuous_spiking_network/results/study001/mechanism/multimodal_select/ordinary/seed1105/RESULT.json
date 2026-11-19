@@ -1,0 +1,206 @@
+{
+  "checkpoint_manifest_sha256": "f78421e21684c3f51abf5bfac7d44d0075f85068b79e05dfe7cffdd95a0a3f91",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "exact model state for inference; optimizer is not retained",
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "gradient_groups": {
+    "backbone.layers.0.channel_gates.bias": {
+      "finite": true,
+      "l1": 0.002335197292268276
+    },
+    "backbone.layers.0.channel_gates.weight": {
+      "finite": true,
+      "l1": 0.10102566331624985
+    },
+    "backbone.layers.0.content_input.bias": {
+      "finite": true,
+      "l1": 0.1787392795085907
+    },
+    "backbone.layers.0.content_input.weight": {
+      "finite": true,
+      "l1": 4.821819305419922
+    },
+    "backbone.layers.0.content_state.weight": {
+      "finite": true,
+      "l1": 2.3453774452209473
+    },
+    "backbone.layers.0.drift_bias": {
+      "finite": true,
+      "l1": 0.034837257117033005
+    },
+    "backbone.layers.0.drift_input.weight": {
+      "finite": true,
+      "l1": 0.8020179867744446
+    },
+    "backbone.layers.0.norm.bias": {
+      "finite": true,
+      "l1": 0.09196015447378159
+    },
+    "backbone.layers.0.norm.weight": {
+      "finite": true,
+      "l1": 0.06706692278385162
+    },
+    "backbone.layers.0.output.weight": {
+      "finite": true,
+      "l1": 4.11098575592041
+    },
+    "backbone.layers.0.raw_adaptation": {
+      "finite": true,
+      "l1": 0.005716308020055294
+    },
+    "backbone.layers.0.raw_adaptation_decay": {
+      "finite": true,
+      "l1": 0.005335990339517593
+    },
+    "backbone.layers.0.raw_boundary": {
+      "finite": true,
+      "l1": 0.011300834827125072
+    },
+    "backbone.layers.0.raw_content_rate": {
+      "finite": true,
+      "l1": 0.012013044208288193
+    },
+    "backbone.layers.0.raw_diffusion": {
+      "finite": true,
+      "l1": 0.012430463917553425
+    },
+    "backbone.layers.0.raw_recovery": {
+      "finite": true,
+      "l1": 0.0017752639250829816
+    },
+    "backbone.layers.0.raw_regeneration": {
+      "finite": true,
+      "l1": 0.0016572852618992329
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 1.2171921730041504
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 7.153159141540527
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.21650177240371704
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.10306037217378616
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.2179841697216034
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 4.663265228271484
+    }
+  },
+  "history": [
+    {
+      "last_grad_norm": 0.7747519612312317,
+      "train_loss": 2.3343926072120667,
+      "training_cpu_seconds": 1.5999938940000016,
+      "training_wall_seconds": 1.7161238379994757,
+      "update": 40,
+      "validation": {
+        "accuracy": 0.109375,
+        "brier": 0.9051002860069275,
+        "cases": 512,
+        "conflict_accuracy": 0.1082802563905716,
+        "cross_entropy": 2.328521490097046,
+        "image_accuracy": 0.1031746044754982,
+        "spoken_accuracy": 0.11538461595773697
+      }
+    },
+    {
+      "last_grad_norm": 1.5548259019851685,
+      "train_loss": 2.2749232709407807,
+      "training_cpu_seconds": 3.0065120970000025,
+      "training_wall_seconds": 3.124218451004708,
+      "update": 80,
+      "validation": {
+        "accuracy": 0.15234375,
+        "brier": 0.8942484855651855,
+        "cases": 512,
+        "conflict_accuracy": 0.14861996471881866,
+        "cross_entropy": 2.2720658779144287,
+        "image_accuracy": 0.210317462682724,
+        "spoken_accuracy": 0.09615384787321091
+      }
+    },
+    {
+      "last_grad_norm": 0.9885405898094177,
+      "train_loss": 2.207046838104725,
+      "training_cpu_seconds": 9.650536139999993,
+      "training_wall_seconds": 10.098644298996078,
+      "update": 160,
+      "validation": {
+        "accuracy": 0.23046875,
+        "brier": 0.8643597960472107,
+        "cases": 512,
+        "conflict_accuracy": 0.2186836451292038,
+        "cross_entropy": 2.168844223022461,
+        "image_accuracy": 0.369047611951828,
+        "spoken_accuracy": 0.09615384787321091
+      }
+    }
+  ],
+  "parameters": {
+    "backbone": 8608,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 330,
+    "total": 11146
+  },
+  "prepare_cpu_seconds": 0.564227689,
+  "selected_step": 160,
+  "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+  "spec": {
+    "architecture": "ordinary",
+    "batch_size": 32,
+    "data_seed": 7123,
+    "depth": 1,
+    "length": 32,
+    "lr": 0.003,
+    "match_cell_budget": false,
+    "seed": 1105,
+    "stage": "mechanism",
+    "task": "multimodal_select",
+    "test_size": 1024,
+    "train_size": 2048,
+    "updates": 160,
+    "val_size": 512,
+    "width": 32
+  },
+  "split_sources_sha256": "f92d73bc301a59c99e0e994d269430e2965115d5c2bc16643f42ca141a5bbf26",
+  "test": {
+    "accuracy": 0.2353515625,
+    "brier": 0.8653007745742798,
+    "cases": 1024,
+    "conflict_accuracy": 0.21666666865348816,
+    "cross_entropy": 2.170982837677002,
+    "image_accuracy": 0.3409961760044098,
+    "spoken_accuracy": 0.12549801170825958
+  },
+  "test_cpu_seconds": 0.40216177900000005,
+  "test_wall_seconds": 0.40943745899858186,
+  "timing_scope": "includes preparation, fitting, validation, serialization, reload and test; installation excluded",
+  "total_cpu_seconds": 11.967460705,
+  "total_wall_seconds": 12.595422906997555,
+  "training_cpu_seconds": 9.650536139999993,
+  "training_examples_seen": 5120,
+  "training_sequence_positions": 163840,
+  "training_wall_seconds": 10.098644298996078,
+  "unique_training_examples_seen": 1869,
+  "validation_cpu_seconds": 0.42208434300000075
+}

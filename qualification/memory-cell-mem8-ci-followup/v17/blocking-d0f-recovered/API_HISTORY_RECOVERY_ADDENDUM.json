@@ -1,0 +1,93 @@
+{
+  "schema": "hepta.mem8.d0f.original-api-history-recovery.v1",
+  "main_store_recovery_manifest": "3b5c751478f8da58d2c695d347d4c6d7e7029943",
+  "prior_original_snapshots": [
+    {
+      "path": "snapshots/snapshot-016/run.json",
+      "bytes": 16567,
+      "sha256": "745d64b59f314454dd7e3ab4ba6b456610de21d41d4fb8525efec9a140157e41",
+      "git_blob": "6f1abf1a0c1dd683792a878124d98ed05a2c4055",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 17:58:08 UTC"
+    },
+    {
+      "path": "snapshots/snapshot-016/jobs.json",
+      "bytes": 86221,
+      "sha256": "c6e9deac7e4f9958ebde687ca2467212653b7d93faae34d967d892ad693a1b85",
+      "git_blob": "052e313586184df005b5bc69e4e092344980cf81",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 17:58:08 UTC"
+    },
+    {
+      "path": "snapshots/snapshot-016/artifacts.json",
+      "bytes": 8087,
+      "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+      "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 17:58:08 UTC"
+    },
+    {
+      "path": "snapshots/snapshot-017/run.json",
+      "bytes": 16567,
+      "sha256": "745d64b59f314454dd7e3ab4ba6b456610de21d41d4fb8525efec9a140157e41",
+      "git_blob": "6f1abf1a0c1dd683792a878124d98ed05a2c4055",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 18:10:00 UTC"
+    },
+    {
+      "path": "snapshots/snapshot-017/jobs.json",
+      "bytes": 86221,
+      "sha256": "c6e9deac7e4f9958ebde687ca2467212653b7d93faae34d967d892ad693a1b85",
+      "git_blob": "052e313586184df005b5bc69e4e092344980cf81",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 18:10:00 UTC"
+    },
+    {
+      "path": "snapshots/snapshot-017/artifacts.json",
+      "bytes": 8087,
+      "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+      "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+      "actual_created": true,
+      "full_utf8_readback_equal": true,
+      "observed_at_utc": "2026-11-11 18:10:00 UTC"
+    }
+  ],
+  "later_snapshot019": {
+    "observed_at_utc": "2026-11-11 18:32:29 UTC",
+    "objects": [
+      {
+        "path": "snapshots/snapshot-019/run.json",
+        "bytes": 16567,
+        "sha256": "745d64b59f314454dd7e3ab4ba6b456610de21d41d4fb8525efec9a140157e41",
+        "git_blob": "6f1abf1a0c1dd683792a878124d98ed05a2c4055",
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "snapshots/snapshot-019/jobs-read-error.json",
+        "bytes": 258,
+        "sha256": "e1c7fa0319fe2eb635642ed075f5c4d6710029f324bd2d042254f6ba1af1705d",
+        "git_blob": "2947eed5c9cdd66a8243f3cacaf57ff814fb5eb3",
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      },
+      {
+        "path": "snapshots/snapshot-019/artifacts.json",
+        "bytes": 8087,
+        "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+        "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+        "actual_created": true,
+        "full_utf8_readback_equal": true
+      }
+    ],
+    "jobs_read_failed": true,
+    "run_still_in_progress": true,
+    "not_a_new_verified_job_closed_set": true
+  },
+  "new_execution_or_retry": false
+}

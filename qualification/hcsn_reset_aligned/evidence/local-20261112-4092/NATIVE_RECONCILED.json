@@ -1,0 +1,77 @@
+{
+  "schema": "hcsn-uniform-law-reconciliation-v1",
+  "job_id": "1a1ce6d84af-2564-1661",
+  "idempotency_key": "hcsn-initial-law-vjp-4092-attempt001",
+  "reused": true,
+  "retried_launch": false,
+  "status": {
+    "at_unix_ms": 1794464669363,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1ce6d84af-2564-1661",
+    "launch_nonce": "f1c4c7a32a2e446c86e8dd480ae04308",
+    "log_bytes": {
+      "stderr": {
+        "seen": 958,
+        "stored": 958
+      },
+      "stdout": {
+        "seen": 4096,
+        "stored": 4096
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "archive_sha256": "0f4ed10b212b65e5ba1b7ea7e1634e324e0d8a4a0f713f62790b57672cdf27b3",
+  "scope": "earlier uniform/c06d initial-law VJP diagnostic; not evidence for the reset-aligned discretization",
+  "readbacks": [
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "1:ba|{\n2:a0|  \"archive_sha256\": \"0f4ed10b212b65e5ba1b7ea7e1634e324e0d8a4a0f713f62790b57672cdf27b3\",\n3:dd|  \"command\": [\n4:b2|    \"/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python\",\n5:6e|    \"-B\",\n6:26|    \"-m\",\n7:c8|    \"unittest\",\n8:bb|    \"qualification.hcsn_joint_dde.test_torch_law\",\n9:30|    \"-v\"\n10:3c|  ],\n11:b5|  \"returncode\": 0,\n12:22|  \"source_sha256\": {\n13:43|    \"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\",\n14:c9|    \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\",\n15:10|    \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\",\n16:40|    \"qualification/hcsn_joint_dde/sensitivities.py\": \"ec259502f7b16fcf6f8fe9d0a0c81b591788e196ebbf9d2feb9554b24818ff32\",\n17:8a|    \"qualification/hcsn_joint_dde/test_torch_law.py\": \"6a6c785e7306cbc16f9cd4f0e68715bead83f9ecc1197d1c96ff1769bc208256\",\n18:b4|    \"qualification/hcsn_joint_dde/torch_law.py\": \"edb51c017295d25be99d7a7e926a275a9b2da97235b72beb24f52257fab6c034\",\n19:77|    \"qualification/hcsn_joint_dde/torch_physical.py\": \"7b343f89310ec34855801ffb13ff1a82b9d0b0a64dcf81c9b4451402e8d9392d\"\n20:d3|  },\n21:b6|  \"source_unchanged\": true,\n22:76|  \"wall_seconds\": 20.18635630607605\n23:14|}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "1:f2|test_actual_reset_kink_is_retained_and_refused (qualification.hcsn_joint_dde.test_torch_law.InitialLawVjp.test_actual_reset_kink_is_retained_and_refused) ... ok\n2:fd|test_boundary_low_noise_and_short_time_directional_fd (qualification.hcsn_joint_dde.test_torch_law.InitialLawVjp.test_boundary_low_noise_and_short_time_directional_fd) ... ok\n3:90|test_forward_and_joint_physics_initial_law_gradcheck (qualification.hcsn_joint_dde.test_torch_law.InitialLawVjp.test_forward_and_joint_physics_initial_law_gradcheck) ... ok\n4:f7|test_law_and_signed_content_derivatives_preserve_mass (qualification.hcsn_joint_dde.test_torch_law.InitialLawVjp.test_law_and_signed_content_derivatives_preserve_mass) ... ok\n5:da|test_post_delay_derivative_includes_recursive_returns (qualification.hcsn_joint_dde.test_torch_law.InitialLawVjp.test_post_delay_derivative_includes_recursive_returns) ... ok\n6:c5|\n7:4e|----------------------------------------------------------------------\n8:e7|Ran 5 tests in 12.189s\n9:c5|\n10:f6|OK"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    {
+      "content": [
+        {
+          "type": "text",
+          "text": "1:7c|LAW_VJP_EVIDENCE {\"full_network_training\": false, \"rare_tail_relative_qualified\": false, \"records\": [{\"attempts\": [{\"gap\": 0.3565280842149354, \"left\": -0.48868657393785764, \"right\": -0.1321584897229222, \"step\": 0.0002}, {\"gap\": 0.35651714265894086, \"left\": -0.4886757410982323, \"right\": -0.13215859843929145, \"step\": 0.0001}], \"case\": \"reset_node_kink\", \"knot_refused\": true, \"smoothed_surrogate\": false}, {\"absolute_errors\": [5.458820728776459e-09, 1.572256658199933e-09], \"ad\": -0.7757139517821969, \"case\": \"near_boundary\", \"finite_differences\": [-0.7757139463233762, -0.7757139502099403], \"horizon\": 0.25, \"relative_rare_event_precision_claimed\": false}, {\"absolute_errors\": [2.9367442921923725e-09, 4.631079894568124e-10], \"ad\": -0.05306967258565681, \"case\": \"low_noise\", \"finite_differences\": [-0.05306966964891252, -0.053069672122548824], \"horizon\": 0.25, \"relative_rare_event_precision_claimed\": false}, {\"absolute_errors\": [2.20653495475176e-11, 2.877975635584562e-13], \"ad\": 0.16963742871880114, \"case\": \"short_time\", \"finite_differences\": [0.1696374286967358, 0.16963742871851334], \"horizon\": 0.001, \"relative_rare_event_precision_claimed\": false}, {\"case\": \"joint_gradcheck\", \"initial_law_shape\": [10, 3], \"maximum_forward_absolute_error\": 1.2219170120175704e-11, \"passed\": true, \"query_times\": [0.0, 0.1, 0.2, 0.6]}, {\"all_channels\": true, \"case\": \"mass_content_law_jacobian\"}, {\"case\": \"recursive_history_derivative\", \"derivative\": [0.6129686521920681, 0.2622227888409901, 0.09044413382773156, 0.025690666366957007, 0.006148643710853216, 0.0012649837514323954, 0.00022369275110919497, 0.0], \"excess\": [0.03736697834515312, 0.007527941428731755, 0.001254339669951282, 0.00017765857105591504, 2.1844468723755152e-05, 2.370553384652141e-06, 2.2882130354311765e-07, 0.0], \"killed_first_hit\": [0.575601673846915, 0.25469484741225834, 0.08918979415778028, 0.025513007795901092, 0.006126799242129461, 0.0012626131980477432, 0.00022346392980565185, 0.0]}], \"reset_knots_differentiable\": false, \"scope\": \"first-order CPU FP64 fixed geometry/delay\", \"source_sha256\": {\"qualification/hcsn_boundary_audit/refractory_transport.py\": \"0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22\", \"qualification/hcsn_boundary_audit/spatial_generator.py\": \"a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441\", \"qualification/hcsn_joint_dde/model.py\": \"54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4\", \"qualification/hcsn_joint_dde/sensitivities.py\": \"ec259502f7b16fcf6f8fe9d0a0c81b591788e196ebbf9d2feb9554b24818ff32\", \"qualification/hcsn_joint_dde/test_torch_law.py\": \"6a6c785e7306cbc16f9cd4f0e68715bead83f9ecc1197d1c96ff1769bc208256\", \"qualification/hcsn_joint_dde/torch_law.py\": \"edb51c017295d25be99d7a7e926a275a9b2da97235b72beb24f52257fab6c034\", \"qualification/hcsn_joint_dde/torch_physical.py\": \"7b343f89310ec34855801ffb13ff1a82b9d0b0a64dcf81c9b4451402e8d9392d\"}}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  ]
+}

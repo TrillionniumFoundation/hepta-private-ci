@@ -1,0 +1,66 @@
+name: Native NDU centered-gradient interval R22
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/centered_interval/**'
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/width4_interval/**'
+      - '.github/workflows/hepta-native-ndu-centered-interval.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-interval:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - name: Checkout exact PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Setup Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Pinned exact-proof diagnostics
+        run: python -m pip install numpy==2.3.5 mpmath==1.3.0
+      - name: Reproduce all six proofs and 120 immutable binary64 tensors
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd"
+          SRC="$ROOT/centered_interval"
+          OUT="$RUNNER_TEMP/r22"
+          mkdir -p "$OUT/proofs" "$OUT/logs"
+          git rev-parse HEAD > "$OUT/HEAD.txt"
+          python -m pip freeze > "$OUT/ENVIRONMENT.txt"
+          (cd "$SRC" && python -m unittest -v test_centered) 2>&1 | tee "$OUT/logs/MATH_TESTS.log"
+          for width in 2 3 4; do
+            for mode in legacy hybrid; do
+              python "$SRC/centered.py" --width "$width" --mode "$mode" --out "$OUT/proofs/w$width-$mode" 2>&1 | tee -a "$OUT/logs/PROOFS.log"
+            done
+          done
+          python "$SRC/emit_scores.py" --legacy "$ROOT/width4_interval" --proof-root "$OUT/proofs" --out "$OUT/readout" 2>&1 | tee "$OUT/logs/READOUT.log"
+          python "$SRC/git_replay.py" --proof-root "$OUT/proofs" --legacy "$ROOT/width4_interval" --scores "$OUT/readout/SCORES.csv" --full-proof-replay 2>&1 | tee "$OUT/logs/AUDIT.log"
+          (
+            cd "$SRC"
+            NDU_R22_EVIDENCE="$OUT/proofs" python -O -m unittest -v \
+              test_tamper.CorruptionTests.test_01_forged_cap \
+              test_tamper.CorruptionTests.test_02_rehashed_false_child_cost \
+              test_tamper.CorruptionTests.test_03_rehashed_false_child_box \
+              test_tamper.CorruptionTests.test_04_deleted_split_rehashed \
+              test_tamper.CorruptionTests.test_05_rehashed_false_final_gap \
+              test_tamper.CorruptionTests.test_06_deleted_frontier_leaf_rehashed
+          ) 2>&1 | tee "$OUT/logs/TAMPER.log"
+      - name: Retain all outcomes and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: r22-centered-interval-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/r22
+          if-no-files-found: error
+          retention-days: 14

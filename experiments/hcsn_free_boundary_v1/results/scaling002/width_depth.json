@@ -1,0 +1,818 @@
+[
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 2352,
+      "frontend": 272,
+      "groups": {
+        "boundary": 16,
+        "content": 2408,
+        "dynamics": 304,
+        "refractory": 16,
+        "reset": 16
+      },
+      "readout": 136,
+      "total": 2760
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.04520690300000041,
+      "cpu_median_seconds": 0.044743383999996666,
+      "cpu_min_seconds": 0.04373753999999863,
+      "repeats": [
+        {
+          "cpu_seconds": 0.04520690300000041,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.011003280000000615
+          },
+          "wall_seconds": 0.04520950800360879
+        },
+        {
+          "cpu_seconds": 0.04373753999999863,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.009470413000002509
+          },
+          "wall_seconds": 0.04374329900019802
+        },
+        {
+          "cpu_seconds": 0.044743383999996666,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.009733233999998703
+          },
+          "wall_seconds": 0.04474836300505558
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.010068975666667276,
+      "root_fraction_of_measured_cpu": 0.22595121543865618,
+      "wall_median_seconds": 0.04474836300505558
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 4160,
+      "tensor_elements": 1040,
+      "tensors": 5,
+      "unique_storage_bytes": 4160
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 346116096,
+    "process_peak_rss_before_bytes": 346116096,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.1503990970000011,
+      "cpu_median_seconds": 0.14809850600000019,
+      "cpu_min_seconds": 0.14785563599999918,
+      "repeats": [
+        {
+          "cpu_seconds": 0.14785563599999918,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0013002009999993902,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.013062237999999837
+          },
+          "wall_seconds": 0.14786929199908627
+        },
+        {
+          "cpu_seconds": 0.1503990970000011,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0009107129999996744,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.010811024000002334
+          },
+          "wall_seconds": 0.15041214899974875
+        },
+        {
+          "cpu_seconds": 0.14809850600000019,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0007226230000014766,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.009956294999998505
+          },
+          "wall_seconds": 0.1481017320038518
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0009778456666668471,
+      "root_forward_cpu_mean_seconds": 0.011276519000000226,
+      "root_fraction_of_measured_cpu": 0.08236322891341487,
+      "wall_median_seconds": 0.1481017320038518
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.05712630200000035,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.012314447000001394
+        },
+        "wall_seconds": 0.05713112399826059
+      },
+      "train_step": {
+        "cpu_seconds": 0.16650364199999856,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0007527879999997822,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.01314361200000036
+        },
+        "wall_seconds": 0.16652558100031456
+      }
+    },
+    "width": 16
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 4704,
+      "frontend": 272,
+      "groups": {
+        "boundary": 32,
+        "content": 4408,
+        "dynamics": 608,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 136,
+      "total": 5112
+    },
+    "depth": 2,
+    "forward": {
+      "cpu_max_seconds": 0.09459514499999955,
+      "cpu_median_seconds": 0.0799718580000004,
+      "cpu_min_seconds": 0.07803713499999887,
+      "repeats": [
+        {
+          "cpu_seconds": 0.07803713499999887,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.019082867999998143
+          },
+          "wall_seconds": 0.07814025699917693
+        },
+        {
+          "cpu_seconds": 0.0799718580000004,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.019071720999999542
+          },
+          "wall_seconds": 0.07997828699444653
+        },
+        {
+          "cpu_seconds": 0.09459514499999955,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.018741661000003518
+          },
+          "wall_seconds": 0.09460138499707682
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.018965416666667068,
+      "root_fraction_of_measured_cpu": 0.2252387884477232,
+      "wall_median_seconds": 0.07997828699444653
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 8256,
+      "tensor_elements": 2064,
+      "tensors": 9,
+      "unique_storage_bytes": 8256
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 346247168,
+    "process_peak_rss_before_bytes": 346116096,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.3698526919999985,
+      "cpu_median_seconds": 0.34566243700000143,
+      "cpu_min_seconds": 0.3382692779999985,
+      "repeats": [
+        {
+          "cpu_seconds": 0.3382692779999985,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.0016801239999999495,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.025306880999998782
+          },
+          "wall_seconds": 0.3383054450023337
+        },
+        {
+          "cpu_seconds": 0.3698526919999985,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.00231183299999671,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.020082072000001006
+          },
+          "wall_seconds": 0.3698611500003608
+        },
+        {
+          "cpu_seconds": 0.34566243700000143,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.001640997000002642,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.0218547849999986
+          },
+          "wall_seconds": 0.34615062800003216
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0018776513333331006,
+      "root_forward_cpu_mean_seconds": 0.022414579333332796,
+      "root_fraction_of_measured_cpu": 0.06915711744821613,
+      "wall_median_seconds": 0.34615062800003216
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.07768399099999712,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.018439122000000197
+        },
+        "wall_seconds": 0.07768948400189402
+      },
+      "train_step": {
+        "cpu_seconds": 0.26503775100000126,
+        "root": {
+          "backward_calls": 2,
+          "backward_cpu_seconds": 0.0014901219999998716,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.01910390000000106
+        },
+        "wall_seconds": 0.2650462520032306
+      }
+    },
+    "width": 16
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 8800,
+      "frontend": 544,
+      "groups": {
+        "boundary": 32,
+        "content": 8392,
+        "dynamics": 1120,
+        "refractory": 32,
+        "reset": 32
+      },
+      "readout": 264,
+      "total": 9608
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.06620771900000122,
+      "cpu_median_seconds": 0.06496854699999943,
+      "cpu_min_seconds": 0.0639909170000017,
+      "repeats": [
+        {
+          "cpu_seconds": 0.06620771900000122,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.017491114999998558
+          },
+          "wall_seconds": 0.06621137099864427
+        },
+        {
+          "cpu_seconds": 0.0639909170000017,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.020918624000000108
+          },
+          "wall_seconds": 0.0639966020025895
+        },
+        {
+          "cpu_seconds": 0.06496854699999943,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.021091611000002786
+          },
+          "wall_seconds": 0.06497495600342518
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.019833783333333816,
+      "root_fraction_of_measured_cpu": 0.3048737450906423,
+      "wall_median_seconds": 0.06497495600342518
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 8256,
+      "tensor_elements": 2064,
+      "tensors": 5,
+      "unique_storage_bytes": 8256
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 346247168,
+    "process_peak_rss_before_bytes": 346247168,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.1993988970000018,
+      "cpu_median_seconds": 0.1912638159999993,
+      "cpu_min_seconds": 0.16851818900000026,
+      "repeats": [
+        {
+          "cpu_seconds": 0.16851818900000026,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0015680590000002326,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.018775701999999228
+          },
+          "wall_seconds": 0.16852534699864918
+        },
+        {
+          "cpu_seconds": 0.1912638159999993,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0014380149999979608,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.024304342000000645
+          },
+          "wall_seconds": 0.19135393000033218
+        },
+        {
+          "cpu_seconds": 0.1993988970000018,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0015725350000010963,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.02019478999999791
+          },
+          "wall_seconds": 0.19941039100376656
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0015262029999997633,
+      "root_forward_cpu_mean_seconds": 0.021091611333332594,
+      "root_fraction_of_measured_cpu": 0.1213443498469068,
+      "wall_median_seconds": 0.19135393000033218
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.05484643699999836,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.019376433999998
+        },
+        "wall_seconds": 0.05487511699902825
+      },
+      "train_step": {
+        "cpu_seconds": 0.15818066799999997,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0015535369999994941,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.018363139000001638
+        },
+        "wall_seconds": 0.15820312100549927
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 17600,
+      "frontend": 544,
+      "groups": {
+        "boundary": 64,
+        "content": 15976,
+        "dynamics": 2240,
+        "refractory": 64,
+        "reset": 64
+      },
+      "readout": 264,
+      "total": 18408
+    },
+    "depth": 2,
+    "forward": {
+      "cpu_max_seconds": 0.1551748239999995,
+      "cpu_median_seconds": 0.09886714699999999,
+      "cpu_min_seconds": 0.09879345800000294,
+      "repeats": [
+        {
+          "cpu_seconds": 0.1551748239999995,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.049128997000000396
+          },
+          "wall_seconds": 0.15520626500074286
+        },
+        {
+          "cpu_seconds": 0.09886714699999999,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.0339960149999996
+          },
+          "wall_seconds": 0.09887323300063144
+        },
+        {
+          "cpu_seconds": 0.09879345800000294,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.034265464999997164
+          },
+          "wall_seconds": 0.09879924300184939
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.039130158999999054,
+      "root_fraction_of_measured_cpu": 0.3327060361616814,
+      "wall_median_seconds": 0.09887323300063144
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 16448,
+      "tensor_elements": 4112,
+      "tensors": 9,
+      "unique_storage_bytes": 16448
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 352157696,
+    "process_peak_rss_before_bytes": 346247168,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.4179677919999989,
+      "cpu_median_seconds": 0.37181333199999855,
+      "cpu_min_seconds": 0.3085248689999993,
+      "repeats": [
+        {
+          "cpu_seconds": 0.4179677919999989,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.0055980230000045594,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.03383026799999911
+          },
+          "wall_seconds": 0.4180030569987139
+        },
+        {
+          "cpu_seconds": 0.3085248689999993,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.004401335999997258,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.03477124500000173
+          },
+          "wall_seconds": 0.30852225700073177
+        },
+        {
+          "cpu_seconds": 0.37181333199999855,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.00636863699999779,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.036610547000002214
+          },
+          "wall_seconds": 0.3718329809998977
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0054559986666665354,
+      "root_forward_cpu_mean_seconds": 0.03507068666666768,
+      "root_fraction_of_measured_cpu": 0.11069779895119175,
+      "wall_median_seconds": 0.3718329809998977
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.1123663530000023,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.03680278300000239
+        },
+        "wall_seconds": 0.11238421199959703
+      },
+      "train_step": {
+        "cpu_seconds": 0.4827689409999998,
+        "root": {
+          "backward_calls": 2,
+          "backward_cpu_seconds": 0.003797999999999746,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.0374353410000019
+        },
+        "wall_seconds": 0.48279627300507855
+      }
+    },
+    "width": 32
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 33984,
+      "frontend": 1088,
+      "groups": {
+        "boundary": 64,
+        "content": 31112,
+        "dynamics": 4288,
+        "refractory": 64,
+        "reset": 64
+      },
+      "readout": 520,
+      "total": 35592
+    },
+    "depth": 1,
+    "forward": {
+      "cpu_max_seconds": 0.09372088000000289,
+      "cpu_median_seconds": 0.08369414099999872,
+      "cpu_min_seconds": 0.06841208200000182,
+      "repeats": [
+        {
+          "cpu_seconds": 0.08369414099999872,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.03543709399999884
+          },
+          "wall_seconds": 0.0837002750049578
+        },
+        {
+          "cpu_seconds": 0.09372088000000289,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.049589736000001494
+          },
+          "wall_seconds": 0.09372597400215454
+        },
+        {
+          "cpu_seconds": 0.06841208200000182,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.03215149500000081
+          },
+          "wall_seconds": 0.06843841099907877
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.03905944166666705,
+      "root_fraction_of_measured_cpu": 0.4766696738072836,
+      "wall_median_seconds": 0.0837002750049578
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 16448,
+      "tensor_elements": 4112,
+      "tensors": 5,
+      "unique_storage_bytes": 16448
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 352157696,
+    "process_peak_rss_before_bytes": 352157696,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.18909380499999884,
+      "cpu_median_seconds": 0.18904896799999804,
+      "cpu_min_seconds": 0.18434740600000055,
+      "repeats": [
+        {
+          "cpu_seconds": 0.18904896799999804,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0022974019999999484,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.03227575999999743
+          },
+          "wall_seconds": 0.18906690800213255
+        },
+        {
+          "cpu_seconds": 0.18434740600000055,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.002492460999999224,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.031764779999999604
+          },
+          "wall_seconds": 0.18435219400271308
+        },
+        {
+          "cpu_seconds": 0.18909380499999884,
+          "root": {
+            "backward_calls": 1,
+            "backward_cpu_seconds": 0.0028618099999988544,
+            "forward_calls": 1,
+            "forward_cpu_seconds": 0.032844703999998615
+          },
+          "wall_seconds": 0.18916006899962667
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.002550557666666009,
+      "root_forward_cpu_mean_seconds": 0.032295081333331886,
+      "root_fraction_of_measured_cpu": 0.185846652799949,
+      "wall_median_seconds": 0.18906690800213255
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.08151379799999958,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.0383062549999984
+        },
+        "wall_seconds": 0.08152579400484683
+      },
+      "train_step": {
+        "cpu_seconds": 0.2318304480000002,
+        "root": {
+          "backward_calls": 1,
+          "backward_cpu_seconds": 0.0028539780000009785,
+          "forward_calls": 1,
+          "forward_cpu_seconds": 0.03580443899999963
+        },
+        "wall_seconds": 0.23197575900121592
+      }
+    },
+    "width": 64
+  },
+  {
+    "batch": 16,
+    "counts": {
+      "backbone": 67968,
+      "frontend": 1088,
+      "groups": {
+        "boundary": 128,
+        "content": 60616,
+        "dynamics": 8576,
+        "refractory": 128,
+        "reset": 128
+      },
+      "readout": 520,
+      "total": 69576
+    },
+    "depth": 2,
+    "forward": {
+      "cpu_max_seconds": 0.19129754799999787,
+      "cpu_median_seconds": 0.18000785899999983,
+      "cpu_min_seconds": 0.17738206099999942,
+      "repeats": [
+        {
+          "cpu_seconds": 0.18000785899999983,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.07948602400000127
+          },
+          "wall_seconds": 0.18008132700197166
+        },
+        {
+          "cpu_seconds": 0.19129754799999787,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.07713702800000277
+          },
+          "wall_seconds": 0.19131347399525112
+        },
+        {
+          "cpu_seconds": 0.17738206099999942,
+          "root": {
+            "backward_calls": 0,
+            "backward_cpu_seconds": 0.0,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.06811996799999775
+          },
+          "wall_seconds": 0.17739075199642684
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.0,
+      "root_forward_cpu_mean_seconds": 0.07491434000000059,
+      "root_fraction_of_measured_cpu": 0.4096011538575963,
+      "wall_median_seconds": 0.18008132700197166
+    },
+    "initial_stream_state": {
+      "retains_autograd_graph": false,
+      "tensor_bytes": 32832,
+      "tensor_elements": 8208,
+      "tensors": 9,
+      "unique_storage_bytes": 32832
+    },
+    "interface": "full_sequence",
+    "length": 64,
+    "model": "free_dual",
+    "process_peak_rss_after_bytes": 385699840,
+    "process_peak_rss_before_bytes": 352157696,
+    "streaming_cache_measured": false,
+    "train_step": {
+      "cpu_max_seconds": 0.5488263670000002,
+      "cpu_median_seconds": 0.47860726300000067,
+      "cpu_min_seconds": 0.43662020199999674,
+      "repeats": [
+        {
+          "cpu_seconds": 0.47860726300000067,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.011343714999995314,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.08827434799999878
+          },
+          "wall_seconds": 0.47862963499937905
+        },
+        {
+          "cpu_seconds": 0.5488263670000002,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.011570390999999347,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.08205052499999965
+          },
+          "wall_seconds": 0.5489100940030767
+        },
+        {
+          "cpu_seconds": 0.43662020199999674,
+          "root": {
+            "backward_calls": 2,
+            "backward_cpu_seconds": 0.007532136000001799,
+            "forward_calls": 2,
+            "forward_cpu_seconds": 0.09082200100000293
+          },
+          "wall_seconds": 0.4366572700018878
+        }
+      ],
+      "root_backward_cpu_mean_seconds": 0.010148747333332153,
+      "root_forward_cpu_mean_seconds": 0.08704895800000045,
+      "root_fraction_of_measured_cpu": 0.19916830216663664,
+      "wall_median_seconds": 0.47862963499937905
+    },
+    "training_updates_for_timing": 4,
+    "warmup": {
+      "forward": {
+        "cpu_seconds": 0.148241217999999,
+        "root": {
+          "backward_calls": 0,
+          "backward_cpu_seconds": 0.0,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.06559089200000301
+        },
+        "wall_seconds": 0.14824759699695278
+      },
+      "train_step": {
+        "cpu_seconds": 0.5603671649999988,
+        "root": {
+          "backward_calls": 2,
+          "backward_cpu_seconds": 0.009037051000003515,
+          "forward_calls": 2,
+          "forward_cpu_seconds": 0.08940574699999715
+        },
+        "wall_seconds": 0.5603894109954126
+      }
+    },
+    "width": 64
+  }
+]

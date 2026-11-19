@@ -129,7 +129,9 @@ impl ObjectiveRuntimeHost {
         let issuer = trust.issuer()?;
         let message = SignedMessage {
             claims: objective_claims(agentd.identity(), &request, &payload)?,
-            signature: hex_bytes(&request.signature_hex)?,
+            signature: codex_hepta_authbus::AuthBusSignature::Ed25519(hex_bytes(
+                &request.signature_hex,
+            )?),
         };
         let authenticated = message
             .authenticate(
@@ -188,7 +190,14 @@ impl ObjectiveRuntimeHost {
             expires_at_ms: authenticated.claims().expires_at_ms,
             scope_digest: authenticated.claims().scope_digest,
             signed_body_digest: authenticated.claims().payload_digest,
-            signature: message.signature,
+            signature: match message.signature {
+                codex_hepta_authbus::AuthBusSignature::Ed25519(signature) => signature,
+                codex_hepta_authbus::AuthBusSignature::MlDsa65(_) => {
+                    return Err(invalid(
+                        "objective V1 journal requires an Ed25519 signature",
+                    ));
+                }
+            },
         };
 
         // Durable publication and replay-frontier mutation remain serialized,

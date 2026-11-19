@@ -1,0 +1,82 @@
+{
+  "actual_exit_code": 1,
+  "cached_variant_measured": false,
+  "calibration_zip_count": 9,
+  "common_full_cpu_per_arm_seconds": 3.866379884,
+  "common_reference_cpu_ns": 109003.734375,
+  "completed_candidates": 36,
+  "execution_commit": "2e7b08c86b2694727d7c989113a59ccfc8779a72",
+  "freeze_sha256": "97f83d0e26251546cbaeecbc3b613ee8abe9ed44285352827a555e98ca0246dc",
+  "methods": [
+    {
+      "all_candidate_prefixes_complete": true,
+      "complete_cpu_at_failure_seconds": 9.831431243000004,
+      "phase": "selected_validation",
+      "residual_rounds": 79,
+      "selected_updates": [
+        465,
+        460,
+        600
+      ],
+      "selected_validation_cpu_seconds_so_far": 0.2289637409999976,
+      "system": "supervised",
+      "units_at_failure": 10317476279
+    },
+    {
+      "all_candidate_prefixes_complete": true,
+      "complete_cpu_at_failure_seconds": 9.873757716000021,
+      "phase": "selected_validation",
+      "residual_rounds": 89,
+      "selected_updates": [
+        493,
+        495,
+        538
+      ],
+      "selected_validation_cpu_seconds_so_far": 0.2267682200000003,
+      "system": "anchor",
+      "units_at_failure": 10566549709
+    },
+    {
+      "all_candidate_prefixes_complete": true,
+      "complete_cpu_at_failure_seconds": 9.963969438000017,
+      "phase": "selected_validation",
+      "residual_rounds": 87,
+      "selected_updates": [
+        470,
+        470,
+        483
+      ],
+      "selected_validation_cpu_seconds_so_far": 0.3309247719999959,
+      "system": "additive",
+      "units_at_failure": 10226607423
+    },
+    {
+      "all_candidate_prefixes_complete": true,
+      "complete_cpu_at_failure_seconds": 10.022472112999996,
+      "phase": "selected_validation",
+      "residual_rounds": 93,
+      "selected_updates": [
+        486,
+        467,
+        473
+      ],
+      "selected_validation_cpu_seconds_so_far": 0.37174191700000137,
+      "system": "ndu",
+      "units_at_failure": 10112794371
+    }
+  ],
+  "postrun_analysis_cpu_ns": 19833266,
+  "reason": "ndu:selected_validation_complete actual CPU 10.022472113s exceeds frozen cap 10.000000000s",
+  "schema": "hepta.codec-d1-partial-descriptive.v1",
+  "scientific_benefit_confirmed": false,
+  "scope": "Saved receipts only; no new data, inference, fit or formal result. Partial slot0 is not an ABBA comparison.",
+  "selected_model_records": 12,
+  "selected_service_zip_count": 10,
+  "slot_bytes": 27558364,
+  "source": "525fa87a3e0f7220553fbcc9782df3f2e4b073e8",
+  "unexecuted_slots": [
+    1,
+    2,
+    3
+  ]
+}

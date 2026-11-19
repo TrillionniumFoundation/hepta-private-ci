@@ -36,6 +36,13 @@ class RuntimeContractTests(unittest.TestCase):
             with self.subTest(key=key), self.assertRaisesRegex(ValueError, key):
                 contract.check_generation_config(changed, 2, 1)
 
+    def test_assistant_confidence_stopping_is_rejected(self):
+        changed = self.config()
+        changed["is_assistant"] = True
+        changed["assistant_confidence_threshold"] = 0.4
+        with self.assertRaisesRegex(ValueError, "is_assistant"):
+            contract.check_generation_config(changed, 2, 1)
+
     def test_special_token_and_primary_decode_mutation_is_rejected(self):
         for key, value in (("bos_token_id", None), ("eos_token_id", 9),
                            ("pad_token_id", 0), ("do_sample", True),

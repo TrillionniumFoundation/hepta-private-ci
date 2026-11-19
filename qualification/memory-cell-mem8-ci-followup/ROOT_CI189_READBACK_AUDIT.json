@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.mem8.root-ci189-readback.v13",
+  "verified_at": "2026-11-11T11:03:51.902906+00:00",
+  "immutable_commit": "ecbbd495009d78ab995225cb437f6f98575e4bf7",
+  "archive": {
+    "bytes": 344748,
+    "sha256": "2f8d10568b3d4faf6bdb1927615b08f5497c159f6720d240a88b6516f9296873",
+    "git_blob": "b86f82acc52d076b697adf52e71b3e78d982c157"
+  },
+  "members_verified": 35,
+  "manifest_rows_verified": 34,
+  "complete_original_logs_verified": 6,
+  "normalized_failure_observations_verified": {
+    "model:130461514712": {
+      "printed": 8,
+      "unique_normalized_payloads": 6
+    },
+    "model:130461514922": {
+      "printed": 8,
+      "unique_normalized_payloads": 6
+    },
+    "infer:130461514980": {
+      "printed": 2,
+      "unique_normalized_payloads": 1
+    },
+    "neuron:130461514980": {
+      "printed": 2,
+      "unique_normalized_payloads": 1
+    },
+    "hardlink:130461514744": {
+      "printed": 4,
+      "unique_normalized_payloads": 3
+    },
+    "remote_control:130461514712": {
+      "printed": 1,
+      "unique_normalized_payloads": 1
+    },
+    "remote_control:130461514922": {
+      "printed": 1,
+      "unique_normalized_payloads": 1
+    }
+  },
+  "original_action_merge_commit": "83b67d85bc8ba58ca1f4e758efdc32dbe5f11c58",
+  "source_commit": "189711e3563ea13a5328d52e99a286f082045b98",
+  "shared_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "original_commit_identities_kept_distinct": true,
+  "windows_private_signed_credit": {
+    "passed": 1,
+    "failed": 0,
+    "retries": 0,
+    "scope": "Exact 189711 receipt printed in complete original job log; separate workflow artifact not downloaded by this verifier."
+  },
+  "overall_ci_pass": false,
+  "archived_programs_executed": 0,
+  "native_tests_executed": 0,
+  "model_requests_executed": 0
+}

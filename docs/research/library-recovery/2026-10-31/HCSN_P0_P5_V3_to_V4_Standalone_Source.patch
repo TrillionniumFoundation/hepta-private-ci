@@ -1,0 +1,1461 @@
+--- /dev/null
++++ b/P0_RATIONAL_CERTIFICATE_PROOF.md
+@@ -0,0 +1,40 @@
++# P0 有理数首达区间证书：证明范围与可重放算法
++
++**研究范围：** 固定吸收边界、恒定漂移与波动率的标量布朗过程
++`dX_t = μ dt + σ dW_t`、`X_0 = x > 0`，`τ = inf{t: X_t ≤ 0}`；有限期限 `T>0`，折现 `q>0`。这**不是** He–Xiong 原论文的债权—股权耦合估值、全局内生违约自由边界或神经网络动力学。当前模型使用**字符串表示的精确十进制有理参数**，不是输入二进制浮点的真实物理误差。
++
++## 核心恒等式
++
++定义 `a=μ/σ²`、`λ=sqrt(a²+2q/σ²)`、`u=σ sqrt(T)`，标准正态累积分布函数 `Φ`。则
++
++- `F = Φ((-x−μT)/u) + exp(−2ax) Φ((-x+μT)/u)`；
++- `G = exp((−a+λ)x) Φ((-x−λσ²T)/u) + exp((−a−λ)x) Φ((-x+λσ²T)/u)`；
++- `F−G = E[(1−exp(−q τ)) 1{τ≤T}] ≥ 0`。
++
++代码实际对 `F`、`G` 分别构造区间并做区间相减；只有 `lower(F−G)>0`、物理范围检查通过才给出 `CERTIFIED_POSITIVE_F_MINUS_G`，绝不采用 `max(0,F−G)` 遮盖逆序。
++
++## 区间端点为什么是有界的
++
++1. **π：** 精确 Machin 恒等式 `π=16 atan(1/5)−4 atan(1/239)`。`atan(z)=sum[(-1)^n z^(2n+1)/(2n+1)]` 对 `0<z<1` 交错递减；余项绝对值 ≤ 首个遗漏项。所有有限和与端点均使用 Python `Fraction`。
++2. **平方根：** 对非负有理数 `a=n/d`，取 `S=10^k`、`u=isqrt(floor(n S² / d))`，则 `u/S ≤ sqrt(a) ≤ (u+1)/S`。整数运算精确，完全平方数时上下界相同。
++3. **指数：** 先将有理数绝对值二分缩放至 `≤1/2`。泰勒多项式之后的余项 ≤ `2 |y|^(N+1)/(N+1)!`；依据 `exp(1/2)<2`。负参数由正参数包围区间倒数得到。重复平方与每次十进制外向量化均使用有理数区间运算。
++4. **标准正态：** 对 `z≥0`，`Φ(z)=1/2+1/sqrt(2π) × sum[(-1)^n z^(2n+1)/(2^n n!(2n+1))]`。当 `n>z²/2` 后项绝对值单调递减，因此交错级数余项在首项遗漏项之内。负 `z` 使用精确对称关系 `Φ(-z)=1−Φ(z)`。间隔输入通过 `Φ` 单调性以端点包围。
++5. **导数：** `∂F/∂x` 按解析导数计算，正态密度以相同有理数指数和 `sqrt(2π)` 区间包围。在 `x=0` 使用**右侧导数**；`x≤0` 常数 1 的左侧延拓一般不光滑，因此没有错误地声称风险通道满足零梯度 smooth pasting。
++6. **QVI：** 对单独定义的有理数有限状态折现重置 MDP，枚举全部 `2^n` 确定性策略，精确高斯消元解 `(I−βP_policy)V=r_policy`，求每个状态的最优值并用精确有理数验证 Bellman 最大方程与最佳确定策略。仅证实这个 *toy MDP*，绝非连续 HX 自由边界 QVI。
++
++## 保守拒绝
++
++- 输入必须是有限十进制**字符串**，参数必须严格属于特定紧致研究域：`0<x≤8`、`0.01≤σ≤4`、`|μ|≤4`、`0<T≤10`、`0<q≤4`；变换出的正态变量绝对值必须 `≤8`，指数实参数绝对值 `≤40`。区间/级数收敛超出预算时抛错，不以裁剪代替。
++- 不接受实际模型实现的 FP32、BF16、GPU 的舍入证书；不接受参数域全覆盖、自由边界偏微分误差、神经模型训练质量或生产性能声明。
++- 此处的“certified”是**假定公式正确、Python 任意精度整数运算正确且区间代码正确时**，经解析级数余项严格约束的实例值包围。没有进行外部形式化证明系统认证。
++
++## 可复现
++
++```sh
++python -m unittest tests.test_v4_certified -v
++python rational_fpt_certificate.py
++python qvi_rational_certificate.py
++python run_v4_audit.py
++```
++
++在 `reports/p0_v4_rational_certificates.json` 查看每一组从精确小数输入出发得到的外向十进制下界、上界、`F−G` 正性及右侧导数包围。在 `tests/test_v4_certified.py` 查看 mpmath 闭式独立高精度检查，以及来自**首达密度独立积分表示**的数值交叉检查（仅测试，不构成区间证明）。
+--- a/README.md
++++ b/README.md
+@@ -1,81 +1,48 @@
+-# HCSN P0–P5 实际研发增量包 V3 — 2026-10-31
++# HCSN Research V4 — independent mathematical enclosures + causal experiments
+ 
+-> **研究工具与独立验证，非产品验收 / 非原仓合并。** 本轮尝试连接 `TrillionniumFoundation/hepta-private-ci` 时 GitHub 返回 **403 `Sorry. Your account was suspended`**；无法读取最新 private main 或 source SHA，亦无法在 GitHub 提交、合并 PR。此处 `P0`–`P5` **全部 OPEN**，`all_blockers_closed=false`，`production_activation_allowed=false`，`DENY_ALL`。
++**2026-10-31 | Research-only / DENY_ALL / no production admission**
+ 
+-## 快速复现
++This directory preserves the completed v3 package and adds this turn's V4
++research. It is NOT a full checkout of TrillionniumFoundation/hepta-private-ci.
++The connected GitHub account returns `403 Sorry. Your account was suspended`;
++thus no current repo SHA, new Git commit, PR, merge, or production deployment
++has been verified from this environment.
+ 
+-在具有 Python 3.10+、`ffmpeg`/`ffprobe` 与 CPU PyTorch 的环境中运行：
++## V4 delta
++
++| Stage | New code / receipt | Scope limit |
++| --- | --- | --- |
++| P0 | `rational_fpt_certificate.py`, `qvi_rational_certificate.py`, `P0_RATIONAL_CERTIFICATE_PROOF.md`, `reports/p0_v4_rational_certificates.json` | Provable outward enclosures for compact scalar fixed-barrier Brownian FPT from exact decimal inputs; exact finite MDP policy enumeration. NOT full financial HX, GPU or device precision |
++| P1 | `p1_real_training_attribution.py`, `reports/p1_v4_42_exploratory_factorial_effects.json` | 42 factorial exploratory effects over 6 synthetic tasks; compute unmatched, no significance |
++| P2 | Extended `recurrent_factorial_pilot.py`, `reports/p1_p2_selective_copy.json` and `reports/p1_p2_regeneration.json` | Two new actually trained tasks; reset is a synthetic proxy, no genuine continuous stochastic renewal |
++| P3 | `p3_instance_retrieval_gate.py` | Prevent class-only retrieval masquerading as instance-level paired 4 modality performance; no real natural encoder run |
++| P4 | Retains CPU NumPy toy and Rust *uncompiled source* | `rustc/cargo` unavailable; no GPU or energy measurement |
++| P5 | Retains fail-closed backbone comparison gate | No matched-data/budget Transformer and SSM training |
++
++## Run locally (with Python 3.10+, scientific dependencies; 3.13 used here)
+ 
+ ```sh
+-cd hcsn_p0_p5_research_v3
++cd hcsn_p0_p5_research_v4
+ python -m pip install -r requirements.txt
+-PYTHONPATH=. python -m unittest discover -s tests -v
+-python precision_limits.py
+-python cpu_kernel_replay.py
+-python toy_four_modality_run.py --steps 450
+-python recurrent_factorial_pilot.py --task overwrite_reset --steps 160 --seeds 13 29 43
+-python recurrent_factorial_pilot.py --task irregular_time --steps 160 --seeds 13 29 43
+-python recurrent_factorial_pilot.py --task mqar --steps 120 --seeds 13 29
+-python recurrent_factorial_pilot.py --task long_range --steps 120 --seeds 13 29
+-python run_v3_audit.py
++python -m unittest discover -s tests -v 2>&1 | tee reports/v4_tests.log
++python p1_real_training_attribution.py
++python run_v4_audit.py
+ ```
+ 
+-以上 Python 审计会创建数值与元数据报告，但**不会将任何实验升级为生产 PASS**。本包已有生成完成的 40 个合成配对媒体样本及对应收据。如需重新生成，先删除 `reports/toy_media_corpus`，再运行 `toy_four_modality_run.py`。CPU/GPU 性能与实际能源数据不可由固定合成收据替代。
+-
+-Rust 草稿仅可在实际安装 Rust 工具链后自行运行：
++To **retrain** new tasks, which will rewrite local receipts and should therefore
++be version-frozen before comparison:
+ 
+ ```sh
+-cd rust_cpu_research
+-cargo test
+-cargo run --release --bin hcsn_cpu_bench
++python recurrent_factorial_pilot.py --task selective_copy --steps 128 --seeds 13 29 43 --out reports/p1_p2_selective_copy.json
++python recurrent_factorial_pilot.py --task regeneration --steps 128 --seeds 13 29 43 --out reports/p1_p2_regeneration.json
+ ```
+ 
+-此 sandbox **未安装 rustc/cargo，不曾编译或运行 Rust 代码**，不能把该 crate 当作通过的原生计算核。
++The true source of final reported results is `reports/v4_audit.json` plus raw
++per-arm receipts and `reports/v4_tests.log`; `MANIFEST_SHA256_v4.json` is an
++integrity manifest, NOT cryptographic GitHub provenance. See `V4_FINDINGS.md`
++for numbers and limitations, and `P0_RATIONAL_CERTIFICATE_PROOF.md` for exact
++analytical assumptions and bounded-domain rejection.
+ 
+-## 这轮做了什么
+-
+-| 阶段 | 本地已执行／生成的研究增量 | 尚待真正关闭的原项目证据 | 当前状态 |
+-|---|---|---|---|
+-| P0 | `fpt_time_brackets.py`：有限时间分片的非负概率质量上下界，并加密分片；`simple_fd_oracle.py`：简化固定边界 PDE 的有限差分；`precision_limits.py`：三精度表示能力、退化极限、零折现灵敏度 | 原始完整 HX 债券/股权耦合解析核，合法参数域与自由边界的自洽解、严格向外舍入的实数区间、真 FP32/BF16、GPU 和全域梯度 | **OPEN** |
+-| P1 | `recurrent_factorial_pilot.py`：**实际训练** HCSN-inspired 小型循环网络的 8 组 Call/Risk/Margin 因子消融，数值锚点局部函数值与斜率精确匹配；训练初值、参数数、输入数据、步数配对 | 原 HCSN 源码与统一 Encoder、独立多种子及未见任务、**同全特征 FLOPs/能源**、与真正调优 ordinary gate 的统计显著增量价值 | **OPEN** |
+-| P2 | 实际训练覆盖写入、不规则时间、两键 MQAR、长程保持；此前的六类生成器、回放 oracle、checkpoint 因果测试保留 | 真正 Selective Copy/覆盖写入/MQAR/长程+连续时间+多次再生全部质量达标；故障恢复 | **OPEN** |
+-| P3 | 生成并**真实解码** 40 个 UTF-8/PNG/WAV/MP4 配对样本，训练 4 个轻量映射到共享嵌入的投影器；噪声特征扰动、跨模态类检索、缺失模态运行；跨 split 音频重复被泄漏门禁拦截后修复，补 symlink 路径拒绝 | 自然数据（而不是程序生成颜色／频率）的合法真实四模态 Encoder、实体/时间隔离 holdout、噪声 OOD、真 HCSN 消融 | **OPEN** |
+-| P4 | `cpu_kernel_replay.py`：**真实 CPU** NumPy 向量运算 64/256/1024/4096 Cell 计时；独立子进程 `os._exit(127)` 后从落盘 checkpoint 恢复，状态逐比特相同且单比特意外损坏拒绝；新增 std-only Rust CPU 草稿源文件 | **Rust 代码尚未编译**；没有 GPU kernel、能耗仪表、原项目真实 Cell、GPU p95/p99 和生产 host 故障恢复 | **OPEN** |
+-| P5 | `backbone_promotion_gate.py`：预注册任务、种子、完整经济成本、按任务的负迁移、Transformer/SSM 双强基线缺项与置信区间逻辑；即使伪造填写所有记录也仅输出 REVIEW_REQUIRED | 无真实调优 Transformer、SSM 和共享 Encoder 混合 Backbone 同预算比较，也没有独立复现实测净收益 | **OPEN** |
+-
+-## 实测摘要（不要外推到 HCSN 产品）
+-
+-- **82/82** 本地 Python 单元测试实际通过，见 `reports/v3_tests.log`。新测试包括跨 split 重复、路径穿透／软链接、数学正反例、再生 QVI 先前对照、真实子进程异常退出的简化 crash/recovery 和 P5 负迁移拒绝。
+-- **P0** 的 200/400/800 节点独立有限差分，在精确有限右端 Dirichlet 值情况下与简化方程解析解最大误差约为 **0.0010093 / 0.00025485 / 0.00006387**；不是金融模型真实自由边界的数值解。首达时间分片的近似上下界随着 16/32/64 块收敛，**不具备认证的浮点区间性质**。
+-- **P0** 极端 frozen 首达反例 `F−G≈9.715e−22` 在高精度下严格为正，但转存为 binary64/FP32/BF16 的标量 F/G 均失去该正差。仅检查转存，不是实际原生 FP32/BF16 测试。
+-- **P1/P2** 共 80 个训练单元：覆盖写入（3 seeds）两侧饱和，普通 / 全机制 **1.0000 / 1.0000**；不规则时间（3 seeds）约 **0.9913 / 0.9878**；MQAR（2 seeds）约 **0.7057 / 0.7031**；长程（2 seeds）约 **0.4844 / 0.4844**。此样本规模极小且差异不支持 HCSN 增益。Call/Risk/Margin 组合训练时间通常更多；其全特征计算预算**未匹配**。
+-- **P3** 40 个媒体样本，holdout 12 个。程序生成颜色文本、图像、频率音频和同色视频，特征简单易识别；holdout 四模态分类与所有 12 个跨模态**同类** top1 检索都是 **1.0**，**不代表真实跨模态性能**。对持出集特征添加高斯扰动后的 image/video 类准确率下降到约 0.917/0.833，非原始字节受扰动的真实 OOD 测试。
+-- **P4** NumPy CPU 96 事件小测中四档 Cell p99 约为 **0.051 / 0.058 / 0.090 / 0.260 ms**（仅本 sandbox 的 toy 向量算子，无控制平面、网络、批处理验证、GPU、能耗或 4096 物理生产 Cell）。该数字不能同生产性能指标并列。
+-- **P5** 未启动任何真实扩模；研究门禁输出 **DENY**。注入完整但不可信的自报获胜元数据时也仅给 **REVIEW_REQUIRED**，永远不会自动打开生产权限。
+-
+-## 原论文与新模型严格分开
+-
+-He & Xiong (2012), **Rollover Risk and Credit Risk**, *Journal of Finance*, 67(2):391–430，DOI: [10.1111/j.1540-6261.2012.01721.x](https://doi.org/10.1111/j.1540-6261.2012.01721.x)，原模型讨论债券/股权互动、债务期限与内生违约边界。单独首达概率、常成本简化最优停止和有限状态再生 MDP 都是重新定义的研究问题。不能把这些小模型的数值收敛认作完整金融 HX 系统、自由边界自洽最优性或神经动力学闭式解。
+-
+-**安全边界补充：** 本地 checkpoint 的裸 SHA-256 无密钥，不能阻挡能重新计算摘要的恶意更改；不是生产 AuthBus、签名回执、代际 fencing 或可信恢复的替代。
+-
+-## 文件索引
+-
+-- `reports/v3_audit.json`：本轮机器可读总收据，六门 OPEN；`reports/v3_tests.log`：实际 80 项测试完整输出。
+-- `reports/p0_precision_limits.json`、`fpt_time_brackets.py`、`simple_fd_oracle.py`：P0。
+-- `reports/p1_p2_*.json`、`recurrent_factorial_pilot.py`：P1/P2 真实 CPU 小网络训练；其他先前的 `event_memory_tasks.py` / `event_memory_v2.py` 是独立生成与 oracle。
+-- `reports/p3_toy_media_encoder.json`、`reports/toy_media_corpus/manifest.json`：P3 研究用合成媒体和实测。
+-- `reports/p4_cpu_oracle.json`、`cpu_kernel_replay.py`、`rust_cpu_research/`：P4 CPU 计时、简化状态恢复、未编译的 Rust 草稿。
+-- `backbone_promotion_gate.py`：P5 拒绝式公平扩模检验。
+-- `tests/`：包含原有 v1/v2 与本轮 v3 的完整测试集合。
+-- `historical_patches/`：此前保存的待人工重审 patches 与历史 SHA 校验收据，**不是这次获取的当前 PR HEAD**。
+-- `MANIFEST_SHA256_v3.json`：便于传输检查的本地字节 hash（不认证 GitHub 原始仓库来源）。
+-
+-## 下一阶段须在 GitHub 恢复后立即推进的工作
+-
+-1. 抓取最新受保护主干、研究栈所有 Draft PR 的 exact HEAD/base、原 `experiments/hcsn_hx_unified_v3/hx.py`、模型/训练路径及独立 CI/source diffs，审查历史 patch 是否适用，不能按旧 SHA 写入。
+-2. P0 在完整 HX 模型上补齐耦合债券/股权价值方程、自由边界、障碍最优性、端点参数合法域、严格数值区间证明和真硬件数值精度测试。
+-3. P1/P2 迁入真实 HCSN / shared Encoder，预注册同斜率／有效参数／全 FLOPs／时间和焦耳预算，并加入 MQAR、Selective Copy、真连续不规则采样、未见长度与多次再生；**负结果保留**。
+-4. P3 使用有来源和用途授权的真实配对文本、图像、音频、视频，按实体/场景/时间隔离且含跨模态噪声与缺失模态对照。
+-5. P4 编译和测试 Rust 核与 GPU kernel，在真实 64/256/1024/4096 Cell 目标机记录可信原始日志、CPU/GPU/RSS/吞吐/p95/p99/能耗、崩溃恢复和独立观察者回执。
+-6. P5 同数据、同 token、同**总计算和总成本**、同优化预算对已调优 Transformer/SSM，进行未见任务独立验证；非劣性及净收益同时满足后才考虑扩模。拒绝任何从合成数据或未完成跑数得出的放量结论。
++**Stage status:** P0, P1, P2, P3, P4 and P5 are OPEN. No partial local success
++means activation authorization; `all_blockers_closed=false` and
++`production_activation_allowed=false`.
+--- /dev/null
++++ b/README_V3_ARCHIVE.md
+@@ -0,0 +1,81 @@
++# HCSN P0–P5 实际研发增量包 V3 — 2026-10-31
++
++> **研究工具与独立验证，非产品验收 / 非原仓合并。** 本轮尝试连接 `TrillionniumFoundation/hepta-private-ci` 时 GitHub 返回 **403 `Sorry. Your account was suspended`**；无法读取最新 private main 或 source SHA，亦无法在 GitHub 提交、合并 PR。此处 `P0`–`P5` **全部 OPEN**，`all_blockers_closed=false`，`production_activation_allowed=false`，`DENY_ALL`。
++
++## 快速复现
++
++在具有 Python 3.10+、`ffmpeg`/`ffprobe` 与 CPU PyTorch 的环境中运行：
++
++```sh
++cd hcsn_p0_p5_research_v3
++python -m pip install -r requirements.txt
++PYTHONPATH=. python -m unittest discover -s tests -v
++python precision_limits.py
++python cpu_kernel_replay.py
++python toy_four_modality_run.py --steps 450
++python recurrent_factorial_pilot.py --task overwrite_reset --steps 160 --seeds 13 29 43
++python recurrent_factorial_pilot.py --task irregular_time --steps 160 --seeds 13 29 43
++python recurrent_factorial_pilot.py --task mqar --steps 120 --seeds 13 29
++python recurrent_factorial_pilot.py --task long_range --steps 120 --seeds 13 29
++python run_v3_audit.py
++```
++
++以上 Python 审计会创建数值与元数据报告，但**不会将任何实验升级为生产 PASS**。本包已有生成完成的 40 个合成配对媒体样本及对应收据。如需重新生成，先删除 `reports/toy_media_corpus`，再运行 `toy_four_modality_run.py`。CPU/GPU 性能与实际能源数据不可由固定合成收据替代。
++
++Rust 草稿仅可在实际安装 Rust 工具链后自行运行：
++
++```sh
++cd rust_cpu_research
++cargo test
++cargo run --release --bin hcsn_cpu_bench
++```
++
++此 sandbox **未安装 rustc/cargo，不曾编译或运行 Rust 代码**，不能把该 crate 当作通过的原生计算核。
++
++## 这轮做了什么
++
++| 阶段 | 本地已执行／生成的研究增量 | 尚待真正关闭的原项目证据 | 当前状态 |
++|---|---|---|---|
++| P0 | `fpt_time_brackets.py`：有限时间分片的非负概率质量上下界，并加密分片；`simple_fd_oracle.py`：简化固定边界 PDE 的有限差分；`precision_limits.py`：三精度表示能力、退化极限、零折现灵敏度 | 原始完整 HX 债券/股权耦合解析核，合法参数域与自由边界的自洽解、严格向外舍入的实数区间、真 FP32/BF16、GPU 和全域梯度 | **OPEN** |
++| P1 | `recurrent_factorial_pilot.py`：**实际训练** HCSN-inspired 小型循环网络的 8 组 Call/Risk/Margin 因子消融，数值锚点局部函数值与斜率精确匹配；训练初值、参数数、输入数据、步数配对 | 原 HCSN 源码与统一 Encoder、独立多种子及未见任务、**同全特征 FLOPs/能源**、与真正调优 ordinary gate 的统计显著增量价值 | **OPEN** |
++| P2 | 实际训练覆盖写入、不规则时间、两键 MQAR、长程保持；此前的六类生成器、回放 oracle、checkpoint 因果测试保留 | 真正 Selective Copy/覆盖写入/MQAR/长程+连续时间+多次再生全部质量达标；故障恢复 | **OPEN** |
++| P3 | 生成并**真实解码** 40 个 UTF-8/PNG/WAV/MP4 配对样本，训练 4 个轻量映射到共享嵌入的投影器；噪声特征扰动、跨模态类检索、缺失模态运行；跨 split 音频重复被泄漏门禁拦截后修复，补 symlink 路径拒绝 | 自然数据（而不是程序生成颜色／频率）的合法真实四模态 Encoder、实体/时间隔离 holdout、噪声 OOD、真 HCSN 消融 | **OPEN** |
++| P4 | `cpu_kernel_replay.py`：**真实 CPU** NumPy 向量运算 64/256/1024/4096 Cell 计时；独立子进程 `os._exit(127)` 后从落盘 checkpoint 恢复，状态逐比特相同且单比特意外损坏拒绝；新增 std-only Rust CPU 草稿源文件 | **Rust 代码尚未编译**；没有 GPU kernel、能耗仪表、原项目真实 Cell、GPU p95/p99 和生产 host 故障恢复 | **OPEN** |
++| P5 | `backbone_promotion_gate.py`：预注册任务、种子、完整经济成本、按任务的负迁移、Transformer/SSM 双强基线缺项与置信区间逻辑；即使伪造填写所有记录也仅输出 REVIEW_REQUIRED | 无真实调优 Transformer、SSM 和共享 Encoder 混合 Backbone 同预算比较，也没有独立复现实测净收益 | **OPEN** |
++
++## 实测摘要（不要外推到 HCSN 产品）
++
++- **82/82** 本地 Python 单元测试实际通过，见 `reports/v3_tests.log`。新测试包括跨 split 重复、路径穿透／软链接、数学正反例、再生 QVI 先前对照、真实子进程异常退出的简化 crash/recovery 和 P5 负迁移拒绝。
++- **P0** 的 200/400/800 节点独立有限差分，在精确有限右端 Dirichlet 值情况下与简化方程解析解最大误差约为 **0.0010093 / 0.00025485 / 0.00006387**；不是金融模型真实自由边界的数值解。首达时间分片的近似上下界随着 16/32/64 块收敛，**不具备认证的浮点区间性质**。
++- **P0** 极端 frozen 首达反例 `F−G≈9.715e−22` 在高精度下严格为正，但转存为 binary64/FP32/BF16 的标量 F/G 均失去该正差。仅检查转存，不是实际原生 FP32/BF16 测试。
++- **P1/P2** 共 80 个训练单元：覆盖写入（3 seeds）两侧饱和，普通 / 全机制 **1.0000 / 1.0000**；不规则时间（3 seeds）约 **0.9913 / 0.9878**；MQAR（2 seeds）约 **0.7057 / 0.7031**；长程（2 seeds）约 **0.4844 / 0.4844**。此样本规模极小且差异不支持 HCSN 增益。Call/Risk/Margin 组合训练时间通常更多；其全特征计算预算**未匹配**。
++- **P3** 40 个媒体样本，holdout 12 个。程序生成颜色文本、图像、频率音频和同色视频，特征简单易识别；holdout 四模态分类与所有 12 个跨模态**同类** top1 检索都是 **1.0**，**不代表真实跨模态性能**。对持出集特征添加高斯扰动后的 image/video 类准确率下降到约 0.917/0.833，非原始字节受扰动的真实 OOD 测试。
++- **P4** NumPy CPU 96 事件小测中四档 Cell p99 约为 **0.051 / 0.058 / 0.090 / 0.260 ms**（仅本 sandbox 的 toy 向量算子，无控制平面、网络、批处理验证、GPU、能耗或 4096 物理生产 Cell）。该数字不能同生产性能指标并列。
++- **P5** 未启动任何真实扩模；研究门禁输出 **DENY**。注入完整但不可信的自报获胜元数据时也仅给 **REVIEW_REQUIRED**，永远不会自动打开生产权限。
++
++## 原论文与新模型严格分开
++
++He & Xiong (2012), **Rollover Risk and Credit Risk**, *Journal of Finance*, 67(2):391–430，DOI: [10.1111/j.1540-6261.2012.01721.x](https://doi.org/10.1111/j.1540-6261.2012.01721.x)，原模型讨论债券/股权互动、债务期限与内生违约边界。单独首达概率、常成本简化最优停止和有限状态再生 MDP 都是重新定义的研究问题。不能把这些小模型的数值收敛认作完整金融 HX 系统、自由边界自洽最优性或神经动力学闭式解。
++
++**安全边界补充：** 本地 checkpoint 的裸 SHA-256 无密钥，不能阻挡能重新计算摘要的恶意更改；不是生产 AuthBus、签名回执、代际 fencing 或可信恢复的替代。
++
++## 文件索引
++
++- `reports/v3_audit.json`：本轮机器可读总收据，六门 OPEN；`reports/v3_tests.log`：实际 80 项测试完整输出。
++- `reports/p0_precision_limits.json`、`fpt_time_brackets.py`、`simple_fd_oracle.py`：P0。
++- `reports/p1_p2_*.json`、`recurrent_factorial_pilot.py`：P1/P2 真实 CPU 小网络训练；其他先前的 `event_memory_tasks.py` / `event_memory_v2.py` 是独立生成与 oracle。
++- `reports/p3_toy_media_encoder.json`、`reports/toy_media_corpus/manifest.json`：P3 研究用合成媒体和实测。
++- `reports/p4_cpu_oracle.json`、`cpu_kernel_replay.py`、`rust_cpu_research/`：P4 CPU 计时、简化状态恢复、未编译的 Rust 草稿。
++- `backbone_promotion_gate.py`：P5 拒绝式公平扩模检验。
++- `tests/`：包含原有 v1/v2 与本轮 v3 的完整测试集合。
++- `historical_patches/`：此前保存的待人工重审 patches 与历史 SHA 校验收据，**不是这次获取的当前 PR HEAD**。
++- `MANIFEST_SHA256_v3.json`：便于传输检查的本地字节 hash（不认证 GitHub 原始仓库来源）。
++
++## 下一阶段须在 GitHub 恢复后立即推进的工作
++
++1. 抓取最新受保护主干、研究栈所有 Draft PR 的 exact HEAD/base、原 `experiments/hcsn_hx_unified_v3/hx.py`、模型/训练路径及独立 CI/source diffs，审查历史 patch 是否适用，不能按旧 SHA 写入。
++2. P0 在完整 HX 模型上补齐耦合债券/股权价值方程、自由边界、障碍最优性、端点参数合法域、严格数值区间证明和真硬件数值精度测试。
++3. P1/P2 迁入真实 HCSN / shared Encoder，预注册同斜率／有效参数／全 FLOPs／时间和焦耳预算，并加入 MQAR、Selective Copy、真连续不规则采样、未见长度与多次再生；**负结果保留**。
++4. P3 使用有来源和用途授权的真实配对文本、图像、音频、视频，按实体/场景/时间隔离且含跨模态噪声与缺失模态对照。
++5. P4 编译和测试 Rust 核与 GPU kernel，在真实 64/256/1024/4096 Cell 目标机记录可信原始日志、CPU/GPU/RSS/吞吐/p95/p99/能耗、崩溃恢复和独立观察者回执。
++6. P5 同数据、同 token、同**总计算和总成本**、同优化预算对已调优 Transformer/SSM，进行未见任务独立验证；非劣性及净收益同时满足后才考虑扩模。拒绝任何从合成数据或未完成跑数得出的放量结论。
+--- /dev/null
++++ b/README_V4.md
+@@ -0,0 +1,48 @@
++# HCSN Research V4 — independent mathematical enclosures + causal experiments
++
++**2026-10-31 | Research-only / DENY_ALL / no production admission**
++
++This directory preserves the completed v3 package and adds this turn's V4
++research. It is NOT a full checkout of TrillionniumFoundation/hepta-private-ci.
++The connected GitHub account returns `403 Sorry. Your account was suspended`;
++thus no current repo SHA, new Git commit, PR, merge, or production deployment
++has been verified from this environment.
++
++## V4 delta
++
++| Stage | New code / receipt | Scope limit |
++| --- | --- | --- |
++| P0 | `rational_fpt_certificate.py`, `qvi_rational_certificate.py`, `P0_RATIONAL_CERTIFICATE_PROOF.md`, `reports/p0_v4_rational_certificates.json` | Provable outward enclosures for compact scalar fixed-barrier Brownian FPT from exact decimal inputs; exact finite MDP policy enumeration. NOT full financial HX, GPU or device precision |
++| P1 | `p1_real_training_attribution.py`, `reports/p1_v4_42_exploratory_factorial_effects.json` | 42 factorial exploratory effects over 6 synthetic tasks; compute unmatched, no significance |
++| P2 | Extended `recurrent_factorial_pilot.py`, `reports/p1_p2_selective_copy.json` and `reports/p1_p2_regeneration.json` | Two new actually trained tasks; reset is a synthetic proxy, no genuine continuous stochastic renewal |
++| P3 | `p3_instance_retrieval_gate.py` | Prevent class-only retrieval masquerading as instance-level paired 4 modality performance; no real natural encoder run |
++| P4 | Retains CPU NumPy toy and Rust *uncompiled source* | `rustc/cargo` unavailable; no GPU or energy measurement |
++| P5 | Retains fail-closed backbone comparison gate | No matched-data/budget Transformer and SSM training |
++
++## Run locally (with Python 3.10+, scientific dependencies; 3.13 used here)
++
++```sh
++cd hcsn_p0_p5_research_v4
++python -m pip install -r requirements.txt
++python -m unittest discover -s tests -v 2>&1 | tee reports/v4_tests.log
++python p1_real_training_attribution.py
++python run_v4_audit.py
++```
++
++To **retrain** new tasks, which will rewrite local receipts and should therefore
++be version-frozen before comparison:
++
++```sh
++python recurrent_factorial_pilot.py --task selective_copy --steps 128 --seeds 13 29 43 --out reports/p1_p2_selective_copy.json
++python recurrent_factorial_pilot.py --task regeneration --steps 128 --seeds 13 29 43 --out reports/p1_p2_regeneration.json
++```
++
++The true source of final reported results is `reports/v4_audit.json` plus raw
++per-arm receipts and `reports/v4_tests.log`; `MANIFEST_SHA256_v4.json` is an
++integrity manifest, NOT cryptographic GitHub provenance. See `V4_FINDINGS.md`
++for numbers and limitations, and `P0_RATIONAL_CERTIFICATE_PROOF.md` for exact
++analytical assumptions and bounded-domain rejection.
++
++**Stage status:** P0, P1, P2, P3, P4 and P5 are OPEN. No partial local success
++means activation authorization; `all_blockers_closed=false` and
++`production_activation_allowed=false`.
+--- /dev/null
++++ b/V4_FINDINGS.md
+@@ -0,0 +1,28 @@
++# HCSN P0–P5 本轮研发增量总结（2026-10-31）
++
++## 本轮新增（相对于已保存 V3 研究包）
++
++- **P0 有理数区间验证**：`rational_fpt_certificate.py` 使用精确 `Fraction`/整数平方根与已证明余项的交错、泰勒级数，为标量固定边界 F/G、正差、有限期限首达风险距离梯度产生外向区间；六组参数、含 `q=10^-22`，均保有数学正差。另用 `qvi_rational_certificate.py` 枚举四状态的 16 种策略并得到精确零 Bellman 残差。
++- **P1/P2 实际新训练**：在此前四个任务基础上增加 `selective_copy`（需要把有效信息保留到末尾）和 `regeneration`（每序列至少 3 次显式重置）。每任务 3 seeds × 8 arm × 128 训练步，增加 48 个真实 CPU 训练行；合计 128 个 arm×seed×task 训练行，包含 V3 既有四任务 80 行。所有实验来自小型合成循环代理，**不是原生 HCSN**；同步初值、训练样本、参数和 SGD 步数，但不匹配完整训练 FLOPs、时间、焦耳或超参调优预算。
++- **P1 原因归因**：`p1_real_training_attribution.py` 在六任务/八组合上统计 42 个主效应/交互效应，三种种子数为 2–3，采用小样本精确符号翻转与跨任务 42 次检验 Holm 校正。**无通过多重校正的优势**。
++- **P3 严格评估工具**：`p3_instance_retrieval_gate.py` 强制四模态对同一个实例进行 12 个方向的配对检索，检查按实体和场景跨数据集泄漏，拒绝所有类原型复用、嵌入碰撞与无效模态，支持特征级噪声诊断。其通过的人工 one-hot canary **不是自然媒体 Encoder 性能**。
++- **P4/P5**：保留 V3 的 CPU NumPy 参考、未编译的 std-only Rust 草稿以及拒绝式同预算扩模门禁；本轮未测到真实 GPU/物理能耗/真实 Backbone，因此不凭空改判。
++
++## 独立研究结果（真实完成的本地任务，不是原仓测试）
++
++| 合成任务 | 普通门控平均准确率 | Call+Risk+Margin 平均准确率 | 配对差（百分点） | 训练 wallclock 倍率 |
++|---|---:|---:|---:|---:|
++| Overwrite / Reset | 100.00% | 100.00% | 0.00 | 1.88× |
++| Irregular Time | 99.13% | 98.78% | −0.35 | 1.89× |
++| MQAR（2 key） | 70.57% | 70.31% | −0.26 | 1.60× |
++| Long Range | 48.44% | 48.44% | 0.00 | 1.57× |
++| Selective Copy | 47.92% | 48.09% | +0.17 | 2.03× |
++| Regeneration（显式多次重置代理） | 95.49% | 93.58% | −1.91 | 2.02× |
++
++**结论：** 不能证明机制收益。新 `selective_copy` 接近随机、`long_range` 接近随机、`mqar` 不达高质量记忆门槛；有些机制更慢且更差。`regeneration` 使用人工 reset，不是连续随机再生的 CTMC 或 QVI 真实闭环。不能把 128 个同一合成研究体系内的训练行当作 128 个独立复现实验。
++
++## 生产关闭状态
++
++P0–P5 **全部 OPEN**、`all_blockers_closed=false`、`production_activation_allowed=false`、`DENY_ALL`。本轮 GitHub 连接器再次返回 403 `Your account was suspended`，因此未核验活跃主干 HEAD、未创建 Commit/PR、未执行线上合并或部署。`rustc`、`cargo` 和原生 GPU/能耗仪表在此容器中不可用。
++
++下一阶段在恢复正确源仓后，最先将 P0 有理数验证作为源码外置 oracle，与原始 `experiments/hcsn_hx_unified_v3/hx.py` 完整耦合金融模型和真实数值实现对照；随后把 P1–P3 的严格对照迁入真实 HCSN/多模态 Encoder。P4/P5 必须使用目标硬件和公平预算的独立回执才能关闭。
+--- /dev/null
++++ b/p1_real_training_attribution.py
+@@ -0,0 +1,91 @@
++"""P1 factorial attribution from actual (synthetic-task) CPU train receipts.
++
++Design 2^3 arms, within-seed identical initialization and data. It *does not*
++match feature FLOPs, time, joules or hyperparameter tuning budget. p values are
++exploratory sign-flip diagnostics with only 2-3 seeds, not confirmatory evidence.
++Global Holm across every task*contrast family protects against arm cherry-pick.
++"""
++from __future__ import annotations
++from collections import defaultdict
++import hashlib
++import itertools
++import json
++import math
++from pathlib import Path
++from fair_ablation import ARMS
++from factorial_evidence import CONTRASTS,exact_two_sided_signflip
++
++TASKS=('overwrite_reset','irregular_time','mqar','long_range','selective_copy','regeneration')
++
++
++def _sign(a, contrast):
++    selected=set() if a=='control' else set(a.split('+'))
++    subset=set(contrast.split('+'))
++    return 1 if (len(selected&subset)-len(subset))%2==0 else -1
++
++
++def estimate(data_by_task:dict[str,dict]):
++    diagnostics=[]
++    contrast_rows=[]
++    for task,raw in data_by_task.items():
++        seeds=raw['seeds']
++        if len(seeds)!=len(set(seeds)) or not seeds:
++            raise ValueError('missing/duplicate seed ids')
++        rows={(r['seed'],r['arm']):r for r in raw['rows']}
++        expected={(seed,arm) for seed in seeds for arm in ARMS}
++        if len(rows)!=len(raw['rows']) or set(rows)!=expected:
++            raise ValueError('incomplete or duplicate factorial rows')
++        for seed in seeds:
++            cohort=[rows[seed,arm] for arm in ARMS]
++            for field in ('initial_parameters_sha256','parameter_count','train_set_sha256',
++                          'holdout_set_sha256','training_steps','train_tokens'):
++                if len({r[field] for r in cohort})!=1:
++                    raise ValueError('unmatched data/model/step: '+field)
++        for contrast in CONTRASTS:
++            effects=[]
++            for seed in seeds:
++                # Standard factorial effect: mean(on sign) - mean(off sign),
++                # equivalent to sum(sign*quality)/4 with 8 arms.
++                contrasts=[_sign(arm,contrast)*rows[seed,arm]['holdout_accuracy'] for arm in ARMS]
++                effects.append(sum(contrasts)/4)
++            p=exact_two_sided_signflip(effects)
++            contrast_rows.append({'task':task,'contrast':contrast,'seed_ids':seeds,
++                                  'seed_effects':effects,'mean_effect':sum(effects)/len(effects),
++                                  'unadjusted_two_sided_signflip_p':p,
++                                  'full_compute_matched':False,
++                                  'confirmatory':False})
++        diagnostics.append({'task':task,'seeds':len(seeds),
++                            'heldout_split_different_from_train':True,
++                            'initial_weights_params_data_steps_paired':True,
++                            'feature_FLOPs_matched':False,
++                            'true_physical_energy_meter':False})
++    # Familywise multiplicity across ALL 6 tasks and ALL 7 factorial effects.
++    ordered=sorted(range(len(contrast_rows)),key=lambda i:contrast_rows[i]['unadjusted_two_sided_signflip_p'])
++    prev=0.
++    for k,i in enumerate(ordered):
++        value=contrast_rows[i]['unadjusted_two_sided_signflip_p']
++        adjusted=min(1.,max(prev,(len(ordered)-k)*value))
++        contrast_rows[i]['holm_across_tasks_and_contrasts']=adjusted
++        prev=adjusted
++    return {'scope':'actually trained small CPU surrogate on synthetic tasks',
++            'n_tasks':len(data_by_task),'n_rows':sum(len(r['rows']) for r in data_by_task.values()),
++            'factorial_effect_count':len(contrast_rows),
++            'main_pair_triple_factorial_effects':contrast_rows,
++            'source_design_diagnostics':diagnostics,
++            'global_familywise_alpha':0.05,
++            'any_holm_significant':any(v['holm_across_tasks_and_contrasts']<.05 for v in contrast_rows),
++            'all_arms_equally_tuned_and_compute_matched':False,
++            'original_HCSN_kernel_tested':False,
++            'attribution_gate':'DENY','production_evidence_accepted':False}
++
++
++def main():
++    root=Path(__file__).resolve().parent
++    data={t:json.loads((root/'reports'/f'p1_p2_{t}.json').read_text()) for t in TASKS}
++    report=estimate(data)
++    path=root/'reports'/'p1_v4_42_exploratory_factorial_effects.json'
++    path.write_text(json.dumps(report,indent=2,ensure_ascii=False))
++    print(f'Actual trained factorial {report["n_rows"]} rows, {report["factorial_effect_count"]} effects; Holm significant: {report["any_holm_significant"]}')
++    print('Gate: ',report['attribution_gate'])
++
++if __name__=='__main__':main()
+--- /dev/null
++++ b/p3_instance_retrieval_gate.py
+@@ -0,0 +1,107 @@
++"""P3 paired four-modality *instance* retrieval diagnostics, not product proof.
++
++Class-level retrieval can score 100% with color/frequency label shortcuts while
++failing to recover WHICH image/audio/video/text belongs to an exact sample.
++This evaluator requires unique sample IDs, entity/scene isolation across splits,
++noncollapsed embeddings, and reports all 12 directional instance-level top-1
++retrievals. The source datasets / real-world encoders cannot be authenticated
++from embedding arrays and this evaluator NEVER grants a production admission.
++"""
++from __future__ import annotations
++import hashlib
++import itertools
++from collections import defaultdict
++import math
++import numpy as np
++
++MODALITIES=('text','image','audio','video')
++SPLITS=('train','validation','holdout')
++
++
++def inspect(samples:list[dict],min_holdout=4,noise_sigma=0.0,seed=2405):
++    if not isinstance(samples,list) or not samples:
++        raise ValueError('missing embedding records')
++    if not isinstance(min_holdout,int) or min_holdout<2:
++        raise ValueError('invalid minimum holdout')
++    if not isinstance(noise_sigma,(int,float)) or not 0<=noise_sigma<=1 or not math.isfinite(noise_sigma):
++        raise ValueError('invalid noise scale')
++    issues=[]
++    seen=set()
++    per_split=defaultdict(list)
++    dimension=None
++    by_entity=defaultdict(set)
++    by_scene=defaultdict(set)
++    signatures=defaultdict(list)
++    for i,r in enumerate(samples):
++        if not isinstance(r,dict):issues.append(f'row {i}: not mapping');continue
++        sid=r.get('sample_id');split=r.get('split')
++        if not isinstance(sid,str) or not sid or sid in seen:
++            issues.append(f'row {i}: empty/duplicate instance ID');continue
++        seen.add(sid)
++        if split not in SPLITS:
++            issues.append(f'{sid}: unknown split');continue
++        for key,registry in [('entity_id',by_entity),('scene_id',by_scene)]:
++            x=r.get(key)
++            if not isinstance(x,str) or not x:
++                issues.append(f'{sid}: missing {key}')
++            else:registry[x].add(split)
++        embeddings=r.get('embeddings')
++        if not isinstance(embeddings,dict) or set(embeddings)!=set(MODALITIES):
++            issues.append(f'{sid}: 4 modalities required');continue
++        clean={}
++        for mod in MODALITIES:
++            try:v=np.asarray(embeddings[mod],dtype=float)
++            except (TypeError,ValueError):
++                issues.append(f'{sid}/{mod}: invalid embedding');continue
++            if v.ndim!=1 or v.size<2 or v.size>32768 or not np.all(np.isfinite(v)):
++                issues.append(f'{sid}/{mod}: invalid shape/finite');continue
++            norm=np.linalg.norm(v)
++            if not np.isfinite(norm) or norm<1e-10:
++                issues.append(f'{sid}/{mod}: zero/overflow embedding');continue
++            if dimension is None:dimension=v.size
++            if v.size!=dimension:
++                issues.append(f'{sid}/{mod}: dimension mismatch');continue
++            v=v/norm
++            clean[mod]=v
++            # Duplicated exact embeddings of distinct IDs imply feature collapse
++            # or a split leak; do not score forced argmax ties as retrieval success.
++            sig=hashlib.sha256(v.tobytes()).hexdigest()
++            signatures[mod,sig].append((split,sid))
++        if len(clean)==4:
++            per_split[split].append({'sample_id':sid,'embeddings':clean})
++    for name,registry in [('entity',by_entity),('scene',by_scene)]:
++        for tag,splits in registry.items():
++            if len(splits)>1:issues.append(f'cross-split {name} reuse: {tag}')
++    for (mod,sig),ids in signatures.items():
++        if len(ids)>1:
++            suffix='cross-split ' if len({split for split,_ in ids})>1 else ''
++            issues.append(f'{suffix}embedding collision {mod}: {len(ids)} instances')
++    holdout=per_split['holdout']
++    if len(holdout)<min_holdout:
++        issues.append(f'only {len(holdout)} holdout instances < {min_holdout}')
++    all_directed=[]
++    if not issues:
++        rng=np.random.default_rng(seed)
++        n=len(holdout)
++        for src,dst in itertools.permutations(MODALITIES,2):
++            query=np.stack([r['embeddings'][src] for r in holdout]);
++            target=np.stack([r['embeddings'][dst] for r in holdout]);
++            if noise_sigma:
++                query=query+rng.normal(0,noise_sigma,query.shape)
++                query/=np.linalg.norm(query,axis=1,keepdims=True)
++            sims=query@target.T
++            winners=np.argmax(sims,axis=1)
++            ties=np.sum(np.abs(sims-np.max(sims,axis=1,keepdims=True))<1e-10,axis=1)
++            exact=(winners==np.arange(n)) & (ties==1)
++            all_directed.append({'from':src,'to':dst,'holdout_count':n,
++                                 'top1_instance_accuracy':float(np.mean(exact)),
++                                 'ambiguous_top1_tie_count':int(np.sum(ties!=1))})
++    return {'structurally_evaluable':not issues,
++            'issues':issues,'n_holdout':len(holdout),
++            'pair_directions':all_directed,
++            'all_directed_instance_top1_at_least_90pct':bool(all_directed) and all(
++                 row['top1_instance_accuracy']>=.9 for row in all_directed),
++            'noise_sigma_embedding_level':noise_sigma,
++            'strict_input_byte_provenance_verified':False,
++            'true_natural_encoder_grounded':False,
++            'production_evidence_accepted':False}
+--- /dev/null
++++ b/qvi_rational_certificate.py
+@@ -0,0 +1,88 @@
++"""Exact rational policy enumeration certificate for a finite regenerative MDP.
++
++Certifies only the explicitly supplied *finite-state discounted* Bellman/QVI:
++V[i] = max(c[i] + beta sum_j P[i,j] V[j], g[i]+beta V[reset]).
++All calculations use exact rational arithmetic, with every deterministic
++stationary continuation/reset policy enumerated. This is NOT the original
++continuous He-Xiong equity/bond free-boundary QVI or a neural HCSN kernel.
++"""
++from __future__ import annotations
++from fractions import Fraction
++import itertools
++import json
++
++
++def f(s):
++    if not isinstance(s,str):
++        raise ValueError('rational certificate accepts decimal string inputs only')
++    return Fraction(s)
++
++
++def solve_exact(A,b):
++    n=len(b)
++    if len(A)!=n or any(len(row)!=n for row in A):
++        raise ValueError('non-square linear system')
++    M=[list(A[i])+[b[i]] for i in range(n)]
++    for col in range(n):
++        pivot=next((row for row in range(col,n) if M[row][col]),None)
++        if pivot is None:raise ArithmeticError('singular linear system')
++        M[col],M[pivot]=M[pivot],M[col]
++        v=M[col][col]
++        M[col]=[z/v for z in M[col]]
++        for row in range(n):
++            if row==col:continue
++            fac=M[row][col]
++            if fac:
++                M[row]=[a-fac*b for a,b in zip(M[row],M[col])]
++    return [row[-1] for row in M]
++
++
++def certify(P:list[list[str]],rewards:list[str],reset_rewards:list[str],
++            beta:str,reset:int=0):
++    n=len(P)
++    if n<1 or n>8 or len(rewards)!=n or len(reset_rewards)!=n:
++        raise ValueError('finite-state enumeration requires 1..8 states')
++    if not 0<=reset<n:raise ValueError('bad reset index')
++    T=[[f(a) for a in row] for row in P]
++    c=[f(x) for x in rewards]
++    g=[f(x) for x in reset_rewards]
++    B=f(beta)
++    if not (0<B<1):raise ValueError('discount must be strictly 0..1')
++    if any(len(row)!=n or any(v<0 for v in row) or sum(row)!=1 for row in T):
++        raise ValueError('not a stochastic transition matrix')
++    value_vectors=[]
++    all_policies=list(itertools.product((False,True),repeat=n))
++    for policy in all_policies:
++        policy_transition=[([Fraction(int(j==reset)) for j in range(n)] if policy[i]
++                           else T[i]) for i in range(n)]
++        rewards_=[g[i] if policy[i] else c[i] for i in range(n)]
++        A=[[(Fraction(int(i==j))-B*policy_transition[i][j])
++            for j in range(n)] for i in range(n)]
++        value_vectors.append(solve_exact(A,rewards_))
++    V=[max(values[i] for values in value_vectors) for i in range(n)]
++    q_cont=[c[i]+B*sum(T[i][j]*V[j] for j in range(n)) for i in range(n)]
++    q_reset=[g[i]+B*V[reset] for i in range(n)]
++    if any(V[i]!=max(q_cont[i],q_reset[i]) for i in range(n)):
++        raise ArithmeticError('Bellman equation failed exact policy enumeration')
++    best_policy=tuple(q_reset[i]>q_cont[i] for i in range(n))
++    if list(V)!=value_vectors[all_policies.index(best_policy)]:
++        raise ArithmeticError('no global stationary optimal policy matches value')
++    return {'model':'finite discounted regenerative MDP, not full He-Xiong QVI',
++            'state_count':n,'enumerated_policies':len(all_policies),
++            'discount':str(B),'exact_values':[str(z) for z in V],
++            'continue_q':[str(z) for z in q_cont],
++            'reset_q':[str(z) for z in q_reset],
++            'optimal_reset_actions':list(best_policy),
++            'bellman_residual_exact':'0',
++            'comparison_to_all_stationary_policies':'exact_componentwise_dominance',
++            'full_HX_qvi_certified':False}
++
++
++def known_case():
++    return certify([
++        ['.8','.2','0','0'],['.15','.7','.15','0'],
++        ['0','.2','.6','.2'],['0','0','.25','.75']],
++        ['0','.08','.4','.5'],['0','.1','1','4'],'.94',0)
++
++
++if __name__=='__main__':print(json.dumps(known_case(),indent=2))
+--- /dev/null
++++ b/rational_fpt_certificate.py
+@@ -0,0 +1,295 @@
++"""Research-only *exact rational* enclosures for a finite-time Brownian FPT.
++
++Under decimal-string parameter semantics, bounded domain, and Python arbitrary
++precision integers, all interval endpoints come from rational arithmetic,
++integer square roots, and analytically bounded alternating/Taylor series.
++This DOES certify the scalar fixed-drift / fixed-barrier F and G formulas under
++these assumptions. It does NOT certify He-Xiong coupled equity/bond valuation,
++GPU/FP32 evaluation or floating-point roundoff of a production implementation.
++
++Cdf: Phi(z)=1/2 + (1/sqrt(2*pi)) sum (-1)^n z^(2n+1) /
++    (2^n n! (2n+1)).  Once terms decrease, the alternating-series tail is
++    bounded by the first omitted term. Pi=16 atan(1/5)-4 atan(1/239), with
++    alternating rational series bounds. Exponential: Taylor around zero after
++    argument halving, remainder <= 2 |x|^(N+1)/(N+1)! for |x|<=1/2.
++
++Everything outside the certified compact domain fails closed. No floats are
++used in the interval computation or the Taylor-stopping decision.
++"""
++from __future__ import annotations
++from dataclasses import dataclass
++from fractions import Fraction
++from functools import lru_cache
++from math import isqrt
++import re
++
++_DECIMAL = re.compile(r'^[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)(?:[Ee][+-]?[0-9]+)?$')
++
++
++def decimal(s: str) -> Fraction:
++    if not isinstance(s, str) or len(s)>128 or not _DECIMAL.fullmatch(s):
++        raise ValueError('Inputs must be finite decimal strings, never binary floats')
++    if 'e' in s.lower():
++        exponent=s.lower().rsplit('e',1)[1]
++        if len(exponent)>5 or abs(int(exponent))>100:
++            raise ValueError('decimal exponent outside safe research domain')
++    p = Fraction(s)
++    if max(p.numerator.bit_length(), p.denominator.bit_length()) > 1024:
++        raise ValueError('decimal input too extreme for this research certificate')
++    return p
++
++
++def _floor(f: Fraction) -> int:
++    return f.numerator // f.denominator
++
++
++def _ceil(f: Fraction) -> int:
++    return -_floor(-f)
++
++
++@dataclass(frozen=True)
++class I:
++    lo: Fraction
++    hi: Fraction
++
++    def __post_init__(self):
++        if self.lo > self.hi:
++            raise ValueError('inverted rational interval')
++
++    @staticmethod
++    def point(x):
++        f = x if isinstance(x, Fraction) else Fraction(x)
++        return I(f, f)
++
++    def quant(self, places: int) -> I:
++        scale=10 ** places
++        return I(Fraction(_floor(self.lo*scale),scale),
++                 Fraction(_ceil(self.hi*scale),scale))
++
++    def __add__(self, other):
++        other=_interval(other)
++        return I(self.lo+other.lo, self.hi+other.hi)
++
++    __radd__ = __add__
++
++    def __neg__(self):
++        return I(-self.hi,-self.lo)
++
++    def __sub__(self,other):
++        return self + (-_interval(other))
++
++    def __rsub__(self,other):
++        return _interval(other)-self
++
++    def __mul__(self,other):
++        other=_interval(other)
++        v=(self.lo*other.lo,self.lo*other.hi,self.hi*other.lo,self.hi*other.hi)
++        return I(min(v),max(v))
++
++    __rmul__=__mul__
++
++    def inv(self):
++        if self.lo<=0<=self.hi:
++            raise ArithmeticError('interval divisor contains zero')
++        return I(1/self.hi,1/self.lo)
++
++    def __truediv__(self,other):
++        return self*_interval(other).inv()
++
++    def __rtruediv__(self,other):
++        return _interval(other)/self
++
++
++def _interval(x) -> I:
++    return x if isinstance(x,I) else I.point(x)
++
++
++def _atan_bound_inverse(m: int, places: int) -> I:
++    """Alternating arctan(1/m), with exact rational next-term tail."""
++    if m<2:raise ValueError('m >= 2 required')
++    z=Fraction(1,m)
++    term=z
++    partial=Fraction(0)
++    eps=Fraction(1,10**(places+8))
++    for n in range(1000):
++        partial+=term if n%2==0 else -term
++        next_term = term * z*z * Fraction(2*n+1,2*n+3)
++        if next_term<eps:
++            if n%2==0:return I(partial-next_term,partial)
++            return I(partial,partial+next_term)
++        term=next_term
++    raise ArithmeticError('pi-series convergence budget exceeded')
++
++
++@lru_cache(maxsize=16)
++def pi(places:int) -> I:
++    return (16*_atan_bound_inverse(5,places)-4*_atan_bound_inverse(239,places)).quant(places+7)
++
++
++def sqrt_point(a:Fraction, places:int) -> I:
++    if a<0:raise ValueError('negative square root')
++    scale=10**(places+7)
++    y=isqrt((a.numerator*scale*scale)//a.denominator)
++    lo=Fraction(y,scale)
++    hi=lo if (y*y*a.denominator == a.numerator*scale*scale) else Fraction(y+1,scale)
++    return I(lo,hi)
++
++
++def sqrt_interval(a:I,places:int) -> I:
++    if a.lo<0:raise ArithmeticError('interval contains negative square root argument')
++    return I(sqrt_point(a.lo,places).lo,sqrt_point(a.hi,places).hi).quant(places+5)
++
++
++def _exp_nonnegative(y:Fraction,places:int)->I:
++    if y<0:raise ValueError('positive-argument helper')
++    halvings=0
++    while y>Fraction(1,2):
++        y/=2
++        halvings+=1
++    total=Fraction(1)
++    term=Fraction(1)
++    eps=Fraction(1,10**(places+halvings+12))
++    for n in range(1,1000):
++        term=term*y/n
++        total+=term
++        next_term=term*y/(n+1)
++        err=2*next_term
++        if err<eps:
++            out=I(total-err,total+err).quant(places+halvings+9)
++            for _ in range(halvings):
++                out=(out*out).quant(places+6)
++            return out.quant(places+4)
++    raise ArithmeticError('exp series convergence budget exceeded')
++
++
++def exp_point(y:Fraction,places:int)->I:
++    if abs(y)>40:
++        raise ArithmeticError('out-of-domain exponential: requires |arg|<=40')
++    if y<0:
++        return _exp_nonnegative(-y,places).inv().quant(places+4)
++    return _exp_nonnegative(y,places)
++
++
++def exp_interval(y:I,places:int)->I:
++    return I(exp_point(y.lo,places).lo,exp_point(y.hi,places).hi).quant(places+3)
++
++
++def _cdf_pos(z:Fraction,places:int)->I:
++    if z<0 or z>8:
++        raise ArithmeticError('CDF certificate supports |z| <=8')
++    total=Fraction(0)
++    term=z
++    eps=Fraction(1,10**(places+12))
++    for n in range(1500):
++        total += term if n%2==0 else -term
++        next_term=term*z*z*Fraction(2*n+1,2*(n+1)*(2*n+3))
++        if n > 1 and Fraction(n,1) > z*z/2 and next_term<eps:
++            s=I(total-next_term,total) if n%2==0 else I(total,total+next_term)
++            norm=sqrt_interval(2*pi(places),places).inv()
++            return (I.point(Fraction(1,2))+s*norm).quant(places+2)
++        term=next_term
++    raise ArithmeticError('CDF alternating-series convergence budget exceeded')
++
++
++def cdf_point(z:Fraction,places:int)->I:
++    if z>=0:return _cdf_pos(z,places)
++    return (I.point(1)-_cdf_pos(-z,places)).quant(places+2)
++
++
++def cdf_interval(z:I,places:int)->I:
++    return I(cdf_point(z.lo,places).lo,cdf_point(z.hi,places).hi).quant(places+2)
++
++
++def dump(i:I, digits:int=35):
++    """Render rounded decimal endpoints outward with exact rational rounding."""
++    scale=10**digits
++    lo=_floor(i.lo*scale)
++    hi=_ceil(i.hi*scale)
++    def d(v):
++        prefix='-' if v<0 else ''
++        val=str(abs(v)).zfill(digits+1)
++        return prefix+val[:-digits]+'.'+val[-digits:]
++    return {'lower':d(lo),'upper':d(hi),'width_upper':d(_ceil((i.hi-i.lo)*scale))}
++
++
++def certified_fpt(x:str,drift:str,sigma:str,horizon:str,discount:str,places:int=45):
++    """Positive mathematical gap enclosure for a COMPACT scalar FPT subdomain.
++
++    Inputs represent exact decimal rationals; outputs are guaranteed enclosures
++    for mathematical formulas, not hardware libm or actual float32 code.
++    """
++    if not isinstance(places,int) or not 25<=places<=75:
++        raise ValueError('places outside supported range 25..75')
++    x,mu,sig,t,q=map(decimal,(x,drift,sigma,horizon,discount))
++    if not (x>0 and sig>0 and t>0 and q>0):
++        raise ValueError('requires x,sigma,T,discount strictly positive')
++    if x>8 or abs(mu)>4 or sig<Fraction(1,100) or sig>4 or t>10 or q>4:
++        raise ArithmeticError('outside researched compact input domain')
++    s2=sig*sig
++    a=I.point(mu/s2)
++    ell=sqrt_interval(a*a+I.point(2*q/s2),places)
++    u=I.point(sig)*sqrt_interval(I.point(t),places)
++    h1=(I.point(-x-mu*t)/u)
++    h2=(I.point(-x+mu*t)/u)
++    F=(cdf_interval(h1,places)+exp_interval(I.point(-2*mu*x/s2),places)*cdf_interval(h2,places)).quant(places+2)
++    hg1=(I.point(-x)-ell*I.point(s2*t))/u
++    hg2=(I.point(-x)+ell*I.point(s2*t))/u
++    G=(exp_interval((-a+ell)*I.point(x),places)*cdf_interval(hg1,places)
++       +exp_interval((-a-ell)*I.point(x),places)*cdf_interval(hg2,places)).quant(places+2)
++    gap=(F-G).quant(places+2)
++    status=('CERTIFIED_POSITIVE_F_MINUS_G' if gap.lo>0 and F.lo>=0 and
++            F.hi<=1 and G.lo>=0 and G.hi<=F.hi else 'DENY_UNRESOLVED')
++    return {'input_exact_decimals':dict(x=str(x),drift=str(mu),sigma=str(sig),
++                                      horizon=str(t),discount=str(q)),
++            'arithmetic':'exact rational intervals; proved pi/erf/exp/sqrt bounds',
++            'model':'Brownian fixed drift/fixed absorbing barrier ONLY',
++            'F':dump(F,digits=places),'G':dump(G,digits=places),
++            'F_minus_G':dump(gap,digits=places),'reported_decimal_places':places,
++            'decision':status,'original_HX_validated':False,
++            'production_FP32_or_GPU_validated':False}
++
++
++if __name__=='__main__':
++    import json
++    print(json.dumps(certified_fpt('0.8','-0.3','0.7','0.9','0.05'),indent=2))
++
++
++def _square(i:I)->I:
++    """Exact enclosure of z^2; avoid negative interval pollution at zero."""
++    if i.lo>=0:return I(i.lo*i.lo,i.hi*i.hi)
++    if i.hi<=0:return I(i.hi*i.hi,i.lo*i.lo)
++    return I(Fraction(0),max(i.lo*i.lo,i.hi*i.hi))
++
++
++def _pdf_interval(z:I, places:int)->I:
++    return (exp_interval(-_square(z)/2,places) /
++            sqrt_interval(2*pi(places),places)).quant(places+1)
++
++
++def certified_risk_distance_gradient(x:str,drift:str,sigma:str,horizon:str,
++                                     places:int=45):
++    """Proved rational interval for d/dx P(tau <=T) at x>=0.
++
++    At x=0 this is the derivative from the *positive* side only. The
++    boundary extension P=1 for x<=0 has derivative 0 from the negative side;
++    its nonzero positive-side gradient disproves global smooth pasting of
++    the risk feature. The value channel of HX equity is not studied here.
++    """
++    if not isinstance(places,int) or not 25<=places<=75:
++        raise ValueError('places outside supported range')
++    x,mu,sig,t=map(decimal,(x,drift,sigma,horizon))
++    if x<0 or x>8 or t<=0 or t>10 or sig<Fraction(1,100) or sig>4 or abs(mu)>4:
++        raise ValueError('outside certified scalar derivative domain')
++    u=I.point(sig)*sqrt_interval(I.point(t),places)
++    a=I.point(-x-mu*t)/u
++    b=I.point(-x+mu*t)/u
++    factor=exp_interval(I.point(-2*mu*x/(sig*sig)),places)
++    result=((-_pdf_interval(a,places)/u)
++            +factor*((I.point(-2*mu/(sig*sig))*cdf_interval(b,places))
++                    -_pdf_interval(b,places)/u)).quant(places+2)
++    return {'scope':'fixed barrier Brownian FPT; derivative from x>0 side',
++            'x':str(x),'gradient':dump(result,digits=places),
++            'reported_decimal_places':places,
++            'strictly_negative_certified':result.hi<0,
++            'boundary_smooth_pasting_certified':False,
++            'coupled_HX_equity_gradient_certified':False}
+--- a/recurrent_factorial_pilot.py
++++ b/recurrent_factorial_pilot.py
+@@ -91,12 +91,36 @@
+     the most recent WRITE0/WRITE1 since last RESET, defaulting to zero.
+     The irregular variant uses exponential inter-event times.
+     """
+-    if task not in ('overwrite_reset','irregular_time','selective_copy','long_range','mqar') or length<6 or n<1:
++    if task not in ('overwrite_reset','irregular_time','selective_copy','long_range','mqar','regeneration') or length<6 or n<1:
+         raise ValueError('unsupported event task or size')
+     rng=np.random.default_rng(seed)
+     xs=np.zeros((n,length,INPUT_DIM),dtype=np.float32)
+     ys=np.empty(n,dtype=np.int64)
+     for i in range(n):
++        if task=='regeneration':
++            # A deliberately synthetic proxy for multiple state re-initialisations:
++            # 3 exact RESET events at known positions; WRITE after the last reset
++            # is guaranteed, and later distractor/overwrites remain possible.
++            # This is NOT a stochastic hazard / physical renewal law or CTMC.
++            memory=0
++            resets={length//4,length//2,3*length//4}
++            final_reset=max(resets)
++            for t in range(length-1):
++                if t in resets:
++                    token=3
++                    memory=0
++                elif t==final_reset+1:
++                    token=int(rng.choice((1,2)))
++                    memory=token-1
++                else:
++                    token=int(rng.choice((0,1,2),p=(.64,.18,.18)))
++                    if token in (1,2):memory=token-1
++                xs[i,t,token]=1.
++                xs[i,t,5]=float(min(4.,rng.exponential(.7)))
++            xs[i,-1,4]=1.
++            xs[i,-1,5]=float(min(4.,rng.exponential(.7)))
++            ys[i]=memory
++            continue
+         if task=='mqar':
+             # Two-key associative memory: each write carries (key,value),
+             # last event queries a random key. No answers encoded in QUERY.
+@@ -234,7 +258,7 @@
+     import argparse
+     parser=argparse.ArgumentParser()
+     parser.add_argument('--steps',type=int,default=32)
+-    parser.add_argument('--task',choices=('overwrite_reset','irregular_time','selective_copy','long_range','mqar'),default='overwrite_reset')
++    parser.add_argument('--task',choices=('overwrite_reset','irregular_time','selective_copy','long_range','mqar','regeneration'),default='overwrite_reset')
+     parser.add_argument('--seeds',nargs='+',type=int,default=[13,29])
+     parser.add_argument('--out',default='reports/p1_p2_recurrent_pilot.json')
+     args=parser.parse_args()
+--- /dev/null
++++ b/run_v4_audit.py
+@@ -0,0 +1,177 @@
++"""Local strict V4 evidence ledger: rational certificates + trained negative controls.
++
++Do not import any conclusion from the archived v3 audit as a current GitHub
++status. Completed local experiments are not an upstream source certification.
++"""
++from __future__ import annotations
++from collections import defaultdict
++from datetime import datetime,timezone
++from pathlib import Path
++from functools import reduce
++import hashlib
++import json
++import math
++import os
++import platform
++import re
++import subprocess
++import sys
++import numpy as np
++from rational_fpt_certificate import certified_fpt, certified_risk_distance_gradient
++from qvi_rational_certificate import known_case
++from factorial_evidence import exact_two_sided_signflip
++
++ROOT=Path(__file__).resolve().parent
++REPORTS=ROOT/'reports'
++TASKS=('overwrite_reset','irregular_time','mqar','long_range','selective_copy','regeneration')
++CASES=[
++    ('0.8','-0.3','0.7','0.9','0.05'),
++    ('1.2','0.1','0.6','1.1','0.4'),
++    ('0.1','0.4','1.3','0.5','0.3'),
++    ('2.0','-0.2','1.0','2.0','0.1'),
++    ('0.001','-0.03','1.2','0.5','0.3'),
++    ('0.8','-0.3','0.7','0.9','1e-22'),
++]
++
++def load(name):
++    return json.loads((REPORTS/name).read_text())
++
++
++def audit_factorial(name):
++    d=load('p1_p2_'+name+'.json')
++    if not d['matched_parameter_data_step_constraints'] or d['full_training_flops_equal']:
++        raise AssertionError('unexpected training budget status')
++    grouped=defaultdict(dict)
++    for r in d['rows']:
++        key=r['seed']
++        if r['arm'] in grouped[key]:raise AssertionError('duplicate factorial row')
++        grouped[key][r['arm']]=r
++    if sorted(grouped)!=sorted(d['seeds']):raise AssertionError('missing seeds')
++    arms=('control','call','risk','margin','call+risk','call+margin','risk+margin','call+risk+margin')
++    if any(set(grouped[s])!=set(arms) for s in d['seeds']):
++        raise AssertionError('missing factorial arm')
++    c=[grouped[s]['control'] for s in sorted(grouped)]
++    t=[grouped[s]['call+risk+margin'] for s in sorted(grouped)]
++    acc=[r['holdout_accuracy'] for r in c]
++    acc_t=[r['holdout_accuracy'] for r in t]
++    effects=[b-a for a,b in zip(acc,acc_t)]
++    times_c=[r['training_wall_seconds'] for r in c]
++    times_t=[r['training_wall_seconds'] for r in t]
++    ratio=np.mean(times_t)/np.mean(times_c)
++    return {'task':name,'seed_count':len(grouped),'seed_ids':sorted(grouped),
++            'train_length':d['train_length'],'unseen_holdout_length':d['holdout_length'],
++            'train_steps_per_arm':d['rows'][0]['training_steps'],
++            'holdout_rows_per_seed':d['rows'][0]['holdout_n'],
++            'trained_rows':len(d['rows']),
++            'ordinary_accuracy_mean':float(np.mean(acc)),
++            'full_mechanism_accuracy_mean':float(np.mean(acc_t)),
++            'paired_seed_deltas':effects,
++            'paired_delta_mean':float(np.mean(effects)),
++            'exact_two_sided_signflip_p':exact_two_sided_signflip(effects),
++            'full_vs_ordinary_wallclock_training_ratio':float(ratio),
++            'accuracy_over_95pct_full_mechanism':all(a>=.95 for a in acc_t),
++            'matched_same_seed_weights_data_params_steps':True,
++            'matched_total_training_compute':False,
++            'synthetic_surrogate_only':True,
++            'P1_mechanism_advantage_confirmed':False,
++            'P2_real_world_memory_gate_passed':False}
++
++
++def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
++
++
++def main():
++    certs=[certified_fpt(*c,places=65) for c in CASES]
++    if any(r['decision']!='CERTIFIED_POSITIVE_F_MINUS_G' for r in certs):
++        raise AssertionError('P0 rational certification failed')
++    gradients=[certified_risk_distance_gradient(x,mu,sig,t,65)
++               for x,mu,sig,t in [('0','-0.3','0.7','0.9'),('0','0','0.6','1'),
++                                  ('0','0.4','1.1','0.75'),('0.8','-0.3','0.7','0.9')]]
++    if not all(g['strictly_negative_certified'] for g in gradients):
++        raise AssertionError('P0 boundary derivative certificate failed')
++    qvi=known_case()
++    if qvi['bellman_residual_exact']!='0':raise AssertionError('QVI exact solver failed')
++    reports=[audit_factorial(x) for x in TASKS]
++    p1_attribution=load('p1_v4_42_exploratory_factorial_effects.json')
++    if p1_attribution['n_rows']!=128 or p1_attribution['factorial_effect_count']!=42 or p1_attribution['any_holm_significant']:
++        raise AssertionError('missing actual factorial attribution or unexpected significance')
++    full=next(r for r in reports if r['task']=='regeneration')
++    if full['paired_delta_mean']>=0:
++        print('Attention: regeneration did not reproduce negative pilot; recheck')
++    tests=(REPORTS/'v4_tests.log').read_text()
++    m=re.search(r'Ran (\d+) tests in',tests)
++    if not m or not tests.rstrip().endswith('OK'):
++        raise AssertionError('V4 complete test transcript missing or failing')
++    p0={'scope':'exact rational input semantics, compact Brownian fixed-barrier FPT',
++        'certified_fpt_cases':certs,'certified_risk_gradient_cases':gradients,
++        'finite_regenerative_mdp_exact_policy_certificate':qvi,
++        'strictly_outward_rational_enclosures':True,
++        'full_financial_HX_equity_bond_coupling':False,
++        'original_HX_free_boundary_verification':False,
++        'machine_FP32_BF16_libm_certified':False}
++    (REPORTS/'p0_v4_rational_certificates.json').write_text(json.dumps(p0,ensure_ascii=False,indent=2))
++    hw={'rustc_path':None,'cargo_path':None,'gpu_detected':False,'gpu_energy_meter':False}
++    for name in ('rustc','cargo'):
++        from shutil import which
++        hw[name+'_path']=which(name)
++    hw['gpu_detected']=any(Path(n).exists() for n in ('/dev/nvidia0','/dev/kfd'))
++    audit={'created_utc':datetime.now(timezone.utc).isoformat(),
++        'environment':{'python':platform.python_version(),'machine':platform.machine(),
++                       'hardware_tools':hw},
++        'repository':{'name':'TrillionniumFoundation/hepta-private-ci',
++                      'live_latest_main_confirmed':False,'write_access_confirmed':False,
++                      'latest_attempt':'Connected GitHub API HTTP403 suspended',
++                      'branch_created_this_iteration':False,'commit_created_this_iteration':False,
++                      'pr_created_this_iteration':False},
++        'P0':{'new_proven_scalar_enclosures':len(certs),
++              'new_negative_right_boundary_gradients':len(gradients),
++              'exact_regenerative_policy_enumeration':qvi['enumerated_policies'],
++              'certificate_details':'reports/p0_v4_rational_certificates.json',
++              'full_HX_and_neural_kernel_closed':False},
++        'P1_P2':{'existing_4_tasks_plus_new_2_trained_pilots':reports,
++                 'total_trained_arm_seed_rows':sum(r['trained_rows'] for r in reports),
++                 'actual_factorial_contrast_count':p1_attribution['factorial_effect_count'],
++                 'Holm_significant_main_or_interaction':p1_attribution['any_holm_significant'],
++                 'real_training_attribution_report':'reports/p1_v4_42_exploratory_factorial_effects.json',
++                 'tasks_train_successful':len(reports),
++                 'same_feature_flops_and_joules_control':False,
++                 'unseen_original_HCSN_test_and_real_renewal':False},
++        'P3':{'v3_procedural_media_study_available':(REPORTS/'p3_toy_media_encoder.json').is_file(),
++              'new_instance_level_12_directed_pair_evaluator_in_tests':True,
++              'rejects_class_collapsed_embedding_and_cross_split_clones':True,
++              'natural_four_modality_paired_holdout_validated':False},
++        'P4':{'v3_numpy_cpu_toy_study_available':(REPORTS/'p4_cpu_oracle.json').is_file(),
++              'native_rust_compiled_and_tested_this_turn':False,
++              'hardware_gpu_64_256_1024_4096_accepted':False,
++              'physical_energy_joules_measured':False},
++        'P5':{'actual_equal_compute_transformer_ssm_hybrid_compared':False,
++              'scaleup_allowed':False},
++        'tests':{'count':int(m.group(1)),'status':'OK',
++                 'log_sha256':sha(REPORTS/'v4_tests.log')},
++        'stage':{k:'OPEN' for k in ('P0','P1','P2','P3','P4','P5')},
++        'all_blockers_closed':False,'production_activation_allowed':False,
++        'research_admission':'DENY_ALL',
++        'notes':['Theoretical rational enclosures certify only restricted scalar FPT and finite MDP',
++                 'Independent numerical tests cannot prove full He-Xiong equity/bond model',
++                 '3-seed CPU synthetic pilot is too small for inferential conclusions',
++                 'Compute FPT interval in rational arithmetic, not actual device math',
++                 'No original HCSN model source revalidated due GitHub 403',
++                 'No natural multimodal dataset or native/GPU benchmarks',
++                 'All six original production gates are OPEN']}
++    (REPORTS/'v4_audit.json').write_text(json.dumps(audit,ensure_ascii=False,indent=2))
++    manifest={}
++    for p in sorted(ROOT.rglob('*')):
++        if not p.is_file() or '__pycache__' in p.parts or p.suffix=='.pyc':continue
++        if p.name in ('MANIFEST_SHA256_v4.json','MANIFEST_SHA256_v3.json','MANIFEST_SHA256.json'):
++            continue
++        rel=p.relative_to(ROOT).as_posix()
++        manifest[rel]=sha(p)
++    (ROOT/'MANIFEST_SHA256_v4.json').write_text(json.dumps(manifest,indent=2))
++    print(f'V4: {int(m.group(1))} tests OK, {sum(r["trained_rows"] for r in reports)} actual trained arm-seed-task rows')
++    print('CERTIFIED restricted scalar FPT:',len(certs),'certified derivative cases:',len(gradients),'rational QVI policies:',qvi['enumerated_policies'])
++    for r in reports: print(r['task'],round(r['ordinary_accuracy_mean'],5),round(r['full_mechanism_accuracy_mean'],5),
++                            round(r['paired_delta_mean'],5),'ratio',round(r['full_vs_ordinary_wallclock_training_ratio'],3))
++    print('Original Hepta six production gates: all OPEN / DENY_ALL')
++
++
++if __name__=='__main__':main()
+--- /dev/null
++++ b/tests/test_v4_certified.py
+@@ -0,0 +1,158 @@
++"""Independent high-precision cross-checks and negative admission cases.
++
++mpmath is used ONLY for an independent test oracle; the interval source under
++review is rationals + proved analytical truncation bounds, not mpmath.
++"""
++import unittest
++from fractions import Fraction
++from mpmath import mp
++from rational_fpt_certificate import (
++    certified_fpt, decimal, cdf_point, pi, exp_point, sqrt_point,
++)
++from qvi_rational_certificate import known_case, certify, solve_exact
++from fpt_reference import _formula
++from qvi_toy import audit as float_qvi_audit
++
++
++def mp_fraction(q:Fraction):
++    return mp.mpf(q.numerator)/q.denominator
++
++
++def interval_includes(d, value):
++    return mp.mpf(d['lower'])<=value<=mp.mpf(d['upper'])
++
++
++class CertifiedScalarBounds(unittest.TestCase):
++    def test_pi_enclosure_independent_high_precision(self):
++        with mp.workdps(120):
++            b=pi(65)
++            self.assertLess(mp_fraction(b.lo),mp.pi)
++            self.assertGreater(mp_fraction(b.hi),mp.pi)
++            self.assertLess(mp_fraction(b.hi-b.lo),mp.mpf('1e-67'))
++
++    def test_cdf_and_exp_bounds(self):
++        for z in ('0','.2','1','-1','4','-4'):
++            with self.subTest(z=z),mp.workdps(120):
++                b=cdf_point(decimal(z),65)
++                ref=mp.erfc(-mp.mpf(z)/mp.sqrt(2))/2
++                self.assertLessEqual(mp_fraction(b.lo),ref)
++                self.assertGreaterEqual(mp_fraction(b.hi),ref)
++        for y in ('0','.0001','-0.005','.5','-2.5','5'):
++            with self.subTest(y=y),mp.workdps(120):
++                b=exp_point(decimal(y),65)
++                self.assertLessEqual(mp_fraction(b.lo),mp.exp(mp.mpf(y)))
++                self.assertGreaterEqual(mp_fraction(b.hi),mp.exp(mp.mpf(y)))
++
++    def test_sqrt_bound(self):
++        for x in ('0','2','3','1.02'):
++            with self.subTest(x=x),mp.workdps(120):
++                b=sqrt_point(decimal(x),70)
++                self.assertLessEqual(mp_fraction(b.lo),mp.sqrt(mp.mpf(x)))
++                self.assertGreaterEqual(mp_fraction(b.hi),mp.sqrt(mp.mpf(x)))
++
++    def test_certificates_against_independent_fpt_closed_form(self):
++        cases=[
++          ('0.8','-0.3','0.7','0.9','0.05'),
++          ('1.2','0.1','0.6','1.1','0.4'),
++          ('0.1','0.4','1.3','0.5','0.3'),
++          ('2.0','-0.2','1.0','2.0','0.1'),
++          ('0.001','-0.03','1.2','0.5','0.3'),
++          ('0.8','-0.3','0.7','0.9','1e-22'),
++        ]
++        for case in cases:
++            with self.subTest(case=case):
++                report=certified_fpt(*case,places=65)
++                self.assertEqual(report['decision'],'CERTIFIED_POSITIVE_F_MINUS_G')
++                with mp.workdps(120):
++                    F,G=_formula(*map(mp.mpf,case))
++                    self.assertTrue(interval_includes(report['F'],F))
++                    self.assertTrue(interval_includes(report['G'],G))
++                    self.assertTrue(interval_includes(report['F_minus_G'],F-G))
++                    self.assertLess(mp.mpf(report['F_minus_G']['lower']),F-G)
++                    self.assertGreater(mp.mpf(report['F_minus_G']['lower']),0)
++
++    def test_strict_rejection_of_unqualified_domains(self):
++        bad=[('0','-.3','.7','.9','.05'),('.8','-.3','.7','.9','0'),
++             ('.8','-.3','0','.9','.05'),('.8','-.3','.7','0','.05'),
++             ('.8','-.3','.001','.9','.05'),('NaN','-.3','.7','.9','.05'),
++             ('.8','-.3','.7','1e400','.05')]
++        for args in bad:
++            with self.subTest(args=args),self.assertRaises((ValueError,ArithmeticError)):
++                certified_fpt(*args)
++        with self.assertRaises(ValueError):
++            certified_fpt(.8,'-.3','.7','.9','.05')
++        with self.assertRaises(ArithmeticError):
++            certified_fpt('0.8','-4','0.02','0.9','0.05')
++
++
++class ExactRegenerationQVI(unittest.TestCase):
++    def test_closed_exact_bellman_and_float_reference(self):
++        r=known_case()
++        self.assertEqual(r['enumerated_policies'],16)
++        self.assertEqual(r['bellman_residual_exact'],'0')
++        self.assertEqual(r['optimal_reset_actions'],[False,False,False,True])
++        self.assertFalse(r['full_HX_qvi_certified'])
++        f=float_qvi_audit()
++        for v,w in zip(r['exact_values'],f['values']):
++            self.assertAlmostEqual(float(Fraction(v)),w,delta=2e-11)
++
++    def test_negative_matrix_and_discount(self):
++        with self.assertRaises(ValueError):
++            certify([['.9','.2'],['0','1']],['0','1'],['0','1'],'.9')
++        with self.assertRaises(ValueError):
++            certify([['1','0'],['0','1']],['0','1'],['0','1'],'1')
++        with self.assertRaises(ValueError):
++            certify([['1','0'],['-.1','1.1']],['0','1'],['0','1'],'.9')
++
++    def test_exact_solver_correctness(self):
++        v=solve_exact([[Fraction(2),Fraction(1)],
++                       [Fraction(1),Fraction(3)]],
++                      [Fraction(7),Fraction(9)])
++        self.assertEqual(v,[Fraction(12,5),Fraction(11,5)])
++
++
++if __name__=='__main__':unittest.main()
++
++class CertifiedBoundaryGradient(unittest.TestCase):
++    def test_zero_boundary_right_derivative_is_nonzero(self):
++        from rational_fpt_certificate import certified_risk_distance_gradient
++        for mu,sigma,t in [('-0.3','0.7','0.9'),('0','0.6','1'),('0.4','1.1','0.75')]:
++            r=certified_risk_distance_gradient('0',mu,sigma,t,places=65)
++            self.assertTrue(r['strictly_negative_certified'])
++            self.assertFalse(r['boundary_smooth_pasting_certified'])
++            with mp.workdps(110):
++                x=mp.zero;m=mp.mpf(mu);s=mp.mpf(sigma);T=mp.mpf(t)
++                scale=s*mp.sqrt(T)
++                z1=(-x-m*T)/scale;z2=(-x+m*T)/scale
++                pdf=lambda z:mp.exp(-z*z/2)/mp.sqrt(2*mp.pi)
++                phi=lambda z:mp.erfc(-z/mp.sqrt(2))/2
++                expected=-pdf(z1)/scale +(-2*m/s**2*phi(z2)-pdf(z2)/scale)
++                self.assertTrue(interval_includes(r['gradient'],expected))
++
++    def test_interior_gradient_is_negative(self):
++        from rational_fpt_certificate import certified_risk_distance_gradient
++        for x in ('.01','.2','.8','2.5'):
++            r=certified_risk_distance_gradient(x,'-.3','.7','.9',places=65)
++            self.assertTrue(r['strictly_negative_certified'])
++
++class IndependentQuadratureCrossCheck(unittest.TestCase):
++    def test_quadrature_independent_integral_representation(self):
++        from fpt_reference import FPT, transformed_integral
++        cases=[('0.8','-0.3','0.7','0.9','0.05'),
++               ('0.1','0.4','1.3','0.5','0.3'),
++               ('1.2','0.1','0.6','1.1','0.4')]
++        for args in cases:
++            with self.subTest(args=args):
++                certified=certified_fpt(*args,places=60)
++                numerical=transformed_integral(FPT(*map(float,args)),dps=75)
++                # This is a cross-check, not a validated quadrature bound:
++                # comparison must be tolerant of quadrature truncation.
++                with mp.workdps(80):
++                    for k in ('F','G'):
++                        lo=mp.mpf(certified[k]['lower']);hi=mp.mpf(certified[k]['upper'])
++                        ref=mp.mpf(numerical[k])
++                        self.assertLess(abs(ref-(lo+hi)/2),mp.mpf('1e-50'))
++
++    def test_reject_huge_decimal_exponent_without_allocating(self):
++        with self.assertRaises(ValueError):
++            certified_fpt('1e999999999999999999999','-.3','.7','.9','.05')
+--- /dev/null
++++ b/tests/test_v4_factorial.py
+@@ -0,0 +1,42 @@
++import unittest
++from copy import deepcopy
++from p1_real_training_attribution import estimate,TASKS
++from fair_ablation import ARMS
++
++
++def synthetic_complete_data():
++    rows=[]
++    for seed in (11,23,37):
++        for arm in ARMS:
++            parts=set() if arm=='control' else set(arm.split('+'))
++            rows.append({'seed':seed,'arm':arm,
++                         'initial_parameters_sha256':'abc',
++                         'parameter_count':193,'train_set_sha256':'train',
++                         'holdout_set_sha256':'holdout','training_steps':10,'train_tokens':200,
++                         'holdout_accuracy':.5+.02*int('call' in parts)
++                                             -.03*int('risk' in parts)+.01*int('margin' in parts)})
++    return {'synthetic_fixture':{'seeds':[11,23,37],'rows':rows}}
++
++class RealTrainingFactorial(unittest.TestCase):
++    def test_all_7_factorial_effects(self):
++        report=estimate(synthetic_complete_data())
++        self.assertEqual(report['factorial_effect_count'],7)
++        self.assertAlmostEqual(next(x for x in report['main_pair_triple_factorial_effects']
++                                    if x['contrast']=='call')['mean_effect'],.02,places=10)
++        self.assertFalse(report['any_holm_significant'])
++        self.assertEqual(report['attribution_gate'],'DENY')
++
++    def test_incomplete_or_mismatched_is_rejected(self):
++        data=synthetic_complete_data()
++        data['synthetic_fixture']['rows'].pop()
++        with self.assertRaises(ValueError):estimate(data)
++        data=synthetic_complete_data()
++        data['synthetic_fixture']['rows'][1]['training_steps']=100
++        with self.assertRaises(ValueError):estimate(data)
++
++    def test_duplicate_is_rejected(self):
++        data=synthetic_complete_data()
++        data['synthetic_fixture']['rows'].append(deepcopy(data['synthetic_fixture']['rows'][0]))
++        with self.assertRaises(ValueError):estimate(data)
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/tests/test_v4_memory.py
+@@ -0,0 +1,36 @@
++import unittest
++import numpy as np
++from recurrent_factorial_pilot import make_dataset,run_pilot
++
++class RegenerationResearchTask(unittest.TestCase):
++    def test_three_resets_and_last_epoch_causality(self):
++        for length in (24,48,64):
++            x,y=make_dataset(length,32,seed=109,task='regeneration')
++            a=x.numpy();b=y.numpy()
++            self.assertEqual(a.shape,(32,length,6))
++            for i in range(32):
++                self.assertEqual(int(a[i,:-1,3].sum()),3)
++                self.assertTrue(np.all(a[i,:-1,:5].sum(axis=1)==1))
++                self.assertTrue(np.all(a[i,:,5]>0))
++                memory=0
++                for t in range(length-1):
++                    if a[i,t,3]:memory=0
++                    elif a[i,t,1]:memory=0
++                    elif a[i,t,2]:memory=1
++                self.assertEqual(memory,int(b[i]))
++
++    def test_across_holdout_seeds(self):
++        x,y=make_dataset(24,192,seed=151,task='regeneration')
++        xx,yy=make_dataset(48,192,seed=100151,task='regeneration')
++        self.assertFalse(np.array_equal(x.numpy().tobytes(),xx.numpy().tobytes()))
++        self.assertTrue(0<float(y.float().mean())<1.)
++        self.assertTrue(0<float(yy.float().mean())<1.)
++
++    def test_train_run_is_always_research_only(self):
++        r=run_pilot(seeds=(11,),training_steps=2,task='regeneration')
++        self.assertEqual(len(r['rows']),8)
++        self.assertTrue(r['matched_parameter_data_step_constraints'])
++        self.assertFalse(r['full_training_flops_equal'])
++        self.assertFalse(r['production_evidence_accepted'])
++
++if __name__=='__main__':unittest.main()
+--- /dev/null
++++ b/tests/test_v4_p3_instance.py
+@@ -0,0 +1,63 @@
++import unittest
++import numpy as np
++from p3_instance_retrieval_gate import inspect,MODALITIES
++
++
++def make(n_holdout=5,n_train=3,collapsed=False):
++    out=[]
++    for split,n in (('train',n_train),('holdout',n_holdout)):
++        for i in range(n):
++            j=i if split=='holdout' else i+10
++            v=np.zeros(20)
++            v[j]=1.
++            if collapsed:v=np.zeros(20);v[i%2]=1.
++            out.append({'sample_id':f'{split}-{i}', 'split':split,
++                        'entity_id':f'entity-{split}-{i}',
++                        'scene_id':f'scene-{split}-{i}',
++                        'embeddings':{m:v.tolist() for m in MODALITIES}})
++    return out
++
++class PairedRetrievalGate(unittest.TestCase):
++    def test_true_instance_success_never_means_prod_pass(self):
++        r=inspect(make())
++        self.assertTrue(r['structurally_evaluable'])
++        self.assertEqual(len(r['pair_directions']),12)
++        self.assertTrue(r['all_directed_instance_top1_at_least_90pct'])
++        self.assertFalse(r['true_natural_encoder_grounded'])
++        self.assertFalse(r['production_evidence_accepted'])
++
++    def test_class_shortcut_collapses_instance_and_is_rejected(self):
++        r=inspect(make(collapsed=True))
++        self.assertFalse(r['structurally_evaluable'])
++        self.assertTrue(any('embedding collision' in s for s in r['issues']))
++        self.assertFalse(r['all_directed_instance_top1_at_least_90pct'])
++
++    def test_cross_split_entity_and_scene_reuse_blocked(self):
++        s=make()
++        s[0]['entity_id']=s[-1]['entity_id']
++        s[1]['scene_id']=s[-2]['scene_id']
++        r=inspect(s)
++        self.assertFalse(r['structurally_evaluable'])
++        self.assertTrue(any('cross-split entity' in k for k in r['issues']))
++        self.assertTrue(any('cross-split scene' in k for k in r['issues']))
++
++    def test_missing_modality_and_inf_blocked(self):
++        s=make();del s[1]['embeddings']['audio']
++        self.assertFalse(inspect(s)['structurally_evaluable'])
++        s=make();s[1]['embeddings']['video'][0]=float('nan')
++        self.assertFalse(inspect(s)['structurally_evaluable'])
++
++    def test_cross_split_embedding_clone_rejected_even_with_distinct_metadata(self):
++        s=make()
++        for m in MODALITIES:
++            s[0]['embeddings'][m]=s[-1]['embeddings'][m][:]
++        r=inspect(s)
++        self.assertFalse(r['structurally_evaluable'])
++        self.assertTrue(any('cross-split embedding collision' in k for k in r['issues']))
++
++    def test_true_corruption_fails_retrieval(self):
++        r=inspect(make(n_holdout=9,n_train=3),noise_sigma=0.9)
++        self.assertTrue(r['structurally_evaluable'])
++        self.assertFalse(r['all_directed_instance_top1_at_least_90pct'])
++
++if __name__=='__main__':unittest.main()

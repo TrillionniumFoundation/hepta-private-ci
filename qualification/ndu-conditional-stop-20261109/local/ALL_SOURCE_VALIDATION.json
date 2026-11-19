@@ -1,0 +1,30 @@
+{
+  "schema": "ndu.source-validation.v1",
+  "base_commit": "885dae0f3285267e9e9c49d8b43b0d009779f9e8",
+  "source_tar_sha256": "73bd281f8728191aab9865f700455f3f65bc324a03c3e1cedf5ff1aeec986ae4",
+  "model_source_sha256": "4c361d044d6c9ee675ef2a148f27542755cad27efa78dc107e3a8af1314ac955",
+  "source_unchanged": true,
+  "runtime": {
+    "python": "3.12.14",
+    "torch": "2.11.0+cpu",
+    "cuda_available": false
+  },
+  "modules": [
+    "ndu_real_runtime.test_conditional_particles",
+    "ndu_real_runtime.test_stopped_control",
+    "ndu_real_runtime.test_stopped_torch",
+    "ndu_real_runtime.test_stopped_diagnostics",
+    "ndu_real_runtime.test_stopped_calibration_run",
+    "ndu_real_runtime.test_stopped_collect_contract",
+    "ndu_real_runtime.test_stopped_collect"
+  ],
+  "tests_run": 44,
+  "tests_passed": 44,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "envelope_wall_seconds": 0.26388114699875587,
+  "log_sha256": "6b9a83816047d0ec2aa756f543b2c7178889e903a8aa03afa3a931b57d77f75a",
+  "research_net_benefit_established": false,
+  "status": "PASS"
+}

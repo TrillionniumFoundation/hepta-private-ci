@@ -4,15 +4,15 @@ use std::collections::BTreeSet;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use super::MAX_ITEMS;
+use super::Requirements;
+use super::compile_internal;
+use super::push_id;
 use crate::CompilationRequest;
 use crate::ContextCompilationReceipt;
 use crate::ContextItem;
 use crate::ContextRole;
 use crate::Error;
-use crate::MAX_ITEMS;
-use crate::Requirements;
-use crate::compile_internal;
-use crate::push_id;
 
 /// An indivisible required provenance/contradiction group. Each member binds the
 /// exact caller-approved item, including role, source/content digests and cost.

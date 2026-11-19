@@ -1,0 +1,85 @@
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+exports_files(glob(["LICENSES/*.txt"]) + ["COPYING"])
+
+copy_file(
+    name = "config_header",
+    src = "@//third_party/dbus:config.h",
+    out = "config.h",
+)
+
+copy_file(
+    name = "arch_header",
+    src = "@//third_party/dbus:dbus-arch-deps.h",
+    out = "dbus/dbus-arch-deps.h",
+)
+
+# Exactly the client-library and shared Unix sources in upstream dbus/meson.build.
+# Daemon, launcher, utilities, intrusive tests and host optional libraries are
+# excluded; normal libdbus runtime argument checks and assertions stay enabled.
+cc_library(
+    name = "dbus-1",
+    srcs = [
+        "dbus/dbus-address.c",
+        "dbus/dbus-auth.c",
+        "dbus/dbus-bus.c",
+        "dbus/dbus-connection.c",
+        "dbus/dbus-credentials.c",
+        "dbus/dbus-dataslot.c",
+        "dbus/dbus-errors.c",
+        "dbus/dbus-file.c",
+        "dbus/dbus-file-unix.c",
+        "dbus/dbus-hash.c",
+        "dbus/dbus-internals.c",
+        "dbus/dbus-keyring.c",
+        "dbus/dbus-list.c",
+        "dbus/dbus-marshal-basic.c",
+        "dbus/dbus-marshal-byteswap.c",
+        "dbus/dbus-marshal-header.c",
+        "dbus/dbus-marshal-recursive.c",
+        "dbus/dbus-marshal-validate.c",
+        "dbus/dbus-memory.c",
+        "dbus/dbus-mempool.c",
+        "dbus/dbus-message.c",
+        "dbus/dbus-misc.c",
+        "dbus/dbus-nonce.c",
+        "dbus/dbus-object-tree.c",
+        "dbus/dbus-pending-call.c",
+        "dbus/dbus-pipe.c",
+        "dbus/dbus-pipe-unix.c",
+        "dbus/dbus-resources.c",
+        "dbus/dbus-server.c",
+        "dbus/dbus-server-debug-pipe.c",
+        "dbus/dbus-server-socket.c",
+        "dbus/dbus-server-unix.c",
+        "dbus/dbus-sha.c",
+        "dbus/dbus-signature.c",
+        "dbus/dbus-string.c",
+        "dbus/dbus-syntax.c",
+        "dbus/dbus-sysdeps.c",
+        "dbus/dbus-sysdeps-pthread.c",
+        "dbus/dbus-sysdeps-unix.c",
+        "dbus/dbus-threads.c",
+        "dbus/dbus-timeout.c",
+        "dbus/dbus-transport.c",
+        "dbus/dbus-transport-socket.c",
+        "dbus/dbus-transport-unix.c",
+        "dbus/dbus-userdb.c",
+        "dbus/dbus-uuidgen.c",
+        "dbus/dbus-watch.c",
+    ],
+    hdrs = glob(["dbus/*.h"]) + [
+        ":arch_header",
+        ":config_header",
+    ],
+    # DBusString relies on aliasing beyond the C standard's guarantees.
+    copts = ["-fno-strict-aliasing"],
+    includes = ["."],
+    linkopts = ["-pthread"],
+    linkstatic = True,
+    local_defines = ["DBUS_COMPILATION"],
+    target_compatible_with = ["@platforms//os:linux"],
+)

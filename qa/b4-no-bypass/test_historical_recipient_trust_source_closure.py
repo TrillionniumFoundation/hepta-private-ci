@@ -100,7 +100,7 @@ class HistoricalRecipientTrustSourceTests(unittest.TestCase):
             "bytes.is_empty() || bytes.len() > WIRE_BOUND", "!(1..=MAX_READS).contains(&request_id)",
             "response.schema != 1", "response.purpose != TRUST_PURPOSE", "response.request_id != request_id",
             "response.profile != profile", "&response.pin != expected", "canonical_digest(&response.data_cut)?",
-            "response.pin.require_initial(initial)?"))
+            "HistoricalLearningTrustPinV1::require_initial(&response.pin, initial)?"))
 
     def test_operation_selection_cannot_reset_sequence_or_absolute_end(self):
         self.check_markers(AGENT + "authority_host_historical_read_runtime.rs", "fn serve_optional(", (

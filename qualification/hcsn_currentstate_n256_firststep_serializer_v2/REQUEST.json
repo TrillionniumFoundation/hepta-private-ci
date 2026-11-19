@@ -1,0 +1,56 @@
+{
+  "schema": "hcsn-n256-firststep-output-serializer-source-v1",
+  "identity": "hcsn-n256-firststep-output-serializer-20261117-c06d-001",
+  "base_commit": "bbef308aaa216c680915c0b195e827d1d15f91cc",
+  "parent_draft": 6610,
+  "target": {
+    "lane": "warm",
+    "lane_order": 1,
+    "time_fraction": [1, 1000],
+    "capsule_identity": "af3119de18a4f2f9049fd4f33c2331448237cb1c90810f6cdf2f2bedaa5bf7c1",
+    "state_coordinates": 2600,
+    "packet_alpha_coordinates": 1320,
+    "packet_generator_coordinates": 65544,
+    "packet_output_coordinates": 264,
+    "packet_coordinates": 67128,
+    "coordinate_denominator": 69728
+  },
+  "bindings": {
+    "parent_contract_sha256": "0cd86de60d0bac10f5289ec3d07d9a4452f592858e85d889a32c5fe3564e1b72",
+    "inherited_v1_serializer_sha256": "3107fb296043de8f3e3c78e13aa940aea38aa64c16dfe68d342d2adb0c7aa97a",
+    "serializer_v2_source_sha256": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9"
+  },
+  "source_controls": {
+    "explicit_packet_output_tensor": true,
+    "packet_output_shape_bound_to_generator": true,
+    "canonical_coordinate_rows_include_output": true,
+    "v1_magic_rejected": true,
+    "small_fixture_only": true
+  },
+  "future_sources": {
+    "candidate_step_sha256": null,
+    "oracle_step_sha256": null,
+    "comparator_sha256": null,
+    "runner_sha256": null
+  },
+  "required_future_admission": {
+    "admission_sha256": null,
+    "unique_execution_key": null,
+    "runtime_sha256": null,
+    "host_snapshot_sha256": null,
+    "ancestor_cgroup_snapshot_sha256": null,
+    "allocation_sha256": null,
+    "calendar_sha256": null
+  },
+  "n256_numerical_execution_allowed": false,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "historical_negative_and_unknown_preserved": true,
+  "full_roster_qualification": false,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

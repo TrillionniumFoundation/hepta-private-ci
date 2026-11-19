@@ -152,6 +152,27 @@ static void delete_file(LPCWSTR path) {
     result("DeleteFileW", path, deleted, error);
 }
 
+static void enumerate_path(LPCWSTR path) {
+    WIN32_FIND_DATAW found;
+    HANDLE search = FindFirstFileW(path, &found);
+    DWORD error = search == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
+    result("FindFirstFileW", path, search != INVALID_HANDLE_VALUE, error);
+    if (search != INVALID_HANDLE_VALUE) {
+        BOOL closed = FindClose(search);
+        error = closed ? ERROR_SUCCESS : GetLastError();
+        result("FindClose", path, closed, error);
+    }
+}
+
+static void read_directory(LPCWSTR path) {
+    HANDLE directory = CreateFileW(
+        path, FILE_LIST_DIRECTORY, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+        NULL, OPEN_EXISTING, FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+    DWORD error = directory == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
+    result("CreateFileW_FILE_LIST_DIRECTORY", path, directory != INVALID_HANDLE_VALUE, error);
+    if (directory != INVALID_HANDLE_VALUE) CloseHandle(directory);
+}
+
 void WINAPI entry(void) {
     static const WCHAR *paths[] = {
         L".", L"child-delete.txt", L"child-delete-dir", L"child-probe.cmd", L".git",
@@ -159,6 +180,8 @@ void WINAPI entry(void) {
         L"trace-explicit-medium.txt", L"trace-explicit-low.txt",
         L"..\\outside\\child-null-ME.txt", L"..\\outside\\child-null-LW.txt"
     };
+    static const WCHAR *enumerations[] = {L"child-delete.txt", L"child-probe.cmd", L"*"};
+    static WCHAR absolute[1024];
     HANDLE token = NULL;
     output = GetStdHandle(STD_OUTPUT_HANDLE);
     text("{\"kind\":\"start\",\"diagnostic_only\":true,\"production_qualification\":false}\n");
@@ -175,6 +198,35 @@ void WINAPI entry(void) {
     }
     for (DWORD index = 0; index < (DWORD)(sizeof(paths) / sizeof(paths[0])); ++index)
         security(paths[index]);
+    // Observe cmd's possible lookup prerequisites before the existing targets
+    // are deleted. These calls neither grant rights nor qualify cmd behavior.
+    for (DWORD index = 0; index < (DWORD)(sizeof(enumerations) / sizeof(enumerations[0])); ++index) {
+        LPCWSTR path = enumerations[index];
+        enumerate_path(path);
+        DWORD capacity = (DWORD)(sizeof(absolute) / sizeof(absolute[0]));
+        DWORD length = GetFullPathNameW(path, capacity, absolute, NULL);
+        BOOL bounded = length != 0 && length < capacity;
+        error = length == 0 ? GetLastError() : (bounded ? ERROR_SUCCESS : ERROR_INSUFFICIENT_BUFFER);
+        result("GetFullPathNameW", path, bounded, error);
+        if (bounded) {
+            enumerate_path(absolute);
+            if (index == 0) {
+                HANDLE file = CreateFileW(
+                    absolute, DELETE, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                    NULL, OPEN_EXISTING, FILE_FLAG_OPEN_REPARSE_POINT, NULL);
+                error = file == INVALID_HANDLE_VALUE ? GetLastError() : ERROR_SUCCESS;
+                result("CreateFileW_DELETE", absolute, file != INVALID_HANDLE_VALUE, error);
+                if (file != INVALID_HANDLE_VALUE) CloseHandle(file);
+            }
+        }
+    }
+    read_directory(L".");
+    DWORD capacity = (DWORD)(sizeof(absolute) / sizeof(absolute[0]));
+    DWORD length = GetFullPathNameW(L".", capacity, absolute, NULL);
+    BOOL bounded = length != 0 && length < capacity;
+    error = length == 0 ? GetLastError() : (bounded ? ERROR_SUCCESS : ERROR_INSUFFICIENT_BUFFER);
+    result("GetFullPathNameW", L".", bounded, error);
+    if (bounded) read_directory(absolute);
     delete_file(L"child-delete.txt");
     delete_file(L"trace-inherited-medium.txt");
     delete_file(L"trace-inherited-low.txt");

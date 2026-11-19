@@ -72,7 +72,7 @@ impl crate::OriginalRootInitialLaunchDataV1 {
                     encoded_bytes: data.withdrawal.encoded_bytes,
                 },
             selector,
-            selection: data.selection.original_selection()?,
+            selection: SelectionData::original_selection(&data.selection)?,
         })
     }
 }

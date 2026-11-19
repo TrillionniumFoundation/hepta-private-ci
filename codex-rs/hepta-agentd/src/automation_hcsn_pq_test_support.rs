@@ -173,7 +173,10 @@ pub(super) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> anyhow
                 PqTrustOutcomeV2::CompareAndSetApplied { value: *next }
             }
             PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Conflict,
-            PqTrustOperationV2::FrontierLoad { .. } | PqTrustOperationV2::ClockNow => {
+            PqTrustOperationV2::FrontierLoad { .. }
+            | PqTrustOperationV2::ClockNow
+            | PqTrustOperationV2::LearningFrontierLoad { .. }
+            | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
                 PqTrustOutcomeV2::Unavailable
             }
         })

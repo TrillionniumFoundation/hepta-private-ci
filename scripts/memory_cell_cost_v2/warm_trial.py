@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 import time
 
-from historical_inventory import save
+from historical_inventory import bind_model_sources, save
 from receipt_reader import load_summary, read_receipt, total
 from storage_ledger import file_record
 from warm_worker import GENERATION_LIMITS
@@ -84,6 +84,8 @@ def freeze(args):
     inputs = [
         {k: row[k] for k in ("path", "bytes", "sha256")} for row in inventory["files"]
     ]
+    model_code = str(args.repo.resolve() / "scripts/memory_cell")
+    bind_model_sources(model_code, inputs)
     sources = [
         pin(dev / "teaching" / code / "observation.json") for code in ("F401", "E731")
     ]
@@ -106,7 +108,7 @@ def freeze(args):
         "sources": sources,
         "operations": list(historical["fixed_operations"]),
         "model_request": payload,
-        "model_code": str(args.repo.resolve() / "scripts/memory_cell"),
+        "model_code": model_code,
         "generation_limits": dict(GENERATION_LIMITS),
         "judge": {
             "expected": historical["expected_development_operations"]
@@ -176,6 +178,7 @@ def execute_body(args):
         checked(p["inventory"])
         for entry in p["inputs"] + p["implementation"]:
             checked(entry)
+        model_source_pins = bind_model_sources(p["model_code"], p["inputs"])
         admitted = True
         sys.path.insert(0, p["supervisor"])
         from process_meter_v2 import run
@@ -197,6 +200,8 @@ def execute_body(args):
                     )
                 }
             )
+            if arm == "memory":
+                request["model_source_pins"] = model_source_pins
             path = args.output / (arm + "-request.json")
             save(path, request)
             environment = dict(

@@ -58,7 +58,13 @@ pub(super) fn evaluate<S: FinalHoldoutCasStoreV1, P: FinalHoldoutProviderV1>(
             ));
         }
     }
-    let mut released = provider.release_paired_after_consumption(&holdout, pairing)?;
+    let mut released = super::super::holdout_release::release_original_paired_holdout(
+        &mut runner.holdout,
+        &product_plan.frozen_plan,
+        &holdout,
+        pairing,
+        provider,
+    )?;
     super::super::normalize_unique_ids(&mut released.snapshot_ids)?;
     super::super::normalize_unique_ids(&mut released.future_window_ids)?;
     let paired_input =

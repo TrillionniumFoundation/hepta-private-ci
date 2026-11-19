@@ -1,0 +1,31 @@
+name: hcsn-currentstate-n256-firststep-contract
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hcsn-currentstate-n256-firststep-contract.yml"
+      - "qualification/hcsn_currentstate_n256_firststep_contract/**"
+      - "qualification/hcsn_currentstate_n256_sparse_dynamic_v2_intent/sparse_dynamic.py"
+      - "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py"
+      - "qualification/hcsn_currentstate_n256_canonical_serializer_intent/canonical_serializer.py"
+      - "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/CAPSULES.json"
+      - "qualification/hcsn_currentstate_n256_roster/evidence/source-266dfe6/attempt001/COORDINATE_SPANS.jsonl"
+      - "qualification/hcsn_currentstate_n256_corrected_t0_capsule_v1/evidence/attempt002_hosted/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-only contract
+        run: python -O qualification/hcsn_currentstate_n256_firststep_contract/verify_source.py
+      - name: Run synthetic controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_firststep_contract.test_contract -v

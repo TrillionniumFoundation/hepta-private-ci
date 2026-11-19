@@ -304,6 +304,10 @@ impl<W: AnchorWitnessStore> OriginalCircuitNextUseReceiptOwnerV1<W> {
         &mut self,
         source: impl NextUseSources,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        // Recovery retains only the original authenticated readback path.
+        if matches!(self.command_origin, CommandOrigin::Recovered) {
+            return self.readback_source(source).await;
+        }
         let started_at = now()?;
         if self.completion_fenced {
             return Err(OwnerError::CommitUncertain.into());

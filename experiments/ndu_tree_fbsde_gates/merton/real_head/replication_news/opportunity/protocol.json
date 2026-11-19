@@ -1,0 +1,29 @@
+{
+  "schema": "hepta.merton.opportunity.protocol.v1",
+  "parent_sha": "c679eebb9d30732bacae8ff921d7bb88154c94d9",
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "archive_sha256": "195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7",
+  "checkpoints": [0,8,32,128],
+  "training_rows": 64,
+  "prior_folds": 4,
+  "fold_rule": "sort train case IDs by SHA256 then assign rank modulo 4; each prior curve trains48 scores16; normalize on its48 only",
+  "prior_probability": "(held_training_fold_correct+1)/18; four equal-mass empirical curve types",
+  "prior_updates": 512,
+  "calibration_sizes": [8,8,16],
+  "calibration_rule": "sort original32 calibration text hashes; consume disjoint8/8/16 only after actual8/32/128 updates; no root calibration",
+  "likelihood": "binomial counts conditional on finite curve type; IID and48-to64 transfer are unverified modeling assumptions",
+  "arms": ["no_update","fixed8","fixed32","slope_matched","belief_neutral","belief_fixed","belief_ndu"],
+  "repeats": 3,
+  "scenarios": [
+    {"name":"unit_low","horizon":1,"step_fee":"1/256","calibration_fee":"1/1024","budget":128},
+    {"name":"unit_high","horizon":1,"step_fee":"1/8","calibration_fee":"1/1024","budget":128},
+    {"name":"reuse8","horizon":8,"step_fee":"1/256","calibration_fee":"1/1024","budget":128},
+    {"name":"budget7","horizon":1,"step_fee":"1/256","calibration_fee":"1/1024","budget":7}
+  ],
+  "planning": "enumerate all feasible future observations and stop/continue actions under the fitted finite model; positive net continuation only; ties stop",
+  "utility": "nested (1-alpha)*conditional_mean + alpha*supported_minimum; terminal same aggregation across posterior curve-type head accuracies",
+  "alpha": "neutral0;fixed1/4;NDU starts1/4 and after actually observed batch updates clip(alpha+(1-2*accuracy)/8,0,1/2)",
+  "cost_reporting": "actual online updates/calibration and CPU; prior512 updates plus16 fold scoring calls charged separately as cold-start and realized within-run amortization; H is not amortization count",
+  "evidence_scope": "same historically inspected archived panel; no new source or future-time claim; no neural preference or general FBSDE",
+  "claim": "optimal only within finite fitted opportunity model, not true learning dynamics; predicted positive ROI is not guaranteed future gain"
+}

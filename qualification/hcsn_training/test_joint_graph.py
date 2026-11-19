@@ -3,6 +3,8 @@
 import copy
 import hashlib
 import json
+import os
+import signal
 from pathlib import Path
 import subprocess
 import sys
@@ -211,6 +213,36 @@ class SharedGraphTests(unittest.TestCase):
         for raw in ('{"a":1,"a":2}', '{"x":NaN}', '{"x":Infinity}', '{"x":1e999}'):
             with self.subTest(raw=raw), self.assertRaises(ValueError):
                 strict_json(raw)
+
+    @unittest.skipUnless(hasattr(os, "mkfifo") and hasattr(signal, "setitimer"), "POSIX FIFO timer required")
+    def test_checkpoint_refuses_fifo_without_waiting_for_a_writer(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/"checkpoint.fifo"
+            os.mkfifo(path, mode=0o600)
+            def timed_out(_signum, _frame):
+                raise TimeoutError("checkpoint reader waited for a FIFO writer")
+            previous_handler = signal.signal(signal.SIGALRM, timed_out)
+            previous_timer = signal.setitimer(signal.ITIMER_REAL, 1.0)
+            try:
+                try:
+                    with self.assertRaisesRegex(ValueError, "regular file"):
+                        load_training_checkpoint(path, digest("authorized checkpoint"))
+                except TimeoutError as error:
+                    self.fail(str(error))
+            finally:
+                signal.setitimer(signal.ITIMER_REAL, 0)
+                signal.signal(signal.SIGALRM, previous_handler)
+                if previous_timer != (0.0, 0.0):
+                    signal.setitimer(signal.ITIMER_REAL, *previous_timer)
+
+    @unittest.skipUnless(hasattr(os, "symlink"), "symbolic links required")
+    def test_checkpoint_regular_symlink_preserves_authenticated_bytes(self):
+        model, request, _, _, _ = self.case()
+        original = Path(request["base_checkpoint"]["path"])
+        alias = original.with_name("regular-alias.pt")
+        alias.symlink_to(original.name)
+        restored = load_model(alias, request["base_checkpoint"]["sha256"])
+        self.assertEqual(tensor_digest(restored.state_dict()), tensor_digest(model.state_dict()))
 
 
 if __name__ == "__main__":

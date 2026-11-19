@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import stat
 import subprocess
 import sys
 
@@ -44,6 +45,24 @@ def file_sha(path):
         while block := stream.read(1024 * 1024):
             result.update(block)
     return result.hexdigest()
+
+
+def pinned_bytes(path, expected, message):
+    """Authenticate one regular-file snapshot bounded by its observed size."""
+    with Path(path).open("rb") as stream:
+        before = os.fstat(stream.fileno())
+        if not stat.S_ISREG(before.st_mode) or before.st_size < 0:
+            raise ValueError(message)
+        payload = stream.read(before.st_size + 1)
+        after = os.fstat(stream.fileno())
+    fields = ("st_dev", "st_ino", "st_size", "st_mtime_ns", "st_ctime_ns")
+    if (
+        len(payload) != before.st_size
+        or any(getattr(before, name) != getattr(after, name) for name in fields)
+        or hashlib.sha256(payload).hexdigest() != expected
+    ):
+        raise ValueError(message)
+    return payload
 
 
 def retain(path, value):

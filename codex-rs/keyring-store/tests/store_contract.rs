@@ -36,3 +36,6 @@ fn mock_store_preserves_backend_failure_instead_of_treating_it_as_absence() {
     let result = store.load(service, account);
     assert!(matches!(result, Err(error) if error.message().contains("credential denied")));
 }
+
+#[path = "store_contract/default_tests.rs"]
+mod default_store_contract;

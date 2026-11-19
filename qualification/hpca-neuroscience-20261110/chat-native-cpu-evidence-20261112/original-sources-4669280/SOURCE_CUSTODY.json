@@ -1,0 +1,60 @@
+{
+  "schema": "hpca-original-producer-source-custody-v1",
+  "origin_head": "4669280bd92804e6b5357ec0d8a27197858a5b6a",
+  "origin_tree": "d78b935a2f5abe1273dced958460c7a3e23ddea6",
+  "scope": "Byte-exact copies of all six producer sources already frozen by the original PREEXECUTION receipt. Read-only regression fixture; the Python sources are never imported or executed by admission tests.",
+  "source_sha256_authority": "Existing chat_evidence_audit.EXPECTED_SOURCES and original PREEXECUTION.json are unchanged.",
+  "suffix_reason": "The .original suffix preserves historical bytes through ordinary Python/JSON formatting. Tests copy these bytes under original names into a private temporary directory before CLI admission.",
+  "live_successor": {
+    "path": "qualification/hpca-neuroscience-20261110/freegen_contract.py",
+    "source_head": "1bba6e39258a86945c83109e869152b23007d3b7",
+    "sha256": "268deacf3fa1a01fe6143f0af38fc48fa6845321100ccadaa59c3aa515d5c4f8",
+    "change": "Adds the neutral is_assistant=False generation option. It remains a successor and cannot satisfy the original producer-source receipt."
+  },
+  "new_model_inferences": 0,
+  "production_qualified": false,
+  "files": [
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/BASE_OUTPUT_PLAN.json",
+      "retained_file": "BASE_OUTPUT_PLAN.json.original",
+      "git_blob": "df77694db392271d30a97bab66ff612c994e2d17",
+      "bytes": 2511,
+      "sha256": "ae4b53e867380d5cd582679612ed0a0970fe89d36eadef19ae7a2b243000b555"
+    },
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/CHAT_WRAPPER_PLAN.json",
+      "retained_file": "CHAT_WRAPPER_PLAN.json.original",
+      "git_blob": "0c5424595d9b59caa1ceed819afff2bb51517d08",
+      "bytes": 603,
+      "sha256": "5ab417097980e4f878d77288d932319bbb6ea31605acd1ca3b801227aeb33f95"
+    },
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/HPCA_V2_OOD_PLAN.json",
+      "retained_file": "HPCA_V2_OOD_PLAN.json.original",
+      "git_blob": "fc9a27b78f7fef95d8f3b3235f269c3c24cc2c91",
+      "bytes": 4705,
+      "sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043"
+    },
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/chat_wrapper_probe.py",
+      "retained_file": "chat_wrapper_probe.py.original",
+      "git_blob": "fa214e1a84d0998520e4bce27c578355ef4ac5a8",
+      "bytes": 9559,
+      "sha256": "ddd53e863301fdbc58600f7f90c12e153f2217d3fa527be933fc4130607e4d28"
+    },
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/freegen_contract.py",
+      "retained_file": "freegen_contract.py.original",
+      "git_blob": "4f3fef62a402c1b2bea7ce207188e931c2fa0dd5",
+      "bytes": 4940,
+      "sha256": "daf7e381992bb7fd131f67aaa09eb21433a1804e423deccacd87edf342a2da5b"
+    },
+    {
+      "original_path": "qualification/hpca-neuroscience-20261110/native_lora_ood_probe.py",
+      "retained_file": "native_lora_ood_probe.py.original",
+      "git_blob": "36fb9ba9f69ffb8e7d5d82c1ac2eb0bf0d9eb619",
+      "bytes": 12637,
+      "sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8"
+    }
+  ]
+}

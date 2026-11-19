@@ -72,7 +72,7 @@ async fn initial_alias_binding_keeps_sqlite_listing_on_the_retained_owner() -> a
     let mut metadata = ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build(&config.model_provider_id);

@@ -11,10 +11,7 @@ import math
 import numpy as np
 from scipy.integrate import quad
 
-from qualification.hcsn_boundary_audit.spatial_generator import (
-    KilledSpatialGenerator,
-    continuum_lower_hit,
-)
+from qualification.hcsn_boundary_audit.spatial_generator import continuum_lower_hit
 
 
 def _uniform_linear(nodes, values, left, right):
@@ -49,10 +46,6 @@ def basis_values(
     comparison has the same upper semantics; the half-line reference returns
     from its tail. No tail/spatial cancellation is treated as qualification.
     """
-    if type(model.spatial) is not KilledSpatialGenerator:
-        raise ValueError(
-            "v1 basis integration requires the exact uniform spatial candidate"
-        )
     if (
         not 0 < original_endpoint <= model.spatial.endpoint
         or type(active_cells) is not int
@@ -84,7 +77,7 @@ def basis_values(
     inf_reset, inf_coefficient = closure(phi_r_inf)
     finite_reset, finite_coefficient = closure(phi_r_finite)
     candidate_nodes, candidate_reset = model.perpetual()
-    nodes = np.linspace(0, model.spatial.endpoint, model.spatial.intervals + 1)
+    nodes = model.spatial.nodes
     edges = np.linspace(0, original_endpoint, active_cells + 1)
     candidate, finite, infinite = [], [], []
     for left, right in zip(edges[:-1], edges[1:]):

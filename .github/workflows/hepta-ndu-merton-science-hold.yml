@@ -1,0 +1,55 @@
+name: Hepta NDU Merton source-science NO-GO receipt (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/science_hold/**'
+      - '.github/workflows/hepta-ndu-merton-science-hold.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-merge:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify original negative observation without inventing a qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+          python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          p=Path('experiments/ndu_tree_fbsde_gates/merton/science_hold/OBSERVATION.json')
+          r=json.loads(p.read_text())
+          assert r['schema']=='hepta.ndu-merton.science-hold.v1'
+          assert r['posture']=='RESEARCH_ONLY_DENY_ALL'
+          assert r['original_public_source_zip_sha256']=='195dfb9e5bedaf5cee7fe8b2994a10f7ebaaf9ecca2a3a94bb77b0185a4337a7'
+          assert r['original_completed_trial_zip_sha256']=='c78cfe148e6d9544450836202f4da0f9bc5d93f980c96362238945b20a67898f'
+          assert r['source_rows']==128 and r['source_split_counts']==[64,32,32]
+          assert r['retrospective_unique_held_records']==32
+          assert r['independent_source_families_verified']==r['new_future_windows']==0
+          assert r['repeated_physical_observations_are_not_independent'] is True
+          assert r['original_sealed_model_rows_replayed_locally']==6
+          assert r['fixed8_correct']==r['ndu_correct']==26
+          assert r['ndu_paired_wins']==r['ndu_paired_losses']==0
+          assert r['final_probabilities_identical'] is True
+          assert r['fixed8_paid_updates']==8 and r['ndu_paid_updates']==128
+          assert len(r['ndu_additional_observed_cpu_ns'])==6
+          assert all(type(x) is int and x>0 for x in r['ndu_additional_observed_cpu_ns'])
+          assert not r['scientific_advantage_confirmed']
+          assert not r['full_lifecycle_cost_qualified']
+          assert not r['production_accepted']
+          print('RESEARCH_NO_GO',hashlib.sha256(p.read_bytes()).hexdigest())
+          PY

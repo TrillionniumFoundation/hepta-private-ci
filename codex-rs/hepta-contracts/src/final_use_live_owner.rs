@@ -1,8 +1,8 @@
 //! Per-entry validation of the retained final-use journal and trusted frontier.
 //!
-//! Journal identity/length fencing in this port is Unix-specific. Windows
-//! continues to use the existing R3 private-state owner without claiming a
-//! new live-journal identity guarantee.
+//! Unix retains journal identity/length fencing. Explicit held Windows owners
+//! revalidate their original marker and namespace; ordinary-path Windows owners
+//! retain their existing I/O checks without claiming the held-owner guarantee.
 //!
 //! The original state guard remains held across native ownership and external
 //! frontier checks. Refusal fences the shared owner, not just one token or a
@@ -27,7 +27,7 @@ impl Inner {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         {
             let mut state = state;
             if self.store.revalidate_owner().is_err() {
@@ -36,7 +36,7 @@ impl Inner {
             }
             Ok(state)
         }
-        #[cfg(not(unix))]
+        #[cfg(not(any(unix, windows)))]
         {
             Ok(state)
         }
@@ -79,7 +79,7 @@ impl VerifiedUseToken {
         // check. Refusal poisons the store shared by every owner clone. The
         // journal I/O can also outlast a grant, so return a fresh time sample
         // for both final validation and the consumer's entry witness.
-        #[cfg(unix)]
+        #[cfg(any(unix, windows))]
         let now_unix_ms = {
             self.owner.store.revalidate_owner()?;
             let now_unix_ms = self.owner.clock.now_unix_ms().map_err(map_trust_error)?;

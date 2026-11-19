@@ -160,7 +160,7 @@ pub(crate) fn fixture_with_objective(
                 .ok_or_else(|| anyhow::anyhow!("fixture host generation overflow"))?,
             principal_scope_digest: digest("current-principal-scope"),
             fence_digest: digest("current-ndu-fence"),
-            revocation_frontier_digest: digest("current-revocation-frontier"),
+            revocation_frontier_digest: Digest32::from_array(authority.revocation_head_sha256()?),
         },
         policy,
     )?

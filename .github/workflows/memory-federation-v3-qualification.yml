@@ -1,0 +1,288 @@
+name: memory federation v3 qualification
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/memory-federation-v3-qualification.yml"
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory-federation-wire/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/app-server/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/memory.federation/**"
+      - "qualification/memory-federation/**"
+      - "qualification/module-execution-dossiers/detail/memory.federation.md"
+      - "scripts/memory_federation_qualification.py"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/memory-federation-v3-qualification.yml"
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/hepta-memory-federation/**"
+      - "codex-rs/hepta-memory-federation-wire/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/ext/hepta-memory/**"
+      - "codex-rs/app-server/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "docs/modules/memory.federation/**"
+      - "qualification/memory-federation/**"
+      - "qualification/module-execution-dossiers/detail/memory.federation.md"
+      - "scripts/memory_federation_qualification.py"
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: Exact source commit to qualify; empty selects the triggering commit
+        required: false
+        type: string
+      base_ref:
+        description: Base branch for the deterministic merge candidate
+        required: false
+        default: main
+        type: string
+      run_merge_candidate:
+        description: Also qualify a deterministic merge against the current base
+        required: true
+        default: true
+        type: boolean
+  workflow_call:
+    inputs:
+      source_sha:
+        required: false
+        type: string
+      base_ref:
+        required: false
+        default: main
+        type: string
+      run_merge_candidate:
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-federation-v3-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ inputs.source_sha || github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  qualify:
+    name: exact candidate (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON((github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.run_merge_candidate)) && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact source commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate source identity and resolve current base
+        id: identity
+        shell: bash
+        env:
+          REQUESTED_BASE_REF: ${{ github.base_ref || inputs.base_ref || 'main' }}
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          if [ "${{ matrix.lane }}" = "base-merge" ]; then
+            test -n "$REQUESTED_BASE_REF"
+            BASE_SHA="$(git rev-parse "refs/remotes/origin/${REQUESTED_BASE_REF}^{commit}")"
+            [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+            git cat-file -e "$BASE_SHA^{commit}"
+            echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_sha=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.identity.outputs.base_sha }}
+          source-sha: ${{ steps.identity.outputs.source_sha }}
+          pr-number: ${{ github.event.pull_request.number || 0 }}
+          author-name: Hepta Memory Federation CI
+          author-email: hepta-memory-federation-ci@users.noreply.github.com
+          message: Memory federation v3 deterministic merge
+
+      - name: Bind tested commit and tree
+        id: tested
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ steps.synthetic.outputs.sha || steps.identity.outputs.source_sha }}
+          EXPECTED_TREE: ${{ steps.synthetic.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test -n "$EXPECTED_SHA"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          TESTED_TREE="$(git rev-parse HEAD^{tree})"
+          if [ -n "$EXPECTED_TREE" ]; then
+            test "$TESTED_TREE" = "$EXPECTED_TREE"
+          fi
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "sha=$EXPECTED_SHA" >> "$GITHUB_OUTPUT"
+          echo "tree=$TESTED_TREE" >> "$GITHUB_OUTPUT"
+          mkdir -p "$RUNNER_TEMP/memory-federation-evidence"
+
+      - name: Verify implementation maps
+        run: >-
+          python3 scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/01-implementation-maps.json"
+          -- python3 scripts/hepta-implementation-maps.py verify
+          --expected-sha "${{ steps.tested.outputs.sha }}"
+          --expected-tree "${{ steps.tested.outputs.tree }}"
+
+      - name: Check focused formatting
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/02-format.json"
+          -- cargo fmt
+          -p codex-hepta-memory-federation
+          -p codex-hepta-memory-federation-wire
+          -p codex-hepta-memory
+          -p codex-hepta-agentd
+          -p codex-hepta-memory-extension
+          -p codex-app-server
+          -- --check
+
+      - name: Test canonical V2 contract
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/03-canonical-v2.json"
+          -- cargo test --locked -p codex-hepta-memory-federation --lib
+
+      - name: Test quarantined V1 compatibility feature
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/04-legacy-v1.json"
+          -- cargo test --locked -p codex-hepta-memory-federation --features legacy-v1 --lib
+
+      - name: Test authenticated cross-host wire contract
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/05-wire.json"
+          -- cargo test --locked -p codex-hepta-memory-federation-wire --all-targets
+
+      - name: Test memory product runtime
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/06-product-runtime.json"
+          -- cargo test --locked -p codex-hepta-memory --lib cognitive_runtime_tests
+
+      - name: Test legacy memory regression suite
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/07-memory-legacy.json"
+          -- cargo test --locked -p codex-hepta-memory --lib cognitive_federation_tests
+
+      - name: Test final-use model-input integration
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/08-final-use.json"
+          -- cargo test --locked -p codex-hepta-memory-extension --lib cognitive::federation
+
+      - name: Check Agentd and App Server composition
+        working-directory: codex-rs
+        run: >-
+          python3 ../scripts/hepta_ci_exec.py
+          --output "$RUNNER_TEMP/memory-federation-evidence/09-product-composition.json"
+          -- cargo check --locked -p codex-hepta-agentd -p codex-app-server
+
+      - name: Strict lint canonical and product crates
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/memory-federation-evidence/10-clippy-product.json" \
+            -- cargo clippy --locked \
+              -p codex-hepta-memory-federation \
+              -p codex-hepta-memory-federation-wire \
+              -p codex-hepta-memory \
+              -p codex-hepta-memory-extension \
+              -p codex-app-server \
+              --all-targets -- -D warnings
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/memory-federation-evidence/11-clippy-agentd.json" \
+            -- cargo clippy --locked -p codex-hepta-agentd --lib -- -D warnings
+
+      - name: Verify clean tested source
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Build machine-readable attestation
+        run: |
+          python3 scripts/memory_federation_qualification.py finalize \
+            --lane "${{ matrix.lane }}" \
+            --source-sha "${{ steps.identity.outputs.source_sha }}" \
+            --base-sha "${{ steps.identity.outputs.base_sha }}" \
+            --merge-sha "${{ steps.synthetic.outputs.sha }}" \
+            --tested-sha "${{ steps.tested.outputs.sha }}" \
+            --evidence-dir "$RUNNER_TEMP/memory-federation-evidence" \
+            --output "$RUNNER_TEMP/memory-federation-evidence/attestation.json"
+
+      - name: Upload qualification evidence
+        id: evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-v3-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/memory-federation-evidence
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Bind artifact digest in a second envelope
+        if: success()
+        run: |
+          python3 scripts/memory_federation_qualification.py envelope \
+            --lane "${{ matrix.lane }}" \
+            --attestation "$RUNNER_TEMP/memory-federation-evidence/attestation.json" \
+            --artifact-digest "${{ steps.evidence.outputs.artifact-digest }}" \
+            --output "$RUNNER_TEMP/memory-federation-envelope.json"
+
+      - name: Upload artifact-digest envelope
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-federation-v3-envelope-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/memory-federation-envelope.json
+          if-no-files-found: error
+          retention-days: 90

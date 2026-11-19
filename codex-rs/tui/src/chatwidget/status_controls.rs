@@ -237,7 +237,7 @@ impl ChatWidget {
             self.forked_from,
             rate_limit_snapshots.as_slice(),
             self.plan_type,
-            Local::now(),
+            codex_utils_time::Timestamp::now(),
             self.model_display_name(),
             collaboration_mode,
             reasoning_effort_override,
@@ -280,7 +280,7 @@ impl ChatWidget {
             .values()
             .cloned()
             .collect();
-        let now = Local::now();
+        let now = codex_utils_time::Timestamp::now();
         let mut remaining = Vec::with_capacity(self.refreshing_status_outputs.len());
         let mut updated_any = false;
         for (pending_request_id, handle) in self.refreshing_status_outputs.drain(..) {

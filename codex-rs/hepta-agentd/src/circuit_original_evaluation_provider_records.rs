@@ -252,6 +252,15 @@ impl<'a> Episode<'a> {
             circuit_learning_run_id_v1(ledger, &owner.identity.agent_id, &requested.episode_id)
                 .map_err(|_| Error::Binding("original ledger-bound execution identity"))?;
         let policy = CircuitTaskSourcePublicationV1::original_policy(source)?;
+        // The ledger canonically sorts authenticated candidate IDs, while
+        // Source retains the original Cell action order. Compare the same
+        // canonical identities without changing the policy or deduplicating.
+        let mut original_candidate_ids = policy
+            .entries()
+            .iter()
+            .map(|entry| entry.candidate_id.clone())
+            .collect::<Vec<_>>();
+        original_candidate_ids.sort();
         let input = source.input();
         let admitted_at = source
             .original_record()
@@ -277,12 +286,7 @@ impl<'a> Episode<'a> {
             || decision.run_snapshot_digest != input.ndu_snapshot_digest
             || decision.selected_candidate_id != *policy.selected()
             || decision.selected_propensity != ProbabilityQ32::ONE
-            || decision.candidate_ids
-                != policy
-                    .entries()
-                    .iter()
-                    .map(|entry| entry.candidate_id.clone())
-                    .collect::<Vec<_>>()
+            || decision.candidate_ids != original_candidate_ids
             || decision.candidate_completeness_digest.is_zero()
             || decision.authentication_digest.is_zero()
             || decision.support_digest.is_zero()

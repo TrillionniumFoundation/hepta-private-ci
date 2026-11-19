@@ -262,17 +262,17 @@ def include_input_scope(
     base: str,
     head: str,
 ) -> dict[str, bool]:
-    """Join embedded-input impact using exact Cargo OWNERS, never name guesses.
+    """Join exact Cargo fallback and embedded-input impact, never name guesses.
 
     Inspect all otherwise-static inputs, including JSON/YAML, not just prose.
     Only embedded inputs (or consumers with computed includes) widen native
-    scope. Unrelated navigation documents remain lightweight. Native file-level
-    scope is retained; this pass does not re-expand unrelated source changes.
+    scope. Unrelated navigation documents remain lightweight. Bounded native
+    file-level scope is retained; full dependency plans use the existing whole lane.
     """
     if scope["full_repo"]:
         return scope
     static_paths = [path for path in paths if not select([path])["native"]]
-    if not static_paths:
+    if not static_paths and not scope["native"]:
         return scope
     from hepta_ci_dependencies import graph, select_packages
     import tomllib
@@ -288,6 +288,13 @@ def include_input_scope(
         tomllib.TOMLDecodeError,
     ):
         return select([], force_full=True)
+    # Reuse the original whole-repository lane whenever the exact dependency
+    # plan cannot safely stay bounded. In particular, build.rs and a resolver
+    # fallback must not reach deterministic_shard with four partial jobs.
+    if scope["native"] and select_packages(paths, before, after)["full_workspace"]:
+        return select([], force_full=True)
+    if not static_paths:
+        return scope
     embedded = {path for path, _ in before.external_inputs | after.external_inputs}
     affected = [path for path in static_paths if path in embedded]
     opaque = before.opaque_input_consumers | after.opaque_input_consumers

@@ -18,12 +18,31 @@ SPEC.loader.exec_module(PROOF)
 DIRECTORY = "codex-rs/hepta-intelligence-eval/src/"
 STORE = DIRECTORY + "fenced_holdout_file.rs"
 CURRENT = DIRECTORY + "fenced_holdout_current.rs"
+REPLAY = DIRECTORY + "fenced_holdout_file_replay.rs"
 OWNER = DIRECTORY + "fenced_holdout.rs"
 FUNCTIONS = {
-    OWNER: {"fn consume(", "fn read_consumption(", "fn read_consumption_for_execution(", "fn is_poisoned("},
-    STORE: {"fn create(", "fn recover(", "fn require_current(", "fn require_physical_current(", "fn acquire(", "fn load(", "fn compare_and_swap("},
-    CURRENT: {"fn read_physical(", "fn replay("},
+    OWNER: {
+        "fn consume(", "fn read_consumption(", "fn read_consumption_for_execution(",
+        "fn is_poisoned(", "fn anchor(", "fn apply_cas<S: FinalHoldoutCasStoreV1>(",
+        "fn digest_state(", "fn fence(", "fn from(", "fn head_digest(",
+        "fn initialize(", "fn into_store(", "fn issue(", "fn new(",
+        "fn qualification_unpoisoned_file_bytes(", "fn recover(", "fn resume(",
+        "fn state_digest(",
+    },
+    STORE: {
+        "fn create(", "fn recover(", "fn require_current(", "fn require_physical_current(",
+        "fn acquire(", "fn load(", "fn compare_and_swap(", "fn anchor(",
+        "fn decode_fence(", "fn deref(", "fn deref_mut(", "fn drop(",
+        "fn encode_fence(", "fn fmt(", "fn io_error(",
+        "fn qualification_unpoisoned_file_bytes(", "fn record_anchor(",
+        "fn replay_event(", "fn transition_payload(", "fn validate_minimum(",
+    },
+    # Physical CURRENT delegates the shared replay grammar to REPLAY below.
+    CURRENT: {"fn read_physical("},
 }
+REPLAY_FUNCTIONS = {"fn read_stable_image(", "fn read_image(", "fn replay_image("}
+# Each file has one consolidated record containing every guard from both owners.
+PROTECTED_ROW_COUNTS = {OWNER: 1, STORE: 1, CURRENT: 1, REPLAY: 1}
 
 
 def function_body(source, marker):
@@ -52,36 +71,52 @@ class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
     def setUpClass(cls):
         cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
 
-    def row(self, path):
+    def rows(self, path):
         rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
-        self.assertEqual(len(rows), 1)
-        return rows[0]
+        self.assertEqual(len(rows), PROTECTED_ROW_COUNTS[path])
+        return rows
+
+    def row(self, path):
+        expected = REPLAY_FUNCTIONS if path == REPLAY else FUNCTIONS[path]
+        scoped = [
+            row for row in self.rows(path)
+            if {rule["function"] for rule in row["required_function_order"]} == expected
+            and (
+                path != CURRENT
+                or "hepta.intelligence-eval.locked-holdout-current.v1" in row["required"]
+            )
+        ]
+        self.assertEqual(len(scoped), 1)
+        return scoped[0]
 
     def verify_changed(self, path, changed):
-        row = self.row(path)
+        self.row(path)
+        rows = self.rows(path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
             target.parent.mkdir(parents=True)
             target.write_text((ROOT / path).read_text())
-            PROOF._verify_protected_files(root, {"protected_file": [row]})
+            PROOF._verify_protected_files(root, {"protected_file": rows})
             target.write_text(changed)
             with self.assertRaises(PROOF.VerificationFailure):
-                PROOF._verify_protected_files(root, {"protected_file": [row]})
+                PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_each_original_physical_read_write_and_fence_guard_is_effective(self):
-        for path, functions in FUNCTIONS.items():
+        for path, functions in {**FUNCTIONS, REPLAY: REPLAY_FUNCTIONS}.items():
             source = (ROOT / path).read_text()
+            code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
+            self.assertEqual(len(code), len(source))
             rules = self.row(path)["required_function_order"]
             self.assertEqual({rule["function"] for rule in rules}, functions)
             for rule in rules:
-                cursor = source.index(rule["function"])
-                end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), cursor)
+                cursor = code.index(rule["function"])
+                end = PROOF._rust_item_end(code, cursor)
                 self.assertIsNotNone(end)
                 for marker in rule["sequence"]:
                     with self.subTest(path=path, function=rule["function"], marker=marker):
-                        # Match the same ordered occurrence as the function guard.
-                        offset = source.index(marker, cursor, end + 1)
+                        # Guards use masked code; equal offsets select the full original bytes.
+                        offset = code.index(marker, cursor, end + 1)
                         self.verify_changed(path, source[:offset] + source[offset + len(marker):])
                         cursor = offset + len(marker)
 
@@ -122,6 +157,7 @@ class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
     def test_recovery_retains_original_minimum_and_byte_record_bounds(self):
         store = (ROOT / STORE).read_text()
         current = (ROOT / CURRENT).read_text()
+        replay = (ROOT / REPLAY).read_text()
         for marker in (
             "const MAX_BYTES: u64 = 32 * 1024 * 1024",
             "const MAX_FRAME: usize = 4096",
@@ -138,7 +174,13 @@ class OriginalHoldoutCurrentSourceClosureTests(unittest.TestCase):
             "current::read_physical(&mut file, binding, minimum)?",
             "current::read_physical(&mut file, binding, None)?", 1,
         ))
+        self.assertIn("physical::replay_image(&bytes, binding, minimum)?", current)
         self.verify_changed(CURRENT, current.replace(
+            "physical::replay_image(&bytes, binding, minimum)?",
+            "physical::replay_image(&bytes, binding, None)?", 1,
+        ))
+        self.assertIn("validate_minimum(state.as_ref(), minimum, minimum_witnessed)?", replay)
+        self.verify_changed(REPLAY, replay.replace(
             "validate_minimum(state.as_ref(), minimum, minimum_witnessed)?",
             "validate_minimum(state.as_ref(), None, true)?", 1,
         ))

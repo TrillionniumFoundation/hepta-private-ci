@@ -1,0 +1,137 @@
+{
+  "schema": "hcsn-uuid-v1-independent-review-correction-v1",
+  "created_utc": "2026-11-05T17:51:49.654058+00:00",
+  "status": "v1_admission_defect_confirmed_and_waiting_campaign_cancelled",
+  "scope": "Correction to prior independent static-reviews; no prior report is rewritten.",
+  "discovery": "Root identified the official PyTorch 2.8 UUID representation mismatch before the waiting campaign entered a model stage.",
+  "primary_sources": [
+    {
+      "url": "https://github.com/pytorch/pytorch/blob/v2.8.0/torch/csrc/cuda/Module.cpp",
+      "git_blob": "b44ce311ecd9245a97ee52513d04d187fb77ff80",
+      "local": {
+        "path": "ci-audit/uuid/PyTorch-v2.8.0-Module.cpp",
+        "sha256": "6dcdd889c619878f0a31d35064ed208c7b4b75a61af53ec3d1b97b84e0b6f04d",
+        "bytes": 75251
+      },
+      "finding": "The 16-byte CUuuid string is bare 8-4-4-4-12 hex, without a GPU prefix."
+    },
+    {
+      "url": "https://github.com/NVIDIA/nvbandwidth/blob/main/inline_common.h",
+      "git_blob": "aa8b164b6f67101932ed82e92b9186460113e38e",
+      "local": {
+        "path": "ci-audit/uuid/NVIDIA-nvbandwidth-inline_common.h",
+        "sha256": "5e7b46d85067b593f2c746984a3600503203c763e530879ddf77ca19f279ddb1",
+        "bytes": 7619
+      },
+      "finding": "NVIDIA converts CUDA UUID bytes to a GPU-prefixed representation for NVML-style comparison."
+    },
+    {
+      "url": "https://docs.nvidia.com/deploy/nvml-api/latest/api/group__nvmlDeviceQueries.html",
+      "finding": "The immutable ASCII UUID lookup documentation does not by itself establish that a bare UUID is rejected."
+    }
+  ],
+  "missed_by_prior_review": {
+    "responsibility": "This independent review did not verify the public UUID string representation against the pinned PyTorch implementation.",
+    "fixture_limitation": "The v1 candidate fixture used GPU-test, an NVML-prefixed value that is not a complete valid UUID. Prior synthetic runtime/control fixtures did not expose the native bare representation.",
+    "affected_conclusion": "Prior v1 no-blocking-static-finding conclusions were insufficient to establish runtime admission. v1 campaign/bundle must not be reused as executable qualified evidence.",
+    "historical_reports": [
+      {
+        "path": "ci-audit/full-b-audit-static-review-v2.json",
+        "sha256": "7cc4fa3268c61e22f64480df1dffe99b0c2951c20327065236fb93048fd0d23e",
+        "bytes": 3969
+      },
+      {
+        "path": "ci-audit/campaign-bundle-independent-review-v1.json",
+        "sha256": "1c4fd1d9beca242091efaf324045998f6678522f99c2c7028341e3a80e33e991",
+        "bytes": 3688
+      },
+      {
+        "path": "ci-audit/followup-packet-independent-review-v1.json",
+        "sha256": "1ce8d63df9e34a2eeefeb43621dd883e8b95b4602110066e6a619570bc055eca",
+        "bytes": 2320
+      },
+      {
+        "path": "ci-audit/followup-v3-delta-independent-review-v1.json",
+        "sha256": "98140ba0d63c28209de48fdbe54128d559ac709ab739831f1cfd165d98ba4cd9",
+        "bytes": 2642
+      }
+    ]
+  },
+  "confirmed_defects": [
+    "v1 runtime_entry compared a bare Torch UUID directly with the canonical GPU-prefixed target and would reject the correct device.",
+    "v1 configure_cuda could misclassify a canonical nvidia-smi readback as a different device because the requested CUDA UUID remained bare.",
+    "v1 external original-probe validation expected a canonical string although the frozen original probe records the native bare string."
+  ],
+  "actual_nvml_comparison": {
+    "receipt": {
+      "path": "ci-audit/uuid/nvml-uuid-lookup-v1.json",
+      "sha256": "986b3c43bcf6df58b7d79324477622c27279e0613708ae3eaad8d86d02bea60a",
+      "bytes": 1039
+    },
+    "provenance": {
+      "path": "ci-audit/uuid/nvml-uuid-lookup-provenance-v1.json",
+      "sha256": "5119b142448fe5367fee1274db39b775e22518f6420d1d799aaf65b67adfe7b6",
+      "bytes": 644
+    },
+    "job_id": "1a1acd0b29d-fc05-5719",
+    "started_utc": "2026-11-05T17:45:23.518902+00:00",
+    "nvidia_ml_py": "13.610.43",
+    "canonical_lookup_return": 0,
+    "bare_lookup_return": 0,
+    "both_readback_same_canonical_gpu": true,
+    "readback_type": "str",
+    "interpretation": "On this actual runtime both spellings resolve. The original energy-counter gap must not be attributed to NVML rejecting a bare UUID. Existing direct canonical NOT_SUPPORTED readings remain unchanged.",
+    "torch_imported": false,
+    "gpu_computation": false,
+    "power_or_energy_read": false
+  },
+  "campaign_impact": {
+    "cancellation": {
+      "path": "uuid-fix/campaign-v1-cancellation.json",
+      "sha256": "99ab64fe0fecafc0439ff78a4ec8915b9eeb15b9dd1d00cf82082ddeb3eb1678",
+      "bytes": 2646
+    },
+    "terminal": {
+      "path": "uuid-fix/campaign-v1-terminal.json",
+      "sha256": "05a3377ab04b787587618c8376d0ef95e96bfe3b6050e298f0b48da69c9c1ab8",
+      "bytes": 1323
+    },
+    "job_id": "1a1acb0a367-fc05-5667",
+    "finished_utc": "2026-11-05T17:36:26.932978+00:00",
+    "stages": [],
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170,
+    "training_attempts_executed": 0,
+    "other_jobs_cancelled": false,
+    "original_sources_modified": false
+  },
+  "targeted_regression": {
+    "receipt": {
+      "path": "ci-audit/uuid/bare-uuid-regression-v1.json",
+      "sha256": "3bb7bcb888515c6a63969fd741c8ba3d1511ffb53bfbd80d809f6898662dc725",
+      "bytes": 2665
+    },
+    "script": {
+      "path": "ci-audit/uuid/test_bare_uuid_regression.py",
+      "sha256": "6b6c6e949d8c84b86461e47cd999817e283d0c8049b0151a03312244d845412f",
+      "bytes": 7837
+    },
+    "status": "passed",
+    "method": "A 16-byte object models the pinned CUuuid formatter; unchanged function ASTs reproduce v1 runtime/configure/probe-validator failures and verify v2 correction, including immutable original probe receipt.",
+    "real_torch_or_cuda": false
+  },
+  "scientific_limits": [
+    "No actual Torch/CUDA training result is established by static review or synthetic UUID tests.",
+    "At cancellation the full matrix remained 0 of 170 and no full-budget B checkpoint had been accepted.",
+    "Historical unfavorable B evidence and unsupported physical GPU energy counters are not upgraded."
+  ],
+  "retained_original_hashes": {
+    "baseline_23py_map": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+    "original_full_config": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "original_probe": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285"
+  },
+  "unaffected_scopes": [
+    "Task-local artifact download, integrity, disk-budget, installation and owned-process cleanup reviews are independent of the UUID comparison.",
+    "Original baseline, rematerialization implementation, probe bytes and numerical training budgets are preserved."
+  ]
+}

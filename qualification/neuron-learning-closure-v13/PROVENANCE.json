@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.learning.v13.reference-source.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+  "source_pull_request": 4532,
+  "files": [
+    {
+      "source_path": "qualification/memory-cell-v13/adapter.py",
+      "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "c366077f96bc59f70cb79b8a0c784e46726df66c",
+      "bytes": 10822,
+      "sha256": "f4c3b03dd22c4a5e7a27459348ba673842060624c6f983e9211112a49bfccba9",
+      "vendored_path": "reference/adapter.py.source",
+      "modifications": [],
+      "executed_by_verifier": true
+    },
+    {
+      "source_path": "qualification/memory-cell-v13/backend.py",
+      "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "ac4762d94ed7a80d3bfd9d2257405ccbd93fb349",
+      "bytes": 5128,
+      "sha256": "47b18cca113cf50ee47bb67032083abb39c44fe151410be792888d3abea55a53",
+      "vendored_path": "reference/backend.py.source",
+      "modifications": [],
+      "executed_by_verifier": false
+    },
+    {
+      "source_path": "qualification/memory-cell-v13/lifecycle.py",
+      "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "bf9be58e5220a16b75a04c9c48a635aefaac55e9",
+      "bytes": 10131,
+      "sha256": "0cb9ce6a732f5fa3156ebc5c28776e3eb241153f7ade3286938965317b9c50eb",
+      "vendored_path": "reference/lifecycle.py.source",
+      "modifications": [],
+      "executed_by_verifier": false
+    },
+    {
+      "source_path": "qualification/memory-cell-v13/download_model.py",
+      "source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+      "git_blob": "1c492c960c756b3dc9658f4d906144571c382663",
+      "bytes": 2927,
+      "sha256": "fd0a7e1ba831c4f2929ee8d29d22495c61ecfdbf7ceee3daec9f5110ff09c0f7",
+      "vendored_path": "reference/download_model.py.source",
+      "modifications": [],
+      "executed_by_verifier": false
+    }
+  ],
+  "encoder_pins": {
+    "MODEL_ID": "sentence-transformers/all-MiniLM-L6-v2",
+    "REVISION": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "FILES": {
+      "onnx/model.onnx": [
+        90405214,
+        "sha256",
+        "6fd5d72fe4589f189f8ebc006442dbb529bb7ce38f8082112682524616046452"
+      ],
+      "tokenizer.json": [
+        466247,
+        "git",
+        "cb202bfe2e3c98645018a6d12f182a434c9d3e02"
+      ],
+      "config.json": [
+        612,
+        "git",
+        "72b987fd805cfa2b58c4c8c952b274a11bfd5a00"
+      ],
+      "sentence_bert_config.json": [
+        53,
+        "git",
+        "59d594003bf59880a884c574bf88ef7555bb0202"
+      ],
+      "modules.json": [
+        349,
+        "git",
+        "952a9b81c0bfd99800fabf352f69c7ccd46c5e43"
+      ],
+      "1_Pooling/config.json": [
+        190,
+        "git",
+        "d1514c3162bbe87b343f565fadc62e6c06f04f03"
+      ],
+      "tokenizer_config.json": [
+        350,
+        "git",
+        "c79f2b6a0cea6f4b564fed1938984bace9d30ff0"
+      ],
+      "special_tokens_map.json": [
+        112,
+        "git",
+        "e7b0375001f109a6b8873d756ad4f7bbb15fbaa5"
+      ]
+    }
+  },
+  "note": "Exact fixed source snapshots. Only Adapter class is loaded; train/predict and backend/download/lifecycle are not executed by this verifier."
+}

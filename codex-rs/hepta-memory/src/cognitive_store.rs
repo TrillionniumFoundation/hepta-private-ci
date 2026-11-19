@@ -240,10 +240,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ),
     ("cognitive_local_outbox_hos2_delivery", "index"),
 ];
-// Exact required-object definitions after migrations 0001..=0018.
-// Migration 0018 adds retirement ACKs and quotes the renamed local-events table.
+// Exact required-object definitions after migrations 0001..=0019.
+// Migration 0019 adds the typed Notes fence exclusion terminal while retaining
+// the immutable original journal and all foreign-key edges.
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "efe57698e8999796cd0aa95a279ba85ef5ed05a823d016fb8cefd0d36d7dd46d";
+    "4e2fbe096bc4f6c936a932fe279d47b6709da9468499358f34df48ae6cc1c025";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -1854,3 +1855,73 @@ mod schema_tests;
 #[cfg(all(test, unix))]
 #[path = "cognitive_initial_database_permissions_tests.rs"]
 mod initial_database_permissions_tests;
+
+#[cfg(all(test, unix))]
+mod additional_initial_database_permissions_tests {
+    use super::*;
+    use std::os::unix::fs::PermissionsExt;
+
+    #[tokio::test]
+    async fn fresh_sqlite_wal_and_shm_inherit_private_main_mode() {
+        let directory = tempfile::tempdir().expect("private SQLite directory");
+        let path = directory.path().join(COGNITIVE_DB_FILENAME);
+        create_private_initial_database(&path).expect("create private main before SQLite");
+        assert_eq!(
+            fs::metadata(&path).expect("main file").permissions().mode() & 0o7777,
+            0o600
+        );
+
+        let sqlite_home =
+            AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect("absolute home");
+        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+            .open_durable_evidence_pool(&path)
+            .await
+            .expect("open real SQLite WAL pool");
+        sqlx::query("CREATE TABLE wal_mode_probe (value INTEGER NOT NULL)")
+            .execute(&pool)
+            .await
+            .expect("write schema to WAL");
+        sqlx::query("INSERT INTO wal_mode_probe (value) VALUES (1)")
+            .execute(&pool)
+            .await
+            .expect("write row to WAL");
+
+        for suffix in ["-wal", "-shm"] {
+            let mut sidecar_name = path.as_os_str().to_os_string();
+            sidecar_name.push(suffix);
+            let sidecar = PathBuf::from(sidecar_name);
+            assert_eq!(
+                fs::metadata(&sidecar)
+                    .expect("live SQLite sidecar")
+                    .permissions()
+                    .mode()
+                    & 0o7777,
+                0o600,
+                "SQLite {suffix} sidecar must remain private"
+            );
+        }
+        pool.close().await;
+    }
+
+    #[test]
+    fn existing_main_is_not_rewritten_by_initial_creation() {
+        let directory = tempfile::tempdir().expect("SQLite directory");
+        let path = directory.path().join(COGNITIVE_DB_FILENAME);
+        fs::write(&path, b"existing crash evidence").expect("existing file");
+        fs::set_permissions(&path, fs::Permissions::from_mode(0o640))
+            .expect("mark existing permission");
+        create_private_initial_database(&path).expect("leave existing source unchanged");
+        assert_eq!(
+            fs::read(&path).expect("existing bytes").as_slice(),
+            b"existing crash evidence"
+        );
+        assert_eq!(
+            fs::metadata(&path)
+                .expect("existing metadata")
+                .permissions()
+                .mode()
+                & 0o7777,
+            0o640
+        );
+    }
+}

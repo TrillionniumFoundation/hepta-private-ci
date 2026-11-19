@@ -35,6 +35,38 @@ fn policy(scope: Digest32) -> PolicySpec {
 }
 
 #[tokio::test]
+async fn unchanged_checkpoint_cannot_hide_a_drifted_clean_authority_frontier() {
+    let root = TempDir::new().unwrap();
+    let store = AuthBusAuthorityStore::open(&root.path().join("authority.sqlite"))
+        .await
+        .unwrap();
+    store
+        .create_policy(policy(Digest32::of_bytes(b"scope")), sample(1, 2_000))
+        .await
+        .unwrap();
+    let checkpoint = AuthorityCheckpoint {
+        generation: 1,
+        digest: store.authority_frontier_digest().await.unwrap(),
+    };
+    store
+        .initialize_authority_checkpoint(checkpoint)
+        .await
+        .unwrap();
+    sqlx::query("UPDATE authbus_policy SET effect = 'deny'")
+        .execute(&store.pool)
+        .await
+        .unwrap();
+    sqlx::query("UPDATE authbus_authority_checkpoint_dirty SET dirty = 0")
+        .execute(&store.pool)
+        .await
+        .unwrap();
+    assert!(matches!(
+        store.reconcile_authority_checkpoint(checkpoint).await,
+        Err(AuthBusAuthorityError::RollbackDetected)
+    ));
+}
+
+#[tokio::test]
 async fn advanced_external_checkpoint_rejects_real_old_database_restore() {
     let root = TempDir::new().unwrap();
     let path = root.path().join("authbus.sqlite");

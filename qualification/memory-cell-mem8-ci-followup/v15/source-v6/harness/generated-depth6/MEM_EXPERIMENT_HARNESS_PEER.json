@@ -1,0 +1,131 @@
+{
+  "schema": "hepta.mem8.source-v6.independent-static-peer.v1",
+  "reviewed_at": "2026-11-11T13:46:31.046546+00:00",
+  "status": "STATIC_NO_REMAINING_MUST_FIX",
+  "reviewer": "mem_experiment_review",
+  "final_variant": "generated-depth6",
+  "source_head": "421d15080b3cb942be8ac51bbe443e268d124a9e",
+  "source_tree": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+  "artifacts": [
+    {
+      "path": ".github/scripts/mem8_source_gates_v6.py",
+      "bytes": 33587,
+      "sha256": "a6e3dd20cea50943d15c8ce83d7733497377857f8044f2c459ef63dc963c6e7e",
+      "git_blob": "4b350bf463b959bc52e4000c35c59532c454a1e2"
+    },
+    {
+      "path": ".github/workflows/hepta-mem8-source-gates-v6.yml",
+      "bytes": 9720,
+      "sha256": "7c71ebf6360d997258c2ce198b49241372af9d3b7059faa684314059eba6109e",
+      "git_blob": "5fc60d07e614fd1e41030040f076883297bc9385"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v6/INPUT_SOURCE_GATES.json.xz",
+      "bytes": 348524,
+      "sha256": "265cb24707274661cf7777a7988f7b67a97a8a842f2ff02c20d4dbe2e08860ec",
+      "git_blob": "7d1603b9dd24bec70c9a5345e195c71192f85dd4"
+    },
+    {
+      "path": "qualification/memory-cell-mem8-source-gates-v6/GOLDEN_CALLER_RECEIPT.json",
+      "bytes": 75046,
+      "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+      "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+    }
+  ],
+  "metadata": {
+    "path": "harness/generated-depth6/STATIC_VALIDATION.json",
+    "bytes": 5178,
+    "sha256": "e685284bc0fd58324456826bbb4dfee72fe9948adc314329e0192767bf195162",
+    "git_blob": "5c0d8070a1e0bca6e3d4c79bfa517bef916cb232"
+  },
+  "offline_independent_checks": {
+    "all_four_final_output_bytes_sha256_git_blob": "PASS",
+    "depth6_only_one_line_change_driver_input_golden_unchanged": "PASS",
+    "ancestor_chain_depth6": [
+      "421d15080b3cb942be8ac51bbe443e268d124a9e",
+      "9bd2f589debdba4a93baa363817c3669cb103721",
+      "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+      "6ce78781977d1ca77d004845b933ec9a99f54a83",
+      "189711e3563ea13a5328d52e99a286f082045b98",
+      "2ae5215beaf8d7b7df111a090b82134beae2683d"
+    ],
+    "ancestor_chain_source": "Parent root independently read actual raw Git ancestry; this peer verified final workflow depth is 6 and literal base remains 2ae.",
+    "base_tree_rehashed_from_full_listing": "12159640adcf073b51f3837e75575e11f5c20233",
+    "parent_tree_rehashed_from_full_listing": "c77785ecb368c44ea699769001a47402c9f50591",
+    "full_base_plus_109_postimages_rehashed": "df293c7709860ecfc3889e4cabb1f970fb649d8e",
+    "complete_leaf_entries": 14050,
+    "changed_paths_vs_parent": [
+      "codex-rs/core/tests/suite/apply_patch_cli.rs",
+      "codex-rs/hepta-neuron/src/cell_generation_control_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "scripts/hepta_typed_callers.py",
+      "scripts/test_hepta_caller_cache.py",
+      "scripts/test_hepta_typed_callers.py",
+      "scripts/verify_hepta_callers.py"
+    ],
+    "each_109_base_preimage_and_postimage_bytes_sha256_git_blob": "PASS",
+    "full_rust_inventory": {
+      "roots": [
+        "codex-rs"
+      ],
+      "files": 6201,
+      "ignored_path_fragments_applied": false
+    },
+    "golden_receipt_full_bytes_unchanged": {
+      "bytes": 75046,
+      "sha256": "17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96",
+      "git_blob": "d783a943bb7278256bc86dc04dfe99d168c7e013"
+    },
+    "golden_expected_count_delta_only": {
+      "field": "rustFilesScanned",
+      "before": 6200,
+      "after": 6201
+    },
+    "python_regression_source_ast_exact_case_ids": {
+      "scripts/test_hepta_typed_callers.py": [
+        "TypedAuthorityCallTests.test_arbitrary_parameter_and_borrowed_clone_alias",
+        "TypedAuthorityCallTests.test_arc_clone_preserves_the_original_authority_receiver",
+        "TypedAuthorityCallTests.test_unknown_shared_clone_cannot_hide_possible_authority",
+        "TypedAuthorityCallTests.test_shared_clone_of_explicit_other_type_is_not_authority",
+        "TypedAuthorityCallTests.test_constructor_binding_never_depends_on_receiver_name",
+        "TypedAuthorityCallTests.test_field_owner_is_visible_across_split_impl_module",
+        "TypedAuthorityCallTests.test_arbitrary_typed_variable_field_without_authority_import",
+        "TypedAuthorityCallTests.test_trait_impl_keeps_typed_authority_field",
+        "TypedAuthorityCallTests.test_local_type_import_alias_and_type_alias_remain_target",
+        "TypedAuthorityCallTests.test_type_alias_declared_in_another_module_remains_authority",
+        "TypedAuthorityCallTests.test_explicit_unrelated_type_does_not_manufacture_authority",
+        "TypedAuthorityCallTests.test_opaque_possible_authority_receiver_refuses_closed",
+        "TypedAuthorityCallTests.test_same_variable_name_in_other_function_does_not_hide_call",
+        "TypedAuthorityCallTests.test_malformed_matching_owner_still_refuses",
+        "TypedAuthorityCallTests.test_absent_method_does_not_parse_unbalanced_owner",
+        "TypedAuthorityCallTests.test_qualified_use_does_not_hide_an_opaque_receiver"
+      ],
+      "scripts/test_hepta_caller_cache.py": [
+        "InvocationFieldIndexTests.test_two_boundary_proof_rejects_changed_source_on_next_invocation",
+        "InvocationFieldIndexTests.test_no_method_call_does_not_suppress_global_field_index_failure"
+      ]
+    }
+  },
+  "reviewed_runtime_contract": [
+    "Pure source and frozen harness occupy separate checkouts; source HEAD/tree/clean and all reviewed source bytes are checked before commands.",
+    "Input/golden/CALLERS identities are exact. Full caller output is parsed without duplicate keys or non-JSON constants, then compared as complete type-preserving and array-order-preserving JSON; only independently derived rustFilesScanned changes.",
+    "Two direct Python scripts require exactly 16 and 2 unique expected case IDs, matching method suffixes, actual exit zero, one exact Ran summary, all ok and terminal OK. Empty, skipped, unexpected, duplicate and failed selections cannot satisfy this predicate.",
+    "The existing 600-second command deadline is shared by formatting, Python cases, caller self-test, full proof, and final source/tree checks. Commands have no automatic retries; timeout cleanup addresses only the process group created for that command.",
+    "Post-format source bytes, both locks, HEAD/tree, staged path inventory and the complete tree are revalidated after verification. No commit or ref is changed.",
+    "Workflow preserves strict pipefail, fixed tool identities, contents-read permission, branch-specific trigger, and always retaining complete records even on failure."
+  ],
+  "limits_and_nonclaims": [
+    "This is static review plus offline byte/tree reconstruction. The driver, regression scripts, formatter, full caller scan, native tests and model were not executed by this peer.",
+    "The 13-name scan retains historical hits with review_required; inherited final status explicitly leaves review remaining, so a successful process exit is not a claim of zero old-name hits.",
+    "Failure capture and artifact sealing preserve evidence after command deadline. They do not extend the source command budget and are still subject to the original 20-minute job limit.",
+    "Depth 6 reaches the independently verified six-commit chain. No fetch or host operation was performed by this peer.",
+    "No original unknown remote operation or provider turn is reconciled or replayed by this source-only harness."
+  ],
+  "native_executions_by_peer": 0,
+  "model_requests_by_peer": 0,
+  "remote_process_starts_by_peer": 0,
+  "ref_mutations_by_peer": 0
+}

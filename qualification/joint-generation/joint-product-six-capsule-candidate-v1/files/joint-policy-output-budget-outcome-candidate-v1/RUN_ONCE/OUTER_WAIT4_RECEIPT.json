@@ -1,0 +1,194 @@
+{
+  "automatic_next_run_authorized": false,
+  "complete_supervisor_CPU_seconds": null,
+  "complete_wait": true,
+  "exit_code": 1,
+  "failure_boundary": "SIGALRM deferred until shared fork ownership registered, even if spawn never returns to caller; exec failure tracked exit127. Hard parent death/kernel stalls/cleanup or disk failure may still prevent descendant receipts/cost",
+  "final_retained_bytes": 1854460,
+  "inventory": {
+    "ROLE_RECEIPTS.json": {
+      "bytes": 663,
+      "sha256": "bf71380b2c80445df3ff98edb32e0020a2f541fee303ea23475ea8d33267a410"
+    },
+    "chain/ACTOR_AFTER.npz": {
+      "bytes": 12303,
+      "sha256": "37a504cbd5da31fdc5476d3a30ee9314248554ce0d04797e823d273ebec53035"
+    },
+    "chain/ARTIFACT.json": {
+      "bytes": 12818,
+      "sha256": "4b0a9f5e4080533b4a0251cd4b9b2059ea0454a797309f5ef83719cf5bf8f863"
+    },
+    "chain/CLOCK.json": {
+      "bytes": 59,
+      "sha256": "5eff16eef6421d2f19ddb58eef04cadee55b7f9f9e4704f1dcee0972df35f62a"
+    },
+    "chain/CONTENT_AFTER.npz": {
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150"
+    },
+    "chain/HANDOFF.json": {
+      "bytes": 3097,
+      "sha256": "6792fc717a237fd1a06cc4dd60f6b6303d16b6e89e6cc6a6e8b501bee04d6f6f"
+    },
+    "chain/MANIFESTS.json": {
+      "bytes": 1021,
+      "sha256": "0305e50f0f1543a8ce1b0ed63452ad53bcc72b704a8b597cbdb471613c2c7121"
+    },
+    "chain/PRODUCER_RESULT.json": {
+      "bytes": 5351,
+      "sha256": "30b38e8e7b227b859a095f0afee1ecb82159c92632d471c7f6656a522a21a386"
+    },
+    "chain/delivery/.hepta-writer.lock": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "chain/delivery/1e50ab572fceda3230178f45fb7e8d246993b26cc926457bd26e3e69c722ac8f/claim.json": {
+      "bytes": 506,
+      "sha256": "df58dc832ecad0cef62d06f2bac94acc4858ee9752b5003f745143b21b1b761b"
+    },
+    "chain/delivery/1e50ab572fceda3230178f45fb7e8d246993b26cc926457bd26e3e69c722ac8f/output-budget-rejected.json": {
+      "bytes": 72523,
+      "sha256": "e3e8e3c4fd16b6e4a2b8b2e3ef8748b5a57986e2e48c2f2f39b55d1bdd1aa94e"
+    },
+    "chain/delivery/1e50ab572fceda3230178f45fb7e8d246993b26cc926457bd26e3e69c722ac8f/reserved.json": {
+      "bytes": 1259,
+      "sha256": "ee846b16fb3bc2372d67e763c90f60fcb77fc7e082b6cfb9f9e4a31769394b9c"
+    },
+    "chain/delivery/e7fea513b017c9d43edf46999ed78606fa89e5c15e5e158771cc2dcf10c66a47/claim.json": {
+      "bytes": 512,
+      "sha256": "56ce9692707f800c4e44ae3dcce4db34679cb242f42d4eddc569e199205e0219"
+    },
+    "chain/delivery/e7fea513b017c9d43edf46999ed78606fa89e5c15e5e158771cc2dcf10c66a47/reserved.json": {
+      "bytes": 1271,
+      "sha256": "53406a050f7d24e4a18b80a4337bc051d860e49f560d33b4c6766af81940301b"
+    },
+    "chain/known-AUDIT.json": {
+      "bytes": 1744,
+      "sha256": "d0c142fc0cb010e3c8125dfd02a4cee79df0ddc10cc267be40d4272677496933"
+    },
+    "chain/known-DYNAMIC-AFTER.json": {
+      "bytes": 637,
+      "sha256": "0d85bec39fef9d5f0381ed86d1b2646e1523a2796c7399aef12d4348920ceeda"
+    },
+    "chain/known-DYNAMIC-BEFORE.json": {
+      "bytes": 637,
+      "sha256": "0d85bec39fef9d5f0381ed86d1b2646e1523a2796c7399aef12d4348920ceeda"
+    },
+    "chain/known-REQUEST.json": {
+      "bytes": 48487,
+      "sha256": "18144a9f65936d5685e76b4905b0c1b493a37e7fabb67eab1b4cb0f420cb1dd3"
+    },
+    "chain/known-RETURNED-route.json": {
+      "bytes": 1247,
+      "sha256": "9e37374eca06f9638ff50cf66f9fae5de84b4cc06da0ba5918a5d444cdd2f98a"
+    },
+    "chain/known-RETURNED.wire": {
+      "bytes": 34884,
+      "sha256": "1fb4562c61b2745c7993c8831a079d500e6b48c4aeb50d1e44e59f08e56c1514"
+    },
+    "chain/producer.stderr": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "chain/producer.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "chain/recover.stderr": {
+      "bytes": 505,
+      "sha256": "172f02244223c90eb7292011400db2519ccca7f1cbf60a9eb89014410d27d88f"
+    },
+    "chain/recover.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "chain/uncommitted-AUDIT.json": {
+      "bytes": 1241,
+      "sha256": "d134de3db98ac11c14deb0bff558c10d7b854d01e7405be821b20b9f4f8be314"
+    },
+    "chain/uncommitted-DYNAMIC-AFTER.json": {
+      "bytes": 977,
+      "sha256": "0a7f894ae5ed7ca5f5532c47b1bbc5b4b679c91b960a0a3a1196523be7f3ec5f"
+    },
+    "chain/uncommitted-DYNAMIC-BEFORE.json": {
+      "bytes": 977,
+      "sha256": "0a7f894ae5ed7ca5f5532c47b1bbc5b4b679c91b960a0a3a1196523be7f3ec5f"
+    },
+    "chain/uncommitted-REQUEST.json": {
+      "bytes": 48493,
+      "sha256": "9551f264a926669707fe182d05bbe1e702f09b4bf247a735dac881d4ffeb3a4a"
+    },
+    "chain/uncommitted-RETURNED-route.json": {
+      "bytes": 1247,
+      "sha256": "899cc0c68116d8f05608149d11b69663a990854060a1e6a46ac590098b446e5e"
+    },
+    "chain/uncommitted-RETURNED.wire": {
+      "bytes": 34884,
+      "sha256": "1fb4562c61b2745c7993c8831a079d500e6b48c4aeb50d1e44e59f08e56c1514"
+    },
+    "supervisor.stderr": {
+      "bytes": 28,
+      "sha256": "147ddfa8736c3ed653541e36c4409978fced5ae571c97f0e15c463374c5be03b"
+    },
+    "supervisor.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "known_CPU_lower_bound_seconds": 0.427192612,
+  "largest_reaped_process_RSS_kib": 33920,
+  "outer_limits": {
+    "AS": [
+      268435456,
+      268435456
+    ],
+    "CPU": [
+      2,
+      2
+    ],
+    "FSIZE": [
+      2097152,
+      2097152
+    ]
+  },
+  "outer_owned_events": [
+    {
+      "event": "launch",
+      "monotonic_ns": 233731424367590,
+      "pid": 6,
+      "role": "supervisor"
+    },
+    {
+      "event": "reap",
+      "monotonic_ns": 233731846303207,
+      "pid": 6,
+      "role": "supervisor"
+    }
+  ],
+  "outer_prefix_CPU_seconds": 0.032407612,
+  "outer_process_receipts": [
+    {
+      "CPU_seconds": 0.394785,
+      "exit_code": 1,
+      "max_RSS_kib": 33920,
+      "pid": 6,
+      "role": "supervisor"
+    }
+  ],
+  "outer_tail": "unknown_not_zero",
+  "pid": 6,
+  "retry": false,
+  "role_receipts_complete": false,
+  "runner_error": null,
+  "source_freeze_sha256": "293ea0c7086f787236648382c9686f3d027c3a5bcc8ecebd5a11eb55c1b97128",
+  "sum_worker_CPU_seconds": 0.329525,
+  "terminal_budget_pass": false,
+  "wall_limits_seconds": {
+    "handled_failure_cleanup": 15,
+    "outer_initial": 90,
+    "supervisor": 60,
+    "workers": 30
+  },
+  "wall_seconds": 0.4227334719907958,
+  "whole_reaped_subtree_CPU_seconds": 0.394785
+}

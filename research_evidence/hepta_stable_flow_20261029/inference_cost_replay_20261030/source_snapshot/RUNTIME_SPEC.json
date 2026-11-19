@@ -1,0 +1,60 @@
+{
+  "version": "hepta-cpu-full-sequence-runtime-20261029-v1",
+  "purpose": "Descriptive inference cost for fixed new selected checkpoints; no energy, GPU, streaming-token, KV-cache, SNN or Transformer result",
+  "registration_timing": "May occur while formal training is running; must precede validation/test scoring and runtime execution",
+  "scope": {
+    "arms": ["analytic", "matched_c1", "sigmoid", "ordinary", "frozen_flow"],
+    "tasks": ["selective_copy", "mqar"],
+    "seed": 81301,
+    "regimes": ["cpu30", "updates384"],
+    "expected_aliases": 20,
+    "physical_deduplication_key": ["task", "arm", "checkpoint_sha256"],
+    "checkpoint_source": "Already sealed validation selection; benchmark every eligible identity regardless of observed task quality"
+  },
+  "inputs": {"source_split": "train", "episode_indices": "0 through 31 inclusive", "batch_sizes": [1, 32], "sequence_length": 32, "dtype": "float32", "batch_one_episode_index": 0, "targets_enter_forward": false},
+  "execution": {
+    "device": "CPU",
+    "torch_threads": 1,
+    "torch_interop_threads": 1,
+    "deterministic_algorithms": true,
+    "mode": "eval and torch.no_grad",
+    "unit": "Fresh-reset full 32-tick sequence forward, with production prepare_sequence and initial-state creation inside every timed call",
+    "model_and_inputs": "Loaded before timing; no disk I/O, checkpoint loading or quality evaluation inside timed intervals",
+    "warmups_per_case": 3,
+    "timed_repetitions_per_case": 11,
+    "case": "Each physical checkpoint at each registered batch size",
+    "warmup_order": "A fresh permutation of all case IDs per warmup round, NumPy default_rng seed 20261029",
+    "timed_order": "A fresh permutation of all case IDs per timed round, NumPy default_rng seed 20261030",
+    "clocks": ["time.process_time_ns", "time.perf_counter_ns"],
+    "output_check": "CPU return is synchronous; after each timed call, verify finite output and bitwise output digest against its warmed deterministic result; validation time excluded",
+    "start_conditions": ["All 60 formal training candidates are sealed complete", "Validation selection is sealed", "Registered checkpoint precision appendix is complete, with failures retained", "Root schedules the run on idle CPU and explicitly records that scheduling assertion"],
+    "idle_cpu_claim": "Scheduling assertion plus raw CPU/wall samples, not a claim to control unrelated host processes",
+    "reuse": "No model, endpoint, repetition or case is omitted or reselected according to accuracy, CE or measured time"
+  },
+  "summaries": {"statistics": ["mean", "median", "sample_standard_deviation", "minimum", "maximum", "p25", "p75"], "derived": ["sequences_per_second_from_median_wall", "external_tokens_per_second_from_median_wall", "amortized_wall_seconds_per_sequence"], "interpretation": "Repeated timing samples describe one CPU execution environment and one timed training seed; they are not independent training seeds"},
+  "state_accounting": {
+    "source": "Unmodified model.accounting() dictionary",
+    "float_payload": "Counted recurrent float scalars times actual model dtype element size",
+    "discrete_payload": "Use actual accounting dtypes: two int64 counters and one bool flag",
+    "batch_payload": "Per-episode scalar payload multiplied by batch size",
+    "scope": "Counted recurrent state payload inside this full-sequence implementation; excludes inputs, outputs, temporary activations, Python objects, allocator overhead and model weights",
+    "prohibited_inference": "Not a measured peak-memory result and not an implemented streaming/KV-cache API"
+  },
+  "quality_join": {
+    "stage": "Separate join after immutable primary held-out scores exist; it does not influence the measurement matrix",
+    "timed_seed": 81301,
+    "reference_arm": "analytic",
+    "comparators": ["matched_c1", "sigmoid", "ordinary", "frozen_flow"],
+    "same_task_and_regime_only": true,
+    "both_validation_accuracy_min": 0.9,
+    "both_test_accuracy_min": 0.9,
+    "absolute_test_accuracy_gap_max": 0.005,
+    "absolute_test_cross_entropy_gap_max": 0.01,
+    "label": "empirical_quality_band_eligible",
+    "meaning": "A narrow descriptive band on the observed scores of the two timed selected models, not a statistical equivalence test or proof of equal population quality",
+    "if_ineligible": "Keep every raw timing case and score; do not report a matched-quality cost ratio for that pair",
+    "if_eligible": "Report analytic/comparator median CPU and wall cost ratios for both registered batch sizes, with individual summaries and observed score gaps",
+    "limitations": ["No extrapolation to other seeds, hardware, long contexts or modalities", "Frozen-flow is a controller-freezing diagnostic with different trainable parameter count", "No SNN/Transformer comparison or energy conclusion"]
+  },
+  "artifacts": ["registration protocol and seal", "source snapshot", "fixed training input shards and hashes", "selection/checkpoint/numerics binding", "declared randomized case orders", "all raw CPU/wall nanosecond arrays", "per-trial event log", "model/state accounting", "summary", "separate held-out quality join"]
+}

@@ -109,6 +109,7 @@ pub fn prepare_ndu(
         },
         scalarization: None,
     };
+    let revocation_frontier_digest = Digest32::from_array(authority.revocation_head_sha256()?);
     let mut owner = NduAuthenticatedOwnerV1::open(
         &root,
         authority,
@@ -118,7 +119,7 @@ pub fn prepare_ndu(
             host_generation: 2,
             principal_scope_digest: d("principal"),
             fence_digest: d("ndu fence"),
-            revocation_frontier_digest: d("ndu revocation frontier"),
+            revocation_frontier_digest,
         },
         policy,
     )?;
@@ -163,7 +164,7 @@ pub fn prepare_ndu(
         "authority_snapshot_sha256":pin(&authority_root.join("authority.json"))?["sha256"],"authority_claims_sha256":pin(&authority_root.join("authority.claims"))?["sha256"],
         "signer_id":"process.ndu.issuer","verifying_key":SigningKey::from_bytes(&[117;32]).verifying_key().to_bytes(),"feed":pin(&home.join("ndu-feed.json"))?,
         "feed_distributor_id":"process.ndu.feed","feed_verifying_key":SigningKey::from_bytes(&[118;32]).verifying_key().to_bytes(),"owner_id":"process.ndu",
-        "principal_scope_digest":d("principal").to_string(),"fence_digest":d("ndu fence").to_string(),"revocation_frontier_digest":d("ndu revocation frontier").to_string(),"policy":policy_json}),
+        "principal_scope_digest":d("principal").to_string(),"fence_digest":d("ndu fence").to_string(),"revocation_frontier_digest":revocation_frontier_digest.to_string(),"policy":policy_json}),
     )
 }
 

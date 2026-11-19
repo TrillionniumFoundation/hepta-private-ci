@@ -1,0 +1,70 @@
+{
+  "all_weights_sha256": "f49a1bc7757488d30340428e4c9bbc1330749c3c56a0e6f001f25391102b90cf",
+  "archive": {
+    "bytes": 160023263,
+    "filename": "hepta_native_ndu_refinement_round10_20261014.zip",
+    "location": "conversation attachment; not a Git binary upload",
+    "sha256": "98d6e9b2cf2ba6f6c651d6a86bb42ebafd04631f811bd109ed00044607e9c04c",
+    "verified_content_members": 1328,
+    "zip_file_members": 1329
+  },
+  "audit": {
+    "cpu": 489.298183778,
+    "independent_action_checks": 192,
+    "independent_action_max_error": 3.885780586188048e-16,
+    "initial_groups": 6,
+    "max_replay_error": 0.0,
+    "monitors": 827,
+    "panels": 1152,
+    "production_authorized": false,
+    "runs": 96,
+    "scalar_entries": 19655616,
+    "switches": 48,
+    "timing_externally_authenticated": false,
+    "wall": 489.395226462
+  },
+  "audit_binding": {
+    "test_tamper.py": "fb7b165d42b8b822f2cb385ab7700935c6d6803047a17c3e4a94bfb2ba4a7454",
+    "verify.py": "9ec91498f92416132374955d11c3453874cb0d7d70ddee7604c34b69cc9e9ea2"
+  },
+  "audit_commit": "e4ecd620a727653d5f3d492b53f98fb73f49fa08",
+  "changed_tensors": 96,
+  "completed_runs": 96,
+  "core_commit": "d352438a3b604673c7fe26b0748e28709279f947",
+  "distinct_checks": 179,
+  "failed_execution_runs": 0,
+  "final_commit": null,
+  "final_joint_qualifications": 35,
+  "fit_cpu_seconds": 1154.145330689,
+  "fit_wall_seconds": 1154.3875237410011,
+  "global_ci_verified": false,
+  "intermediate_monitor_cpu_seconds": 59.74124828999999,
+  "intermediate_monitor_wall_seconds": 59.749016523998876,
+  "large_width_qualifications": 0,
+  "parent_commit": "33b73a48006a1a9d13c862d424322d112f79bc60",
+  "postfit_evaluation_cpu_seconds": 254.110930129,
+  "primary_pairs": 12,
+  "primary_stage_improved_pairs": 12,
+  "production_authorized": false,
+  "project_cloud_execution": false,
+  "protocol_commit": "e40eb5297bdc1969b8492e448207a2b3bd4d943d",
+  "qualifications_by_width": {
+    "256": 0,
+    "64": 35
+  },
+  "quality_gate": "max(J_CC5,J_CC9)<=0.04850 and abs(J_CC9-J_CC5)<=1e-6",
+  "schema": "hepta.native.ndu.refinement.evidence.r10",
+  "source_binding": {
+    "refine.py": "0224db51bc1f83e030dd5c6abd211781b7c63374da09059b8425486db047aa8a",
+    "run.py": "1893f019737eed493be8e204092f80e80acb8aeba54cda33ae61344a2094610f",
+    "test_refinement.py": "e9f42b7a6c8ed8a6836752c31e4d22f796f114bc3737a23afdc225120f49157f"
+  },
+  "source_math_tests": 172,
+  "tamper_tests": 7,
+  "terminal_gate_cpu_seconds": 17.426320168,
+  "terminal_gate_wall_seconds": 17.427869856999962,
+  "tests_skipped": 0,
+  "total_child_cpu_seconds": 1669.8690889999993,
+  "total_sweep_wall_seconds": 1672.8108707659999,
+  "weight_index_sha256": "578b0a0cf45e2cfb57fa48f11dc33efb0f027686e833e77125c7720320c94c48"
+}

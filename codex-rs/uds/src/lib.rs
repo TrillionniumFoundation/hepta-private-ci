@@ -10,6 +10,9 @@ use tokio::io::AsyncRead;
 use tokio::io::AsyncWrite;
 use tokio::io::ReadBuf;
 
+mod deadline_guard;
+pub use deadline_guard::guard_future_before_deadline;
+
 #[cfg(target_os = "linux")]
 mod inherited;
 mod owner_local;

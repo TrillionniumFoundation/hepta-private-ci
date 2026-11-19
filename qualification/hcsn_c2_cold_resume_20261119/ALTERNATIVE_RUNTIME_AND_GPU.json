@@ -1,0 +1,21 @@
+{
+  "nvidia_smi": {
+    "returncode": 0,
+    "stderr": "",
+    "stdout": "NVIDIA GeForce RTX 4060, 8188, 6675, 30\n"
+  },
+  "runtimes": [
+    {
+      "python": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/bin/python",
+      "returncode": 0,
+      "stderr": "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/cuda/__init__.py:182: UserWarning: CUDA initialization: Unexpected error from cudaGetDeviceCount(). Did you run some cuda functions before calling NumCudaDevices() that might have already set an error? Error 2: out of memory (Triggered internally at /pytorch/c10/cuda/CUDAFunctions.cpp:119.)\n  return torch._C._cuda_getDeviceCount() > 0\n",
+      "stdout": "{\"torch\": \"2.9.1+cu128\", \"git\": \"5811a8d7da873dd699ff6687092c225caffcf1bb\", \"file\": \"/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/__init__.py\", \"cuda_available\": false, \"cuda_count\": 1}\n"
+    },
+    {
+      "python": "/home/qian-qi/heptatorch-e8m0-orthogonal-20261116/venv/bin/python",
+      "returncode": 0,
+      "stderr": "/home/qian-qi/heptatorch-e8m0-orthogonal-20261116/venv/lib/python3.12/site-packages/torch/_subclasses/functional_tensor.py:377: UserWarning: Failed to initialize NumPy: No module named 'numpy' (Triggered internally at /__w/pytorch/pytorch/torch/csrc/utils/tensor_numpy.cpp:82.)\n  cpu = _conversion_method_template(device=torch.device(\"cpu\"))\n",
+      "stdout": "{\"torch\": \"2.15.0+cpu\", \"git\": \"d0f2af8b66b20da4baa50644c0cd3f887a2eae2e\", \"file\": \"/home/qian-qi/heptatorch-e8m0-orthogonal-20261116/venv/lib/python3.12/site-packages/torch/__init__.py\", \"cuda_available\": false, \"cuda_count\": 0}\n"
+    }
+  ]
+}

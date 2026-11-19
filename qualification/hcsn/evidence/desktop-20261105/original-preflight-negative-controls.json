@@ -1,0 +1,50 @@
+{
+  "status": "passed",
+  "scope": "non-torch admission/replay negative controls on independent copies; no CUDA execution",
+  "probe_sha256": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+  "passed": 4,
+  "failed": 0,
+  "baseline_sources_unchanged": true,
+  "baseline_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "records": [
+    {
+      "name": "source-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "receipt_sha256": "e4ab33d19f1b27e7334356039a0006d7de4947552aa1fdeab70ad8e7ca6af8e1",
+      "rejection": "ValueError: source or full config differs from pinned baseline",
+      "before_torch_import": true
+    },
+    {
+      "name": "config-drift",
+      "status": "passed",
+      "child_exit_code": 1,
+      "receipt_sha256": "47ce8545f7e0e85638d824fe940ce7d2c6f8edc7ab837644ac49025e1a7d4f59",
+      "rejection": "ValueError: source or full config differs from pinned baseline",
+      "before_torch_import": true
+    },
+    {
+      "name": "existing-output-refused",
+      "status": "passed",
+      "child_exit_code": 2,
+      "receipt_unchanged": true,
+      "existing_receipt_sha256": "2cd8b984845916a4215ea20e6d8537d74dc68fc7533f4650c977c1876ccdc0c9"
+    },
+    {
+      "name": "concurrent-exclusive-initial-publish",
+      "status": "passed",
+      "outcomes": [
+        {
+          "owner": "owner-a",
+          "result": "FileExistsError"
+        },
+        {
+          "owner": "owner-b",
+          "result": "claimed"
+        }
+      ],
+      "receipt_owner": "owner-b",
+      "receipt_sha256": "fe9acce8d91557c37f545fa13733ec7a5f7e5f1eeb4715695a7fc9d7b69f6105"
+    }
+  ]
+}

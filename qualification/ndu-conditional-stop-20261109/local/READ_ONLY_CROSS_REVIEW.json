@@ -1,0 +1,161 @@
+{
+  "schema": "ndu.conditional-stop.read-only-cross-review.v1",
+  "reviewed_date": "2026-11-09",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "6f6d76b78349448015655de7fbba9ac89c0b94fb",
+  "disposition": "HOLD",
+  "source_modified": false,
+  "workflow_rerun_requested": false,
+  "model_training_performed": false,
+  "interface_review": {
+    "finding": "No static interface, registration or packaged-module blocker found for the declared fresh V2 reset collection and prediction-only diagnostic.",
+    "modules": [
+      "stopped_diagnostics",
+      "stopped_calibration_run",
+      "stopped_collect_contract",
+      "stopped_collect",
+      "stopped_torch",
+      "stopped_control",
+      "conditional_particles"
+    ],
+    "registration_sha256": "561f29a64c47995e45d5934202fad7be10645354df40ca2f6330d768c4257836",
+    "actual_registration_validated": true,
+    "group_counts": {
+      "fit": 40,
+      "calibration": 6,
+      "diagnostic": 6,
+      "excluded_original_tuning": 8
+    },
+    "rosters_match_preparation_exactly": true,
+    "calibration_or_diagnostic_overlap_with_fit_or_tuning": false,
+    "core": "ordinary",
+    "memory_mode": "reset",
+    "neighbor_groups": 6,
+    "particles": 8,
+    "feature_scales_width": 40,
+    "receipt_sha256": "53d1494186db9e43b1e9c8d2f004f5dfadd86d44c4614ba10841179da5bde74f",
+    "receipt_records_source_groups": 40,
+    "weights_sha256": "db6e3d05270163368d10176299a7d5be3ccee2d8e773fcfbb32454ff1c0f9f54",
+    "memory_admission": "Fresh V2 records explicitly carry reset memory. An all-V2 input does not require fabricating the absent memory_mode field in the old content-training receipt. Legacy V1 admission remains strict.",
+    "macro_selector": "Checks original train-only rows, the same behavior checkpoint, complete episode links and hashes, actual adjacent action/STOP or STOP-only terminal observations, and unchanged STOP utility. Earlier PREPARE actions are prefix state, not invented PREPARE/STOP outcomes.",
+    "handoff": "The driver's one input JSONL must include both calibration and diagnostic exports without changing original lines; pin the combined bytes. Calibration-only input cannot establish diagnostic results; diagnostic-only input fails calibration admission.",
+    "cpu_worker": "The CPU worker template CLI matches the driver and explicitly reports CPU use. Static review does not establish CUDA availability or successful cloud execution."
+  },
+  "source_package": {
+    "archive_sha256": "73bd281f8728191aab9865f700455f3f65bc324a03c3e1cedf5ff1aeec986ae4",
+    "manifest_sha256": "86905686a77ff147240ef199c61d7e0b30b2e5759db65df8e1671d6fc834fc92",
+    "archive_bytes": 244264,
+    "files": 81,
+    "unpacked_bytes": 1018296,
+    "exact_inventory_and_every_file_hash_match_manifest": true,
+    "every_archived_file_matches_reviewed_workspace_bytes": true,
+    "includes_new_helpers_collectors_tests_packages_golden_profile_and_hepta_core": true,
+    "model_source_sha256": "4c361d044d6c9ee675ef2a148f27542755cad27efa78dc107e3a8af1314ac955",
+    "actual_model_source_identity_matches_manifest": true,
+    "profile_sha256": "0ce0dbbd8827167cf45b49eeacb7cd015844758a62ef93a8041f4df68b5860d0",
+    "boundary": "The model-source identity covers its declared model/numerical dependencies. The full archive manifest additionally covers the diagnostic helper, driver and collector; the model digest alone is not the full executable source identity."
+  },
+  "denominators_and_costs": {
+    "collection": "All 60 planned requests are read back; Completed, Failed, Unresolved and Unstarted statuses are retained. Only verified completed episodes are exported.",
+    "diagnostic": "The diagnostic JSONL is conditional on completed observed episodes. It must be reported with the collection-result planned/attempted/failure inventory.",
+    "unsupported": "Observed unsupported macros retain point errors and reasons. Paired center/joint CRPS averages use supported observations only and average within source before across sources.",
+    "partial_failure": "Flushed rows and attempted/recorded counters survive a driver exception; status remains failed.",
+    "durations": "Action-only duration fields are preserved. Selected action/STOP and STOP-only macros overlap, so their seconds cannot be summed as collection cost. Full deployment/evaluation/outer-process receipts remain separate.",
+    "collector_exit": "Collector exit zero is not an all-episodes-success assertion; read its explicit dispositions and wall-limit observation."
+  },
+  "weak_critic_baseline": {
+    "finding": "Content is pretrained, but the auxiliary utility/transition/duration/light heads were not fitted in the content stage. FrozenMacroPredictor point centers are therefore a weak, uncalibrated auxiliary-critic baseline.",
+    "receipt": {
+      "stage": "content",
+      "status": "CONTENT_PRETRAINED",
+      "regime": "frozen",
+      "content_training_present": true,
+      "fit_training_present": false,
+      "residual_estimate_present": false,
+      "common_auxiliary_heads_trained_present": false,
+      "content_parameters": 8093,
+      "auxiliary_parameters": 7039,
+      "prefit_parameter_sha256": "a5198d01f30ae6caef22a2e1f0d8d5c8dc4cd8169f5fdd7218c3c296ebd9c583",
+      "final_parameter_sha256": "a5198d01f30ae6caef22a2e1f0d8d5c8dc4cd8169f5fdd7218c3c296ebd9c583"
+    },
+    "original_training_source": {
+      "sha256": "89c04df05f3252f418b8bbc1a15a8ad9ab1cdc3d7859439b3863243b064ca165",
+      "bytes": 33244,
+      "exact_receipt_pin_match": true,
+      "method": "Complete original source read through heptaruntime, with service SHA and independently recomputed SHA agreeing. Private host paths omitted."
+    },
+    "original_neural_source": {
+      "sha256": "fa5062d477efe204ca6e424f2416d78d37dde4effa616a650605c83de959eadd",
+      "bytes": 7817,
+      "exact_receipt_pin_match": true,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/0287271bac7416af61f9a0569b44f5d16ae3f7d0/scripts/ndu_real_runtime/neural.py"
+    },
+    "exact_original_code_facts": [
+      "The constructor is seeded before ReceiptPortfolioModel is created.",
+      "In _epochs, heads=[] for phase=content; Adam then receives only content_parameters.",
+      "content_parameters yields project, core, answer and box_delta, excluding utility_head, light_head and transition.",
+      "Content loss is text candidate CE plus four times box loss. Observed utility/transition/duration/light losses run only under phase=fit.",
+      "Fit epochs, residual fitting and the common_auxiliary_heads_trained receipt field are guarded by stage=fit."
+    ],
+    "provenance_caution": "The imported GitHub training.py at commit 0287271 is not byte-identical to the receipt pin. This review uses the separately retrieved exact-pin original training.py rather than silently substituting the imported variant.",
+    "permitted_claim": "Predictive improvement relative to this content-only checkpoint's untrained auxiliary point predictor on the observed macro distribution.",
+    "forbidden_inference": "No evidence here of beating sufficiently trained critics/controllers, an action-only empirical baseline, or improving realized policy utility."
+  },
+  "ci_jobs": [
+    {
+      "job_id": 129045298300,
+      "run_id": 42582743042,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582743042/job/129045298300",
+      "failed_step": "Prepare Bazel CI / Install just",
+      "cause": "Installer did not support just@1.51.0 on aarch64_macos and selected cargo-binstall@1.15.11. The cargo-binstall aarch64 ZIP download returned HTTP504 eleven times; curl exited56 at 2026-11-09T08:01:17Z.",
+      "dependency_url": "https://github.com/cargo-bins/cargo-binstall/releases/download/v1.15.11/cargo-binstall-aarch64-apple-darwin.zip",
+      "downstream": "Bazel release build and bwrap checks skipped.",
+      "raw_log_sha256": "108dc6805a37c910a0878ef8527ad243ab507166d542790a0c5586a7e4e0478a",
+      "raw_log_bytes": 54421,
+      "classification": "Dependency preparation/download failure. New Python not executed; macOS build unverified."
+    },
+    {
+      "job_id": 129045163211,
+      "run_id": 42582742768,
+      "name": "Architecture convergence (source-head)",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582742768/job/129045163211",
+      "failed_step": "Install DotSlash",
+      "cause": "DotSlash0.5.9 UbuntuARM64 download returned HTTP504 six times; curl exited22 at 2026-11-09T08:02:09Z.",
+      "dependency_url": "https://github.com/facebook/dotslash/releases/download/v0.5.9/dotslash-ubuntu-22.04.arm64.v0.5.9.tar.gz",
+      "preceding": "Candidate identity, scope, command-runner and repository-control tests passed. Failure occurred in native tool preparation, not a reported new-module architectural violation.",
+      "raw_log_sha256": "d7052b336ff4db1e2d3c8dc8787297a3cdf2d3991a829394d8d1d83d9439d183",
+      "raw_log_bytes": 81010,
+      "classification": "Tool download failure. Architecture qualification remains failed/unestablished."
+    },
+    {
+      "job_id": 129045297952,
+      "run_id": 42582743042,
+      "name": "cargo-deny",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42582743042/job/129045297952",
+      "failed_step": "Prepare third-party Docker action",
+      "cause": "cargo-deny0.19.0 archive decoding failed with gzip: invalid magic and tar failure in all three Docker build attempts. Build command exited2; final Docker setup exited1.",
+      "dependency_url": "https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.0/cargo-deny-0.19.0-x86_64-unknown-linux-musl.tar.gz",
+      "uncertainty": "This log does not expose the HTTP response code; 504 is not established for this particular download.",
+      "secondary": "The missing check-clean-worktree action occurs after action preparation prevented repository checkout.",
+      "downstream": "No cargo-deny advisory/license/dependency assessment ran.",
+      "raw_log_sha256": "13da21b28c43beceb2d208b0a4b49ec15869b3532991d8ea43136561e558bdd0",
+      "raw_log_bytes": 29985,
+      "classification": "Third-party action-image preparation failure. Dependency audit unverified."
+    }
+  ],
+  "ci_scope": "Only these three original jobs were diagnosed. This is not an all-checks-green claim; other failures and the aggregate required check remain in the separate full check snapshot.",
+  "scientific_boundaries": [
+    "Nearest-neighbor empirical residuals have no distribution-free conditional coverage guarantee.",
+    "Singleton/unsupported laws are not valid risk support; retain their denominator and reasons.",
+    "Horizon-one action-then-STOP diagnostics do not validate multi-step Generation v4 recursion or production Cell V2 ownership.",
+    "Source exclusion is relative to known original fit/tuning/quarantine rosters, not authenticated globally unseen exposure.",
+    "No generator or auxiliary critic was retrained. CRPS and predicted risk sensitivity are not actual policy outcomes.",
+    "The weak point baseline and absence of a matched action-only empirical comparison prevent attributing gain specifically to semantic conditioning.",
+    "Correlated tasks within six diagnostic sources are not independent training replications.",
+    "No Hepta-versus-ordinary architecture advantage, independent four-fit replication, general theoretical novelty or complete-cost stable net benefit is established."
+  ],
+  "net_benefit_established": false,
+  "counterfactual_outcomes_created": false,
+  "independent_training_repeats": 0
+}

@@ -414,6 +414,7 @@ class OriginalObserverCoverageTests(unittest.TestCase):
             "codex-rs/hepta-learning-artifacts/src/owner.rs",
             "codex-rs/hepta-intelligence-eval/src/owner.rs",
             "codex-rs/hepta-neuron/src/witness.rs",
+            "codex-rs/hepta-contracts/src/owner.rs",
         )
         with tempfile.TemporaryDirectory() as temporary:
             postimages, records, original, saved = self.maintenance_driver(

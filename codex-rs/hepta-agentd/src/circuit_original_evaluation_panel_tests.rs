@@ -76,8 +76,22 @@ impl PanelFixture {
         peer: TrainingPeer,
     ) -> impl std::future::Future<Output = anyhow::Result<Box<Self>>> {
         Box::pin(async move {
-            let (original, mut primary_b, mut retention_b, registration) =
-                Box::pin(preregistered()).await?;
+            let prepared = Box::new(Box::pin(preregistered()).await?);
+            Self::complete_registered(prepared, peer).await
+        })
+    }
+
+    fn complete_registered(
+        prepared: Box<(
+            Box<PositiveFixture>,
+            BFixture,
+            BFixture,
+            crate::OriginalCellEvaluationPanelRegistrationV1,
+        )>,
+        peer: TrainingPeer,
+    ) -> impl std::future::Future<Output = anyhow::Result<Box<Self>>> {
+        Box::pin(async move {
+            let (original, mut primary_b, mut retention_b, registration) = *prepared;
             assert_eq!(primary_b.at, retention_b.at);
             let at = primary_b.at;
             // Actual retention completes first. Only its original publication

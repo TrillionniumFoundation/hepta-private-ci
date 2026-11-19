@@ -1,0 +1,30 @@
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_source.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_source.rs
+@@ -27,7 +27,6 @@
+ use crate::LearningIterationEvidencePeerV1;
+ use crate::LearningIterationRuntimeErrorV1;
+ use crate::LoadedCellQ24ModelV1;
+-use crate::OriginalCellQ24DatasetErrorV1 as CellQ24DatasetErrorV1;
+ use crate::OriginalCellQ24DatasetV1;
+ use crate::OriginalCellQ24TrainingSourceConfigV1;
+ use crate::cell_q24_dataset::CellQ24DatasetErrorV1;
+--- a/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_material_receipt_owner.rs
+@@ -32,7 +32,6 @@
+ use crate::CellQ24DatasetRuleV1;
+ use crate::CircuitTaskSourceReadbackV1;
+ use crate::LoadedCellQ24ModelV1;
+-use crate::OriginalCellQ24DatasetErrorV1 as CellQ24DatasetErrorV1;
+ use crate::OriginalCellQ24DatasetV1;
+ #[cfg(target_os = "linux")]
+ use crate::OriginalCircuitOnPolicyPanelPolicyV2;
+--- a/codex-rs/hepta-agentd/src/cell_q24_training_source.rs
++++ b/codex-rs/hepta-agentd/src/cell_q24_training_source.rs
+@@ -35,7 +35,6 @@
+ use crate::CircuitTaskSourceReadbackV1;
+ use crate::LearningIterationEvidenceClientV1;
+ use crate::LoadedCellQ24ModelV1;
+-use crate::OriginalCellQ24DatasetErrorV1 as CellQ24DatasetErrorV1;
+ use crate::OriginalCellQ24DatasetV1;
+ use crate::OriginalCellQ24RemoteMaterialClientV1;
+ use crate::cell_q24_dataset::CellQ24DatasetErrorV1;

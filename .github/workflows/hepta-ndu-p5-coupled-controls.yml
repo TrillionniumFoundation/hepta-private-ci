@@ -1,0 +1,49 @@
+name: Hepta P5 nonlinear coupled discrete FBSDE controls (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-p5-coupled-study/**'
+      - '.github/workflows/hepta-ndu-p5-coupled-controls.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  independent-discrete-oracles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source and runtime identity
+        run: |
+          git rev-parse HEAD
+          python --version
+          sha256sum qualification/ndu-p5-coupled-study/*.py
+      - name: Ordinary and optimized adversarial regressions
+        run: |
+          set -euo pipefail
+          cd qualification/ndu-p5-coupled-study
+          python -W error::ResourceWarning -m unittest discover -s . -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover -s . -p 'test_*.py' -v
+      - name: Freeze protocol then execute and audit in separate processes
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-p5-discrete
+          cd qualification/ndu-p5-coupled-study
+          python study.py plan --output /tmp/hepta-p5-discrete/protocol.json
+          sha256sum /tmp/hepta-p5-discrete/protocol.json > /tmp/hepta-p5-discrete/protocol.sha256
+          python study.py execute --protocol /tmp/hepta-p5-discrete/protocol.json \
+            --output /tmp/hepta-p5-discrete/sealed-computations.json
+          sha256sum /tmp/hepta-p5-discrete/sealed-computations.json > /tmp/hepta-p5-discrete/sealed-computations.sha256
+          python study.py audit --protocol /tmp/hepta-p5-discrete/protocol.json \
+            --sealed /tmp/hepta-p5-discrete/sealed-computations.json \
+            --output /tmp/hepta-p5-discrete/independent-replay.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-p5-coupled-discrete-research-no-authority
+          path: /tmp/hepta-p5-discrete/
+          if-no-files-found: warn
+          retention-days: 14

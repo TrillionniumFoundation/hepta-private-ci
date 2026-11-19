@@ -1597,6 +1597,8 @@ mod tests {
             GuardianReviewSession {
                 session,
                 io: SessionIo {
+                    terminal_publications: Default::default(),
+                    event_delivery: Default::default(),
                     tx_sub,
                     rx_event,
                     agent_status,

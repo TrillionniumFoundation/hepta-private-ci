@@ -1,0 +1,25 @@
+{
+  "context_length": 64,
+  "context_policy": "four fixed early associations; T-5 fresh independent distractor observations; final fixed-key query",
+  "distractor_observations": 59,
+  "initial_associations": 4,
+  "interpretation": "Synthetic true-history retention growth, with disjoint distractor keys and no repeated target association; not natural data.",
+  "physical_duration": {
+    "expected": 64.0,
+    "mean_by_split": {
+      "test": 63.89087677001953,
+      "train": 64.08699035644531,
+      "val": 63.7818603515625
+    }
+  },
+  "preprocessing_fit": "none; fixed transforms only",
+  "schema": "hcsn-data-v1",
+  "seed": 7123,
+  "sizes": {
+    "test": 1024,
+    "train": 1024,
+    "val": 512
+  },
+  "task": "long_memory",
+  "timing_policy": "independent lognormal increments with expected dt=1; duration grows with T"
+}

@@ -9,8 +9,6 @@ The graph evaluator separately implements a bounded, additive-utility DAG,
 not a general FBSDE or authorization mechanism.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import math

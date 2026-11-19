@@ -1,0 +1,62 @@
+{
+  "authority": "DENY_ALL",
+  "changed_score_fields": 0,
+  "deploy": false,
+  "distinct_hardware": false,
+  "evaluation": "PUBLIC_OPERATOR_OOD_NOT_INDEPENDENT",
+  "exact_equal_score_fields": 648,
+  "hold": "HOLD_NO_GO",
+  "independent_evaluator": false,
+  "maximum_score_field_delta": 0.0,
+  "model_identities": {
+    "config_sha256": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+    "exposed_fixture_sha256": "01ec1a644f37b9fc7a4c6616f589768df97f8eed7a289b5de86afadaa7ce6165",
+    "model_safetensors_sha256": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "script_sha256": "4dded105ac0477c9747b13d98ee1b57d46dcc322d034121a55a9c63a12250e5e",
+    "tokenizer_sha256": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+  },
+  "new_training_run": false,
+  "original_full_run_cost": {
+    "io_delta": {
+      "cancelled_write_bytes": 0,
+      "rchar": 390165,
+      "read_bytes": 14946304,
+      "syscr": 137,
+      "syscw": 9,
+      "wchar": 648,
+      "write_bytes": 0
+    },
+    "process_cpu_seconds": 33.539317821,
+    "ru_maxrss_kib_lifetime_peak": 1229628,
+    "wall_seconds": 9.919518772978336
+  },
+  "original_ood_sha256": "3002553ec485b19247f510863e9c78d2cce7747434ad7737f68b7dd3f9a74a2a",
+  "plan_git_commit": "a54c1d72ee2d82d3bae5c5fdda94d5d3333046b2",
+  "plan_sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043",
+  "replay_full_run_cost": {
+    "io_delta": {
+      "cancelled_write_bytes": 0,
+      "rchar": 390165,
+      "read_bytes": 14557184,
+      "syscr": 137,
+      "syscw": 9,
+      "wchar": 648,
+      "write_bytes": 0
+    },
+    "process_cpu_seconds": 32.938411662,
+    "ru_maxrss_kib_lifetime_peak": 1248592,
+    "wall_seconds": 9.599138684105128
+  },
+  "replay_host": "heptaruntime-ai395",
+  "replay_job_id": "1a1cbccc45f-2564-cbd",
+  "replay_sha256": "a5e40b990dc2b02b7c689c3ed5332a0c10348d04f0ee8e6bcc8d49b3b58dcc4b",
+  "replicated_conditions": 9,
+  "replicated_forward_rows": 216,
+  "same_binary_predictions": 216,
+  "schema": "hpca-readonly-process-repeat-v1",
+  "score_changes_sample": [],
+  "source_git_commit": "aaa01ecc3b4e157dcf4927ac42301daaf2df7b4c",
+  "source_script_sha256": "b9f61e8133f67af2d126c3730588c1386efcfb2788259f618e092081c2454af8",
+  "total_score_fields": 648,
+  "training_result_sha256": "9512849b90964c35951bb8bb2226b3f2f6d3ec0da1e9a3b98467c8970afbe39c"
+}\n

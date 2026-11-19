@@ -1,0 +1,12 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m independent.run train --freeze independent/frozen-r2-ledger-cache.json --out runs/codex-cloud-efficient-r2-t8",
+  "completed_utc": "2026-10-23T12:30:53.891175+00:00",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "execution_commit": "382c9967c22acaf185e86c121a6f39c2a8f48c1f",
+  "exit_code": 1,
+  "formal_test_opened": false,
+  "freeze_sha256": "5df6eba7dc7c5059fe3fa9623ba48a61c9e7ff8a206403bd29041b6a8dfb0654",
+  "selected_cloud_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "source_commit": "d0b99c25a26739c52e5695433625ac1b966f25a4",
+  "started_utc": "2026-10-23T12:30:40.726318+00:00"
+}

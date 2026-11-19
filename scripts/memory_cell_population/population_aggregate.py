@@ -136,6 +136,35 @@ def aggregate(results):
         raise ValueError(
             "one immutable protocol, source implementation and runtime identity required"
         )
+    required_engineering = {
+        "matched_adapter_budget",
+        "matched_candidate_updates",
+        "router_overhead_within_one_percent",
+        "parent_unchanged",
+        "source_groups_preserved",
+        "final_owner_admission",
+        "selection_unchanged",
+        "selection_preceded_final_reads",
+        "exact_typed_baseline",
+        "both_precommitted_codecs_measured",
+    }
+    optional_engineering = {
+        "source_identity_unchanged",
+        "selection_bytes_unchanged_after_codecs",
+    }
+    gate_sets = []
+    for result in results:
+        gates = result["engineering_gates"]
+        if (
+            type(gates) is not dict
+            or not required_engineering <= set(gates)
+            or not set(gates) <= required_engineering | optional_engineering
+            or any(type(value) is not bool for value in gates.values())
+        ):
+            raise ValueError("complete boolean engineering gates required")
+        gate_sets.append(set(gates))
+    if any(keys != gate_sets[0] for keys in gate_sets[1:]):
+        raise ValueError("identical engineering gate sets required across seeds")
     results = sorted(results, key=lambda r: r["seed"])
     mean_gain = sum(r["summary"]["split_retention_gain"] for r in results) / len(
         results

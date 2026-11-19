@@ -1,0 +1,7 @@
+{
+  "reason": "Sort imports in the newly added audit producer before final release. The initial audit passed all scientific and artifact checks; it is preserved as a superseded pre-format attempt, not the current final release gate.",
+  "scientific_sources_or_data_changed": false,
+  "original_attempt_final_audit_sha256": "7e92e0e7f1a87454934b164e6fa9f12e1012a629848a684eccc11a2324660a40",
+  "superseded_directory": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/final_audit_attempt001",
+  "only_intended_change": "Import ordering in finalize_recovery_audit.py; rerun the unchanged audit checks and bind the final producer bytes."
+}

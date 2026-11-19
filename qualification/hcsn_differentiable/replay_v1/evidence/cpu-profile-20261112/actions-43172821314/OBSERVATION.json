@@ -1,0 +1,69 @@
+{
+  "schema": "hcsn-cpu-profile-ci-observation-v1",
+  "run_id": 43172821314,
+  "run_attempt": 1,
+  "tested_source": "0de7f86e0636c585a7f15a580a889990e29e0a4b",
+  "source_checkout_confirmed_in_both_raw_logs": true,
+  "run_conclusion": "failure",
+  "adapter_job": {
+    "id": 131029900589,
+    "conclusion": "success",
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "wall_for_tests_seconds": 0.044
+  },
+  "real_recovery_job": {
+    "id": 131030253645,
+    "conclusion": "failure",
+    "failure_step": "Require an observed immutable original artifact before any model setup",
+    "reason": "CPU-ARTIFACT status MISSING; immutable archive publication not observed",
+    "artifact_checkout": "skipped",
+    "python_setup": "skipped",
+    "torch_install": "skipped",
+    "model_execution": "skipped",
+    "clean_source": "success",
+    "retain": "success"
+  },
+  "model_executions": 0,
+  "actual_real_checkpoint_continuities": 0,
+  "native_optimizer_calls": "UNKNOWN",
+  "new_independent_complete_training_replays": 0,
+  "scientific_admission": "HOLD_NO_GO",
+  "logs": "Original decoded job-log strings retained byte-for-byte as UTF-8 including original BOM. These are not original compressed GitHub log archives.",
+  "files": {
+    "RUN.original.json": {
+      "bytes": 15018,
+      "sha256": "19d63b18a4cd52e12912c04cb54c447b47a389353421e1a6418aae7ed600cb5e"
+    },
+    "S4-COMPATIBILITY.json": {
+      "bytes": 768,
+      "sha256": "ef088f11561468419e4b4d825710c175f348658b1abaeff5862ddeeb3a04dc44"
+    },
+    "131029900589.log": {
+      "bytes": 24010,
+      "sha256": "2377854e367486eb2e3c05d50097e1d80918687f9ded2e6bbf7a2523bfd956bb"
+    },
+    "131030253645.log": {
+      "bytes": 21865,
+      "sha256": "1e9f329f23bbc1fdbbda834707bd89b599d1e3fd0c17b6d1f251d1d25e55747a"
+    },
+    "original-cores.py": {
+      "bytes": 16079,
+      "sha256": "95fcf93747520414a062183affd546f599bc415b2a9daa47e59db20f67412302"
+    },
+    "131030253645.steps.json": {
+      "bytes": 1771,
+      "sha256": "d270c42c24e720f42fede37da8d3ba2c967ad115e4fa6f5add8efc93111a37b6"
+    },
+    "BACKUP-SEARCH-SUMMARY.json": {
+      "bytes": 781,
+      "sha256": "0c3866d1146e15d9641c3c19a705b1a67953db39054414f88a6c4b2b8996273e"
+    },
+    "131029900589.steps.json": {
+      "bytes": 1136,
+      "sha256": "af80cb4361be24907aa2a8387b5cfb673ae55f974a07252bafbdbdc8952d25dd"
+    }
+  }
+}

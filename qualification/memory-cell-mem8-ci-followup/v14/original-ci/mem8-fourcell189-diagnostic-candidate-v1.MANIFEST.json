@@ -1,0 +1,111 @@
+{
+  "schema": "hepta.mem8.immutable-evidence-archive.v1",
+  "name": "mem8-fourcell189-diagnostic-candidate-v1",
+  "source_head": "189711e3563ea13a5328d52e99a286f082045b98",
+  "source_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "scope": "Three test-only diagnostic postimages with complete exact preimages, inverse edits, source capsule and independent peer review. Original token/ACL/delete operations and refusal assertions remain; no native run or formatter result. This is not a fix of the observed Neither deletion.",
+  "members": [
+    {
+      "path": "CANDIDATE.patch",
+      "bytes": 13469,
+      "sha256": "4cd3ae47a9048a684edc3a860785ca7cb6d2a7d1a4df3622e55df90870c762f9",
+      "git_blob": "f512a39f98b465b53349e30548a570f686d46a5f"
+    },
+    {
+      "path": "CANDIDATE_MANIFEST.json",
+      "bytes": 1386,
+      "sha256": "e17764b59e30db153a0f64126f873255c9d0682f8090fac742d5705029d4ee73",
+      "git_blob": "9a7dcd748799967788b2eb4da065c775800148ae"
+    },
+    {
+      "path": "EDITS_AND_INVERSE.json",
+      "bytes": 12016,
+      "sha256": "5413dc07d4eed270f89134303698d8cb2b94c450a44fb5a23248509de4374331",
+      "git_blob": "289415494986be7b0d25d2648e61f5c3afa54c9a"
+    },
+    {
+      "path": "EXPERIMENT_PEER_REVIEW.json",
+      "bytes": 6113,
+      "sha256": "989a77df97ca0f01d1da126eaa1c113f13787cd08c0c114578d6dfdd9f09426e",
+      "git_blob": "56a4a4c357da101751877c83dafc935cd955c235"
+    },
+    {
+      "path": "ORIGINAL_FAILURE_READ_ONLY_ANALYSIS.json",
+      "bytes": 24122,
+      "sha256": "953ef4a8fcf83f57a135e9df51fba81fcd3c35439775182f1eae1f748f0293ce",
+      "git_blob": "bcd8ce0a9ee92430db76db60df0f0444c6cf3ad3"
+    },
+    {
+      "path": "PUBLICATION.json",
+      "bytes": 3779,
+      "sha256": "20840de6c9758a12bdf8e02053ea357338ab6d43b47a4c65ecdc71e5400eac13",
+      "git_blob": "26f0164a5c2d4d0b5b06ea3328770cf07006932a"
+    },
+    {
+      "path": "README.md",
+      "bytes": 601,
+      "sha256": "8023cb880855de0e0c8edd1a0473bffc832f94eafb7f69f2bfef6cbe50ffe5d7",
+      "git_blob": "1e9ac41343387ff00f1b1f560e24d47825d9e6ef"
+    },
+    {
+      "path": "SOURCE_CAPSULE.json",
+      "bytes": 73199,
+      "sha256": "ada3f50b98fe5d19bea2f5d9dd661db0589c9649157507dad8023f3eea395bcb",
+      "git_blob": "ed78b09de85fcbee68d64761b492ee55e055f8f9"
+    },
+    {
+      "path": "preimages/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 16679,
+      "sha256": "b701ad01169eb9f64b62ad50099dfcda51b014a5c96dbc2080631fd2e6d7ee75",
+      "git_blob": "6f05793ec6ee043a933073ada3a1bf9122de5a73"
+    },
+    {
+      "path": "preimages/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "bytes": 19457,
+      "sha256": "5de538b700abb9e7b3e0e798566e617165de71ce3eac5897e33489ececad56f1",
+      "git_blob": "867fcfad7244b8951155720dcae0e21bb634eafb"
+    },
+    {
+      "path": "preimages/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "bytes": 7954,
+      "sha256": "c622cb87f40a6768fb57546dc0f5d2996e8d0d35838ccba613dab983eff2ac39",
+      "git_blob": "fe9017be8f0252983a44677ba900e7b17d2007a6"
+    },
+    {
+      "path": "references/windows-sandbox-Cargo.json",
+      "bytes": 2932,
+      "sha256": "d6b2bc00e8775d8d8cf51b2aefc8e43afeef749dfef40b462e8ea6b212733a07",
+      "git_blob": "381e9c1b34c2c87380f668df8b3c6c47f53fcdae"
+    },
+    {
+      "path": "references/windows-sandbox-lib.rs",
+      "bytes": 31194,
+      "sha256": "98e4c116d974abe0704f4c22b1c7d19914dad88ea547b9f45c8e5278e968b76a",
+      "git_blob": "b8b04b2455422194487e6665599c44e2de66cd49"
+    },
+    {
+      "path": "source/codex-rs/windows-sandbox-rs/src/delete_permission_matrix_tests.rs",
+      "bytes": 26196,
+      "sha256": "c99932c44c498e4ff1fc884e5c500109fe9a01bbda40053ceb87ebeb40f1f105",
+      "git_blob": "783ab64ef7c8cc18c65fcf0339db1c5eb5b9273c"
+    },
+    {
+      "path": "source/codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "bytes": 19580,
+      "sha256": "e095e94297d14ccdd82db3cd6e358b8951aab42798e2c588d3b017ae351d123d",
+      "git_blob": "1f16623dbea1b021a6b67d5e52ff9f90973d5d26"
+    },
+    {
+      "path": "source/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+      "bytes": 8102,
+      "sha256": "3f1ae85e68c6001bbc3032b817bd6b6deb913a6b4c77e1def98c401d2603c211",
+      "git_blob": "5e33c4fbea42cf69fcd5e8da2bbbef0943fdd31f"
+    },
+    {
+      "path": "verify_archive.py",
+      "bytes": 3419,
+      "sha256": "59a704c2eb03dcf4c282d4926d03c284f8d4662475a36ac79158035edb8ef90f",
+      "git_blob": "de2910b5989bd1aea83f48ad9ee2f8ed49bd37ab"
+    }
+  ]
+}

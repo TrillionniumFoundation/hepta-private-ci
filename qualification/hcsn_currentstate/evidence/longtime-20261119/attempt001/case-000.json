@@ -1,0 +1,158 @@
+{
+  "active_reward": 0.0,
+  "advance_explicit_exponentials": 2,
+  "advance_forward_cpu_seconds": 0.021254727999999723,
+  "advance_forward_seconds": 0.03120178600147483,
+  "advance_largest_matrix": 4,
+  "all_forward_largest_matrix": 4,
+  "all_values_and_gradients_finite": true,
+  "backward_cpu_seconds": 0.020464857000000336,
+  "backward_internal_exponentials": "not instrumented",
+  "backward_scalar_calls": 6,
+  "backward_seconds": 0.021554815000854433,
+  "child_measured_cpu_seconds": 2.486046527,
+  "child_measured_wall_seconds": 2.53106256799947,
+  "delay": "1/5",
+  "discount": 0.15,
+  "dtype": "float64",
+  "escape_reward": 0.0,
+  "gradient_absolute_errors": [
+    [
+      2.7755575615628914e-17,
+      0.0,
+      2.7755575615628914e-17
+    ],
+    [
+      6.938893903907228e-18,
+      0.0,
+      6.938893903907228e-18
+    ]
+  ],
+  "gradients": [
+    [
+      0.14235406455252192,
+      -0.14235406455252195,
+      0.14235406455252192
+    ],
+    [
+      -0.042706219365756574,
+      0.04270621936575658,
+      -0.042706219365756574
+    ]
+  ],
+  "initial_channels": [
+    1.0,
+    -0.3
+  ],
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "case_wall_seconds": 45,
+    "max_dimension": 256,
+    "max_exponentials": 2048,
+    "max_packets": 256,
+    "threads": 1,
+    "total_cpu_seconds": 120,
+    "total_wall_seconds": 180
+  },
+  "maximum_gradient_absolute_error": 2.7755575615628914e-17,
+  "maximum_signed_mass_balance_error": 5.551115123125783e-17,
+  "maximum_value_absolute_error": 2.7755575615628914e-17,
+  "mpmath": "1.3.0",
+  "peak_rss_after_forward_kib": 223588,
+  "peak_rss_native_kib": 225032,
+  "pending_generator_orders": [
+    [
+      2,
+      2
+    ]
+  ],
+  "pending_packets": 1,
+  "phase": "complete",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.41",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "quantity_order": [
+    "hit_count",
+    "active",
+    "refractory"
+  ],
+  "rate_fp64_hex": "0x1.b333333333333p+0",
+  "reference_50_vs_80_max_absolute_error": "4.303883188855588505996657872719995379842818815145699170852749597366346018209684e-51",
+  "reference_80_digits": {
+    "gradients_content": [
+      "-0.042706219365756581703657033770007985621202817252502219369568069547479109045941685",
+      "0.042706219365756581703657033770007985621202817252502219369568069547479109045941685",
+      "-0.042706219365756581703657033770007985621202817252502219369568069547479109045941685"
+    ],
+    "gradients_probability": [
+      "0.14235406455252194428034878307288309594351894098051086077663777111770119933157454",
+      "-0.14235406455252194428034878307288309594351894098051086077663777111770119933157454",
+      "0.14235406455252194428034878307288309594351894098051086077663777111770119933157454"
+    ],
+    "values_content": [
+      "-0.086468903171217080379484584898394667657669232829285778152159652262604454770291573",
+      "-0.21353109682878290851828516885003992810601408626251109684784034773739554522970843",
+      "-0.086468903171217080379484584898394667657669232829285778152159652262604454770291573"
+    ],
+    "values_probability": [
+      "0.28822967723739027859825608463558452028240529509744569611681114441149400334212728",
+      "0.71177032276260972140174391536441547971759470490255430388318885558850599665787272",
+      "0.28822967723739027859825608463558452028240529509744569611681114441149400334212728"
+    ]
+  },
+  "refractory_explicit_exponentials": 2,
+  "refractory_forward_cpu_seconds": 0.004157828000000308,
+  "refractory_forward_seconds": 0.0020100299989280757,
+  "rlimit_as": [
+    4294967296,
+    4294967296
+  ],
+  "rlimit_cpu": [
+    43,
+    44
+  ],
+  "source_sha256_after": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "source_sha256_before": {
+    "differentiable.py": "fccee9781c86af243c5f691f876d0dec34296edfedc327d6f4a100bcd2def949",
+    "study_longtime.py": "62daf4850b6e0079b5b75d50b57ba74a61ef76e75de9276f9caf3dd2172f502f"
+  },
+  "spike_reward": 1.0,
+  "state_tensor_bytes": 192,
+  "status": "completed",
+  "target": "1/5",
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "torch": "2.8.0+cpu",
+  "torch_interop_threads": 1,
+  "torch_threads": 1,
+  "value_absolute_errors": [
+    [
+      0.0,
+      0.0,
+      0.0
+    ],
+    [
+      0.0,
+      2.7755575615628914e-17,
+      0.0
+    ]
+  ],
+  "values": [
+    [
+      0.2882296772373903,
+      0.7117703227626098,
+      0.2882296772373903
+    ],
+    [
+      -0.08646890317121708,
+      -0.21353109682878293,
+      -0.08646890317121708
+    ]
+  ]
+}

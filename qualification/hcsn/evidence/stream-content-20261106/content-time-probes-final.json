@@ -1,0 +1,136 @@
+{
+  "schema": "hcsn-content-time-probe-v1",
+  "scope": "finite untrained CPU fixtures; not task quality or general convergence",
+  "source_commit": "89c6d21e03038d896d57b22149ea4deb23813228",
+  "source_files_sha256": {
+    "qualification/hcsn/__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "qualification/hcsn/attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+    "qualification/hcsn/audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+    "qualification/hcsn/baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+    "qualification/hcsn/benchmark.py": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+    "qualification/hcsn/cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "qualification/hcsn/checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "qualification/hcsn/content_model.py": "5309333bb9c46238553ecb9c24fadcafd8f80c4c081ce2a6304b17b47513f64b",
+    "qualification/hcsn/content_tasks.py": "981c06077a384f835579b09541b66507a0624fbf2bbd3cceac6e0ede104b8268",
+    "qualification/hcsn/execution.py": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+    "qualification/hcsn/mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "qualification/hcsn/population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "qualification/hcsn/population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "qualification/hcsn/reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "qualification/hcsn/rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "qualification/hcsn/stream_time.py": "dc42264efd340e8a5136062568681c23d7667129ab9237f82515d69ba195265d",
+    "qualification/hcsn/tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "qualification/hcsn/tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "qualification/hcsn/tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "qualification/hcsn/tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "qualification/hcsn/tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+    "qualification/hcsn/tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "qualification/hcsn/tests/test_content_model.py": "c84865bcbf2dc11be6862f676d5a421ca49626ba0a4f2c6bc6ad9fbf3a9c6c81",
+    "qualification/hcsn/tests/test_content_tasks.py": "38fc261b74b01d15f4bd80a9d5a0cfd9002ad646232c1f762e322cd18f65ad74",
+    "qualification/hcsn/tests/test_execution.py": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+    "qualification/hcsn/tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "qualification/hcsn/tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "qualification/hcsn/tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "qualification/hcsn/tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "qualification/hcsn/tests/test_stream_time.py": "b06d936a3316e9b0f6eed7919a8a95aee33eba50c2bc5de41d87a37b8b32f960",
+    "qualification/hcsn/tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "qualification/hcsn/validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+  },
+  "python": "3.12.14",
+  "torch": "2.8.0+cpu",
+  "device": "cpu",
+  "dtype": "float64",
+  "fixture_seeds": [
+    193,
+    509
+  ],
+  "refinement": {
+    "schema": "hx-value-stream-refinement-v1",
+    "mechanism": "stationary_value_gating_A",
+    "kernel": "hx",
+    "channel": "dual",
+    "boundary": "conditional",
+    "input_hold": "piecewise_constant",
+    "seconds_per_model_time": 1.0,
+    "rows": [
+      {
+        "subdivisions": 1,
+        "finite": true,
+        "previous_subdivisions": null,
+        "memory_trace_rms_change": null,
+        "recovery_trace_rms_change": null,
+        "terminal_memory_rms_change": null,
+        "terminal_prediction_rms_change": null
+      },
+      {
+        "subdivisions": 2,
+        "finite": true,
+        "previous_subdivisions": 1,
+        "memory_trace_rms_change": 0.03445951502522757,
+        "recovery_trace_rms_change": 0.01502028036140504,
+        "terminal_memory_rms_change": 0.012385036820852123,
+        "terminal_prediction_rms_change": 0.03715511046255634
+      },
+      {
+        "subdivisions": 4,
+        "finite": true,
+        "previous_subdivisions": 2,
+        "memory_trace_rms_change": 0.004079270023651817,
+        "recovery_trace_rms_change": 0.0070131286900295565,
+        "terminal_memory_rms_change": 0.0007913117606478172,
+        "terminal_prediction_rms_change": 0.002373935281943452
+      },
+      {
+        "subdivisions": 8,
+        "finite": true,
+        "previous_subdivisions": 4,
+        "memory_trace_rms_change": 0.0019390832924255853,
+        "recovery_trace_rms_change": 0.003471939140896975,
+        "terminal_memory_rms_change": 0.000497794642720418,
+        "terminal_prediction_rms_change": 0.001493383928161187
+      }
+    ],
+    "continuum_error_known": false,
+    "moving_boundary_first_passage_error": null,
+    "limits": [
+      "Stationary conditioned features do not define moving-boundary first passage.",
+      "Successive endpoint differences do not prove global convergence.",
+      "No training, model selection or quality advantage is established."
+    ]
+  },
+  "mechanism_gradients": {
+    "schema": "hx-value-stream-gradient-v1",
+    "objective": "mean_squared_terminal_memory",
+    "epsilon": 0.0001,
+    "subdivisions": 2,
+    "rows": [
+      {
+        "parameter": "boundary_input.weight",
+        "status": "passed",
+        "analytical_directional_derivative": 0.001143741455553235,
+        "central_difference": 0.0011437414550174996,
+        "absolute_error": 5.357355184476553e-13,
+        "allowed_error": 2.3874829111064703e-06
+      },
+      {
+        "parameter": "raw_financial",
+        "status": "passed",
+        "analytical_directional_derivative": 0.0008543622734652305,
+        "central_difference": 0.0008543622734280554,
+        "absolute_error": 3.7175124090182976e-14,
+        "allowed_error": 1.808724546930461e-06
+      }
+    ],
+    "status": "passed"
+  },
+  "actual_query_loss_gradient": {
+    "analytical": -0.0010646844761743833,
+    "central_difference": -0.0010646844761375007,
+    "absolute_error": 3.688260634404639e-14,
+    "epsilon": 0.0001
+  },
+  "cpu_seconds": 0.535599258,
+  "wall_seconds": 0.5377697050025745,
+  "energy_joules": null,
+  "optimizer_steps": 0
+}

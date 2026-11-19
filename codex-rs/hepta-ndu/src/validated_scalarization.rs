@@ -88,3 +88,89 @@ impl ValidatedScalarizationProfileV1 {
         self.scalarization_digest
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use codex_hepta_types::StableId;
+
+    use super::*;
+    use crate::AxisDirection;
+    use crate::AxisValue;
+    use crate::RequiredOrganSet;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("stable id")
+    }
+
+    fn profile() -> UtilityProfile {
+        UtilityProfile {
+            profile_id: id("utility-v1"),
+            axis_registry_digest: Digest32::of_bytes(b"axis-registry"),
+            normalization_manifest_digest: Digest32::of_bytes(b"normalization"),
+            dimensions: vec![
+                (id("latency"), AxisDirection::Minimize),
+                (id("success"), AxisDirection::Maximize),
+            ],
+            risk_ceilings: Vec::new(),
+            resource_ceilings: Vec::new(),
+            required_organs: RequiredOrganSet {
+                organ_ids: Vec::new(),
+            },
+        }
+    }
+
+    #[test]
+    fn validated_scalarization_is_profile_bound_and_canonical() {
+        let scalarization = ScalarizationProfile {
+            profile_id: id("weights-v1"),
+            weights: vec![
+                AxisValue {
+                    axis: id("success"),
+                    value: FixedQ32::ONE,
+                },
+                AxisValue {
+                    axis: id("latency"),
+                    value: FixedQ32::ZERO,
+                },
+            ],
+        };
+        let validated = ValidatedScalarizationProfileV1::try_new(&profile(), scalarization)
+            .expect("valid scalarization");
+        assert_eq!(validated.profile().weights[0].axis, id("latency"));
+        assert!(!validated.utility_profile_digest().is_zero());
+        assert!(!validated.scalarization_digest().is_zero());
+    }
+
+    #[test]
+    fn incomplete_or_out_of_range_scalarization_is_rejected_before_owner_open() {
+        let incomplete = ScalarizationProfile {
+            profile_id: id("weights-v1"),
+            weights: vec![AxisValue {
+                axis: id("success"),
+                value: FixedQ32::ONE,
+            }],
+        };
+        assert!(matches!(
+            ValidatedScalarizationProfileV1::try_new(&profile(), incomplete),
+            Err(NduError::IncompleteScalarization)
+        ));
+
+        let invalid = ScalarizationProfile {
+            profile_id: id("weights-v1"),
+            weights: vec![
+                AxisValue {
+                    axis: id("success"),
+                    value: FixedQ32::from_raw(FixedQ32::ONE.raw() + 1),
+                },
+                AxisValue {
+                    axis: id("latency"),
+                    value: FixedQ32::from_raw(-1),
+                },
+            ],
+        };
+        assert!(matches!(
+            ValidatedScalarizationProfileV1::try_new(&profile(), invalid),
+            Err(NduError::InvalidWeight(_))
+        ));
+    }
+}

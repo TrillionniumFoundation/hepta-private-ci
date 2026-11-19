@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.mem8.v15.private-original-root-audit.v1",
+  "status": "PASS",
+  "verification_scope": "Full remote binary readback, exact outer member hashes/Git identities, two full original ZIP CRC/member bindings, original 34 case rows/six summaries, credit receipt/source/drift/retry invariants, both directory mutants and restored exact source",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "immutable_carrier_commit": "780e1c3314761695c3c5ae2b76a61feac3313807",
+  "archive": {
+    "bytes": 76288,
+    "sha256": "c7834c5ddde04379915710ef3c85e349df5f103f8423ce745cf1ded4fc73b5de",
+    "git_blob": "45d4bfb858e49a8c1dcae1ea02f46f15fa91d162"
+  },
+  "outer_members": 22,
+  "original_zip_members": 11,
+  "replayed_reviewed_offline_verifier": true,
+  "reproduced_audit_byte_identical": true,
+  "reproduced_audit_sha256": "a8456f414702f88e6f54f9b9dc1f8803ce2db3ab5699bf2af09255a9fa35ddb8",
+  "native_or_model_requests_executed_by_audit": 0,
+  "counts": {
+    "main_executions": 34,
+    "main_distinct_package_case_ids": 34,
+    "main_passed": 34,
+    "main_failed": 0,
+    "positive_repeat_executions": 2,
+    "mutant_executions": 4,
+    "expected_mutant_passes": 2,
+    "expected_mutant_failures": 2
+  },
+  "limits": [
+    "No JUnit was retained by this original workflow; raw nextest case rows and summaries were checked.",
+    "Reported skipped counts remain separate; the 34 selected cases are not a whole-package or whole-Windows pass.",
+    "The enabled core apply-patch hardlink case is in a separate failing Bazel job and is not closed by these private-store cases.",
+    "Positive replay of two acquisition cases is not counted as two new unique source capabilities."
+  ]
+}

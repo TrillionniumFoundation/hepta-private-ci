@@ -73,34 +73,40 @@ def extract_fixture(repo, output, ruff):
     parts = []
     for entry in manifest["archive"]["parts"]:
         data = (original / entry["path"]).read_bytes()
-        assert len(data) == entry["bytes"] and sha(data) == entry["sha256"]
+        if not (len(data) == entry["bytes"] and sha(data) == entry["sha256"]):
+            raise AssertionError()
         parts.append(data)
     archive = b"".join(parts)
-    assert sha(archive) == manifest["archive"]["sha256"]
+    if not (sha(archive) == manifest["archive"]["sha256"]):
+        raise AssertionError()
     prefix = "memory-budget-evidence-20261024/"
     with tarfile.open(fileobj=io.BytesIO(archive), mode="r:gz") as tar:
         protocol = json.load(tar.extractfile(prefix + "prepared-001/protocol.json"))
-        assert (
+        if not (
             sha(ruff.read_bytes())
             == protocol["task_fixture_files"]["ruff-runtime/bin/ruff"]
-        )
+        ):
+            raise AssertionError()
         files = {}
         for member in tar:
             start = prefix + "task-fixtures/lint-original/"
             if not member.name.startswith(start) or not member.isfile():
                 continue
             relative = Path(member.name.removeprefix(start))
-            assert not relative.is_absolute() and ".." not in relative.parts
+            if not (not relative.is_absolute() and ".." not in relative.parts):
+                raise AssertionError()
             data = tar.extractfile(member).read()
             expected = protocol["task_fixture_files"][
                 "task-fixtures/lint-original/" + str(relative)
             ]
-            assert sha(data) == expected
+            if not (sha(data) == expected):
+                raise AssertionError()
             dest = output / relative
             dest.parent.mkdir(parents=True, exist_ok=True)
             dest.write_bytes(data)
             files[str(relative)] = dict(bytes=len(data), sha256=expected)
-    assert len(files) == 17
+    if not (len(files) == 17):
+        raise AssertionError()
     return dict(
         archive_sha256=sha(archive),
         original_fixture_files=files,
@@ -125,7 +131,8 @@ def execute(ruff, python, original, root, prediction):
     check = [str(ruff), "check", "--no-cache", TARGET]
     before = command(check, workspace, root / "before")
     log = (root / "before/stdout.log").read_text()
-    assert before["returncode"] != 0 and "F401" in log and "E731" in log
+    if not (before["returncode"] != 0 and "F401" in log and "E731" in log):
+        raise AssertionError()
     operation = prediction.strip() if isinstance(prediction, str) else None
     action = None
     if operation in OPERATIONS:
@@ -164,7 +171,8 @@ def execute(ruff, python, original, root, prediction):
         for p in workspace.rglob("*.py")
         if p.read_bytes() != (original / p.relative_to(workspace)).read_bytes()
     }
-    assert set(changed) <= {TARGET}
+    if not (set(changed) <= {TARGET}):
+        raise AssertionError()
     result = dict(
         raw_prediction=prediction,
         admitted=action is not None,

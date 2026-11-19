@@ -102,6 +102,13 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             .journal
             .current()?
             .ok_or(NeuronRuntimeError::CheckpointMismatch)?;
+        // Calibrated execution keeps the existing timing boundary: calibration
+        // contributes to measured execution before the unchanged resource gate.
+        let calibration = self
+            .calibrated
+            .as_ref()
+            .map(|config| calibrate(&config.calibration, &sparse_receipt, input.logical_sequence))
+            .transpose()?;
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
         let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
@@ -141,9 +148,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             saturation_count: sparse_receipt.projection_count,
             queue_age_micros: model_output.queue_age_micros,
         };
-        let output = if let Some(config) = &self.calibrated {
-            let (confidence_ppm, ood_ppm, abstain) =
-                calibrate(&config.calibration, &sparse_receipt, input.logical_sequence)?;
+        let output = if let Some((confidence_ppm, ood_ppm, abstain)) = calibration {
             let abstain = abstain || resource_exceeded;
             let tick_receipt = NeuronTickReceiptV1 {
                 tick_id: input.tick_id.clone(),

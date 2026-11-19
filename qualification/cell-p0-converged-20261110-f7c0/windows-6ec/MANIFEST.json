@@ -1,0 +1,53 @@
+{
+  "schema": "p0-windows-6ec-readback-manifest-v1",
+  "source_head": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "run_id": 42937198409,
+  "job_id": 130250125460,
+  "scope": "Existing exact-source Windows run only; no rerun, no later-head or Training adapter qualification.",
+  "files": [
+    {
+      "path": "API_CAPTURE.json",
+      "bytes": 21495,
+      "sha256": "4b6229ec85ecf689273ca21d7a69b8fe8419930effd2011c81350e951238551e"
+    },
+    {
+      "path": "ARTIFACT_INDEX.json",
+      "bytes": 1506,
+      "sha256": "eddff733500283a04d03a43d6760b88c9310bd67f531096105b554b152fb6565"
+    },
+    {
+      "path": "CI_EVIDENCE.json",
+      "bytes": 18041,
+      "sha256": "c7e515d3fe43f942b88f799298c025665d54cdf68ee30d3c0eaf1e110596728a"
+    },
+    {
+      "path": "RAW_EXCERPTS.txt.gz",
+      "bytes": 4673,
+      "sha256": "e1df9fbab2f0213b670093b5db50b4cb3ef74cebc51b91621438fc5913d219ee",
+      "uncompressed_bytes": 16452,
+      "uncompressed_sha256": "5b9b19c5d8e1266e539846b8f8769b87fcd8d4cc34c85956a2a5b3c6e8888801"
+    },
+    {
+      "path": "RESULTS.md",
+      "bytes": 6609,
+      "sha256": "38d1c8282f8093f8fb50546f308ec2aed08947018a1fa1ab3a2875bbd42bd929"
+    },
+    {
+      "path": "artifact_13820071570.zip",
+      "bytes": 13533,
+      "sha256": "b5cd3b06015b9d1aef2ba721540b21fd0b1bf10ae4d566d48ef6ae6be5823273"
+    },
+    {
+      "path": "job_130250125460.decoded.log.gz",
+      "bytes": 52663,
+      "sha256": "66afb1756e19b964622d1ebc010a87dc988967b3e6e006def01812fbe7c9090b"
+    }
+  ],
+  "source_delivery_manifest_sha256": "4b7dfa10f5e88b9b0dbd17c1bab73a95228bdf46121b35e99778078b7bd6fb47",
+  "storage_only_transform": {
+    "logical_path": "RAW_EXCERPTS.txt",
+    "stored_path": "RAW_EXCERPTS.txt.gz",
+    "reason": "Preserve exact derivative excerpt bytes, including original trailing spaces, without text whitespace violations; original ZIP and complete log are unchanged."
+  }
+}

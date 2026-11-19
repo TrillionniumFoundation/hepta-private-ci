@@ -1,0 +1,82 @@
+{
+  "complete_tree_leaf_count": 14053,
+  "complete_tree_recomputed": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "files": [
+    {
+      "bytes": 15877,
+      "git_blob": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "sha256": "3b6f63c55d18463ef12b5c35c456f52d720cff406615c616aa59e5514905b75f"
+    },
+    {
+      "bytes": 6574,
+      "git_blob": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "sha256": "b5c8c1728724e01e90422f80003c1a644418478c62ea3a2228d40255a7f3f136"
+    },
+    {
+      "bytes": 4517,
+      "git_blob": "bd94e2dc6f712c3c48da30597c0c45001dd5e81e",
+      "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "sha256": "9ea2def1193798e7c9bb6fc20f3e8998e3a8a1271bb2661b01c06456caa26a1f"
+    },
+    {
+      "bytes": 7099,
+      "git_blob": "3dbbcb516d0aa5386d2e2bbf550824422017d724",
+      "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "sha256": "db4dd341980625241262c989b816442c52b1a0ed4af95bc036e3478fe2edfaec"
+    }
+  ],
+  "independent_peer_required_before_admission": true,
+  "input_source_pins": 20,
+  "model_requests": 0,
+  "native_tests": 0,
+  "original_five_plan": {
+    "bytes": 9187,
+    "git_blob": "6d611f3f805d87c233bb89700b1dc1b18e750365",
+    "sha256": "83d9a2067770ea4ffa428f9cee66d112e386d5622195c2311083fbaef7767cd7"
+  },
+  "pin_origins": {
+    ".github/scripts/windows_current_ci.py": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "AGENTS.md": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "MODULE.bazel.lock": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/.cargo/config.toml": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/.config/nextest.toml": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/Cargo.lock": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/Cargo.toml": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/rust-toolchain.toml": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/windows-sandbox-rs/Cargo.toml": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": "actual V10 canonical formatter capsule bytes, including reviewed earlier Clippy output",
+    "codex-rs/windows-sandbox-rs/src/helper_materialization.rs": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "codex-rs/windows-sandbox-rs/src/lib.rs": "actual V10 canonical formatter capsule bytes",
+    "codex-rs/windows-sandbox-rs/src/setup.rs": "actual V10 canonical formatter capsule bytes",
+    "codex-rs/windows-sandbox-rs/src/setup_process.rs": "actual V10 canonical formatter capsule bytes",
+    "codex-rs/windows-sandbox-rs/src/setup_process_tests.rs": "actual V10 canonical formatter capsule bytes",
+    "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs": "actual V10 canonical formatter capsule bytes",
+    "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs": "actual V10 canonical formatter capsule bytes, including reviewed earlier Clippy output",
+    "justfile": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "scripts/just-shell.py": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched",
+    "scripts/run-nextest.py": "same immutable Git blob as the previously frozen actual five-case plan; complete V10 tree independently matched"
+  },
+  "refs_changed": false,
+  "schema": "mem.windows-sandbox-fix.final-preparation.v1",
+  "scope": "real helper build then exactly one scoped Windows sandbox just fix",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_only_original_job": 130660630288,
+  "source_only_original_run": 43060276203,
+  "source_only_root_audit": {
+    "bytes": 1162,
+    "git_blob": "7ec42e5b814661be43e815788b3a16cfdd0cf6c7",
+    "sha256": "e0949b39fe15edfb012d11eee05de9c34215a30ccde10d06087421faf7302ac1"
+  },
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "static_checks": {
+    "PowerShell_execution_or_new_native_test": "NOT_PERFORMED",
+    "no_placeholder_pins": "PASS",
+    "python_ast": "PASS",
+    "same_original_PowerShell_control_structure": "only namespace, displayed scope and source identities change",
+    "yaml": "PASS"
+  },
+  "status": "FROZEN_NOT_ADMITTED_NOT_RUN",
+  "support_bytes_unchanged": true
+}

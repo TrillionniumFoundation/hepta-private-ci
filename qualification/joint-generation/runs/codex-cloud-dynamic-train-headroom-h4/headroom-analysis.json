@@ -1,0 +1,469 @@
+{
+  "boundary": "This is an exploratory TRAIN diagnostic of existing T11 weights, actual old rowwise service and a conditional label-aware proxy oracle. No policy fitted or timing/seed discarded. It neither confirms dynamic benefit nor rules out every model/task family; old r2/CORE failures and H1 prices remain unchanged. Static NDU receives every applicable optimization in future work.",
+  "experiment_id": "h4",
+  "mean_content_gap_N_minus_NC": 0.0011402135334602393,
+  "mean_free_label_oracle_raw_minus_N_full": -0.00021338087227628004,
+  "mean_oracle_headroom_vs_own_continue_proxy": 0.002187107339972941,
+  "mean_oracle_proxy_minus_N_full": -0.0015038151342732602,
+  "prior_H2_failure": {
+    "H3_ledger_label": "H3-TRAIN-RD-not-qualification",
+    "TRAIN_constructed": false,
+    "bad_ledger_label": "H2-TRAIN-R&D-not-qualification",
+    "bindings": {
+      "PARTIAL": {
+        "path": "training_diagnostics/dynamic-h2/PARTIAL.json",
+        "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+      },
+      "diagnostic": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/diagnostic.json",
+        "sha256": "eaaed14c1a77f4d2d5af801d6579539c82ab8cad4ef3a306ee5bcf864ae366fa"
+      },
+      "freeze": {
+        "path": "training_diagnostics/dynamic-h2/frozen-h2.json",
+        "sha256": "cf555cd1571d2019b6c9c2e1ca737ff9392682a0e2b19aae580425d699413e52"
+      },
+      "outer_execution": {
+        "path": "runs/codex-cloud-dynamic-h2-source-preflight/actual-worker-execution.json",
+        "sha256": "7edac8719400ea0d9c8578c15bc1b38e5072eb6797f05ea46037aac649cdbe7e"
+      },
+      "output_START": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/START.json",
+        "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+      },
+      "protocol": {
+        "path": "training_diagnostics/dynamic-h2/protocol.json",
+        "sha256": "0da7509c51248832182d448f77cb323cf8bc3b23e98585795e9c3e0912a2c051"
+      },
+      "report": {
+        "path": "runs/codex-cloud-dynamic-train-headroom-h2/REPORT.md",
+        "sha256": "17c02151359a85b102751f57e10e8fbe14bb4b4b3d984da3a3ec33866ef47ae3"
+      },
+      "stage_START": {
+        "path": "training_diagnostics/dynamic-h2/START.json",
+        "sha256": "4bd25ebd1569630a273acc059baea093e737a9926a00d1ddd348359be4cc04dc"
+      }
+    },
+    "exact_error": "independent.accounting.AccountingError: invalid arm",
+    "execution_commit": "a5bec822cf5c235c52c7a6ab20bf74297a9795e8",
+    "fixed_ledger_label": "H2-TRAIN-RD-not-qualification",
+    "known_declared_units": 0,
+    "launcher_cpu_ns_before_final_receipt": 27556463,
+    "measured_service_calls": 0,
+    "models_loaded": false,
+    "original_worker_sha256": "5311a378af1753a6801438a0607f3570c9bf3256f959eebbfab41dfa60f8545e",
+    "retention": "H2 locks, freeze, failure and costs stay sealed; H3 does not resume/reset H2 and never selects among measured outcomes",
+    "source_commit": "f3c9d89bf10be3e0d7664d3ba5c3eb17cc782665",
+    "status": "terminal startup implementation failure; zero TRAIN/model/service measurements; not a scientific effect estimate",
+    "total_research_cpu_ns_before_final_receipt": 519258463,
+    "unsettled_declared_units": 0,
+    "worker_and_descendant_cpu_ns": 491702000
+  },
+  "prior_H3_failure": {
+    "TRAIN_constructions": 0,
+    "actual_research_cpu_ns": 807168997,
+    "attempted_service_calls": 0,
+    "cost_identity": "Historical phase CPU floats compare after round(seconds*1e9); NC8537556029 and N8307966292 unchanged. All true budgets remain exact/unrelaxed.",
+    "diagnostic_path": "runs/codex-cloud-dynamic-train-headroom-h3/diagnostic.json",
+    "diagnostic_sha256": "c05d77366a0d53b79ce77cbd4ff173ea1806c432660857e3f1449eec2d930e90",
+    "failure": "ValueError: historical complete build cost changed; exact binary float equality falsely rejected identical integer-nanosecond values",
+    "freeze_path": "training_diagnostics/dynamic-h3/frozen-h3.json",
+    "freeze_sha256": "829c2b8ae3bdc56e168a5185e41a8e837b042b518cb51df44e88a65387ea5928",
+    "model_object_loads": 0,
+    "model_results_observed": 0,
+    "outer_receipt_path": "runs/codex-cloud-dynamic-h3-source-preflight/actual-worker-execution.json",
+    "outer_receipt_sha256": "0b89e35ea0f54eed7e61b660273294149cd997b10c037eeca295003a3c1b730a",
+    "source_commit": "9ca2a3e7e7f318793608a311fee644e1f4fe84e8",
+    "source_repair_commit": "ef88118111",
+    "start_path": "training_diagnostics/dynamic-h3/START.json",
+    "start_sha256": "8a648ccf3fc911e036022734acafe3ec708b2ce739c7d561a2ef17e470093a3e"
+  },
+  "qualification_eligible": false,
+  "schema": "hepta.dynamic-train-headroom-h4-analysis.v1",
+  "scientific_benefit_confirmed": false,
+  "seeds": [
+    {
+      "NC_full_raw": 0.992162599270597,
+      "NC_low_raw": 0.9421418549471802,
+      "N_full_raw": 0.992458093769598,
+      "all_timing_samples": {
+        "N-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            87120.40307708333,
+            88028.57431114583,
+            104147.93403333332
+          ],
+          "prepare_cpu_ns": [
+            813615,
+            731422,
+            1610070
+          ],
+          "service_cpu_ns_per_row": [
+            87112.26692708333,
+            88021.26009114583,
+            104131.83333333333
+          ]
+        },
+        "NC-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            77343.5953740625,
+            89278.34424333333,
+            78950.0018525
+          ],
+          "prepare_cpu_ns": [
+            475846,
+            557341,
+            3152529
+          ],
+          "service_cpu_ns_per_row": [
+            77338.8369140625,
+            89272.77083333333,
+            78918.4765625
+          ]
+        },
+        "NC-go": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            111762.52666354168,
+            97254.38779333333,
+            153173.02491260416
+          ],
+          "prepare_cpu_ns": [
+            1320570,
+            689821,
+            763266
+          ],
+          "service_cpu_ns_per_row": [
+            111749.32096354167,
+            97247.48958333333,
+            153165.39225260416
+          ]
+        },
+        "NC-stop": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            79981.69880458333,
+            93142.09511447918,
+            133585.94908833335
+          ],
+          "prepare_cpu_ns": [
+            662719,
+            1359544,
+            641263
+          ],
+          "service_cpu_ns_per_row": [
+            79975.07161458333,
+            93128.49967447917,
+            133579.53645833334
+          ]
+        }
+      },
+      "content_gap_N_minus_NC": 0.0002954944990011562,
+      "decomposition": {
+        "minus_build_gap": -0.00020842814175205462,
+        "minus_content_gap": -0.0002954944990011562,
+        "minus_runtime_gap_proxy": -0.006726840538180682,
+        "routing_headroom": 0.005051723363760626,
+        "sum": -0.0021790398151732664
+      },
+      "direct_NC_full_complete_net": 0.9629100391204025,
+      "direct_N_full_complete_net": 0.9609414252984517,
+      "free_label_oracle_raw": 0.9934334985979906,
+      "free_label_oracle_raw_minus_N_full": 0.0009754048283925242,
+      "go_proxy_vs_measured_go_cost_difference": 0.0002629319377169849,
+      "historical_build_utility_cost": {
+        "N": 0.007542209850522465,
+        "NC": 0.00775063799227452
+      },
+      "limits": "Oracle sees unavailable labels/outcomes. New-wave signed/zero-clamped median CPU and constant marginal-mixture assumptions are descriptive, not certified request-level or complete-system upper bounds. Direct static is T11-selected NDU/full, not every static policy.",
+      "mandatory_route_overhead_vs_direct_NC_full_proxy": 0.009199377000884489,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_paired_median": 34418.93128947918,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_pairs": [
+        34418.93128947918,
+        7976.043550000002,
+        74223.02306010415
+      ],
+      "measured_go_minus_direct_NC_full_runtime_utility_cost_paired_median": 0.009373947612158864,
+      "new_wave_service_price_c": 0.005334180326828239,
+      "oracle_continue_fraction": 0.22135416666666666,
+      "oracle_headroom_vs_best_constant_proxy": 0.005051723363760626,
+      "oracle_headroom_vs_own_continue_proxy": 0.005051723363760626,
+      "oracle_headroom_vs_own_stop_proxy": 0.049738287360349125,
+      "oracle_proxy_complete_net": 0.9587623854832785,
+      "oracle_proxy_net_minus_direct_NC_full": -0.004147653637123994,
+      "oracle_proxy_net_minus_direct_N_full": -0.0021790398151732004,
+      "oracle_raw": 0.9930608853486241,
+      "oracle_stop_rows": 2392,
+      "physical_sources": 192,
+      "rows": 3072,
+      "runtime_utility_cost": {
+        "N-full": 0.023974458620623865,
+        "NC-full": 0.02150192215792006,
+        "NC-go": 0.030438367221087562,
+        "NC-stop": 0.02536711883197631
+      },
+      "seed": 11,
+      "signed_go_minus_stop_cpu_ns_per_row": [
+        31774.249348958343,
+        4118.989908854157,
+        19585.855794270814
+      ],
+      "signed_median_marginal_cpu_ns_per_row": 19585.855794270814,
+      "signed_price_sensitivity_oracle_minus_N_full": -0.0021790398151732004,
+      "zero_clamped_marginal_cpu_ns_per_row": 19585.855794270814
+    },
+    {
+      "NC_full_raw": 0.9908550040816566,
+      "NC_low_raw": 0.9410182777699135,
+      "N_full_raw": 0.9930141450548687,
+      "all_timing_samples": {
+        "N-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            90121.20403927083,
+            86268.6699590625,
+            86776.089665
+          ],
+          "prepare_cpu_ns": [
+            595762,
+            1862992,
+            532404
+          ],
+          "service_cpu_ns_per_row": [
+            90115.24641927083,
+            86250.0400390625,
+            86770.765625
+          ]
+        },
+        "NC-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            92363.42040666667,
+            82327.911341875,
+            85533.95055385417
+          ],
+          "prepare_cpu_ns": [
+            603499,
+            571017,
+            538252
+          ],
+          "service_cpu_ns_per_row": [
+            92357.38541666667,
+            82322.201171875,
+            85528.56803385417
+          ]
+        },
+        "NC-go": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            90771.6929440625,
+            96909.62542666667,
+            81744.07367208332
+          ],
+          "prepare_cpu_ns": [
+            632478,
+            730251,
+            900987
+          ],
+          "service_cpu_ns_per_row": [
+            90765.3681640625,
+            96902.32291666667,
+            81735.06380208333
+          ]
+        },
+        "NC-stop": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            91420.1042559375,
+            91708.59234291667,
+            82657.78083427083
+          ],
+          "prepare_cpu_ns": [
+            690992,
+            651552,
+            836254
+          ],
+          "service_cpu_ns_per_row": [
+            91413.1943359375,
+            91702.07682291667,
+            82649.41829427083
+          ]
+        }
+      },
+      "content_gap_N_minus_NC": 0.0021591409732121766,
+      "decomposition": {
+        "minus_build_gap": -0.00020842814175205462,
+        "minus_content_gap": -0.0021591409732121766,
+        "minus_runtime_gap_proxy": -0.001264790853597951,
+        "routing_headroom": 0.0008760233440111693,
+        "sum": -0.0027563366245510128
+      },
+      "direct_NC_full_complete_net": 0.9598093147465794,
+      "direct_N_full_complete_net": 0.961838589018599,
+      "free_label_oracle_raw": 0.9917310274256678,
+      "free_label_oracle_raw_minus_N_full": -0.0012831176292010073,
+      "go_proxy_vs_measured_go_cost_difference": 0.0001765939104130601,
+      "historical_build_utility_cost": {
+        "N": 0.007542209850522465,
+        "NC": 0.00775063799227452
+      },
+      "limits": "Oracle sees unavailable labels/outcomes. New-wave signed/zero-clamped median CPU and constant marginal-mixture assumptions are descriptive, not certified request-level or complete-system upper bounds. Direct static is T11-selected NDU/full, not every static policy.",
+      "mandatory_route_overhead_vs_direct_NC_full_proxy": 0.0016030856965425291,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_paired_median": -1591.7274626041763,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_pairs": [
+        -1591.7274626041763,
+        14581.71408479166,
+        -3789.876881770848
+      ],
+      "measured_go_minus_direct_NC_full_runtime_utility_cost_paired_median": -0.0004335047396386457,
+      "new_wave_service_price_c": 0.0,
+      "oracle_continue_fraction": 0.6419270833333334,
+      "oracle_headroom_vs_best_constant_proxy": 0.0008760233440111693,
+      "oracle_headroom_vs_own_continue_proxy": 0.0008760233440111693,
+      "oracle_headroom_vs_own_stop_proxy": 0.050712749655754306,
+      "oracle_proxy_complete_net": 0.959082252394048,
+      "oracle_proxy_net_minus_direct_NC_full": -0.0007270623525313935,
+      "oracle_proxy_net_minus_direct_N_full": -0.0027563366245509924,
+      "oracle_raw": 0.9917310274256678,
+      "oracle_stop_rows": 1100,
+      "physical_sources": 192,
+      "rows": 3072,
+      "runtime_utility_cost": {
+        "N-full": 0.023633346185747275,
+        "NC-full": 0.023295051342802697,
+        "NC-go": 0.024721543128932166,
+        "NC-stop": 0.024898137039345226
+      },
+      "seed": 23,
+      "signed_go_minus_stop_cpu_ns_per_row": [
+        -647.826171875,
+        5200.24609375,
+        -914.3544921875
+      ],
+      "signed_median_marginal_cpu_ns_per_row": -647.826171875,
+      "signed_price_sensitivity_oracle_minus_N_full": -0.0026183692363770383,
+      "zero_clamped_marginal_cpu_ns_per_row": 0.0
+    },
+    {
+      "NC_full_raw": 0.9929278457362817,
+      "NC_low_raw": 0.9412838667145326,
+      "N_full_raw": 0.993893850864449,
+      "all_timing_samples": {
+        "N-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            81775.32367229168,
+            110738.3250625,
+            77925.6611528125
+          ],
+          "prepare_cpu_ns": [
+            820974,
+            1628600,
+            634377
+          ],
+          "service_cpu_ns_per_row": [
+            81767.11393229167,
+            110722.0390625,
+            77919.3173828125
+          ]
+        },
+        "NC-full": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            83518.25040010417,
+            101390.2499146875,
+            76524.7844803125
+          ],
+          "prepare_cpu_ns": [
+            545971,
+            566886,
+            553741
+          ],
+          "service_cpu_ns_per_row": [
+            83512.79069010417,
+            101384.5810546875,
+            76519.2470703125
+          ]
+        },
+        "NC-go": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            92669.0770825,
+            109032.25981458333,
+            77799.780724375
+          ],
+          "prepare_cpu_ns": [
+            1069427,
+            990695,
+            960299
+          ],
+          "service_cpu_ns_per_row": [
+            92658.3828125,
+            109022.35286458333,
+            77790.177734375
+          ]
+        },
+        "NC-stop": {
+          "complete_runtime_cpu_ns_per_horizon_request": [
+            95669.43358864583,
+            78232.84536,
+            77852.970375625
+          ],
+          "prepare_cpu_ns": [
+            755631,
+            1237661,
+            633561
+          ],
+          "service_cpu_ns_per_row": [
+            95661.87727864583,
+            78220.46875,
+            77846.634765625
+          ]
+        }
+      },
+      "content_gap_N_minus_NC": 0.000966005128167385,
+      "decomposition": {
+        "minus_build_gap": -0.00020842814175205462,
+        "minus_content_gap": -0.000966005128167385,
+        "minus_runtime_gap_proxy": 0.0009647889946769322,
+        "routing_headroom": 0.0006335753121470282,
+        "sum": 0.0004239310369045208
+      },
+      "direct_NC_full_complete_net": 0.9624311295080147,
+      "direct_N_full_complete_net": 0.964080246425167,
+      "free_label_oracle_raw": 0.9935614210484286,
+      "free_label_oracle_raw_minus_N_full": -0.00033242981602035694,
+      "go_proxy_vs_measured_go_cost_difference": -0.003931687441006207,
+      "historical_build_utility_cost": {
+        "N": 0.007542209850522465,
+        "NC": 0.00775063799227452
+      },
+      "limits": "Oracle sees unavailable labels/outcomes. New-wave signed/zero-clamped median CPU and constant marginal-mixture assumptions are descriptive, not certified request-level or complete-system upper bounds. Direct static is T11-selected NDU/full, not every static policy.",
+      "mandatory_route_overhead_vs_direct_NC_full_proxy": -0.0014394726419097517,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_paired_median": 7642.009899895827,
+      "measured_go_minus_direct_NC_full_runtime_cpu_ns_per_row_pairs": [
+        9150.82668239584,
+        7642.009899895827,
+        1274.996244062495
+      ],
+      "measured_go_minus_direct_NC_full_runtime_utility_cost_paired_median": 0.0020812906667767393,
+      "new_wave_service_price_c": 0.0,
+      "oracle_continue_fraction": 0.6468098958333334,
+      "oracle_headroom_vs_best_constant_proxy": 0.0006335753121470282,
+      "oracle_headroom_vs_own_continue_proxy": 0.0006335753121470282,
+      "oracle_headroom_vs_own_stop_proxy": 0.05227755433389603,
+      "oracle_proxy_complete_net": 0.9645041774620714,
+      "oracle_proxy_net_minus_direct_NC_full": 0.002073047954056717,
+      "oracle_proxy_net_minus_direct_N_full": 0.00042393103690441247,
+      "oracle_raw": 0.9935614210484286,
+      "oracle_stop_rows": 1085,
+      "physical_sources": 192,
+      "rows": 3072,
+      "runtime_utility_cost": {
+        "N-full": 0.022271394588759652,
+        "NC-full": 0.02274607823599247,
+        "NC-go": 0.025238293035088927,
+        "NC-stop": 0.02130660559408272
+      },
+      "seed": 47,
+      "signed_go_minus_stop_cpu_ns_per_row": [
+        -3003.4944661458285,
+        30801.88411458333,
+        -56.45703125
+      ],
+      "signed_median_marginal_cpu_ns_per_row": -56.45703125,
+      "signed_price_sensitivity_oracle_minus_N_full": 0.000434612993069905,
+      "zero_clamped_marginal_cpu_ns_per_row": 0.0
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+COMMAND ['/usr/bin/python3', '-m', 'unittest', '-v', 'test_hpca_process_replay']
+EXIT 0
+STDOUT
+
+STDERR
+test_dropped_row_rejected (test_hpca_process_replay.ReplayTest.test_dropped_row_rejected) ... ok
+test_forged_cost_rejected (test_hpca_process_replay.ReplayTest.test_forged_cost_rejected) ... ok
+test_forged_identity_rejected (test_hpca_process_replay.ReplayTest.test_forged_identity_rejected) ... ok
+test_forged_label_rejected (test_hpca_process_replay.ReplayTest.test_forged_label_rejected) ... ok
+test_forged_probability_rejected (test_hpca_process_replay.ReplayTest.test_forged_probability_rejected) ... ok
+test_full_nine_condition_reexecution (test_hpca_process_replay.ReplayTest.test_full_nine_condition_reexecution) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.003s
+
+OK
+
+COMMAND ['/usr/bin/python3', 'verify_hpca_process_replay.py']
+EXIT 0
+STDOUT
+{
+  "authority": "DENY_ALL",
+  "bit_exact_score_fields": 648,
+  "conditions": 9,
+  "identical_decisions": 216,
+  "model_forwards": 216,
+  "new_training": false,
+  "owner_attested": false,
+  "production_qualified": false,
+  "qualification": "HOLD_NO_GO",
+  "recorded_ood_task_origin": "public operator; NOT independent B",
+  "replay_cpu_seconds": 32.938411662,
+  "replay_peak_rss_kib": 1248592,
+  "replay_wall_seconds": 9.599138684105128,
+  "same_host": true,
+  "same_program": true,
+  "schema": "hpca-process-reexecution-verified-v1"
+}
+
+STDERR
+

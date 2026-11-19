@@ -1,0 +1,389 @@
+{
+  "schema": "rrsnn-v4-complete-evidence-closeout-1",
+  "created_at_utc": "2026-10-29T17:21:06.341522+00:00",
+  "report_builder_sha256": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+  "template_sha256": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+  "source_evidence": {
+    "selection": {
+      "path": "selection.json",
+      "sha256": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd"
+    },
+    "training": {
+      "path": "results/training_summary.json",
+      "sha256": "99b28561ac6bbe95a2967b435311a07981efed5fb7236e716a4b5dc2981c2144"
+    },
+    "evaluation": {
+      "path": "results/evaluation_matrix_status.json",
+      "sha256": "4a528628e5701ca1ae1818392fbf5e18e93063fa232bcb9834043139a618a184"
+    },
+    "aggregate": {
+      "path": "results/aggregate.json",
+      "sha256": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773"
+    },
+    "mechanisms": {
+      "path": "results/mechanism_contrasts.json",
+      "sha256": "6468c31ed77072794ed0a9997f49a11a88886c37b2fc240b560500e9582dba09"
+    },
+    "original_status": {
+      "path": "results/numerical_matrix_status.json",
+      "sha256": "7299d8b6c851aec33b0a9ef59a390e0eaa10a5375f992a0d14119fb07c08699c"
+    },
+    "repair_status": {
+      "path": "results/precision_repair_matrix_status.json",
+      "sha256": "16da144dd1df9245fabb0078bf630bbfaf17d170f82ee99de5f875a3f4215a79"
+    },
+    "repair": {
+      "path": "results/precision_repair_report.json",
+      "sha256": "b35da0c6f7e1ed333b191dca66862ecea87f532d39c60332136942113f8cbbe1"
+    },
+    "calibration": {
+      "path": "results/probability_calibration/summary.json",
+      "sha256": "304687fbc05db989e74491b1f3b8b2b0be8517b649e167af8e8d64c411513e8c"
+    },
+    "behavior": {
+      "path": "results/delivery_behavior_diagnostic.json",
+      "sha256": "25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b"
+    },
+    "policy": {
+      "path": "policy_benchmark_results/matrix.json",
+      "sha256": "88840d7daedb03e5f48bba0627ad5bc259f2c9e7b8891dfe6a8def3476da5034"
+    },
+    "policy_summary": {
+      "path": "policy_benchmark_results/summary.json",
+      "sha256": "a3cdb0ca638ec6edc1dbe238b2c9ca2931f55a6dbc4e144816002fc45cd309bb"
+    },
+    "inference_scope": {
+      "path": "policy_benchmark_results/inference_scope.json",
+      "sha256": "9b7059d9732124488506251a199f53d7ecf1a2d9c3b230fff19e030f37cc1ad9"
+    },
+    "native": {
+      "path": "hepta/r5_local_status.json",
+      "sha256": "9b476b15498e9380e77822ef7c45d2f032a9bafd5f04d05a116923dc5f457df3"
+    },
+    "bridge": {
+      "path": "hepta/rr_bridge_results/trained_latest.json",
+      "sha256": "ea46a817da890d049e2a88870df91f54a475b51e4b7a9c4bfe94f258a056fd6c"
+    },
+    "bootstrap": {
+      "path": "hepta/bootstrap_repair_results/proof_latest.json",
+      "sha256": "2a684268e7dbfe7f43cc570d7400f8b01224b415ea7cd14360a18eee0913f825"
+    },
+    "ci": {
+      "path": "hepta/ci_observation/observation.json",
+      "sha256": "c19d6f11a55e791cd67ce7ca02ff8e1f64d715f44e9219d22d9ed3be69e261b2"
+    },
+    "migration": {
+      "path": "workspace_migration.json",
+      "sha256": "12afb780469d15ae370594829d37804ec2367247aea36ae0a712ffabd874d811"
+    },
+    "migration_review": {
+      "path": "workspace_migration_review.json",
+      "sha256": "7033be0f4822da16a6856c882d919a3618335c5b7cc23fea810a11f4764ad27e"
+    },
+    "migration_runtime": {
+      "path": "workspace_migration_runtime_review.json",
+      "sha256": "d15de2d61203ba89e50202ffdb168e2a9fc7308cae58092d695eb27b52e5c92b"
+    },
+    "storage_context": {
+      "path": "policy_benchmark_results/storage_context.json",
+      "sha256": "3c46f0454446b0708df997201c36b8383cdc53e2dfce005c0f26a446eac3343d"
+    }
+  },
+  "frozen_source_files_verified": 14,
+  "selected_checkpoint_sha_verified": 80,
+  "training_receipt_sha_verified": 80,
+  "numerical_raw_sha_verified": 120,
+  "probability_raw_sha_verified": 5,
+  "execution": {
+    "training_checkpoints": 80,
+    "evaluation_files": 960,
+    "original_numerical_comparisons": 60,
+    "repair_comparisons": 60,
+    "resource_conditions": 80,
+    "all_declared_matrices_completed": true
+  },
+  "primary_comparator": "ctrnn_state_cpu",
+  "secondary_comparator": "alif_analog",
+  "primary_utility_acceptance_passed": false,
+  "primary_acceptance_rule_changed": false,
+  "original_numerical_gate_passed": false,
+  "original_predeclared_engineering_acceptance_passed": false,
+  "isolated_precision_repair_stored_path_comparisons_passed": true,
+  "repair_replaces_original_evidence": false,
+  "repair_full_state_rng_equivalence_established": false,
+  "internal_probability_sanity_passed": true,
+  "external_predictive_calibration_established": false,
+  "training_pressure_windows": [
+    {
+      "variant": "rr_mean_maturity",
+      "seed": 401,
+      "quality": {
+        "status": "shared_cgroup_pressure_observed",
+        "limit_event_deltas": {
+          "max": 2936,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "attributed_to_this_model": false
+      }
+    },
+    {
+      "variant": "rr_mean_maturity",
+      "seed": 503,
+      "quality": {
+        "status": "shared_cgroup_pressure_observed",
+        "limit_event_deltas": {
+          "max": 4744,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "attributed_to_this_model": false
+      }
+    },
+    {
+      "variant": "rr_shuffle_maturity",
+      "seed": 101,
+      "quality": {
+        "status": "shared_cgroup_pressure_observed",
+        "limit_event_deltas": {
+          "max": 1152,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "attributed_to_this_model": false
+      }
+    },
+    {
+      "variant": "rr_shuffle_maturity",
+      "seed": 211,
+      "quality": {
+        "status": "shared_cgroup_pressure_observed",
+        "limit_event_deltas": {
+          "max": 12,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "attributed_to_this_model": false
+      }
+    },
+    {
+      "variant": "rr_shuffle_maturity",
+      "seed": 307,
+      "quality": {
+        "status": "shared_cgroup_pressure_observed",
+        "limit_event_deltas": {
+          "max": 12,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "attributed_to_this_model": false
+      }
+    }
+  ],
+  "resource_pressure_windows": [
+    {
+      "identity": {
+        "checkpoint_sha256": "1e71e14031b4adfd566d179c2b3421ed41b068fb597caa3fcee51a71be69ed96",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 256,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 503,
+        "variant": "alif"
+      },
+      "path": "policy_benchmark_results/alif/seed_503/instances_256.json",
+      "sha256": "9fec72a1620043f2b57be2ad30aa93fe189ee91e93073734594c858357cb173b",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 249,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "2de3cc0f293641816c302d6411e977dc5e78cea1b604c8db4ccf72bf05fd6c71",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 256,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 503,
+        "variant": "resource_lif"
+      },
+      "path": "policy_benchmark_results/resource_lif/seed_503/instances_256.json",
+      "sha256": "484504bfa83fddf9dbd9d42a95136687a4f3e919dec6bc1cefa94f4cd7c0151f",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 1009,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "bedb214119c96e7003550764474eb2b0f2a42b2025204b8d18e079ce9f354249",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 256,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 503,
+        "variant": "rr_full"
+      },
+      "path": "policy_benchmark_results/rr_full/seed_503/instances_256.json",
+      "sha256": "be9dc67bf0f315355d5dbfbfdff141e42c5c984bb9b06e503c254e5e1bdc4c56",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 4374,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "d3809c8ee06608bf3b9af8e901b22696a0b5d5e7b50407a9d4a584c9e5c15d57",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 1024,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 101,
+        "variant": "alif"
+      },
+      "path": "policy_benchmark_results/alif/seed_101/instances_1024.json",
+      "sha256": "166bf033245ce5de0b3926f1e163f0bdc41d5718572d3f6ec2a6d4a29dab7689",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 4813,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "32d23ba4e030beb5850b25faff1fd119c08da4af2035ca70ba40aa4c0d5af651",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 1024,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 101,
+        "variant": "rr_full"
+      },
+      "path": "policy_benchmark_results/rr_full/seed_101/instances_1024.json",
+      "sha256": "0cd6304a54dde906db4a85c66adc14aa4cd031c5f26a48ca6046f58c317ea46b",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 1121,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "3e2cd96b41c67f707674b3cdff9b7aff73841402b7a4f06f1eb12cd699fd9cce",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 4096,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 101,
+        "variant": "resource_lif"
+      },
+      "path": "policy_benchmark_results/resource_lif/seed_101/instances_4096.json",
+      "sha256": "bd0edfba1c0b3d496179d2920fe5e58430bd9e86bb8ea4ddf6474bbaa12b899f",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 3173,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "13918a915678e5d1b5ab86955e5d8e460c862bfe6d8fed8e7c2c2132d34aed53",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 4096,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 211,
+        "variant": "rr_full"
+      },
+      "path": "policy_benchmark_results/rr_full/seed_211/instances_4096.json",
+      "sha256": "4341da8a686a3482ba5060e9599de98711ceba9cd9f53111ae82d61db05d8f21",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 3503,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    },
+    {
+      "identity": {
+        "checkpoint_sha256": "4f0330dc45c14ccd39758f0908000f10f9fd5cea40bc4e9c0effdc65d785fcb6",
+        "cpu_affinity": [
+          3
+        ],
+        "policy_instances": 4096,
+        "protocol_sha256": "2e07736de24fc60c3520ee7d1bc70ebf987cd5ce309284fa21e8db4166bbe973",
+        "training_seed": 307,
+        "variant": "rr_full"
+      },
+      "path": "policy_benchmark_results/rr_full/seed_307/instances_4096.json",
+      "sha256": "3be58e3cbb10b6dc3012f6141890a6ab8cba5b3c69651d59e2c5f96bd66cb34b",
+      "quality": {
+        "attributed_to_this_policy": false,
+        "limit_event_deltas": {
+          "max": 60,
+          "oom": 0,
+          "oom_kill": 0
+        },
+        "status": "shared_cgroup_pressure_observed"
+      }
+    }
+  ],
+  "conditional_bootstrap_repair_passed": true,
+  "conditional_trained_feature_bridge_passed": true,
+  "production_owner_lifecycle_qualified": false,
+  "independent_production_future_window": false,
+  "full_cell_scale_qualified": false,
+  "dot_identity_verified": false,
+  "resource_environment_migration": "Real copy to independent tmpfs. First 64 resource conditions remain original overlay measurements; remaining 16 use this tmpfs workspace. Output writes and checkpoint/hash/GC are outside frozen measurement timers, but shared cgroup shmem/cache/resource conditions changed and are disclosed. Not exclusive-host or production qualification.",
+  "resource_conditions_original_overlay": 64,
+  "resource_conditions_tmpfs": 16,
+  "resource_boundary_version": "original_frozen_rr_full",
+  "precision_repair_resource_measurements_performed": false,
+  "runtime_identity_review_status": "matches_for_examined_runtime_dependencies_and_cpu_limits_with_namespace_change_disclosed",
+  "resource_environment_identical_across_migration": false,
+  "full_repository_ci_green": false,
+  "global_resource_maturity_qvi_solved": false,
+  "scientific_novelty_established": false,
+  "all_blockers_closed": false,
+  "production_activation_allowed": false,
+  "candidate_disposition": "reject_current_frozen_candidate_for_promotion",
+  "scope": "Complete fixed synthetic comparison and scoped repair. Negative evidence decides this candidate; unavailable theory and production qualifications remain unestablished."
+}

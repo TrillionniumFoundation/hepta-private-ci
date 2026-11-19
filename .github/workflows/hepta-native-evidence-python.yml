@@ -1,0 +1,46 @@
+name: Hepta native A-B-C and Cell evidence Python gates
+
+on:
+  pull_request:
+    paths:
+      - qualification/native-agent-comparison/**
+      - .github/workflows/hepta-native-evidence-python.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-evidence-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-structural-tests:
+    name: Python compile and adversarial evidence checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Python source compilation
+        run: python3 -m compileall -q qualification/native-agent-comparison
+
+      - name: A/B/C and six-arm Cell adversarial regressions
+        run: python3 -m unittest discover -s qualification/native-agent-comparison -p 'test_*.py' -v
+
+      - name: Frozen baseline must fail closed without real model/target/task evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf '[]\n' > "$RUNNER_TEMP/empty-evidence.json"
+          if python3 qualification/native-agent-comparison/compare.py \
+              qualification/native-agent-comparison/BASELINE.json \
+              "$RUNNER_TEMP/empty-evidence.json" > "$RUNNER_TEMP/invalid-stdout" 2> "$RUNNER_TEMP/invalid-stderr"; then
+            echo "Missing independent evidence incorrectly accepted" >&2
+            exit 1
+          fi
+          grep -F 'HOLD_NO_GO:' "$RUNNER_TEMP/invalid-stderr"

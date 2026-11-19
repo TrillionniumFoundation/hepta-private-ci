@@ -1,0 +1,102 @@
+{
+  "scope": "static operational counts derived from frozen source and config; no Torch execution and no time or measured-memory estimate",
+  "baseline_commit": "28a61d14ea7d4c3b3c515ab57b29c98de22e5673",
+  "config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "canonical_source_map_sha256": "13860b933a93966e880e64840efa0ac26b70ab62cbe7e38bf71587575d9831a3",
+  "source_files_sha256": {
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "attempts.py": "9c43646b29a2f5fbecd7f8adf0f5da2ee25d0e23768ec3b420d5c79bacc4d470",
+    "audit_population.py": "97e6d7cae07ddf35448e8e6f67c42bf3c75dc9216b4a52df320a1dbdbe0dcee8",
+    "baselines.py": "914a244abe4014a919b35539c4db04a9d334f627981d07fda20935af90026408",
+    "benchmark.py": "fc55f0f71cf35af742a423a407e42defb828c84285b9a6602b91d9b314ac2830",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "tests/test_cells.py": "efa7459f38a3f9a8b1bdce5e18c259a4f77cc86c51e27f032b4eeea33c780740",
+    "tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045"
+  },
+  "requested_matrix_identities": 170,
+  "requested_b_identities": 20,
+  "forward_calls_per_fit": {
+    "training": 400,
+    "validation": 32,
+    "test": 16,
+    "latency_warmups": 2,
+    "latency_measured": 100
+  },
+  "total_forward_calls_per_fit": 550,
+  "backward_and_adam_calls_per_fit": 400,
+  "training_examples_per_fit": 25600,
+  "training_tokens_per_fit": 1638400,
+  "b_shape": {
+    "batch": 64,
+    "hidden": 64,
+    "bins": 32,
+    "sequence": 64,
+    "dtype": "float32"
+  },
+  "single_fp32_matrix_bytes": 16777216,
+  "boundary_state_bytes": 622592,
+  "boundary_state_64_sum_bytes": 39845888,
+  "parameter_count_including_readout": 4353,
+  "log_ndtr_scalar_counts": {
+    "formula": "8*batch*hidden*bins^2*steps + 3*batch*hidden*bins*steps",
+    "matrix_calls_per_step": 8,
+    "vector_calls_per_step": 3,
+    "full_forward": 2172649472,
+    "original550forwards_per_b_fit": 1194957209600,
+    "original20b_fits_forward_only": 23899144192000,
+    "approx_remat950forward_equivalents_per_b_fit": 2064016998400,
+    "approx_remat20b_fits_forward_equivalents": 41280339968000,
+    "remat_count_limitation": "approximation with one complete replay per training step; actual non-reentrant early stopping and backward arithmetic require profiling"
+  },
+  "audit_original_joint_grids": [
+    {
+      "factor": 1,
+      "bins": 32,
+      "steps": 64,
+      "single_fp32_matrix_bytes_at_batch64": 16777216,
+      "scalar_log_ndtr_evaluations_per_batch": 2172649472,
+      "trace_batches_per_checkpoint": 16
+    },
+    {
+      "factor": 2,
+      "bins": 64,
+      "steps": 128,
+      "single_fp32_matrix_bytes_at_batch64": 67108864,
+      "scalar_log_ndtr_evaluations_per_batch": 17280532480,
+      "trace_batches_per_checkpoint": 16
+    },
+    {
+      "factor": 4,
+      "bins": 128,
+      "steps": 256,
+      "single_fp32_matrix_bytes_at_batch64": 268435456,
+      "scalar_log_ndtr_evaluations_per_batch": 137841606656,
+      "trace_batches_per_checkpoint": 16
+    }
+  ],
+  "audit_all20b": {
+    "trace_loop_leading_baseline_forward_equivalents": 23360,
+    "extra_factor1_actual_forward_replay_calls": 320,
+    "trace_loop_log_ndtr_scalar_evaluations": 50334332354560,
+    "extra_factor1_actual_forward_replay_log_ndtr_scalar_evaluations": 695247831040,
+    "combined_log_ndtr_scalar_evaluations": 51029580185600
+  },
+  "candidate_probe_sha256": "f8a2b7c193d2750cafb95446eff314195ca54ebb0305c008a35336f6bd874e08",
+  "base_probe_sha256": "70331f392c9695e0522da52817b3511b544304a6f4e23a169a016a07ea9f1285",
+  "candidate_negative_checks_sha256": "6b4ab60e34d243d69d74af127a7e28ed0b80e02dcb7069f1bde6fc0870ea516d"
+}

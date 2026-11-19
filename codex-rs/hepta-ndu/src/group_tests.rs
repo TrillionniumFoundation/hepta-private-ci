@@ -1,5 +1,7 @@
 use std::fmt::Debug;
 
+use pretty_assertions::assert_eq;
+
 use super::*;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
@@ -146,6 +148,49 @@ fn malformed_abstain_net_cannot_hide_behind_positive_continuation() {
         decide_group_continuation_v1(&subject, &make_trace(&subject, &candidates), &candidates,),
         Err(GroupSystem2Error::ArithmeticOverflow)
     );
+}
+
+#[test]
+fn exhausted_resource_budget_abstains_with_positive_net() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros;
+    let result = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 0);
+    assert_eq!(result.authority, AuthorityPosture::DENY_ALL);
+
+    // With a nonzero remaining balance, the existing positive-net baseline
+    // remains advisory; an execution owner must still reserve actual work.
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros - 1;
+    let still_possible = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(still_possible.selected_candidate_id, "continue");
+
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros + 1;
+    assert_eq!(
+        decide_group_continuation_v1(&subject, &trace, &candidates),
+        Err(GroupSystem2Error::ResourceCeilingExceeded {
+            used: subject.resource_ceiling_micros + 1,
+            ceiling: subject.resource_ceiling_micros,
+        })
+    );
+}
+
+#[test]
+fn exhausted_budget_is_aggregated_across_distinct_cells() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells[0].cost_micros = 80;
+    let mut second = trace.cells[0].clone();
+    second.cell_id = "cell:1".to_owned();
+    second.cost_micros = 20;
+    trace.cells.push(second);
+
+    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(decision.selected_candidate_id, "abstain");
+    assert_eq!(decision.authority, AuthorityPosture::DENY_ALL);
 }
 
 #[test]
@@ -350,4 +395,294 @@ fn stable_group_ids_reject_control_and_noncanonical_tokens() {
             Err(GroupSystem2Error::InvalidId("candidate_id"))
         );
     }
+}
+
+#[test]
+fn budget_preflight_recomputes_exact_selected_trace_and_quotes_remaining() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&subject, &candidates);
+    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+
+    // Five microseconds were actually observed; a future quoted invocation
+    // must fit within the remaining 95, independent of its Q32 utility cost.
+    let first = must(preflight_group_future_cost_v1(
+        &subject,
+        &trace,
+        &candidates,
+        &decision,
+        95,
+    ));
+    let again = must(preflight_group_future_cost_v1(
+        &subject,
+        &trace,
+        &candidates,
+        &decision,
+        95,
+    ));
+    assert_eq!(first, again);
+    assert_eq!(first.selected_candidate_id, "continue");
+    assert_eq!(first.requested_future_micros, 95);
+    assert_eq!(first.remaining_micros, 95);
+    assert_eq!(first.authority, AuthorityPosture::DENY_ALL);
+
+    let smaller = must(preflight_group_future_cost_v1(
+        &subject,
+        &trace,
+        &candidates,
+        &decision,
+        94,
+    ));
+    assert_ne!(first.preflight_digest, smaller.preflight_digest);
+    assert_eq!(smaller.remaining_micros, first.remaining_micros);
+}
+
+#[test]
+fn budget_preflight_rejects_forged_selection_and_mismatched_trace() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&subject, &candidates);
+    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+
+    let mut forged = decision.clone();
+    forged.selected_candidate_id = "abstain".to_owned();
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &trace, &candidates, &forged, 1),
+        Err(GroupSystem2Error::DecisionMismatch)
+    );
+
+    let mut altered = trace.clone();
+    altered.behavior_digest = digest("new-behavior");
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &altered, &candidates, &decision, 1),
+        Err(GroupSystem2Error::DecisionMismatch)
+    );
+}
+
+#[test]
+fn budget_preflight_denies_zero_and_over_remaining_future_cost() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&subject, &candidates);
+    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &trace, &candidates, &decision, 0),
+        Err(GroupSystem2Error::ZeroFutureCost)
+    );
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &trace, &candidates, &decision, 96),
+        Err(GroupSystem2Error::FutureCostExceedsRemaining {
+            requested: 96,
+            remaining: 95,
+        })
+    );
+
+    let mut nearly_exhausted = trace.clone();
+    nearly_exhausted.cells[0].cost_micros = 99;
+    let decision = must(decide_group_continuation_v1(
+        &subject,
+        &nearly_exhausted,
+        &candidates,
+    ));
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &nearly_exhausted, &candidates, &decision, 2,),
+        Err(GroupSystem2Error::FutureCostExceedsRemaining {
+            requested: 2,
+            remaining: 1,
+        })
+    );
+}
+
+#[test]
+fn abstention_preflight_must_quote_exactly_zero_work() {
+    let subject = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&subject, &candidates);
+    trace.cells[0].cost_micros = subject.resource_ceiling_micros;
+    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));
+    assert_eq!(decision.selected_candidate_id, "abstain");
+    assert_eq!(
+        preflight_group_future_cost_v1(&subject, &trace, &candidates, &decision, 1),
+        Err(GroupSystem2Error::AbstainFutureCost)
+    );
+    let preflight = must(preflight_group_future_cost_v1(
+        &subject,
+        &trace,
+        &candidates,
+        &decision,
+        0,
+    ));
+    assert_eq!(preflight.remaining_micros, 0);
+    assert_eq!(preflight.authority, AuthorityPosture::DENY_ALL);
+}
+
+#[test]
+fn budget_preflight_rejects_stale_owner_before_decision_or_quote() {
+    let original = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&original, &candidates);
+    let mut forged = must(decide_group_continuation_v1(&original, &trace, &candidates));
+    forged.net_value_q32 += 1;
+
+    let changed_owners = [
+        GroupNduSubjectV1 {
+            group_id: "group:other".to_owned(),
+            ..original.clone()
+        },
+        GroupNduSubjectV1 {
+            encoder_digest: digest("other-encoder"),
+            ..original.clone()
+        },
+        GroupNduSubjectV1 {
+            objective_digest: digest("other-objective"),
+            ..original.clone()
+        },
+        GroupNduSubjectV1 {
+            utility_profile_digest: digest("other-utility"),
+            ..original.clone()
+        },
+        GroupNduSubjectV1 {
+            subject_class: GroupSubjectClassV1::Agent,
+            ..original.clone()
+        },
+        GroupNduSubjectV1 {
+            resource_ceiling_micros: 101,
+            ..original.clone()
+        },
+    ];
+    for changed in changed_owners {
+        // Binding must reject before the forged decision or a zero/huge quote
+        // can influence the error, even with unchanged subject ID/generation.
+        for requested_future_micros in [0, 1, u64::MAX] {
+            assert_eq!(
+                preflight_group_future_cost_v1(
+                    &changed,
+                    &trace,
+                    &candidates,
+                    &forged,
+                    requested_future_micros,
+                ),
+                Err(GroupSystem2Error::TraceBindingMismatch(
+                    "subject_binding_digest",
+                ))
+            );
+        }
+    }
+
+    let mut missing_binding = trace;
+    missing_binding.subject_binding_digest = Digest32::ZERO;
+    assert_eq!(
+        preflight_group_future_cost_v1(
+            &original,
+            &missing_binding,
+            &candidates,
+            &forged,
+            /*requested_future_micros*/ 0,
+        ),
+        Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ))
+    );
+}
+
+#[test]
+fn budget_preflight_rebinding_requires_new_decision_before_quote_checks() {
+    let original = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&original, &candidates);
+    let decision = must(decide_group_continuation_v1(&original, &trace, &candidates));
+    let before = must(preflight_group_future_cost_v1(
+        &original,
+        &trace,
+        &candidates,
+        &decision,
+        /*requested_future_micros*/ 95,
+    ));
+    let changed = GroupNduSubjectV1 {
+        encoder_digest: digest("other-encoder"),
+        ..original
+    };
+    let mut rebound = trace;
+    rebound.subject_binding_digest = canonical_group_subject_binding_digest_v1(&changed);
+    for requested_future_micros in [0, 95, u64::MAX] {
+        assert_eq!(
+            preflight_group_future_cost_v1(
+                &changed,
+                &rebound,
+                &candidates,
+                &decision,
+                requested_future_micros,
+            ),
+            Err(GroupSystem2Error::DecisionMismatch)
+        );
+    }
+    let new_decision = must(decide_group_continuation_v1(
+        &changed,
+        &rebound,
+        &candidates,
+    ));
+    let after = must(preflight_group_future_cost_v1(
+        &changed,
+        &rebound,
+        &candidates,
+        &new_decision,
+        /*requested_future_micros*/ 95,
+    ));
+    assert_ne!(decision.trace_digest, new_decision.trace_digest);
+    assert_ne!(before.preflight_digest, after.preflight_digest);
+    assert_eq!(
+        (
+            &after.selected_candidate_id,
+            after.requested_future_micros,
+            after.remaining_micros,
+            after.authority,
+        ),
+        (
+            &before.selected_candidate_id,
+            before.requested_future_micros,
+            before.remaining_micros,
+            AuthorityPosture::DENY_ALL,
+        )
+    );
+}
+
+#[test]
+fn budget_preflight_enforces_the_rebound_owner_ceiling() {
+    let original = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&original, &candidates);
+    let changed = GroupNduSubjectV1 {
+        resource_ceiling_micros: 6,
+        ..original
+    };
+    trace.subject_binding_digest = canonical_group_subject_binding_digest_v1(&changed);
+    let decision = must(decide_group_continuation_v1(&changed, &trace, &candidates));
+    let preflight = must(preflight_group_future_cost_v1(
+        &changed,
+        &trace,
+        &candidates,
+        &decision,
+        /*requested_future_micros*/ 1,
+    ));
+    assert_eq!(
+        (
+            preflight.requested_future_micros,
+            preflight.remaining_micros,
+            preflight.authority,
+        ),
+        (1, 1, AuthorityPosture::DENY_ALL)
+    );
+    assert_eq!(
+        preflight_group_future_cost_v1(
+            &changed,
+            &trace,
+            &candidates,
+            &decision,
+            /*requested_future_micros*/ 2,
+        ),
+        Err(GroupSystem2Error::FutureCostExceedsRemaining {
+            requested: 2,
+            remaining: 1,
+        })
+    );
 }

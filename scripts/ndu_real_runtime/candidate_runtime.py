@@ -9,8 +9,10 @@ import copy
 from dataclasses import asdict
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 
 from .candidate_memory import CandidateMemory, CandidateMemoryError, CandidateScope
 from .objective import canonical_sha
@@ -178,10 +180,28 @@ def read_audit(directory, binding, expected):
     ):
         raise ValueError("Invalid candidate audit binding")
     path = Path(directory) / binding["path"]
-    if path.is_symlink() or not path.is_file():
+    try:
+        before = path.lstat()
+    except OSError as error:
+        raise ValueError("Candidate audit must be a regular direct child") from error
+    if not stat.S_ISREG(before.st_mode):
         raise ValueError("Candidate audit must be a regular direct child")
-    with path.open("rb") as stream:
-        raw = stream.read(MAX_AUDIT_BYTES + 1)
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise ValueError("Candidate audit descriptor admission failed") from error
+    try:
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or (opened.st_dev, opened.st_ino) != (
+            before.st_dev,
+            before.st_ino,
+        ):
+            raise ValueError("Candidate audit inode changed during admission")
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            raw = stream.read(MAX_AUDIT_BYTES + 1)
+    finally:
+        os.close(descriptor)
     if (
         len(raw) != binding["bytes"]
         or hashlib.sha256(raw).hexdigest() != binding["sha256"]

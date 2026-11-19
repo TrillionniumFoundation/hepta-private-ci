@@ -1,0 +1,113 @@
+{
+  "compatibilityOracle": {
+    "corpus_cases": 630,
+    "failure_cases": 44,
+    "oracle": "unmodified syntect 5.3.0 implementation with package name only changed; official bincode 1.3.3; exact packaged assets",
+    "status": "PASS",
+    "syntax_assets": [
+      {
+        "asset": "default_newlines.packdump",
+        "highlighted_lines": 7350,
+        "syntaxes": 75
+      },
+      {
+        "asset": "default_nonewlines.packdump",
+        "highlighted_lines": 7350,
+        "syntaxes": 75
+      },
+      {
+        "asset": "syntaxes-onig-newlines.bin",
+        "highlighted_lines": 21560,
+        "syntaxes": 220
+      },
+      {
+        "asset": "syntaxes-onig-no-newlines.bin",
+        "highlighted_lines": 21560,
+        "syntaxes": 220
+      },
+      {
+        "asset": "syntaxes-fancy-newlines.bin",
+        "highlighted_lines": 0,
+        "syntaxes": 213
+      },
+      {
+        "asset": "syntaxes-fancy-no-newlines.bin",
+        "highlighted_lines": 0,
+        "syntaxes": 213
+      }
+    ],
+    "themes": 39,
+    "yaml_cases": 20
+  },
+  "tests": {
+    "onigAndErrorHandlingAndRegressions": {
+      "passed": 124,
+      "skipped": 0
+    },
+    "fancyAndErrorHandlingAndRegressions": {
+      "passed": 124,
+      "skipped": 0
+    },
+    "originalPublicApiTest": {
+      "passed": 1,
+      "skipped": 0
+    },
+    "formatterScopeLinux": {
+      "passed": 32
+    }
+  },
+  "candidateRustTestExecutions": 249,
+  "candidateDistinctRustTests": 125,
+  "newCodecRegressions": 5,
+  "originalRuntimeAssertionsWeakened": false,
+  "originalPublicApiTestFunctionModified": false,
+  "automaticSnapshotUpdateUsed": false,
+  "profiles": {
+    "nextest": "repository local profile; period 30s, terminate-after 2, retries 1",
+    "regexOptimization": "original upstream dev package opt-level 2 for aho-corasick, fancy-regex, regex-automata, regex-syntax",
+    "debugInfo": 0,
+    "incremental": false,
+    "buildJobs": 1
+  },
+  "priorFailuresRetained": {
+    "attempt01": "bincode-next 3.1.1 accepted truncated Vec; use 3.2.0 with regression assertions",
+    "attempt02": "serde convenience writer lost final buffered write errors; explicit IoWriter flush required",
+    "attempt03": "qualification dependency alias error, corrected before successful oracle",
+    "initialNewRegressionCompile": "pretty_assertions 0.6 requires sized comparison inputs; compare slice references",
+    "initialFancyRun": "standalone qualification workspace omitted original regex optimization settings; restored original settings, same timeout and assertions then all 124 pass"
+  },
+  "cargoDeny": "advisories ok, bans ok, licenses ok, sources ok; no policy ignore or target filter change",
+  "canonicalCargoAndBazelLocks": "passed",
+  "actualSyntectBazelCquery": "passed",
+  "validationOrder": "Runtime tests and API assertions precede final just fix / just fmt per repository instructions",
+  "scopeLimits": [
+    "No complete codex-tui/Core native rebuild is claimed here",
+    "Six syntax assets have structural and wire comparisons; four onig assets have 57820 line-highlighting comparisons; fancy backend is separately exercised by the full original suite",
+    "Concrete bincode and YAML error types are deliberate local-patch API changes documented in HEPTA_API_REVIEW.json"
+  ],
+  "evidenceSha256": {
+    "differential-attempt04.out": "58364318bc2a93d881875febe3a1b58b38a6e46936ff4da9e9cb0ffb37975f33",
+    "differential-attempt04.err": "6a6527bad84be9249ca2e8c7bbdda6c9776cebfe6534a72d8a3c7c80fd6a7497",
+    "original-tests-runtime-attempt02.log": "b3116d1c04e750355f03f5e8aad949758eacd5bb2ed763af19ded1eaa9863f17",
+    "original-tests-fancy-upstream-profile.log": "aa393e3b7fade62d0f3b58abfc65c3466d788ce015ca39119827af57daa576e2",
+    "original-public-api-test.log": "1deaa7d29c2318c5c1e9a1653cd197b497993f4cbea910c83c6c896c8bc4b2b0",
+    "formatter-scope-tests.log": "5190e5e4f3dae70fb6f5472d52136b5e250970a07165de7e1be5b8077e082c88",
+    "public-api-common-graph-proof.json": "89bf3fa14516de40c264bb398d4b9b03ed692efb673c3f16ca86eddf8c112485",
+    "public-api-original-current-graph.txt": "28afc5b2d3ba56b4ceac1f46ad710ff243f4dcd3412c6b5b58cb7171c608d412",
+    "public-api-maintenance-only.diff": "8d2be8e7c9903b16c109461f981147ea096d442306289f7d8cf55063c937297a",
+    "scoped-fix.log": "6c2d301b5ee5f90dbfac957f817655cfc7fdb51d24d83b94aae5c46d30c26e2c",
+    "final-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "caller-lexical-preflight.json": "8a8f7ccbf4b5c99d449227aea88ef845dbd8bee529704bb16bb58bc6264cb583",
+    "python-format-ast-proof.json": "e86cd73c2afe2c38da066bb836bf6cd45e09020db4b829b25df6410f4392e7ab"
+  },
+  "finalFormat": "passed",
+  "standaloneVendorLockedMetadata": "passed",
+  "preservedFixtureFilesAfterFormat": 1733,
+  "callerLexicalPreflight": {
+    "rustFiles": 46,
+    "passed": 46,
+    "failures": 0,
+    "sourceSha256": "d879b6642f023befcfd984e39b413ceed21d527c4d64c6d828864b0e767b49b8",
+    "gateModified": false
+  }
+}

@@ -5,7 +5,6 @@ Selection and NextUse extend that proof through distinct original owners.
 """
 import hashlib
 import importlib.util
-import json
 from pathlib import Path
 import sys
 import tempfile
@@ -13,6 +12,7 @@ import unittest
 
 from protected_record_support import align_protected_record, require_protected_record
 
+from original_current_source_contract_support import load_current_contract, project_case
 from rust_source_marker_support import source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -105,36 +105,14 @@ def original_state_slot_guards(row):
 class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        contract_bytes = (ROOT / CONTRACT_PATH).read_bytes()
-        if hashlib.sha256(contract_bytes).hexdigest() != (
-            "ac2f3d9e8ab1f290fd5894deddbeda977231600ff885cb551a1f7b96764f849e"
-        ):
-            raise AssertionError("historical positive-root contract changed")
-        cls.contract = json.loads(contract_bytes)
         cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
-        def explicit_original_types(value):
-            if isinstance(value, str):
-                return value.replace(
-                    "let closed = CandidateOriginalOperation::close(operation)",
-                    "let closed: ClosedCandidateOriginalOperation<'_> = CandidateOriginalOperation::close(operation)",
-                )
-            if isinstance(value, list):
-                return [explicit_original_types(item) for item in value]
-            if isinstance(value, dict):
-                return {key: explicit_original_types(item) for key, item in value.items()}
-            return value
-        for collection in ("rows", "mutations"):
-            for index, row in enumerate(cls.contract[collection]):
-                if row["path"].endswith(("cell_q24_candidate_stage_adoption.rs", "cell_q24_candidate_stage_next_use.rs")):
-                    row = explicit_original_types(row)
-                cls.contract[collection][index] = original_state_slot_guards(row)
-        cls.contract["rows"] = [align_protected_record(row, cls.manifest["protected_file"])
-                                for row in cls.contract["rows"]]
-
+        cls.contract, cls.current, cls.rows = load_current_contract(
+            ROOT, cls.manifest, "3", CONTRACT_PATH
+        )
 
     def verifies(self, path, source):
-        rows = [row for row in self.contract["rows"] if row["path"] == path]
-        self.assertEqual(len(rows), 1, path)
+        rows = [row for row in self.rows if row["path"] == path]
+        self.assertEqual(len(rows), self.current["record_counts"][path], path)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
@@ -143,6 +121,7 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def rejects(self, case):
+        case = project_case(self.current, case)
         path, function = case["path"], case["function"]
         source = (ROOT / path).read_text()
         code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(source))
@@ -156,7 +135,7 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             self.verifies(path, source[:first] + source[after:])
 
     def test_complete_guard_records_and_exact_caller_delta_are_installed(self):
-        for row in self.contract["rows"]:
+        for row in self.rows:
             with self.subTest(path=row["path"]):
                 require_protected_record(row, self.manifest["protected_file"])
                 self.verifies(row["path"], (ROOT / row["path"]).read_text())
@@ -165,6 +144,11 @@ class OriginalPositiveRootSuffixClosureTests(unittest.TestCase):
             *[change["after"] for change in self.contract["boundary"]["changes"]],
             *self.contract["boundary"]["additions"],
         ]
+        self.assertEqual(
+            [row["id"] for row in expected],
+            [row["id"] for row in self.current["boundaries"]],
+        )
+        expected = self.current["boundaries"]
         inventory = self.manifest["privileged_inventory"]["required_boundary_ids"]
         for row in expected:
             with self.subTest(boundary=row["id"]):

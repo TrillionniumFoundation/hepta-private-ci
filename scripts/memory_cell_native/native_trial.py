@@ -6,6 +6,7 @@ GitHub permissions, establish unseen-data generalization, or qualify production.
 
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -35,8 +36,21 @@ def retain(path, value):
 def prepare(args):
     root = Path(args.out).resolve()
     root.mkdir(mode=0o700, parents=True, exist_ok=False)
-    with tarfile.open(args.archive) as archive:
-        data = archive.extractfile("producer/dataset.json").read()
+    if args.archive_bytes <= 0:
+        raise ValueError("positive pinned archive byte count required")
+    with Path(args.archive).open("rb") as stream:
+        archive_bytes = stream.read(args.archive_bytes + 1)
+    archive_sha256 = hashlib.sha256(archive_bytes).hexdigest()
+    if (
+        len(archive_bytes) != args.archive_bytes
+        or archive_sha256 != args.archive_sha256
+    ):
+        raise ValueError("retained archive bytes differ from explicit pin")
+    with tarfile.open(fileobj=io.BytesIO(archive_bytes), mode="r:*") as archive:
+        dataset_member = archive.getmember("producer/dataset.json")
+        if not dataset_member.isfile() or dataset_member.size > 4 * 1024 * 1024:
+            raise ValueError("bounded regular evidence member required")
+        data = archive.extractfile(dataset_member).read()
         if hashlib.sha256(data).hexdigest() != args.dataset_sha256:
             raise ValueError("retained dataset bytes differ from explicit pin")
         dataset = json.loads(data)
@@ -91,7 +105,7 @@ def prepare(args):
             "typed_source_sha256": hashlib.sha256(raw).hexdigest(),
             "producer_dataset_sha256": args.dataset_sha256,
             "producer_manifest_sha256": dataset["manifest_sha256"],
-            "archive_sha256": file_sha(args.archive),
+            "archive_sha256": archive_sha256,
             "commit_tree": commit["commit"]["tree"]["sha"],
             "github_commit_receipt": commit_path,
             "github_manifest_receipt": "imported/inputs/ci-incidents/manifest.json",
@@ -219,6 +233,8 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     p = commands.add_parser("prepare")
     p.add_argument("--archive", required=True)
+    p.add_argument("--archive-bytes", type=int, required=True)
+    p.add_argument("--archive-sha256", required=True)
     p.add_argument("--dataset-sha256", required=True)
     p.add_argument("--case-id", required=True)
     p.add_argument("--out", required=True)

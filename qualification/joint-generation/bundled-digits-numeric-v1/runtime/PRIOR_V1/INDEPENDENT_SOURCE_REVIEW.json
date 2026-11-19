@@ -1,0 +1,50 @@
+{
+  "review_type": "Independent SOURCE ONLY review",
+  "verdict": "BLOCKED",
+  "freeze_sha256": "6d30329ebb27147c37f5874bb551f2057e1a367e4b396abfdb38362dc3efbb6e",
+  "execution_admitted": false,
+  "scope": "Read frozen candidate and public design-v2/review only. Stdlib-only source/document hashing and runtime-path metadata inspection. No candidate import/execution, NumPy import/reference execution, data-path access, model initialization or training.",
+  "bindings": {
+    "all_frozen_candidate_files_match": true,
+    "design_review_sha256": "e838cc9f47e082f8aa244d4d2771193c60315e406985850a5fd775dd047b161a",
+    "runtime_manifest_paths": 1131,
+    "runtime_manifest_total_file_bytes_by_metadata": 104717314,
+    "runtime_install_hashes_recomputed": false
+  },
+  "blocking_findings": [
+    {
+      "id": "S01",
+      "target": "tests.py:42-51,58-61,83-91",
+      "finding": "Raw finite-difference plus/minus losses and explicit epsilons are discarded, leaving only derived slopes. FD, model Adam and micro Adam witnesses are appended after assertions, so the failing comparison is lost. micro_records is absent from STATE. This prevents saved arithmetic review of central differences and retention of the actual failing probe.",
+      "required_change": "Record fixed probe identity, both epsilons and all four raw losses, analytic value and thresholds before asserting; similarly retain actual/reference/before/gradient Adam values before comparison and expose micro records through STATE. Preserve this exact review before editing; refreeze and obtain new review without numerical runs."
+    },
+    {
+      "id": "S02",
+      "target": "RUNTIME.json; run_once.py launch contract and worker exec",
+      "finding": "Runtime manifest binds only source/native files, not bytecode caches. -B disables bytecode writes, not reads. Installed numpy/__pycache__/__init__.cpython-312.pyc exists and can be loaded without its bytes being bound. Thus claimed executable source/runtime closure is incomplete, including supervisor startup imports.",
+      "required_change": "Use a frozen enforceable cache-bypass strategy from interpreter startup for both supervisor and worker, or bind all eligible caches. No cache deletion or runtime mutation is implied by this request."
+    },
+    {
+      "id": "S03",
+      "target": "worker.py: final json.dumps outside exception handler; tests.py STATE",
+      "finding": "Nonfinite diagnostic floats may enter retained STATE before a later check. allow_nan=False serialization then raises outside the catch, losing RESULT even for an ordinary Python assertion. Initial finite_backward failure also captures no bounded detail of the failing finite check. Current wording must not imply reliable raw-witness retention for such failures.",
+      "required_change": "Define bounded failure-safe serialization with explicit nonfinite tags, retain the current failing diagnostic before assertions where possible, and state unavoidable hard-kill/serialization failure limits. Reassess fixed worst-case output size after adding witnesses."
+    }
+  ],
+  "source_findings": {
+    "architectures": "A/B 35658, C 36408, L 4810 match design-v2; 112534 initialized parameters total. C W1/b1 and A/B full initialization binding asserted.",
+    "streams": "Canonical v2 SHA256 top52 midpoint uniform, host binary64 Xavier/Box-Muller then float32 cast, fixed qualification701/epoch0 and synthetic64pixel formulas match specification. KAT literals present; no numerical run or new KAT computation done by reviewer.",
+    "backward": "Dense input and weight gradients retained for each affine, including first-layer dx and B zero-route matrix products. Softmax Jacobian product present. Float32 array arithmetic preserved.",
+    "reference": "Independent einsum/scalar binary64 forward-loss reference, no kernel import. 24 tensors x3 probes x4 perturbed forwards +4 baselines =292 calls; 72 probes.",
+    "optimizer": "Four model step1 Adam updates plus two two-element fixture updates, sampled72 model coordinates and4 fixture coordinates. Float32 scalar reference follows per-operator rounding.",
+    "counts": "16 float32 forwards,20 forward examples,4 backwards,8 backward examples,52/24 forward/backward matmuls,587152/445840 dense MACs coherent with source.",
+    "wire": "256-byte little-endian input, fixed10words,64 hex pixels; invalid size/nonfinite/range rejected. Direct comparison reuses kernel forward and is not an independently implemented numerical oracle. B replacements enforce exact output identity; A changes are descriptive only.",
+    "relu_risks": "Central differences may cross a ReLU kink; dual-epsilon agreement is a local numerical guard, not proof of differentiability. No source proof guarantees fixed probes pass. Any stability/gradient failure stops the attempt without tuning or replacement probes.",
+    "resources": "Supervisor/child hard CPU4s, AS256MiB each, FSIZE2MiB; child alarm30s and supervisor32s kill/reap. Single owned fork, inherited lock held through wait4 and inventory. Thread checks and audit hook are cooperative trusted-source constraints, not an OS sandbox or proof against transient native threads. Runtime hashing104717314 bytes is additional supervisor work and unmeasured fit risk.",
+    "outputs": "Only RESULT and WAIT4 receipt writers, both bounded, within4MiB cap under reviewed source. Revised witness schema needs fresh bound. No strict filesystem quota or all-in strictCPU claim.",
+    "paths": "Runtime manifest paths restricted to installed interpreter/library roots; no real dataset/heldout/sourcegzip path opens in reviewed source. Original benchmark lock opened rb with fixed inode/device check. Admission and frozen input reads are explicit.",
+    "limits": "No parent-death immediate-child-kill guarantee; own child lifetime wait4 only if supervisor survives. Source/review/tool costs and final supervisor tail are unknown, nonzero. No success/feasibility/model-quality claim."
+  },
+  "required_next_action": "Do not launch this freeze. Preserve exact review; prepare source-only fixes and new freeze for independent review. No SOURCE_PASS.json issued.",
+  "HOLD_NEW_TRAIN": "UNCHANGED"
+}

@@ -1,0 +1,107 @@
+name: Hepta NDU Tree FBSDE research gates (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/**'
+      - '.github/workflows/hepta-ndu-tree-fbsde-gates.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  exact-math-and-mechanism:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin physical Head-only NumPy dependency
+        run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Record exact source and runtime
+        run: |
+          git rev-parse HEAD
+          python --version
+          python -m pip freeze
+          sha256sum experiments/ndu_tree_fbsde_gates/*.py
+      - name: Run numpy-only NDU and Head contracts; keep Torch P0 in its pinned physical job
+        env:
+          PYTHONPATH: experiments/ndu_tree_fbsde_gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The P0 pretrained job separately runs its exact 17 PyTorch contract
+          # tests on Python 3.11 / torch 2.5.1. This numeric-only job must
+          # neither silently skip import errors nor install unpinned Torch.
+          test -f experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py
+          grep -Fq "test_p0_compact_paired.py" .github/workflows/hepta-p0-compact-physical.yml
+          mapfile -t TEST_MODULES < <(find experiments/ndu_tree_fbsde_gates -maxdepth 1 -type f -name 'test_*.py' ! -name 'test_p0_compact_paired.py' -printf '%f\n' | sort)
+          test "${#TEST_MODULES[@]}" -ge 10
+          for i in "${!TEST_MODULES[@]}"; do TEST_MODULES[i]="${TEST_MODULES[i]%.py}"; done
+          printf 'Explicit NumPy-only modules: %s\n' "${TEST_MODULES[@]}"
+          python -W error::ResourceWarning -m unittest -v "${TEST_MODULES[@]}"
+      - name: Execute separate-process 64/256/1024/4096 actual CPU Head-only batches
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ndu-shadow-head-panel
+          for n in 64 256 1024 4096; do
+            python experiments/ndu_tree_fbsde_gates/head_only_physical.py \
+              --cells "$n" --trials 100 \
+              --output "/tmp/ndu-shadow-head-panel/head_${n}.json" \
+              > "/tmp/ndu-shadow-head-panel/stdout_${n}.txt"
+          done
+          python experiments/ndu_tree_fbsde_gates/head_panel_audit.py \
+            --inputs /tmp/ndu-shadow-head-panel/head_{64,256,1024,4096}.json \
+            --output /tmp/ndu-shadow-head-panel/panel_audit.json
+      - name: Train actual synthetic teacher-distilled gated Cell, seal, score in separate process
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python experiments/ndu_tree_fbsde_gates/teacher_study.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json
+          F_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_future_inputs.json | cut -d' ' -f1)
+          S_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json | cut -d' ' -f1)
+          python experiments/ndu_tree_fbsde_gates/teacher_study_evaluator.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
+            --output /tmp/ndu-shadow-head-panel/teacher_independent_process_score.json
+      - name: Score sealed Head policies against cost-adjusted exact Bellman
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          F_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_future_inputs.json | cut -d' ' -f1)
+          S_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json | cut -d' ' -f1)
+          python experiments/ndu_tree_fbsde_gates/teacher_utility_evaluator.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
+            --output /tmp/ndu-shadow-head-panel/teacher_decision_utility.json
+      - name: Execute actual paired observed-return System2 Critic, seal two source-disjoint future windows
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ndu-shadow-head-panel/paired-raw
+          python experiments/ndu_tree_fbsde_gates/paired_trial_replay.py \
+            --output-dir /tmp/ndu-shadow-head-panel/paired-raw \
+            --train-count 4096 --future-count 512
+          python experiments/ndu_tree_fbsde_gates/paired_result_audit.py \
+            --directory /tmp/ndu-shadow-head-panel/paired-raw \
+            --audit /tmp/ndu-shadow-head-panel/paired-raw-independent-audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-tree-fbsde-shadow-head-only-evidence
+          path: /tmp/ndu-shadow-head-panel/
+          retention-days: 7
+          if-no-files-found: warn
+

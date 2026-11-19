@@ -1,0 +1,84 @@
+{
+  "schema": "rr-v4-baseline-validation-1",
+  "checks": [
+    {
+      "name": "independent_adaptive_ode_event_paths",
+      "passed": true,
+      "cases": 72,
+      "physical_events": 37,
+      "maximum_state_error": 2.6645352591003757e-15,
+      "maximum_event_time_error": 1.1546319456101628e-14
+    },
+    {
+      "name": "no_observation_time_split_and_causal_input_order",
+      "passed": true,
+      "variants": 6,
+      "maximum_state_error": 8.881784197001252e-16
+    },
+    {
+      "name": "measured_tensor_state_accounting",
+      "passed": true,
+      "variants": {
+        "lif": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 132,
+          "shared_constant_buffer_bytes": 0
+        },
+        "alif": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 164,
+          "shared_constant_buffer_bytes": 0
+        },
+        "alif_held": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 196,
+          "shared_constant_buffer_bytes": 0
+        },
+        "resource_lif": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 164,
+          "shared_constant_buffer_bytes": 0
+        },
+        "ctrnn": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 68,
+          "shared_constant_buffer_bytes": 8
+        },
+        "ctrnn_matched": {
+          "encoder_parameters": 248,
+          "actual_float32_state_bytes": 676,
+          "shared_constant_buffer_bytes": 160
+        }
+      }
+    },
+    {
+      "name": "continuously_decaying_alif_not_held_threshold",
+      "passed": true,
+      "continuous_spikes": 2
+    },
+    {
+      "name": "training_gradients_finite",
+      "passed": true,
+      "norms": {
+        "lif": 233.57557573070545,
+        "alif": 27.425724145043457,
+        "resource_lif": 143.22866043588618,
+        "ctrnn": 23.948625636638607,
+        "ctrnn_matched": 23.319301790653647
+      },
+      "qualification": "Spiking count gradients are declared biased surrogates, not finite-difference-exact event-count derivatives"
+    },
+    {
+      "name": "nonfinite_or_negative_intervals_rejected",
+      "passed": true,
+      "cases": 9
+    }
+  ],
+  "allPassed": true,
+  "reference": "independent scipy DOP853 with event roots; no Euler comparison",
+  "scope": {
+    "taskUtilityAcceptance": false,
+    "fullLSNNReproduction": false,
+    "spikingGradientUnbiased": false
+  }
+}

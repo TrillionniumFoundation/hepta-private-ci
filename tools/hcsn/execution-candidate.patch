@@ -1,0 +1,787 @@
+--- a/qualification/hcsn/attempts.py
++++ b/qualification/hcsn/attempts.py
+@@ -77,6 +77,14 @@
+                and r.get('training_status') in {'completed', 'failed'}]
+     measured = [r.get('energy', {}).get('joules_by_physical_counter') for r in results]
+     measured = [v for v in measured if v is not None]
++    by_completion = dict(complete=[], incomplete=[], unknown=[])
++    for result in results:
++        energy = result.get('energy', {})
++        counters = energy.get('joules_by_physical_counter')
++        if counters is not None:
++            complete = energy.get('interval_complete')
++            category = 'complete' if complete is True else 'incomplete' if complete is False else 'unknown'
++            by_completion[category].append(counters)
+     return dict(total=len(results), completed=completed, failed=failed,
+                 unavailable=sum(r['status'] == 'unavailable' for r in results),
+                 invalidated=sum(r['status'] == 'invalidated' for r in results),
+@@ -88,6 +96,16 @@
+                 known_training_tokens=sum(r.get('training_tokens_seen') or 0 for r in results),
+                 budget_unknown_attempts=sum(r.get('training_examples_seen') is None for r in results),
+                 energy_measured_attempts=len(measured), energy_missing_attempts=len(results)-len(measured),
++                energy_measured_complete_interval_attempts=len(by_completion['complete']),
++                energy_measured_incomplete_interval_attempts=len(by_completion['incomplete']),
++                energy_measured_unknown_interval_attempts=len(by_completion['unknown']),
+                 measured_joules_by_counter={name: sum(v.get(name, 0) for v in measured)
+                                            for name in {k for v in measured for k in v}},
++                measured_joules_by_counter_by_interval_completion={
++                    category: {name: sum(v[name] for v in values if name in v)
++                               for name in {k for v in values for k in v}}
++                    for category, values in by_completion.items()},
++                energy_interval_completion_scope='Only explicit boolean interval_complete flags classify observed intervals; '
++                'legacy/missing/nonboolean flags remain unknown. Complete interval does not mean complete training budget. '
++                'Any-reading totals retain incomplete and unknown costs; missing counter values are excluded, never zero-filled.',
+                 energy_scope='sum of available attempt device/package readings; missing attempts excluded, never zero-filled')
+--- a/qualification/hcsn/audit_population.py
++++ b/qualification/hcsn/audit_population.py
+@@ -20,6 +20,7 @@
+ from .benchmark import atomic_json, make_dataset
+ from .population_torch import TorchPopulation
+ from .attempts import resolve_weights
++from .execution import execution_policy, implementation_record
+ 
+ 
+ def trace(encoder, readout, inputs, factor):
+@@ -68,7 +69,14 @@
+         raise ValueError('checkpoint best_validation_mse mismatch')
+     if saved['training_steps_completed'] != config['train_steps']:
+         raise ValueError('checkpoint training budget mismatch')
+-    encoder = make_encoder(run['model'], 2, config['hidden_size'], dt=config['dt'])
++    policy = execution_policy(config)
++    encoder = make_encoder(run['model'], 2, config['hidden_size'], dt=config['dt'],
++                           population_checkpoint_steps=policy['population_checkpoint_steps'])
++    implementation = implementation_record(encoder)
++    if run.get('encoder_class', implementation['encoder_class']) != implementation['encoder_class']:
++        raise ValueError('encoder_class differs from declared execution policy')
++    if run.get('implementation', implementation if not policy['population_checkpoint_steps'] else None) != implementation:
++        raise ValueError('implementation differs from declared execution policy')
+     encoder.load_state_dict({k.removeprefix('encoder.'): v for k, v in saved['state_dict'].items()
+                              if k.startswith('encoder.')})
+     expected_grid = dict(asdict(encoder.population.config),
+@@ -86,6 +94,7 @@
+     if test_hash != report['datasets'][run['task']]['split_sha256'][2]:
+         raise ValueError('held-out test split hash mismatch')
+     row = dict(task=run['task'], model=run['model'], seed=run['seed'], status='audited',
++               implementation=implementation,
+                checkpoint_sha256=run['best_checkpoint_sha256'], test_split_sha256=test_hash,
+                resolutions=[], factor_one_forward_exact=True)
+     baseline_outputs = None
+--- a/qualification/hcsn/baselines.py
++++ b/qualification/hcsn/baselines.py
+@@ -7,6 +7,7 @@
+ from torch.nn import functional as F
+ 
+ from .cells import ValueKernelCell
++from .execution import execution_policy
+ 
+ 
+ class UnavailableBaseline(RuntimeError):
+@@ -215,8 +216,9 @@
+         return self.model(self.input(x))
+ 
+ 
+-def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1):
++def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1, *, population_checkpoint_steps=0):
+     """Return the requested implementation, never a substituted optional baseline."""
++    execution_policy(dict(population_checkpoint_steps=population_checkpoint_steps))
+     variants = {"hx_dual": {}, "hx_fixed": {"boundary": "fixed"},
+                 "hx_call": {"channel": "call"}, "hx_risk": {"channel": "risk"},
+                 "no_rollover": {"kernel": "no_rollover"}, "softplus": {"kernel": "softplus"},
+@@ -227,6 +229,10 @@
+         return TransformerEncoder(input_size, hidden_size,
+                                   preceding=ValueKernelCell(input_size, hidden_size))
+     if name in {"population_flux", "population_flux_no_recovery"}:
++        if population_checkpoint_steps == 1:
++            from .rematerialization import RematerializedPopulationFluxEncoder
++            return RematerializedPopulationFluxEncoder(
++                input_size, hidden_size, dt=dt, recovery=name == "population_flux", segment_steps=1)
+         return PopulationFluxEncoder(input_size, hidden_size, dt=dt, recovery=name == "population_flux")
+     if name == "gru":
+         return GRUEncoder(input_size, hidden_size)
+--- a/qualification/hcsn/benchmark.py
++++ b/qualification/hcsn/benchmark.py
+@@ -23,6 +23,8 @@
+ import numpy as np
+ 
+ from . import attempts
++from .execution import (close_energy_interval, configure_cuda, execution_policy,
++                        implementation_record, training_memory_peak)
+ 
+ 
+ def atomic_json(path, value, *, replace=True):
+@@ -162,6 +164,7 @@
+ 
+ 
+ def validate_config(config):
++    execution_policy(config)
+     for key in ("train_count", "validation_count", "test_count", "length", "hidden_size",
+                 "batch_size", "train_steps", "latency_repeats", "cpu_threads"):
+         if not isinstance(config.get(key), int) or config[key] <= 0:
+@@ -212,20 +215,26 @@
+     from .baselines import UnavailableBaseline, make_encoder
+     from torch import nn
+ 
++    policy = execution_policy(config)
+     record = {"task": task, "model": name, "seed": seed, "status": "failed",
++              "execution_policy": policy, "encoder_class": None, "implementation": None,
+               "training_status": "not_started", "training_examples_seen": 0,
+               "training_tokens_seen": 0, "training_steps_completed": 0,
+               "budget_measurement_scope": "examples/tokens submitted to training forward; optimizer steps counted separately",
+               "energy": {"joules_by_physical_counter": None,
++                         "interval_complete": False, "interval_completion": "not_started",
+                          "missing_reason": "attempt did not reach physical energy measurement"}}
+     stage = "construction"
+     meter = None
++    energy_started, peak_reset, peak_captured = False, False, False
+     try:
+         torch.manual_seed(seed)
+         if device.type == "cuda":
+             torch.cuda.manual_seed_all(seed)
+-        encoder = make_encoder(name, 2, config["hidden_size"], device=device, dt=config["dt"])
++        encoder = make_encoder(name, 2, config["hidden_size"], device=device, dt=config["dt"],
++                               population_checkpoint_steps=policy["population_checkpoint_steps"])
+         record["encoder_class"] = type(encoder).__name__
++        record["implementation"] = implementation_record(encoder)
+         if hasattr(encoder, "population"):
+             from dataclasses import asdict
+             cfg = encoder.population.config
+@@ -255,6 +264,7 @@
+             return float(total/targets.numel())
+         if device.type == "cuda":
+             torch.cuda.reset_peak_memory_stats(device)
++            peak_reset = True
+         model.train()
+         batch_rng = np.random.default_rng(seed+1729)
+         losses, best_val, best_state = [], math.inf, None
+@@ -262,6 +272,7 @@
+         sync()
+         meter = EnergyCounter(str(device))
+         meter.start()
++        energy_started = True
+         start = time.perf_counter()
+         stage, record["training_status"] = "training", "running"
+         for step in range(config["train_steps"]):
+@@ -274,11 +285,19 @@
+             if not bool(torch.isfinite(loss)):
+                 raise FloatingPointError(f"nonfinite loss at optimizer step {step}")
+             loss.backward()
++            missing = [n for n, p in model.named_parameters() if p.requires_grad and p.grad is None]
++            if missing:
++                record["missing_trainable_gradients"] = missing
++                raise FloatingPointError(f"missing trainable gradients at optimizer step {step}: {missing}")
+             if any(p.grad is not None and not bool(torch.isfinite(p.grad).all()) for p in model.parameters()):
+                 raise FloatingPointError(f"nonfinite gradient at optimizer step {step}")
+-            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
++            norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
++            if not bool(torch.isfinite(norm)):
++                raise FloatingPointError(f"nonfinite gradient norm at optimizer step {step}")
+             optimizer.step()
+             record["training_steps_completed"] = step+1
++            if any(not bool(torch.isfinite(p).all()) for p in model.parameters()):
++                raise FloatingPointError(f"nonfinite updated parameter at optimizer step {step}")
+             losses.append(float(loss.detach()))
+             if (step+1) % val_interval == 0 or step+1 == config["train_steps"]:
+                 model.eval()
+@@ -292,10 +311,14 @@
+         sync()
+         elapsed = time.perf_counter()-start
+         stage, record["training_status"] = "evaluation", "completed"
+-        record["energy"] = meter.stop()
++        record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
+         meter = None
+-        record["peak_gpu_allocated_bytes"] = torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None
+-        record["peak_gpu_missing_reason"] = None if device.type == "cuda" else "CPU execution has no GPU allocation"
++        if not record["energy"]["interval_complete"]:
++            raise RuntimeError("CUDA training energy interval did not synchronize completely")
++        record.update(training_memory_peak(torch, device, reset_completed=peak_reset))
++        record["peak_gpu_interval_complete"] = (
++            record["peak_gpu_measurement_status"] == "measured" if device.type == "cuda" else None)
++        peak_captured = True
+         record["training_wall_seconds_including_validation"] = elapsed
+         record["training_examples_seen"] = config["train_steps"]*config["batch_size"]
+         record["training_tokens_seen"] = record["training_examples_seen"]*config["length"]
+@@ -338,7 +361,22 @@
+             record["training_status"] = "failed"
+     finally:
+         if meter is not None:
+-            record["energy"] = meter.stop()
++            record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
++            record["terminal_cuda_synchronized"] = record["energy"]["terminal_cuda_synchronized"]
++            record["terminal_cuda_sync_error"] = record["energy"]["terminal_cuda_sync_error"]
++        elif device.type == "cuda":
++            try:
++                torch.cuda.synchronize(device)
++                record["terminal_cuda_synchronized"] = True
++            except Exception as exc:
++                record["terminal_cuda_synchronized"] = False
++                record["terminal_cuda_sync_error"] = f"{type(exc).__name__}: {exc}"
++                if record["status"] == "completed":
++                    record.update(status="failed", failure_stage="terminal_synchronization",
++                                  reason=record["terminal_cuda_sync_error"])
++        if not peak_captured:
++            record.update(training_memory_peak(torch, device, reset_completed=peak_reset))
++            record["peak_gpu_interval_complete"] = False if device.type == "cuda" else None
+     return record
+ 
+ 
+@@ -354,6 +392,7 @@
+         cpu_name = next((line.partition(":")[2].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
+                          if line.startswith("model name")), "unknown CPU")
+     report = {"schema_version": 2, "purpose": "synthetic research qualification", "config": config,
++              "execution_policy": execution_policy(config),
+               "source_sha256": source.hexdigest(), "source_files_sha256": source_files, "hardware": {"platform": platform.platform(),
+               "machine": platform.machine(), "cpu_model": cpu_name, "logical_cpu_count": os.cpu_count(),
+               "python": sys.version.split()[0], "numpy": np.__version__},
+@@ -371,11 +410,13 @@
+             for name in config["models"]:
+                 for seed in config["seeds"]:
+                     report["runs"].append({"task": task, "model": name, "seed": seed,
++                                           "implementation": None, "execution_policy": report["execution_policy"],
+                                            "status": "unavailable", "reason": "PyTorch is not installed"})
+         report.update(status="unavailable", summary=aggregate(report["runs"]))
+         return report
+     device = torch.device(config.get("device", "cpu"))
+-    cuda_missing = device.type == "cuda" and not torch.cuda.is_available()
++    cuda_execution = configure_cuda(torch, device, config.get("cuda_memory_fraction"))
++    cuda_unavailable_reason = cuda_execution["setup_error"]
+     torch.set_num_threads(config["cpu_threads"])
+     torch.use_deterministic_algorithms(True, warn_only=True)
+     report["software"] = {}
+@@ -385,7 +426,9 @@
+         except metadata.PackageNotFoundError:
+             report["software"][package] = None
+     report["hardware"].update(torch=torch.__version__, device=str(device),
+-                              device_name=torch.cuda.get_device_name(device) if device.type == "cuda" and not cuda_missing else cpu_name,
++                              device_name=(cuda_execution["name"] or "unavailable CUDA device")
++                              if device.type == "cuda" else cpu_name,
++                              cuda_execution=cuda_execution,
+                               cpu_threads=torch.get_num_threads(), deterministic_requested=True)
+     report["hardware"].update(cuda_runtime=torch.version.cuda, cuda_available=torch.cuda.is_available())
+     for task in config["tasks"]:
+@@ -427,13 +470,16 @@
+                         atomic_json(saved, prior)
+                 if result is None:
+                     def operation(weights):
+-                        if cuda_missing:
++                        if cuda_unavailable_reason:
+                             return dict(task=task, model=name, seed=seed, status="unavailable",
+                                         training_status="not_started", training_examples_seen=0,
+                                         training_tokens_seen=0, training_steps_completed=0,
+                                         energy={"joules_by_physical_counter": None,
+-                                                "missing_reason": "CUDA unavailable; training not started"},
+-                                        reason="CUDA requested but unavailable; no CPU fallback")
++                                                "interval_complete": False, "interval_completion": "not_started",
++                                                "missing_reason": "CUDA execution setup unavailable; training not started"},
++                                        implementation=None,
++                                        execution_policy=report["execution_policy"],
++                                        reason=cuda_unavailable_reason)
+                         return _run_one(config, task, name, seed, splits, device, torch, weights)
+                     provenance = dict(key=key, source_sha256=report["source_sha256"],
+                                       config=config, dataset=report["datasets"][task],
+--- /dev/null
++++ b/qualification/hcsn/configs/full-rematerialized.json
+@@ -0,0 +1,48 @@
++{
++  "profile": "research",
++  "device": "cuda:0",
++  "tasks": [
++    "delayed_recall",
++    "adding"
++  ],
++  "models": [
++    "hx_dual",
++    "hx_fixed",
++    "hx_call",
++    "hx_risk",
++    "no_rollover",
++    "softplus",
++    "no_recovery",
++    "hx_attention",
++    "population_flux",
++    "population_flux_no_recovery",
++    "gru",
++    "lif",
++    "adaptive_lif",
++    "pif",
++    "transformer",
++    "cfc",
++    "mamba2"
++  ],
++  "seeds": [
++    0,
++    1,
++    2,
++    3,
++    4
++  ],
++  "data_seed": 271828,
++  "train_count": 4096,
++  "validation_count": 512,
++  "test_count": 1024,
++  "length": 64,
++  "hidden_size": 64,
++  "batch_size": 64,
++  "train_steps": 400,
++  "learning_rate": 0.001,
++  "dt": 0.1,
++  "latency_repeats": 100,
++  "cpu_threads": 2,
++  "population_checkpoint_steps": 1,
++  "cuda_memory_fraction": 0.5
++}
+--- /dev/null
++++ b/qualification/hcsn/execution.py
+@@ -0,0 +1,133 @@
++"""Explicit execution policy and bounded, public-API CUDA evidence helpers."""
++
++import math
++import subprocess
++
++
++def execution_policy(config):
++    steps = config.get("population_checkpoint_steps", 0)
++    if type(steps) is not int or steps not in (0, 1):
++        raise ValueError("population_checkpoint_steps must be 0 (original) or 1 (fixed candidate)")
++    fraction = config.get("cuda_memory_fraction")
++    if fraction is not None:
++        if (type(fraction) not in (int, float) or not math.isfinite(fraction)
++                or not 0 < fraction <= 1):
++            raise ValueError("cuda_memory_fraction must be finite and in (0, 1]")
++        if not str(config.get("device", "cpu")).startswith("cuda"):
++            raise ValueError("cuda_memory_fraction requires a CUDA device; no CPU fallback")
++    return dict(population_checkpoint_steps=steps, cuda_memory_fraction=fraction)
++
++
++def implementation_record(encoder):
++    steps = getattr(encoder, "segment_steps", 0)
++    return dict(encoder_class=type(encoder).__name__, population_checkpoint_steps=steps,
++                use_reentrant=False if steps else None,
++                preserve_rng_state=True if steps else None,
++                gradient_horizon="full sequence",
++                training_cost_includes_recomputation=bool(steps))
++
++
++def configure_cuda(torch, device, fraction):
++    """Bind stable device facts and an explicit allocator policy before any fit.
++
++    Missing optional metadata stays missing. Failure to select the requested
++    device or apply its requested cap prevents training; no uncapped retry.
++    """
++    result = dict(uuid=None, name=None, driver_version=None, compute_capability=None,
++                  total_memory_bytes=None, requested_memory_fraction=fraction,
++                  memory_fraction_set=False, memory_fraction_readback=None,
++                  allocator_limit_bytes=None, setup_error=None, metadata_missing_reasons={},
++                  memory_limit_scope="PyTorch process allocator; not a GPU reservation or external-allocation limit")
++    if device.type != "cuda":
++        result["metadata_missing_reasons"]["cuda"] = "CPU execution has no CUDA device"
++        return result
++    if not torch.cuda.is_available():
++        result["setup_error"] = "CUDA requested but unavailable; no CPU fallback"
++        result["metadata_missing_reasons"]["cuda"] = result["setup_error"]
++        return result
++    try:
++        torch.cuda.set_device(device)
++        props = torch.cuda.get_device_properties(device)
++        result.update(name=props.name, total_memory_bytes=props.total_memory,
++                      compute_capability=[props.major, props.minor])
++        uuid = getattr(props, "uuid", None)
++        result["uuid"] = (str(uuid).strip() or None) if uuid is not None else None
++        if fraction is not None:
++            torch.cuda.set_per_process_memory_fraction(float(fraction), device)
++            result["memory_fraction_set"] = True
++    except Exception as exc:
++        result["setup_error"] = f"CUDA execution setup failed: {type(exc).__name__}: {exc}"
++        return result
++    try:
++        actual = float(torch.cuda.memory.get_per_process_memory_fraction(device))
++        if not math.isfinite(actual) or not 0 <= actual <= 1:
++            raise ValueError("invalid allocator-fraction readback")
++        result["memory_fraction_readback"] = actual
++        result["allocator_limit_bytes"] = int(result["total_memory_bytes"]*actual)
++        if fraction is not None and not math.isclose(actual, fraction, rel_tol=0, abs_tol=1e-12):
++            result["setup_error"] = "CUDA allocator-fraction readback differs from requested policy"
++    except Exception as exc:
++        result["metadata_missing_reasons"]["memory_fraction_readback"] = f"{type(exc).__name__}: {exc}"
++    if result["uuid"] is None:
++        result["metadata_missing_reasons"]["uuid"] = "CUDA properties did not expose a UUID"
++        result["metadata_missing_reasons"]["driver_version"] = "No UUID; ordinal-based GPU mapping refused"
++    else:
++        try:
++            query = subprocess.run(
++                ["nvidia-smi", "-i", result["uuid"], "--query-gpu=uuid,driver_version",
++                 "--format=csv,noheader,nounits"],
++                check=True, capture_output=True, text=True, timeout=15)
++            lines = [line.strip() for line in query.stdout.splitlines() if line.strip()]
++            fields = lines[0].split(",") if len(lines) == 1 else []
++            if (len(fields) != 2 or fields[0].strip() != result["uuid"]
++                    or fields[1].strip().lower() in {"", "n/a", "[n/a]", "not supported", "[not supported]"}):
++                raise ValueError("nvidia-smi did not return the requested UUID and driver")
++            result["driver_version"] = fields[1].strip()
++        except Exception as exc:
++            result["metadata_missing_reasons"]["driver_version"] = f"{type(exc).__name__}: {exc}"
++    return result
++
++
++def close_energy_interval(meter, torch, device, *, started):
++    """Try to finish CUDA work before the terminal physical-counter reading."""
++    synchronized, sync_error = None, None
++    if device.type == "cuda":
++        try:
++            torch.cuda.synchronize(device)
++            synchronized = True
++        except Exception as exc:
++            synchronized, sync_error = False, f"{type(exc).__name__}: {exc}"
++    try:
++        energy = meter.stop()
++    except Exception as exc:
++        energy = dict(joules_by_physical_counter=None,
++                      missing_reason=f"terminal energy read failed: {type(exc).__name__}: {exc}")
++    energy.setdefault("scope", "training wall interval; device/package, not process attribution")
++    complete = started and synchronized is not False
++    energy.update(terminal_cuda_synchronized=synchronized, terminal_cuda_sync_error=sync_error,
++                  interval_complete=complete,
++                  interval_completion=("synchronized" if complete and synchronized else
++                                       "synchronous_cpu" if complete else "incomplete_or_not_started"))
++    return energy
++
++
++def training_memory_peak(torch, device, *, reset_completed):
++    result = dict(peak_gpu_allocated_bytes=None, peak_gpu_reserved_bytes=None,
++                  peak_gpu_missing_reason=None,
++                  peak_gpu_measurement_status="unavailable",
++                  peak_gpu_scope="PyTorch allocator since reset after model/datasets; training and validation interval")
++    if device.type != "cuda":
++        result["peak_gpu_missing_reason"] = "CPU execution has no GPU allocation"
++        result["peak_gpu_measurement_status"] = "not_applicable_cpu"
++    elif not reset_completed:
++        result["peak_gpu_missing_reason"] = "Training peak reset did not complete; prior allocator peaks are not reused"
++    else:
++        try:
++            allocated, reserved = torch.cuda.max_memory_allocated(device), torch.cuda.max_memory_reserved(device)
++            if any(type(value) is not int or value < 0 for value in (allocated, reserved)):
++                raise ValueError("invalid allocator peak readback")
++            result.update(peak_gpu_allocated_bytes=allocated, peak_gpu_reserved_bytes=reserved,
++                          peak_gpu_measurement_status="measured")
++        except Exception as exc:
++            result["peak_gpu_missing_reason"] = f"Training peak read failed: {type(exc).__name__}: {exc}"
++    return result
+--- /dev/null
++++ b/qualification/hcsn/rematerialization.py
+@@ -0,0 +1,59 @@
++"""Opt-in full-BPTT rematerialization of the unchanged population-flux encoder.
++
++This changes activation storage and recomputation, not the grid, time step,
++state transition, training batch, or gradient horizon. It is a separate
++candidate until forward/gradient/optimizer parity and actual CUDA cost pass.
++"""
++
++import math
++
++import torch
++from torch.utils.checkpoint import checkpoint
++
++from .baselines import PopulationFluxEncoder
++from .population_torch import TensorPopulationState
++
++
++class RematerializedPopulationFluxEncoder(PopulationFluxEncoder):
++    """Keep segment-boundary tensors and recompute internal activations."""
++
++    def __init__(self, input_size, hidden_size, *, dt=0.1, recovery=True,
++                 segment_steps=1):
++        if type(segment_steps) is not int or segment_steps <= 0:
++            raise ValueError("segment_steps must be a positive integer")
++        super().__init__(input_size, hidden_size, dt=dt, recovery=recovery)
++        self.segment_steps = segment_steps
++
++    def _advance(self, active, refractory, recovery, escaped, trace, inputs, dt):
++        # All evolving state is explicit: backward must replay the same values
++        # even though subsequent segments have already executed.
++        state = TensorPopulationState(active, refractory, recovery, escaped)
++        outputs = []
++        for value in inputs.unbind(1):
++            drive = 6*torch.sigmoid(self.input(value)+self.recurrent(trace))
++            step = self.population(state, drive=drive)
++            state = step.state
++            trace = math.exp(-dt/0.5)*trace+(1-math.exp(-dt/0.5))*step.rate
++            outputs.append(trace)
++        return (state.active, state.refractory, state.recovery, state.escaped,
++                trace, torch.stack(outputs, dim=1))
++
++    def forward(self, x, dt=0.1):
++        if not math.isclose(dt, self.population.config.dt, rel_tol=0, abs_tol=1e-12):
++            raise ValueError("forward dt must equal the configured population step")
++        state = self.population.initial_state((x.shape[0], self.hidden_size))
++        trace = x.new_zeros(x.shape[0], self.hidden_size)
++        outputs = []
++        for start in range(0, x.shape[1], self.segment_steps):
++            arguments = (state.active, state.refractory, state.recovery,
++                         state.escaped, trace,
++                         x[:, start:start+self.segment_steps], dt)
++            if torch.is_grad_enabled():
++                values = checkpoint(self._advance, *arguments, use_reentrant=False,
++                                    preserve_rng_state=True)
++            else:
++                values = self._advance(*arguments)
++            state = TensorPopulationState(*values[:4])
++            trace = values[4]
++            outputs.append(values[5])
++        return torch.cat(outputs, dim=1)
+--- a/qualification/hcsn/tests/test_cells.py
++++ b/qualification/hcsn/tests/test_cells.py
+@@ -109,7 +109,8 @@
+ 
+     def test_each_native_ablation_and_baseline_trains_one_step(self):
+         names = ["hx_dual", "hx_fixed", "hx_call", "hx_risk", "no_rollover", "softplus",
+-                 "no_recovery", "hx_attention", "population_flux", "gru", "lif", "adaptive_lif", "pif", "transformer"]
++                 "no_recovery", "hx_attention", "population_flux", "population_flux_no_recovery",
++                 "gru", "lif", "adaptive_lif", "pif", "transformer"]
+         x = torch.randn(2, 4, 2)
+         for name in names:
+             with self.subTest(model=name):
+@@ -118,6 +119,7 @@
+                 self.assertEqual(tuple(output.shape), (2, 4, 8))
+                 self.assertTrue(bool(torch.isfinite(output).all()))
+                 output.square().sum().backward()
++                self.assertEqual([n for n, p in model.named_parameters() if p.requires_grad and p.grad is None], [])
+                 self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all()) for p in model.parameters()))
+ 
+     def test_official_cfc_batch_timespans_match_scalar_cell_steps(self):
+@@ -132,6 +134,7 @@
+             actual = encoder(inputs, dt=.1)
+             torch.testing.assert_close(actual, torch.stack(expected, 1))
+             actual.square().mean().backward()
++            self.assertEqual([n for n, p in encoder.named_parameters() if p.requires_grad and p.grad is None], [])
+             self.assertTrue(all(p.grad is None or bool(torch.isfinite(p.grad).all())
+                                 for p in encoder.parameters()))
+ 
+--- /dev/null
++++ b/qualification/hcsn/tests/test_execution.py
+@@ -0,0 +1,227 @@
++"""Execution-policy identity, failure evidence and candidate checkpoint replay."""
++
++import copy
++import importlib.util
++import json
++from pathlib import Path
++import tempfile
++from types import SimpleNamespace
++import unittest
++from unittest.mock import Mock, patch
++
++from .. import benchmark
++from ..execution import close_energy_interval, configure_cuda, execution_policy, training_memory_peak
++
++TORCH_AVAILABLE = importlib.util.find_spec("torch") is not None
++
++
++def tiny_config(**changes):
++    config = json.loads((Path(__file__).parents[1]/"configs/smoke.json").read_text())
++    config.update(models=["gru"], seeds=[0], train_steps=1, latency_repeats=1,
++                  hidden_size=2, length=4, train_count=4, validation_count=2,
++                  test_count=2, batch_size=2)
++    config.update(changes)
++    return config
++
++
++class ExecutionEvidenceTests(unittest.TestCase):
++    def test_mixed_energy_intervals_keep_cost_and_do_not_promote_legacy(self):
++        from ..attempts import accounting
++        attempts = [dict(result=dict(status=status, training_status=status,
++                                     training_examples_seen=examples, training_tokens_seen=examples*4,
++                                     energy=energy))
++                    for status, examples, energy in (
++                        ('completed', 4, dict(joules_by_physical_counter={'gpu': 2.0, 'package': 4.0},
++                                              interval_complete=True)),
++                        ('failed', 2, dict(joules_by_physical_counter={'gpu': 1.0}, interval_complete=False)),
++                        ('completed', 4, dict(joules_by_physical_counter={'gpu': 3.0})),
++                        ('failed', 2, dict(joules_by_physical_counter=None, interval_complete=True)))]
++        before = copy.deepcopy(attempts)
++        result = accounting(attempts)
++        self.assertEqual(attempts, before)
++        self.assertEqual((result['energy_measured_attempts'], result['energy_missing_attempts'],
++                          result['energy_measured_complete_interval_attempts'],
++                          result['energy_measured_incomplete_interval_attempts'],
++                          result['energy_measured_unknown_interval_attempts']), (3, 1, 1, 1, 1))
++        self.assertEqual(result['measured_joules_by_counter'], {'gpu': 6.0, 'package': 4.0})
++        self.assertEqual(result['measured_joules_by_counter_by_interval_completion'],
++                         dict(complete={'gpu': 2.0, 'package': 4.0}, incomplete={'gpu': 1.0}, unknown={'gpu': 3.0}))
++        self.assertEqual((result['known_training_examples'], result['known_training_tokens']), (12, 48))
++
++    def test_invalid_policy_rejected_and_policy_changes_cache_identity(self):
++        config = tiny_config()
++        for key, value in (("population_checkpoint_steps", True), ("population_checkpoint_steps", 4),
++                           ("cuda_memory_fraction", float("nan")), ("cuda_memory_fraction", 0),
++                           ("cuda_memory_fraction", True), ("cuda_memory_fraction", .5)):
++            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
++                benchmark.validate_config(dict(config, **{key: value}))
++        report = dict(config=dict(config, device="cuda:0", cuda_memory_fraction=.5),
++                      source_sha256="fixed source", hardware={}, software={},
++                      datasets={"delayed_recall": {"split_sha256": ["train", "val", "test"]}})
++        original = benchmark.receipt_key(report, "delayed_recall", "population_flux", 0)
++        remat = copy.deepcopy(report)
++        remat["config"]["population_checkpoint_steps"] = 1
++        capped = copy.deepcopy(remat)
++        capped["config"]["cuda_memory_fraction"] = .75
++        hardware = copy.deepcopy(remat)
++        hardware["hardware"]["cuda_execution"] = dict(uuid="GPU-1", driver_version="570.00")
++        self.assertEqual(len({original, *(benchmark.receipt_key(r, "delayed_recall", "population_flux", 0)
++                                         for r in (remat, capped, hardware))}), 4)
++
++    def test_cuda_public_metadata_and_cap_are_bound_without_ordinal_guess(self):
++        device = SimpleNamespace(type="cuda")
++        props = SimpleNamespace(uuid="GPU-test", name="fixture", total_memory=8*2**30, major=8, minor=9)
++        cuda = Mock()
++        cuda.is_available.return_value = True
++        cuda.get_device_properties.return_value = props
++        cuda.memory.get_per_process_memory_fraction.return_value = .5
++        with patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout="GPU-test, 570.00\n")) as query:
++            info = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
++        cuda.set_per_process_memory_fraction.assert_called_once_with(.5, device)
++        self.assertEqual((info["uuid"], info["driver_version"], info["compute_capability"],
++                          info["allocator_limit_bytes"], info["setup_error"]),
++                         ("GPU-test", "570.00", [8, 9], 4*2**30, None))
++        self.assertEqual(query.call_args.args[0][1:3], ["-i", "GPU-test"])
++        with patch("hcsn.execution.subprocess.run", return_value=SimpleNamespace(stdout="GPU-other, 570.00\n")):
++            mismatched = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
++        self.assertIsNone(mismatched["driver_version"])
++        self.assertIn("requested UUID", mismatched["metadata_missing_reasons"]["driver_version"])
++        props.uuid = None
++        with patch("hcsn.execution.subprocess.run", side_effect=AssertionError("no ordinal fallback")):
++            missing = configure_cuda(SimpleNamespace(cuda=cuda), device, .5)
++        self.assertIsNone(missing["uuid"])
++        self.assertIn("ordinal", missing["metadata_missing_reasons"]["driver_version"])
++
++    def test_failed_allocator_cap_prevents_matrix_attempts_without_torch(self):
++        cuda = Mock()
++        cuda.is_available.return_value = True
++        cuda.get_device_properties.return_value = SimpleNamespace(
++            uuid="GPU-test", name="fixture", total_memory=8*2**30, major=8, minor=9)
++        cuda.set_per_process_memory_fraction.side_effect = RuntimeError("injected cap rejection")
++        device = SimpleNamespace(type="cuda")
++        fake = SimpleNamespace(cuda=cuda, device=lambda value: device, set_num_threads=lambda value: None,
++                               get_num_threads=lambda: 2, use_deterministic_algorithms=lambda *a, **kw: None,
++                               __version__="fixture", version=SimpleNamespace(cuda="fixture"))
++        with patch.dict("sys.modules", torch=fake), patch("hcsn.benchmark._run_one") as operation:
++            report = benchmark.run(tiny_config(device="cuda:0", cuda_memory_fraction=.5, seeds=[0, 1]))
++        operation.assert_not_called()
++        self.assertEqual(report["accounting"], dict(requested=2, unique_records=2, completed=0, failed=0, unavailable=2))
++        self.assertTrue(all("injected cap rejection" in r["reason"] for r in report["runs"]))
++        self.assertEqual(report["attempt_accounting"]["known_training_examples"], 0)
++
++    def test_failed_terminal_sync_keeps_partial_reading_and_precedes_meter_stop(self):
++        events = []
++        def fail_sync(device):
++            events.append("synchronize")
++            raise RuntimeError("injected asynchronous failure")
++        def stop():
++            events.append("stop")
++            return dict(joules_by_physical_counter={"nvml_fixture": 3.5}, missing_reason=None)
++        energy = close_energy_interval(SimpleNamespace(stop=stop),
++                                       SimpleNamespace(cuda=SimpleNamespace(synchronize=fail_sync)),
++                                       SimpleNamespace(type="cuda"), started=True)
++        self.assertEqual(events, ["synchronize", "stop"])
++        self.assertEqual(energy["joules_by_physical_counter"], {"nvml_fixture": 3.5})
++        self.assertFalse(energy["interval_complete"])
++        self.assertFalse(energy["terminal_cuda_synchronized"])
++        self.assertIn("injected asynchronous failure", energy["terminal_cuda_sync_error"])
++
++    def test_training_peak_requires_own_reset_and_keeps_reserved_separate(self):
++        cuda = Mock()
++        cuda.max_memory_allocated.return_value = 120
++        cuda.max_memory_reserved.return_value = 256
++        torch = SimpleNamespace(cuda=cuda)
++        device = SimpleNamespace(type="cuda")
++        not_reset = training_memory_peak(torch, device, reset_completed=False)
++        cuda.max_memory_allocated.assert_not_called()
++        self.assertIsNone(not_reset["peak_gpu_allocated_bytes"])
++        measured = training_memory_peak(torch, device, reset_completed=True)
++        self.assertEqual((measured["peak_gpu_allocated_bytes"], measured["peak_gpu_reserved_bytes"]), (120, 256))
++        self.assertEqual(measured["peak_gpu_measurement_status"], "measured")
++        calls = cuda.max_memory_allocated.call_count
++        cpu = training_memory_peak(torch, SimpleNamespace(type="cpu"), reset_completed=True)
++        self.assertEqual((cpu["peak_gpu_allocated_bytes"], cpu["peak_gpu_reserved_bytes"],
++                          cpu["peak_gpu_measurement_status"]), (None, None, "not_applicable_cpu"))
++        self.assertEqual(cuda.max_memory_allocated.call_count, calls)
++
++
++@unittest.skipUnless(TORCH_AVAILABLE, "PyTorch not installed; candidate execution is not verified")
++class CandidateExecutionTests(unittest.TestCase):
++    def test_candidate_policy_both_variants_saved_replay_and_resume(self):
++        import torch
++        from .. import audit_population
++        from ..baselines import make_encoder
++        for name in ("population_flux", "population_flux_no_recovery"):
++            torch.manual_seed(17)
++            original = make_encoder(name, 2, 2)
++            original_rng = torch.get_rng_state()
++            torch.manual_seed(17)
++            candidate = make_encoder(name, 2, 2, population_checkpoint_steps=1)
++            self.assertEqual(type(candidate).__name__, "RematerializedPopulationFluxEncoder")
++            self.assertEqual(type(original).__name__, "PopulationFluxEncoder")
++            torch.testing.assert_close(torch.get_rng_state(), original_rng, rtol=0, atol=0)
++            self.assertEqual(set(candidate.state_dict()), set(original.state_dict()))
++            for key, value in original.state_dict().items():
++                torch.testing.assert_close(candidate.state_dict()[key], value, rtol=0, atol=0)
++        config = tiny_config(models=["population_flux", "population_flux_no_recovery"],
++                             population_checkpoint_steps=1)
++        with tempfile.TemporaryDirectory() as directory:
++            path = Path(directory)/"candidate.json"
++            report = benchmark.run(config, path.with_suffix(".runs"))
++            self.assertEqual(report["accounting"]["completed"], 2)
++            benchmark.atomic_json(path, report)
++            result = audit_population.audit(path)
++            self.assertEqual((result["status"], result["audited_b_runs"]), ("passed", 2))
++            for row in result["records"]:
++                self.assertEqual(row["implementation"]["encoder_class"], "RematerializedPopulationFluxEncoder")
++                self.assertEqual(row["implementation"]["population_checkpoint_steps"], 1)
++            with patch("hcsn.benchmark._run_one", side_effect=AssertionError("completed candidate reran")):
++                self.assertEqual(benchmark.run(config, path.with_suffix(".runs"))["runs"], report["runs"])
++            original = benchmark.run(dict(config, population_checkpoint_steps=0), path.with_suffix(".runs"))
++            self.assertEqual(original["accounting"]["completed"], 2)
++            self.assertTrue(set(r["best_checkpoint"] for r in original["runs"]).isdisjoint(
++                r["best_checkpoint"] for r in report["runs"]))
++            tampered = copy.deepcopy(report)
++            tampered["runs"][0]["implementation"]["population_checkpoint_steps"] = 0
++            benchmark.atomic_json(path, tampered)
++            rejected = audit_population.audit(path)
++            self.assertEqual(rejected["status"], "failed")
++            self.assertIn("execution policy", next(r["reason"] for r in rejected["records"] if r["status"] == "failed"))
++
++    def test_missing_gradient_is_failure_but_intentionally_frozen_parameter_is_allowed(self):
++        import torch
++        from ..baselines import GRUEncoder
++        for trainable in (True, False):
++            encoder = GRUEncoder(2, 2)
++            encoder.register_parameter("unused_fixture", torch.nn.Parameter(torch.zeros(1), requires_grad=trainable))
++            with self.subTest(trainable=trainable), patch("hcsn.baselines.make_encoder", return_value=encoder):
++                report = benchmark.run(tiny_config())
++            row = report["runs"][0]
++            if trainable:
++                self.assertEqual((row["status"], row["training_steps_completed"], row["training_examples_seen"]),
++                                 ("failed", 0, 2))
++                self.assertEqual(row["missing_trainable_gradients"], ["encoder.unused_fixture"])
++                self.assertTrue(row["energy"]["interval_complete"])
++            else:
++                self.assertEqual(row["status"], "completed")
++                self.assertIsNone(row["peak_gpu_interval_complete"])
++                self.assertEqual(row["peak_gpu_measurement_status"], "not_applicable_cpu")
++
++    def test_nonfinite_norm_and_updated_parameter_preserve_actual_update_count(self):
++        import torch
++        with patch.object(torch.nn.utils, "clip_grad_norm_", return_value=torch.tensor(float("inf"))):
++            norm_failure = benchmark.run(tiny_config())["runs"][0]
++        self.assertEqual((norm_failure["status"], norm_failure["training_steps_completed"],
++                          norm_failure["training_examples_seen"]), ("failed", 0, 2))
++        self.assertIn("nonfinite gradient norm", norm_failure["reason"])
++        original_step = torch.optim.Adam.step
++        def corrupt_after_step(optimizer, *args, **kwargs):
++            outcome = original_step(optimizer, *args, **kwargs)
++            with torch.no_grad():
++                optimizer.param_groups[0]["params"][0].fill_(float("nan"))
++            return outcome
++        with patch.object(torch.optim.Adam, "step", corrupt_after_step):
++            parameter_failure = benchmark.run(tiny_config())["runs"][0]
++        self.assertEqual((parameter_failure["status"], parameter_failure["training_steps_completed"],
++                          parameter_failure["training_examples_seen"]), ("failed", 1, 2))
++        self.assertIn("nonfinite updated parameter", parameter_failure["reason"])

@@ -1,0 +1,48 @@
+{
+  "abridged_printed_report": {
+    "bytes": 2663,
+    "git_blob": "f4bf1784ee652f1c6adb8c4fff7c8cbe6257e14c",
+    "sha256": "a2f8bbe2e545a48cb3be82e00e17eefef4bbe6b7665a8dd2467396ea27ab8db3"
+  },
+  "full_report": {
+    "bytes": 21923,
+    "git_blob": "08472e8d8256cbe1524cbd339299fd27199acbf0",
+    "sha256": "27f87da71e7bcdbdb253bc4794e32d00152974d3fd831934bd1937fab06bf781"
+  },
+  "materializer": {
+    "bytes": 4995,
+    "git_blob": "afbf586515494c8647f1629fc18b65ceb98efeef",
+    "sha256": "a3566790472177556e3ae2f42b59121e3a1b779c1ba63b37199a1fa2a45dab19"
+  },
+  "materializer_actual_execution": {
+    "chunk_id": "ab7eaf",
+    "exit_code": 0,
+    "original_token_count": 48,
+    "output": "{\"zip_members\": 386, \"canonical_tar_members\": 387, \"expanded_omitted_count\": 9, \"canonical_root\": \"/workspace/scratch/ed3538174819/mem8-source-v11-original-run/readback/canonical-original\"}\n",
+    "wall_time_seconds": 0.408710014
+  },
+  "original_job_raw": {
+    "bytes": 108534,
+    "git_blob": "ba01f94ea6d1ac410557ea1a9cf1071b2b21fada",
+    "sha256": "172cf55f61113e12a94e3a836717e518429d511e6d774e27f968a21bbdfea7b2"
+  },
+  "original_zip": {
+    "bytes": 7243382,
+    "git_blob": "f5102cff2c2bde455cb470ed8b8fbccd9622004a",
+    "sha256": "caef5a9025aaf1f64fdd7bfffae29f0c1532f360748bb64e2559b75a9bef84fe"
+  },
+  "schema": "mem-original-source-gate-offline-execution-v1",
+  "source_tests_or_model_requests_started_by_reader": 0,
+  "verifier": {
+    "bytes": 15956,
+    "git_blob": "1b7f521a251de317f78bf16cccd029642a0a8cd1",
+    "sha256": "99bfa8d686fe632158d0663572792eb7c51bed2af50bb1088fe11a356491d3e6"
+  },
+  "verifier_actual_execution": {
+    "chunk_id": "5a762f",
+    "exit_code": 0,
+    "original_token_count": 666,
+    "output": "{\n  \"schema\": \"hepta.mem8.source-ci.v11.offline-verification.v1\",\n  \"status\": \"PASS_OFFLINE_ORIGINAL_SOURCE_RECORDS\",\n  \"original_run\": 43069105073,\n  \"original_job\": 130691870162,\n  \"workflow_head\": \"15d51439723126f446185905d609d6f755be9f5a\",\n  \"source_head_unchanged\": \"ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80\",\n  \"initial_tree\": \"27651abb15e269c427c75f28f92a3bd1cd9d191f\",\n  \"formatted_tree\": \"27651abb15e269c427c75f28f92a3bd1cd9d191f\",\n  \"source_before_clean\": true,\n  \"source_after_status\": \"\",\n  \"source_after_note\": \"Formatter changes, if any, are staged; original HEAD/tree remain unchanged. Staged edits are not clean-tree proof.\",\n  \"base_entries\": 14037,\n  \"initial_entries\": 14053,\n  \"final_entries\": 14053,\n  \"all_three_merkle_trees_recomputed\": true,\n  \"overlay_paths\": 118,\n  \"formatter_changed_paths\": [],\n  \"format_only_patch\": {\n    \"bytes\": 0,\n    \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n    \"git_blob\": \"e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\"\n  },\n  \"renamed_case_old_name_hits\": 0,\n  \"rename_inventory\": 13,\n  \"rust_files_scanned\": 6204,\n  \"authority_granted\": false,\n  \"original_golden\": {\n    \"bytes\": 75046,\n    \"sha256\": \"17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96\",\n    \"git_blob\": \"d783a943bb7278256bc86dc04dfe99d168c7e013\"\n  },\n  \"full_golden_equal_except_derived_rust_count\": true,\n  \"source_python_actual_pass\": 18,\n  \"source_python_actual_fail\": 0,\n  \"source_python_actual_skip\": 0,\n  \"manifest_members_verified\": 386,\n  \"tar_members_verified\": 387,\n  \"original_archive\": {\n    \"path\": \"mem8-source-gates-v11-records.tar.xz\",\n    \"members\": 387,\n    \"bytes\": 2074124,\n    \"sha256\": \"37639b86c67c9afcafa1b70c50a7da6b63200b9554b5934333716f412cf73693\",\n    \"git_blob\": \"a88400e87a66e04e17b5ab5438650e63d219739c\"\n  },\n  \"started_at\": \"2026-11-11T17:32:44.605427+00:00\",\n  \"finished_at\": \"2026-11-11T17:37:29.725026+00:00\",\n  \"deadline_utc\": \"2026-11-11T17:42:44.605427+00:00\",\n  \"elapsed_seconds\": 285.119599,\n  \"native_project_tests\": 0,\n  \"model_calls\": 0,\n  \"locks_unchanged\": [\n    {\n      \"bytes\": 421005,\n      \"git_blob\": \"025813e20504f31d12dae2092a0807a1a4066419\",\n      \"path\": \"codex-rs/Cargo.lock\",\n      \"sha256\": \"98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69\"\n    },\n    {\n      \"bytes\": 1788299,\n      \"git_blob\": \"1565448430312c7fb7537a48f97e9cd2da945df3\",\n      \"path\": \"MODULE.bazel.lock\",\n      \"sha256\": \"783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57\"\n    }\n  ],\n  \"limit\": \"Source-only formatter, Python regression, caller and tree proof; no native compile, new Bazel graph solution or provider qualification.\"\n}\n",
+    "wall_time_seconds": 0.834517297
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "schema": "hcsn-torch-recovery-evidence-v1",
+  "scope": "pinned dependency recovery; not model-training qualification",
+  "source": {
+    "research_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "installer_sha256": "1e7598b7c4623fabd8969f0ba0c806b529f6999621eb59fa5730192e28f0a7d1",
+    "original_installer_sha256": "a01f4a9bed417e97fe9446b670d5ba40ca4fecda3cf6910d860f8258588f3da3",
+    "full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a"
+  },
+  "recovery": {
+    "job_id": "1a1afd5eec2-fc05-6c0f",
+    "state": "succeeded",
+    "exit_code": 0,
+    "output_complete": true,
+    "output_durable": true,
+    "automatic_retry": false,
+    "claim_sha256": "1b16123594e95ffa7f20f665f076e52a7d57d502d03750578400d7a7a2678cc1",
+    "started_at": "2026-11-06T07:49:56.857120+00:00",
+    "finished_at": "2026-11-06T07:52:35.038411+00:00",
+    "elapsed_seconds": 158.2139561639633,
+    "cpu_seconds_self": 42.375374,
+    "cpu_seconds_children": 103.927003,
+    "artifact_count": 25,
+    "artifact_bytes": 3918339031,
+    "local_parts_reused": 41,
+    "wire_bytes_received_this_attempt": 0,
+    "offline_recovery_only": true,
+    "model_computation_performed": false,
+    "checks": [
+      {
+        "label": "offline_hash_required_pip_install",
+        "started_at": "2026-11-06T07:50:39.144010+00:00",
+        "finished_at": "2026-11-06T07:52:30.536771+00:00",
+        "returncode": 0
+      },
+      {
+        "label": "pip_check",
+        "started_at": "2026-11-06T07:52:30.542834+00:00",
+        "finished_at": "2026-11-06T07:52:31.465219+00:00",
+        "returncode": 0
+      },
+      {
+        "label": "torch_cuda_metadata_only",
+        "started_at": "2026-11-06T07:52:32.040622+00:00",
+        "finished_at": "2026-11-06T07:52:35.028034+00:00",
+        "returncode": 0
+      }
+    ],
+    "disk_budget": {
+      "bytecode_and_metadata_allowance_bytes": 536870912,
+      "exact_zip_uncompressed_bytes": 6688734497,
+      "known_parallel_artifact_write_allowance_bytes": 0,
+      "required_free_bytes": 14358552576,
+      "reserve_bytes": 5368709120,
+      "rounded_payload_bytes": 6727151616,
+      "temporary_allowance_basis": "one complete largest uncompressed wheel in addition to the final installed payload",
+      "temporary_allowance_bytes": 1725820928
+    },
+    "disk_remaining_bytes": 15627341824
+  },
+  "runtime": {
+    "torch": "2.8.0+cu128",
+    "torch_cuda": "12.8",
+    "cuda_available": true,
+    "cuda_count": 1,
+    "cxx11_abi": true,
+    "versions": {
+      "numpy": "2.3.5",
+      "scipy": "1.17.0",
+      "ncps": "1.0.1",
+      "nvidia-ml-py": "13.610.43",
+      "triton": "3.4.0"
+    },
+    "devices": [
+      {
+        "index": 0,
+        "name": "NVIDIA GeForce RTX 4060",
+        "major": 8,
+        "minor": 9,
+        "total_memory": 8184135680
+      }
+    ]
+  },
+  "raw_artifacts": [
+    {
+      "relative_path": "envsetup/torch-recovery-v5/status.json",
+      "sha256": "ee5e86c11b423e917fe15b0d23d80468c25972567f396a0e8699b5133485d10e"
+    },
+    {
+      "relative_path": "envsetup/TORCH_READY.json",
+      "sha256": "65ece28b081216105038d28368ec7240a74ff848bf524c8b5c67023cf3101df2"
+    },
+    {
+      "relative_path": "envsetup/torch-availability.json",
+      "sha256": "dd474a59ad8673c0975a6043dfc64a58250621e996f08f6e1d49cc0d88c602cd"
+    }
+  ],
+  "preserved": {
+    "original_v4_stage_sha256": "9c67cd2611b26e7ce3fc469bd5bb0878e7eb70b47d56e39dff2733486bc01f94",
+    "old_torch_job": "1a1aca78192-fc05-562f",
+    "old_torch_exit_code": 1,
+    "old_torch_failure": "wheel METADATA identity is ambiguous",
+    "old_v4_wire_bytes": 2974688904,
+    "old_v4_elapsed_seconds": 7859.846566096065,
+    "torch_manifest_sha256": "5b8df3b8ff4583f10f43a1ecfb05f35574a3f95a16a458d107e36e8a89175701",
+    "mamba_manifest_sha256": "86f88c5d54c74e5baccdd99cace8f056a6ed6acc11f4bd8f633e122c951d5501",
+    "original_campaign_job": "1a1acdd69f2-fc05-5757",
+    "research_source_changed": false,
+    "model_training_budget_changed": false,
+    "new_training_campaign_started": false
+  },
+  "interpretation": {
+    "strict_cuda_qualification_established": false,
+    "completed_cuda_runs_at_handoff": 0,
+    "requested_cuda_runs": 170,
+    "physical_gpu_energy": null,
+    "physical_gpu_energy_reason": "Existing pinned NVML energy and power readings are NOT_SUPPORTED; no energy estimate substituted."
+  },
+  "publication": {
+    "raw_artifacts_retained": true,
+    "view": "bounded selected fields; host login names and absolute host paths omitted",
+    "note": "raw_artifact SHA256 values identify retained originals, not this normalized public JSON"
+  }
+}

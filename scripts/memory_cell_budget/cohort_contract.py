@@ -6,7 +6,9 @@ import json
 import os
 from pathlib import Path
 import re
+import sys
 import time
+from importlib.machinery import PathFinder
 
 from budget_ledger import canonical, digest
 
@@ -194,6 +196,88 @@ def validate_seal(directory):
         if file_sha(path) != expected:
             raise ValueError("original task log, fixture or registered tool changed")
     return receipt
+
+
+def bind_implementation(directory, implementation, expected_seal=None):
+    """Bind the actual import roots to independently frozen source paths."""
+    directory = Path(directory).resolve(strict=True)
+    implementation = Path(implementation).resolve(strict=True)
+    seal_path = directory / "seal.json"
+    seal_sha256 = file_sha(seal_path)
+    if expected_seal is not None and seal_sha256 != expected_seal:
+        raise ValueError("implementation seal identity changed")
+    receipt = validate_seal(directory)
+    controller = Path(__file__).resolve().parent
+    directories = sorted((implementation / "scripts").glob("memory_cell*"))
+    if not directories or any(p.is_symlink() or not p.is_dir() for p in directories):
+        raise ValueError("implementation source directories are not bound")
+    implementation_files = [
+        p for folder in directories for p in sorted(folder.glob("*.py"))
+    ]
+    controller_files = [
+        p for p in sorted(controller.glob("*.py")) if not p.name.startswith("test_")
+    ]
+    bound = {}
+    for path in implementation_files + controller_files:
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("implementation source must be a regular file")
+        resolved = str(path.resolve(strict=True))
+        expected = receipt["code"].get(resolved)
+        if expected is None or file_sha(path) != expected:
+            raise ValueError(
+                "actual implementation source is not independently pinned: " + resolved
+            )
+        bound[resolved] = expected
+    if not implementation_files:
+        raise ValueError("implementation source set is empty")
+    modules = {
+        p.stem: p.resolve()
+        for p in implementation_files
+        if p.stem.isidentifier()
+        and p.stem != "__init__"
+        and not p.stem.startswith("test_")
+    }
+    for name in (
+        "model_process",
+        "parametric_model",
+        "parametric_worker",
+        "population_transfer",
+    ):
+        if name not in modules:
+            raise ValueError("required implementation module is not pinned: " + name)
+    controller_modules = {p.stem: p.resolve() for p in controller_files}
+    search = [str(p) for p in reversed(directories)]
+    for name, expected in modules.items():
+        loaded = sys.modules.get(name)
+        if loaded is not None:
+            origin = getattr(loaded, "__file__", None)
+            allowed = {expected}
+            if name in controller_modules:
+                allowed.add(controller_modules[name])
+            if origin is None or Path(origin).resolve() not in allowed:
+                raise ValueError(
+                    "loaded implementation module differs from pinned source: " + name
+                )
+        else:
+            spec = PathFinder.find_spec(name, search)
+            if (
+                spec is None
+                or spec.origin is None
+                or Path(spec.origin).resolve() != expected
+            ):
+                raise ValueError(
+                    "implementation import resolution differs from pinned source: "
+                    + name
+                )
+    if file_sha(seal_path) != seal_sha256:
+        raise ValueError("implementation seal changed during admission")
+    return {
+        "schema": "hepta.memory-budget.implementation-binding.v1",
+        "implementation": str(implementation),
+        "study": str(directory),
+        "seal_sha256": seal_sha256,
+        "source_set_sha256": digest(bound),
+    }
 
 
 def admit_prospective_score(meta, prediction, resolution):

@@ -1,0 +1,8 @@
+{
+  "failed_execution_chunk": "7c9de5",
+  "exit_code": 1,
+  "stage": "first remote binary decode, before any archive extraction",
+  "cause": "GitHub file endpoint returned standard LF-wrapped base64; strict decoder rejected internal LF",
+  "correction": "Remove only ASCII CR/LF/space/tab wrapping after verifying all non-alphabet bytes are that whitespace, then retain strict base64 decoding and exact byte/SHA/Git checks",
+  "original_API_base64_retained": true
+}

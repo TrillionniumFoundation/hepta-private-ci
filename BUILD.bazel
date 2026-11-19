@@ -2,6 +2,35 @@ load("@apple_support//xcode:xcode_config.bzl", "xcode_config")
 
 xcode_config(name = "disable_xcode")
 
+config_setting(
+    name = "rust_fastbuild",
+    values = {"compilation_mode": "fastbuild"},
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "rust_dbg",
+    values = {"compilation_mode": "dbg"},
+    visibility = ["//visibility:public"],
+)
+
+config_setting(
+    name = "rust_opt",
+    values = {"compilation_mode": "opt"},
+    visibility = ["//visibility:public"],
+)
+
+# The release compile gate deliberately exercises cfg(not(debug_assertions))
+# with fastbuild. Keep its explicit target and exec compiler flags authoritative.
+config_setting(
+    name = "rust_release_cfg_check",
+    flag_values = {
+        "@rules_rust//rust/settings:extra_exec_rustc_flag": "-Cdebug-assertions=no",
+        "@rules_rust//rust/settings:extra_rustc_flag": "-Cdebug-assertions=no",
+    },
+    visibility = ["//visibility:public"],
+)
+
 # We mark the local platform as glibc-compatible so that rust can grab a toolchain for us.
 # TODO(zbarsky): Upstream a better libc constraint into rules_rust.
 # We only enable this on linux though for sanity, and because it breaks remote execution.

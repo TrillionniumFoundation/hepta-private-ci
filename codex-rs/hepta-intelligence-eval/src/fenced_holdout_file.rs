@@ -34,6 +34,9 @@ use crate::holdout_envelope::HoldoutPlanEnvelopeV2;
 use crate::paired_plan::decode_paired_plan;
 use crate::paired_plan::encode_paired_plan;
 
+#[path = "fenced_holdout_file_replay.rs"]
+mod physical;
+
 #[path = "fenced_holdout_current.rs"]
 mod current;
 
@@ -49,8 +52,6 @@ const EVENT_PAIRED_PLAN: u8 = 2;
 #[cfg(feature = "qualification-owned-file-read")]
 #[path = "fenced_holdout_file_observation.rs"]
 mod observation;
-#[path = "fenced_holdout_file_replay.rs"]
-mod physical;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LockedFileCasErrorV1 {
@@ -156,7 +157,9 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         }
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
-        if physical::read_stable_image(&mut file)? != bytes {
+        if physical::read_stable_image(&mut file)? != bytes
+            || current::read_physical(&mut file, binding, minimum)?.bytes != observed.bytes
+        {
             return Err(LockedFileCasErrorV1::Indeterminate);
         }
         Ok(Self {
@@ -232,6 +235,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
                     && current.history_digest == self.history_digest
                     && current.state == self.state =>
             {
+                self.poisoned = false;
                 Ok(current)
             }
             _ => {
@@ -303,6 +307,7 @@ impl FinalHoldoutCasStoreV1 for LockedFileFinalHoldoutCasStoreV1 {
             .and_then(|_| self.file.write_all(&frame))
             .and_then(|()| self.file.sync_all());
         if write.is_err() {
+            self.poisoned = true;
             return Err(FinalHoldoutCasStoreError::Indeterminate);
         }
         let observed = physical::read_stable_image(&mut self.file)

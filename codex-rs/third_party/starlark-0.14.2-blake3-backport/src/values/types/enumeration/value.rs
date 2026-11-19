@@ -19,7 +19,6 @@ use std::fmt;
 use std::fmt::Display;
 
 use allocative::Allocative;
-use derivative::Derivative;
 use dupe::Dupe;
 use either::Either;
 use starlark_derive::Coerce;
@@ -47,18 +46,24 @@ use crate::values::enumeration::enum_type::FrozenEnumType;
 use crate::values::types::type_instance_id::TypeInstanceId;
 
 /// A value from an enumeration.
-#[derive(
-    Clone, Derivative, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable,
-)]
+#[derive(Clone, Trace, Coerce, Freeze, ProvidesStaticType, Allocative, StarlarkPagable)]
 #[repr(C)]
-#[derivative(Debug)]
 pub struct EnumValueGen<V: ValueLifetimeless> {
     // Must ignore value.typ or type.elements, since they are circular
-    #[derivative(Debug = "ignore")]
     pub(crate) typ: V, // Must be EnumType it points back to (so it can get the type)
-    pub(crate) value: V,   // The value of this enumeration
+    pub(crate) value: V, // The value of this enumeration
     pub(crate) index: i32, // The index in the enumeration
     pub(crate) id: TypeInstanceId,
+}
+
+impl<V: ValueLifetimeless + std::fmt::Debug> std::fmt::Debug for EnumValueGen<V> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("EnumValueGen")
+            .field("value", &self.value)
+            .field("index", &self.index)
+            .field("id", &self.id)
+            .finish()
+    }
 }
 
 impl<'v, V: ValueLike<'v>> Display for EnumValueGen<V> {

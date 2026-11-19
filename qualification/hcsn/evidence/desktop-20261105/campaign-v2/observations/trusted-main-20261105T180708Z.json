@@ -1,0 +1,24 @@
+{
+  "schema": "hcsn-trusted-main-probe-observation-v1",
+  "observed_at_utc": "2026-11-05 18:07:08 UTC",
+  "run_id": 39526325715,
+  "run_attempt": 5,
+  "head_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "run_status": "queued",
+  "jobs": [
+    {
+      "id": 127299267982,
+      "status": "queued",
+      "conclusion": null,
+      "runner_id": 0,
+      "steps": [],
+      "labels": [
+        "self-hosted",
+        "linux",
+        "x64"
+      ]
+    }
+  ],
+  "actions_taken": "read only; no rerun, dispatch, registration or credential change",
+  "ci_pass_established": false
+}

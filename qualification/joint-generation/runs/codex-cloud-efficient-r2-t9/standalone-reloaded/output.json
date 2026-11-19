@@ -1,0 +1,284 @@
+{
+  "bundle_digest": "ecf06216f39d644f66f5de0478ba925b53e8b87bcaa310028975ec307c9232f3",
+  "caption": "blue cross right",
+  "choices": {
+    "image": 11,
+    "text": 11
+  },
+  "controller_cost_calibrated": true,
+  "cpu_ns": 9027766,
+  "decoding": {
+    "mode": "sample",
+    "seed": 42
+  },
+  "frozen_runtime": {
+    "compute_price": 0.02,
+    "cost_ratio": 0.0,
+    "decision_price": 0.0,
+    "inference_cap_full_equivalents": 2.0,
+    "rho": 1.5,
+    "runtime_batch_size": 64
+  },
+  "image_sha256": "c6765fd611d6347ea48765af88835e3c130cbf0560191848b02028535fd5a620",
+  "mode": "continuation",
+  "model_digest": "8c4cf889c9a6ae416c37e0a927d57ce9acbbd9da8f3f5f5fff71b9859421d8c9",
+  "model_seed": 11,
+  "native_sha256": "154f13f2dc2a707a15c99730973b688e1f66652f9d1ee194fecf5eea956bf770",
+  "preparation": {
+    "arm": "native-bundle-prepare",
+    "consumed_units": 4608,
+    "hardware_flops_or_latency": false,
+    "kernels": {
+      "prepare": {
+        "thumbnail_encoder_fold": {
+          "calls": 1,
+          "compare_ops": 0,
+          "consumed_units": 4608,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 4608,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      }
+    },
+    "prices": {
+      "compare_ops": 1,
+      "div_ops": 4,
+      "exp_ops": 8,
+      "log_ops": 8,
+      "macs": 2,
+      "pow_ops": 8,
+      "scalar_ops": 1,
+      "sort_items": 1,
+      "sqrt_ops": 4,
+      "tanh_ops": 8
+    },
+    "remaining_units": 95392,
+    "schema": "hepta.independent-work-ledger.v1",
+    "shared_sources": [],
+    "stages": {
+      "prepare": {
+        "consumed_units": 4608,
+        "op_compare_ops": 0,
+        "op_div_ops": 0,
+        "op_exp_ops": 0,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 4608,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 0,
+        "thumbnail_fold_calls": 1
+      }
+    },
+    "total_cap": 100000,
+    "totals": {
+      "consumed_units": 4608,
+      "op_compare_ops": 0,
+      "op_div_ops": 0,
+      "op_exp_ops": 0,
+      "op_log_ops": 0,
+      "op_macs": 0,
+      "op_pow_ops": 0,
+      "op_scalar_ops": 4608,
+      "op_sort_items": 0,
+      "op_sqrt_ops": 0,
+      "op_tanh_ops": 0,
+      "thumbnail_fold_calls": 1
+    },
+    "unit_profile": "declared-priced-operator-work-v1"
+  },
+  "qualification_only": true,
+  "route": {
+    "actual_units": 6593,
+    "batch_size": 1,
+    "charged_units": 6593,
+    "continued": [
+      false
+    ],
+    "mode": "continuation",
+    "model_forwards": 1,
+    "per_row": {
+      "full_forwards": [
+        0
+      ],
+      "gain": [
+        -0.034880207783684204
+      ],
+      "low_forwards": [
+        1
+      ],
+      "model_forwards": [
+        1
+      ],
+      "work_units": [
+        6593
+      ]
+    },
+    "per_row_forwards": [
+      1
+    ],
+    "per_row_work_units": [
+      6593
+    ],
+    "prepare_units": 0,
+    "request_cap_units": 34368,
+    "reservation_charged": false,
+    "worst_reserved_units": 21725
+  },
+  "run_id": "t9-external-smoke:1",
+  "runtime_cost": {
+    "arm": "native-service",
+    "consumed_units": 10697,
+    "hardware_flops_or_latency": false,
+    "kernels": {
+      "inference": {
+        "native_batch_continuation": {
+          "calls": 1,
+          "compare_ops": 68,
+          "consumed_units": 6593,
+          "div_ops": 114,
+          "exp_ops": 24,
+          "log_ops": 0,
+          "macs": 2666,
+          "pow_ops": 0,
+          "scalar_ops": 289,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 32
+        }
+      },
+      "output": {
+        "decoder": {
+          "calls": 1,
+          "compare_ops": 384,
+          "consumed_units": 3264,
+          "div_ops": 192,
+          "exp_ops": 192,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 576,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        },
+        "sample_and_quantize": {
+          "calls": 1,
+          "compare_ops": 410,
+          "consumed_units": 840,
+          "div_ops": 0,
+          "exp_ops": 0,
+          "log_ops": 0,
+          "macs": 0,
+          "pow_ops": 0,
+          "scalar_ops": 430,
+          "sort_items": 0,
+          "sqrt_ops": 0,
+          "tanh_ops": 0
+        }
+      }
+    },
+    "prices": {
+      "compare_ops": 1,
+      "div_ops": 4,
+      "exp_ops": 8,
+      "log_ops": 8,
+      "macs": 2,
+      "pow_ops": 8,
+      "scalar_ops": 1,
+      "sort_items": 1,
+      "sqrt_ops": 4,
+      "tanh_ops": 8
+    },
+    "remaining_units": 27775,
+    "schema": "hepta.independent-work-ledger.v1",
+    "shared_sources": [],
+    "stages": {
+      "inference": {
+        "batch_requests": 1,
+        "consumed_units": 6593,
+        "critic_decisions": 1,
+        "critic_rows": 1,
+        "model_forward_calls": 1,
+        "model_forward_macs": 2624,
+        "model_forward_rows": 1,
+        "native_batches": 1,
+        "op_compare_ops": 68,
+        "op_div_ops": 114,
+        "op_exp_ops": 24,
+        "op_log_ops": 0,
+        "op_macs": 2666,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 289,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 32,
+        "thumbnail_calls": 1,
+        "thumbnail_rows": 1
+      },
+      "output": {
+        "consumed_units": 4104,
+        "decoder_calls": 1,
+        "decoder_elements": 192,
+        "op_compare_ops": 794,
+        "op_div_ops": 192,
+        "op_exp_ops": 192,
+        "op_log_ops": 0,
+        "op_macs": 0,
+        "op_pow_ops": 0,
+        "op_scalar_ops": 1006,
+        "op_sort_items": 0,
+        "op_sqrt_ops": 0,
+        "op_tanh_ops": 0,
+        "output_bytes": 374,
+        "serialized_requests": 1
+      }
+    },
+    "total_cap": 38472,
+    "totals": {
+      "batch_requests": 1,
+      "consumed_units": 10697,
+      "critic_decisions": 1,
+      "critic_rows": 1,
+      "decoder_calls": 1,
+      "decoder_elements": 192,
+      "model_forward_calls": 1,
+      "model_forward_macs": 2624,
+      "model_forward_rows": 1,
+      "native_batches": 1,
+      "op_compare_ops": 862,
+      "op_div_ops": 306,
+      "op_exp_ops": 216,
+      "op_log_ops": 0,
+      "op_macs": 2666,
+      "op_pow_ops": 0,
+      "op_scalar_ops": 1295,
+      "op_sort_items": 0,
+      "op_sqrt_ops": 0,
+      "op_tanh_ops": 32,
+      "output_bytes": 374,
+      "serialized_requests": 1,
+      "thumbnail_calls": 1,
+      "thumbnail_rows": 1
+    },
+    "unit_profile": "declared-priced-operator-work-v1"
+  },
+  "schema": "hepta.joint-generation.native-output.v1",
+  "selection_ready": false,
+  "serialized_output_bytes": 374,
+  "spent": {
+    "controller": 341,
+    "generator": 14964,
+    "output_bytes": 107
+  },
+  "system": "ndu_control",
+  "timing_scope": "single request including loading/preparation/contract/PNG receipt; final file persistence excluded; not frozen batch-throughput qualification",
+  "wall_ns": 9027107
+}

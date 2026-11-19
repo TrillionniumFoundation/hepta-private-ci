@@ -1,0 +1,67 @@
+{
+  "failures": 0,
+  "full_archive": {
+    "bytes": 3696777,
+    "filename": "hepta_native_ndu_stem_abcd_20261014.zip",
+    "location": "conversation artifact; full archive is not committed to Git",
+    "sha256": "99fcd4caa91320dafdc99483f120eec5a1f60c1039934bdf708dce39c4cd88c1",
+    "verified_members": 223
+  },
+  "global_ci_verified": false,
+  "primary_bc_weights": {
+    "filename": "PRIMARY_BC_WEIGHTS.npz",
+    "location": "aggregate NPZ in conversation archive; six byte-identical member arrays are individual NPY files in repository primary_weights/",
+    "models": 6,
+    "sha256": "1fc0cef4082a6173c820d780c1a9cf2723b7054ab2d8abed23a74775ae0e1628",
+    "weights_per_model": 65
+  },
+  "production_authorized": false,
+  "project_cloud_execution": false,
+  "replay_maximum_error": 0.0,
+  "replay_panels": 126,
+  "repository_weight_files": {
+    "primary_weights/B_seed11_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "8efc1ad1a1922e28eb3ac19fce4310bb49fc83f8",
+      "sha256": "71c8e1ad82002fae429d27b61f0568b627535549f163808ca376bde06d2477e9"
+    },
+    "primary_weights/B_seed23_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "5ce341427d26c4f32b5280c28d2ae3d3e8b982ab",
+      "sha256": "620ebd9e0ec85ae143ab0dd3b782aab5b73d6400b97ac487822058f853029226"
+    },
+    "primary_weights/B_seed47_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "a34effb78d6531267bf7748ad3947045400d26ff",
+      "sha256": "6580f535ba26c46f7ff7a9a5dc04256969bcb6dfc9b0670bdcce3b71b3da2205"
+    },
+    "primary_weights/C_seed11_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "394790dbe7f527bca23a81908bfa8a328abfe5c4",
+      "sha256": "241e111d8950b594eb92879b82ac5a494fd9129cf01cad37625435aa98947689"
+    },
+    "primary_weights/C_seed23_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "988c75a28641498f7ebde722f11d06da165d0779",
+      "sha256": "3a8b81b6324f642ec92db846a8c370ce1b7a7f9e73c2789e1678e4de0841ef06"
+    },
+    "primary_weights/C_seed47_cpu8.npy": {
+      "bytes": 648,
+      "git_blob_sha1": "7f848a113c7f7dd8efb1687158304cafff634185",
+      "sha256": "c10a3c1233d40244acfc3c126de5d292fd44d58fedf13860452e9b4e30b1bc7d"
+    }
+  },
+  "runs": 22,
+  "saved_models_replayed": 21,
+  "schema": "hepta.native-stem-abcd.evidence.v1",
+  "source_sha256": {
+    "models.py": "7a90a41254d396fc6e9be9c1d48865bcec8e34c746f57935fe6b355bd4eb5fdd",
+    "problem.py": "58eecc762f5ac5700e52f9a23f3f82be4aad2fa229b1e9d8260fd08ccd2551b7",
+    "run.py": "9d3cd155f514054af26138a2383eb433ebcdc79d6c93a3152ce85a6dc780793c",
+    "sweep.py": "c4a9d79c2d0a2fb36984105460e64ab6acd4a308d33306d3bff21993329d8434",
+    "test_native.py": "ea1a1aa93bfc0116a4cf3622df96898fc09042166779ac39520492428e5bf56a"
+  },
+  "tested_source_commit": "bdc2dcfbf6f329369916bfd5ece9cc10b7f35f72",
+  "tests_passed": 28,
+  "tests_skipped": 0
+}

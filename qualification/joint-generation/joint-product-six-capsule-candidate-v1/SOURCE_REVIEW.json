@@ -1,0 +1,118 @@
+{
+  "status": "SOURCE_REVIEW_ACCEPTED_FOR_ONE_BOUNDED_STDLIB_PACKAGING_QUALIFICATION",
+  "source_freeze_sha256": "8a4fd9f0e9745d465bb8acc0f8bb8a17c556f8e2281eeae33e66a4f41807af1a",
+  "qualification_admitted": true,
+  "admitted_scope": "Exactly one execution of this frozen package run_once.py with the caller-confirmed existing shared benchmark lock, running its one stdlib test child. This admission covers byte materialization/negative storage fixtures only. No original capsule runner, scientific/model operation, installation, permission change, remote publication, merge or deployment is admitted by this review.",
+  "review_method": "Independent static reading of materialize.py, run_once.py, test_materialize.py, prepare_package.py and finalize_package.py; AST-only validation of scalar capsule_spec and import surfaces; own read-only SHA256/size/path and capacity arithmetic against local original source and INPUTS-bound synthetic assets. No candidate module was imported; no candidate, test, qualification or model was executed. The only write is this source-review artifact outside FREEZE.",
+  "boundaries": {
+    "design_manifest_sha256": "d0dd53cfd0a747a0cd659eb063f3cc68761b7fe69bae2052595ad0d09c71df73",
+    "design_review_sha256": "d3410c0b1b9a7fb2920fc316ca77c34ff07eae3b21a71422bfca6c43002088f7",
+    "capacity_sha256": "3147ef2615429a6ccf0662cbdac1310716c6b8a01a35b37ac2b047e32fbd84ed",
+    "capsule_manifest_sha256": "8cca2fd77a3825af017bbe46e957ed0f9fb3b8d437b41a3063c33080a461a15b",
+    "shared_lock_observed_readonly": {
+      "path": "/workspace/shared/rgb-class-preservation-20261030/benchmark.lock",
+      "device": 27,
+      "inode": 536619,
+      "bytes": 0,
+      "is_symlink": false,
+      "scope": "Identity checked by stat only; this reviewer did not acquire or modify it. Caller selected shared exclusion, not production owner authentication."
+    },
+    "run_directory_absent_at_review": true,
+    "tests_executed_by_reviewer": false,
+    "models_executed_by_reviewer": false
+  },
+  "verified_static_facts": {
+    "all_335_FREEZE_members_match": true,
+    "prepared_package_files_including_FREEZE": 336,
+    "prepared_package_bytes_including_FREEZE": 3539804,
+    "prepared_package_max_blob_bytes": 401600,
+    "all_original_logical_paths_byteexact": 242,
+    "all_stored_blobs_hash_size_path_checked": 320,
+    "unique_stored_blob_bytes": 2990186,
+    "all_173_original_frozen_members_and_six_original_FREEZEs_present": true,
+    "all_13_runtime_input_union_paths_exact": true,
+    "runtime_input_union_bytes": 1772664,
+    "all_six_capsule_source_and_input_mappings_match_original_FREEZE_INPUTS": true,
+    "no_target_RUN_ONCE_in_any_materialization_mapping": true,
+    "capsule_spec_is_only_docstring_plus_literal_assignments": true,
+    "manifest_pins_match_scalar_spec": true,
+    "NPZ_records": {
+      "count": 79,
+      "maximum_bytes": 401600,
+      "terminal_bytes": 4960,
+      "central_directory_bytes": 4938,
+      "EOCD_bytes": 22,
+      "original_bytes": 1560407,
+      "whole_sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150",
+      "ordered_contiguous_original_ranges_and_reconstructed_bytes_match": true
+    },
+    "copied_provenance_entries_match_manifest": 242,
+    "omitted_raw_entries_exact_from_eight_copied_outer_receipt_inventories": 281,
+    "omitted_raw_contents_not_read_or_revalidated": true,
+    "frozen_negative_names_unique_and_match_CAPACITY": 46,
+    "frozen_positive_cases": 7
+  },
+  "capacity_independent_recalculation": {
+    "six_expanded_data_files": 251,
+    "six_expanded_data_bytes": 11472850,
+    "six_completion_receipts_bytes": 47805,
+    "six_complete_files": 257,
+    "six_complete_bytes": 11520655,
+    "fixture_package_files": 321,
+    "fixture_package_bytes": 3107302,
+    "injected_failure_first_file": "joint-policy-delivery-candidate-v2/FREEZE.json",
+    "injected_failure_bytes": 2427,
+    "successful_schedule_retained_files_before_log_report_receipt": 649,
+    "successful_schedule_retained_bytes_before_log_report_receipt": 18247239,
+    "log_cap_bytes": 65536,
+    "test_report_cap_bytes": 32768,
+    "outer_receipt_cap_bytes": 262144,
+    "terminal_retained_file_cap": 652,
+    "terminal_retained_byte_cap": 18607687,
+    "calculation": "Six full materializations plus their six receipts; restored package fixture; selected delivery-v2 full failed-output tree; selected retained-byte-cache full success plus receipt; one first-file write-failure remainder; four-byte SENTINEL. Add separate log/report/outer-receipt caps only at terminal accounting.",
+    "bound_scope": "Exact fixed successful schedule and terminal inventory, not a filesystem quota or arbitrary-failure aggregate guarantee. RLIMIT_FSIZE is per-file. Prepared package counts exclude this later review and qualification evidence."
+  },
+  "implementation_review": [
+    "D1: qualification runner opens the supplied existing regular nonsymlink lock with rb and acquires flock(EX|NB). It does not create, copy or replace a lock. materialize.py has no lock code. Original runners remain bytes-identical and still depend on caller-supplied shared lock and existing Python/NumPy/Linux environment.",
+    "D2: all source and INPUTS artifacts required by the fixed Fashion entrypoint paths are retained. Unsupported lazy legacy serve functions remain explicitly out of scope. materialize.py imports only stdlib and frozen scalar capsule_spec; test_materialize.py imports only stdlib and that consumer. No eval/exec/dynamic code load or scientific module import was found in these entrypoints.",
+    "D3: explicit schema/key/type checks refuse duplicate keys, nonfinite JSON, booleans as integers, unexpected/missing/duplicate destination paths, record order/count/offset/length drift, unsafe paths and malformed digests. Manifest identity, individual object identity and full reconstructed original identity are separately checked. Records are raw bytes, never extracted archive member paths.",
+    "D4: exact manifest bytes, fixed object/path/record count, selected workspace bytes, fixture counts and total successful retained bytes are frozen in CAPACITY. This reviewer independently recomputed all named totals. The code does not present per-file FSIZE as aggregate enforcement.",
+    "Complete manifest and every stored object are validated before the destination root is created. Verified source bytes are retained in memory; later package changes cannot replace them during writes. Target paths are fixed and deduplicated; target RUN_ONCE is absent. Parent symlinks, source symlinks and existing or partial destinations refuse.",
+    "The consumer verifies the complete written path set and each written byte before writing a pending completion receipt, verifies that pending receipt, then renames it last. The receipt status says MATERIALIZED_BYTES_VERIFIED_NOT_QUALIFIED and explicitly records no runner execution or shared-lock creation. OS failures can leave incomplete fresh output; no automatic repair/reuse is attempted.",
+    "The fixed test schedule contains six complete source/input reconstructions, 46 named refusal/failure fixtures and one retained-validated-byte success after source drift. The latter verifies the original source bytes reached output and restores its fixture afterward. Tests check forbidden scientific imports and exact final retained files/bytes.",
+    "The outer requires SOURCE_REVIEW bound to the exact FREEZE and qualification_admitted true, uses exclusive RUN_ONCE creation and launches exactly one isolated -I -B test child. No subprocess is launched by that child. Child exit, full wait4 rusage, count checks and terminal capacity checks all gate packaging PASS; failure does not authorize replay."
+  ],
+  "admitted_resource_limits": {
+    "test_child_CPU_soft_hard_seconds": [
+      3,
+      3
+    ],
+    "test_child_wall_seconds": 15,
+    "outer_CPU_soft_hard_seconds": [
+      4,
+      4
+    ],
+    "AS_bytes": 268435456,
+    "FSIZE_per_file_bytes": 8388608,
+    "terminal_retained_files": 652,
+    "terminal_retained_bytes": 18607687,
+    "no_original_model_or_experiment_budget_reuse_or_expansion": true,
+    "resource_timing": "Outer sets inherited AS/FSIZE and its own CPU4 limits before frozen-byte verification and child launch. Child preexec lowers CPU to3 and sets alarm15; outer also monitors child elapsed wall15. No independent whole-outer wall bound is claimed.",
+    "failure_boundary": "Handled launch/monitor errors attempt own-child kill/reap. Hard parent death, Popen failure before an owned handle, kernel stalls, disk/receipt errors and later outer tail can prevent full accounting. CPU prefixes and full child wait4 are not entire lifetime cost; unknown outer tail is retained."
+  },
+  "preparation_failure_preservation": {
+    "directory": "joint-product-six-capsule-preparation-history-v1",
+    "prior_failed_freeze_sha256": "444784419b53bbc6353adbb07ffec5397f54a229f85ff459c66866fbdc4d33a5",
+    "finding": "First finalizer excluded all basename FREEZE.json paths; the current finalizer excludes only the new root FREEZE. The preserved code delta is exactly that filter correction and final inventory now includes all nine nested original FREEZE files.",
+    "interpretation": "Static preparation failure is preserved separately and is not qualification evidence. Earlier preparation cost is not refunded. This source review did not execute either finalizer."
+  },
+  "publication_and_scope_holds": [
+    "This admission is not a saved-result PASS. The future qualification must finish once within its frozen bounds; an independent saved-result review is still needed before any separately authorized publication.",
+    "Do not publish the whole RUN_ONCE qualification output tree: expanded content.npz copies are 1560407 bytes each and exceed the remote blob limit. Publish only the reviewed frozen package and separately selected bounded review/report/receipt artifacts; explicitly catalog omitted expanded output as hash referenced.",
+    "Every remote blob, including later review/results, must satisfy the actual incremental repository policy. Remote Git size/hash and downloaded-record whole NPZ reconstruction remain separate checks.",
+    "Six historical scoped PASS records remain separate. This package proves no combined implementation, scientific improvement, production authentication, hostile-concurrency guarantee, power-loss transaction, raw-run evidence re-audit or replay authorization.",
+    "Existing scientific-data403, denied App Server access, strict256, production permission holds and 67 historical oversized blobs against main remain unchanged."
+  ],
+  "blocking_findings": [],
+  "verdict": "Admit exactly the frozen one-time stdlib packaging qualification through run_once.py with the confirmed existing shared benchmark lock. No scientific/model execution is admitted. Preserve any failure and stop; no automatic rerun."
+}

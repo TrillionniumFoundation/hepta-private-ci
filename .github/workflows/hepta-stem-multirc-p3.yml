@@ -1,0 +1,39 @@
+name: Hepta P3 Original-Human MultiRC Source Owner Bridge (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-replacement-p0/original_multirc_p2.py"
+      - "qualification/stem-replacement-p0/test_original_multirc_p2.py"
+      - "qualification/stem-replacement-p0/ORIGINAL_MULTIRC_SOURCE_P3.md"
+      - ".github/workflows/hepta-stem-multirc-p3.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-source-adapter-only:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: "3.11"
+      - name: Original source-owner SHA contract, not public dataset acquisition
+        run: |
+          set -euo pipefail
+          cd qualification/stem-replacement-p0
+          python -m py_compile original_multirc_p2.py test_original_multirc_p2.py
+          python -m unittest -q test_original_multirc_p2
+          python -O -m unittest -q test_original_multirc_p2
+          python - <<'PY'
+          import original_multirc_p2 as m
+          assert m.DATA_REVISION=='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          assert m.COUNTS=={'train':12,'calibration':4,'test':8}
+          assert m.bank.MAX_CASES_PHYSICAL==96
+          print('original_publisher_dataset_downloaded=false genuine_human_efficacy=false production=false')
+          PY

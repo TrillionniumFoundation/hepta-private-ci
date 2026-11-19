@@ -1,0 +1,30 @@
+name: hcsn-currentstate-n256-firststep-hosted-admission-intent
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hcsn-currentstate-n256-firststep-hosted-admission-intent.yml"
+      - "qualification/hcsn_currentstate_n256_firststep_hosted_admission_intent/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-n256-firststep-hosted-admission-intent-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  static-zero-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Verify frozen zero-model intent
+        run: python -m qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.verify_source
+      - name: Run normal controls
+        run: python -m unittest qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.test_policy
+      - name: Run optimized controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_firststep_hosted_admission_intent.test_policy

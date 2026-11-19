@@ -50,7 +50,11 @@ impl PqFixture {
                     unix_ms: time.load(Ordering::SeqCst),
                 },
                 PqTrustOperationV2::FrontierLoad { .. }
-                | PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Unavailable,
+                | PqTrustOperationV2::FrontierCompareAndSet { .. }
+                | PqTrustOperationV2::LearningFrontierLoad { .. }
+                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                    PqTrustOutcomeV2::Unavailable
+                }
             })
         })?;
         let head = FinalUseRevocations {

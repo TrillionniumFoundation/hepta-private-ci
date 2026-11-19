@@ -1,0 +1,27 @@
+{
+  "analysis_wall_seconds": 29.747979883999506,
+  "analyzer_sha256": "f2763843250e99d92542104d527b24d1fcd8ed541f8d199fa4f3fd62fac42809",
+  "child_peak_rss_bytes": 346402816,
+  "child_system_cpu_seconds": 0.90916,
+  "child_user_cpu_seconds": 28.076284,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.content_analysis",
+    "--protocol",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/CONTENT002_PROTOCOL.json",
+    "--study",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002",
+    "--output",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content_analysis002"
+  ],
+  "complete_child_cpu_seconds": 28.985444,
+  "main_scheduler_receipt_sha256": "678b4a877fad5d20a841e382629ccc9d6e146198813a95e5d4fe800baebf86de",
+  "measurement": "Full isolated analyzer wait4; watcher self CPU is a separate component, sleep wall time is not analysis compute",
+  "protocol_sha256": "03070eb0d3fc264ace436f25a06c989bb898f3c33caba83936f5040c660e6b9c",
+  "returncode": 0,
+  "stdout_sha256": "09b78b28d09c0362f0f9201825fefb919155e655d5303768190e88efb49c342b",
+  "waiting_wall_seconds": 5061.289450126,
+  "watcher_self_cpu_seconds": 0.379963181,
+  "watcher_sha256": "e67cdeeb39b4a09e9e51daea5c739317505aaf61d089653ca757ce50eda16d32"
+}

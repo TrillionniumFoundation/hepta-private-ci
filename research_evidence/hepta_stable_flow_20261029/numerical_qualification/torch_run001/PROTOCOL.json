@@ -1,0 +1,88 @@
+{
+  "identity": "new-untrained-stable-flow-qualification-20261029-v1",
+  "created_utc": "2026-10-29T11:54:37.759937+00:00",
+  "flow_version": "hepta-stable-flow-20261029-v1",
+  "not_recovered_checkpoint": true,
+  "source_sha256": {
+    "experiments/call_put_stable_flow/numerics.py": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748",
+    "experiments/call_put_stable_flow/flow.py": "28b9ca69e0f1017dc49c6de7d0a28ebddc1c80b7af9b11c5fb2c4c2d7cef15de",
+    "experiments/call_put_stable_flow/tests/test_numerics.py": "287e37aaea605533d30e98e6d18abb9ad78793669c00b52fd74de9d2649d8e57",
+    "experiments/call_put_stable_flow/tests/test_flow.py": "2135c47ff637589f356e5637ef0cc04c72637f3143bdeac2cd80e12294a39b9b",
+    "research_evidence/hepta_stable_flow_20261029/numerical_qualification/run_torch_qualification.py": "3b5d5ef3152807e40c8f43623a598e3cfa33d54fe7da5fff2afa36341c2511a4"
+  },
+  "kernel_tolerances": {
+    "float32_relative": 1e-05,
+    "float64_relative": 1e-11,
+    "subnormal_absolute_floor": "16*dtype.tiny"
+  },
+  "precision_control": "weights, inputs, dt initialized in FP32 then exactly upcast",
+  "phi_grid": [
+    -20,
+    -4,
+    -1.0000001,
+    -1,
+    -0.2500001,
+    -0.25,
+    -0.1,
+    -0.0001,
+    -1e-08,
+    0,
+    1e-08,
+    0.0001,
+    0.25,
+    0.2500001,
+    1,
+    1.0000001,
+    4,
+    20
+  ],
+  "option_x_grid": [
+    -20,
+    -0.25,
+    -1e-08,
+    0,
+    1e-12,
+    1e-08,
+    0.0001,
+    0.01,
+    0.0625,
+    0.250001,
+    0.5,
+    2,
+    20,
+    80
+  ],
+  "kappa_grid": [
+    0.25,
+    1.0,
+    4.0
+  ],
+  "fp32_steps": [
+    0.25,
+    0.125,
+    0.0625
+  ],
+  "fp64_steps": [
+    0.25,
+    0.125,
+    0.0625,
+    0.03125,
+    0.015625,
+    0.0078125,
+    0.00390625
+  ],
+  "flow_modes": [
+    "analytic",
+    "matched_c1",
+    "sigmoid"
+  ],
+  "probe_labels": [
+    "smooth",
+    "crossing"
+  ],
+  "interpretation": "Kernel gates are assertions; flow curves are diagnostics, not a global error certificate or task-quality result.",
+  "torch_version": "2.8.0+cpu",
+  "numpy_version": "2.3.5",
+  "python_version": "3.12.14",
+  "threads": 1
+}

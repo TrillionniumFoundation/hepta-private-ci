@@ -50,6 +50,7 @@ def execute_group(task, model, snapshot, critic, *, mode="ndu", max_steps=4,
     workspace = BoundedWorkspace(snapshot.identity.scope, snapshot.identity.generation,
                                  slots=1, width=model.hidden_dim, max_steps=rounds)
     state, logits, statuses, bindings, pending_state = None, None, [], [], None
+    proposed_candidates = []
     meter_policy = dict(schema=TRANSFORMER_POLICY_SCHEMA, arithmetic_profile=WORK_PROFILE,
         mode="strict", wall_time_ns=30_000_000_000, max_process_rss_bytes=None,
         rapl_zone=None, rapl_max_power_watts=None)
@@ -81,7 +82,9 @@ def execute_group(task, model, snapshot, critic, *, mode="ndu", max_steps=4,
                         generation=snapshot.identity.generation)
         bindings.append(dict(step=workspace.step, state_sha256=digest_json(workspace.state),
                              feature_sha256=snapshot.digest, model_sha256=model_sha))
-        return chr(65 + logits.argmax(dim=1).item())
+        candidate = chr(65 + logits.argmax(dim=1).item())
+        proposed_candidates.append(candidate)
+        return candidate
 
     def check(public, candidate):
         if mode == "no_verifier":
@@ -136,6 +139,7 @@ def execute_group(task, model, snapshot, critic, *, mode="ndu", max_steps=4,
     result.update(mode=mode, feature_sha256=snapshot.digest, model_sha256=model_sha,
         critic_sha256=critic.params_sha256, workspace_bindings=bindings,
         workspace_steps=workspace.step, verifier_statuses=statuses,
+        proposed_candidates=proposed_candidates,
         empirical_intervals_are_certified_support=False,
         native_production_owner_integrated=False,
         shared_encoder_work_accounted_by_campaign=True)

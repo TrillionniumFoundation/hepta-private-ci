@@ -26,7 +26,8 @@ def finite_volume_generator(edges, face_drift, sigma):
     widths = edges[1:]-edges[:-1]
     width = (edges[-1]-edges[0])/len(widths)
     if (not bool(torch.isfinite(edges).all()) or not bool(torch.isfinite(face_drift).all())
-            or not bool(width > 0) or not bool(torch.allclose(widths, width.expand_as(widths)))):
+            or not bool(width > 0) or not bool((widths > 0).all())
+            or not bool(torch.allclose(widths, width.expand_as(widths), atol=0))):
         raise ValueError("finite-volume grid must be finite, uniform and increasing")
     bins, diffusion = len(widths), sigma**2/(2*width**2)
     left = torch.relu(-face_drift[..., :-1])/width+diffusion

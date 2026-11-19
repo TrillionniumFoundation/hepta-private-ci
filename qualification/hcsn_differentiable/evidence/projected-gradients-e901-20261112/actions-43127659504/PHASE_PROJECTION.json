@@ -1,0 +1,154 @@
+{
+  "phase_projection": [
+    {
+      "curve": [
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.013
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.026
+        },
+        {
+          "active_probability": 1.8735013540549512e-17,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.039
+        },
+        {
+          "active_probability": 0.04590000000000019,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.052
+        },
+        {
+          "active_probability": 0.3174300000000003,
+          "deterministic_release_reference": 0.25000000000000017,
+          "elapsed": 0.065
+        },
+        {
+          "active_probability": 0.731088,
+          "deterministic_release_reference": 0.8999999999999999,
+          "elapsed": 0.078
+        }
+      ],
+      "early_release_at_0.052": 0.04590000000000019,
+      "maximum_release_error": 0.16891199999999995,
+      "phase_cells": 10
+    },
+    {
+      "curve": [
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.013
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.026
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.039
+        },
+        {
+          "active_probability": 8.992806499463764e-17,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.052
+        },
+        {
+          "active_probability": 0.2743200000000003,
+          "deterministic_release_reference": 0.25000000000000017,
+          "elapsed": 0.065
+        },
+        {
+          "active_probability": 0.830016,
+          "deterministic_release_reference": 0.8999999999999999,
+          "elapsed": 0.078
+        }
+      ],
+      "early_release_at_0.052": 8.992806499463764e-17,
+      "maximum_release_error": 0.06998399999999994,
+      "phase_cells": 20
+    },
+    {
+      "curve": [
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.013
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.026
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.039
+        },
+        {
+          "active_probability": 1.1102230246251564e-18,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.052
+        },
+        {
+          "active_probability": 0.2500000000000002,
+          "deterministic_release_reference": 0.25000000000000017,
+          "elapsed": 0.065
+        },
+        {
+          "active_probability": 0.8853120000000001,
+          "deterministic_release_reference": 0.8999999999999999,
+          "elapsed": 0.078
+        }
+      ],
+      "early_release_at_0.052": 1.1102230246251564e-18,
+      "maximum_release_error": 0.014687999999999812,
+      "phase_cells": 40
+    },
+    {
+      "curve": [
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.013
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.026
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.039
+        },
+        {
+          "active_probability": 0,
+          "deterministic_release_reference": 0,
+          "elapsed": 0.052
+        },
+        {
+          "active_probability": 0.25000000000000017,
+          "deterministic_release_reference": 0.25000000000000017,
+          "elapsed": 0.065
+        },
+        {
+          "active_probability": 0.8971840000000002,
+          "deterministic_release_reference": 0.8999999999999999,
+          "elapsed": 0.078
+        }
+      ],
+      "early_release_at_0.052": 0,
+      "maximum_release_error": 0.0028159999999997076,
+      "phase_cells": 80
+    }
+  ],
+  "test": "test_operator.OperatorNumericalTests.test_phase_projection_early_release_and_refinement_are_disclosed",
+  "warning": "QPR can release earlier through repeated phase projection; it is not exact per-path delay"
+}

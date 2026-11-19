@@ -1,0 +1,65 @@
+{
+  "steps": [
+    {
+      "command": [
+        "cargo",
+        "generate-lockfile",
+        "--offline"
+      ],
+      "code": 0,
+      "seconds": 0.034293295990210027,
+      "stdout": "",
+      "stderr": "     Locking 24 packages to latest Rust 1.95.0 compatible versions\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "fmt"
+      ],
+      "code": 0,
+      "seconds": 0.06575812501250766,
+      "stdout": "",
+      "stderr": "cargo fmt --manifest-path Cargo.toml\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "build"
+      ],
+      "code": 0,
+      "seconds": 30.488465611997526,
+      "stdout": "",
+      "stderr": "cargo build --release --locked --offline --manifest-path Cargo.toml\n   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/patched_upstream/codex-rs/hepta-types)\n   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/patched_upstream/codex-rs/hepta-infer-core)\n   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/patched_upstream/codex-rs/hepta-neuron)\n   Compiling codex-rrsnn-bootstrap-repair v0.1.0 (/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_repair_build)\n    Finished `release` profile [optimized] target(s) in 30.47s\n"
+    },
+    {
+      "command": [
+        "/tmp/hepta-finish3-rescue/tools/just",
+        "test"
+      ],
+      "code": 0,
+      "seconds": 0.5234129809978185,
+      "stdout": "{\"positive_recoveries\": 6, \"negative_checks\": 13, \"all_passed\": true, \"production_qualified\": false}\n",
+      "stderr": "\"/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3\" \"/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/bootstrap_repair.py\" --test-only --binary \"/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/native_build/target/release/rrsnn-native-bootstrap-repair\"\n"
+    }
+  ],
+  "all_passed": true,
+  "disk_free_before": 292327424,
+  "disk_free_after": 273936384,
+  "source": {
+    "base_commit": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "path": "codex-rs/hepta-neuron/src/runtime.rs",
+    "before_sha256": "bace4a3c36a2a4199a975aeac73041011ed487b2d308c75c4e062b25e6451fad",
+    "after_sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+    "changed_crate_files": [
+      "hepta-neuron/src/runtime.rs"
+    ],
+    "added_method": "recover_bootstrap_anchored",
+    "existing_formats_changed": false,
+    "trusted_current_initialization_frontier_required": true,
+    "derive_anchor_from_journal_forbidden": true,
+    "old_intent_does_not_prove_freshness": true
+  },
+  "binary_sha256": "21ef09d33d4390a6fe324bbf85eb71fba4c7c01ed44f81631f3e9fcf762dfed9",
+  "lock_sha256": "e12edd3820e09a3872e0465276bff957b18a6f54da7f5b185983a6b2ff3174e3",
+  "production_qualified": false
+}

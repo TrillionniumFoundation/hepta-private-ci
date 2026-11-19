@@ -1,0 +1,283 @@
+{
+  "all_completed_candidates": [],
+  "execution_schedule": [],
+  "selected": [],
+  "systems": {
+    "additive": {
+      "completed_candidates": [],
+      "cost": null,
+      "incomplete_candidate": null,
+      "ledger": null,
+      "phase": null
+    },
+    "anchor": {
+      "completed_candidates": [],
+      "cost": null,
+      "incomplete_candidate": null,
+      "ledger": null,
+      "phase": null
+    },
+    "ndu": {
+      "completed_candidates": [],
+      "cost": null,
+      "incomplete_candidate": null,
+      "ledger": null,
+      "phase": null
+    },
+    "ndu_control": {
+      "completed_candidates": [],
+      "cost": null,
+      "incomplete_candidate": null,
+      "ledger": null,
+      "phase": null
+    },
+    "supervised": {
+      "completed_candidates": [],
+      "cost": {
+        "active_candidate_cpu_seconds": 0.00046586400000059314,
+        "cpu_seconds": 9.077887362
+      },
+      "incomplete_candidate": null,
+      "ledger": {
+        "arm": "supervised",
+        "consumed_units": 3611371737,
+        "hardware_flops_or_latency": false,
+        "kernels": {
+          "base_decoder": {
+            "adam_update": {
+              "calls": 900,
+              "compare_ops": 1800,
+              "consumed_units": 65190600,
+              "div_ops": 6740100,
+              "exp_ops": 0,
+              "log_ops": 0,
+              "macs": 0,
+              "pow_ops": 3600,
+              "scalar_ops": 29210400,
+              "sort_items": 0,
+              "sqrt_ops": 2247300,
+              "tanh_ops": 0
+            },
+            "decoder": {
+              "calls": 903,
+              "compare_ops": 4161024,
+              "consumed_units": 35368704,
+              "div_ops": 2080512,
+              "exp_ops": 2080512,
+              "log_ops": 0,
+              "macs": 0,
+              "pow_ops": 0,
+              "scalar_ops": 6241536,
+              "sort_items": 0,
+              "sqrt_ops": 0,
+              "tanh_ops": 0
+            },
+            "decoder_gradient": {
+              "calls": 900,
+              "compare_ops": 0,
+              "consumed_units": 12268800,
+              "div_ops": 2073600,
+              "exp_ops": 0,
+              "log_ops": 0,
+              "macs": 0,
+              "pow_ops": 0,
+              "scalar_ops": 3974400,
+              "sort_items": 0,
+              "sqrt_ops": 0,
+              "tanh_ops": 0
+            },
+            "decoder_mse": {
+              "calls": 3,
+              "compare_ops": 0,
+              "consumed_units": 20745,
+              "div_ops": 3,
+              "exp_ops": 0,
+              "log_ops": 0,
+              "macs": 0,
+              "pow_ops": 0,
+              "scalar_ops": 20733,
+              "sort_items": 0,
+              "sqrt_ops": 0,
+              "tanh_ops": 0
+            }
+          },
+          "base_pretrain": {
+            "efficient_S": {
+              "calls": 1500,
+              "compare_ops": 32823000,
+              "consumed_units": 3372429000,
+              "div_ops": 37407000,
+              "exp_ops": 2304000,
+              "log_ops": 192000,
+              "macs": 1462272000,
+              "pow_ops": 18000,
+              "scalar_ops": 177012000,
+              "sort_items": 0,
+              "sqrt_ops": 10933500,
+              "tanh_ops": 3072000
+            }
+          },
+          "base_validation": {
+            "two_view_validation": {
+              "calls": 3,
+              "compare_ops": 416448,
+              "consumed_units": 90241344,
+              "div_ops": 469152,
+              "exp_ops": 207360,
+              "log_ops": 0,
+              "macs": 40034304,
+              "pow_ops": 0,
+              "scalar_ops": 4451328,
+              "sort_items": 0,
+              "sqrt_ops": 0,
+              "tanh_ops": 221184
+            }
+          }
+        },
+        "prices": {
+          "compare_ops": 1,
+          "div_ops": 4,
+          "exp_ops": 8,
+          "log_ops": 8,
+          "macs": 2,
+          "pow_ops": 8,
+          "scalar_ops": 1,
+          "sort_items": 1,
+          "sqrt_ops": 4,
+          "tanh_ops": 8
+        },
+        "remaining_units": 8388628263,
+        "schema": "hepta.independent-work-ledger.v1",
+        "shared_sources": [
+          {
+            "consumed_units": 3611371737,
+            "sha256": "b73e7ee773283b398834814bb3da0e75fb7cde34fd1c91a9ac8968fb8aa43160",
+            "source": "shared-build"
+          }
+        ],
+        "stages": {
+          "base_calibration": {
+            "consumed_units": 35852544,
+            "measured_service_requests": 1944,
+            "serving_calibration_rows": 1944
+          },
+          "base_compile": {
+            "compiler_invocations": 1,
+            "consumed_units": 0,
+            "native_library_bytes": 23960
+          },
+          "base_data": {
+            "consumed_units": 0,
+            "prepared_rows": 4224
+          },
+          "base_decoder": {
+            "consumed_units": 112848849,
+            "content_updates": 0,
+            "decoder_calls": 903,
+            "decoder_elements": 2080512,
+            "decoder_updates": 900,
+            "op_compare_ops": 4162824,
+            "op_div_ops": 10894215,
+            "op_exp_ops": 2080512,
+            "op_log_ops": 0,
+            "op_macs": 0,
+            "op_pow_ops": 3600,
+            "op_scalar_ops": 39447069,
+            "op_sort_items": 0,
+            "op_sqrt_ops": 2247300,
+            "op_tanh_ops": 0,
+            "optimizer_elements": 2246400,
+            "optimizer_updates": 900
+          },
+          "base_export": {
+            "consumed_units": 0,
+            "serialized_bytes": 227163,
+            "serialized_tensors": 27
+          },
+          "base_pretrain": {
+            "consumed_units": 3372429000,
+            "content_updates": 1500,
+            "cross_entropy_calls": 1500,
+            "model_backward_calls": 1500,
+            "model_backward_macs": 768000000,
+            "model_backward_rows": 96000,
+            "model_forward_calls": 1500,
+            "model_forward_macs": 694272000,
+            "model_forward_rows": 96000,
+            "op_compare_ops": 32823000,
+            "op_div_ops": 37407000,
+            "op_exp_ops": 2304000,
+            "op_log_ops": 192000,
+            "op_macs": 1462272000,
+            "op_pow_ops": 18000,
+            "op_scalar_ops": 177012000,
+            "op_sort_items": 0,
+            "op_sqrt_ops": 10933500,
+            "op_tanh_ops": 3072000,
+            "optimizer_elements": 10932000,
+            "optimizer_updates": 1500,
+            "training_examples": 96000
+          },
+          "base_validation": {
+            "consumed_units": 90241344,
+            "model_forward_rows": 6912,
+            "observer_modes": 9,
+            "op_compare_ops": 416448,
+            "op_div_ops": 469152,
+            "op_exp_ops": 207360,
+            "op_log_ops": 0,
+            "op_macs": 40034304,
+            "op_pow_ops": 0,
+            "op_scalar_ops": 4451328,
+            "op_sort_items": 0,
+            "op_sqrt_ops": 0,
+            "op_tanh_ops": 221184,
+            "validation_candidates": 3,
+            "validation_rows": 3456
+          }
+        },
+        "total_cap": 12000000000,
+        "totals": {
+          "compiler_invocations": 1,
+          "consumed_units": 3611371737,
+          "content_updates": 1500,
+          "cross_entropy_calls": 1500,
+          "decoder_calls": 903,
+          "decoder_elements": 2080512,
+          "decoder_updates": 900,
+          "measured_service_requests": 1944,
+          "model_backward_calls": 1500,
+          "model_backward_macs": 768000000,
+          "model_backward_rows": 96000,
+          "model_forward_calls": 1500,
+          "model_forward_macs": 694272000,
+          "model_forward_rows": 102912,
+          "native_library_bytes": 23960,
+          "observer_modes": 9,
+          "op_compare_ops": 37402272,
+          "op_div_ops": 48770367,
+          "op_exp_ops": 4591872,
+          "op_log_ops": 192000,
+          "op_macs": 1502306304,
+          "op_pow_ops": 21600,
+          "op_scalar_ops": 220910397,
+          "op_sort_items": 0,
+          "op_sqrt_ops": 13180800,
+          "op_tanh_ops": 3293184,
+          "optimizer_elements": 13178400,
+          "optimizer_updates": 2400,
+          "prepared_rows": 4224,
+          "serialized_bytes": 227163,
+          "serialized_tensors": 27,
+          "serving_calibration_rows": 1944,
+          "training_examples": 96000,
+          "validation_candidates": 3,
+          "validation_rows": 3456
+        },
+        "unit_profile": "declared-priced-operator-work-v1"
+      },
+      "phase": "candidate_initialization"
+    }
+  },
+  "test_opened": false
+}

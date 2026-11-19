@@ -29,10 +29,22 @@ are checked before and after. The exact Python/Torch build is recorded in the
 native PREEXECUTION before any new worker starts. D is loaded by the existing
 episode reader but no new D evaluation or confirmation E access is performed.
 
-This initial source stage is prepared for native execution. No new optimizer
-call or replay pass is yet claimed by this document. Execution evidence will
-be appended separately. A successful diagnostic establishes checkpoint
-continuity and local crash safety for these states and operations. It adds
+Source commit `5cb83d9c76beedf4c1c917e4bf561f5f26261ce7` preceded both native
+attempts. They actually launched, then each received authoritative cancelled
+status, signal 15 and `timed_out=false`. No complete replay state/report was
+produced. Actual optimizer calls in those attempts remain UNKNOWN; no later
+26-call success may replace that unknown cumulative cost. The original launch,
+status, stdout/stderr, plan commitment and incident ledger are preserved under
+`../evidence/real-checkpoint-replay-native-20261112/`. No third native training
+attempt was started. Cancel source and descendant termination remain unproven.
+
+A separate zero-model read-only export succeeded: all six selected states and
+bound inputs are retained in an 11,397,159-byte ZIP with SHA256
+`37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75`.
+Its 555 members contain 56,675,710 original bytes. Binary transfer and an
+explicit Ubuntu CPU resource/runtime amendment are separate pending steps.
+A successful future diagnostic would establish checkpoint continuity and local
+crash safety for its declared states and operations. It would add
 **zero independently complete C2 training replays**, establishes no adequacy,
 numerical accuracy, efficacy, baseline superiority or energy benefit, and
 does not resolve the original missing controller terminal. HOLD_NO_GO remains.

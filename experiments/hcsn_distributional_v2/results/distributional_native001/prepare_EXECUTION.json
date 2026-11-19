@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.distributional_native_smoke",
+    "--output",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/distributional_native001",
+    "--backbone-run",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/content002/runs/mnist__distribution_free_dual__9201",
+    "--worker",
+    "prepare"
+  ],
+  "complete_child_cpu_seconds": 5.723704,
+  "exit_code": 0,
+  "measurement": "wait4 includes imports and waited native descendants",
+  "peak_rss_kib_linux": 227716,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wall_seconds": 13.945765990000382
+}

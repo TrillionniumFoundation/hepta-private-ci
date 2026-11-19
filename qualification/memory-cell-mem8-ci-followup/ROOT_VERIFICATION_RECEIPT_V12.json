@@ -1,0 +1,73 @@
+{
+  "schema": "hepta.mem8.root-verification-checkpoint.v12",
+  "recorded_at": "2026-11-11 10:06:48 UTC",
+  "provenance": "This receipt records completed root verification before the shared execution environment disconnected. It does not claim that an inaccessible local audit file was fetched after the disconnect.",
+  "immutable_inputs": {
+    "source_v1": "7fdf1760ffe5bb2db4749f61bc95eaffd2a6fb34",
+    "original_failures_and_controls": "cf406b45b7309d14ecc379cfee7c911e2eca98a5",
+    "source_v2": "ec606f4971423605ca9e172c04214a30e278126b"
+  },
+  "source_v1": {
+    "verification_at": "2026-11-11T09:22:36.961936+00:00",
+    "verified_members": 239,
+    "source_paths": 68,
+    "archive_bytes": 1343776,
+    "archive_sha256": "2b6c58f3ac6463f2faca18fcf792c820a1c0a0d1116089ff7f69331d45ff889d",
+    "base_tree_recomputed": "12159640adcf073b51f3837e75575e11f5c20233",
+    "candidate_tree_recomputed": "6a809f5a03bf2d9d399c9b2f78dbb0d0b48f9aa9",
+    "complete_entries": 14043,
+    "rust_files_scanned": 6196,
+    "caller_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "old_test_name_matches": 0,
+    "full_formatter_delta_reviewed": true
+  },
+  "source_v2": {
+    "verification_at": "2026-11-11T10:00:29.233870+00:00",
+    "verified_members": 242,
+    "source_paths": 69,
+    "archive_bytes": 1347860,
+    "archive_sha256": "244d0c156594a7e1bf4ce2136b867c40015be12b77e338d75a8960bdc724e188",
+    "base_tree_recomputed": "12159640adcf073b51f3837e75575e11f5c20233",
+    "candidate_tree_recomputed": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+    "complete_entries": 14043,
+    "new_source_files": 6,
+    "formatted_capsule_bytes": 2166886,
+    "formatted_capsule_sha256": "6081a45344f3fa7687b71901033b813499d5dc3913c052e63a6700a9c96b6a37",
+    "formatter_changed_paths": [],
+    "rust_files_scanned": 6196,
+    "caller_status": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "old_test_names_searched": 13,
+    "old_test_name_matches": 0,
+    "original_started_at": "2026-11-11T09:38:03.911499+00:00",
+    "original_finished_at": "2026-11-11T09:41:58.770120+00:00",
+    "original_deadline": "2026-11-11T09:48:03.911499+00:00",
+    "donor_exact_bytes_unchanged": true
+  },
+  "original_evidence": {
+    "full_git_objects": 15,
+    "direct_archives": 5,
+    "direct_members_verified": 156,
+    "additional_nested_mac_members_verified": 12,
+    "archive_manifest_rows_complete": true,
+    "all_members_safe_unique_regular": true,
+    "linux_review_embedded_archive_matches_separately_fetched_native_archive": true,
+    "original_mac_test_exit": 3,
+    "original_mac_job_conclusion": "cancelled",
+    "original_mac_failed_targets": 16,
+    "original_mac_timeout_targets": 4,
+    "original_mac_flaky_targets": 3,
+    "original_bazel_v1_lock_commands": 0,
+    "original_bazel_v1_numeric_detached_exit": null,
+    "linux_inert_control_passed": true,
+    "mac_v1_inert_control_count": 0,
+    "mac_v1_fetch_timed_out": true,
+    "mac_original_child_path_and_request_file_spelling": "UNKNOWN"
+  },
+  "audit_execution": {
+    "archived_programs_executed": 0,
+    "native_tests_executed": 0,
+    "model_requests_executed": 0,
+    "source_refs_modified": false
+  },
+  "adoption_blockers_closed": 0
+}

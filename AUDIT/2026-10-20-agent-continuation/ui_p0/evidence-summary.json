@@ -1,0 +1,262 @@
+{
+  "schema": 1,
+  "createdAtUtc": "2026-10-20T02:27:02.480065+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pr": 2885,
+  "sourceCommit": "89933fdc84ed1151f04609a1881ab24aaef119b4",
+  "sourceTree": "25b2a7b559549fba0d22fa7d62d78c76c13cd5ce",
+  "diagnosticOnly": true,
+  "primaryGate": "FAILURE_RETAINED",
+  "originalFullUiRerun": false,
+  "productPatchProposed": false,
+  "remoteMutations": false,
+  "duplicateMaintainedProbeProposed": false,
+  "upstreamFix": "62473ad0f747e245e514c93e741bb8e168a2a207",
+  "upstreamChange": "https://chromium-review.googlesource.com/c/chromium/src/+/8508456",
+  "diagnosticProcessExit": 0,
+  "diagnosticExecutions": 20,
+  "results": [
+    {
+      "mode": "baseline",
+      "case": "positive",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "baseline",
+      "case": "empty",
+      "executions": 2,
+      "strictCompletions": 2,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "baseline",
+      "case": "oversize",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        true,
+        true
+      ]
+    },
+    {
+      "mode": "baseline",
+      "case": "truncated",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "baseline",
+      "case": "abort",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        true,
+        true
+      ]
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "case": "positive",
+      "executions": 2,
+      "strictCompletions": 2,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "case": "empty",
+      "executions": 2,
+      "strictCompletions": 2,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "case": "oversize",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        true,
+        true
+      ]
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "case": "truncated",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        false,
+        false
+      ]
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "case": "abort",
+      "executions": 2,
+      "strictCompletions": 0,
+      "applicationCallbacks": [
+        1,
+        1
+      ],
+      "controllerAborted": [
+        true,
+        true
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "FINDINGS.md",
+      "bytes": 17972,
+      "sha256": "d8729ff7b2b5121e4c42455c75dffd7d45e1b7912420f364712ccaeeba0b1d9c"
+    },
+    {
+      "path": "identity.json",
+      "bytes": 327,
+      "sha256": "568fd12f87e6b8ffc6b2239ffbac300d97d32a329a691ebe8832aacaacbf0ba8"
+    },
+    {
+      "path": "browser-identities.json",
+      "bytes": 2745,
+      "sha256": "3e7bb9355089b024e497a95eb9d5b5956124a50185bade1e1105016bc2c61fe3"
+    },
+    {
+      "path": "browser-153-download.json",
+      "bytes": 245,
+      "sha256": "d389823a2b67c32ca1738ebd8e33a6d57ffcd7659905ce50aa625edd92d9f703"
+    },
+    {
+      "path": "playwright-1.64.1-browsers.json",
+      "bytes": 1135,
+      "sha256": "2cfd419f71ac6475d81e1301fa86c34cf2a2a6bae2a0da4b5a2b18310216b6bf"
+    },
+    {
+      "path": "source-job.log",
+      "bytes": 1470409,
+      "sha256": "e98950ce731d776176a885d03f25f8149782ce8e563c9caa52f8727d0a3d4cba"
+    },
+    {
+      "path": "ui-gateway-source.zip",
+      "bytes": 2117670,
+      "sha256": "e6dc4efc5dde4049e4f9084b9468e997e4bf4d6d30dcb247e1894eb12d5f3461"
+    },
+    {
+      "path": "raw-request-audit.json",
+      "bytes": 60563,
+      "sha256": "61b70b66913ce7dffe00481c8015a3952dd670fa8efd5a3dd982ee5c8b76850b"
+    },
+    {
+      "path": "ui-build-manifest.json",
+      "bytes": 40152,
+      "sha256": "026de9ca6037800af4df12c53aee250f700b4e20ead41fa8d68679b4324bf410"
+    },
+    {
+      "path": "reproduce-no-store.mjs",
+      "bytes": 7241,
+      "sha256": "a6b72b0b4b912e3f8d59f15f24c660f2303d52d8e0cd3d73cee6ddb03af3a801"
+    },
+    {
+      "path": "no-store-reproduction.json",
+      "bytes": 24679,
+      "sha256": "36930f89773b225d80a19f35e0bbb1a19f96ff92cfd1368e9be9792c42526147"
+    },
+    {
+      "path": "upstream-web.js",
+      "bytes": 141816,
+      "sha256": "0404897d76bbd81e2225ab62b2fde1c4832e34331706b94c4c00aa71640fe765"
+    },
+    {
+      "path": "upstream-web-network.rs",
+      "bytes": 16476,
+      "sha256": "24dffe35dba1218adaa6d9ab9a12f51631f796e8d9f31114ecb973db34417b14"
+    },
+    {
+      "path": "ime.patch",
+      "bytes": 29243,
+      "sha256": "694a54d1087bd004456a49ff742f7ff94d46df4803ab52c96bc6898f41bf89d4"
+    },
+    {
+      "path": "platform-before/src/os/web/web.js",
+      "bytes": 149440,
+      "sha256": "f2decc893fc78e346e35e61fef83f136088005b04e9f901adffbf2a063a24646"
+    },
+    {
+      "path": "chromium-8508456.json",
+      "bytes": 85327,
+      "sha256": "a514ab0b6ffd930bae9df0df7fee0aec15466377e76f3157d466212315ac747b"
+    },
+    {
+      "path": "browser-153-response-body-loader.cc",
+      "bytes": 21883,
+      "sha256": "667ec6672e478ce6841cfeacdd1c09d0d560463ae461b9109beae962f5d9a037"
+    },
+    {
+      "path": "browser-156-stable-response-body-loader.cc",
+      "bytes": 21883,
+      "sha256": "667ec6672e478ce6841cfeacdd1c09d0d560463ae461b9109beae962f5d9a037"
+    },
+    {
+      "path": "browser-157-response-body-loader.cc",
+      "bytes": 22792,
+      "sha256": "979ce76e70424734af0539e1858345b2e000a422fba5d34170d4748364143047"
+    },
+    {
+      "path": "browser-cache-purge.json",
+      "bytes": 372,
+      "sha256": "5a72849eece796d9770a690f607bbf8e368f8053230b0d0949dae5f4fe531908"
+    }
+  ]
+}

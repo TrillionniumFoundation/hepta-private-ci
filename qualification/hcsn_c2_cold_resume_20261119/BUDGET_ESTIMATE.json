@@ -1,0 +1,66 @@
+{
+  "current_probe_frozen_envelope": {
+    "cold_repeats_per_batch": 2,
+    "concurrency": 1,
+    "maximum_child_wall_sum_seconds": 1200,
+    "maximum_parent_seconds": 1260,
+    "maximum_per_child_wall_seconds": 300,
+    "original_effective_batches": 2,
+    "real_optimizer_calls": 4,
+    "threads": 1
+  },
+  "estimate_scope": "Original C2 continuation phase only; excludes earlier parent training, unknown tail/finalization and new independent verification overhead. Costs are historical observations, not a guaranteed future runtime.",
+  "fits": [
+    {
+      "cpu_lower_bound_seconds": 19971.534804,
+      "fit": "hcsn-s101-lr0.001",
+      "last_epoch": 116,
+      "last_observed_epoch_wall_seconds": 284.68690393911675,
+      "scope": "producer wait4 full child",
+      "wall_lower_bound_seconds": 19985.070857540006
+    },
+    {
+      "cpu_lower_bound_seconds": 8746.954086,
+      "fit": "hcsn-s101-lr0.003",
+      "last_epoch": 76,
+      "last_observed_epoch_wall_seconds": 285.2388084027916,
+      "scope": "producer wait4 full child",
+      "wall_lower_bound_seconds": 8750.430073021911
+    },
+    {
+      "cpu_lower_bound_seconds": 22806.769432748,
+      "fit": "hcsn-s211-lr0.001",
+      "last_epoch": 126,
+      "last_observed_epoch_wall_seconds": 287.22303380118683,
+      "scope": "last complete epoch process CPU prefix",
+      "wall_lower_bound_seconds": 22822.214447502047
+    },
+    {
+      "cpu_lower_bound_seconds": 1263.453444,
+      "fit": "hcsn-s211-lr0.003",
+      "last_epoch": 50,
+      "last_observed_epoch_wall_seconds": 300.59839211497456,
+      "scope": "producer wait4 full child",
+      "wall_lower_bound_seconds": 1266.1501302358229
+    },
+    {
+      "cpu_lower_bound_seconds": 22798.017438502,
+      "fit": "hcsn-s307-lr0.001",
+      "last_epoch": 127,
+      "last_observed_epoch_wall_seconds": 276.718923113076,
+      "scope": "last complete epoch process CPU prefix",
+      "wall_lower_bound_seconds": 22810.91307456419
+    },
+    {
+      "cpu_lower_bound_seconds": 7905.963201,
+      "fit": "hcsn-s307-lr0.003",
+      "last_epoch": 72,
+      "last_observed_epoch_wall_seconds": 282.21430173004046,
+      "scope": "producer wait4 full child",
+      "wall_lower_bound_seconds": 7909.660792936105
+    }
+  ],
+  "observed_cpu_lower_bound_hours": 23.192414557291666,
+  "observed_wall_sum_lower_bound_hours": 23.20678871550002,
+  "original_lifetime_accounting_closed": false
+}

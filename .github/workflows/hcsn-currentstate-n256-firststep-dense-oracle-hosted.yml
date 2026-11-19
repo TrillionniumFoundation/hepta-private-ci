@@ -1,0 +1,49 @@
+name: hcsn-currentstate-n256-firststep-dense-oracle-hosted
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-hosted.yml"
+      - "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/**"
+      - "qualification/hcsn_consolidated_readback/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hcsn-consumed-dense-readback-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  consumed-original-readback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12.3"
+      - name: Install original tiny-control numerical dependencies
+        run: >-
+          python -m pip install --only-binary=:all:
+          -r qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/requirements.txt
+      - name: Check fail-closed consumed-source controls
+        run: python -m unittest qualification.hcsn_consolidated_readback.test_readback -v
+      - name: Read consumed originals and unchanged source controls
+        run: |
+          python -m qualification.hcsn_consolidated_readback.readback --case dense \
+            > "$RUNNER_TEMP/hcsn-consumed-dense-readback.stdout" \
+            2> "$RUNNER_TEMP/hcsn-consumed-dense-readback.stderr"
+      - name: Preserve readback success or failure
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hcsn-consumed-dense-readback-${{ github.sha }}
+          path: ${{ runner.temp }}/hcsn-consumed-dense-readback.*
+          if-no-files-found: error
+          retention-days: 30

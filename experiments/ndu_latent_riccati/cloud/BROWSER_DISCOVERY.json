@@ -1,0 +1,28 @@
+{
+  "schema": "ndu-latent-browser-cloud-discovery-v1",
+  "observed_at_utc": "2026-10-21 13:14:47 UTC",
+  "route": "Permitted cloud-browser fallback for runner inventory and admin-state reads unsupported by the GitHub connector",
+  "verified_repository_url": "https://github.com/TrillionniumFoundation/hepta-private-ci",
+  "observations": {
+    "sign_in_link_visible": true,
+    "sign_up_link_visible": true,
+    "repository_settings_navigation_present": false,
+    "signed_in_admin_session_available": false,
+    "runner_inventory_retrieved": false
+  },
+  "blocker": {
+    "type": "browser authentication boundary",
+    "exact_limit": "Repository opened in signed-out state; no existing authenticated UI session was available for Settings > Actions > Runners.",
+    "runner_scheduling_cause_determined": false,
+    "bot_detection_claimed": false
+  },
+  "actions": {
+    "repository_page_opened": true,
+    "settings_modified": false,
+    "authentication_flow_started": false,
+    "credentials_entered": false,
+    "user_handoff_requested": false,
+    "runner_or_infrastructure_changes": false
+  },
+  "stop_reason": "Parent authorized read-only use of existing authentication only, and instructed stopping at any sign-in wall."
+}

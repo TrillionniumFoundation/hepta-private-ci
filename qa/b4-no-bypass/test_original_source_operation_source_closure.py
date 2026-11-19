@@ -10,6 +10,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_source_operation_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -106,7 +108,7 @@ SCOPED_GENERIC = {
                 ".load(std::sync::atomic::Ordering::Acquire)",
                 "require_original_dataset_scope(",
                 "training.original_source_for_operation()?",
-                "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+                ".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)",
                 "let original = owners.read_original_completion()?",
                 "SourceLaneProof::from_operation(operation.as_ref())",
                 "work(&mut owners.training, &original, &proof)",
@@ -166,9 +168,9 @@ class OriginalSourceOperationClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:offset] + replacement + source[offset + len(marker):]
+        changed = source[:offset] + replacement + source[limit:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -245,7 +247,9 @@ class OriginalSourceOperationClosureTests(unittest.TestCase):
                 self.rejects(path, function, marker)
         for path, function in ((STAGE, "fn in_lane<"), (MODEL, "fn in_model_lane<")):
             for marker in (
-                "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)",
+                (".map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)"
+                 if path == MODEL else
+                 "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)"),
                 "OriginalCellQ24TrainingSourceOperationV1::read_after_native(",
                 "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)",
             ):
@@ -296,7 +300,13 @@ class OriginalSourceOperationClosureTests(unittest.TestCase):
         source_after = native.index("self.require_live_source_if_captured()?", after_fit)
         self.assertLess(source_after, native.index("self.journal.complete("))
         self.rejects(NATIVE, "fn fit_or_readback_with_source(", "self.require_live_source_if_captured()?")
-        self.rejects(STAGE, "fn execute_training(", "training.require_live_source_if_captured()?")
+        self.rejects(NATIVE, "fn fit_or_readback(",
+                     "self.fit_or_readback_with_source(cancellation, &OriginalQ24OwnerReadV1)")
+        self.rejects(STAGE, "fn execute_original_training_with_source_at(",
+                     "training.require_live_source_if_captured()?")
+        self.rejects(STAGE, "fn execute_training(",
+                     "owners.execute_original_training_with_source_at("
+                     "&cancellation, &OriginalQ24OwnerReadV1, operation_started_at,)")
         self.rejects(SOURCE, "fn current_material(", "self.read_original_evidence(config).await?")
 
     def test_operation_cannot_gain_clone_deserialization_effects_or_reset(self):
@@ -326,9 +336,9 @@ class OriginalSourceOperationClosureTests(unittest.TestCase):
                 start = code.index(function)
                 end = PROOF._rust_item_end(code, start)
                 self.assertIsNotNone(end)
-                offset = source.index(marker, start, end + 1)
+                offset, limit = source_marker_span(source, marker, start, end + 1)
                 moved = (
-                    source[:offset] + source[offset + len(marker):]
+                    source[:offset] + source[limit:]
                     + "\nfn outside_original_lane() { " + marker + "; }\n"
                 )
                 with self.subTest(path=path, marker=marker):

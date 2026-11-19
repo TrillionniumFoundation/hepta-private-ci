@@ -248,6 +248,15 @@ fn session_telemetry_for_request(
     )
 }
 
+pub(crate) mod test_transport;
+mod transport;
+mod websocket_auth;
+use websocket_auth::WebsocketAuthSnapshot;
+#[cfg(test)]
+mod transport_tests;
+use test_transport::FirstPartyTestTransport;
+use transport::ModelApiTransport;
+
 /// Session-scoped state shared by all [`ModelClient`] clones.
 ///
 /// This is intentionally kept minimal so `ModelClient` does not need to hold a full `Config`. Most
@@ -311,6 +320,7 @@ pub struct ModelClient {
     agent_identity_policy: AgentIdentityAuthPolicy,
     prompt_cache_key_override: Option<String>,
     http_client_factory: HttpClientFactory,
+    first_party_test_transport: Option<Arc<FirstPartyTestTransport>>,
 }
 
 /// A turn-scoped streaming session created from a [`ModelClient`].
@@ -381,6 +391,7 @@ struct WebsocketConnectionIdentity {
     headers: ApiHeaderMap,
     beta_features_header: Option<String>,
     compatibility_projection_json: Vec<u8>,
+    auth_headers: ApiHeaderMap,
 }
 
 impl WebsocketConnectionIdentity {
@@ -388,14 +399,30 @@ impl WebsocketConnectionIdentity {
         provider: &ApiProvider,
         beta_features_header: Option<&str>,
         responses_metadata: &CodexResponsesMetadata,
+        auth_headers: &ApiHeaderMap,
     ) -> std::result::Result<Self, ApiError> {
-        let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
-                .map_err(|error| {
-                    ApiError::Stream(format!(
-                        "failed to bind websocket compatibility identity: {error}"
-                    ))
-                })?;
+        // Model flags, Git enrichment and tool inventory accompany each request.
+        // Normalize only this connection-comparison copy: the physical request
+        // and cold-recovery fingerprint retain every original metadata field.
+        let mut connection_metadata = responses_metadata.clone();
+        if matches!(
+            connection_metadata.request_kind,
+            Some(CodexResponsesRequestKind::Compaction(_))
+        ) {
+            connection_metadata.request_kind = Some(CodexResponsesRequestKind::Turn);
+        }
+        connection_metadata.node_repl_auto_review_required = None;
+        connection_metadata.node_repl_disabled = None;
+        connection_metadata.workspaces.clear();
+        connection_metadata.tool_namespaces_info = None;
+        let compatibility_projection_json = serde_json::to_vec(
+            &connection_metadata.websocket_connection_compatibility_projection(),
+        )
+        .map_err(|error| {
+            ApiError::Stream(format!(
+                "failed to bind websocket compatibility identity: {error}"
+            ))
+        })?;
         Ok(Self {
             provider_name: provider.name.clone(),
             base_url: provider.base_url.clone(),
@@ -408,6 +435,7 @@ impl WebsocketConnectionIdentity {
             headers: provider.headers.clone(),
             beta_features_header: beta_features_header.map(str::to_string),
             compatibility_projection_json,
+            auth_headers: auth_headers.clone(),
         })
     }
 }
@@ -420,6 +448,7 @@ impl std::fmt::Debug for WebsocketConnectionIdentity {
             .field("base_url", &"[redacted]")
             .field("query_param_count", &self.query_params.len())
             .field("header_count", &self.headers.len())
+            .field("auth_header_count", &self.auth_headers.len())
             .field(
                 "beta_features_present",
                 &self.beta_features_header.is_some(),
@@ -657,7 +686,19 @@ impl ModelClient {
             agent_identity_policy,
             prompt_cache_key_override: None,
             http_client_factory,
+            first_party_test_transport: None,
         }
+    }
+
+    pub(crate) fn with_first_party_test_transport(
+        mut self,
+        fixture: Option<Arc<FirstPartyTestTransport>>,
+    ) -> Result<Self> {
+        if let Some(fixture) = &fixture {
+            fixture.validate_provider(self.state.provider.info())?;
+        }
+        self.first_party_test_transport = fixture;
+        Ok(self)
     }
 
     pub(crate) fn with_prompt_cache_key_override(
@@ -1371,30 +1412,42 @@ impl ModelClient {
         &self,
         api_provider: &ApiProvider,
         endpoint: &str,
-    ) -> Result<ReqwestTransport> {
+    ) -> Result<ModelApiTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(fixture) = &self.first_party_test_transport {
+            return ModelApiTransport::for_fixture(Arc::clone(fixture), &request_url)
+                .map_err(Into::into);
+        }
         let client = create_client_for_route(
             &self.http_client_factory,
             &request_url,
             ClientRouteClass::Api,
         )
         .map_err(std::io::Error::from)?;
-        Ok(ReqwestTransport::from_http_client(client))
+        Ok(ModelApiTransport::production(
+            ReqwestTransport::from_http_client(client),
+        ))
     }
 
     fn build_sensitive_api_transport(
         &self,
         api_provider: &ApiProvider,
         endpoint: &str,
-    ) -> Result<ReqwestTransport> {
+    ) -> Result<ModelApiTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(fixture) = &self.first_party_test_transport {
+            return ModelApiTransport::for_fixture(Arc::clone(fixture), &request_url)
+                .map_err(Into::into);
+        }
         let client = create_client_for_sensitive_route(
             &self.http_client_factory,
             &request_url,
             ClientRouteClass::Api,
         )
         .map_err(std::io::Error::from)?;
-        Ok(ReqwestTransport::from_http_client(client))
+        Ok(ModelApiTransport::production(
+            ReqwestTransport::from_http_client(client),
+        ))
     }
 
     pub(crate) async fn prewarm_auth(&self) -> Result<()> {
@@ -1437,10 +1490,14 @@ impl ModelClient {
         auth_context: AuthRequestTelemetryContext,
         request_route_telemetry: RequestRouteTelemetry,
     ) -> std::result::Result<ConnectedWebsocket, ApiError> {
+        // Capture once before identity binding. The same frozen provider is
+        // applied last when the API constructs the actual handshake headers.
+        let api_auth = Arc::new(WebsocketAuthSnapshot::capture(api_auth.as_ref()));
         let identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
             self.state.beta_features_header.as_deref(),
             responses_metadata,
+            api_auth.headers(),
         )?;
         let headers = self.build_websocket_headers(responses_metadata).await;
         let websocket_telemetry = ModelClientSession::build_websocket_telemetry(
@@ -1794,10 +1851,14 @@ impl ModelClientSession {
             auth_context,
             request_route_telemetry,
         } = params;
+        // Resolve header-only auth once even when considering socket reuse.
+        // A reconnect receives this frozen provider, never the mutable source.
+        let api_auth = Arc::new(WebsocketAuthSnapshot::capture(api_auth.as_ref()));
         let desired_identity = WebsocketConnectionIdentity::from_provider(
             &api_provider,
             self.client.state.beta_features_header.as_deref(),
             responses_metadata,
+            api_auth.headers(),
         )?;
         let needs_new = match self.websocket_session.connection.as_ref() {
             Some(conn) => conn.identity != desired_identity || conn.connection.is_closed().await,

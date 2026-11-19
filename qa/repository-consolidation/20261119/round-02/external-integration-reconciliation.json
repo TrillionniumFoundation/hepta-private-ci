@@ -1,0 +1,17 @@
+{
+  "base": "8047312e93277de56726d5535f02bbbf7c985572",
+  "root_parent": "4836b0ae4fe93b93bf4f8f61f92fd2b6db7203fc",
+  "external_parent": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+  "external_commits": 5,
+  "readme_original_sha256": "3ff58bc54260ad9b56b43ef659693cd9c6a2e469f24dc957e17183cfc4cb8871",
+  "readme_external_sha256": "dd3bdf2f8e74d8e9247265c344e58eaeb045d6a9807f540c6da3ec4f29477776",
+  "conflicts": [
+    "README add/add; both exact source documents retained and joined"
+  ],
+  "source_resolution": "Keep both explicit cfg-specific connection calls inside the existing timeout_at argument, after the original phase deadline calculation. This satisfies the original function-order guards and preserves the external explicit Unix/Windows transport behavior. Same await/error mapping/frame/identity checks; no new call or allowlist entry.",
+  "prior_validation": "The external hoisted connection future failed the current protected function-order guard; that result was not accepted as PASS.",
+  "protected_name_count": 395,
+  "remote_mutations": 0,
+  "protected_guards_pass": 826,
+  "client_control_sha256": "c9f99be7622cbda482787668de4894fb63a73e6d4efcd8feb1be3ec8809ceb3b"
+}

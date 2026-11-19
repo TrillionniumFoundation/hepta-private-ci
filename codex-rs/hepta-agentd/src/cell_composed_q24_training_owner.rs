@@ -68,6 +68,7 @@ pub(crate) use work::OriginalQ24TrainingWorkDataV1;
 pub(crate) use work::OriginalQ24TrainingWorkObservedV1;
 #[cfg(test)]
 pub(crate) use work::original_q24_work_contract;
+
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_training_source_owner.rs"]
 mod source;
@@ -185,7 +186,7 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
             self.require_live_source_if_captured()?;
             // The original source/evidence reads can block. Revalidate the
             // locked native journal before using any cached operation state.
-            self.require_current()?;
+            self.require_current_with_source(source)?;
             match self.journal.readback(&self.key) {
                 Ok(state) => return self.decode_state(state),
                 Err(ProductEvaluationExecutionStoreErrorV1::Missing) => {
@@ -209,10 +210,9 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         // Validate exactly the bytes that will be persisted, using the same
         // reconstruction as cold readback, before committing a terminal result.
         self.decode(&payload)?;
-        self.require_current_with_source(source)?;
         #[cfg(target_os = "linux")]
         self.require_live_source_if_captured()?;
-        self.require_current()?;
+        self.require_current_with_source(source)?;
         #[cfg(target_os = "linux")]
         self.require_captured_work_deadline()?;
         let before = anchor(self.journal.anchor());
@@ -240,9 +240,13 @@ impl<W: AnchorWitnessStore> CellQ24TrainingOwnerV1<W> {
         &mut self,
         source: &impl OriginalQ24DatasetReadV1,
     ) -> Result<(), Error> {
-        self.require_current()?;
+        if self.fenced {
+            return Err(Error::CommitUncertain);
+        }
         OriginalQ24DatasetReadV1::require_current_batch(source, &self.batch)?;
-        Ok(())
+        // Check the held journal after the sealed Dataset read, which may
+        // block. This preserves the captured profile's one physical preflight.
+        self.require_current()
     }
 
     fn require_current(&mut self) -> Result<(), Error> {

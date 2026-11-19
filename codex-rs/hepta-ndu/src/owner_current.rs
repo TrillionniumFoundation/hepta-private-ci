@@ -108,6 +108,11 @@ impl NduAuthenticatedOwnerV1 {
             .verifier
             .apply(&self.authority, signed, now)
             .map_err(NduOwnerError::ReadTrust)?;
+        let frontier = Digest32::from_array(self.authority.revocation_head_sha256()?);
+        if frontier.is_zero() {
+            return Err(NduOwnerError::InvalidContext("revocation frontier"));
+        }
+        self.context.revocation_frontier_digest = frontier;
         trust.feed = Some((receipt, signed.update.issued_at_unix_ms));
         Ok(())
     }

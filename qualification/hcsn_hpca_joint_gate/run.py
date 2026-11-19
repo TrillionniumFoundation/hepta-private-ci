@@ -27,7 +27,7 @@ def main():
     original_manifest = manifest_path.read_bytes()
     runner_before = Path(__file__).read_bytes()
     manifest = json.loads(original_manifest)
-    historical_path = Path(__file__).with_name("MANIFEST.json")
+    historical_path = Path(__file__).with_name(manifest["historical_manifest"]["path"])
     historical_before = historical_path.read_bytes()
     historical_sha = hashlib.sha256(historical_before).hexdigest()
     if historical_sha != manifest["historical_manifest"]["sha256"]:
@@ -119,9 +119,9 @@ def main():
     results = []
     expected_tests = {
         "hcsn-spatial-phase": 19,
-        "c2-terminal": 33,
-        "hpca-normal": 18,
-        "hpca-optimized": 18,
+        "c2-terminal": 51,
+        "hpca-normal": 20,
+        "hpca-optimized": 20,
     }
     for name, arguments in commands:
         wall = time.perf_counter()

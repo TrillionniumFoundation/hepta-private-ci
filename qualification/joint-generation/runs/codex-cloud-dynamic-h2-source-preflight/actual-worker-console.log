@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/dynamic-h2/run_once.py", line 451, in <module>
+    result = collect(parser.parse_args().freeze)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/training_diagnostics/dynamic-h2/run_once.py", line 263, in collect
+    ledger = WorkLedger("H2-TRAIN-R&D-not-qualification", total_cap=4_000_000_000)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/accounting.py", line 77, in __init__
+    self.arm = _name(arm, "arm")
+               ^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/accounting.py", line 54, in _name
+    raise AccountingError("invalid " + name)
+independent.accounting.AccountingError: invalid arm

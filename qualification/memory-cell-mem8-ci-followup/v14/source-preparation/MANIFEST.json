@@ -1,0 +1,401 @@
+{
+  "logical_embedded_members": [
+    {
+      "bytes": 328808,
+      "encoding": "base64",
+      "git_blob": "0f510d74f2b351033f7b5cff49b43f5dd766b0d4",
+      "json_pointer": "/binary_write/request/data_base64",
+      "name": "v4/INPUT_SOURCE_GATES.json.xz",
+      "scope": "Exact original complete binary; losslessly embedded in unchanged original request receipt",
+      "sha256": "320e3ee8ac8dc90a25f3b85ef0ceda7c1fe8af8fb27446ebc73e0afb1aae3938",
+      "source_member": "v4/REMOTE_UPLOAD_OBSERVATIONS.json"
+    }
+  ],
+  "manifest_self_hash": "Outer publication index binds this manifest; self-reference avoided.",
+  "members": [
+    {
+      "bytes": 569,
+      "git_blob": "0d025792c255dbedfd71e21be1b429cf81327863",
+      "mode": "0644",
+      "name": "LOSSLESS_EMBEDDINGS.json",
+      "sha256": "01c5d2c33ba81a51911171f4c75b5ed10e90a714de01b720a920c8c6997c2983",
+      "type": "regular"
+    },
+    {
+      "bytes": 3534,
+      "git_blob": "07e362d6dc615e902e639fb19b6a6749cc9e84f1",
+      "mode": "0644",
+      "name": "PACKAGING_STATUS.json",
+      "sha256": "8cfd67696161f96974825c026dede9e96c8a90375f212c024b1dbcefbf85d959",
+      "type": "regular"
+    },
+    {
+      "bytes": 1487,
+      "git_blob": "ddf46b896447e6f7bb0cdf2617141f0fd3f7deb5",
+      "mode": "0644",
+      "name": "README.md",
+      "sha256": "7f14dc7ffc2e58520d1fce57a01980cf3d74a463837cfce1694f760788ffc7fa",
+      "type": "regular"
+    },
+    {
+      "bytes": 4887,
+      "git_blob": "68cfbe10bd32052aded8942bb93e623235935bde",
+      "mode": "0644",
+      "name": "RECOVERY_GAPS.json",
+      "sha256": "30b134ec9a4d1dfd7e19b22446e673ee1ee8f34ed7f79c23b7bdca0f0f61510a",
+      "type": "regular"
+    },
+    {
+      "bytes": 23280,
+      "git_blob": "dd45c8232dae5cd162600fa207a12fa9e86a4b49",
+      "mode": "0644",
+      "name": "ci/driver-v4/mem8_source_gates_v4.py",
+      "sha256": "90d3a98e4b13c80a7da334a854b50607496abf841c80e7f4cd106006e43fc354",
+      "type": "regular"
+    },
+    {
+      "bytes": 21152,
+      "git_blob": "0a4222f2967906fb9285c0e17c16427c328a2548",
+      "mode": "0644",
+      "name": "ci/driver-v5/CI_PUBLICATION_RECEIPTS.json",
+      "sha256": "41a67930d3745ece306d653f7a5fbfa3f7bf5c3ad2475d2d0b11fb7e4be266f9",
+      "type": "regular"
+    },
+    {
+      "bytes": 23280,
+      "git_blob": "0a10994d70bf483477992a607bce5806f394937d",
+      "mode": "0644",
+      "name": "ci/driver-v5/mem8_source_gates_v5.py",
+      "sha256": "f32ca75f21c2097a30bda5892606aef80c62e4072837de7e99e42b56b17cfcf9",
+      "type": "regular"
+    },
+    {
+      "bytes": 9280,
+      "git_blob": "d7f0325d83af4eef98b98a790f8ff755d343c0d5",
+      "mode": "0644",
+      "name": "ci/workflow-v5-original/mem8-source-gates-v5.yml",
+      "sha256": "95c7ce5ca5c52555579a026be02d94e78065ac6657b0503e181edf37fd18c2db",
+      "type": "regular"
+    },
+    {
+      "bytes": 9499,
+      "git_blob": "c9848e288c48110dd65d8600b92fb2279d814151",
+      "mode": "0644",
+      "name": "ci/workflow-v5-revision2/mem8-source-gates-v5.yml",
+      "sha256": "0190e2b3dfe210e2be5c7531c0a560e0e2716c98ce6057840fcffef958925990",
+      "type": "regular"
+    },
+    {
+      "bytes": 1464,
+      "git_blob": "4618a937f1427ecf6664a394afe0cf5ab097f4c6",
+      "mode": "0644",
+      "name": "new-audits/DRIVER_DERIVATION_RECHECK.json",
+      "sha256": "eeef2925d32b6b4a94f20ce8d7e56459d26fd6d152f63c80a9e2ed05c0ad27a4",
+      "type": "regular"
+    },
+    {
+      "bytes": 5226,
+      "git_blob": "6614c0305766df826213e5f16294a08f3460559f",
+      "mode": "0644",
+      "name": "new-audits/DRIVER_IDENTITY_CHANGE.reconstructed.patch",
+      "sha256": "4a2b0b3f541612c4c9f5b1c385030e252ad17d9f33cf84e2c2ec3642dd1b8775",
+      "type": "regular"
+    },
+    {
+      "bytes": 2744,
+      "git_blob": "2be57a8b40b68d7f9a6228cd98377345131ba624",
+      "mode": "0644",
+      "name": "new-audits/RECOVERY_BYTE_AUDIT.json",
+      "sha256": "9848edc66ae7ee487e2076aff9e4f04fc47eab5b6d4386f3590bba229dd33a46",
+      "type": "regular"
+    },
+    {
+      "bytes": 1281,
+      "git_blob": "b32466cbe8d884b76a66d9c1bd8950b4e4773919",
+      "mode": "0644",
+      "name": "new-audits/WORKFLOW_REVISION2.reconstructed.patch",
+      "sha256": "6444148d319c93915b41e3124e2e3b9b62e347dc50db061fa2f37b9cb63f5f15",
+      "type": "regular"
+    },
+    {
+      "bytes": 25122,
+      "git_blob": "77458a7c7362da7c39fbaf1bc975afd16020f126",
+      "mode": "0644",
+      "name": "new-audits/build_recovered_package.py",
+      "sha256": "1bf1a5640a4c109ddea1812faaacc459fd82c7bce76398a9be61d5937dca4df1",
+      "type": "regular"
+    },
+    {
+      "bytes": 27950,
+      "git_blob": "d452388335bef58192b38adc2055fee18a270a1b",
+      "mode": "0644",
+      "name": "recovery-original-store/BINARY_DRIVER_REQUEST.json",
+      "sha256": "ab7e9267de3f608c0b4e0d5c10f0fab27c98d725037f410c207d2c9a1ba2fc2a",
+      "type": "regular"
+    },
+    {
+      "bytes": 196,
+      "git_blob": "68ebd6effec8c01072934a35744e95e91932bffc",
+      "mode": "0644",
+      "name": "recovery-original-store/V5_SOURCE_COMMIT.json",
+      "sha256": "64bc88999ea6058db6eb83505c1eb030bee1dca1910d1d623c60593a55ddb6a5",
+      "type": "regular"
+    },
+    {
+      "bytes": 196,
+      "git_blob": "fe4c45876840c958a75b28863411ccc8fe532f04",
+      "mode": "0644",
+      "name": "recovery-original-store/V5_SOURCE_TREE.json",
+      "sha256": "5e7b0e7190c0c4a23e2230f2b14d34c827fd9c5b19fce4e89959ccce52e8d08c",
+      "type": "regular"
+    },
+    {
+      "bytes": 3456,
+      "git_blob": "e0c42fca681ae0bd93954a8c60c73fc21cdcff47",
+      "mode": "0644",
+      "name": "v4/EXPERIMENT_BYTE_AUDIT.json",
+      "sha256": "30f0bbf1461efa8621ff383bb49f72d8ebd9207198b0d308c87824f507833c52",
+      "type": "regular"
+    },
+    {
+      "bytes": 6570,
+      "git_blob": "a865c58c0016390543e5ac8c388d80e157b4354f",
+      "mode": "0644",
+      "name": "v4/EXPERIMENT_PEER_REVIEW.json",
+      "sha256": "32a966dded6e0aec514f7890c0118b550d3abffe87267c56e0264c4f3b09da3e",
+      "type": "regular"
+    },
+    {
+      "bytes": 7029,
+      "git_blob": "57179a779c75b4c4524a4c1f29f9b42a9c7a619e",
+      "mode": "0644",
+      "name": "v4/H_OFFICIAL_TOOL_CONTRACTS.json",
+      "sha256": "705cb63c31b0399984c8159154aeb896812780bd002603595ed8ad7bc7624f1d",
+      "type": "regular"
+    },
+    {
+      "bytes": 22775,
+      "git_blob": "cf3c26c3c2320c522ea305871c6c9d4f572899b7",
+      "mode": "0644",
+      "name": "v4/PURE_SOURCE_OBJECT_RECEIPT.json",
+      "sha256": "1774df8c2db7c42bfd72a15a934acc29d92ae0a93c8b9d9712494f6f43fe4b98",
+      "type": "regular"
+    },
+    {
+      "bytes": 458116,
+      "git_blob": "c887c09d31ec83ec5454ab40bc98cd3bdd79e762",
+      "mode": "0644",
+      "name": "v4/REMOTE_UPLOAD_OBSERVATIONS.json",
+      "sha256": "ce5e7f2255ed767d2e2c37774a4dfbcfdb0998aa677781543f608d198b030a80",
+      "type": "regular"
+    },
+    {
+      "bytes": 20848,
+      "git_blob": "a4a286ab38c8e5d3c17e22262de5983774f65250",
+      "mode": "0644",
+      "name": "v4/run_source_gates.py",
+      "sha256": "a7c1ee335dba00ad47adaed9bbe1a9e35fc69616fa99f0cd5af309edffcb0a86",
+      "type": "regular"
+    },
+    {
+      "bytes": 7042,
+      "git_blob": "27898ba86da3c953e3820d3e43fcc5c2edd0af95",
+      "mode": "0644",
+      "name": "v5/HOLDOUT_STATIC_PEER_REVIEW.json",
+      "sha256": "b041cac05a0f84140838a24fb282b8c18e32fb7eefc008be749cf2a0e595c9f6",
+      "type": "regular"
+    },
+    {
+      "bytes": 333228,
+      "git_blob": "e2a4d99be9181e60b4ebcfbfc7dc7ea7bc531ef8",
+      "mode": "0644",
+      "name": "v5/INPUT_SOURCE_GATES.json.xz",
+      "sha256": "948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0",
+      "type": "regular"
+    },
+    {
+      "bytes": 1000,
+      "git_blob": "6c82199ec3665b35431f948798d7848802f04bda",
+      "mode": "0644",
+      "name": "v5/POSTIMAGE_PUBLICATION.json",
+      "sha256": "2c2ab94161c551f09143896947c581690d78d6cda32222dc61582fd58057796f",
+      "type": "regular"
+    },
+    {
+      "bytes": 58094,
+      "git_blob": "e98046093121664d7b4e8f5605c451c39d1e5e46",
+      "mode": "0644",
+      "name": "v5/SOURCE_GATE_INDEX.json",
+      "sha256": "443220122a59a53c9df2fec6842423e1d28292bb3058f79896086996f62298cc",
+      "type": "regular"
+    }
+  ],
+  "missing_requested_original_file_count": 15,
+  "original_artifact_recovery_complete": false,
+  "original_file_recovery_provenance": [
+    {
+      "bytes": 333228,
+      "git_blob": "e2a4d99be9181e60b4ebcfbfc7dc7ea7bc531ef8",
+      "member": "v5/INPUT_SOURCE_GATES.json.xz",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable published binary full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v5-input.json.xz",
+      "sha256": "948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0"
+    },
+    {
+      "bytes": 6570,
+      "git_blob": "a865c58c0016390543e5ac8c388d80e157b4354f",
+      "member": "v4/EXPERIMENT_PEER_REVIEW.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/EXPERIMENT_PEER_REVIEW.json",
+      "sha256": "32a966dded6e0aec514f7890c0118b550d3abffe87267c56e0264c4f3b09da3e"
+    },
+    {
+      "bytes": 3456,
+      "git_blob": "e0c42fca681ae0bd93954a8c60c73fc21cdcff47",
+      "member": "v4/EXPERIMENT_BYTE_AUDIT.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/EXPERIMENT_BYTE_AUDIT.json",
+      "sha256": "30f0bbf1461efa8621ff383bb49f72d8ebd9207198b0d308c87824f507833c52"
+    },
+    {
+      "bytes": 7029,
+      "git_blob": "57179a779c75b4c4524a4c1f29f9b42a9c7a619e",
+      "member": "v4/H_OFFICIAL_TOOL_CONTRACTS.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/H_OFFICIAL_TOOL_CONTRACTS.json",
+      "sha256": "705cb63c31b0399984c8159154aeb896812780bd002603595ed8ad7bc7624f1d"
+    },
+    {
+      "bytes": 458116,
+      "git_blob": "c887c09d31ec83ec5454ab40bc98cd3bdd79e762",
+      "member": "v4/REMOTE_UPLOAD_OBSERVATIONS.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original parent store recovered; serialization matched complete pre-reset byte hash",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/REMOTE_UPLOAD_OBSERVATIONS.json",
+      "sha256": "ce5e7f2255ed767d2e2c37774a4dfbcfdb0998aa677781543f608d198b030a80"
+    },
+    {
+      "bytes": 22775,
+      "git_blob": "cf3c26c3c2320c522ea305871c6c9d4f572899b7",
+      "member": "v4/PURE_SOURCE_OBJECT_RECEIPT.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original parent store recovered; serialization matched observed 22775-byte pre-reset artifact, not a differently sized draft",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/PURE_SOURCE_OBJECT_RECEIPT.json",
+      "sha256": "1774df8c2db7c42bfd72a15a934acc29d92ae0a93c8b9d9712494f6f43fe4b98"
+    },
+    {
+      "bytes": 20848,
+      "git_blob": "a4a286ab38c8e5d3c17e22262de5983774f65250",
+      "member": "v4/run_source_gates.py",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Exact bytes decoded from original binary driver upload request; complete pre-reset hash matched",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v4/run_source_gates.py",
+      "sha256": "a7c1ee335dba00ad47adaed9bbe1a9e35fc69616fa99f0cd5af309edffcb0a86"
+    },
+    {
+      "bytes": 58094,
+      "git_blob": "e98046093121664d7b4e8f5605c451c39d1e5e46",
+      "member": "v5/SOURCE_GATE_INDEX.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Deterministic exact reconstruction from frozen V5 input; complete pre-reset byte hash matched",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v5/SOURCE_GATE_INDEX.json",
+      "sha256": "443220122a59a53c9df2fec6842423e1d28292bb3058f79896086996f62298cc"
+    },
+    {
+      "bytes": 7042,
+      "git_blob": "27898ba86da3c953e3820d3e43fcc5c2edd0af95",
+      "member": "v5/HOLDOUT_STATIC_PEER_REVIEW.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original published full text retained in function store; complete original byte identity matched",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v5/HOLDOUT_STATIC_PEER_REVIEW.json",
+      "sha256": "b041cac05a0f84140838a24fb282b8c18e32fb7eefc008be749cf2a0e595c9f6"
+    },
+    {
+      "bytes": 23280,
+      "git_blob": "dd45c8232dae5cd162600fa207a12fa9e86a4b49",
+      "member": "ci/driver-v4/mem8_source_gates_v4.py",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Exact inverse identity substitutions of immutable V5 driver; complete old byte hash matched",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/ci/driver-v4/mem8_source_gates_v4.py",
+      "sha256": "90d3a98e4b13c80a7da334a854b50607496abf841c80e7f4cd106006e43fc354"
+    },
+    {
+      "bytes": 23280,
+      "git_blob": "0a10994d70bf483477992a607bce5806f394937d",
+      "member": "ci/driver-v5/mem8_source_gates_v5.py",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/ci/driver-v5/mem8_source_gates_v5.py",
+      "sha256": "f32ca75f21c2097a30bda5892606aef80c62e4072837de7e99e42b56b17cfcf9"
+    },
+    {
+      "bytes": 21152,
+      "git_blob": "0a4222f2967906fb9285c0e17c16427c328a2548",
+      "member": "ci/driver-v5/CI_PUBLICATION_RECEIPTS.json",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original parent store recovered; serialization matched complete pre-reset byte hash",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/ci/driver-v5/CI_PUBLICATION_RECEIPTS.json",
+      "sha256": "41a67930d3745ece306d653f7a5fbfa3f7bf5c3ad2475d2d0b11fb7e4be266f9"
+    },
+    {
+      "bytes": 9280,
+      "git_blob": "d7f0325d83af4eef98b98a790f8ff755d343c0d5",
+      "member": "ci/workflow-v5-original/mem8-source-gates-v5.yml",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback; invalid job.env version retained",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/ci/workflow-v5-original/mem8-source-gates-v5.yml",
+      "sha256": "95c7ce5ca5c52555579a026be02d94e78065ac6657b0503e181edf37fd18c2db"
+    },
+    {
+      "bytes": 9499,
+      "git_blob": "c9848e288c48110dd65d8600b92fb2279d814151",
+      "member": "ci/workflow-v5-revision2/mem8-source-gates-v5.yml",
+      "old_full_sha256_matched": true,
+      "recovery_method": "Original immutable UTF8 blob full readback",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/ci/workflow-v5-revision2/mem8-source-gates-v5.yml",
+      "sha256": "0190e2b3dfe210e2be5c7531c0a560e0e2716c98ce6057840fcffef958925990"
+    },
+    {
+      "bytes": 1000,
+      "git_blob": "6c82199ec3665b35431f948798d7848802f04bda",
+      "member": "v5/POSTIMAGE_PUBLICATION.json",
+      "old_full_sha256_matched": false,
+      "recovery_method": "Complete original function-store object reserialized; original file length matched, prior full byte hash unavailable",
+      "restored_source_path": "/tmp/mem8-source-preparation-evidence/recovery/v5/POSTIMAGE_PUBLICATION.json",
+      "sha256": "2c2ab94161c551f09143896947c581690d78d6cda32222dc61582fd58057796f"
+    },
+    {
+      "bytes": 27950,
+      "git_blob": "d452388335bef58192b38adc2055fee18a270a1b",
+      "member": "recovery-original-store/BINARY_DRIVER_REQUEST.json",
+      "old_full_sha256_matched": false,
+      "recovery_method": "Complete original parent function-store request object reserialized; do not claim original file formatting",
+      "restored_source_path": "/workspace/scratch/ed3538174819/mem8-reset-recovery/repair-v4-binary-driver-request.json",
+      "sha256": "ab7e9267de3f608c0b4e0d5c10f0fab27c98d725037f410c207d2c9a1ba2fc2a"
+    },
+    {
+      "bytes": 196,
+      "git_blob": "68ebd6effec8c01072934a35744e95e91932bffc",
+      "member": "recovery-original-store/V5_SOURCE_COMMIT.json",
+      "old_full_sha256_matched": false,
+      "recovery_method": "Original parent function-store response object reserialized; no source commit recreated",
+      "restored_source_path": "/workspace/scratch/ed3538174819/mem8-reset-recovery/repair-v5-source-commit.json",
+      "sha256": "64bc88999ea6058db6eb83505c1eb030bee1dca1910d1d623c60593a55ddb6a5"
+    },
+    {
+      "bytes": 196,
+      "git_blob": "fe4c45876840c958a75b28863411ccc8fe532f04",
+      "member": "recovery-original-store/V5_SOURCE_TREE.json",
+      "old_full_sha256_matched": false,
+      "recovery_method": "Original parent function-store response object reserialized; no Git tree recreated",
+      "restored_source_path": "/workspace/scratch/ed3538174819/mem8-reset-recovery/repair-v5-source-tree.json",
+      "sha256": "5e7b0e7190c0c4a23e2230f2b14d34c827fd9c5b19fce4e89959ccce52e8d08c"
+    }
+  ],
+  "regular_payload_members": 27,
+  "schema": "hepta.mem8.source-preparation.recovered-member-manifest.v1"
+}

@@ -252,9 +252,9 @@ impl LearningArtifactOwnerService {
         receipt_from_checkpoint(&retained.checkpoint)
     }
 
-    fn require_original_withdrawal(&self) -> Result<(), LearningArtifactOwnerServiceError> {
+    fn require_original_withdrawal(&self) -> Result<(), ArtifactOwnerHostError> {
         if self.withdrawal_pending {
-            return Err(ArtifactOwnerHostError::Indeterminate.into());
+            return Err(ArtifactOwnerHostError::Indeterminate);
         }
         self.host.require_original_withdrawal_frontier(
             &self.withdrawal_registry,

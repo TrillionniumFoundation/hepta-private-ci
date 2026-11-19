@@ -1,0 +1,925 @@
+{
+  "schema": "hepta.verify1.publication-base-drift-review.v1",
+  "created_at_utc": "2026-11-08T18:01:57.938351+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "read_only_github": true,
+  "remote_mutations": 0,
+  "tests_rerun": false,
+  "model_calls": 0,
+  "github_observed_at_utc": "2026-11-08T18:00:45.823Z",
+  "pr": {
+    "number": 5351,
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5351",
+    "head_branch": "research/verify1-risk-cell-20261108-771b",
+    "head_sha": "a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02",
+    "state": "open",
+    "draft": true
+  },
+  "tested_base_commit": "0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2",
+  "tested_base_tree": "665c8b980d0ed3e7eace3b4cf961287e69af38ee",
+  "proposed_publication_base_commit": "a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02",
+  "proposed_publication_base_tree": "561168c7b899fecb5a41a2a83a93e4a63293c8b8",
+  "parent_chain": [
+    "a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02",
+    "0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2",
+    "5fa591bb2e75596a4cd9877c39bb678382f9bb97"
+  ],
+  "new_commit_message": "docs(verify1): distinguish native qualification and model pilot",
+  "new_commit_date": "2026-11-08T17:17:09Z",
+  "compare": {
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1
+  },
+  "full_change_inventory": [
+    {
+      "path": "experiments/verification_cell_verify1/INTEGRATION.md",
+      "before": {
+        "path": "INTEGRATION.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "685e69373a6ef80fb5ac17267546bb3a762912c6",
+        "size": 11052,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/685e69373a6ef80fb5ac17267546bb3a762912c6"
+      },
+      "after": {
+        "path": "INTEGRATION.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4e14e38a80176f772aa999fc0b766927d4d90f92",
+        "size": 15781,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4e14e38a80176f772aa999fc0b766927d4d90f92"
+      },
+      "status": "modified",
+      "additions": 77,
+      "deletions": 21,
+      "changes": 98,
+      "patch": "@@ -12,10 +12,17 @@ preserve the same contracts.\n | Base tree | `491eace326f335498334fb051c9e8f298ca7a04c` |\n | Observed `main` | `732e934ba496d90fbe042b8d41d479ef901643e5` |\n \n-The native entry points in the table were inspected at the implementation base.\n-In particular, its durable dispatch and automation host code differ from the\n+The existing native entry points below retain the original implementation-base\n+audit. In particular, durable dispatch and automation host code differ from the\n observed `main`; this document uses the base's dispatch behavior.\n \n+The native extension was separately inspected at published snapshot\n+`0c81508e3cb9ea5c949c12a0c01c61c66e8d4df2`. Its\n+[SOURCE_BINDING.json](../../qualification/verify1-native-20261108/SOURCE_BINDING.json)\n+binds the actual Linux run to the base plus eight source files, with separate\n+tested and formatted hashes. The publication snapshot is not the test subject,\n+and the test's ephemeral candidate identity is not a production identity.\n+\n ## What this package establishes\n \n This is a research and engineering harness with actual local SQLite effects,\n@@ -31,13 +38,29 @@ production trust registration. Payload identity checking is not signature\n verification or an authenticated native store read. Its inner record digest is\n not the native payload or envelope digest.\n \n-The neural self-evaluation, shared-base roles, distinct-adapter, and distinct-base\n-arms remain `NOT_RUN`. The `common_misjudgment` fixture injects a shared wrong\n-value; it does not execute correlated model voters. Synthetic source groups do\n+The separate Rust extension and Agentd qualification described below now exercise\n+typed native report validation, a real fixture-state checker, and signed native\n+evidence ingress under ephemeral fixture trust. This does not change the Python\n+serializer's responsibilities or register a production checker, signer, or caller.\n+\n+Within the original four-policy SQLite runner, the neural self-evaluation,\n+shared-base roles, distinct-adapter, and distinct-base arms remain `NOT_RUN`.\n+That runner's `common_misjudgment` fixture injects a shared wrong value; it does not execute correlated model voters. Synthetic source groups do\n not become independent real tasks by receiving different identifiers. An\n engineering smoke result does not qualify a real-model study, Agentd production\n integration, or a statistical guarantee.\n \n+Separate real-model execution was retained in PR #5346 at evidence snapshot\n+`f25124815a9832af9b00652a4741d794a744df06`: see the\n+[run-v2 provenance](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/README.zh-CN.md)\n+and [43-check independent audit](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/VERIFY1_AUDIT.json).\n+It records 108 completed policy trajectories, 652 real model forwards and three\n+trained frozen-feature logistic readouts. The execution is bound to a source\n+capsule and manifest; `published_model_source_commit` remains `null`. It is not\n+covered by the native capsule below or automatically part of the observed\n+phase-1 PR #5351 source. The pilot retains scientific admission **HOLD** and\n+production authority **NONE**; its optional-call cap is not equal actual cost.\n+\n ## Existing native entry points\n \n Paths below are relative to the repository root; links resolve from this file.\n@@ -55,6 +78,33 @@ Paths below are relative to the repository root; links resolve from this file.\n | Qualification-only provider seam | [hepta-evidence/src/provider_effect_store.rs](../../codex-rs/hepta-evidence/src/provider_effect_store.rs): `dispatch_provider_effect_qualification`, `reconcile_provider_effect_with_adapter` | Useful for fault/recovery qualification; this seam is not registered as a production Agentd caller. Invocation is not proof of a physical effect. |\n | Full task accounting | [hepta-neuron/src/cell_task_cost.rs](../../codex-rs/hepta-neuron/src/cell_task_cost.rs): `CellTaskCostV2`, `CellTaskCostIdentityV2`, `CellCostEntryV2`, `CellCostAccountingV2` | Bind source/task identity and all stages, including failed or cancelled work. Keep exclusive entries distinct from inclusive envelopes; unmeasured cost is unknown, not zero. |\n \n+## Native extension and retained execution\n+\n+| Component | Source | Executed scope |\n+| --- | --- | --- |\n+| Typed report namespace | [verify1_report.rs](../../codex-rs/hepta-evidence/src/verify1_report.rs), [qualification.rs](../../codex-rs/hepta-evidence/src/qualification.rs) | Validate original inner report bytes/digest and typed semantics in `hepta.verify1.report`. Generic append does not invoke a property checker. |\n+| SQLite property checker | [verify1_checker.rs](../../codex-rs/hepta-evidence/src/verify1_checker.rs), [verify1_fixture_check.rs](../../codex-rs/hepta-evidence/examples/verify1_fixture_check.rs) | Recompute initialized goal, epoch, frontier, values, finished intents and ACK/readback obligations in one read snapshot. Return an unsigned receipt without accepting the task. |\n+| Agentd evidence path | [verify1_kernel_evidence_product.rs](../../codex-rs/hepta-agentd/tests/verify1_kernel_evidence_product.rs) | Start the actual daemon with ephemeral fixture trust; sign, append, query and verify, including replay, expiry, tamper and current revocation checks. No production principal is registered. |\n+\n+The [native qualification capsule](../../qualification/verify1-native-20261108/README.md)\n+records 131 evidence-crate tests passing, one existing ignored test, and four\n+selected Agentd integration tests passing. Six actual Python SQLite cases\n+produced seven native checker results. These are engineering observations for the\n+bound source overlay; final formatting and eventual publication are separate\n+identities. Tests were not rerun after final formatting.\n+\n+The checker's property is `fixture_prefix_goal_and_owner_readback_at_snapshot`\n+in domain `sqlite_two_field_engineering_fixture_v1`. A step-1 result covers only\n+the left target and cannot become a terminal success result. The checker assumes\n+a trusted controller goal, a trusted host-selected fixture database, a consistent\n+SQLite transaction, and trusted owner/epoch-bound readbacks. It does not isolate\n+another process able to modify that database.\n+\n+The native qualification capsule records `model_inference=false`, no production\n+caller and no adoption. This scope is separate from the real-model run-v2 pilot\n+above and does not assert zero inference across VERIFY-1. It does not include\n+whole-workspace, Bazel or other-platform qualification.\n+\n ## Three report contracts and their authority\n \n | Report | Meaning | Required interpretation |\n@@ -76,31 +126,37 @@ nor a probability may become a `FinalUse` grant or a replacement for readback.\n \n ## Faults and the corresponding native observations\n \n-| Injection | Current local fixture | Native connection still to implement |\n+The native checker exercised the same retained SQLite states. The final column\n+lists remaining production or model work, not missing fixture-checker code.\n+\n+| Injection | Executed fixture and native result | Remaining production or model connection |\n | --- | --- | --- |\n-| Stale read | State changes after an earlier observation; acceptance checks current values/version. | Bind Cell source frontier and owner revision, current dispatch fence, and evidence expiry/revocation. Recheck the property against the current destination before acceptance. |\n-| Missing receipt | Commit the effect while withholding its ACK; reconcile the retained intent and state. | Preserve admission/dispatch identity and `Indeterminate`; use authoritative destination lookup and reconciliation without repeating the effect. |\n-| Semantic error | Write an incorrect goal value with otherwise normal execution. | Run a trusted property-specific checker on actual destination bytes/values. Hashes, transport success, and signatures alone do not check meaning. |\n-| Partial success | Complete only part of the goal. | Distinguish `Accepted` from `Completed` and enumerate all terminal obligations. A completed sub-operation is not a completed trajectory. |\n-| Common misjudgment | Inject the same wrong value used to represent a common failure. | Collect actual model/voter outputs with frozen base/adapter identities and blinded outcome labels; compare shared failures with an external checker. Native signer diversity is not a substitute. |\n+| Stale read | State changes after an earlier observation; native checker refutes the current wrong values. | Bind Cell source frontier and owner revision, current dispatch fence, and evidence expiry/revocation. Recheck the property against the current destination before acceptance. |\n+| Missing receipt | Native checker returns unknown after commit without ACK, then proves the pinned snapshot after owner readback without effect replay. | Preserve admission/dispatch identity and `Indeterminate`; use authoritative destination lookup and reconciliation without repeating the effect. |\n+| Semantic error | Native checker refutes the incorrect goal value despite normal effect execution. | Run a trusted property-specific checker on actual destination bytes/values. Hashes, transport success, and signatures alone do not check meaning. |\n+| Partial success | Native checker refutes the complete goal when only part is present. | Distinguish `Accepted` from `Completed` and enumerate all terminal obligations. A completed sub-operation is not a completed trajectory. |\n+| Common misjudgment | Native checker refutes an injected wrong value; no model voters ran in this native capsule. | Collect actual model/voter outputs with frozen base/adapter identities and blinded outcome labels; compare shared failures with an external checker. Native signer diversity is not a substitute. |\n \n ## Remaining integration sequence\n \n-1. Register a real checker trust entry point. Fix checker version, property,\n-   assumptions, allowed evidence sources, freshness policy, and result scope.\n-   Authenticate destination readback and distinguish checker execution from a\n-   caller-supplied report. Preserve `unknown` when obligations cannot be checked.\n-2. Connect typed payloads to native canonical envelopes, `SignedMessage` claims,\n-   configured issuers, append ingress, and current-trust verification. Bind the\n-   source commit/tree and exact evidence identity; validate native size limits.\n-   Exercise expiry, revocation, replay, and recovery through the real host.\n+1. Connect the existing fixture checker or another property-specific checker to\n+   an owner-selected production trust entry point. Fix its version, property,\n+   assumptions, evidence sources, freshness policy and result scope. Authenticate\n+   destination readback and retain `unknown` for unchecked obligations. The\n+   SQLite fixture's trusted database assumption does not establish this ownership.\n+2. Supply actual production issuers and caller wiring for the native envelope,\n+   signing, append/query and current-trust path exercised by the Agentd fixture.\n+   Bind the real source/tree and evidence identity, and qualify the target's\n+   revocation, expiry, replay and recovery behavior. The test's ephemeral trust\n+   configuration must not be reused as production authority.\n 3. Add actor/tool hooks around observation, optional check selection, effect\n    execution, and terminal acceptance. Keep authorization, hard constraints,\n    dispatch fencing, and current destination readback in the host. Synchronous\n    authorized callbacks must not wait on remote work; asynchronous delivery\n    needs the existing durable admission and reconciliation path.\n-4. Freeze real model/base/adapter artifacts, task sources, train/calibration/\n-   confirmation splits, and output receipts before comparing arms. Keep hidden\n+4. For the next scientific comparison, freeze real model/base/adapter artifacts,\n+   task sources, train/calibration/confirmation splits, and output receipts.\n+   Preserve the separate run-v2 evidence and its unresolved qualification limits. Keep hidden\n    outcome labels away from policies. Use paired tasks and explicit source,\n    model-family, adapter, and failure-cluster labels; execute equal-budget voting\n    and external-check arms before drawing ensemble conclusions.",
+      "patch_sha256": "b9f266a3aaa543ace1cb7643fb0a322ae66604c918011f7382750fb11db03fab"
+    },
+    {
+      "path": "experiments/verification_cell_verify1/README.md",
+      "before": {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4d161349e2e3f7b0b17db1bcc1cc720e9b427762",
+        "size": 7904,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/4d161349e2e3f7b0b17db1bcc1cc720e9b427762"
+      },
+      "after": {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "32fce0daa9709e8f1181c272eb88744c0181bed3",
+        "size": 11256,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs/32fce0daa9709e8f1181c272eb88744c0181bed3"
+      },
+      "status": "modified",
+      "additions": 56,
+      "deletions": 11,
+      "changes": 67,
+      "patch": "@@ -1,9 +1,10 @@\n # VERIFY-1: verification and risk Cell\n \n-This package executes a bounded engineering experiment and prepares typed inputs\n-for a later model study. It does not install a production Cell or grant effect\n-authority. The original Hepta host continues to own authorization, deterministic\n-constraints and actual effect readback.\n+This package executes a bounded SQLite experiment and provides native typed\n+reports, a fixture checker, and an Agentd evidence integration qualification.\n+The four-policy runner is separate from the retained model pilot described below.\n+It does not install a production Cell or grant effect authority. The original Hepta host continues to own authorization,\n+deterministic constraints and actual effect readback.\n \n ## Run\n \n@@ -68,9 +69,9 @@ the same optional-check opportunity cap (0.6 declared units, 0.2 per check) and\n separately reserved mandatory terminal check. Actual spending can differ. The\n declared scheduling units are not measured dollars, energy or latency.\n \n-Single-step neural self-evaluation, shared-base roles, different adapters and\n-different bases are registered as `NOT_RUN`, with zero inference receipts and\n-missing artifact identities. Naming a fault `common_misjudgment` does not execute\n+Within this original four-policy SQLite runner, single-step neural self-evaluation,\n+shared-base roles, different adapters and different bases are registered as\n+`NOT_RUN`, with zero inference receipts and missing artifact identities. Naming a fault `common_misjudgment` does not execute\n an ensemble. No simulated model voting result is reported as a real-model result.\n \n ## Measurements and retained records\n@@ -96,8 +97,8 @@ against the scheduled step-4 decision horizon, including early stops.\n \n `compare_votes` accepts original per-voter records and reports base/adapter\n provenance, paired error correlation and common failure clusters. Different\n-identities never imply independent errors. The experiment itself runs no neural\n-voters. `summarize_costs` rejects duplicate physical operation IDs and preserves\n+identities never imply independent errors. This original four-policy runner executes no neural\n+voters; the separate model pilot below has its own execution and source identity. `summarize_costs` rejects duplicate physical operation IDs and preserves\n failed/cancelled work. Controller CPU and operation wall times are measured;\n child CPU and energy remain unmeasured. Summed nested durations are not elapsed\n time. `full_physical_cost_complete` therefore remains false.\n@@ -121,8 +122,52 @@ and independently pinned digest. This serialization layer does not sign an\n envelope, register a trusted issuer, execute Agentd ingress or authenticate a\n queried payload. `kernel.evidence`'s `Supported` is not a property proof.\n \n-See [INTEGRATION.md](INTEGRATION.md) for the audited native entry points and\n-[STUDY_PROTOCOL.md](STUDY_PROTOCOL.md) for the remaining real-model experiment.\n+Separate native code validates the `hepta.verify1.report` namespace and implements\n+`check_verify1_sqlite(path, trusted_goal, expected_scope)`. The checker reads one\n+SQLite snapshot and recomputes the pinned fixture property; imported verdicts are\n+not checker inputs. Generic evidence append validates the report namespace but\n+does not automatically run this checker.\n+\n+The [native qualification](../../qualification/verify1-native-20261108/README.md)\n+records a Linux run with 131 evidence-crate tests passing, one existing ignored\n+test, and four selected Agentd integration tests passing. The Agentd test starts\n+the actual daemon with ephemeral fixture trust and exercises signing, append,\n+query, replay, expiry, tampering, and current-trust revocation. Six Python fixture\n+cases produced seven native checks; missing ACK remained unknown until owner\n+readback, and no database acceptance rows were added.\n+\n+Those observations bind the exact base plus source overlay and the distinct\n+tested/formatted hashes in\n+[SOURCE_BINDING.json](../../qualification/verify1-native-20261108/SOURCE_BINDING.json).\n+They are not a rerun of the eventual publication commit, a whole-workspace or\n+Bazel result, or a registration of a production signer/caller. The retained\n+[RESULT.json](../../qualification/verify1-native-20261108/RESULT.json) keeps\n+`model_inference=false`, `production_caller_registered=false`, and\n+`production_adoption=false` for this native qualification capsule. These fields do\n+not describe all VERIFY-1 experiments.\n+\n+## Separately retained real-model pilot\n+\n+The [run-v2 provenance and independent audit](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/README.zh-CN.md)\n+retained in PR #5346 describe a separate native model execution: 108 completed\n+policy trajectories, 652 actual model forwards, and three trained frozen-feature\n+logistic readouts. Its [audit result](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/f25124815a9832af9b00652a4741d794a744df06/qualification/cell-research-stages-20261108/followthrough-20261108/VERIFY1_AUDIT.json)\n+passed 43 checks by independently recomputing the retained originals, without\n+rerunning inference or training. These observations are distinct from both the\n+four-policy runner above and the native evidence/checker qualification capsule.\n+\n+The model execution is bound by its source capsule and manifest. The retained\n+`published_model_source_commit` is `null`; the audit does not claim that its new\n+`model_*` files belong to the observed phase-1 PR #5351 head. Three frozen-feature\n+readouts are not base-model finetunes or independent natural-task trials. All\n+seven primary arms accepted 4 of 12 trajectories with zero accepted errors under\n+mandatory host readback; selector superiority remains unestablished. Equal voting\n+opportunities do not establish equal physical cost, and the pilot retains\n+scientific admission **HOLD** and production authority **NONE**.\n+\n+See [INTEGRATION.md](INTEGRATION.md) for the original base audit, the native\n+extension, and the remaining owner integration, and\n+[STUDY_PROTOCOL.md](STUDY_PROTOCOL.md) for the real-model experiment.\n \n Scientific acceptance, full physical cost, Agentd production integration and\n real-model superiority remain **HOLD** even when this engineering gate passes.",
+      "patch_sha256": "9ad80da0d66cc6f2138e5611bae91995781cbf7f0deaabb5902c65b81861dc57"
+    }
+  ],
+  "tree_proof": {
+    "method": "Recompute seven untruncated Git tree object SHA1s; recursively compare every differing tree entry; identical mode/type/tree SHA proves unchanged descendants without fetching them.",
+    "objects": [
+      {
+        "sha": "3a4f1249c46ed51d7e4e1f6c5f14df357a6676d8",
+        "recomputed_sha": "3a4f1249c46ed51d7e4e1f6c5f14df357a6676d8",
+        "entries": 16,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/3a4f1249c46ed51d7e4e1f6c5f14df357a6676d8"
+      },
+      {
+        "sha": "561168c7b899fecb5a41a2a83a93e4a63293c8b8",
+        "recomputed_sha": "561168c7b899fecb5a41a2a83a93e4a63293c8b8",
+        "entries": 53,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/561168c7b899fecb5a41a2a83a93e4a63293c8b8"
+      },
+      {
+        "sha": "5726a47e7cef916d18ddbfd08b6799737e7f480f",
+        "recomputed_sha": "5726a47e7cef916d18ddbfd08b6799737e7f480f",
+        "entries": 1,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/5726a47e7cef916d18ddbfd08b6799737e7f480f"
+      },
+      {
+        "sha": "665c8b980d0ed3e7eace3b4cf961287e69af38ee",
+        "recomputed_sha": "665c8b980d0ed3e7eace3b4cf961287e69af38ee",
+        "entries": 53,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/665c8b980d0ed3e7eace3b4cf961287e69af38ee"
+      },
+      {
+        "sha": "b88f0e6a892148fdd829c693dffbeb8c92753a53",
+        "recomputed_sha": "b88f0e6a892148fdd829c693dffbeb8c92753a53",
+        "entries": 16,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/b88f0e6a892148fdd829c693dffbeb8c92753a53"
+      },
+      {
+        "sha": "eb9fec14d8d47b836a9cd6c9f23c3735ae1169fd",
+        "recomputed_sha": "eb9fec14d8d47b836a9cd6c9f23c3735ae1169fd",
+        "entries": 1,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/eb9fec14d8d47b836a9cd6c9f23c3735ae1169fd"
+      },
+      {
+        "sha": "edf8380b0e9875fb86cc246247556d10a090fef0",
+        "recomputed_sha": "edf8380b0e9875fb86cc246247556d10a090fef0",
+        "entries": 157,
+        "truncated": false,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/trees/edf8380b0e9875fb86cc246247556d10a090fef0"
+      }
+    ],
+    "unchanged_entries_or_subtree_roots": [
+      {
+        "path": ".bazelignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "42da641f9d7e45ea9ecaa0f2eba0f783ffca596d"
+      },
+      {
+        "path": ".bazelrc",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e4502d89f0ca4f27d5adf4a575c27a633966436e"
+      },
+      {
+        "path": ".bazelversion",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b13d146a7b02b96e4c30340e69388d539c9721be"
+      },
+      {
+        "path": ".codespellignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0da447f000de188776a33e770c2d2d77b37f97ee"
+      },
+      {
+        "path": ".codespellrc",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "49a7dfe79422a261e9769e1fcc486e4f06b4e46e"
+      },
+      {
+        "path": ".codex",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "4697cb070366598c6ef529811515c255f4369f3f"
+      },
+      {
+        "path": ".devcontainer",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "d930c4761f5bc87ba6308f0e78a93d4a911025a1"
+      },
+      {
+        "path": ".g1",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "67598d14cb17933af7bc6eac148f54b4fc54ce59"
+      },
+      {
+        "path": ".gitattributes",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "17da38650745923743630d38d3eb0327b7a55d1f"
+      },
+      {
+        "path": ".github",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ebf10132e9f9d380b1d94cfe5df5df2984e49a5d"
+      },
+      {
+        "path": ".gitignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dbcd8633154a13966c231033a6c07ad8be169c73"
+      },
+      {
+        "path": ".markdownlint-cli2.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "15b472c61cb73bf14f6c327266e479229f555eca"
+      },
+      {
+        "path": ".npmrc",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4153fe87bb5f08b63514128adf30f1643ef3f1fc"
+      },
+      {
+        "path": ".prettierignore",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "538bdc7f1658482073bb2cee8f2cd82f8c1bb13c"
+      },
+      {
+        "path": ".prettierrc.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4c58c583e5fa327928190f625a1095a9c4d9e72f"
+      },
+      {
+        "path": ".vscode",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b26f3b4bbfa530719068fbf14ad6ea3a4b502b33"
+      },
+      {
+        "path": ".worktreeinclude",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "74824b01f957d689559c85d750538ac39b36b0ed"
+      },
+      {
+        "path": "AGENTS.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+      },
+      {
+        "path": "BUILD.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1f9970fdbd25413e7a4e9a98519ba44a735158d4"
+      },
+      {
+        "path": "CALLERS.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "0022774645e4358532f213fe239447ff9474ea4b"
+      },
+      {
+        "path": "CHANGELOG.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2eb564c560a4c85507169a26637f6bce59f7e1fb"
+      },
+      {
+        "path": "LICENSE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4606e72e042564097e8780d66c1d4dcb611869bd"
+      },
+      {
+        "path": "MODULE.bazel",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "87681a96a17ef5baee4367c00e1c1fd7282c278d"
+      },
+      {
+        "path": "MODULE.bazel.lock",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b91bee756020f2b6b0e92b1a5c4477e6a180149e"
+      },
+      {
+        "path": "NOTICE",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2805899d56d0332d175cfc613c67d45d6f006db7"
+      },
+      {
+        "path": "README.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c50c614f45063a46ffd7ab8ab1999c7251c8892a"
+      },
+      {
+        "path": "SECURITY.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "29a9b903df5da8e789d685efe8012fa4edd775e5"
+      },
+      {
+        "path": "announcement_tip.toml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "79c0daea761e0f634960dd39e2dff6bdbfd02f63"
+      },
+      {
+        "path": "apps",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "eb1beb8f7e97e2c0acbf23f1f2ca626183f7c1ff"
+      },
+      {
+        "path": "bazel",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "a63126a6c952997f9c09561b7bbe666ac61ef23a"
+      },
+      {
+        "path": "codex-cli",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "8a51d813d1387f192cc66bb9feade5e12675a3f7"
+      },
+      {
+        "path": "codex-rs",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b5b6ba93b2abfca3844bc6bf6b56ff9f9a7b4c93"
+      },
+      {
+        "path": "defs.bzl",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ab9b8e8153e3813cbbc068932bf626a0699cd9f2"
+      },
+      {
+        "path": "docs",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "c70acd76655d1ea361b1b2c0ee7a7f5cc53787a3"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/STUDY_PROTOCOL.md",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "1a1f0da72e4a068a51b7c07d50317c3e393d4d13"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/__init__.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "44d81ae3b3969ed4a0add25351066e627f1e35ca"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/calibration.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "9b4c8aea01b094f1f32f382a6f169a934e6a6114"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/contracts.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a5ed66ad8c7d7b6c9469943d121d36debef7b88"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/experiment.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "2793690c5e8f0a491a00859476d101992df73ada"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/kernel_payload.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "dfc391c5d83abe993763aeec07f2394f732adedf"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/metrics.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f8f93e2eb9324d3dc6dbc6fd42bc80a6c09362a1"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/runtime.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8f7d69f50a4b3c3478cb2801f159f27453f20cc2"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_calibration.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "e6d7bbcd4c12b9ec1c70d32bcd3d26ecd15ec4c2"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_contracts.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b1705b7a60219fcee974b5d77a2e1b62fa009e8f"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_experiment.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "ff2252219e9431be0846d710d3e3b0373d520d30"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_kernel_payload.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "5ae6d910b9bb3eaf8a49c86d124820304004ed67"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_metrics.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "05748cda2cf3869c2f35786d1f2b95eea485c365"
+      },
+      {
+        "path": "experiments/verification_cell_verify1/test_runtime.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "c48cedf8a73078746f9ddfa47c313205939b8dfd"
+      },
+      {
+        "path": "external",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6717a894bfc52f7908d89aedeb0003e8eb660eec"
+      },
+      {
+        "path": "flake.lock",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3b96f5c60d1c9c0ce6475400ee3c82d0a45f14d1"
+      },
+      {
+        "path": "flake.nix",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "7943d3cdacc23207c8dc222917a315b0d34272b5"
+      },
+      {
+        "path": "justfile",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      {
+        "path": "package.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a65950c26b698be87208ab644ee1c464f7759b55"
+      },
+      {
+        "path": "patches",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "ad76fe0e407216af8ec351cd218be86594e2458b"
+      },
+      {
+        "path": "pnpm-lock.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "48ba7c7f117e999a649fb66e4bb5c57e76243101"
+      },
+      {
+        "path": "pnpm-workspace.yaml",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "49e7da14d39923ae45ce36669932753e53d06258"
+      },
+      {
+        "path": "qa",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "6a0233caee6752e0ae57634f7759ebe057b40259"
+      },
+      {
+        "path": "qualification",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "1e3d71ca202d81c29a6a26ef47ad799e5726d7bb"
+      },
+      {
+        "path": "rbe.bzl",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "57e301ac776d9c7196e9c854bc6e27ce2718d886"
+      },
+      {
+        "path": "scratch",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "65b649147864de2851b5a9e4ddfaa3bc93e0fb77"
+      },
+      {
+        "path": "scripts",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "edf8380b0e9875fb86cc246247556d10a090fef0"
+      },
+      {
+        "path": "sdk",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "03867fb100b45ae6b18fc56b3e517dbd2c0bdb47"
+      },
+      {
+        "path": "third_party",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "b7078ccdf97d138cafdebecca0515f4dbcab47dd"
+      },
+      {
+        "path": "tools",
+        "mode": "040000",
+        "type": "tree",
+        "sha": "118399106aac089a8a164e83467b546e1a231ba9"
+      },
+      {
+        "path": "workspace_root_test_launcher.bat.tpl",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "fa18c301dd22ca9023ba2f59801a8119dfbf8a69"
+      },
+      {
+        "path": "workspace_root_test_launcher.sh.tpl",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4606fd8b15274f3e52aca493a34f32264d124c06"
+      }
+    ],
+    "complete_changed_leaf_count": 2,
+    "complete_diff_matches_commit_and_compare": true
+  },
+  "baseline_files": [
+    {
+      "path": "experiments/verification_cell_verify1/MODEL_PILOT.md",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/MODEL_PILOT.md",
+      "local_bytes": 10987,
+      "local_sha256": "6b58d43d10a25c23a3372ffa2dab6fda045b8ce24b233844fae08cefe16805ed",
+      "local_git_blob_sha": "b24450dada150fb391661f0c63c1ab377aead328",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/__init__.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/__init__.py",
+      "local_bytes": 74,
+      "local_sha256": "34501e640bd290f92ece01aa58b12eb587ec88589f3c6bd62ebb000704c92913",
+      "local_git_blob_sha": "44d81ae3b3969ed4a0add25351066e627f1e35ca",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "44d81ae3b3969ed4a0add25351066e627f1e35ca"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "44d81ae3b3969ed4a0add25351066e627f1e35ca"
+      },
+      "old_new_repository_state_identical": true,
+      "status": "PRESENT_BOTH_BASES_EXACT_BYTES",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/contracts.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/contracts.py",
+      "local_bytes": 11755,
+      "local_sha256": "60a38923c46e3df3ad4ec357cbe0287062986e84aa8123267b5ef2954062730d",
+      "local_git_blob_sha": "8a5ed66ad8c7d7b6c9469943d121d36debef7b88",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a5ed66ad8c7d7b6c9469943d121d36debef7b88"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8a5ed66ad8c7d7b6c9469943d121d36debef7b88"
+      },
+      "old_new_repository_state_identical": true,
+      "status": "PRESENT_BOTH_BASES_EXACT_BYTES",
+      "capsule_import": false
+    },
+    {
+      "path": "experiments/verification_cell_verify1/metrics.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/metrics.py",
+      "local_bytes": 14328,
+      "local_sha256": "3e0a9a996ad62a0feae24a9905c7885352917b195146564b04ac6b15771b302d",
+      "local_git_blob_sha": "f8f93e2eb9324d3dc6dbc6fd42bc80a6c09362a1",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f8f93e2eb9324d3dc6dbc6fd42bc80a6c09362a1"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "f8f93e2eb9324d3dc6dbc6fd42bc80a6c09362a1"
+      },
+      "old_new_repository_state_identical": true,
+      "status": "PRESENT_BOTH_BASES_EXACT_BYTES",
+      "capsule_import": false
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_audit.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_audit.py",
+      "local_bytes": 7273,
+      "local_sha256": "a245eb86f080968fe8a8a5edc117ec3479be85f3eabc70a985723f4d362588df",
+      "local_git_blob_sha": "ef50a93afa6180b211143d267a666e548fe6232f",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_backend.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_backend.py",
+      "local_bytes": 10667,
+      "local_sha256": "426cb259d8cb6bd74840460f281b4b7e238b9be689694290cf585e412136135c",
+      "local_git_blob_sha": "65f2976580a4b7bb42b6250415a906d1fd6a1f57",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_heads.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_heads.py",
+      "local_bytes": 5464,
+      "local_sha256": "ee3f872a5d32c7723204f3bee1073b20b7d7e59e6f7775546be637be47c091bf",
+      "local_git_blob_sha": "91f96acd476da2cdd78aadf389e5ba154a8eaa77",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_policy.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_policy.py",
+      "local_bytes": 13828,
+      "local_sha256": "7f14595ace200997498e20b020ce36e00d8c5c06585b9acfff85e8673d0a8e21",
+      "local_git_blob_sha": "7a7d67fe348fbe1cadf178d3901cfa04812039c1",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_protocol.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_protocol.py",
+      "local_bytes": 9495,
+      "local_sha256": "abc186c14d11cffbab2106eac44bd98a277c9900090902df01f80e32c6afc2d4",
+      "local_git_blob_sha": "5fa13770dd897933cf40f782a62e9bf9a3bac6a8",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_runner.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_runner.py",
+      "local_bytes": 4016,
+      "local_sha256": "b8b6b915cf985b412ab96e17c1c7ef60067c54fb104ade084fa51755b2301df5",
+      "local_git_blob_sha": "1c191f2f7b8fa4b8fda9f3cd8fce0f2989ed9190",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/model_summary.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/model_summary.py",
+      "local_bytes": 14360,
+      "local_sha256": "9731dd77f9d318fac7d1b44f571bd85bf3e33bf6240f898af9757a8001afe386",
+      "local_git_blob_sha": "dc3d3a14428d519bca77d4d68c9e11d2c08f4672",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/runtime.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/runtime.py",
+      "local_bytes": 12343,
+      "local_sha256": "af8b6cf4ed31cb6024c536771f056c5a3481902e011990ab70d43b8e961079a4",
+      "local_git_blob_sha": "8f7d69f50a4b3c3478cb2801f159f27453f20cc2",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8f7d69f50a4b3c3478cb2801f159f27453f20cc2"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "8f7d69f50a4b3c3478cb2801f159f27453f20cc2"
+      },
+      "old_new_repository_state_identical": true,
+      "status": "PRESENT_BOTH_BASES_EXACT_BYTES",
+      "capsule_import": false
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_audit.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_audit.py",
+      "local_bytes": 5444,
+      "local_sha256": "060d8e4b1e3a0cf959edc37b0d38c168abec635a021b85db8c280923eb332f52",
+      "local_git_blob_sha": "781e2d384484882cf3753f1b0774edb299a81d93",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_backend.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_backend.py",
+      "local_bytes": 2833,
+      "local_sha256": "f1bfe598bc420ba9ca5c5f8a87299ab395466f56d01c702200ad99ca93c3458a",
+      "local_git_blob_sha": "fea73e9e76da547315457a9947fc9e544f07b880",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_heads.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_heads.py",
+      "local_bytes": 2748,
+      "local_sha256": "c0e92b3bab6cf65ef198dd20683453997f84c096231818837d4d217d4f292bf2",
+      "local_git_blob_sha": "8e13d62d3cb8706746fd3044ff017677b70179a4",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_policy.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_policy.py",
+      "local_bytes": 3630,
+      "local_sha256": "be685843857b272206f247502037bd3d07b809b4a59af1bd140fd81ccecb5c37",
+      "local_git_blob_sha": "f185768f12121b1ee2073a7f85a34581e12c530c",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_protocol.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_protocol.py",
+      "local_bytes": 2118,
+      "local_sha256": "4b6189082f0894cc9ea55a6507df3f3d6ac1c08781aa240fcebf39da833f6fc6",
+      "local_git_blob_sha": "4f476804fd099d2b08578c57274c077a7e0b15f9",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    },
+    {
+      "path": "experiments/verification_cell_verify1/test_model_runner.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/native-bundle-verify-r2/verify/baseline/experiments/verification_cell_verify1/test_model_runner.py",
+      "local_bytes": 3347,
+      "local_sha256": "26ba3dca8e882f277429b2238a97e4d58dc23b4040fcbb102c07e5e2e8d21ff6",
+      "local_git_blob_sha": "857402ec130d76ef73021e5825d0e5958c1022d1",
+      "old_entry": null,
+      "new_entry": null,
+      "old_new_repository_state_identical": true,
+      "status": "ABSENT_BOTH_BASES_EXACT_CAPSULE_IMPORT_REQUIRED",
+      "capsule_import": true
+    }
+  ],
+  "scaffold_files": [
+    {
+      "path": "AGENTS.md",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "faa57cc0db48123e1011f1eb47692cd3bbbcfc3a"
+      },
+      "readback_sha256": "c3f80e8386eb170b00af1e21de40d770c4941e464915687e728e2d14a7e79480",
+      "readback_bytes": 22519,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/AGENTS.md"
+    },
+    {
+      "path": "justfile",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "a215a76cf407ace9715bca39c20497014e7dd4dc"
+      },
+      "readback_sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "readback_bytes": 7838,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/justfile"
+    },
+    {
+      "path": "scripts/format.py",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "d4eabe70b68605933240e9129245f7f4cccbde5d"
+      },
+      "readback_sha256": "8d93d7a6261bbe5f2b9fceea228154f0be29f721015d05b4f538c30076dd80b3",
+      "readback_bytes": 16599,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/scripts/format.py"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+      },
+      "readback_sha256": "444d6b328d44abf6453b77b6acce2a0c881fc162ff30b20f352c85067797fbe9",
+      "readback_bytes": 2030,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/scripts/just-shell.py"
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4340b6b78e83971e0032a7c90852f02791d3acbf"
+      },
+      "readback_sha256": "0b6799e50e7d0e58834615ccd885e23a78acd7b89f43f37b315cdb355cd05fc0",
+      "readback_bytes": 177,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/scripts/pyproject.toml"
+    },
+    {
+      "path": "scripts/uv.lock",
+      "old_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026"
+      },
+      "new_entry": {
+        "mode": "100644",
+        "type": "blob",
+        "sha": "6c0c3bd0810badf5f901317b61d642d1dc84e026"
+      },
+      "readback_sha256": "6b8e7a82d1a4f4c5d59ce57cf8be472ea031c6fb0a905506258d434132b3c99c",
+      "readback_bytes": 6220,
+      "byte_identical": true,
+      "readback_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/a6b174fa26e0d4f4870266ed0f65d96cb4cb3c02/scripts/uv.lock"
+    }
+  ],
+  "counts": {
+    "baseline": 18,
+    "published_exact_byte_matches": 4,
+    "absent_both_bases_requiring_capsule_import": 14,
+    "scaffold_exact_byte_matches": 6
+  },
+  "model_execution_identity": {
+    "source_commit": null,
+    "capsule_sha256": "a3f87c341f5b0acbd58af4719eda440bed7e6ffd762634601c8732bd81eafed3",
+    "manifest_sha256": "ad3ebffe2c6cf39f4c9158901a2b626d1d20c5c206498f0642a8cf50aea9f02d",
+    "later_import_is_historical_execution_commit": false
+  },
+  "evidence": {
+    "raw_readback_path": "/workspace/scratch/14afb8ae9d10/verify/base-drift-github-readback.json",
+    "raw_readback_sha256": "40f5c2a890488ed833343453d0786274e7f3913959101204d8ce6f7d1892d03e",
+    "review_script_sha256": "e6cac2333186d2970d273bab705fb3ea8fdaab08bfe2c0f0bcb9f3d51c08a120",
+    "tested_bundle_sha256": "3efee78c00b1a9df95ad68da8eda2d8692b922eaa70e6ab970bade7f121a0210",
+    "source_copy_sha256": "8e9bec9a1332129152e541c45b2beee263057a7a6dda05077a067b0d9c83dfec"
+  },
+  "conclusion": "PASS_SOURCE_EQUIVALENCE_FOR_DERIVED_PUBLICATION_PROJECTION",
+  "publication_conditions": [
+    "Preserve original TESTED_SOURCE, FINAL_SOURCE, VALIDATION, failure and command receipts with tested base 0c81508e; do not rewrite their historical base identity.",
+    "Create a derived publication projection whose base tree and sole publication parent is a6b174fa; retain both new documentation blobs exactly.",
+    "Record the old tested base and new publication base separately, bound to this review and to the original validation/final-source receipt hashes.",
+    "Import the exact historical capsule as a separate mechanical commit, then apply the already validated formatted gate files; neither commit becomes the historical executed-source commit.",
+    "Require all planned Python blobs to remain equal to validated final source or exact capsule imports. This review does not authorize any other source changes.",
+    "Immediately before publication, reread the base branch and require a6b174fa. If it moves again, stop and inspect the new diff.",
+    "Do not create a branch from the obsolete base to bypass the new documentation. Do not overwrite or reset the existing research branch.",
+    "No test rerun is inferred from source equivalence; no fresh model/scientific result is claimed. Scientific admission remains HOLD and production adoption NoUpdate."
+  ]
+}

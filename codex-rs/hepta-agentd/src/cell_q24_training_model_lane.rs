@@ -240,7 +240,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         )]
         let mut operation = source
             .as_ref()
-            .map(|source| crate::OriginalCellQ24TrainingSourceV1::begin_source_operation(source))
+            .map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)
             .transpose()
             .map_err(crate::CellQ24TrainingOwnerErrorV1::from)?;
         let original = owners.read_original_completion()?;

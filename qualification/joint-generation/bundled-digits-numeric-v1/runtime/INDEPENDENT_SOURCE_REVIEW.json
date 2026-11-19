@@ -1,0 +1,71 @@
+{
+  "review_type": "Independent SOURCE ONLY revised-freeze review",
+  "verdict": "PASS",
+  "freeze_sha256": "9f4953db9e05651997b7597e3acc8e08e462e4f674ab0f87a5d535fed054d54c",
+  "execution_admitted": false,
+  "scope": "Read frozen candidate and public design-v2/review only. Stdlib-only source/document hashing and runtime-path metadata inspection. No candidate import/execution, NumPy import/reference execution, data-path access, model initialization or training.",
+  "bindings": {
+    "all_frozen_candidate_files_match": true,
+    "design_review_sha256": "e838cc9f47e082f8aa244d4d2771193c60315e406985850a5fd775dd047b161a",
+    "runtime_manifest_paths": 1131,
+    "runtime_manifest_total_file_bytes_by_metadata": 104717314,
+    "runtime_install_hashes_recomputed": true,
+    "runtime_hash_mismatches": 0,
+    "prior_freeze_and_review_exact": true,
+    "all_revised_frozen_files_match": true,
+    "AST_parse_only_passed": true,
+    "cache_prefix_absent_at_review": true,
+    "RUN_ONCE_absent_at_review": true
+  },
+  "blocking_findings": [],
+  "source_findings": {
+    "architectures": "A/B 35658, C 36408, L 4810 match design-v2; 112534 initialized parameters total. C W1/b1 and A/B full initialization binding asserted.",
+    "streams": "Canonical v2 SHA256 top52 midpoint uniform, host binary64 Xavier/Box-Muller then float32 cast, fixed qualification701/epoch0 and synthetic64pixel formulas match specification. KAT literals present; no numerical run or new KAT computation done by reviewer.",
+    "backward": "Dense input and weight gradients retained for each affine, including first-layer dx and B zero-route matrix products. Softmax Jacobian product present. Float32 array arithmetic preserved.",
+    "reference": "Independent einsum/scalar binary64 forward-loss reference, no kernel import. 24 tensors x3 probes x4 perturbed forwards +4 baselines =292 calls; 72 probes.",
+    "optimizer": "Four model step1 Adam updates plus two two-element fixture updates, sampled72 model coordinates and4 fixture coordinates. Float32 scalar reference follows per-operator rounding.",
+    "counts": "16 float32 forwards,20 forward examples,4 backwards,8 backward examples,52/24 forward/backward matmuls,587152/445840 dense MACs coherent with source.",
+    "wire": "256-byte little-endian input, fixed10words,64 hex pixels; invalid size/nonfinite/range rejected. Direct comparison reuses kernel forward and is not an independently implemented numerical oracle. B replacements enforce exact output identity; A changes are descriptive only.",
+    "relu_risks": "Central differences may cross a ReLU kink; dual-epsilon agreement is a local numerical guard, not proof of differentiability. No source proof guarantees fixed probes pass. Any stability/gradient failure stops the attempt without tuning or replacement probes.",
+    "resources": "Supervisor/child hard CPU4s, AS256MiB each, FSIZE2MiB; child alarm30s and supervisor32s kill/reap. Single owned fork, inherited lock held through wait4 and inventory. Thread checks and audit hook are cooperative trusted-source constraints, not an OS sandbox or proof against transient native threads. Runtime hashing104717314 bytes is additional supervisor work and unmeasured fit risk.",
+    "outputs": "Revised fixed complete/partial witness schemas fit conservative237568-byte allowance below256KiB schema cap. Node20000/depth10/list128/dict64 type guards and fallback fail closed. RESULT plus bounded receipt remain below unchanged4MiB retained ceiling under trusted source, not a filesystem quota.",
+    "paths": "Runtime manifest paths restricted to installed interpreter/library roots; no real dataset/heldout/sourcegzip path opens in reviewed source. Original benchmark lock opened rb with fixed inode/device check. Admission and frozen input reads are explicit.",
+    "limits": "No parent-death immediate-child-kill guarantee; own child lifetime wait4 only if supervisor survives. Source/review/tool costs and final supervisor tail are unknown, nonzero. No success/feasibility/model-quality claim. Source/installation hash checks performed in reviewer process, additional unmeasured costs not charged as model worker lifetime."
+  },
+  "required_next_action": "Parent may admit exactly one bounded synthetic supervisor invocation with the required startup flags and absent cache prefix. SOURCE_PASS is source acceptance only, never TRAIN or data-access authority.",
+  "HOLD_NEW_TRAIN": "UNCHANGED",
+  "prior_review_sha256": "d1cb4e38a37c3f777760a414dc47dcdbb1f0a5e263fa68e2d6f1cca3e4d35698",
+  "resolved_findings": [
+    {
+      "id": "S01",
+      "disposition": "FD raw epsilon/plus/minus witnesses append before calls/assertions and include pending/pass/fail status. Model and micro Adam before/gradient/after/reference recorded before comparison; micro list linked to STATE. Finite and loss checks retain bounded diagnostic witnesses. Math, probes, tolerances and model work unchanged."
+    },
+    {
+      "id": "S02",
+      "disposition": "Exact absent BYTECODE_DISABLED prefix supplied via interpreter -X at startup for both processes, verified in each process. Parent must verify absence immediately before launch. -B prevents writes; worker audit rejects .pyc opens. Existing runtime caches are bypassed under trusted-workspace assumptions, not protected against concurrent hostile mutation. All1131 installed source/native hashes independently checked without imports and match."
+    },
+    {
+      "id": "S03",
+      "disposition": "Bounded recursive serialization maps nonfinite host floats to fixed explicit tags and forces failure; fallback small failure JSON declares lost witnesses. Fixed diagnostic lists/types are within depth/node/list bounds. Complete-schema conservative allowances total237568 bytes below262144, within unchanged2MiB file and4MiB total limits. Hard kills/write failures can still prevent RESULT and are never success."
+    }
+  ],
+  "launch_requirements": {
+    "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12",
+    "flags": [
+      "-I",
+      "-S",
+      "-B",
+      "-X",
+      "pycache_prefix=/workspace/scratch/4f754a4eb697/bundled-digits-numeric-candidate-v1/BYTECODE_DISABLED"
+    ],
+    "script": "run_once.py",
+    "preconditions": [
+      "Parent separately admits one invocation",
+      "Verify BYTECODE_DISABLED neither exists nor is symlink immediately before startup",
+      "No RUN_ONCE attempt exists",
+      "No edits after reviewed freeze"
+    ],
+    "note": "Earlier abbreviated PLAN command omits -X and will fail closed; only revised S02 command is accepted."
+  },
+  "numerical_claim": "No candidate import, NumPy import, reference run, initialization or numerical execution performed by reviewer. Source PASS predicts neither numerical pass nor resource fit. Fixed ReLU probes may fail; retain failures without tolerance/probe/workload tuning."
+}

@@ -8,8 +8,6 @@ Neither a pretrained Laya checkpoint, real Hepta production decision, learned
 continuous-time FBSDE, nor a live external task is used. PyTorch is optional.
 """
 
-from __future__ import annotations
-
 import argparse
 from dataclasses import dataclass
 from functools import lru_cache

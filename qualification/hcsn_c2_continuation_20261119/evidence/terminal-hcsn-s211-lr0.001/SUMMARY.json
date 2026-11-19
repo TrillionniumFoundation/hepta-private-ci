@@ -1,0 +1,90 @@
+{
+  "both_children_cost": {
+    "cpu_seconds": 8505.105180999999,
+    "sum_child_wall_seconds": 8623.391132543096,
+    "two_child_makespan_seconds": 5805.587805787043
+  },
+  "cost": {
+    "assigned_cpu": 0,
+    "cleanup_budget_overrun_wall_seconds": 0.0,
+    "cpu_system_seconds": 47.67217,
+    "cpu_total_seconds": 5721.835218,
+    "cpu_user_seconds": 5674.163048,
+    "dispatch_monotonic": 420378.574039716,
+    "exit_code": 0,
+    "external_stop": null,
+    "full_fresh_process_wall_seconds": 5805.587805787043,
+    "hard_killed": false,
+    "identity": "hcsn-c2-independent-continuation-20261119-d741-001-hcsn-s211-lr0.001",
+    "observed_memory_high_water_bytes": 3587870720,
+    "peak_rss_kib": 3503780,
+    "pid": 1036680,
+    "post_deadline_wall_scope": "May include in-flight compute and finalization; no extra scientific budget or qualification credit.",
+    "post_external_stop_wall_seconds": null,
+    "raw_wait_status": 0,
+    "result_error": null,
+    "result_sha256": "4d28b70f559134469ed8726747166284e875d5f5e5e30f5c65285cb44591928f",
+    "result_status": "BUDGET_STOP",
+    "rss_limit_exceeded": false,
+    "scientific_wall_budget_seconds": 6000,
+    "status": "REVIEWABLE_TERMINAL",
+    "stop_receipt_error": null,
+    "wait4_return_monotonic": 426184.161845503,
+    "wall_within_scientific_budget_seconds": 5805.587805787043
+  },
+  "partial_epoch": {
+    "batch_size": 32,
+    "complete_epoch": false,
+    "completed_effective_batches": 5,
+    "current_epoch": 147,
+    "episode_order_length": 356,
+    "micro_batch_size": 8,
+    "next_episode_offset": 160,
+    "saved_completed_objectives": 5
+  },
+  "result": {
+    "all_bound_inputs_unchanged": true,
+    "development_forwards_started": 88,
+    "frozen_initial_tensors_unchanged": true,
+    "last_complete_epoch": 146,
+    "logical_main_updates": 1757,
+    "new_micro_forwards_started": 924,
+    "new_optimizer_completed": 245,
+    "new_optimizer_started": 245,
+    "new_phase_cpu_seconds_before_exit": 5721.091855227,
+    "new_phase_wall_seconds_before_exit": 5804.781459016027,
+    "open_optimizer_completion_interval": [
+      0,
+      0
+    ],
+    "optimizer_completions_after_scientific_deadline": 0,
+    "scientifically_in_budget_optimizer_completions": 245,
+    "selected_development_complete": true,
+    "status": "BUDGET_STOP",
+    "stop_reason": "training boundary reserved for finalization",
+    "stopping": {
+      "best": 0.388353751030186,
+      "best_epoch": 144,
+      "plateau_anchor": 0.38698437025179494,
+      "stale_epochs": 8
+    },
+    "training_adequacy_established": false,
+    "training_end_new_phase_wall_seconds": 5703.109546249034
+  },
+  "selected_best_checkpoint": {
+    "epoch": 144,
+    "path": "/home/qian-qi/hepta-c2-continuation-20261119-d741/RUN_OUTPUT/hcsn-s211-lr0.001/checkpoints/epoch-0144.pt",
+    "sha256": "83f7b3148c10fa377feb9f4449ffa42a0b1679f073569f1886852d7eb82145c3"
+  },
+  "selected_development": {
+    "accuracy": 0.71457185778668,
+    "balanced_accuracy_present_classes": 0.3875948380341843,
+    "brier_half_sum": 0.21967211341202708,
+    "brier_mean_classes": 0.0399403842567322,
+    "ece_15_equal_width_bins": 0.11018863784089045,
+    "events": 31952,
+    "macro_f1_11_classes": 0.388353751030186,
+    "macro_f1_present_classes": 0.388353751030186,
+    "nll": 1.0103585569280256
+  }
+}

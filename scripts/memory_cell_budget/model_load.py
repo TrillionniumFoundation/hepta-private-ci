@@ -42,6 +42,7 @@ def continued_load(versions, queries, routes, records, ledger, args, directory):
                 event,
                 request,
                 implementation=args.implementation,
+                study=args.study,
                 directory=directory / event,
                 maximum_seconds=60,
             )

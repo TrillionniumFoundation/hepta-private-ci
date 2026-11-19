@@ -1,0 +1,24 @@
+{
+  "H3_cpu_cap_seconds": 30.0,
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "training_diagnostics/dynamic-h2/run_once.py",
+    "--experiment",
+    "h3",
+    "--freeze",
+    "training_diagnostics/dynamic-h3/frozen-h3.json"
+  ],
+  "completed_utc": "2026-10-23T16:22:59.389263+00:00",
+  "cumulative_H2_H3_research_cpu_ns_before_receipt": 1326427460,
+  "full_worker_and_descendant_cpu_ns": 784206000,
+  "launcher_own_cpu_ns_before_receipt": 22962997,
+  "outer_cpu_cap_pass": true,
+  "overall_exit_code": 1,
+  "prior_H2_startup_research_cpu_ns": 519258463,
+  "schema": "hepta.h3-outer-execution.v1",
+  "scope": "Sole registered H3 TRAIN wave. Prior H2 startup failure retained separately and cumulatively, never refunded. No fit, selection, formal evaluation or retries. Final outer-receipt serialization tiny remainder not a model budget credit.",
+  "started_utc": "2026-10-23T16:22:58.602581+00:00",
+  "total_H3_research_cpu_ns_before_receipt": 807168997,
+  "wall_ns": 786689283,
+  "worker_exit_code": 1
+}

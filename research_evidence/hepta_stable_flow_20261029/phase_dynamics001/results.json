@@ -1,0 +1,97 @@
+{
+  "interpretation": "Hand-selected bounded parameters demonstrate regime capacity only. Threshold crossings are continuous; no hard reset, event sparsity, biological spike fit, or trained task improvement is established.",
+  "protocol_sha256": "1dcd5c2e68da70f9ba69c9df399a2e1444027d30dbf90b88be66ed6f636e05bf",
+  "raw_arrays_sha256": "134944430f40a256b3291129f4b43ef3195b4696c9c94978930b6fe9ca82e3a2",
+  "rows": [
+    {
+      "case": "restoring",
+      "determinant": 0.16666666666666669,
+      "eigenvalues": [
+        [
+          -0.20833333333333331,
+          0.3510895738823483
+        ],
+        [
+          -0.20833333333333331,
+          -0.3510895738823483
+        ]
+      ],
+      "jacobian": [
+        [
+          -0.25,
+          -1.0
+        ],
+        [
+          0.125,
+          -0.16666666666666666
+        ]
+      ],
+      "mean_peak_interval": null,
+      "put_recovery_gain": 1.5,
+      "tail_margin_peak_to_peak": 1.4364470724004264e-09,
+      "tail_peak_times": [],
+      "trace": -0.41666666666666663
+    },
+    {
+      "case": "restoring",
+      "internal_step": 0.0625,
+      "reference_gate_passed": true,
+      "scaled_max_state_error": 2.410000590611458e-06
+    },
+    {
+      "case": "restoring",
+      "internal_step": 0.03125,
+      "reference_gate_passed": true,
+      "scaled_max_state_error": 6.097673298714651e-07
+    },
+    {
+      "case": "regenerative_recovery",
+      "determinant": 0.16666666666666669,
+      "eigenvalues": [
+        [
+          0.16666666666666666,
+          0.37267799624996495
+        ],
+        [
+          0.16666666666666666,
+          -0.37267799624996495
+        ]
+      ],
+      "jacobian": [
+        [
+          0.5,
+          -1.0
+        ],
+        [
+          0.25,
+          -0.16666666666666666
+        ]
+      ],
+      "mean_peak_interval": 15.075,
+      "put_recovery_gain": 3.0,
+      "tail_margin_peak_to_peak": 0.8960043458093794,
+      "tail_peak_times": [
+        99.875,
+        114.875,
+        130.0,
+        145.125,
+        160.125,
+        175.25
+      ],
+      "trace": 0.33333333333333337
+    },
+    {
+      "case": "regenerative_recovery",
+      "internal_step": 0.0625,
+      "reference_gate_passed": false,
+      "scaled_max_state_error": 0.013316404880515
+    },
+    {
+      "case": "regenerative_recovery",
+      "internal_step": 0.03125,
+      "reference_gate_passed": true,
+      "scaled_max_state_error": 0.0033862762501374734
+    }
+  ],
+  "status": "complete"
+}

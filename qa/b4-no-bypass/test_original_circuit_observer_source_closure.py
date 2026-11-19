@@ -20,15 +20,17 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "circuit_next_use_receipt_owner.rs"
-READERS = ('codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs',
- 'codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs',
- 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_source.rs',
- 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_training_operation.rs',
- 'codex-rs/hepta-agentd/src/circuit_next_use_receipt_owner.rs',
- 'codex-rs/hepta-agentd/src/circuit_selection_receipt_owner.rs',
- 'codex-rs/hepta-agentd/src/cell_q24_training_source.rs',
- 'codex-rs/hepta-agentd/src/circuit_model_selection_receipt_sources.rs',
- 'codex-rs/hepta-agentd/src/neuron_cell_evaluation_qualification_sources.rs')
+READERS = (
+    AGENT + "learning_iteration_evaluation_evidence.rs",
+    AGENT + "learning_iteration_generation_evidence.rs",
+    AGENT + "neuron_cell_evaluation_training_source.rs",
+    AGENT + "neuron_cell_evaluation_training_operation.rs",
+    OWNER,
+    AGENT + "circuit_selection_receipt_owner.rs",
+    AGENT + "cell_q24_training_source.rs",
+    AGENT + "circuit_model_selection_receipt_sources.rs",
+    AGENT + "neuron_cell_evaluation_qualification_sources.rs",
+)
 FUNCTIONS = {
     "fn create(", "fn recover(", "fn validate_config(", "fn prepare(",
     "fn attest_source(", "fn readback_source(", "fn predecessors(",
@@ -120,10 +122,19 @@ class OriginalCircuitObserverSourceClosureTests(unittest.TestCase):
         functions = self.rows[0]["required_function_order"]
         self.assertEqual({row["function"] for row in functions}, FUNCTIONS)
         self.assertGreater(sum(len(row["sequence"]) for row in functions), 100)
+        code = PROOF._strip_cfg_test_items(PROOF._strip_rust_non_code(self.source))
+        self.assertEqual(len(code), len(self.source))
         for row in functions:
+            self.assertEqual(code.count(row["function"]), 1, row["function"])
+            cursor = code.index(row["function"])
+            end = PROOF._rust_item_end(code, cursor)
+            self.assertIsNotNone(end)
             for marker in row["sequence"]:
                 with self.subTest(function=row["function"], marker=marker):
-                    self.mutate_function(row["function"], marker)
+                    # Delete the ordered obligation, not an earlier recovery call.
+                    offset = code.index(marker, cursor, end + 1)
+                    self.rejects(self.source[:offset] + self.source[offset + len(marker):])
+                    cursor = offset + len(marker)
 
     def test_configuration_and_physical_read_guards_cannot_be_dead_branches(self):
         for function in ("fn create(", "fn recover("):

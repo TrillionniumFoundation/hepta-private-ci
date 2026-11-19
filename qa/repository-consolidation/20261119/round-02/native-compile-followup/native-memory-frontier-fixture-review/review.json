@@ -1,0 +1,37 @@
+{
+  "schema": "hepta.native-memory-fixture-authority-frontier.v1",
+  "base": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/native_memory_current_test_support.rs",
+      "before_sha256": "3618a782a02a270fe36bbb74ef971bf704f3121be6911d3af057a03d9160f499",
+      "after_sha256": "e67d6805f2883a0c61d5937326dfb08295660e59f67fd1ba1dcc0fa04d9a526e",
+      "exact_canonical_source_after_inverse": true
+    }
+  ],
+  "cause": "Fixture context used an arbitrary digest unrelated to its actual FinalUseAuthority revocation head. Three signed mutations run before the first signed read-feed update; production mutation admission now enforces exact claimed/current frontier equality. Therefore construction fails before trust-revocation behavior is exercised.",
+  "repair": "Initialize the fixture NDU context from the actual same authority revocation_head_sha256, using the existing fallible public read. This is the construction already used by hepta-ndu owner_tests.",
+  "unchanged": [
+    "All native-memory current-context tests and assertions, including objective cancellation and same-key trust revocation",
+    "CurrentFixture::trust epoch/revoked parameters and file schema",
+    "Production NDU claimed-token/current-frontier comparisons",
+    "Signed feed verification, initial revision 1 and later revision 2/3",
+    "All production guard and caller allowlists"
+  ],
+  "unchanged_source_sha256": {
+    "codex-rs/hepta-agentd/src/native_memory_current_tests.rs": "6ab143cc53d75b34920b46d02a03dfc908d4088638eb9bda0740293d3fa3c08a",
+    "codex-rs/hepta-agentd/src/objective_runtime_current_tests.rs": "c3defdd8fbe7b0fea9b25ab56bf463c29fd000c63f8a76f5b00cb5e411e7cec3",
+    "codex-rs/hepta-ndu/src/owner.rs": "0cb8f4f4483379fca308ec04a53ebfa5de8712d8b4b71a49c1da3cd2944eb386",
+    "codex-rs/hepta-ndu/src/owner_current.rs": "cff2e3427eefe42d6fd270dcbc03a9df3f030464e4310bcf5b02b3d3aca1bbc5",
+    "codex-rs/hepta-ndu/src/owner_tests.rs": "b5599af923953a0b0f55aef4017e4e55cc35eb6b79630cb94e5393fa2bf93e62"
+  },
+  "consumer_census": "Agentd test source has one NduOwnerContextV1 initializer, in this helper; all existing native-memory fixture consumers get the actual initial frontier.",
+  "protected_file_rows": [],
+  "boundary_rows_mentioned": [],
+  "validation": {
+    "scoped_rustfmt": "PASS",
+    "source_inverse": "PASS",
+    "native_failure": "Actual GNU ROG test emitted RevocationFrontierMismatch before positive test completion.",
+    "native_followup": "Pending CI agent; request entire native_memory_current_tests group, retaining original assertions."
+  }
+}

@@ -31,6 +31,9 @@ use super::AgentdState;
 use super::poisoned_state;
 use super::run_error;
 
+#[path = "state_run_reconciliation.rs"]
+mod run_reconciliation;
+
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
     "this Agent's private automation storage is unavailable";
@@ -713,6 +716,18 @@ impl AgentdState {
                 AgentdPayload::RunReceipt(wire_run_receipt(receipt))
             }
             crate::AgentdMethod::RunStatus { run_id } => self.run_status_payload(run_id)?,
+            crate::AgentdMethod::RunMarkBoundDispatched { binding } => {
+                self.run_mark_bound_dispatched_payload(binding)?
+            }
+            crate::AgentdMethod::RunCancelBound { binding, reason } => {
+                self.run_cancel_bound_payload(binding, reason)?
+            }
+            crate::AgentdMethod::RunObserveBoundTerminal { observation } => {
+                self.run_observe_bound_terminal_payload(observation)?
+            }
+            crate::AgentdMethod::RunReconciliationState { run_id } => {
+                self.run_reconciliation_state_payload(run_id)?
+            }
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
@@ -804,7 +819,7 @@ impl AgentdState {
                         store,
                         &intent,
                         &wire_payload,
-                        &signed_grant,
+                        signed_grant.as_ref(),
                         &command_id,
                         now_ms()?,
                     )

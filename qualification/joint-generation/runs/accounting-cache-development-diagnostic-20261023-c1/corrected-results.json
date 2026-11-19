@@ -1,0 +1,336 @@
+{
+  "claims_excluded": [
+    "whole-build speedup",
+    "qualification pass",
+    "content/utility improvement",
+    "root cause of T7 slowdown",
+    "claim that thread settings caused original mixed timings"
+  ],
+  "cold_start_scope": "Only 256 quoted ledger admissions or 256 real S objective/forward/backward/Adam updates are timed. Process startup, imports, seven-stage reconstruction, random inputs, model construction, receipts and equality checks are outside timers. There is no warmup; first-use effects remain in the fixed order.",
+  "fixture_stage_count_before": 7,
+  "fixture_total_counter_count_before": 35,
+  "iterations": {
+    "full_update": 256,
+    "ledger_only": 256
+  },
+  "observed_process_threads_after_import": 1,
+  "pairs": [
+    {
+      "cpu_saved_ns": 1832722,
+      "cpu_saving_fraction": 0.17622264228483034,
+      "kind": "ledger_only",
+      "new": {
+        "cpu_ns": 8567315,
+        "wall_ns": 8567155
+      },
+      "old": {
+        "cpu_ns": 10400037,
+        "wall_ns": 10399998
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 1,
+      "receipts": {
+        "new": {
+          "file": "receipts/ledger_only-p1-new.json",
+          "sha256": "3bc971f36d74be18044cfc86be1cbe826c36e50e7e5c5e7e43f2c26b3786812d"
+        },
+        "old": {
+          "file": "receipts/ledger_only-p1-old.json",
+          "sha256": "01d8189bc5e273493c4e89ea1f5edab514c73121fef28253f973ad63a55f1c2c"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 1780447,
+      "cpu_saving_fraction": 0.14494737329712296,
+      "kind": "ledger_only",
+      "new": {
+        "cpu_ns": 10502956,
+        "wall_ns": 10503166
+      },
+      "old": {
+        "cpu_ns": 12283403,
+        "wall_ns": 12293742
+      },
+      "order": [
+        "new",
+        "old"
+      ],
+      "pair": 2,
+      "receipts": {
+        "new": {
+          "file": "receipts/ledger_only-p2-new.json",
+          "sha256": "42ab744be581170b20d606076ab639acad98ff1029d11b9e9dac44abd2326fd0"
+        },
+        "old": {
+          "file": "receipts/ledger_only-p2-old.json",
+          "sha256": "a9d5599faad50e31747d80e33d909e12716c59bee2e14f197ef60ae50f724677"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 2031311,
+      "cpu_saving_fraction": 0.17851798620709292,
+      "kind": "ledger_only",
+      "new": {
+        "cpu_ns": 9347436,
+        "wall_ns": 9377638
+      },
+      "old": {
+        "cpu_ns": 11378747,
+        "wall_ns": 11378589
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 3,
+      "receipts": {
+        "new": {
+          "file": "receipts/ledger_only-p3-new.json",
+          "sha256": "e2e29f63c8c0f327bdf9efee4d8ae8ae5ec6fcd637f8f29dcb4071a48f644736"
+        },
+        "old": {
+          "file": "receipts/ledger_only-p3-old.json",
+          "sha256": "c4eda0822c87547b1240c25d78e5fc4d59b6bb0c3545c57e09603e384c9daa1a"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": -1552447,
+      "cpu_saving_fraction": -0.14438636860582552,
+      "kind": "ledger_only",
+      "new": {
+        "cpu_ns": 12304480,
+        "wall_ns": 12304154
+      },
+      "old": {
+        "cpu_ns": 10752033,
+        "wall_ns": 10752196
+      },
+      "order": [
+        "new",
+        "old"
+      ],
+      "pair": 4,
+      "receipts": {
+        "new": {
+          "file": "receipts/ledger_only-p4-new.json",
+          "sha256": "b7aac8ed0793db4f53cc4e9b4913780337f92b1234efd7abf9d38b4f8bc382b6"
+        },
+        "old": {
+          "file": "receipts/ledger_only-p4-old.json",
+          "sha256": "cdde8c5f34fd1b816eaa792ecb2316e31235cd9986989fc39cd232d7bc901da0"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 1662686,
+      "cpu_saving_fraction": 0.15541374268363572,
+      "kind": "ledger_only",
+      "new": {
+        "cpu_ns": 9035763,
+        "wall_ns": 9036733
+      },
+      "old": {
+        "cpu_ns": 10698449,
+        "wall_ns": 10699093
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 5,
+      "receipts": {
+        "new": {
+          "file": "receipts/ledger_only-p5-new.json",
+          "sha256": "5d417ef49b1297cde128a066b6454d531b456de2408929bb108fc4a4d5d44056"
+        },
+        "old": {
+          "file": "receipts/ledger_only-p5-old.json",
+          "sha256": "37d373f7738446ef835083588f218f14733e1ab3356f45c8b92f07dd3e8c66fa"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": -2421018,
+      "cpu_saving_fraction": -0.017540008037045786,
+      "kind": "full_update",
+      "new": {
+        "cpu_ns": 140449347,
+        "wall_ns": 140458583
+      },
+      "old": {
+        "cpu_ns": 138028329,
+        "wall_ns": 138028671
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 1,
+      "receipts": {
+        "new": {
+          "file": "receipts/full_update-p1-new.json",
+          "sha256": "5305c4fedfa9263a6853d1713de19fbef496c065704c748177d1e4835a46afe3"
+        },
+        "old": {
+          "file": "receipts/full_update-p1-old.json",
+          "sha256": "03b59f380d7bc0656a5c9c3c4500948a1023c663f44c4cdc869d4f4ae7bb2a6e"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 21393228,
+      "cpu_saving_fraction": 0.14797750870978046,
+      "kind": "full_update",
+      "new": {
+        "cpu_ns": 123177580,
+        "wall_ns": 123177650
+      },
+      "old": {
+        "cpu_ns": 144570808,
+        "wall_ns": 146078596
+      },
+      "order": [
+        "new",
+        "old"
+      ],
+      "pair": 2,
+      "receipts": {
+        "new": {
+          "file": "receipts/full_update-p2-new.json",
+          "sha256": "fbcc1020ad6ab6d94b505bea245b54003d5e0cb1b50372a18a7de4de35f6701d"
+        },
+        "old": {
+          "file": "receipts/full_update-p2-old.json",
+          "sha256": "3dcdd8fac26d44633e4b42b2118ed9a55f07079d6929eaa8e1464ecd3d0739a1"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": -36573895,
+      "cpu_saving_fraction": -0.24583578565999328,
+      "kind": "full_update",
+      "new": {
+        "cpu_ns": 185347577,
+        "wall_ns": 185348003
+      },
+      "old": {
+        "cpu_ns": 148773682,
+        "wall_ns": 149014073
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 3,
+      "receipts": {
+        "new": {
+          "file": "receipts/full_update-p3-new.json",
+          "sha256": "04271b6f4fe1420613c8375e022c381bcdd2ae0ffe32f5ffb57665f3e735df65"
+        },
+        "old": {
+          "file": "receipts/full_update-p3-old.json",
+          "sha256": "3278540e8c7c000aef5540f522b2793a0126efe70c6d24acb8e9753aa1169944"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 13168804,
+      "cpu_saving_fraction": 0.0923149793879153,
+      "kind": "full_update",
+      "new": {
+        "cpu_ns": 129481978,
+        "wall_ns": 129530196
+      },
+      "old": {
+        "cpu_ns": 142650782,
+        "wall_ns": 143281873
+      },
+      "order": [
+        "new",
+        "old"
+      ],
+      "pair": 4,
+      "receipts": {
+        "new": {
+          "file": "receipts/full_update-p4-new.json",
+          "sha256": "bbafe2fb8a3102cbecf644e8cdd228c59df7aff01f0b689ed80017476953e7ee"
+        },
+        "old": {
+          "file": "receipts/full_update-p4-old.json",
+          "sha256": "c0e2ef6ee85183e8d2104f260324ec09adeb2b1f754acdc92ab816e0baa8f9d1"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    },
+    {
+      "cpu_saved_ns": 5499807,
+      "cpu_saving_fraction": 0.04121196966482778,
+      "kind": "full_update",
+      "new": {
+        "cpu_ns": 127951883,
+        "wall_ns": 127953043
+      },
+      "old": {
+        "cpu_ns": 133451690,
+        "wall_ns": 133452218
+      },
+      "order": [
+        "old",
+        "new"
+      ],
+      "pair": 5,
+      "receipts": {
+        "new": {
+          "file": "receipts/full_update-p5-new.json",
+          "sha256": "9cad050a45c5856301dcdfb459ca280ecfe877c7d3b15108279fa43f23517f9c"
+        },
+        "old": {
+          "file": "receipts/full_update-p5-old.json",
+          "sha256": "35de94ddb028bc3bb6d43a3d710b442a260592e42463b7334b60dbb4ae6dd3ac"
+        }
+      },
+      "snapshots_params_adam_losses_updates_bitwise_equal": true
+    }
+  ],
+  "protocol_sha256": "03253f1bb00a69aeccf5bb109522c7442c647d29bc0dd8505439404071cd585a",
+  "qualification": false,
+  "schema": "hepta.corrected-accounting-development-diagnostic.v1",
+  "summary": {
+    "full_update": {
+      "median_new_cpu_ns": 129481978,
+      "median_old_cpu_ns": 142650782,
+      "median_paired_cpu_saving_fraction": 0.04121196966482778,
+      "negative_cpu_pairs": [
+        1,
+        3
+      ]
+    },
+    "ledger_only": {
+      "median_new_cpu_ns": 9347436,
+      "median_old_cpu_ns": 10752033,
+      "median_paired_cpu_saving_fraction": 0.15541374268363572,
+      "negative_cpu_pairs": [
+        4
+      ]
+    }
+  },
+  "thread_environment": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  }
+}

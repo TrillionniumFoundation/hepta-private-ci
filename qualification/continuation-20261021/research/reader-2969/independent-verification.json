@@ -1,0 +1,112 @@
+{
+  "schema": "hepta.reader-artifact-independent-check.v1",
+  "workflow_run": 39524743076,
+  "job": 118976636455,
+  "artifact_id": 12312374935,
+  "source_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+  "artifact_sha256": "beb82b997808c7e2d158fa51d711fb04259069480c891f16a67f8627bce5210d",
+  "verified_new_hosted_predict_calls": 64,
+  "unique_registered_cases": 16,
+  "rows_per_arm": {
+    "distractor": 16,
+    "full": 16,
+    "none": 16,
+    "withheld": 16
+  },
+  "source_files_verified": {
+    "docs/learning/NDU_FBSDE_SPEC.md": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+    "docs/learning/NEURAL_BIOMIMICRY_SPEC.md": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+    "docs/modules/automation.taskflow/TECHNICAL.md": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+    "docs/modules/inference.control/TECHNICAL.md": "fbaed3bc0efa82d3f7a8038c4abeb1a10426a412",
+    "codex-rs/hepta-ndu/src/recursive.rs": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+    "docs/readiness/NDU_SYSTEM_EXECUTION.md": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b"
+  },
+  "manifest_sha256": "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89",
+  "source_dataset_base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+  "model_repo": "convaiinnovations/laya",
+  "model_revision": "c5d78730f3493e4fe16d61507ef4b78eef7318cf",
+  "reported_model_snapshot_sha256": "94fe55dd163eedcb9b0c3e167e4afe87ab13cc8daf39b299f880ada2860e5d5a",
+  "recomputed_metrics": {
+    "none": {
+      "top1_gold_fraction": 0.4375,
+      "abstention_fraction": 0.125,
+      "evidence_condition_accuracy": 0.125,
+      "multiclass_brier_evidence_target": 0.8939312625,
+      "mean_reported_probability_expected_answer": 0.1924625,
+      "unsupported_assertion_fraction": 0.875,
+      "reported_confidence_correctness_mse_diagnostic": 0.38078849375,
+      "p50_wall_ms": 911.97155,
+      "p95_wall_ms": 978.66858,
+      "mean_input_characters": 817,
+      "mean_reported_input_tokens": 167.6875
+    },
+    "distractor": {
+      "top1_gold_fraction": 0.3125,
+      "abstention_fraction": 0.375,
+      "evidence_condition_accuracy": 0.375,
+      "multiclass_brier_evidence_target": 0.7582478375,
+      "mean_reported_probability_expected_answer": 0.23893124999999998,
+      "unsupported_assertion_fraction": 0.625,
+      "reported_confidence_correctness_mse_diagnostic": 0.261429138125,
+      "p50_wall_ms": 1008.99103,
+      "p95_wall_ms": 1179.35682,
+      "mean_input_characters": 904.4375,
+      "mean_reported_input_tokens": 191.4375
+    },
+    "withheld": {
+      "top1_gold_fraction": 0.5625,
+      "abstention_fraction": 0.125,
+      "evidence_condition_accuracy": 0.125,
+      "multiclass_brier_evidence_target": 0.8374884375,
+      "mean_reported_probability_expected_answer": 0.21210625,
+      "unsupported_assertion_fraction": 0.875,
+      "reported_confidence_correctness_mse_diagnostic": 0.477627114375,
+      "p50_wall_ms": 1028.72923,
+      "p95_wall_ms": 1184.51605,
+      "mean_input_characters": 947.3125,
+      "mean_reported_input_tokens": 197.6875
+    },
+    "full": {
+      "top1_gold_fraction": 1,
+      "abstention_fraction": 0,
+      "evidence_condition_accuracy": 1,
+      "multiclass_brier_evidence_target": 0.30251311875,
+      "mean_reported_probability_expected_answer": 0.53575625,
+      "unsupported_assertion_fraction": 0,
+      "reported_confidence_correctness_mse_diagnostic": 0.633637719375,
+      "p50_wall_ms": 1138.199795,
+      "p95_wall_ms": 1385.13967,
+      "mean_input_characters": 1052.375,
+      "mean_reported_input_tokens": 219.5625
+    }
+  },
+  "runtime": {
+    "laya_version": "0.3.20",
+    "match_count": 1,
+    "patch_id": "torch-cutedsl-cse-two-args-v1",
+    "patch_path": "_inductor/codegen/cutedsl/cutedsl_kernel.py",
+    "patched_sha256": "7c8094f25f41c42df4438a394c56de8e380974690454d4518624234933de304f",
+    "production_selection_authority": false,
+    "python_version": "3.12.3",
+    "runtime_kind": "real_reader_cpu",
+    "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+    "source_sha256": "bf60bb964eb96f78131f5344a48eff99adf6be03369226234530bb8b8a0b297b",
+    "torch_version": "2.11.0+cpu",
+    "transformers_version": "4.57.6"
+  },
+  "posture": {
+    "production_selection_authority": false,
+    "statistical_qualification": false,
+    "independent_heldout_calibration": false
+  },
+  "limitations": [
+    "Registered repository diagnostic cases are not newly independent source families or future-window samples",
+    "One answer presentation; position-counterbalanced diagnostics were not run",
+    "Hosted runtime emitted an invalid-temperature/clamping warning; confidence is not certified calibrated",
+    "Retained rows do not include the complete class probability vector; aggregate Brier values are recomputed from retained per-row scores, not from original vectors",
+    "No weights or individual checkpoint-file inventory retained here; the observed fingerprint cannot be independently recomputed from these non-weight artifacts",
+    "No FLOPs, energy, full peak memory, complete checkpoint/resource/calibration join, or production acceptance is supplied",
+    "These are 64 Laya Reader calls, separate from historical Qwen Memory 40+72"
+  ],
+  "local_model_calls_by_this_verifier": 0
+}

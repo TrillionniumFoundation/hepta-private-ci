@@ -1,0 +1,66 @@
+{
+  "schema": "mem8.code-mode-host.startup-diagnostics.recovered-publication.v1",
+  "base": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "scope": "Two test fixture files only; separate from qualified 69-path source capsule.",
+  "status": "diagnostic_candidate_unformatted_and_uncompiled",
+  "actual_created_source_blobs": [
+    {
+      "path": "codex-rs/code-mode-host/tests/support/host.rs",
+      "preimage_git_blob": "ed2a8cfdd082c4a2564e3ac4d8824a81cccf0ab4",
+      "postimage_git_blob": "395bb83307ed0503da6f7a456d5615489a87353d",
+      "postimage_bytes": 5682,
+      "postimage_sha256": "206d5601e87d64ca858c3ac567850b07233894bf27a836f5776e906d84db6162",
+      "mode_policy": "preserve existing exact-base Git tree mode"
+    },
+    {
+      "path": "codex-rs/code-mode-host/tests/grpc_tcp.rs",
+      "preimage_git_blob": "b15699b9447a733989567daf593230cf0ad4c007",
+      "postimage_git_blob": "1ae86e08f5268ff9dcf4f24764009a2c5b0ba0cb",
+      "postimage_bytes": 5809,
+      "postimage_sha256": "6bb8d2617b93643fd1e5e7c6b5f696415bd1d5cb048bdd313a625ba38fb2e4a2",
+      "mode_policy": "preserve existing exact-base Git tree mode"
+    }
+  ],
+  "recovery": {
+    "local_environment_unavailable": true,
+    "method": "Fetched both full exact2ae preimages and reapplied the complete previously executed construction text; independently verified UTF-8 byte count, SHA256 and Git blob identity against all original pre-loss postimage hashes before create_blob.",
+    "postimages_byte_identical_to_original_local_candidate": true,
+    "patch": "New deterministic complete unified diff generated from the verified original preimages and recovered postimages; not claimed to preserve the original local patch-file bytes.",
+    "original_pre_loss_patch_sha256": null,
+    "local_original_manifest_byte_recovery_claim": false
+  },
+  "patch": {
+    "bytes": 5965,
+    "sha256": "08271b200f4fde0a1e09faaa8f7035249d2bb658885d4c6810f2c3a4fab1a225",
+    "git_blob": "17285619dee1fac7a1e959e9c84a321214d44d38"
+  },
+  "peer_review_blob": "6bb26191410fc4af9796e976b54b554bf3b2163d",
+  "bounds": {
+    "stderr_max_bytes": 8192,
+    "stderr_max_poll_calls": 16,
+    "max_bytes_per_read": 512,
+    "additional_wait_seconds": 0,
+    "transport_or_test_retries": 0,
+    "original_endpoint_wait_seconds": 10
+  },
+  "preserved": [
+    "first stdout line handling including original standalone read_line Ok(0) behavior",
+    "all original endpoint and response assertions",
+    "same child owner and kill_on_drop policy",
+    "original error chain, with an added fixed-field outer context",
+    "successful startup leaves original stderr handle untouched"
+  ],
+  "privacy": {
+    "raw_stderr_exported": false,
+    "arbitrary_environment_exported": false,
+    "paths_or_argv_exported": false,
+    "only_fixed_substring_markers_and_nonblocking_status_reported": true
+  },
+  "limits": [
+    "No formatter or native test has executed for these postimages.",
+    "The original 29 endpoint failures are not declared fixed.",
+    "not_ready and zero captured bytes do not establish an empty original stderr stream.",
+    "Fixed marker presence is a substring observation, not a root-cause determination."
+  ],
+  "remote_refs_modified": false
+}

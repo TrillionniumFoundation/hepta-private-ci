@@ -278,7 +278,7 @@ where
         .consume_paired(plan)
         .map_err(PairedEvaluationError::Holdout)?;
     let (data, observer_outcomes) =
-        holdout_release::release_original_paired_holdout(owner, plan, &holdout, provider)?;
+        holdout_release::release_original_frozen_paired_holdout(owner, plan, &holdout, provider)?;
     if &data.manifest != manifest {
         return Err(invalid("released manifest changed"));
     }

@@ -8,6 +8,11 @@ on:
         type: boolean
         required: true
         default: false
+      accept_model_terms:
+        description: "Run the pinned SmolLM2-135M-Instruct default-daemon checkpoint study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -35,6 +40,37 @@ jobs:
           ref: ${{ env.CANDIDATE_SHA }}
           persist-credentials: false
           fetch-depth: 0
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
       - name: Bind source and new evidence paths
         shell: bash
         run: |
@@ -88,13 +124,15 @@ jobs:
           mkdir -m 700 "$HEPTA_NATIVE_MEMORY_PROCESS_ROOT"
           python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/process-negative-test" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-agentd --test native_memory_process --retries 0 -E 'test(default_daemon_current_process_refuses_pin_drift_and_revoked_read_without_model)'
       - name: Install pinned CPU model runtime
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         shell: bash
         run: |
           set -euo pipefail
-          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-torch.log"
           python -m pip install 'transformers==4.57.1' 'peft==0.17.1' 'tokenizers==0.22.2' 'safetensors==0.6.2' 'numpy==1.26.4' 'huggingface-hub==0.35.3' 'accelerate==1.10.1' 2>&1 | tee "$NATIVE_ARTIFACT_ROOT/install-runtime.log"
           python -m pip freeze > "$NATIVE_ARTIFACT_ROOT/runtime-freeze.txt"
       - name: Recover the exact previously qualified checkpoint without training
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -102,12 +140,14 @@ jobs:
           set -euo pipefail
           python -I -B scripts/memory_cell_native/current/native_process_restore.py --repo "$GITHUB_WORKSPACE" --base "$RUNNER_TEMP/hepta-native-process-base" --out "$NATIVE_ARTIFACT_ROOT/restored" --download-to "$RUNNER_TEMP/native-memory-40188170696-1.zip" --acquire-base
       - name: Register the only new decoder query before execution
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         shell: bash
         run: |
           set -euo pipefail
           mkdir -m 700 /tmp/hmp
           python -I -B scripts/memory_cell_native/current/native_process_ci.py prepare --repo "$GITHUB_WORKSPACE" --prior-config "$NATIVE_ARTIFACT_ROOT/restored/rebased-prior-config.json" --training-run "$NATIVE_ARTIFACT_ROOT/restored/run/trial" --source-document "$NATIVE_ARTIFACT_ROOT/restored/run/trial/source_document.json" --out "$NATIVE_ARTIFACT_ROOT/positive" --fixture-root /tmp/hmp/positive --source-profile committed --expected-head "$CANDIDATE_SHA" --allow-runtime-refresh
       - name: One decoder query through the actual default daemon and real controlled issuer
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         shell: bash
         env:
           HEPTA_NATIVE_MEMORY_PROCESS_ROOT: /tmp/hmp
@@ -117,6 +157,7 @@ jobs:
           export HEPTA_NATIVE_MEMORY_PROCESS_SOURCE_DOCUMENT="$NATIVE_ARTIFACT_ROOT/restored/run/trial/source_document.json"
           python -I -B scripts/memory_cell_native/current/native_process_command.py --repo "$GITHUB_WORKSPACE" --out "$NATIVE_ARTIFACT_ROOT/process-positive-test" --expected-head "$CANDIDATE_SHA" -- just test --locked -p codex-hepta-agentd --test native_memory_process --run-ignored only --retries 0 -E 'test(pretrained_default_daemon_current_process_delivers_once_then_refuses_revocation)'
       - name: Join raw process, delivery, revocation, Drain and restart evidence
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         shell: bash
         run: |
           set -euo pipefail
@@ -161,5 +202,13 @@ jobs:
           name: native-process-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/hepta-native-process-artifacts
           include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
           if-no-files-found: error
           retention-days: 14

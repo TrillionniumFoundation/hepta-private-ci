@@ -1,0 +1,89 @@
+{
+  "attempt": 1,
+  "boundary": "Additive offline checks on the original three JUnit/raw pairs. No result or source byte changes.",
+  "job_id": 130668437204,
+  "new_native_execution": 0,
+  "original_artifact": {
+    "bytes": 1413095,
+    "git_blob": "796c09643d1f4d1ab0fb70664f67baa5a3c6621b",
+    "sha256": "b1787753805af121986af7e99be7c09e99aea1ef613ddb8c965de2bdd9a355ff"
+  },
+  "original_package_modified": false,
+  "rows": [
+    {
+      "command_package_raw_binary_suite_and_classname": "codex-hepta-agentd",
+      "junit": "agentd-nextest.junit.xml",
+      "junit_identity": {
+        "bytes": 1772,
+        "git_blob": "5017788321c335f478f29b398ac62d78215f1c7c",
+        "sha256": "3bb5b3ca722124d8deb94590865208419c1408ea37ab064f93f814901ff79b5a"
+      },
+      "matching_case_ids": 6,
+      "profile": "local",
+      "raw_and_junit_nextest_uuid": "d6856e10-c1a3-4b05-a39f-f2f0e9dacd18",
+      "raw_identity": {
+        "bytes": 68528,
+        "git_blob": "01f9d1b55c04a899faf028ada0114112b94705ad",
+        "sha256": "3bdcb26b8e776a93595dcf83fb41a3f1d7a351c2271dc4a34744fe9615a45621"
+      },
+      "raw_log": "agentd-tests.json.2ec0cc92c01c452aad4b0e9200aa1b8e.log",
+      "receipt": "agentd-tests.json",
+      "receipt_identity": {
+        "bytes": 1547,
+        "git_blob": "e85071085b64d024ffe00a83d1d391ecdaac1e48",
+        "sha256": "71fa92ab11f9fdbfec1cb3cfb8e8213fa2f07bda37e20ab86716de417b840260"
+      }
+    },
+    {
+      "command_package_raw_binary_suite_and_classname": "codex-hepta-agentd",
+      "junit": "agentd-qualification-profile.junit.xml",
+      "junit_identity": {
+        "bytes": 545,
+        "git_blob": "e124f60797eaceebb374bdb281c892069bf6faa6",
+        "sha256": "98827dbe8c0b05dac3cce25ded98518498733728a6a9daf9b776b874c66c13e1"
+      },
+      "matching_case_ids": 1,
+      "profile": "local",
+      "raw_and_junit_nextest_uuid": "f10e548d-a4e0-4d1c-a28d-a33546209109",
+      "raw_identity": {
+        "bytes": 38294,
+        "git_blob": "1c79932f4438f566f248a6646d473c305eeec416",
+        "sha256": "83020893d23926f2b8544320bcf460faba95b94b7227bb6f29f03d63a5b01e38"
+      },
+      "raw_log": "agentd-qualification-profile-tests.json.155e5ade66ad4e87a2b6f5bab83729ce.log",
+      "receipt": "agentd-qualification-profile-tests.json",
+      "receipt_identity": {
+        "bytes": 1703,
+        "git_blob": "61d30bda17edfb4704016e7097edbe82adb29cab",
+        "sha256": "b1fdf746f94f2cc3d4798c24c38102258bf7a3e946a777648e28a58e2c6c7415"
+      }
+    },
+    {
+      "command_package_raw_binary_suite_and_classname": "codex-hepta-agent-protocol",
+      "junit": "last-nextest.junit.xml",
+      "junit_identity": {
+        "bytes": 3690,
+        "git_blob": "24161865f2e80a5190f15e134ca57d380748bfee",
+        "sha256": "341d3708772b5f051c8e74fd2f2e8beb95a258390666d3e2141cdc1830ee3be4"
+      },
+      "matching_case_ids": 16,
+      "profile": "local",
+      "raw_and_junit_nextest_uuid": "6ff55758-d384-4bf7-98c7-e88fa35b3743",
+      "raw_identity": {
+        "bytes": 31846,
+        "git_blob": "ad67cc4e8aca815fb7463940b1a14848b51c85a5",
+        "sha256": "79018ac2f4f609af00f9ad5cb13c3ac54da98cd95d5c4fa718c8efe1739f9fcc"
+      },
+      "raw_log": "protocol-tests.json.71a48f37be1b46868258614823913513.log",
+      "receipt": "protocol-tests.json",
+      "receipt_identity": {
+        "bytes": 1483,
+        "git_blob": "6e2437a5008d0a0d27f70fa084851293817f7150",
+        "sha256": "54653ab112aa38894a89c02d3c25b22e240e3e532f56f9054ed9a1b977b3ad48"
+      }
+    }
+  ],
+  "run_id": 43062473099,
+  "schema": "mem8.d0f.native-junit-crossbinding.addendum.v1",
+  "status": "PASS_ORIGINAL_UUID_AND_BINARY_CROSSBINDING"
+}

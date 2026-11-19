@@ -185,6 +185,13 @@ fn reopen_ledger_at(
     .unwrap()
 }
 
+fn closed_ledger_bytes(path: &std::path::Path) -> [Vec<u8>; 2] {
+    [
+        fs::read(path).unwrap(),
+        fs::read(witness_path(path)).unwrap(),
+    ]
+}
+
 fn closed_bytes_and_reopen(
     ledger: LedgerWriter,
     path: &std::path::Path,
@@ -215,6 +222,7 @@ fn closed_bytes_and_reopen(
     assert_eq!(reopened.records().unwrap(), expected_records);
     assert_eq!(reopened.snapshot().unwrap(), expected_snapshot);
     assert_eq!(reopened.witness_frontier().unwrap(), frontier);
+    assert_eq!(reopened.snapshot().unwrap(), expected_snapshot);
     (reopened, bytes)
 }
 
@@ -523,6 +531,7 @@ fn ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_deci
     ));
     assert!(ports.calls.is_empty());
     assert!(ledger.records().unwrap().is_empty());
+    assert_eq!(ledger.snapshot().unwrap(), snapshot);
 
     // Preserve every signature, metric failure and evidence digest. Only the
     // public decision label changes; this must not authorize candidate use.
@@ -536,6 +545,7 @@ fn ineligible_qualification_cannot_be_relabelled_to_enter_ports_or_record_a_deci
         ports.calls
     );
     assert!(ledger.records().unwrap().is_empty());
+    assert_eq!(ledger.snapshot().unwrap(), snapshot);
     assert!(matches!(
         result,
         Err(EvaluatedShadowError::Qualification(_))

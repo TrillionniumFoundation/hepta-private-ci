@@ -1,0 +1,190 @@
+{
+  "schema": "mem8.owner-v11.append-only-companion-schema-review.v1",
+  "status": "RECOMMEND_COMPANION_FILE_WITH_UNCHANGED_COMPLETE_BASELINE",
+  "scope": "Proposal and static review only. This is not the V11 owner ledger, not a run of the frozen Python generator, and not a publication receipt.",
+  "proposed_path": "qualification/memory-cell-mem8-owner/run-001/OWNER_FOLLOWUP_V11.json",
+  "verified_baseline": {
+    "owner_commit": "f86dfb058edd6e489671e99baf7643a58e7eed35",
+    "owner_tree": "259c24c65d05db477cfe2cba12a20414744bdb17",
+    "owner_parent": "fb533298874d85b6d6ec3d0d1352cd847e54ac4f",
+    "path": "qualification/memory-cell-mem8-owner/run-001/BLOCKERS.json",
+    "bytes": 134567,
+    "sha256": "bac85ca6969f7fe47b75245cb688bbcf995871204e5ad921c327df736aa85b36",
+    "git_blob": "2d5f0256776089b386f8e5ebd9d9eefcbfaac5f2",
+    "actual_owner_publication_receipt": {
+      "bytes": 4187,
+      "sha256": "25cac64c14d53c7e7869c265fe39df70811e64541443c6589ecd44ae2a0082a2",
+      "git_blob": "02229924b5a89726517e5c45f2017d59b35f26f2"
+    },
+    "independently_fetched_whole_file_matches_blob": true,
+    "checkpoint_revision": 10,
+    "open_gate_count": 10,
+    "prior_closed_entry_count": 18
+  },
+  "verified_original_generator": {
+    "preparation_commit": "738ea351c69d14ca6bbd177644575deaafeee7e3",
+    "preparation_tree": "1f9950e289c600e9c67067bc2858ac70b81d9d65",
+    "path": "qualification/memory-cell-mem8-ci-followup/v17/owner-v11-preparation/prepare_owner_v11.py",
+    "bytes": 22129,
+    "sha256": "6392145a2cce0187f4d6dc4eddfd381bca6892a32a0bf97c9a64636cc05af30b",
+    "git_blob": "a305575e93303b53f01842768f9fc06403893c16",
+    "executed_for_this_alternative": false,
+    "substitute_generator_equivalence_claimed": false
+  },
+  "checkpoint_contract": {
+    "composition": "The complete checkpoint consists of the unchanged full baseline file plus the separately named V11 companion, in one actual owner commit.",
+    "immutable_policy": "All original top-level values, ten entire gate objects and acceptance/closure requirements, nine non-CI intakes, the HOSTED-CI historical object, original provider/H unknowns and all eighteen prior closed entries remain in the unchanged original blob.",
+    "limited_current_precedence": "Only the companion's explicitly named current source/evidence publication identities and observation time are current labels. All earlier execution records retain their original source and time. No generic override or implicit result transfer is allowed.",
+    "discovery": "The actual PR description and review entry point must link both components and explicitly identify the unchanged baseline as V10 history. A consumer that reads only BLOCKERS.json does not automatically consume the companion.",
+    "future_flattening": "A future single-file ledger would require its own concretely reviewed and actually executed transformation against the then-current owner baseline; this companion is not evidence that the frozen Python generator ran."
+  },
+  "required_companion_sections": [
+    {
+      "name": "checkpoint",
+      "requirements": [
+        "Explicit revision 11 and actual UTC observation time.",
+        "Prepared/unpublished state until the separately retained actual owner CAS and full readback; no self-hash or predicted owner head."
+      ]
+    },
+    {
+      "name": "baseline",
+      "requirements": [
+        "Exact owner commit/tree/path/134567-byte whole-file identity above.",
+        "Actual preceding owner publication receipt 02229924b5a89726517e5c45f2017d59b35f26f2.",
+        "Final owner tree and full remote baseline bytes must still match that original blob."
+      ]
+    },
+    {
+      "name": "actual_publications",
+      "requirements": [
+        "Root's actual source PR5935 and evidence PR5889 publication records, including exact head/tree/draft/ref/body/update evidence and original receipt identity.",
+        "Preserved previous owner PR5897 identity.",
+        "Receipt paths added with this owner proposal are identified as proposal paths, not claimed to exist in an earlier source/evidence commit."
+      ]
+    },
+    {
+      "name": "fixed_original_facts",
+      "requirements": [
+        "One explicit frozen list of report identities and selected facts; no implicit latest lookup.",
+        "Each result retains exact source/tree/run/job/attempt, status, original scope and complete report/member evidence binding.",
+        "New cead Windows sandbox clean-lint result is separate from the unchanged original d0f dirty-lint failure and from d0f MEM/Architecture/two-native results.",
+        "Source-only, software, audit-mode protection, real memory benefit and original owner recovery scopes remain distinct."
+      ]
+    },
+    {
+      "name": "adoption_gates",
+      "requirements": [
+        "Exactly the ten baseline IDs below, all OPEN, referencing their original entire gate object and unchanged intake.",
+        "Do not rewrite historical HOSTED-CI status/finding or its closure requirement.",
+        "Do not append software results to the historical eighteen-entry closed array."
+      ]
+    },
+    {
+      "name": "protected_outcomes",
+      "requirements": [
+        "NoUpdate, HOLD and production_adoption=false.",
+        "Zero newly claimed real/scored actor episodes and model requests; original admitted provider turn/unknown physical-request count and H settlement remain unchanged.",
+        "No original-owner/trust/effect recovery claim is inferred from archive bytes or a fixture."
+      ]
+    },
+    {
+      "name": "environment_and_validation_boundary",
+      "requirements": [
+        "Managed environment unavailable after the recorded validations; frozen Python owner generator not run for this companion.",
+        "Distinguish the agent's completed pre-outage original ZIP/member/reader replay from the root's later full remote binary/hash verification.",
+        "Do not claim a root XZ re-extraction or original-reader rerun where only pure-JS byte validation was available."
+      ]
+    },
+    {
+      "name": "publication_boundary",
+      "requirements": [
+        "Root alone performs the actual expected-head owner CAS from f86dfb058edd6e489671e99baf7643a58e7eed35, subject to fresh actual ref verification.",
+        "Retain the actual new owner head/tree/ref/full-body/full-file readbacks separately after success.",
+        "No source/ref/native/model action is performed by this review."
+      ]
+    }
+  ],
+  "all_open_gate_references": [
+    {
+      "id": "WORKING-STATE-SCIENTIFIC-GATE",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/0",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "ORDINARY-OWNER-BRIDGE",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/1",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "PROVIDER-RUNTIME-BINDING",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/2",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "UNSEEN-EPISODIC-BENEFIT",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/3",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "STRONG-BASELINES-AND-ASSOCIATION",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/4",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "SOURCE-OWNERSHIP-EXPOSURE-AND-TRUST",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/5",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "DELETION-AND-EXTERNAL-EFFECT",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/6",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "FULL-OWNER-EFFECT-COLD-RECOVERY",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/7",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "FULL-COST-AND-SLOW-CONSOLIDATION",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/8",
+      "entire_original_gate_is_authoritative": true
+    },
+    {
+      "id": "HOSTED-CI",
+      "required_followup_state": "OPEN",
+      "baseline_pointer": "/open/9",
+      "entire_original_gate_is_authoritative": true
+    }
+  ],
+  "minimal_checks_available_without_python": [
+    "Hash and Git-blob verify the full unchanged baseline at its actual path in both old and proposed owner trees.",
+    "Serialize the bounded companion from a reviewed object, parse it, verify exact section/ID sets and all ten OPEN states, and compare each fixed fact with the pinned original report value.",
+    "Bind only actual source/evidence/owner publication receipts and exact repository/archive-member identities.",
+    "Verify the actual new companion bytes after Git creation and after the root's expected-head publication; preserve old baseline bytes unchanged.",
+    "Keep these byte, JSON-shape and report-binding checks labeled as the actual validation method; do not call them an equivalent execution of the frozen Python generator."
+  ],
+  "original_path_misidentification_avoided": {
+    "historical_predecessor_path": "qualification/memory-cell-mem7/read-freshness-20261110/BLOCKERS.json",
+    "actual_blob_at_preceding_owner": "8d572af8504eee40522c5ef1f4e7169eae3bf3d5",
+    "not_the_current_134567_byte_baseline": true
+  },
+  "remaining_final_inputs": "Root's final actual current-source/evidence publication receipts, frozen final report selection and actual owner CAS/readback. This review deliberately does not populate or predict those values.",
+  "review_actions": {
+    "Git_reads": true,
+    "pure_JS_byte_checks": true,
+    "local_runtime_execution": false,
+    "frozen_generator_execution": false,
+    "native_or_model_execution": false,
+    "ref_mutation": false
+  }
+}

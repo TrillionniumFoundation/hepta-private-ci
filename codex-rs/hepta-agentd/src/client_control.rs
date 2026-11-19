@@ -109,10 +109,13 @@ impl AgentdClient {
         // original Unix socket on other platforms, under one read/write deadline.
         let stream = timeout_at(self.original_phase_end(end)?, {
             #[cfg(windows)]
-            let connection = ControlStream::connect(&self.socket_path);
+            {
+                ControlStream::connect(&self.socket_path)
+            }
             #[cfg(not(windows))]
-            let connection = UnixStream::connect(&self.socket_path);
-            connection
+            {
+                UnixStream::connect(&self.socket_path)
+            }
         })
         .await
         .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?

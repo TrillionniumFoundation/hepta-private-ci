@@ -1,0 +1,767 @@
+--- before/codex-rs/hepta-neuron/src/cell_generation_control_tests.rs
++++ after/codex-rs/hepta-neuron/src/cell_generation_control_tests.rs
+@@ -416,10 +416,9 @@
+ 
+     // This uses terminal's original five-second wait. The caught panic must
+     // come from that bound, not an unrelated error or an accepted proposal.
+-    let failure = std::panic::catch_unwind(AssertUnwindSafe(|| {
+-        terminal(&mut port, &fixture.request)
+-    }))
+-    .expect_err("persistent uncertainty must not produce a terminal proposal");
++    let failure =
++        std::panic::catch_unwind(AssertUnwindSafe(|| terminal(&mut port, &fixture.request)))
++            .expect_err("persistent uncertainty must not produce a terminal proposal");
+     let message = failure
+         .downcast_ref::<String>()
+         .map(String::as_str)
+--- before/codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs
++++ after/codex-rs/windows-sandbox-rs/src/delete_permission_control_tests.rs
+@@ -62,7 +62,10 @@
+ #[derive(Serialize, Deserialize)]
+ enum Request {
+     Native(Vec<[PathBuf; 2]>),
+-    Cmd { script: PathBuf, env: HashMap<String, String> },
++    Cmd {
++        script: PathBuf,
++        env: HashMap<String, String>,
++    },
+ }
+ 
+ #[derive(Serialize, Deserialize)]
+@@ -74,8 +77,11 @@
+ fn process_token(process: HANDLE, access: u32) -> Result<OwnedHandle> {
+     let mut raw = 0;
+     // SAFETY: the process handle is retained, and raw receives a new owned handle.
+-    ensure!(unsafe { OpenProcessToken(process, access, &mut raw) } != 0,
+-        "OpenProcessToken: {}", std::io::Error::last_os_error());
++    ensure!(
++        unsafe { OpenProcessToken(process, access, &mut raw) } != 0,
++        "OpenProcessToken: {}",
++        std::io::Error::last_os_error()
++    );
+     Ok(unsafe { OwnedHandle::from_raw_handle(raw as _) })
+ }
+ 
+@@ -83,11 +89,23 @@
+     let mut statistics: TOKEN_STATISTICS = unsafe { std::mem::zeroed() };
+     let mut returned = 0;
+     // SAFETY: statistics is aligned and its exact writable size is supplied.
+-    ensure!(unsafe { GetTokenInformation(token.as_raw_handle() as HANDLE, TokenStatistics,
+-        (&mut statistics as *mut TOKEN_STATISTICS).cast(),
+-        std::mem::size_of::<TOKEN_STATISTICS>() as u32, &mut returned) } != 0,
+-        "TokenStatistics: {}", std::io::Error::last_os_error());
+-    ensure!(returned as usize == std::mem::size_of::<TOKEN_STATISTICS>(), "TokenStatistics size");
++    ensure!(
++        unsafe {
++            GetTokenInformation(
++                token.as_raw_handle() as HANDLE,
++                TokenStatistics,
++                (&mut statistics as *mut TOKEN_STATISTICS).cast(),
++                std::mem::size_of::<TOKEN_STATISTICS>() as u32,
++                &mut returned,
++            )
++        } != 0,
++        "TokenStatistics: {}",
++        std::io::Error::last_os_error()
++    );
++    ensure!(
++        returned as usize == std::mem::size_of::<TOKEN_STATISTICS>(),
++        "TokenStatistics size"
++    );
+     Ok((statistics.TokenId.LowPart, statistics.TokenId.HighPart))
+ }
+ 
+@@ -96,33 +114,66 @@
+     let capacity = std::mem::size_of_val(&words);
+     let mut returned = 0;
+     // SAFETY: the bounded, aligned buffer covers the full supplied capacity.
+-    ensure!(unsafe { GetTokenInformation(token.as_raw_handle() as HANDLE, TokenPrivileges,
+-        words.as_mut_ptr().cast(), capacity as u32, &mut returned) } != 0,
+-        "TokenPrivileges: {}", std::io::Error::last_os_error());
++    ensure!(
++        unsafe {
++            GetTokenInformation(
++                token.as_raw_handle() as HANDLE,
++                TokenPrivileges,
++                words.as_mut_ptr().cast(),
++                capacity as u32,
++                &mut returned,
++            )
++        } != 0,
++        "TokenPrivileges: {}",
++        std::io::Error::last_os_error()
++    );
+     let offset = std::mem::offset_of!(TOKEN_PRIVILEGES, Privileges);
+     let stride = std::mem::size_of::<LUID_AND_ATTRIBUTES>();
+-    ensure!((returned as usize) >= offset && returned as usize <= capacity, "TokenPrivileges size");
++    ensure!(
++        (returned as usize) >= offset && returned as usize <= capacity,
++        "TokenPrivileges size"
++    );
+     let count = unsafe { std::ptr::read_unaligned(words.as_ptr().cast::<u32>()) } as usize;
+-    ensure!(count <= (returned as usize - offset) / stride, "TokenPrivileges count");
++    ensure!(
++        count <= (returned as usize - offset) / stride,
++        "TokenPrivileges count"
++    );
+     let mut result = Vec::with_capacity(count);
+     for index in 0..count {
+         // SAFETY: each complete entry lies inside the validated returned buffer.
+-        let entry = unsafe { std::ptr::read_unaligned(words.as_ptr().cast::<u8>()
+-            .add(offset + index * stride).cast::<LUID_AND_ATTRIBUTES>()) };
++        let entry = unsafe {
++            std::ptr::read_unaligned(
++                words
++                    .as_ptr()
++                    .cast::<u8>()
++                    .add(offset + index * stride)
++                    .cast::<LUID_AND_ATTRIBUTES>(),
++            )
++        };
+         result.push(((entry.Luid.LowPart, entry.Luid.HighPart), entry.Attributes));
+     }
+     result.sort_unstable();
+-    ensure!(result.windows(2).all(|pair| pair[0].0 != pair[1].0), "duplicate privilege LUID");
++    ensure!(
++        result.windows(2).all(|pair| pair[0].0 != pair[1].0),
++        "duplicate privilege LUID"
++    );
+     Ok(result)
+ }
+ 
+ fn removed_privileges() -> Result<[(u32, i32); 2]> {
+     let mut result = [(0, 0); 2];
+-    for (index, name) in ["SeBackupPrivilege", "SeRestorePrivilege"].iter().enumerate() {
++    for (index, name) in ["SeBackupPrivilege", "SeRestorePrivilege"]
++        .iter()
++        .enumerate()
++    {
+         let mut luid: LUID = unsafe { std::mem::zeroed() };
+         // SAFETY: the fixed local name and the output LUID remain valid for the call.
+-        ensure!(unsafe { LookupPrivilegeValueW(std::ptr::null(), to_wide(name).as_ptr(), &mut luid) } != 0,
+-            "LookupPrivilegeValueW: {}", std::io::Error::last_os_error());
++        ensure!(
++            unsafe { LookupPrivilegeValueW(std::ptr::null(), to_wide(name).as_ptr(), &mut luid) }
++                != 0,
++            "LookupPrivilegeValueW: {}",
++            std::io::Error::last_os_error()
++        );
+         result[index] = (luid.LowPart, luid.HighPart);
+     }
+     Ok(result)
+@@ -142,22 +193,36 @@
+         let job_result = self.job.terminate();
+         let fallback_error = if job_result.is_err() && !self.reaped {
+             // SAFETY: this is the owned handle of the exact child created below.
+-            let killed = unsafe { TerminateProcess(self.process.as_raw_handle() as HANDLE, /*uexitcode*/ 1) };
++            let killed = unsafe {
++                TerminateProcess(self.process.as_raw_handle() as HANDLE, /*uexitcode*/ 1)
++            };
+             (killed == 0).then(std::io::Error::last_os_error)
+-        } else { None };
++        } else {
++            None
++        };
+         // The failure-only cleanup uses the existing native termination grace.
+         // It never extends the five-second execution or ten-second elevated budget.
+-        let wait_ms = if self.reaped { 0 } else { crate::RUNNER_TERMINATION_WAIT_MS };
+-        let waited = unsafe { WaitForSingleObject(self.process.as_raw_handle() as HANDLE, wait_ms) };
++        let wait_ms = if self.reaped {
++            0
++        } else {
++            crate::RUNNER_TERMINATION_WAIT_MS
++        };
++        let waited =
++            unsafe { WaitForSingleObject(self.process.as_raw_handle() as HANDLE, wait_ms) };
+         self.reaped = waited == WAIT_OBJECT_0;
+-        ensure!(self.reaped, "control child cleanup remains unconfirmed: wait={waited}; job={job_result:?}; fallback={fallback_error:?}");
++        ensure!(
++            self.reaped,
++            "control child cleanup remains unconfirmed: wait={waited}; job={job_result:?}; fallback={fallback_error:?}"
++        );
+         job_result.context("terminate the owned control process tree")
+     }
+ }
+ 
+ impl Drop for Child {
+     fn drop(&mut self) {
+-        if !self.cleanup_attempted && let Err(error) = self.cleanup() {
++        if !self.cleanup_attempted
++            && let Err(error) = self.cleanup()
++        {
+             eprintln!("delete control cleanup failed: {error:#}");
+         }
+     }
+@@ -166,16 +231,25 @@
+ fn run(request: Request) -> Result<Reply> {
+     let deadline = Instant::now() + Duration::from_millis(/*millis*/ 5_000);
+     let encoded = serde_json::to_vec(&request)?;
+-    ensure!(encoded.len() as u64 <= MAX_BYTES, "control request exceeds bound");
++    ensure!(
++        encoded.len() as u64 <= MAX_BYTES,
++        "control request exceeds bound"
++    );
+     let mut input = tempfile::tempfile()?;
+     input.write_all(&encoded)?;
+     input.rewind()?;
+     let mut output = tempfile::tempfile()?;
+     // Only these new test-owned handles become inheritable; never parent stdio.
+-    let handles = [input.as_raw_handle() as HANDLE, output.as_raw_handle() as HANDLE];
++    let handles = [
++        input.as_raw_handle() as HANDLE,
++        output.as_raw_handle() as HANDLE,
++    ];
+     for handle in handles {
+-        ensure!(unsafe { SetHandleInformation(handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) } != 0,
+-            "control handle inheritance: {}", std::io::Error::last_os_error());
++        ensure!(
++            unsafe { SetHandleInformation(handle, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT) } != 0,
++            "control handle inheritance: {}",
++            std::io::Error::last_os_error()
++        );
+     }
+     let parent = process_token(unsafe { GetCurrentProcess() }, TOKEN_QUERY)?;
+     let parent_id = token_id(&parent)?;
+@@ -186,8 +260,17 @@
+     attributes.set_job(job.as_raw_handle() as HANDLE)?;
+     attributes.set_handle_list(handles.to_vec())?;
+     let executable = std::env::current_exe()?;
+-    let argv = [executable.to_str().context("control executable is not Unicode")?.to_owned(),
+-        "--exact".into(), CHILD_CASE.into(), "--ignored".into(), "--nocapture".into(), "--test-threads=1".into()];
++    let argv = [
++        executable
++            .to_str()
++            .context("control executable is not Unicode")?
++            .to_owned(),
++        "--exact".into(),
++        CHILD_CASE.into(),
++        "--ignored".into(),
++        "--nocapture".into(),
++        "--test-threads=1".into(),
++    ];
+     let mut command = to_wide(argv_to_command_line(&argv));
+     let mut startup: STARTUPINFOEXW = unsafe { std::mem::zeroed() };
+     startup.StartupInfo.cb = std::mem::size_of::<STARTUPINFOEXW>() as u32;
+@@ -199,82 +282,178 @@
+     let mut information: PROCESS_INFORMATION = unsafe { std::mem::zeroed() };
+     // SAFETY: all buffers/attributes are owned through creation. The child is
+     // atomically in our job and suspended before any test or cmd code can run.
+-    ensure!(unsafe { CreateProcessW(to_wide(&executable).as_ptr(), command.as_mut_ptr(),
+-        std::ptr::null(), std::ptr::null(), /*binherithandles*/ 1,
+-        CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT, std::ptr::null(),
+-        std::ptr::null(), &startup.StartupInfo, &mut information) } != 0,
+-        "CreateProcessW control: {}", std::io::Error::last_os_error());
++    ensure!(
++        unsafe {
++            CreateProcessW(
++                to_wide(&executable).as_ptr(),
++                command.as_mut_ptr(),
++                std::ptr::null(),
++                std::ptr::null(),
++                /*binherithandles*/ 1,
++                CREATE_SUSPENDED | EXTENDED_STARTUPINFO_PRESENT,
++                std::ptr::null(),
++                std::ptr::null(),
++                &startup.StartupInfo,
++                &mut information,
++            )
++        } != 0,
++        "CreateProcessW control: {}",
++        std::io::Error::last_os_error()
++    );
+     let mut child = Child {
+         process: unsafe { OwnedHandle::from_raw_handle(information.hProcess as _) },
+         thread: unsafe { OwnedHandle::from_raw_handle(information.hThread as _) },
+-        job, reaped: false, cleanup_attempted: false,
++        job,
++        reaped: false,
++        cleanup_attempted: false,
+     };
+     let execution = (|| -> Result<()> {
+-        let token = process_token(child.process.as_raw_handle() as HANDLE, TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES)?;
+-        ensure!(token_id(&token)? != parent_id, "control must own a distinct primary token");
++        let token = process_token(
++            child.process.as_raw_handle() as HANDLE,
++            TOKEN_QUERY | TOKEN_ADJUST_PRIVILEGES,
++        )?;
++        ensure!(
++            token_id(&token)? != parent_id,
++            "control must own a distinct primary token"
++        );
+         let before = privileges(&token)?;
+         for (low, high) in removed {
+-            if !before.iter().any(|(id, _)| *id == (low, high)) { continue; }
+-            let change = TOKEN_PRIVILEGES { PrivilegeCount: 1,
+-                Privileges: [LUID_AND_ATTRIBUTES { Luid: LUID { LowPart: low, HighPart: high }, Attributes: SE_PRIVILEGE_REMOVED }] };
++            if !before.iter().any(|(id, _)| *id == (low, high)) {
++                continue;
++            }
++            let change = TOKEN_PRIVILEGES {
++                PrivilegeCount: 1,
++                Privileges: [LUID_AND_ATTRIBUTES {
++                    Luid: LUID {
++                        LowPart: low,
++                        HighPart: high,
++                    },
++                    Attributes: SE_PRIVILEGE_REMOVED,
++                }],
++            };
+             // SAFETY: only this distinct, suspended child's token can be adjusted.
+-            let changed = unsafe { AdjustTokenPrivileges(token.as_raw_handle() as HANDLE,
+-                /*disableallprivileges*/ 0, &change, /*bufferlength*/ 0, std::ptr::null_mut(), std::ptr::null_mut()) };
++            let changed = unsafe {
++                AdjustTokenPrivileges(
++                    token.as_raw_handle() as HANDLE,
++                    /*disableallprivileges*/ 0,
++                    &change,
++                    /*bufferlength*/ 0,
++                    std::ptr::null_mut(),
++                    std::ptr::null_mut(),
++                )
++            };
+             let error = unsafe { GetLastError() };
+             // ERROR_NOT_ALL_ASSIGNED is a failure, even when the API returns true.
+-            ensure!(changed != 0 && error == ERROR_SUCCESS, "remove control privilege: errno={error}");
++            ensure!(
++                changed != 0 && error == ERROR_SUCCESS,
++                "remove control privilege: errno={error}"
++            );
+         }
+-        let expected: Privileges = before.into_iter().filter(|(id, _)| !removed.contains(id)).collect();
+-        ensure!(privileges(&token)? == expected, "child privilege removal changed another privilege or left Backup/Restore");
+-        ensure!(privileges(&parent)? == parent_before, "parent privileges changed before control resume");
+-        eprintln!("delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true");
+-        ensure!(Instant::now() < deadline, "control setup exhausted the original 5s budget");
++        let expected: Privileges = before
++            .into_iter()
++            .filter(|(id, _)| !removed.contains(id))
++            .collect();
++        ensure!(
++            privileges(&token)? == expected,
++            "child privilege removal changed another privilege or left Backup/Restore"
++        );
++        ensure!(
++            privileges(&parent)? == parent_before,
++            "parent privileges changed before control resume"
++        );
++        eprintln!(
++            "delete_control verified_before_resume distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true"
++        );
++        ensure!(
++            Instant::now() < deadline,
++            "control setup exhausted the original 5s budget"
++        );
+         let previous = unsafe { ResumeThread(child.thread.as_raw_handle() as HANDLE) };
+         ensure!(previous == 1, "control ResumeThread returned {previous}");
+-        let wait_ms = deadline.saturating_duration_since(Instant::now()).as_millis() as u32;
+-        let waited = unsafe { WaitForSingleObject(child.process.as_raw_handle() as HANDLE, wait_ms) };
+-        ensure!(waited == WAIT_OBJECT_0, "ordinary control did not finish within original 5s: wait={waited}");
++        let wait_ms = deadline
++            .saturating_duration_since(Instant::now())
++            .as_millis() as u32;
++        let waited =
++            unsafe { WaitForSingleObject(child.process.as_raw_handle() as HANDLE, wait_ms) };
++        ensure!(
++            waited == WAIT_OBJECT_0,
++            "ordinary control did not finish within original 5s: wait={waited}"
++        );
+         child.reaped = true;
+         let mut code = 0;
+-        ensure!(unsafe { GetExitCodeProcess(child.process.as_raw_handle() as HANDLE, &mut code) } != 0,
+-            "control exit query: {}", std::io::Error::last_os_error());
++        ensure!(
++            unsafe { GetExitCodeProcess(child.process.as_raw_handle() as HANDLE, &mut code) } != 0,
++            "control exit query: {}",
++            std::io::Error::last_os_error()
++        );
+         ensure!(code == 0, "ordinary control libtest exited {code}");
+         Ok(())
+     })();
+     let cleanup = child.cleanup();
+     let parent_after = privileges(&parent);
+-    ensure!(cleanup.is_ok(), "ordinary control cleanup failed: {cleanup:?}; execution={execution:?}; parent_snapshot_available={}", parent_after.is_ok());
+-    ensure!(parent_after? == parent_before, "parent privileges changed after control");
++    ensure!(
++        cleanup.is_ok(),
++        "ordinary control cleanup failed: {cleanup:?}; execution={execution:?}; parent_snapshot_available={}",
++        parent_after.is_ok()
++    );
++    ensure!(
++        parent_after? == parent_before,
++        "parent privileges changed after control"
++    );
+     output.rewind()?;
+     let mut bytes = Vec::new();
+     output.take(MAX_BYTES + 1).read_to_end(&mut bytes)?;
+-    ensure!(bytes.len() as u64 <= MAX_BYTES, "control output exceeds bound");
++    ensure!(
++        bytes.len() as u64 <= MAX_BYTES,
++        "control output exceeds bound"
++    );
+     let output = String::from_utf8(bytes)?;
+     execution.with_context(|| format!("ordinary control output: {output}"))?;
+-    let results: Vec<_> = output.lines().filter_map(|line| line.strip_prefix(RESULT_PREFIX)).collect();
+-    ensure!(results.len() == 1, "expected exactly one completed control result: {output}");
++    let results: Vec<_> = output
++        .lines()
++        .filter_map(|line| line.strip_prefix(RESULT_PREFIX))
++        .collect();
++    ensure!(
++        results.len() == 1,
++        "expected exactly one completed control result: {output}"
++    );
+     serde_json::from_str(results[0]).context("decode the completed control result")
+ }
+ 
+ pub(crate) fn native(matrix: &DeleteMatrix) -> Result<NativeErrors> {
+-    let request = matrix.paths().map(|(file, directory)| [file.to_path_buf(), directory.to_path_buf()]).collect();
+-    let Reply::Native(errors) = run(Request::Native(request))? else { anyhow::bail!("wrong native control result"); };
+-    errors.into_iter().map(|pair| {
+-        let mut decoded = [None; 2];
+-        for (index, error) in pair.into_iter().enumerate() {
+-            if let Some((kind, raw)) = error {
+-                let code = raw.context("native control error has no Win32 code")?;
+-                let actual = std::io::Error::from_raw_os_error(code).kind();
+-                ensure!(format!("{actual:?}") == kind, "native control error kind/code mismatch");
+-                decoded[index] = Some((actual, raw));
++    let request = matrix
++        .paths()
++        .map(|(file, directory)| [file.to_path_buf(), directory.to_path_buf()])
++        .collect();
++    let Reply::Native(errors) = run(Request::Native(request))? else {
++        anyhow::bail!("wrong native control result");
++    };
++    errors
++        .into_iter()
++        .map(|pair| {
++            let mut decoded = [None; 2];
++            for (index, error) in pair.into_iter().enumerate() {
++                if let Some((kind, raw)) = error {
++                    let code = raw.context("native control error has no Win32 code")?;
++                    let actual = std::io::Error::from_raw_os_error(code).kind();
++                    ensure!(
++                        format!("{actual:?}") == kind,
++                        "native control error kind/code mismatch"
++                    );
++                    decoded[index] = Some((actual, raw));
++                }
+             }
+-        }
+-        Ok(decoded)
+-    }).collect()
++            Ok(decoded)
++        })
++        .collect()
+ }
+ 
+ pub(crate) fn cmd(script: &Path, env: HashMap<String, String>) -> Result<(Option<i32>, String)> {
+-    let Reply::Cmd { code, output } = run(Request::Cmd { script: script.to_path_buf(), env })? else {
++    let Reply::Cmd { code, output } = run(Request::Cmd {
++        script: script.to_path_buf(),
++        env,
++    })?
++    else {
+         anyhow::bail!("wrong cmd control result");
+     };
+     Ok((code, output))
+@@ -285,30 +464,53 @@
+ fn ordinary_delete_control_child() -> Result<()> {
+     let token = process_token(unsafe { GetCurrentProcess() }, TOKEN_QUERY)?;
+     let removed = removed_privileges()?;
+-    ensure!(privileges(&token)?.iter().all(|(id, _)| !removed.contains(id)), "control child still has Backup/Restore");
++    ensure!(
++        privileges(&token)?
++            .iter()
++            .all(|(id, _)| !removed.contains(id)),
++        "control child still has Backup/Restore"
++    );
+     let mut bytes = Vec::new();
+-    std::io::stdin().lock().take(MAX_BYTES + 1).read_to_end(&mut bytes)?;
+-    ensure!(bytes.len() as u64 <= MAX_BYTES, "control request exceeds bound");
++    std::io::stdin()
++        .lock()
++        .take(MAX_BYTES + 1)
++        .read_to_end(&mut bytes)?;
++    ensure!(
++        bytes.len() as u64 <= MAX_BYTES,
++        "control request exceeds bound"
++    );
+     let reply = match serde_json::from_slice::<Request>(&bytes)? {
+         Request::Native(paths) => {
+             ensure!(paths.len() == 4, "native control requires all four cells");
+-            let errors = paths.into_iter().map(|[file, directory]| {
+-                [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
+-                    result.err().map(|error| (format!("{:?}", error.kind()), error.raw_os_error()))
++            let errors = paths
++                .into_iter()
++                .map(|[file, directory]| {
++                    [std::fs::remove_file(file), std::fs::remove_dir(directory)].map(|result| {
++                        result
++                            .err()
++                            .map(|error| (format!("{:?}", error.kind()), error.raw_os_error()))
++                    })
+                 })
+-            }).collect();
++                .collect();
+             Reply::Native(errors)
+         }
+         Request::Cmd { script, env } => {
+             let mut log = tempfile::tempfile()?;
+             let status = std::process::Command::new("C:\\Windows\\System32\\cmd.exe")
+-                .args(["/d", "/c"]).arg(script).envs(env)
+-                .stdout(log.try_clone()?).stderr(log.try_clone()?).status()?;
++                .args(["/d", "/c"])
++                .arg(script)
++                .envs(env)
++                .stdout(log.try_clone()?)
++                .stderr(log.try_clone()?)
++                .status()?;
+             log.rewind()?;
+             let mut output = String::new();
+             log.take(MAX_BYTES + 1).read_to_string(&mut output)?;
+             ensure!(output.len() as u64 <= MAX_BYTES, "cmd output exceeds bound");
+-            Reply::Cmd { code: status.code(), output }
++            Reply::Cmd {
++                code: status.code(),
++                output,
++            }
+         }
+     };
+     println!("\n{RESULT_PREFIX}{}", serde_json::to_string(&reply)?);
+--- before/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
++++ after/codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs
+@@ -39,7 +39,8 @@
+             fs::create_dir(path).expect("create allowed root");
+         }
+         let host = DeleteMatrix::new(&fixture.path().join("host")).expect("host matrix");
+-        let restricted = DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
++        let restricted =
++            DeleteMatrix::new(&fixture.path().join("outside")).expect("outside matrix");
+         host.assert_same_acls(&restricted);
+         let host_access_context = host.access_diagnostics();
+         let (script, env) = matrix_script(&host);
+@@ -47,69 +48,173 @@
+         fs::write(&host_script, script).expect("write host script");
+         let (status, host_log) = crate::delete_permission_control::cmd(&host_script, env)
+             .expect("run the ordinary cmd control without Backup/Restore privileges");
+-        let host_outcomes = host.finish("ordinary-host-cmd-done").expect("host physical readback");
++        let host_outcomes = host
++            .finish("ordinary-host-cmd-done")
++            .expect("host physical readback");
+         eprintln!("delete_matrix host_cmd_status={status:?} output={host_log:?}");
+         assert_eq!(status, Some(0), "{host_access_context}");
+-        assert_eq!(host_log.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
+-            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"],
+-            "{host_access_context}");
+-        assert_eq!(host_outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
+-            .map(|route| DeleteOutcome { route, file_deleted: route != DeleteRoute::Neither,
+-                directory_deleted: route != DeleteRoute::Neither }), "{host_access_context}");
++        assert_eq!(
++            host_log
++                .lines()
++                .filter(|line| line.starts_with("MATRIX_"))
++                .collect::<Vec<_>>(),
++            [
++                "MATRIX_ATTEMPT_0",
++                "MATRIX_ATTEMPT_1",
++                "MATRIX_ATTEMPT_2",
++                "MATRIX_ATTEMPT_3",
++                "MATRIX_DONE"
++            ],
++            "{host_access_context}"
++        );
++        assert_eq!(
++            host_outcomes,
++            [
++                DeleteRoute::Neither,
++                DeleteRoute::TargetOnly,
++                DeleteRoute::ParentOnly,
++                DeleteRoute::Both
++            ]
++            .map(|route| DeleteOutcome {
++                route,
++                file_deleted: route != DeleteRoute::Neither,
++                directory_deleted: route != DeleteRoute::Neither
++            }),
++            "{host_access_context}"
++        );
+ 
+         let allowed_file = workspace.join("allowed-file");
+         let allowed_directory = workspace.join("allowed-directory");
+         fs::write(&allowed_file, "allowed").expect("seed allowed file");
+         fs::create_dir(&allowed_directory).expect("seed allowed directory");
+         let (script, mut env) = matrix_script(&restricted);
+-        let script = script.replacen("@echo off\r\n", concat!(
++        let script = script.replacen(
+             "@echo off\r\n",
+-            "del /f /q \"%ALLOWED_FILE%\"\r\n",
+-            "rmdir \"%ALLOWED_DIRECTORY%\"\r\n",
+-        ), /*count*/ 1);
++            concat!(
++                "@echo off\r\n",
++                "del /f /q \"%ALLOWED_FILE%\"\r\n",
++                "rmdir \"%ALLOWED_DIRECTORY%\"\r\n",
++            ),
++            /*count*/ 1,
++        );
+         let script_path = workspace.join("restricted-matrix.cmd");
+         fs::write(&script_path, script).expect("write restricted script");
+         env.extend([
+             ("TEMP".to_owned(), temp_root.to_string_lossy().into_owned()),
+             ("TMP".to_owned(), tmp_root.to_string_lossy().into_owned()),
+-            ("ALLOWED_FILE".to_owned(), allowed_file.to_string_lossy().into_owned()),
+-            ("ALLOWED_DIRECTORY".to_owned(), allowed_directory.to_string_lossy().into_owned()),
++            (
++                "ALLOWED_FILE".to_owned(),
++                allowed_file.to_string_lossy().into_owned(),
++            ),
++            (
++                "ALLOWED_DIRECTORY".to_owned(),
++                allowed_directory.to_string_lossy().into_owned(),
++            ),
+         ]);
+         let permission_profile = PermissionProfile::workspace_write();
+         let before = snapshot(fixture.path()).expect("snapshot four-cell fixture");
+         let home_before = snapshot(codex_home.path()).expect("snapshot legacy home");
+         let refused = spawn_windows_sandbox_session_legacy(
+-            &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
+-            vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(),
+-                "/c".to_owned(), script_path.display().to_string()],
+-            &workspace, env.clone(), /*timeout_ms*/ Some(5_000), &[], &[],
+-            /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
+-        ).await;
++            &permission_profile,
++            workspace_roots_for(&workspace).as_slice(),
++            codex_home.path(),
++            vec![
++                "C:\\Windows\\System32\\cmd.exe".to_owned(),
++                "/d".to_owned(),
++                "/c".to_owned(),
++                script_path.display().to_string(),
++            ],
++            &workspace,
++            env.clone(),
++            /*timeout_ms*/ Some(5_000),
++            &[],
++            &[],
++            /*tty*/ false,
++            /*stdin_open*/ false,
++            /*use_private_desktop*/ true,
++        )
++        .await;
+         assert_unavailable(refused);
+-        assert_eq!(snapshot(fixture.path()).expect("read back four-cell fixture"), before);
+-        assert_eq!(snapshot(codex_home.path()).expect("read back legacy home"), home_before);
++        assert_eq!(
++            snapshot(fixture.path()).expect("read back four-cell fixture"),
++            before
++        );
++        assert_eq!(
++            snapshot(codex_home.path()).expect("read back legacy home"),
++            home_before
++        );
+         let spawned = spawn_windows_sandbox_session_elevated_for_permission_profile(
+-            &permission_profile, workspace_roots_for(&workspace).as_slice(), codex_home.path(),
+-            vec!["C:\\Windows\\System32\\cmd.exe".to_owned(), "/d".to_owned(), "/c".to_owned(), script_path.display().to_string()],
+-            &workspace, env,
+-            /*proxy_enforced*/ false, /*network_proxy_restricting_sid*/ None,
++            &permission_profile,
++            workspace_roots_for(&workspace).as_slice(),
++            codex_home.path(),
++            vec![
++                "C:\\Windows\\System32\\cmd.exe".to_owned(),
++                "/d".to_owned(),
++                "/c".to_owned(),
++                script_path.display().to_string(),
++            ],
++            &workspace,
++            env,
++            /*proxy_enforced*/ false,
++            /*network_proxy_restricting_sid*/ None,
+             /*timeout_ms*/ Some(5_000),
+-            /*read_roots_override*/ None, /*read_roots_include_platform_defaults*/ true,
+-            /*write_roots_override*/ None, &[], &[],
+-            /*tty*/ false, /*stdin_open*/ false, /*use_private_desktop*/ true,
+-        ).await.expect("spawn explicit elevated four-cell path");
++            /*read_roots_override*/ None,
++            /*read_roots_include_platform_defaults*/ true,
++            /*write_roots_override*/ None,
++            &[],
++            &[],
++            /*tty*/ false,
++            /*stdin_open*/ false,
++            /*use_private_desktop*/ true,
++        )
++        .await
++        .expect("spawn explicit elevated four-cell path");
+         let (stdout, exit_code) = collect_elevated_stdout_and_exit(
+-            spawned, codex_home.path(), Duration::from_secs(/*secs*/ 10),
+-        ).await;
++            spawned,
++            codex_home.path(),
++            Duration::from_secs(/*secs*/ 10),
++        )
++        .await;
+         let stdout = String::from_utf8_lossy(&stdout);
+-        let outcomes = restricted.finish("elevated-child-done").expect("restricted physical readback");
++        let outcomes = restricted
++            .finish("elevated-child-done")
++            .expect("restricted physical readback");
+         eprintln!("delete_matrix elevated_exit={exit_code} stdout={stdout:?}");
+         assert_eq!(exit_code, 0);
+-        assert_eq!(stdout.lines().filter(|line| line.starts_with("MATRIX_")).collect::<Vec<_>>(),
+-            ["MATRIX_ATTEMPT_0", "MATRIX_ATTEMPT_1", "MATRIX_ATTEMPT_2", "MATRIX_ATTEMPT_3", "MATRIX_DONE"]);
+-        assert_eq!(fs::symlink_metadata(&allowed_file).unwrap_err().kind(), std::io::ErrorKind::NotFound);
+-        assert_eq!(fs::symlink_metadata(&allowed_directory).unwrap_err().kind(), std::io::ErrorKind::NotFound);
+-        assert_eq!(outcomes, [DeleteRoute::Neither, DeleteRoute::TargetOnly, DeleteRoute::ParentOnly, DeleteRoute::Both]
+-            .map(|route| DeleteOutcome { route, file_deleted: false, directory_deleted: false }));
++        assert_eq!(
++            stdout
++                .lines()
++                .filter(|line| line.starts_with("MATRIX_"))
++                .collect::<Vec<_>>(),
++            [
++                "MATRIX_ATTEMPT_0",
++                "MATRIX_ATTEMPT_1",
++                "MATRIX_ATTEMPT_2",
++                "MATRIX_ATTEMPT_3",
++                "MATRIX_DONE"
++            ]
++        );
++        assert_eq!(
++            fs::symlink_metadata(&allowed_file).unwrap_err().kind(),
++            std::io::ErrorKind::NotFound
++        );
++        assert_eq!(
++            fs::symlink_metadata(&allowed_directory).unwrap_err().kind(),
++            std::io::ErrorKind::NotFound
++        );
++        assert_eq!(
++            outcomes,
++            [
++                DeleteRoute::Neither,
++                DeleteRoute::TargetOnly,
++                DeleteRoute::ParentOnly,
++                DeleteRoute::Both
++            ]
++            .map(|route| DeleteOutcome {
++                route,
++                file_deleted: false,
++                directory_deleted: false
++            })
++        );
+     });
+ }
+--- before/scripts/test_hepta_caller_cache.py
++++ after/scripts/test_hepta_caller_cache.py
+@@ -74,9 +74,7 @@
+             verifier.verify(self.root)
+ 
+     def test_no_method_call_does_not_suppress_global_field_index_failure(self):
+-        self.client.write_text(
+-            "struct Holder { authority: Gate", encoding="utf-8"
+-        )
++        self.client.write_text("struct Holder { authority: Gate", encoding="utf-8")
+         with self.assertRaisesRegex(
+             verifier.VerificationFailure,
+             "gate_enter: unbalanced Rust authority context",

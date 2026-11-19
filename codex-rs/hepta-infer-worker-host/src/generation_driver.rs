@@ -174,13 +174,15 @@ impl GenerationDriver {
             weights_digest: pins.parameters_sha256.clone(),
             tokenizer_digest: pins.source_sha256.clone(),
             preprocessor_digest: pins.source_sha256.clone(),
-            // Source, configuration (including epsilon) and learned parameters
-            // identify the generation encoder's normalization independently.
+            // Bind the actual input/architecture normalization and optional
+            // Neuron projection to the registered source, config and parameters.
             normalizer_digest: generation_json_digest(&(
-                "hepta.inference.generation-normalizer.v1",
+                "hepta.ndu-v6.generation-normalizer-binding.v1",
                 &pins.source_sha256,
                 &pins.config_sha256,
                 &pins.parameters_sha256,
+                &pins.snapshot_sha256,
+                neuron::generation_projection_digest().to_string(),
             ))
             .map_err(failure)?,
             quantization_digest: Digest32::of_bytes(b"float32.cpu.no-quantization.v1").to_string(),

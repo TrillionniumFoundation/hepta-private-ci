@@ -1,0 +1,34 @@
+test_fifo_directory_and_links_refuse_without_blocking (closure_io_tests.DescriptorTests.test_fifo_directory_and_links_refuse_without_blocking) ... ok
+test_inplace_mutation_and_oversize_are_refused (closure_io_tests.DescriptorTests.test_inplace_mutation_and_oversize_are_refused) ... ok
+test_opened_descriptor_survives_path_replacement (closure_io_tests.DescriptorTests.test_opened_descriptor_survives_path_replacement) ... ERROR
+test_parent_substitution_is_refused (closure_io_tests.DescriptorTests.test_parent_substitution_is_refused) ... ok
+test_replacement_at_actual_open_refuses_fifo_and_symlink (closure_io_tests.DescriptorTests.test_replacement_at_actual_open_refuses_fifo_and_symlink) ... ok
+test_actual_array_dtype_shape_finite_variance_and_permutation_are_checked (closure_tests.LearningClosureTests.test_actual_array_dtype_shape_finite_variance_and_permutation_are_checked) ... ok
+test_cli_outputs_content_receipt_only_and_refuses_invalid_input (closure_tests.LearningClosureTests.test_cli_outputs_content_receipt_only_and_refuses_invalid_input) ... ok
+test_each_member_digest_changes_with_its_verified_content (closure_tests.LearningClosureTests.test_each_member_digest_changes_with_its_verified_content) ... ok
+test_metadata_closure_cursor_rng_config_and_optimizer_are_checked (closure_tests.LearningClosureTests.test_metadata_closure_cursor_rng_config_and_optimizer_are_checked) ... ok
+test_npy_allocation_hazards_are_rejected_before_any_numpy_load (closure_tests.LearningClosureTests.test_npy_allocation_hazards_are_rejected_before_any_numpy_load) ... ok
+test_original_save_load_complete_binding_without_training_or_inference (closure_tests.LearningClosureTests.test_original_save_load_complete_binding_without_training_or_inference) ... ok
+test_raw_zip_inventory_corruption_and_expansion_bounds (closure_tests.LearningClosureTests.test_raw_zip_inventory_corruption_and_expansion_bounds) ... ok
+test_release_contents_are_bound_without_publication_or_parent_authority (closure_tests.LearningClosureTests.test_release_contents_are_bound_without_publication_or_parent_authority) ... ok
+test_release_cut_rejects_boolean_and_float_aliases (closure_tests.LearningClosureTests.test_release_cut_rejects_boolean_and_float_aliases) ... ok
+test_source_cut_revision_rejects_boolean_and_float_aliases (closure_tests.LearningClosureTests.test_source_cut_revision_rejects_boolean_and_float_aliases) ... ok
+test_source_encoder_and_dataset_content_drift_are_rejected (closure_tests.LearningClosureTests.test_source_encoder_and_dataset_content_drift_are_rejected) ... ok
+
+======================================================================
+ERROR: test_opened_descriptor_survives_path_replacement (closure_io_tests.DescriptorTests.test_opened_descriptor_survives_path_replacement)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_io_tests.py", line 86, in test_opened_descriptor_survives_path_replacement
+    with open_regular(source, 8) as stream:
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/contextlib.py", line 144, in __exit__
+    next(self.gen)
+  File "/workspace/scratch/62902f6722b7/hepta-cell-work/qualification/neuron-learning-closure-v13/closure_io.py", line 56, in open_regular
+    raise ClosureError("Input changed while its contents were read")
+closure_io.ClosureError: Input changed while its contents were read
+
+----------------------------------------------------------------------
+Ran 16 tests in 1.792s
+
+FAILED (errors=1)

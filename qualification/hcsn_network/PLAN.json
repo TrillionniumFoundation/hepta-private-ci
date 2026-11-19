@@ -1,0 +1,15 @@
+{
+  "schema": "hcsn-coupled-flow-study-v1",
+  "scope": "Finite synchronous two-layer content network, not a task-benefit experiment",
+  "source_freeze": "Local Git commit before study execution; publication is separate",
+  "model": {"input_size": 1, "content_size": 2, "layers": 2, "activation": "tanh", "rate_drive": false, "message_mode": "full"},
+  "physics": {"spatial_cells": 1, "rates": [1.7, 2.1], "discount": 0.15, "refractory": 0.2, "sample_interval": 0.1},
+  "data": {"kind": "four disclosed synthetic trajectories", "seed": 271828, "steps": 8, "batch": 4, "held_out": false},
+  "teacher_seed": 53,
+  "student_seed": 37,
+  "optimizer": {"kind": "Adam", "learning_rate": 0.03, "updates": 60},
+  "training_check": "Final same-input MSE <= 0.2 times initial MSE; failure is retained",
+  "cold_check": "Warm and fresh-process forward continuations from full saved state have equal tensor bytes",
+  "cold_limits": {"address_space_bytes": 8589934592, "cpu_soft_seconds": 90, "cpu_hard_seconds": 95, "wall_seconds": 100},
+  "semantic_limits": ["One sample-triggered write per interval", "One interval of causal interlayer latency", "Shared physics and probability across batch", "No gradient through cold checkpoint history", "No continuum or arbitrary time-partition equivalence", "No claim of task-optimality or real-task advantage"]
+}

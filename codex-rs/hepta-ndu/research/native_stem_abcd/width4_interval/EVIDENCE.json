@@ -1,0 +1,81 @@
+{
+  "all_source_sha256": {
+    "audit/test_tamper.py": "9c317c8a8c3891ffd9bc90c050cab0cade810f88fb5aa1e3907892e970d618e8",
+    "audit/verify.py": "0657c9599966a2cd2a22b579e8f0890c52a645fa2c29fa78eb71cdb0ee416e25",
+    "fitters.py": "293e3b2919444f35822e3ca0d253fd3ecb286076ccf8e83f7f167846dcc2d2d8",
+    "global_interval.py": "e70902d28993272c89330e96d846801e3b6d76623697b92a7d6867867bfa7dd1",
+    "model.py": "e0a1cff9e3fe8d4510b8bde45343518214695177145ef6efe698596b0d05b123",
+    "model_eps1_pilot.py": "94623f3ea3ebbef5b5e9bcda8b8b4225a236bdbb59aefa9756ca36749840aed5",
+    "run.py": "59455e3e95b39f9c25dc2c2912754be370423e22921c7be77e3c99a3894f2818",
+    "test_math.py": "7846cc35516223d09230589a4d7b93cdd2ed8e5f3e13774733be3ddf59dc1588"
+  },
+  "audit": {
+    "audit_cpu": 26.949566189,
+    "audit_wall": 26.95244563899996,
+    "checkpoints": 5979,
+    "first_report": "w2-s0-lbfgs",
+    "fit_cpu_total": 29.570819360999998,
+    "global_optimum_location_proven": false,
+    "hardware_attested": false,
+    "largest_fit_process_rss": 294785024,
+    "leaf_entries": 19200,
+    "max_branch_replay_error": 0.0,
+    "max_checkpoint_cost_replay_error": 0.0,
+    "per_width_certified": {
+      "2": true,
+      "3": false,
+      "4": false
+    },
+    "per_width_strict_success": {
+      "2": 20,
+      "3": 0,
+      "4": 0
+    },
+    "production_authorized": false,
+    "schema": "hepta.ndu.width4.r21.audit",
+    "strict_successes": 20,
+    "unique_groups": 24,
+    "verified_runs": 120,
+    "whole_sweep_child_cpu": 274.2913549999999,
+    "whole_sweep_wall": 277.35175946399977
+  },
+  "certificate_by_width": {
+    "2": true,
+    "3": false,
+    "4": false
+  },
+  "energy_joules": null,
+  "executed_core_sha256": {
+    "PROTOCOL.md": "9004e2e984edeb0234bf687eba05f313f29db8f1fb336ebb81d93bb832414dbd",
+    "fitters.py": "293e3b2919444f35822e3ca0d253fd3ecb286076ccf8e83f7f167846dcc2d2d8",
+    "global_interval.py": "e70902d28993272c89330e96d846801e3b6d76623697b92a7d6867867bfa7dd1",
+    "model.py": "e0a1cff9e3fe8d4510b8bde45343518214695177145ef6efe698596b0d05b123",
+    "run.py": "59455e3e95b39f9c25dc2c2912754be370423e22921c7be77e3c99a3894f2818",
+    "test_math.py": "7846cc35516223d09230589a4d7b93cdd2ed8e5f3e13774733be3ddf59dc1588"
+  },
+  "false_certificates_promoted": 0,
+  "global_flops": null,
+  "gpu_max_bytes": null,
+  "parent": "3b1c47979cb7323415275bd84e50547711f1218c",
+  "production_authorized": false,
+  "remote_frozen_protocol": "14dbf7ffdbfac43c81dfe355f644e8b11f383266",
+  "remote_protocol_clarification": "42547d4b16d0ea8c77dbdcc0108fcf5f3f289508",
+  "schema": "hepta.ndu.width4.r21.final-artifact",
+  "source_slice_only": true,
+  "tests": {
+    "R18_legacy": 25,
+    "R19_legacy": 18,
+    "R20_legacy": 20,
+    "R21_new": 18,
+    "R21_tamper_python_O": 8,
+    "skips": 0,
+    "total_distinct": 89
+  },
+  "whole_repository_ci_verified": false,
+  "whole_sweep": {
+    "child_cpu": 274.2913549999999,
+    "complete": 120,
+    "failures": 0,
+    "wall": 277.35175946399977
+  }
+}

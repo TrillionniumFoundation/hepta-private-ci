@@ -23,6 +23,7 @@ from .candidate_runtime import CandidateRuntime, validate_activation, validate_p
 from .candidate_selector import validate_profile as validate_selector_profile
 from .selector_runtime import SelectorRuntime
 from .controllers import ControlPlan, Controller, PublicState
+from .content_identity import SELECTION_SCHEMA, selection_receipt
 from .metering import Meter, atomic_json, file_sha, transport_receipt, canonical_sha
 from .neural import FittedPredictor, ReceiptPortfolioModel
 from .objective import utility_profile
@@ -375,6 +376,7 @@ def run():
                 "memory_mode": plan.memory_mode,
                 "control_profile_sha256": control_digest,
                 "parameters_sha256": baseline_parameters,
+                "content_identity_profile": SELECTION_SCHEMA,
                 "candidate_selector_profile_sha256": selector_runtime.profile_sha256
                 if selector_runtime is not None
                 else None,
@@ -593,11 +595,18 @@ def run():
             (packet["source_size"]["width"], packet["source_size"]["height"]),
             state,
         )
+        with meter.stage("codec", "bind selected content to action payload"):
+            selection = (
+                selection_receipt(candidates, selected_index, output)
+                if action == "WRITE_TEXT"
+                else None
+            )
         result = {
             "schema": "ndu.real.actor-observation.v1",
             "case_id": packet["case_id"],
             "step": sequence,
             "action": output,
+            "content_selection": selection,
             "public_features": list(public_state.features),
             "public_metadata": meta,
             "controller": details,

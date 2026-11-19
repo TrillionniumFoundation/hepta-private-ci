@@ -59,6 +59,7 @@ use codex_protocol::protocol::ThreadSettingsOverrides;
 use codex_protocol::user_input::UserInput;
 use core_test_support::TestCodexResponsesRequestKind;
 use core_test_support::apps_test_server::AppsTestServer;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::load_default_config_for_test;
 use core_test_support::responses::ResponsesRequest;
 use core_test_support::responses::ev_assistant_message;
@@ -799,7 +800,7 @@ fn write_auth_json(
         "OPENAI_API_KEY": openai_api_key,
         "tokens": tokens,
         // RFC3339 datetime; value doesn't matter for these tests
-        "last_refresh": chrono::Utc::now(),
+        "last_refresh": codex_utils_time::Timestamp::now(),
     });
 
     std::fs::write(
@@ -3937,4 +3938,203 @@ async fn history_dedupes_streamed_and_final_messages_across_turns() {
         r3_tail_expected,
         "request 3 tail mismatch",
     );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_turns() {
+    let server = FirstPartyMockServer::start().await.unwrap();
+    let assistant_create_time = 1_785_276_138.422709;
+    let mut assistant_message = ev_assistant_message("msg-1", "first answer");
+    assistant_message["item"]["internal_chat_message_metadata_passthrough"] = json!({
+        "create_time": assistant_create_time,
+    });
+    let response_mock = mount_sse_sequence(
+        &server,
+        vec![
+            sse(vec![
+                ev_response_created("resp1"),
+                assistant_message,
+                ev_completed("resp1"),
+            ]),
+            sse(vec![ev_response_created("resp2"), ev_completed("resp2")]),
+        ],
+    )
+    .await;
+    let test = server.test_codex().build(&server).await.unwrap();
+
+    test.submit_turn("turn one").await.unwrap();
+    test.submit_turn("turn two").await.unwrap();
+
+    let requests = response_mock.requests();
+    assert_eq!(requests.len(), 2);
+    let first = requests[0].body_json();
+    let second = requests[1].body_json();
+    let first_turn_id = first["client_metadata"]["turn_id"]
+        .as_str()
+        .expect("first request should include turn id");
+    let second_turn_id = second["client_metadata"]["turn_id"]
+        .as_str()
+        .expect("second request should include turn id");
+    assert_ne!(first_turn_id, second_turn_id);
+
+    let first_input = first["input"].as_array().expect("first input");
+    let second_input = second["input"].as_array().expect("second input");
+    assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
+    for item in first_input {
+        assert_eq!(
+            item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
+            Some(first_turn_id)
+        );
+    }
+    for role in ["user", "developer"] {
+        assert!(first_input.iter().any(|item| {
+            item["role"].as_str() == Some(role)
+                && item["internal_chat_message_metadata_passthrough"]["create_time"]
+                    .as_f64()
+                    .is_some_and(|create_time| create_time > 0.0)
+        }));
+    }
+
+    let item_turn_id = |text: &str| {
+        second_input
+            .iter()
+            .find(|item| {
+                item["content"].as_array().is_some_and(|content| {
+                    content
+                        .iter()
+                        .any(|content_item| content_item["text"].as_str() == Some(text))
+                })
+            })
+            .and_then(|item| item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str())
+    };
+    assert_eq!(item_turn_id("turn one"), Some(first_turn_id));
+    assert_eq!(item_turn_id("first answer"), Some(first_turn_id));
+    assert_eq!(item_turn_id("turn two"), Some(second_turn_id));
+
+    let item_create_time = |text: &str| {
+        second_input
+            .iter()
+            .find(|item| {
+                item["content"].as_array().is_some_and(|content| {
+                    content
+                        .iter()
+                        .any(|content_item| content_item["text"].as_str() == Some(text))
+                })
+            })
+            .and_then(|item| {
+                item["internal_chat_message_metadata_passthrough"]["create_time"].as_f64()
+            })
+    };
+    assert_eq!(
+        item_create_time("first answer"),
+        Some(assistant_create_time)
+    );
+    assert!(item_create_time("turn two").is_some_and(|create_time| create_time > 0.0));
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn sends_audio_urls_to_responses_for_first_party_provider() {
+    skip_if_no_network!();
+
+    let server = FirstPartyMockServer::start()
+        .await
+        .expect("owned first-party fixture");
+    let response_mock = mount_sse_once(
+        &server,
+        sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
+    )
+    .await;
+    let codex = server
+        .test_codex()
+        .with_model_info_override("gpt-5.5", |model_info| {
+            model_info.input_modalities.push(InputModality::Audio);
+        })
+        .build(&server)
+        .await
+        .unwrap()
+        .codex;
+    let audio_url = "data:audio/wav;base64,AAAA";
+
+    codex
+        .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Audio {
+            audio_url: audio_url.to_string(),
+        }]))
+        .await
+        .unwrap();
+    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+
+    let request = response_mock.single_request();
+    assert!(request.has_content_kinds(&["user.audio"]));
+    let user_message = request
+        .input()
+        .into_iter()
+        .rev()
+        .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
+        .expect("request should include a user message");
+    assert_eq!(
+        user_message["content"],
+        json!([{
+            "type": "input_audio",
+            "audio_url": audio_url,
+        }])
+    );
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn sends_local_audio_to_responses_for_first_party_provider() -> anyhow::Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = FirstPartyMockServer::start().await?;
+    let response_mock = mount_sse_once(
+        &server,
+        sse(vec![ev_response_created("resp1"), ev_completed("resp1")]),
+    )
+    .await;
+    let codex = server
+        .test_codex()
+        .with_model_info_override("gpt-5.5", |model_info| {
+            model_info.input_modalities.push(InputModality::Audio);
+        })
+        .build(&server)
+        .await?
+        .codex;
+    let temp_dir = tempfile::tempdir()?;
+    let audio_path = temp_dir.path().join("recording.wav");
+    std::fs::write(&audio_path, b"audio")?;
+
+    codex
+        .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::LocalAudio {
+            path: audio_path.clone(),
+        }]))
+        .await?;
+    wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
+
+    let request = response_mock.single_request();
+    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    let user_message = request
+        .input()
+        .into_iter()
+        .rev()
+        .find(|item| item.get("role").and_then(serde_json::Value::as_str) == Some("user"))
+        .expect("request should include a user message");
+    let audio_path = audio_path.display();
+    assert_eq!(
+        user_message["content"],
+        json!([
+            {
+                "type": "input_text",
+                "text": format!(r#"<audio name=[Audio #1] path="{audio_path}">"#),
+            },
+            {
+                "type": "input_audio",
+                "audio_url": "data:audio/wav;base64,YXVkaW8=",
+            },
+            {
+                "type": "input_text",
+                "text": "</audio>",
+            },
+        ])
+    );
+
+    Ok(())
 }

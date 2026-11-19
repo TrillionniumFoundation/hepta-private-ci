@@ -1,0 +1,1024 @@
+{
+  "tasks": [
+    [
+      {
+        "id": "act3/filesystem/v1/n3/normal/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "bc57d3af91a984869ef4ba4e4ad6ca0894cc9d40378d2949686e9da916e571e6",
+          "90fd75af4ce8dc1eb3e60191320f82aa60d40ff439782914205e82a38c81c2d4",
+          "1404cfed899cc646d94caf1b119e209f12433ee359c02a019a2ba432899c6064"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/normal/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "bc57d3af91a984869ef4ba4e4ad6ca0894cc9d40378d2949686e9da916e571e6",
+          "90fd75af4ce8dc1eb3e60191320f82aa60d40ff439782914205e82a38c81c2d4",
+          "1404cfed899cc646d94caf1b119e209f12433ee359c02a019a2ba432899c6064"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/normal/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "bc57d3af91a984869ef4ba4e4ad6ca0894cc9d40378d2949686e9da916e571e6",
+          "90fd75af4ce8dc1eb3e60191320f82aa60d40ff439782914205e82a38c81c2d4",
+          "1404cfed899cc646d94caf1b119e209f12433ee359c02a019a2ba432899c6064"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/normal/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "bc57d3af91a984869ef4ba4e4ad6ca0894cc9d40378d2949686e9da916e571e6",
+          "90fd75af4ce8dc1eb3e60191320f82aa60d40ff439782914205e82a38c81c2d4",
+          "1404cfed899cc646d94caf1b119e209f12433ee359c02a019a2ba432899c6064"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/lost_reply/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "02b57ac056b04e04f1602cc4589a062d75f06ecb5180068bb91f762000fa0bb5",
+          "bcfcd6d8bce1eb443f134e5ff95c4b8db6db932414273de51054876e218cc7f1",
+          "8348f0df0016d578e325ef7039bdfd1c447e6b3411b3845f29a60a9492592dbb"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/lost_reply/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "02b57ac056b04e04f1602cc4589a062d75f06ecb5180068bb91f762000fa0bb5",
+          "bcfcd6d8bce1eb443f134e5ff95c4b8db6db932414273de51054876e218cc7f1",
+          "8348f0df0016d578e325ef7039bdfd1c447e6b3411b3845f29a60a9492592dbb"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/lost_reply/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "02b57ac056b04e04f1602cc4589a062d75f06ecb5180068bb91f762000fa0bb5",
+          "bcfcd6d8bce1eb443f134e5ff95c4b8db6db932414273de51054876e218cc7f1",
+          "8348f0df0016d578e325ef7039bdfd1c447e6b3411b3845f29a60a9492592dbb"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/lost_reply/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "02b57ac056b04e04f1602cc4589a062d75f06ecb5180068bb91f762000fa0bb5",
+          "bcfcd6d8bce1eb443f134e5ff95c4b8db6db932414273de51054876e218cc7f1",
+          "8348f0df0016d578e325ef7039bdfd1c447e6b3411b3845f29a60a9492592dbb"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/partial_failure/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "1484afcf5c56671e0865d7918e586cb030316fd3f2c2e748a29b9cdb013c3605",
+          "d8c7302550fb78af8d232495bfa6a3a23966b27f9d38b9f85fd2f4f0e5bdf99a",
+          "9d694c105c39eb71b9939f61459d0b69b1ddc93de2b2a0e9f9971794046d3174"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/partial_failure/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "1484afcf5c56671e0865d7918e586cb030316fd3f2c2e748a29b9cdb013c3605",
+          "d8c7302550fb78af8d232495bfa6a3a23966b27f9d38b9f85fd2f4f0e5bdf99a",
+          "9d694c105c39eb71b9939f61459d0b69b1ddc93de2b2a0e9f9971794046d3174"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/partial_failure/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "1484afcf5c56671e0865d7918e586cb030316fd3f2c2e748a29b9cdb013c3605",
+          "d8c7302550fb78af8d232495bfa6a3a23966b27f9d38b9f85fd2f4f0e5bdf99a",
+          "9d694c105c39eb71b9939f61459d0b69b1ddc93de2b2a0e9f9971794046d3174"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/partial_failure/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "1484afcf5c56671e0865d7918e586cb030316fd3f2c2e748a29b9cdb013c3605",
+          "d8c7302550fb78af8d232495bfa6a3a23966b27f9d38b9f85fd2f4f0e5bdf99a",
+          "9d694c105c39eb71b9939f61459d0b69b1ddc93de2b2a0e9f9971794046d3174"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/opaque_after_apply/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "11bcc657c19c0332f52839686503f62a66eec34ba3dfabd6713d3d7766f1610d",
+          "e36e9a51f0e11e4548e0b174645bf1f4ab4b50e29e25f5a906c4ba5507e50da1",
+          "72d7ef9ffda596aeb1acbaaea606b356791084b336894db82dc4baa45b62c1d2"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/opaque_after_apply/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "11bcc657c19c0332f52839686503f62a66eec34ba3dfabd6713d3d7766f1610d",
+          "e36e9a51f0e11e4548e0b174645bf1f4ab4b50e29e25f5a906c4ba5507e50da1",
+          "72d7ef9ffda596aeb1acbaaea606b356791084b336894db82dc4baa45b62c1d2"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/opaque_after_apply/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "11bcc657c19c0332f52839686503f62a66eec34ba3dfabd6713d3d7766f1610d",
+          "e36e9a51f0e11e4548e0b174645bf1f4ab4b50e29e25f5a906c4ba5507e50da1",
+          "72d7ef9ffda596aeb1acbaaea606b356791084b336894db82dc4baa45b62c1d2"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n3/opaque_after_apply/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "11bcc657c19c0332f52839686503f62a66eec34ba3dfabd6713d3d7766f1610d",
+          "e36e9a51f0e11e4548e0b174645bf1f4ab4b50e29e25f5a906c4ba5507e50da1",
+          "72d7ef9ffda596aeb1acbaaea606b356791084b336894db82dc4baa45b62c1d2"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/normal/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "136efc7aff73cdf4504f9ed3d73a80a5dc71e0d6e1e54fb52d50619f59198082",
+          "82b6de5b0462bc7893c656e49a2185016327c45933bd1692fd10a6752120c023",
+          "b7d0ee99f1223fcf6de4cdd3c95ff20bb83fda66bb50b58de79d6ce2efe8a2e6",
+          "76e7e436e17a0764d40fe15dd40c46d1875aa5e55ffbc10cade3db4e38f365e7",
+          "0aa49b7c6fc153bb18edd081f17c0bd6f5412364508e275729f2357ea5fc37a8"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/normal/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "136efc7aff73cdf4504f9ed3d73a80a5dc71e0d6e1e54fb52d50619f59198082",
+          "82b6de5b0462bc7893c656e49a2185016327c45933bd1692fd10a6752120c023",
+          "b7d0ee99f1223fcf6de4cdd3c95ff20bb83fda66bb50b58de79d6ce2efe8a2e6",
+          "76e7e436e17a0764d40fe15dd40c46d1875aa5e55ffbc10cade3db4e38f365e7",
+          "0aa49b7c6fc153bb18edd081f17c0bd6f5412364508e275729f2357ea5fc37a8"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/normal/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "136efc7aff73cdf4504f9ed3d73a80a5dc71e0d6e1e54fb52d50619f59198082",
+          "82b6de5b0462bc7893c656e49a2185016327c45933bd1692fd10a6752120c023",
+          "b7d0ee99f1223fcf6de4cdd3c95ff20bb83fda66bb50b58de79d6ce2efe8a2e6",
+          "76e7e436e17a0764d40fe15dd40c46d1875aa5e55ffbc10cade3db4e38f365e7",
+          "0aa49b7c6fc153bb18edd081f17c0bd6f5412364508e275729f2357ea5fc37a8"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/normal/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "normal",
+        "goals": [
+          "136efc7aff73cdf4504f9ed3d73a80a5dc71e0d6e1e54fb52d50619f59198082",
+          "82b6de5b0462bc7893c656e49a2185016327c45933bd1692fd10a6752120c023",
+          "b7d0ee99f1223fcf6de4cdd3c95ff20bb83fda66bb50b58de79d6ce2efe8a2e6",
+          "76e7e436e17a0764d40fe15dd40c46d1875aa5e55ffbc10cade3db4e38f365e7",
+          "0aa49b7c6fc153bb18edd081f17c0bd6f5412364508e275729f2357ea5fc37a8"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/lost_reply/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "134c35de982b0d381de8c1146b809d5419a87eed10d57f1db2c6aedd0a7d6e03",
+          "5a94149e29b115abb93f73641dd682f50b648172bafa1e7c5a7869a36c9e0d6c",
+          "a8cbf9bdb9548bd8e49f9065dcc3e293115765520495eeb305a66aeb3bf48929",
+          "2b762722d25608d0c704b501fe1c3177731dd73351520a1dc71f29c1fcb9c516",
+          "cdba57065966b1f06dee8585dc41220432cc38351b5c807903bc6a62cb10447e"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/lost_reply/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "134c35de982b0d381de8c1146b809d5419a87eed10d57f1db2c6aedd0a7d6e03",
+          "5a94149e29b115abb93f73641dd682f50b648172bafa1e7c5a7869a36c9e0d6c",
+          "a8cbf9bdb9548bd8e49f9065dcc3e293115765520495eeb305a66aeb3bf48929",
+          "2b762722d25608d0c704b501fe1c3177731dd73351520a1dc71f29c1fcb9c516",
+          "cdba57065966b1f06dee8585dc41220432cc38351b5c807903bc6a62cb10447e"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/lost_reply/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "134c35de982b0d381de8c1146b809d5419a87eed10d57f1db2c6aedd0a7d6e03",
+          "5a94149e29b115abb93f73641dd682f50b648172bafa1e7c5a7869a36c9e0d6c",
+          "a8cbf9bdb9548bd8e49f9065dcc3e293115765520495eeb305a66aeb3bf48929",
+          "2b762722d25608d0c704b501fe1c3177731dd73351520a1dc71f29c1fcb9c516",
+          "cdba57065966b1f06dee8585dc41220432cc38351b5c807903bc6a62cb10447e"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/lost_reply/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "lost_reply",
+        "goals": [
+          "134c35de982b0d381de8c1146b809d5419a87eed10d57f1db2c6aedd0a7d6e03",
+          "5a94149e29b115abb93f73641dd682f50b648172bafa1e7c5a7869a36c9e0d6c",
+          "a8cbf9bdb9548bd8e49f9065dcc3e293115765520495eeb305a66aeb3bf48929",
+          "2b762722d25608d0c704b501fe1c3177731dd73351520a1dc71f29c1fcb9c516",
+          "cdba57065966b1f06dee8585dc41220432cc38351b5c807903bc6a62cb10447e"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/partial_failure/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "60d41c604dc23f907c210645f1ab2dc412986f9e3f2287076713841e3e286c62",
+          "1bc9ef2b8a228d9500d6baa0a8118901a503684eb0151a518deecc66a48c4edd",
+          "f8c17b53e8f71e6121894017bc17625c0e039605ece5a12868e301fd074a908e",
+          "4d2807500890f3d921cf6f69df87b31d59ee1878428cf44a6fe25bdd805c93c2",
+          "cc0bd039a99c84ecdbbe8bb3fc5a5e8b30f0efde44e5d07b406818d54e1f103e"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/partial_failure/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "60d41c604dc23f907c210645f1ab2dc412986f9e3f2287076713841e3e286c62",
+          "1bc9ef2b8a228d9500d6baa0a8118901a503684eb0151a518deecc66a48c4edd",
+          "f8c17b53e8f71e6121894017bc17625c0e039605ece5a12868e301fd074a908e",
+          "4d2807500890f3d921cf6f69df87b31d59ee1878428cf44a6fe25bdd805c93c2",
+          "cc0bd039a99c84ecdbbe8bb3fc5a5e8b30f0efde44e5d07b406818d54e1f103e"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/partial_failure/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "60d41c604dc23f907c210645f1ab2dc412986f9e3f2287076713841e3e286c62",
+          "1bc9ef2b8a228d9500d6baa0a8118901a503684eb0151a518deecc66a48c4edd",
+          "f8c17b53e8f71e6121894017bc17625c0e039605ece5a12868e301fd074a908e",
+          "4d2807500890f3d921cf6f69df87b31d59ee1878428cf44a6fe25bdd805c93c2",
+          "cc0bd039a99c84ecdbbe8bb3fc5a5e8b30f0efde44e5d07b406818d54e1f103e"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/partial_failure/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "partial_failure",
+        "goals": [
+          "60d41c604dc23f907c210645f1ab2dc412986f9e3f2287076713841e3e286c62",
+          "1bc9ef2b8a228d9500d6baa0a8118901a503684eb0151a518deecc66a48c4edd",
+          "f8c17b53e8f71e6121894017bc17625c0e039605ece5a12868e301fd074a908e",
+          "4d2807500890f3d921cf6f69df87b31d59ee1878428cf44a6fe25bdd805c93c2",
+          "cc0bd039a99c84ecdbbe8bb3fc5a5e8b30f0efde44e5d07b406818d54e1f103e"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/opaque_after_apply/running",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "94aae816480693f99fb036252a1728e13a184a4a4e0222524da213fd4420c8a9",
+          "2519730349b1b3986e775210eb75b5102489a9781a120e9beca81ba5265cff27",
+          "a662bb3ba8dfc4b029b3f78c9b0416d955bccbc276c46de22a017c138a9fc5a0",
+          "2596b3ad7318c855a6d4d023880cb793810e5a519925e6fc175e0996e883b898",
+          "9c3b86e21132b5b67b901dca56c3f0ab2aec6b2823a4b956f502b782e9a39828"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/opaque_after_apply/pause_resume",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "94aae816480693f99fb036252a1728e13a184a4a4e0222524da213fd4420c8a9",
+          "2519730349b1b3986e775210eb75b5102489a9781a120e9beca81ba5265cff27",
+          "a662bb3ba8dfc4b029b3f78c9b0416d955bccbc276c46de22a017c138a9fc5a0",
+          "2596b3ad7318c855a6d4d023880cb793810e5a519925e6fc175e0996e883b898",
+          "9c3b86e21132b5b67b901dca56c3f0ab2aec6b2823a4b956f502b782e9a39828"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/opaque_after_apply/expired",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "94aae816480693f99fb036252a1728e13a184a4a4e0222524da213fd4420c8a9",
+          "2519730349b1b3986e775210eb75b5102489a9781a120e9beca81ba5265cff27",
+          "a662bb3ba8dfc4b029b3f78c9b0416d955bccbc276c46de22a017c138a9fc5a0",
+          "2596b3ad7318c855a6d4d023880cb793810e5a519925e6fc175e0996e883b898",
+          "9c3b86e21132b5b67b901dca56c3f0ab2aec6b2823a4b956f502b782e9a39828"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v1/n5/opaque_after_apply/no_repair",
+        "family": "filesystem",
+        "version": 1,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "94aae816480693f99fb036252a1728e13a184a4a4e0222524da213fd4420c8a9",
+          "2519730349b1b3986e775210eb75b5102489a9781a120e9beca81ba5265cff27",
+          "a662bb3ba8dfc4b029b3f78c9b0416d955bccbc276c46de22a017c138a9fc5a0",
+          "2596b3ad7318c855a6d4d023880cb793810e5a519925e6fc175e0996e883b898",
+          "9c3b86e21132b5b67b901dca56c3f0ab2aec6b2823a4b956f502b782e9a39828"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/normal/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "18ff8bc47f4243ae5e60095dd3d21c0529bb5cca8e8146e78c3fdffd674db33c",
+          "9fc346ec0fb59ac5ad93ffe741ffb732133a3d734cabeeac2bc5d6b9bc85589c",
+          "c32ee647530ec409ffc36a685f97a8cdd2022a211c717e70675b809d56738663"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/normal/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "18ff8bc47f4243ae5e60095dd3d21c0529bb5cca8e8146e78c3fdffd674db33c",
+          "9fc346ec0fb59ac5ad93ffe741ffb732133a3d734cabeeac2bc5d6b9bc85589c",
+          "c32ee647530ec409ffc36a685f97a8cdd2022a211c717e70675b809d56738663"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/normal/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "18ff8bc47f4243ae5e60095dd3d21c0529bb5cca8e8146e78c3fdffd674db33c",
+          "9fc346ec0fb59ac5ad93ffe741ffb732133a3d734cabeeac2bc5d6b9bc85589c",
+          "c32ee647530ec409ffc36a685f97a8cdd2022a211c717e70675b809d56738663"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/normal/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "18ff8bc47f4243ae5e60095dd3d21c0529bb5cca8e8146e78c3fdffd674db33c",
+          "9fc346ec0fb59ac5ad93ffe741ffb732133a3d734cabeeac2bc5d6b9bc85589c",
+          "c32ee647530ec409ffc36a685f97a8cdd2022a211c717e70675b809d56738663"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/lost_reply/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "b3e7d19016c68fab56bbf89f36c0803e08bbe67b602a8c3b4240818493240751",
+          "b3dbc4f896f643a0962e8ee1fa64cc5995315bc949e53c609b843264b0a863cc",
+          "6b57450c566fc159cf681ef6b62eacb4d7c82a7418d2b5af7656028d11cdc22c"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/lost_reply/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "b3e7d19016c68fab56bbf89f36c0803e08bbe67b602a8c3b4240818493240751",
+          "b3dbc4f896f643a0962e8ee1fa64cc5995315bc949e53c609b843264b0a863cc",
+          "6b57450c566fc159cf681ef6b62eacb4d7c82a7418d2b5af7656028d11cdc22c"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/lost_reply/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "b3e7d19016c68fab56bbf89f36c0803e08bbe67b602a8c3b4240818493240751",
+          "b3dbc4f896f643a0962e8ee1fa64cc5995315bc949e53c609b843264b0a863cc",
+          "6b57450c566fc159cf681ef6b62eacb4d7c82a7418d2b5af7656028d11cdc22c"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/lost_reply/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "b3e7d19016c68fab56bbf89f36c0803e08bbe67b602a8c3b4240818493240751",
+          "b3dbc4f896f643a0962e8ee1fa64cc5995315bc949e53c609b843264b0a863cc",
+          "6b57450c566fc159cf681ef6b62eacb4d7c82a7418d2b5af7656028d11cdc22c"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/partial_failure/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "88e28a0320948331e62a84a21901ca603ba06a5c2809d33331242ae221138639",
+          "2721231624b0e52acbbf19bb6bf81497001779e4c2d800bdc35000714caf35c1",
+          "c4cddfcd166539337da6c65f974d0c266333441b8e373af8e6004d94590b3aa5"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/partial_failure/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "88e28a0320948331e62a84a21901ca603ba06a5c2809d33331242ae221138639",
+          "2721231624b0e52acbbf19bb6bf81497001779e4c2d800bdc35000714caf35c1",
+          "c4cddfcd166539337da6c65f974d0c266333441b8e373af8e6004d94590b3aa5"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/partial_failure/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "88e28a0320948331e62a84a21901ca603ba06a5c2809d33331242ae221138639",
+          "2721231624b0e52acbbf19bb6bf81497001779e4c2d800bdc35000714caf35c1",
+          "c4cddfcd166539337da6c65f974d0c266333441b8e373af8e6004d94590b3aa5"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/partial_failure/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "88e28a0320948331e62a84a21901ca603ba06a5c2809d33331242ae221138639",
+          "2721231624b0e52acbbf19bb6bf81497001779e4c2d800bdc35000714caf35c1",
+          "c4cddfcd166539337da6c65f974d0c266333441b8e373af8e6004d94590b3aa5"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/opaque_after_apply/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "f2a57fabb6cb40b8467bfccaf38d832aac7ac806b363dac1af342e0a9ca6eb8d",
+          "6f975eddd46407179ad4869baf2430b3e1b3290522d52f298bf8ba07475de78f",
+          "ee12b69243c7fa44c0cb3ce1ff349d4ceac4c3a4a5801544cb8783c0da58e6db"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/opaque_after_apply/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "f2a57fabb6cb40b8467bfccaf38d832aac7ac806b363dac1af342e0a9ca6eb8d",
+          "6f975eddd46407179ad4869baf2430b3e1b3290522d52f298bf8ba07475de78f",
+          "ee12b69243c7fa44c0cb3ce1ff349d4ceac4c3a4a5801544cb8783c0da58e6db"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/opaque_after_apply/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "f2a57fabb6cb40b8467bfccaf38d832aac7ac806b363dac1af342e0a9ca6eb8d",
+          "6f975eddd46407179ad4869baf2430b3e1b3290522d52f298bf8ba07475de78f",
+          "ee12b69243c7fa44c0cb3ce1ff349d4ceac4c3a4a5801544cb8783c0da58e6db"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n3/opaque_after_apply/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "f2a57fabb6cb40b8467bfccaf38d832aac7ac806b363dac1af342e0a9ca6eb8d",
+          "6f975eddd46407179ad4869baf2430b3e1b3290522d52f298bf8ba07475de78f",
+          "ee12b69243c7fa44c0cb3ce1ff349d4ceac4c3a4a5801544cb8783c0da58e6db"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/normal/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "dab0222b75a26eb2debb91d896a75e8553a2f24f6f0c67ab2a13737bb928eb8a",
+          "856df1247e40b6b86092e39c1e46d81e19639ec6dd2a9ae7945c34428a04ee1e",
+          "40c771a1ca290c8fb37f0ca8059b14edb95f6c10ac580ead2e0ff07f5d164784",
+          "3f01750beb05ea528eabecc77549ec80ff1d8f30f117df07ed98b96fb4b2967f",
+          "0c22c51da4f68e61c1f90f3fbcd9b439d2f4a07cf5f901d03c5542f44356e0c9"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/normal/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "dab0222b75a26eb2debb91d896a75e8553a2f24f6f0c67ab2a13737bb928eb8a",
+          "856df1247e40b6b86092e39c1e46d81e19639ec6dd2a9ae7945c34428a04ee1e",
+          "40c771a1ca290c8fb37f0ca8059b14edb95f6c10ac580ead2e0ff07f5d164784",
+          "3f01750beb05ea528eabecc77549ec80ff1d8f30f117df07ed98b96fb4b2967f",
+          "0c22c51da4f68e61c1f90f3fbcd9b439d2f4a07cf5f901d03c5542f44356e0c9"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/normal/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "dab0222b75a26eb2debb91d896a75e8553a2f24f6f0c67ab2a13737bb928eb8a",
+          "856df1247e40b6b86092e39c1e46d81e19639ec6dd2a9ae7945c34428a04ee1e",
+          "40c771a1ca290c8fb37f0ca8059b14edb95f6c10ac580ead2e0ff07f5d164784",
+          "3f01750beb05ea528eabecc77549ec80ff1d8f30f117df07ed98b96fb4b2967f",
+          "0c22c51da4f68e61c1f90f3fbcd9b439d2f4a07cf5f901d03c5542f44356e0c9"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/normal/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "normal",
+        "goals": [
+          "dab0222b75a26eb2debb91d896a75e8553a2f24f6f0c67ab2a13737bb928eb8a",
+          "856df1247e40b6b86092e39c1e46d81e19639ec6dd2a9ae7945c34428a04ee1e",
+          "40c771a1ca290c8fb37f0ca8059b14edb95f6c10ac580ead2e0ff07f5d164784",
+          "3f01750beb05ea528eabecc77549ec80ff1d8f30f117df07ed98b96fb4b2967f",
+          "0c22c51da4f68e61c1f90f3fbcd9b439d2f4a07cf5f901d03c5542f44356e0c9"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/lost_reply/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "82551f23cf3b1d1c0fe888df72a10000f305ddf58bb7af5dc9537264a73d8dff",
+          "a2b9cb6c361b0748c4cc9bc0526fe28901340db6c0fb2f1275ed6aae32a15c0e",
+          "38a366082dd1cfc2d3f7af11a8e6adee92c2e70445315e3e65857814757031c1",
+          "9be59c20b06ef513b7c1c6d10971441f4f6834a5a616f02cf46f66009d0c8125",
+          "2219d2d2752667e93f737eef040df610d4ad87850edbab3f83a697f966c30aa4"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/lost_reply/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "82551f23cf3b1d1c0fe888df72a10000f305ddf58bb7af5dc9537264a73d8dff",
+          "a2b9cb6c361b0748c4cc9bc0526fe28901340db6c0fb2f1275ed6aae32a15c0e",
+          "38a366082dd1cfc2d3f7af11a8e6adee92c2e70445315e3e65857814757031c1",
+          "9be59c20b06ef513b7c1c6d10971441f4f6834a5a616f02cf46f66009d0c8125",
+          "2219d2d2752667e93f737eef040df610d4ad87850edbab3f83a697f966c30aa4"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/lost_reply/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "82551f23cf3b1d1c0fe888df72a10000f305ddf58bb7af5dc9537264a73d8dff",
+          "a2b9cb6c361b0748c4cc9bc0526fe28901340db6c0fb2f1275ed6aae32a15c0e",
+          "38a366082dd1cfc2d3f7af11a8e6adee92c2e70445315e3e65857814757031c1",
+          "9be59c20b06ef513b7c1c6d10971441f4f6834a5a616f02cf46f66009d0c8125",
+          "2219d2d2752667e93f737eef040df610d4ad87850edbab3f83a697f966c30aa4"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/lost_reply/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "lost_reply",
+        "goals": [
+          "82551f23cf3b1d1c0fe888df72a10000f305ddf58bb7af5dc9537264a73d8dff",
+          "a2b9cb6c361b0748c4cc9bc0526fe28901340db6c0fb2f1275ed6aae32a15c0e",
+          "38a366082dd1cfc2d3f7af11a8e6adee92c2e70445315e3e65857814757031c1",
+          "9be59c20b06ef513b7c1c6d10971441f4f6834a5a616f02cf46f66009d0c8125",
+          "2219d2d2752667e93f737eef040df610d4ad87850edbab3f83a697f966c30aa4"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/partial_failure/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "acb1e75545781debd4d3013019ecf125ff9b4ba207980d003b9375b2d934139a",
+          "3e20a7cecbac4e563921545a39dde1c9ad0aa46629b5966b69087a8ad887b66a",
+          "a37e30a7c73259974cea28b99561cb8814bae184073922b88b95db45d56cd5b1",
+          "7a1f6e9e2a78c32615f24595c04af3c344e86403359ebac34ba75f008baa2d07",
+          "ed60b757aba4ea2792a9c30f41235f3a1918e2db29b1e0269392439306487753"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/partial_failure/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "acb1e75545781debd4d3013019ecf125ff9b4ba207980d003b9375b2d934139a",
+          "3e20a7cecbac4e563921545a39dde1c9ad0aa46629b5966b69087a8ad887b66a",
+          "a37e30a7c73259974cea28b99561cb8814bae184073922b88b95db45d56cd5b1",
+          "7a1f6e9e2a78c32615f24595c04af3c344e86403359ebac34ba75f008baa2d07",
+          "ed60b757aba4ea2792a9c30f41235f3a1918e2db29b1e0269392439306487753"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/partial_failure/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "acb1e75545781debd4d3013019ecf125ff9b4ba207980d003b9375b2d934139a",
+          "3e20a7cecbac4e563921545a39dde1c9ad0aa46629b5966b69087a8ad887b66a",
+          "a37e30a7c73259974cea28b99561cb8814bae184073922b88b95db45d56cd5b1",
+          "7a1f6e9e2a78c32615f24595c04af3c344e86403359ebac34ba75f008baa2d07",
+          "ed60b757aba4ea2792a9c30f41235f3a1918e2db29b1e0269392439306487753"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/partial_failure/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "partial_failure",
+        "goals": [
+          "acb1e75545781debd4d3013019ecf125ff9b4ba207980d003b9375b2d934139a",
+          "3e20a7cecbac4e563921545a39dde1c9ad0aa46629b5966b69087a8ad887b66a",
+          "a37e30a7c73259974cea28b99561cb8814bae184073922b88b95db45d56cd5b1",
+          "7a1f6e9e2a78c32615f24595c04af3c344e86403359ebac34ba75f008baa2d07",
+          "ed60b757aba4ea2792a9c30f41235f3a1918e2db29b1e0269392439306487753"
+        ]
+      },
+      "no_repair"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/opaque_after_apply/running",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "3482ab27c6266f9543e5066e74696dc7bda7f37ce268363466ccfd78943bc9c4",
+          "24f9ef8cd4df3cca328ab55b812c76f2e91a5908a5cb4c2a5993b9a52741e3f3",
+          "da85425b8677e2fd7184e8032c591a1b97873572f448b3285b895d77d75add89",
+          "8281c5227bdee30f253e3f03f6cdc957077d5389b32b46acc3b57f29f5a32d0d",
+          "63db341a89b5ebc301564a709b3c3d0a0522e40d241e1a23701203856dbee4b7"
+        ]
+      },
+      "running"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/opaque_after_apply/pause_resume",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "3482ab27c6266f9543e5066e74696dc7bda7f37ce268363466ccfd78943bc9c4",
+          "24f9ef8cd4df3cca328ab55b812c76f2e91a5908a5cb4c2a5993b9a52741e3f3",
+          "da85425b8677e2fd7184e8032c591a1b97873572f448b3285b895d77d75add89",
+          "8281c5227bdee30f253e3f03f6cdc957077d5389b32b46acc3b57f29f5a32d0d",
+          "63db341a89b5ebc301564a709b3c3d0a0522e40d241e1a23701203856dbee4b7"
+        ]
+      },
+      "pause_resume"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/opaque_after_apply/expired",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "3482ab27c6266f9543e5066e74696dc7bda7f37ce268363466ccfd78943bc9c4",
+          "24f9ef8cd4df3cca328ab55b812c76f2e91a5908a5cb4c2a5993b9a52741e3f3",
+          "da85425b8677e2fd7184e8032c591a1b97873572f448b3285b895d77d75add89",
+          "8281c5227bdee30f253e3f03f6cdc957077d5389b32b46acc3b57f29f5a32d0d",
+          "63db341a89b5ebc301564a709b3c3d0a0522e40d241e1a23701203856dbee4b7"
+        ]
+      },
+      "expired"
+    ],
+    [
+      {
+        "id": "act3/filesystem/v2/n5/opaque_after_apply/no_repair",
+        "family": "filesystem",
+        "version": 2,
+        "fault": "opaque_after_apply",
+        "goals": [
+          "3482ab27c6266f9543e5066e74696dc7bda7f37ce268363466ccfd78943bc9c4",
+          "24f9ef8cd4df3cca328ab55b812c76f2e91a5908a5cb4c2a5993b9a52741e3f3",
+          "da85425b8677e2fd7184e8032c591a1b97873572f448b3285b895d77d75add89",
+          "8281c5227bdee30f253e3f03f6cdc957077d5389b32b46acc3b57f29f5a32d0d",
+          "63db341a89b5ebc301564a709b3c3d0a0522e40d241e1a23701203856dbee4b7"
+        ]
+      },
+      "no_repair"
+    ]
+  ],
+  "seeds": [
+    700,
+    701,
+    702,
+    703,
+    704,
+    705,
+    706,
+    707
+  ],
+  "arms": [
+    "fixed",
+    "head",
+    "gru"
+  ],
+  "source_sha256": {
+    "qualify_operational.py": "b03d10529ac789afe96f03556ff9661f16afba4925e6af0d73fd30f02b5a5cfa",
+    "skill_lifecycle.py": "1bfdc72945c095fdfb7c2d447fe862ce771de5d6036640e164d61b16e6944044",
+    "operational_metrics.py": "6b1b2df7828345773f04c96dc2fe7a13517456511bfa79f106c93b2f166232a0",
+    "file_family.py": "9d65246d0374d18d7035428b930ccbee68075ff8b264bb47bff1ee69dfd62dfd",
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "diagnose.py": "ea427daece8b211a1b01c4fe23f9273c3bcfdb308a3c139078b1ad954d11cb2a",
+    "qualify_families.py": "14cee192b89a89e1e42d044f7a7f5dd8206eaf8f442796899f7d6ce36aa6a333",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+  },
+  "archive_inputs_sha256": {
+    "RESULT.json": "65fce279bc17d8ece28ece68b270cfd64051fee61b556fad2c46af276282c432",
+    "FROZEN_MANIFEST.json": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9",
+    "confirmation-trajectories.jsonl.gz": "c53c480a136407c0d71efcf4df74c9dba00d73b245565857449f2dc32eca8ce4",
+    "training-trajectories.jsonl.gz": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec",
+    "B3_head-seed-700.npz": "2901ba80ae8d665ba9098698a9199eedc3233430baea0df8b3a13563d98b10bc",
+    "B3_head-seed-701.npz": "58263ffc240b261e498af2dbec91de8b578a68cb99df2dddcd159bd9a135085c",
+    "B3_head-seed-702.npz": "7c32b5cdc1a3b1926d2d6ec874dcc3cf967e943cbc0443eddd3b44b4c2358e4c",
+    "B3_head-seed-703.npz": "68e6035a3438bb16566916aa67c4d18e6ed0857cf3af7fa5bef0166d426b2d57",
+    "B3_head-seed-704.npz": "b394f5685fced0d30f0c605632c109f7eb1ed9bbd99864a2dbe5799a1e75ff72",
+    "B3_head-seed-705.npz": "70e0a64318ea5f4e35783be82488a7460db39bafba82435241a03d024c08c1d0",
+    "B3_head-seed-706.npz": "5b20ab2aae0906e2f6c502b73b7bf603a339bcdb7cefecb6975aac428a9bf7ba",
+    "B3_head-seed-707.npz": "13c9a2e94de2a4543a2c6fe8a9a439192c4c4039c3aecfa42f50706e88c43a4c",
+    "B4_gru-seed-700.npz": "7388073b70b5b27953dc74a41a2052ea57e7e70fe0ca220b50d1da0815bc116c",
+    "B4_gru-seed-701.npz": "fa226d72309586a4aa75f5ad5e7549b304a7396ce716d48d31f22822045c9181",
+    "B4_gru-seed-702.npz": "98372ee53211f9e17ec8c25081a0e0786d12faaede6ef4630b8de1d8d50b3d2f",
+    "B4_gru-seed-703.npz": "c7df2efd818b2cf6cd17393854e93b9c36fe0e9db8384abf65c040db82a7ade5",
+    "B4_gru-seed-704.npz": "45be9a09fd939bc0934e94f59547e5b790696d81d7bc1b9cb266801bc98884d9",
+    "B4_gru-seed-705.npz": "6bc37059e16ccf201b08e3f181200770ee6aa0bc5e5c2c1b71daf0860ca89419",
+    "B4_gru-seed-706.npz": "73b766d821c3f0da1b4a21e83a008bad2838639db05cdc1208c6f64a94c92f16",
+    "B4_gru-seed-707.npz": "6ed2d0e82871ac9a41fdaed4bca608a1182178ddffd497912a652b5cd420ac2e",
+    "SHA256SUMS.json": "16de01ad186843a08f115562ba6c3ade48ca43fe42b6c437399958d8cafb44df",
+    "source-postimages.zip": "8b2c18bbddf915e6f143d26871864d0ef27c657738d9f19198b4859f6e46d75c"
+  },
+  "deadline_window_ns": 60000000000,
+  "scope": "repeated controlled filesystem probes; same ACT2 observations",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5"
+  },
+  "base_probes": 16,
+  "schedule_conditions": 64,
+  "new_independent_real_tasks": 0,
+  "training_performed": false
+}

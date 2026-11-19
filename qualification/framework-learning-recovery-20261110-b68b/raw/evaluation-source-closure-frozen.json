@@ -1,0 +1,43 @@
+{
+  "source_sha": "6c5e5fa199ef291c5dbbc0ab13fe3e565d750fec",
+  "source_tree": "8ac7e89fb13e732e3c8c5191eba3a0dc40bbd792",
+  "before_status": "",
+  "started_at": "2026-11-10T13:21:30.951396+00:00",
+  "cwd": "/workspace/scratch/b68b63394cea/hepta-framework",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_cell_learning_evaluation_source_closure.py"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/b68b63394cea/validation/evaluation-source-closure-0.log",
+      "sha256": "e1990b38b01902ee476915419c53d331f213b502ea6f184e625310fde56f38c9",
+      "bytes": 106
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "qa/b4-no-bypass",
+        "-p",
+        "test_learning_evaluation_recovery_source_closure.py"
+      ],
+      "exit_code": 0,
+      "log": "/workspace/scratch/b68b63394cea/validation/evaluation-source-closure-1.log",
+      "sha256": "f8ddc3f944eb1f66d649ee1a85cc521a1f16f7c215eecfeda4255b14a99e32fc",
+      "bytes": 102
+    }
+  ],
+  "finished_at": "2026-11-10T13:21:31.545629+00:00",
+  "after_status": ""
+}

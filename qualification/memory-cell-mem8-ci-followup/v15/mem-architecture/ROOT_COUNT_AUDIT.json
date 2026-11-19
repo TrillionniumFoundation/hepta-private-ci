@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.mem8.v15.mem-architecture-root-count-audit.v1",
+  "status": "PASS_ALL_THREE_REVIEWED_OFFLINE_AUDITS_REPRODUCED_BYTE_IDENTICALLY",
+  "immutable_carrier_commit": "ee112a2a3970b0cdd93a6b30911b56bc4d164a80",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "native_tests_or_model_requests_by_audit": 0,
+  "reviewed_data_only_audit_replays": [
+    {
+      "reviewed_script": "audit_completed_python_artifacts.py",
+      "script_sha256": "8bfc15678a7f9e0a85bb7e21b07cafdb2651fb8db9e6c89aeb51269be939c788",
+      "exit_code": 0,
+      "byte_identical_reproduced_audit": "PARTIAL_AUDIT_01.json",
+      "audit_sha256": "0bfba6830a7f28e8fa42f7eac009672908c0056244c168cdcee477a047dbb775",
+      "raw_log": "audit_completed_python_artifacts.py.root-replay.log",
+      "raw_log_bytes": 2194,
+      "raw_log_sha256": "015632e70392e89fee13678123cb6413403abf339a35f2c5750a79f46d754c8d"
+    },
+    {
+      "reviewed_script": "audit_native_artifact.py",
+      "script_sha256": "7a9ad82f188a2f69564267af76bb27a995cfeb002e86ebe050bdde9ced3d6a15",
+      "exit_code": 0,
+      "byte_identical_reproduced_audit": "NATIVE_AUDIT.json",
+      "audit_sha256": "2fe655c06bc04dacfa97ac010ea036bba5a712b8924036334bb9a11988725510",
+      "raw_log": "audit_native_artifact.py.root-replay.log",
+      "raw_log_bytes": 3697,
+      "raw_log_sha256": "b535d7df7075b7beac5e1a64339a9cbc83fbe7bcbe05c584f0798c7610edd6c9"
+    },
+    {
+      "reviewed_script": "audit_architecture_artifact_v2.py",
+      "script_sha256": "f3d293d957d4f6101332190f58381ef9859a339da709b076f9ec240da4e60326",
+      "exit_code": 0,
+      "byte_identical_reproduced_audit": "ARCHITECTURE_AUDIT_V2.json",
+      "audit_sha256": "7686ff3e461b1f8dfe0e1092699bcb7fc086ccfd26a49bc087143dc660fda8ea",
+      "raw_log": "audit_architecture_artifact_v2.py.root-replay.log",
+      "raw_log_bytes": 3317,
+      "raw_log_sha256": "c1ab2e52ca1872cc483a10cc4372603acd167cb36cefe9d6c89c03789b0cf2eb"
+    }
+  ],
+  "counts": {
+    "MEM_python_executions": 154,
+    "MEM_python_distinct_cases": 120,
+    "MEM_native_executions": 34,
+    "MEM_native_distinct_cases": 33,
+    "Architecture_source_head_executions": 664,
+    "Architecture_source_head_Python": 138,
+    "Architecture_source_head_Rust": 526,
+    "Architecture_distinct_base_merge_Python_executions": 136
+  },
+  "boundaries": [
+    "Counts refer to original exact-source executions; running these audit scripts executes no native test, actor, or model.",
+    "The original provider outcome remains UNKNOWN.",
+    "Scientific unseen successor benefit, deployed owner recovery, and independent trust recovery are not established.",
+    "Architecture base-merge commit6032 is separate from source-head9bd2 even though both have treec777."
+  ]
+}

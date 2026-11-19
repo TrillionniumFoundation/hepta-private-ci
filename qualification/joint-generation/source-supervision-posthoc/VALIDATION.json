@@ -1,0 +1,33 @@
+{
+  "analysis_kind": "POSTHOC CROSS-RUN",
+  "counts": {
+    "contrasts": 48,
+    "dataset_generation_calls": 0,
+    "metric_evaluation_calls": 0,
+    "model_forwards": 0,
+    "model_restores": 0,
+    "training_updates": 0
+  },
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 3
+  },
+  "new_primary_gate": null,
+  "original_overall_gates": {
+    "mask_ablation": false,
+    "replication": false
+  },
+  "result_sha256": "09bc1743a677307dc343b3e31fa1bb43e0a0d3fc068c212dfbb3a56292406fa2",
+  "rust_checks": "Notrun: Python-onlyscope",
+  "saved_review_sha256": "d53989b2d22324090e9a3d4135799bb48454ef8421756524315f2e9c7f2688d2",
+  "scope": "Full48contrasts; thresholdflags descriptiveonly; noNDU-specificorpreregisteredprimaryclaim; nomodelorperrequestmetricreplay",
+  "source_review_sha256": "7683f028ba275dff6915baa4eeb424463d0300c2cfce43594ed05feec53a5bec",
+  "source_sha256": {
+    "INPUT_IDENTITIES.json": "f5033fd8904481241ed65148846e8f7a940b7ca646f34688971b2aab16e6cb43",
+    "PLAN.md": "6179870e65ff59ef775f0208d8e9566c8144ba2d737fa068ffc140e06c533a65",
+    "decompose.py": "3d6918539af5d48091681a7bcb8101929f1c5e981e173d0e8e2dc1f469353249",
+    "test_decompose.py": "737884dee70eb052cd48e15fb80cf8dc22d68c69151ce2e6d056dd3d7039feae"
+  },
+  "status": "POSTHOC_AGGREGATE_DECOMPOSITION_COMPLETE_NOT_NEW_PRIMARY"
+}

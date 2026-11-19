@@ -5,7 +5,6 @@ use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 
 use anyhow::Result;
-use chrono::Utc;
 use codex_http_client::HttpClientFactory;
 use codex_login::AuthManager;
 use codex_login::CodexAuth;
@@ -79,7 +78,7 @@ impl ModelsCache for TestModelsCache {
                 .entry
                 .clone()
                 .ok_or_else(|| ModelsCacheError::new("cache not found"))?;
-            entry.fetched_at = Utc::now();
+            entry.fetched_at = codex_utils_time::Timestamp::now();
             self.stored_entries
                 .lock()
                 .expect("stored entries lock should not be poisoned")
@@ -210,7 +209,7 @@ async fn injected_cache_hit_drives_agent_model_selection() -> Result<()> {
     let model_slug = "injected-cache-model";
     let cache = Arc::new(TestModelsCache {
         entry: Some(ModelsCacheEntry {
-            fetched_at: Utc::now(),
+            fetched_at: codex_utils_time::Timestamp::now(),
             etag: None,
             client_version: Some(codex_models_manager::client_version_to_whole()),
             models: vec![remote_model(model_slug)],

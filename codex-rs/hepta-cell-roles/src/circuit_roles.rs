@@ -482,6 +482,9 @@ impl RouterAdapterV1 {
         context
             .validate(CellRoleV1::Router)
             .map_err(CircuitRoleErrorV1::Adapter)?;
+        if context.generation != input.expected_generation {
+            return Err(CircuitRoleErrorV1::GenerationMismatch);
+        }
         let owner_module = StableId::new(Self::OWNER_MODULE)
             .map_err(|_| CircuitRoleErrorV1::EmptyId("router owner module"))?;
         let legal = legal_ids(&input.legal_route_ids)?;
@@ -1007,5 +1010,27 @@ mod tests {
             RouterAdapterV1::fence(&input, &tampered),
             Err(CircuitRoleErrorV1::FenceMismatch)
         );
+    }
+
+    #[test]
+    fn router_rejects_context_from_another_generation() {
+        let input = RouterCircuitInputV1 {
+            candidates: vec![route("route.a", 1)],
+            legal_route_ids: vec![id("route.a")],
+            policy_digest: digest(92),
+            expected_generation: Generation::new(2).expect("generation"),
+            route_fence_digest: digest(90),
+            budget: budget(),
+        };
+        let current = context(CellRoleV1::Router);
+        RouterAdapterV1::adapt(&current, &input).expect("same generation");
+        for generation in [1, 3] {
+            let mut other = current.clone();
+            other.generation = Generation::new(generation).expect("generation");
+            assert_eq!(
+                RouterAdapterV1::adapt(&other, &input),
+                Err(CircuitRoleErrorV1::GenerationMismatch)
+            );
+        }
     }
 }

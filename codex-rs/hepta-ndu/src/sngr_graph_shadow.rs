@@ -221,6 +221,9 @@ fn check_cycle(
         let child_height = check_cycle(graph, next, state, depth + 1)?;
         height = height.max(child_height + 1);
     }
+    if depth.saturating_add(height) > MAX_SNG_GRAPH_DEPTH {
+        return Err(SngrGraphShadowError::Depth);
+    }
     state.insert(id.to_owned(), Visit::Complete { height });
     Ok(height)
 }

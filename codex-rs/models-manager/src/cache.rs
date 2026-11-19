@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::openai_models::ModelInfo;
 use serde::Deserialize;
 use serde::Serialize;
@@ -62,7 +60,7 @@ pub type ModelsCacheFuture<'a, T> = Pin<Box<dyn Future<Output = T> + Send + 'a>>
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct ModelsCacheEntry {
     /// Time when the catalog was fetched or last revalidated with the models endpoint.
-    pub fetched_at: DateTime<Utc>,
+    pub fetched_at: codex_utils_time::Timestamp,
     /// Endpoint ETag used to revalidate the catalog without downloading an unchanged payload.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub etag: Option<String>,
@@ -84,10 +82,10 @@ impl ModelsCacheEntry {
         if ttl.is_zero() {
             return false;
         }
-        let Ok(ttl_duration) = chrono::Duration::from_std(ttl) else {
+        let Some(ttl_duration) = codex_utils_time::duration_from_std(ttl) else {
             return false;
         };
-        let age = Utc::now().signed_duration_since(self.fetched_at);
+        let age = codex_utils_time::Timestamp::now().signed_duration_since(self.fetched_at);
         age <= ttl_duration
     }
 }
@@ -161,7 +159,7 @@ impl ModelsCache for FileModelsCache {
             if entry.is_fresh(self.cache_ttl / 2) {
                 return Ok(());
             }
-            entry.fetched_at = Utc::now();
+            entry.fetched_at = codex_utils_time::Timestamp::now();
             save_file(&self.cache_path, &entry).await
         })
     }

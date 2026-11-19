@@ -1,0 +1,27 @@
+..E.......
+======================================================================
+ERROR: test_inventory_and_exact_product_callers_are_closed (test_root_learning_bootstrap_source_closure.RootLearningBootstrapSourceClosureTests.test_inventory_and_exact_product_callers_are_closed) (boundary='root_learning_completed_circuit_source')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/b68b63394cea/hepta-framework/scripts/verify_hepta_callers.py", line 520, in _verify_boundary
+    matched = any(
+              ^^^^
+  File "/workspace/scratch/b68b63394cea/hepta-framework/scripts/verify_hepta_callers.py", line 521, in <genexpr>
+    has_authority_call(code, boundary.receiver_type, method, fields)
+  File "/workspace/scratch/b68b63394cea/hepta-framework/scripts/hepta_typed_callers.py", line 212, in has_authority_call
+    raise UnresolvedTypedReceiver(
+hepta_typed_callers.UnresolvedTypedReceiver: unresolved possible AgentdState::require_circuit_learning_source receiver
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/workspace/scratch/b68b63394cea/hepta-framework/qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py", line 112, in test_inventory_and_exact_product_callers_are_closed
+    PROOF._verify_boundary(ROOT, row, self.sources, ())
+  File "/workspace/scratch/b68b63394cea/hepta-framework/scripts/verify_hepta_callers.py", line 525, in _verify_boundary
+    raise VerificationFailure(
+root_learning_caller_proof.VerificationFailure: root_learning_completed_circuit_source: codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs: unresolved possible AgentdState::require_circuit_learning_source receiver
+
+----------------------------------------------------------------------
+Ran 10 tests in 1.361s
+
+FAILED (errors=1)

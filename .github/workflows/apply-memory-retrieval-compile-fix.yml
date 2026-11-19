@@ -1,0 +1,44 @@
+name: Apply memory retrieval compile fix
+
+on:
+  push:
+    branches:
+      - work/memory-retrieval-production-convergence-20260926
+    paths:
+      - scripts/apply_memory_retrieval_compile_fix.py
+      - .github/workflows/apply-memory-retrieval-compile-fix.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: memory-retrieval-compile-fix
+  cancel-in-progress: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-slim
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+
+      - name: Apply exact compile fix
+        run: |
+          set -euo pipefail
+          python3 scripts/apply_memory_retrieval_compile_fix.py
+          git diff --check
+          git diff --exit-code -- . ':(exclude)codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs' || true
+          test "$(git status --short | wc -l)" -eq 1
+          git status --short | grep -Fx ' M codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs'
+
+      - name: Commit compile fix
+        run: |
+          set -euo pipefail
+          git config user.name "hepta-convergence-bot"
+          git config user.email "hepta-convergence-bot@users.noreply.github.com"
+          git add codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs
+          git commit -m "fix(memory.retrieval): import owner proposition digest type"
+          git push origin HEAD:work/memory-retrieval-production-convergence-20260926

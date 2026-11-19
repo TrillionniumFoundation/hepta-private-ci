@@ -21,6 +21,7 @@ impl LearningArtifactOwnerService {
         expected_intent_digest: Digest32,
     ) -> Result<OriginalArtifactPublicationReadbackV1, OriginalArtifactPublicationReadbackErrorV1>
     {
+        self.require_original_withdrawal()?;
         let observed = LearningArtifactOwnerHost::read_original_publication_current(
             &self.host,
             operation_id,

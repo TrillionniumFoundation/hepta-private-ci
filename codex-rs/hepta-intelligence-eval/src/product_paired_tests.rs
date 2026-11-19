@@ -504,3 +504,61 @@ fn paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineli
         );
     }
 }
+
+#[test]
+fn paired_provider_receives_original_consumption_borrow() {
+    struct OriginalOnlyProvider<'a> {
+        inner: &'a mut support::PairedProvider,
+        calls: usize,
+    }
+
+    impl FinalHoldoutProviderV1 for OriginalOnlyProvider<'_> {
+        fn manifest_digest(&mut self) -> Result<Digest32, ProductProviderErrorV1> {
+            self.inner.manifest_digest()
+        }
+
+        fn release_paired_after_original_consumption(
+            &mut self,
+            consumed: crate::OriginalFinalHoldoutConsumptionV1<'_>,
+            pairing: &crate::OnPolicyPairingContractV1,
+        ) -> Result<crate::OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1> {
+            self.calls += 1;
+            consumed.with_current_paired_consumption(|_, _, receipt| {
+                self.inner
+                    .release_paired_after_consumption(receipt, pairing)
+            })
+        }
+    }
+
+    let mut test = PairedHarness::new(2, false, false);
+    let original = &mut test.original;
+    let at = original.now;
+    let clock = || Ok(at);
+    let mut provider = OriginalOnlyProvider {
+        inner: &mut test.provider,
+        calls: 0,
+    };
+    let executed = original
+        .runner
+        .evaluate_or_readback_temporal_comparison(
+            &ProductEvaluationExecutionRequestV1 {
+                plan: &original.frozen,
+                candidate_plan: &original.fixture.candidate_plan,
+                baseline_plan: &original.fixture.baseline_plan,
+                evaluator: &original.context.evaluator,
+                verifier: &original.verifier,
+                clock: &clock,
+            },
+            &mut provider,
+            &mut original.executions,
+            &mut original.attestor,
+        )
+        .expect("paired release through the original consumed owner");
+    assert!(executed.paired_input_digest.is_some());
+    assert_eq!(provider.calls, 1);
+    assert_eq!(
+        (provider.inner.releases, provider.inner.shared_releases),
+        (1, 0)
+    );
+    assert_eq!(original.attestor.calls, 1);
+}

@@ -1,0 +1,64 @@
+{
+  "canonical_rebuilt_sha256": "fc5ee4b9caf245714ede21c1c88077876b5ee9d816a4ddf60893155a4727407e",
+  "canonical_recorded_sha256": "fc5ee4b9caf245714ede21c1c88077876b5ee9d816a4ddf60893155a4727407e",
+  "cpu_seconds": 0.9602397199999999,
+  "diagnostic_job": "representation/mnist/hcsn/seed6201",
+  "direct_manifest_equal": false,
+  "failed_audit_sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76",
+  "jobs_with_serialized_speaker_splits": 97,
+  "json_roundtrip_equal": true,
+  "only_differences": [
+    {
+      "path": [
+        "speaker_splits",
+        "test"
+      ],
+      "rebuilt_type": "tuple",
+      "rebuilt_value": [
+        "lucas",
+        "yweweler"
+      ],
+      "recorded_type": "list",
+      "recorded_value": [
+        "lucas",
+        "yweweler"
+      ]
+    },
+    {
+      "path": [
+        "speaker_splits",
+        "train"
+      ],
+      "rebuilt_type": "tuple",
+      "rebuilt_value": [
+        "george",
+        "jackson",
+        "nicolas"
+      ],
+      "recorded_type": "list",
+      "recorded_value": [
+        "george",
+        "jackson",
+        "nicolas"
+      ]
+    },
+    {
+      "path": [
+        "speaker_splits",
+        "val"
+      ],
+      "rebuilt_type": "tuple",
+      "rebuilt_value": [
+        "theo"
+      ],
+      "recorded_type": "list",
+      "recorded_value": [
+        "theo"
+      ]
+    }
+  ],
+  "rejected_jobs": 97,
+  "rejected_set_equals_speaker_manifest_set": true,
+  "saved_manifest_sha256": "12a859dbb343900c7325bba03fd27d8dbb057287867d5e80937ca50de8577f90",
+  "wall_seconds": 0.5338479189958889
+}

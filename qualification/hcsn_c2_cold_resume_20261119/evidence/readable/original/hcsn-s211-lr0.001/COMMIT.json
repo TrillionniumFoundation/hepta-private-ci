@@ -1,0 +1,193 @@
+{
+  "best_checkpoint": {
+    "bytes": 450552,
+    "sha256": "a83e259366c76f1f3856c4be1291d2e842d32b283c661f656ae44fd156b37b3c"
+  },
+  "best_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/checkpoints/epoch-0124.pt",
+  "checkpoint": {
+    "bytes": 450552,
+    "sha256": "e98973d5d41621727444a2c117b89a7f33925b96066f092136c2f945b1453da3"
+  },
+  "checkpoint_path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/checkpoints/epoch-0126.pt",
+  "epoch": {
+    "complete": true,
+    "cumulative_process_cpu_seconds": null,
+    "cumulative_process_wall_seconds": 37199.48737557721,
+    "development": {
+      "accuracy": 0.7064659489233851,
+      "balanced_accuracy_present_classes": 0.3707669707308771,
+      "brier_half_sum": 0.22442595051104045,
+      "brier_mean_classes": 0.04080471827473463,
+      "confusion_matrix": [
+        [
+          5983,
+          0,
+          42,
+          1,
+          0,
+          415,
+          148,
+          7,
+          12,
+          1,
+          0
+        ],
+        [
+          58,
+          72,
+          0,
+          46,
+          0,
+          330,
+          4,
+          0,
+          114,
+          0,
+          7
+        ],
+        [
+          402,
+          14,
+          491,
+          33,
+          5,
+          123,
+          16,
+          9,
+          23,
+          24,
+          0
+        ],
+        [
+          5,
+          116,
+          298,
+          9639,
+          0,
+          11,
+          973,
+          122,
+          307,
+          0,
+          29
+        ],
+        [
+          149,
+          0,
+          5,
+          0,
+          0,
+          140,
+          1,
+          0,
+          2,
+          0,
+          0
+        ],
+        [
+          530,
+          4,
+          112,
+          6,
+          6,
+          4079,
+          132,
+          1,
+          6,
+          115,
+          0
+        ],
+        [
+          309,
+          2,
+          128,
+          1101,
+          0,
+          14,
+          1663,
+          20,
+          11,
+          0,
+          6
+        ],
+        [
+          2,
+          2,
+          18,
+          386,
+          19,
+          86,
+          222,
+          193,
+          97,
+          1,
+          0
+        ],
+        [
+          1,
+          55,
+          0,
+          908,
+          0,
+          22,
+          405,
+          0,
+          444,
+          0,
+          110
+        ],
+        [
+          84,
+          2,
+          0,
+          3,
+          2,
+          98,
+          0,
+          0,
+          0,
+          9,
+          0
+        ],
+        [
+          27,
+          0,
+          0,
+          114,
+          0,
+          2,
+          183,
+          0,
+          35,
+          0,
+          0
+        ]
+      ],
+      "ece_15_equal_width_bins": 0.12257774573057384,
+      "events": 31952,
+      "macro_f1_11_classes": 0.3774269923221212,
+      "macro_f1_present_classes": 0.3774269923221212,
+      "nll": 1.0165582341204962
+    },
+    "epoch": 126,
+    "events": 89216,
+    "phase_process_cpu_seconds": 22806.769432748,
+    "phase_process_wall_seconds": 22822.214447502047,
+    "training_target_weight_sum": 47014.67413821177,
+    "training_weighted_loss": 1.1166913802592717,
+    "training_weighted_loss_numerator": 52500.881355839585
+  },
+  "logical_main_updates": 1512,
+  "previous_commit": {
+    "bytes": 3906,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/commits/epoch-0125.json",
+    "sha256": "15c0fb82648064521b41c88f190d5758047ddf866d570e0d410313102c187e8e"
+  },
+  "schema": "hcsn-c2-complete-epoch-commit-v1",
+  "stopping": {
+    "best": 0.37790299262340454,
+    "best_epoch": 124,
+    "plateau_anchor": 0.37790299262340454,
+    "stale_epochs": 2
+  }
+}

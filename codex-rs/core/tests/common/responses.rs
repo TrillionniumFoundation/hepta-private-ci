@@ -39,7 +39,7 @@ use wiremock::matchers::path_regex;
 #[path = "responses_matcher_tests.rs"]
 mod matcher_tests;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct ResponseMock {
     requests: Arc<Mutex<Vec<ResponsesRequest>>>,
 }

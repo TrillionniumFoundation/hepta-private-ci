@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-static-admission-failure-v1",
+  "identity": "hcsn-original-visit897-source-migration-static-clear-20261112-c06d",
+  "source_branch": "research/hcsn-original-visit897-source-migration-vjp-n128-20261112-c06d",
+  "source_head": "75743e7ff99950a57e90308331d2fd5c26e2de06",
+  "frozen_candidate_source": "c06232839ce00b128bdeeff4b3cdcb0e5e13bdcd",
+  "idempotency_key": "hcsn-original-visit897-source-migration-static-clear-001",
+  "host": "desktop",
+  "job_id": "1a1d086d1a2-2564-1b95",
+  "authoritative_process_status": {
+    "state": "failed",
+    "exit_code": 2,
+    "cancelled": false,
+    "timed_out": false,
+    "automatic_retry": false,
+    "audit_recorded": true,
+    "output_complete": true,
+    "output_durable": true,
+    "terminal_publication_confirmed": true,
+    "stdout_bytes": 0,
+    "stderr_bytes": 374,
+    "stdout_eof": true,
+    "stderr_eof": true
+  },
+  "failure_stage": "format_before_inspector",
+  "stderr_text": "正克隆到 '/home/qian-qi/hcsn-original-visit897-source-migration-static-clear-20261112-c06d'...\nHEAD 目前位于 75743e7ff9 Bind frozen visit-897 N128 source inventory\nusage: format.py [-h] [--check] [--all | --base BASE]\nformat.py: error: unrecognized arguments: -- --base 994def0b188c5105d0ceb9ace281af7f4bd0e3b2\nerror: recipe `fmt` failed on line 51 with exit code 2\n",
+  "observed_candidate_calls": {
+    "imports": 0,
+    "forwards": 0,
+    "adjoints": 0,
+    "optimizer_updates": 0
+  },
+  "same_key_reissued": false,
+  "replacement_key_created": false,
+  "admission_status": "RED_STOP_NO_READMISSION",
+  "numerical_execution_status": "NOT_EXECUTED",
+  "note": "The original failure is retained. A later zero-candidate-call static review does not convert this pre-admission job into a pass."
+}

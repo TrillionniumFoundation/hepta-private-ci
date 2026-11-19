@@ -25,11 +25,16 @@ PROVIDER = AGENT + "circuit_original_evaluation_provider.rs"
 CUSTODY = AGENT + "circuit_evaluation_cohort_custody.rs"
 EXPECTED = {
     "cell_generation_original_physical_current": (MEMBER,),
-    "learning_original_evaluation_panel_registration": ('codex-rs/hepta-agentd/src/circuit_on_policy_evaluation_policy_panel.rs',),
+    "learning_original_evaluation_panel_registration": (
+        AGENT + "circuit_on_policy_evaluation_policy_panel.rs",
+    ),
     "learning_original_evaluation_panel_owner": (),
     "learning_original_evaluation_panel_current": (),
     "learning_original_evaluation_panel_member_current": (CORE,),
-    "learning_original_evaluation_cohort_readback_current": (PROVIDER, CUSTODY),
+    "learning_original_evaluation_cohort_readback_current": (
+        PROVIDER,
+        CUSTODY,
+    ),
     "learning_original_evaluation_cohort_member_binding": (CUSTODY,),
     "learning_original_evaluation_cohort_final_authentication": (CUSTODY,),
 }

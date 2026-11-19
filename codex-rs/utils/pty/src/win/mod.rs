@@ -77,7 +77,10 @@ impl WinChild {
             .lock()
             .map_err(|_| IoError::other("ConPTY process handle lock poisoned"))?
             .try_clone()
-            .map_err(IoError::other)?;
+            .map_err(|error| match error {
+                filedescriptor::Error::Io(error) => error,
+                error => IoError::other(error),
+            })?;
         match unsafe { WaitForSingleObject(proc.as_raw_handle() as _, wait_ms) } {
             WAIT_OBJECT_0 => {
                 let mut status: DWORD = 0;

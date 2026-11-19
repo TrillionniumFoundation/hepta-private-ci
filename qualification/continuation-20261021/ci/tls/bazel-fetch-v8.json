@@ -1,0 +1,14 @@
+{
+  "command": [
+    "bazel",
+    "fetch",
+    "--repo=@v8",
+    "--disk_cache=/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-cache/disk",
+    "--repo_contents_cache=/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-cache/repo-contents",
+    "--repository_cache=/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-cache/repository"
+  ],
+  "start": "2026-10-21T01:22:22.433452+00:00",
+  "end": "2026-10-21T01:22:24.749710+00:00",
+  "returncode": 0,
+  "log": "/workspace/scratch/337c309bc660/hepta-audit/ci/tls-bazel-fetch-v8.log"
+}

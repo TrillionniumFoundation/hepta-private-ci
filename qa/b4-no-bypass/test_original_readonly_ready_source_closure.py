@@ -12,6 +12,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_readonly_ready_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -122,11 +124,16 @@ class OriginalReadonlyReadySourceClosureTests(unittest.TestCase):
         start = code.index("fn " + function + "(")
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1) if at is None else at
-        self.assertEqual(source[offset:offset + len(marker)], marker)
+        if at is None:
+            offset, limit = source_marker_span(source, marker, start, end + 1)
+        else:
+            offset, limit = at, at + len(marker)
+            self.assertGreaterEqual(offset, start)
+            self.assertLessEqual(limit, end + 1)
+            self.assertEqual(code[offset:limit], marker)
         self.verifies(path, source)
         with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
-            self.verifies(path, source[:offset] + replacement + source[offset + len(marker):])
+            self.verifies(path, source[:offset] + replacement + source[limit:])
 
     def test_only_actual_readonly_backends_and_consuming_hosts_are_registered(self):
         paths = set(FUNCTIONS)
@@ -159,9 +166,11 @@ class OriginalReadonlyReadySourceClosureTests(unittest.TestCase):
             self.assertEqual({row["function"][3:-1] for row in rows}, expected)
             code = self.code((ROOT / path).read_text())
             for row in rows:
-                cursor = code.index(row["function"]) + len(row["function"])
+                cursor = code.index(row["function"])
+                end = PROOF._rust_item_end(code, cursor)
+                self.assertIsNotNone(end)
                 for marker in row["sequence"]:
-                    offset = code.index(marker, cursor)
+                    offset = code.index(marker, cursor, end + 1)
                     cursor = offset + len(marker)
                     with self.subTest(path=path, function=row["function"], marker=marker):
                         self.rejects(path, row["function"][3:-1], marker, at=offset)

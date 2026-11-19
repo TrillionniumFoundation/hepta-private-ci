@@ -39,6 +39,10 @@ use crate::CellQ24TrainingOwnerV1;
 #[path = "cell_q24_model_proposal_admission.rs"]
 mod admission;
 use admission::Admission;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_current_owner.rs"]
+mod current;
 #[cfg(target_os = "linux")]
 pub(crate) use admission::RootQ24ModelProjectionDataV1;
 #[cfg(target_os = "linux")]
@@ -76,10 +80,6 @@ pub(crate) fn prepare_original_q24_model_material<
     training.require_original_dataset_provenance()?;
     Ok(admission.key(binding).binding_digest)
 }
-
-#[cfg(target_os = "linux")]
-#[path = "cell_q24_model_current_owner.rs"]
-mod current;
 
 #[derive(Debug, thiserror::Error)]
 pub enum CellQ24ModelProposalErrorV1 {

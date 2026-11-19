@@ -1,0 +1,4250 @@
+{
+  "schema_version": 2,
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Refresh of the initial 35 open non-Draft PRs, not a new repository census",
+  "collected_start_utc": "2026-10-21T01:12:31Z",
+  "collected_end_utc": "2026-10-21T01:18:17.370Z",
+  "contexts_screened": [
+    {
+      "name": "CI required",
+      "app_id": 15368
+    },
+    {
+      "name": "Architecture required",
+      "app_id": 15368
+    }
+  ],
+  "protection_limit": "Base branch summaries are current. Full administration protection details are inaccessible to the integration. Reviews, all policy requirements and source semantics are not completely qualified.",
+  "summary": {
+    "metadata_count": 35,
+    "head_rechecks": 35,
+    "check_sets": 35,
+    "check_pages": 42,
+    "check_runs": 2448,
+    "pages_over_100": 6,
+    "bounded_recheck_head_matches": 34,
+    "observed_race_prs": [
+      2962
+    ],
+    "still_open_non_draft": 35,
+    "mergeable_state_counts": {
+      "unstable": 6,
+      "blocked": 15,
+      "behind": 5,
+      "dirty": 9
+    },
+    "common_context_counts_at_observed_head": {
+      "CI required": {
+        "failure": 33,
+        "MISSING": 2
+      },
+      "Architecture required": {
+        "success": 21,
+        "queued": 1,
+        "failure": 13
+      }
+    },
+    "qualified_merge_candidates": []
+  },
+  "base_policy_observations": {
+    "main": {
+      "collected_at_utc": "2026-10-21T01:17:47.027Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/main",
+      "branch_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "protected": true,
+      "protection_summary": {
+        "enabled": true,
+        "required_status_checks": {
+          "enforcement_level": "non_admins",
+          "contexts": [
+            "CI required",
+            "Architecture required"
+          ],
+          "checks": [
+            {
+              "context": "CI required",
+              "app_id": 15368
+            },
+            {
+              "context": "Architecture required",
+              "app_id": 15368
+            }
+          ]
+        }
+      },
+      "scope": "branch GET summary; not full administration protection or ruleset policy"
+    },
+    "integration/v8-main-convergence-20261020": {
+      "collected_at_utc": "2026-10-21T01:18:17.178Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/integration/v8-main-convergence-20261020",
+      "branch_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+      "protected": false,
+      "protection_summary": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "scope": "branch GET summary; not full administration protection or ruleset policy"
+    },
+    "codex/group-ndu-deterministic-20261017": {
+      "collected_at_utc": "2026-10-21T01:18:17.220Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/codex/group-ndu-deterministic-20261017",
+      "branch_sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+      "protected": false,
+      "protection_summary": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "scope": "branch GET summary; not full administration protection or ruleset policy"
+    },
+    "codex/memory-cell-evidence-20261008": {
+      "collected_at_utc": "2026-10-21T01:18:17.332Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/codex/memory-cell-evidence-20261008",
+      "branch_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+      "protected": false,
+      "protection_summary": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "scope": "branch GET summary; not full administration protection or ruleset policy"
+    },
+    "fix/main-product-blockers-20261005": {
+      "collected_at_utc": "2026-10-21T01:18:17.370Z",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/branches/fix/main-product-blockers-20261005",
+      "branch_sha": "f349a05435c4b442c1799d854aafdee84c286337",
+      "protected": false,
+      "protection_summary": {
+        "enabled": false,
+        "required_status_checks": {
+          "enforcement_level": "off",
+          "contexts": [],
+          "checks": []
+        }
+      },
+      "scope": "branch GET summary; not full administration protection or ruleset policy"
+    }
+  },
+  "pull_requests": [
+    {
+      "number": 2964,
+      "title": "ci: isolate Bazel failure-status preservation with four regression tests",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+        "base_ref": "integration/v8-main-convergence-20261020",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.224Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2964",
+        "head": {
+          "ref": "agents/20261020/ci-bazel-status-stage1",
+          "sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51"
+        },
+        "base": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "5d9356cb234ba023486ba35c51779110ca506a18",
+        "updated_at": "2026-10-20T19:15:35Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.739Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2964",
+        "head": {
+          "ref": "agents/20261020/ci-bazel-status-stage1",
+          "sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51"
+        },
+        "base": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "5d9356cb234ba023486ba35c51779110ca506a18",
+        "updated_at": "2026-10-20T19:15:35Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 43,
+        "pages": [
+          {
+            "number": 2964,
+            "sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/fad7f6b342e9a087bbc921862ba93f67b1873f51/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.846Z",
+            "total_count": 43,
+            "returned": 43,
+            "file": "checks-2964-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 43,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2964,
+            "requested_head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+            "id": 118902273627,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+            "app_id": 15368,
+            "started_at": "2026-10-20T22:03:57Z",
+            "completed_at": "2026-10-20T22:04:05Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39481413753/job/118902273627",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2964,
+            "requested_head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+            "id": 118846284911,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+            "app_id": 15368,
+            "started_at": "2026-10-20T20:23:45Z",
+            "completed_at": "2026-10-20T20:23:47Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39481413662/job/118846284911",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "integration/v8-main-convergence-20261020",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2962,
+      "title": "fix(agentd): remove obsolete legacy learning writer paths",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "8ce0cbdd37c8777655eebc6e0a72021fbe8ba229",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.558Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2962",
+        "head": {
+          "ref": "fix/lane-e-legacy-writer-cleanup-20261020",
+          "sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "6b712e5496db160a9377813f7e248f4c8322d70a",
+        "updated_at": "2026-10-21T01:05:43Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.825Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2962",
+        "head": {
+          "ref": "fix/lane-e-legacy-writer-cleanup-20261020",
+          "sha": "f6748b35164bc26b8b9926fde5b76b5b91b4b42b"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "ee21018d274270f4afa4b43eb139a99f9b736d4b",
+        "updated_at": "2026-10-21T01:12:57Z"
+      },
+      "changes_since_initial": {
+        "head_changed": true,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "OBSERVED_RACE",
+      "check_runs": {
+        "requested_head_sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 25,
+        "pages": [
+          {
+            "number": 2962,
+            "sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.789Z",
+            "total_count": 25,
+            "returned": 25,
+            "file": "checks-2962-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": false,
+        "terminal_page": 1,
+        "terminal_count": 25,
+        "required_context_observations": {
+          "CI required": {
+            "observation": "MISSING",
+            "head_sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55"
+          },
+          "Architecture required": {
+            "number": 2962,
+            "requested_head_sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55",
+            "id": 118980507940,
+            "name": "Architecture required",
+            "status": "queued",
+            "conclusion": null,
+            "head_sha": "f41a16d05c26937253f9c2ff1cb90e0e9f3d1c55",
+            "app_id": 15368,
+            "started_at": "2026-10-21T01:12:28Z",
+            "completed_at": null,
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39525290649/job/118980507940",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": true
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2961,
+      "title": "fix(ci, runtime): retain native CI policy and repair protocol/runtime regressions",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+        "base_ref": "integration/v8-main-convergence-20261020",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:31Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2961",
+        "head": {
+          "ref": "agents/20261020/ci-runtime-regressions",
+          "sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a"
+        },
+        "base": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "2ffe3a413654e94b2d46ba12a2c8f6e9743ea31d",
+        "updated_at": "2026-10-20T19:44:20Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.765Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2961",
+        "head": {
+          "ref": "agents/20261020/ci-runtime-regressions",
+          "sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a"
+        },
+        "base": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "2ffe3a413654e94b2d46ba12a2c8f6e9743ea31d",
+        "updated_at": "2026-10-20T19:44:20Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 69,
+        "pages": [
+          {
+            "number": 2961,
+            "sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/c210d26350ac57e527b4ff59663e5c8d518ff95a/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.919Z",
+            "total_count": 69,
+            "returned": 69,
+            "file": "checks-2961-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 69,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2961,
+            "requested_head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+            "id": 118946099974,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+            "app_id": 15368,
+            "started_at": "2026-10-20T23:29:36Z",
+            "completed_at": "2026-10-20T23:29:46Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39484972929/job/118946099974",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2961,
+            "requested_head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+            "id": 118864193850,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+            "app_id": 15368,
+            "started_at": "2026-10-20T21:00:41Z",
+            "completed_at": "2026-10-20T21:00:44Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39484972848/job/118864193850",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "integration/v8-main-convergence-20261020",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2959,
+      "title": "ci: integrated blocker closure for NDU qualification",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+        "base_ref": "codex/group-ndu-deterministic-20261017",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.183Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2959",
+        "head": {
+          "ref": "codex/ndu-blocker-closure-20261020",
+          "sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f"
+        },
+        "base": {
+          "ref": "codex/group-ndu-deterministic-20261017",
+          "sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "0d80f5f644e269fdd7a215c6b5bcf9543e229a03",
+        "updated_at": "2026-10-20T20:01:11Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.736Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2959",
+        "head": {
+          "ref": "codex/ndu-blocker-closure-20261020",
+          "sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f"
+        },
+        "base": {
+          "ref": "codex/group-ndu-deterministic-20261017",
+          "sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "0d80f5f644e269fdd7a215c6b5bcf9543e229a03",
+        "updated_at": "2026-10-20T20:01:11Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 55,
+        "pages": [
+          {
+            "number": 2959,
+            "sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/8aa52b4a1d6dd004400500191d70b7b573b5a23f/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:00.012Z",
+            "total_count": 55,
+            "returned": 55,
+            "file": "checks-2959-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 55,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2959,
+            "requested_head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+            "id": 118959638609,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+            "app_id": 15368,
+            "started_at": "2026-10-21T00:08:55Z",
+            "completed_at": "2026-10-21T00:09:04Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39488408194/job/118959638609",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2959,
+            "requested_head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+            "id": 118888530135,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+            "app_id": 15368,
+            "started_at": "2026-10-20T21:26:20Z",
+            "completed_at": "2026-10-20T21:26:23Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39488407906/job/118888530135",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "codex/group-ndu-deterministic-20261017",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2937,
+      "title": "Integrate V8 baseline, shared Cells and exact Objective history",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.358Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2937",
+        "head": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "cae9d60bc6bce4b3f9b24db64759448a237a0630",
+        "updated_at": "2026-10-20T20:14:52Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.873Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2937",
+        "head": {
+          "ref": "integration/v8-main-convergence-20261020",
+          "sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "cae9d60bc6bce4b3f9b24db64759448a237a0630",
+        "updated_at": "2026-10-20T20:14:52Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 71,
+        "pages": [
+          {
+            "number": 2937,
+            "sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b58d870a2c38ebee0aa0b974d9f03767c888fa7e/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.946Z",
+            "total_count": 71,
+            "returned": 71,
+            "file": "checks-2937-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 71,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2937,
+            "requested_head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+            "id": 118959540432,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+            "app_id": 15368,
+            "started_at": "2026-10-21T00:08:34Z",
+            "completed_at": "2026-10-21T00:08:44Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39490343769/job/118959540432",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2937,
+            "requested_head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+            "id": 118908805348,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+            "app_id": 15368,
+            "started_at": "2026-10-20T22:04:22Z",
+            "completed_at": "2026-10-20T22:04:26Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39490343489/job/118908805348",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2883,
+      "title": "ci: reduce scoped native build storage",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "a8ce72907288d1836612446b87cb1d5c184993ac",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.372Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2883",
+        "head": {
+          "ref": "fix/scoped-native-build-storage-20261019",
+          "sha": "a8ce72907288d1836612446b87cb1d5c184993ac"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "15b4060d199f89d98cf073e9a47d8d5d452430ff",
+        "updated_at": "2026-10-19T04:15:05Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:14.233Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2883",
+        "head": {
+          "ref": "fix/scoped-native-build-storage-20261019",
+          "sha": "a8ce72907288d1836612446b87cb1d5c184993ac"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "15b4060d199f89d98cf073e9a47d8d5d452430ff",
+        "updated_at": "2026-10-19T04:15:05Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2883,
+            "sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/a8ce72907288d1836612446b87cb1d5c184993ac/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.958Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2883-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2883,
+            "requested_head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+            "id": 117901811235,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+            "app_id": 15368,
+            "started_at": "2026-10-19T05:16:30Z",
+            "completed_at": "2026-10-19T05:16:38Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39198531514/job/117901811235",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2883,
+            "requested_head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+            "id": 117893995807,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+            "app_id": 15368,
+            "started_at": "2026-10-19T04:45:36Z",
+            "completed_at": "2026-10-19T04:45:39Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39198531447/job/117893995807",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2882,
+      "title": "test(hepta-fleet): assert fixture host admission without unwrap",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.419Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2882",
+        "head": {
+          "ref": "fix/fleet-fixture-admission-assert-main",
+          "sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "62b3d71018cf66f4dce6d1db273d956497e38003",
+        "updated_at": "2026-10-19T03:35:50Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.941Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2882",
+        "head": {
+          "ref": "fix/fleet-fixture-admission-assert-main",
+          "sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "62b3d71018cf66f4dce6d1db273d956497e38003",
+        "updated_at": "2026-10-19T03:35:50Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 24,
+        "pages": [
+          {
+            "number": 2882,
+            "sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b34cb44f06db0a66acb3d25b183a2a05c4cebc7e/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.788Z",
+            "total_count": 24,
+            "returned": 24,
+            "file": "checks-2882-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 24,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2882,
+            "requested_head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+            "id": 117881115008,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+            "app_id": 15368,
+            "started_at": "2026-10-19T03:53:02Z",
+            "completed_at": "2026-10-19T03:53:12Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39195438433/job/117881115008",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2882,
+            "requested_head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+            "id": 117882974089,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+            "app_id": 15368,
+            "started_at": "2026-10-19T04:00:59Z",
+            "completed_at": "2026-10-19T04:01:02Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39195438324/job/117882974089",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2815,
+      "title": "feat(hepta-agentd): read exact durable Objective admission through owner",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.380Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2815",
+        "head": {
+          "ref": "agents/r9-objective-admission-20261018",
+          "sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "6fed115313c5067f8ff4af8906b446f281765fb3",
+        "updated_at": "2026-10-20T04:47:34Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:14.061Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2815",
+        "head": {
+          "ref": "agents/r9-objective-admission-20261018",
+          "sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "6fed115313c5067f8ff4af8906b446f281765fb3",
+        "updated_at": "2026-10-20T04:47:34Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2815,
+            "sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/995b6fb9ef73ada7c3348b01deb28940a2c4a2d1/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.934Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2815-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2815,
+            "requested_head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+            "id": 118507168335,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+            "app_id": 15368,
+            "started_at": "2026-10-20T07:25:26Z",
+            "completed_at": "2026-10-20T07:25:36Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39371448635/job/118507168335",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2815,
+            "requested_head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+            "id": 118469026506,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+            "app_id": 15368,
+            "started_at": "2026-10-20T05:46:31Z",
+            "completed_at": "2026-10-20T05:46:34Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39371448508/job/118469026506",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2709,
+      "title": "fix(app-server): authenticate Unix control peers before WebSocket upgrade",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.312Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2709",
+        "head": {
+          "ref": "fix/app-server-control-peer-auth-20261017",
+          "sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "bde5020ac5bdcc911bb71db9daac04bc95e1f364",
+        "updated_at": "2026-10-18T02:28:13Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.848Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2709",
+        "head": {
+          "ref": "fix/app-server-control-peer-auth-20261017",
+          "sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "bde5020ac5bdcc911bb71db9daac04bc95e1f364",
+        "updated_at": "2026-10-18T02:28:13Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2709,
+            "sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/db3dca79d410976a074e0a13e88c3ebd20d9975f/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:00.074Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2709-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2709,
+            "requested_head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+            "id": 117592379737,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+            "app_id": 15368,
+            "started_at": "2026-10-18T05:36:52Z",
+            "completed_at": "2026-10-18T05:37:01Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39090184551/job/117592379737",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2709,
+            "requested_head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+            "id": 117571628430,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+            "app_id": 15368,
+            "started_at": "2026-10-18T03:42:19Z",
+            "completed_at": "2026-10-18T03:42:22Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39090184505/job/117571628430",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2697,
+      "title": "fix(agentd): authenticate control socket peers before frames",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.416Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2697",
+        "head": {
+          "ref": "fix/agentd-control-peer-auth-20261017",
+          "sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "286349fd1709e7c73e523ef41645400081c0da1d",
+        "updated_at": "2026-10-17T13:58:41Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.899Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2697",
+        "head": {
+          "ref": "fix/agentd-control-peer-auth-20261017",
+          "sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "286349fd1709e7c73e523ef41645400081c0da1d",
+        "updated_at": "2026-10-17T13:58:41Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 24,
+        "pages": [
+          {
+            "number": 2697,
+            "sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5810df76d82c4189e2ff8bd6da55d21adf5a646d/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.795Z",
+            "total_count": 24,
+            "returned": 24,
+            "file": "checks-2697-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 24,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2697,
+            "requested_head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+            "id": 117480196194,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+            "app_id": 15368,
+            "started_at": "2026-10-17T19:25:46Z",
+            "completed_at": "2026-10-17T19:25:54Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39038734923/job/117480196194",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2697,
+            "requested_head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+            "id": 117440150609,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+            "app_id": 15368,
+            "started_at": "2026-10-17T17:24:23Z",
+            "completed_at": "2026-10-17T17:24:27Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39038734950/job/117440150609",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2611,
+      "title": "research(ndu): SNG-R short-horizon FBSDE shooting and DAG shadow reference",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.386Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2611",
+        "head": {
+          "ref": "codex/sngr-fbsde-shadow-20261017",
+          "sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "576383eaf6eb49b671dd051f776936a3086240cf",
+        "updated_at": "2026-10-18T15:37:19Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:14.079Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2611",
+        "head": {
+          "ref": "codex/sngr-fbsde-shadow-20261017",
+          "sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "576383eaf6eb49b671dd051f776936a3086240cf",
+        "updated_at": "2026-10-18T15:37:19Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2611,
+            "sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/cc594bbb1494f3dc3f5adff360a58eee958f2054/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.822Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2611-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2611,
+            "requested_head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+            "id": 117675246984,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+            "app_id": 15368,
+            "started_at": "2026-10-18T12:41:19Z",
+            "completed_at": "2026-10-18T12:41:26Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39106846517/job/117675246984",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2611,
+            "requested_head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+            "id": 117622837510,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+            "app_id": 15368,
+            "started_at": "2026-10-18T09:09:16Z",
+            "completed_at": "2026-10-18T09:09:19Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39106846485/job/117622837510",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2607,
+      "title": "feat(memory-cell): original-byte factorial controls, real Reader evidence and bounded pairing",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+        "base_ref": "codex/memory-cell-evidence-20261008",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:12:46.448Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2607",
+        "head": {
+          "ref": "codex/memory-four-stage-premise-integrity-20261017",
+          "sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c"
+        },
+        "base": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "ae91fb6275d20c8a585d2e073f13cf119be63569",
+        "updated_at": "2026-10-20T19:50:12Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:13.795Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2607",
+        "head": {
+          "ref": "codex/memory-four-stage-premise-integrity-20261017",
+          "sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c"
+        },
+        "base": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "ae91fb6275d20c8a585d2e073f13cf119be63569",
+        "updated_at": "2026-10-20T19:50:12Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 69,
+        "pages": [
+          {
+            "number": 2607,
+            "sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/bcce62f0c36a79fe2712437c26c40e9456e80d4c/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:13:59.924Z",
+            "total_count": 69,
+            "returned": 69,
+            "file": "checks-2607-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 69,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2607,
+            "requested_head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+            "id": 118947884205,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+            "app_id": 15368,
+            "started_at": "2026-10-20T23:34:36Z",
+            "completed_at": "2026-10-20T23:34:47Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39486617411/job/118947884205",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2607,
+            "requested_head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+            "id": 118891643109,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+            "app_id": 15368,
+            "started_at": "2026-10-20T21:27:13Z",
+            "completed_at": "2026-10-20T21:27:17Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39486617397/job/118891643109",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "codex/memory-cell-evidence-20261008",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2606,
+      "title": "docs: record remaining cargo-deny security blockers",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "28607454e2c648bc1ee7e4c31acffd976652829e",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.816Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2606",
+        "head": {
+          "ref": "docs/cargo-deny-blockers-20261017",
+          "sha": "28607454e2c648bc1ee7e4c31acffd976652829e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "6c520cabf27664c3cae2dccef4a2285d4e48d1bc",
+        "updated_at": "2026-10-17T05:21:47Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.216Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2606",
+        "head": {
+          "ref": "docs/cargo-deny-blockers-20261017",
+          "sha": "28607454e2c648bc1ee7e4c31acffd976652829e"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "6c520cabf27664c3cae2dccef4a2285d4e48d1bc",
+        "updated_at": "2026-10-17T05:21:47Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2606,
+            "sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/28607454e2c648bc1ee7e4c31acffd976652829e/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.724Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2606-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2606,
+            "requested_head_sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+            "id": 117356907791,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+            "app_id": 15368,
+            "started_at": "2026-10-17T09:17:12Z",
+            "completed_at": "2026-10-17T09:17:20Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39005985333/job/117356907791",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2606,
+            "requested_head_sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+            "id": 117337194961,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "28607454e2c648bc1ee7e4c31acffd976652829e",
+            "app_id": 15368,
+            "started_at": "2026-10-17T07:49:49Z",
+            "completed_at": "2026-10-17T07:49:51Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39005985293/job/117337194961",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2605,
+      "title": "security: update rustls to patched 0.23.46",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.861Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2605",
+        "head": {
+          "ref": "fix/security-rustls-20261017",
+          "sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "19ba7d7df44b3c2b82ea12e36387392be2793c6a",
+        "updated_at": "2026-10-17T08:01:25Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.336Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2605",
+        "head": {
+          "ref": "fix/security-rustls-20261017",
+          "sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "19ba7d7df44b3c2b82ea12e36387392be2793c6a",
+        "updated_at": "2026-10-17T08:01:25Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2605,
+            "sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.613Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2605-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2605,
+            "requested_head_sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+            "id": 117406224347,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+            "app_id": 15368,
+            "started_at": "2026-10-17T14:28:26Z",
+            "completed_at": "2026-10-17T14:28:36Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39015806701/job/117406224347",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2605,
+            "requested_head_sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+            "id": 117354755595,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+            "app_id": 15368,
+            "started_at": "2026-10-17T08:55:27Z",
+            "completed_at": "2026-10-17T08:55:29Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39015806805/job/117354755595",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2599,
+      "title": "ci: remove clippy denied unwraps from test fixtures",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "924f96d71622c031346b1cb473ed7807d0780867",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.857Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2599",
+        "head": {
+          "ref": "fix/ci-clippy-expect-unwrap-20261017",
+          "sha": "924f96d71622c031346b1cb473ed7807d0780867"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "3cb2e24c5597ae3f1a59f126b3ddb1e84e436c18",
+        "updated_at": "2026-10-19T01:48:09Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.239Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2599",
+        "head": {
+          "ref": "fix/ci-clippy-expect-unwrap-20261017",
+          "sha": "924f96d71622c031346b1cb473ed7807d0780867"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "3cb2e24c5597ae3f1a59f126b3ddb1e84e436c18",
+        "updated_at": "2026-10-19T01:48:09Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "924f96d71622c031346b1cb473ed7807d0780867",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2599,
+            "sha": "924f96d71622c031346b1cb473ed7807d0780867",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/924f96d71622c031346b1cb473ed7807d0780867/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.544Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2599-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2599,
+            "requested_head_sha": "924f96d71622c031346b1cb473ed7807d0780867",
+            "id": 117865915354,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "924f96d71622c031346b1cb473ed7807d0780867",
+            "app_id": 15368,
+            "started_at": "2026-10-19T02:49:33Z",
+            "completed_at": "2026-10-19T02:49:42Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39187007790/job/117865915354",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2599,
+            "requested_head_sha": "924f96d71622c031346b1cb473ed7807d0780867",
+            "id": 117858117157,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "924f96d71622c031346b1cb473ed7807d0780867",
+            "app_id": 15368,
+            "started_at": "2026-10-19T02:18:57Z",
+            "completed_at": "2026-10-19T02:18:59Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39187007798/job/117858117157",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2566,
+      "title": "CI: real 500-job fanout with source-pinned shards and live capacity audit",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "1b2a24b727511220724418bc057f031e81ba5eea",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.824Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2566",
+        "head": {
+          "ref": "feat/gha-500-real-test-fleet-20261016",
+          "sha": "1b2a24b727511220724418bc057f031e81ba5eea"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "8c9a8131bf924dc3e887de2a80a81371d0548c49",
+        "updated_at": "2026-10-18T16:16:42Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.487Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2566",
+        "head": {
+          "ref": "feat/gha-500-real-test-fleet-20261016",
+          "sha": "1b2a24b727511220724418bc057f031e81ba5eea"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "8c9a8131bf924dc3e887de2a80a81371d0548c49",
+        "updated_at": "2026-10-18T16:16:42Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 100,
+        "pages": [
+          {
+            "number": 2566,
+            "sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/1b2a24b727511220724418bc057f031e81ba5eea/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.908Z",
+            "total_count": 100,
+            "returned": 100,
+            "file": "checks-2566-001.json"
+          },
+          {
+            "number": 2566,
+            "sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/1b2a24b727511220724418bc057f031e81ba5eea/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:24.837Z",
+            "total_count": 100,
+            "returned": 0,
+            "file": "checks-2566-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 0,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2566,
+            "requested_head_sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "id": 117789217053,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "app_id": 15368,
+            "started_at": "2026-10-18T21:03:37Z",
+            "completed_at": "2026-10-18T21:03:47Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39135802830/job/117789217053",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2566,
+            "requested_head_sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "id": 117709672936,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "1b2a24b727511220724418bc057f031e81ba5eea",
+            "app_id": 15368,
+            "started_at": "2026-10-18T16:16:50Z",
+            "completed_at": "2026-10-18T16:16:54Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39135802855/job/117709672936",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2406,
+      "title": "fix(actions): allow CI aggregate jobs to stop on cancellation",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.896Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2406",
+        "head": {
+          "ref": "fix/actions-cancel-safe-aggregate-jobs-20261015",
+          "sha": "fd3811f84f044a107d58a20e0ef59bd29013f232"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "39ba3b173cec2957ba430d78dda275fe7d9e0ecc",
+        "updated_at": "2026-10-16T00:47:20Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.423Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2406",
+        "head": {
+          "ref": "fix/actions-cancel-safe-aggregate-jobs-20261015",
+          "sha": "fd3811f84f044a107d58a20e0ef59bd29013f232"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "39ba3b173cec2957ba430d78dda275fe7d9e0ecc",
+        "updated_at": "2026-10-16T00:47:20Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 49,
+        "pages": [
+          {
+            "number": 2406,
+            "sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/fd3811f84f044a107d58a20e0ef59bd29013f232/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.630Z",
+            "total_count": 49,
+            "returned": 49,
+            "file": "checks-2406-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 49,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2406,
+            "requested_head_sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+            "id": 116927895412,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+            "app_id": 15368,
+            "started_at": "2026-10-16T10:37:18Z",
+            "completed_at": "2026-10-16T10:37:28Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38831481372/job/116927895412",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2406,
+            "requested_head_sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+            "id": 116760023271,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+            "app_id": 15368,
+            "started_at": "2026-10-16T04:59:43Z",
+            "completed_at": "2026-10-16T04:59:46Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38831481509/job/116760023271",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2365,
+      "title": "feat(memory-cell): experimental associative memory kernel with matched type-split and artifact-only tests",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+        "base_ref": "codex/memory-cell-evidence-20261008",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.725Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2365",
+        "head": {
+          "ref": "codex/associative-cell-type-split-20261015",
+          "sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84"
+        },
+        "base": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "32b0dd1cf50160bc77f1b0e8b7e92cc7325aa994"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "f7cf5892a40ea64dac6417b481aa9420d530abfb",
+        "updated_at": "2026-10-16T12:11:46Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.266Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2365",
+        "head": {
+          "ref": "codex/associative-cell-type-split-20261015",
+          "sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84"
+        },
+        "base": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "32b0dd1cf50160bc77f1b0e8b7e92cc7325aa994"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "f7cf5892a40ea64dac6417b481aa9420d530abfb",
+        "updated_at": "2026-10-16T12:11:46Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 64,
+        "pages": [
+          {
+            "number": 2365,
+            "sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/da3f14b9b16bb8d6d4b4e29f2315b3c379908b84/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.770Z",
+            "total_count": 64,
+            "returned": 64,
+            "file": "checks-2365-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 64,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2365,
+            "requested_head_sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+            "id": 117263975016,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+            "app_id": 15368,
+            "started_at": "2026-10-17T01:10:58Z",
+            "completed_at": "2026-10-17T01:11:08Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38898628824/job/117263975016",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2365,
+            "requested_head_sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+            "id": 116990163881,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+            "app_id": 15368,
+            "started_at": "2026-10-16T15:47:18Z",
+            "completed_at": "2026-10-16T15:47:22Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38898628595/job/116990163881",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "codex/memory-cell-evidence-20261008",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 2273,
+      "title": "feat: add NDU resource portfolio and snapshot-bound shadow pipeline",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.831Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2273",
+        "head": {
+          "ref": "research/ndu-merton-portfolio-p0-20261015",
+          "sha": "6b885ae432f5d100260dec48615e6a4e0903e55c"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "2bcabdc9bbab7ad3ac8aa34bc1bf7152646f07ce",
+        "updated_at": "2026-10-19T00:08:40Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.284Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2273",
+        "head": {
+          "ref": "research/ndu-merton-portfolio-p0-20261015",
+          "sha": "6b885ae432f5d100260dec48615e6a4e0903e55c"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "2bcabdc9bbab7ad3ac8aa34bc1bf7152646f07ce",
+        "updated_at": "2026-10-19T00:08:40Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 61,
+        "pages": [
+          {
+            "number": 2273,
+            "sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/6b885ae432f5d100260dec48615e6a4e0903e55c/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.603Z",
+            "total_count": 61,
+            "returned": 61,
+            "file": "checks-2273-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 61,
+        "required_context_observations": {
+          "CI required": {
+            "number": 2273,
+            "requested_head_sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+            "id": 117873476521,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+            "app_id": 15368,
+            "started_at": "2026-10-19T03:21:00Z",
+            "completed_at": "2026-10-19T03:21:09Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39179442252/job/117873476521",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 2273,
+            "requested_head_sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+            "id": 117835564776,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+            "app_id": 15368,
+            "started_at": "2026-10-19T00:38:26Z",
+            "completed_at": "2026-10-19T00:38:28Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39179442305/job/117835564776",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1682,
+      "title": "Add shared Stem, Head matrix, and governed fast paths",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.926Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1682",
+        "head": {
+          "ref": "work/full-experiments",
+          "sha": "e89570ddb8bd21c8c89d6278456014d8245c745a"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "423728ba21c5615edcb25906a57fbe6cedcfc931",
+        "updated_at": "2026-10-13T06:09:13Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.228Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1682",
+        "head": {
+          "ref": "work/full-experiments",
+          "sha": "e89570ddb8bd21c8c89d6278456014d8245c745a"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "423728ba21c5615edcb25906a57fbe6cedcfc931",
+        "updated_at": "2026-10-13T06:09:13Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 60,
+        "pages": [
+          {
+            "number": 1682,
+            "sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e89570ddb8bd21c8c89d6278456014d8245c745a/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.513Z",
+            "total_count": 60,
+            "returned": 60,
+            "file": "checks-1682-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 60,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1682,
+            "requested_head_sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+            "id": 115212702473,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+            "app_id": 15368,
+            "started_at": "2026-10-13T09:26:41Z",
+            "completed_at": "2026-10-13T09:26:51Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38355086801/job/115212702473",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1682,
+            "requested_head_sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+            "id": 115168504002,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+            "app_id": 15368,
+            "started_at": "2026-10-13T07:41:32Z",
+            "completed_at": "2026-10-13T07:41:37Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38355086510/job/115168504002",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1452,
+      "title": "feat(memory-cell): complete native census, bounded serving and adjudication handoff",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.955Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1452",
+        "head": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "49b62fb9b1689b0261e8223a706886399cc58205",
+        "updated_at": "2026-10-19T02:09:17Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.244Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1452",
+        "head": {
+          "ref": "codex/memory-cell-evidence-20261008",
+          "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "blocked",
+        "merge_commit_sha": "49b62fb9b1689b0261e8223a706886399cc58205",
+        "updated_at": "2026-10-19T02:09:17Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 125,
+        "pages": [
+          {
+            "number": 1452,
+            "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/81d9fcb36bddfcc6dc914f87697c642824273cc1/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.922Z",
+            "total_count": 125,
+            "returned": 100,
+            "file": "checks-1452-001.json"
+          },
+          {
+            "number": 1452,
+            "sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/81d9fcb36bddfcc6dc914f87697c642824273cc1/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:25.080Z",
+            "total_count": 125,
+            "returned": 25,
+            "file": "checks-1452-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 25,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1452,
+            "requested_head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "id": 117871428421,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "app_id": 15368,
+            "started_at": "2026-10-19T03:12:37Z",
+            "completed_at": "2026-10-19T03:12:47Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39188618965/job/117871428421",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1452,
+            "requested_head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "id": 117864003851,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+            "app_id": 15368,
+            "started_at": "2026-10-19T02:41:26Z",
+            "completed_at": "2026-10-19T02:41:30Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39188618925/job/117864003851",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1390,
+      "title": "fix(acceptance): verify pinned SSHSIG without Unix subprocesses",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+        "base_ref": "fix/main-product-blockers-20261005",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.709Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1390",
+        "head": {
+          "ref": "fix/native-sshsig-20261005",
+          "sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b"
+        },
+        "base": {
+          "ref": "fix/main-product-blockers-20261005",
+          "sha": "f349a05435c4b442c1799d854aafdee84c286337"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "66c26a035b7d0893113c32e999580bc264a7f4d0",
+        "updated_at": "2026-10-11T02:50:35Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.143Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1390",
+        "head": {
+          "ref": "fix/native-sshsig-20261005",
+          "sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b"
+        },
+        "base": {
+          "ref": "fix/main-product-blockers-20261005",
+          "sha": "f349a05435c4b442c1799d854aafdee84c286337"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "unstable",
+        "merge_commit_sha": "66c26a035b7d0893113c32e999580bc264a7f4d0",
+        "updated_at": "2026-10-11T02:50:35Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 18,
+        "pages": [
+          {
+            "number": 1390,
+            "sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/3589a2964d1aa5fd6119e2dd9a363ab4579a981b/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:29.454Z",
+            "total_count": 18,
+            "returned": 18,
+            "file": "checks-1390-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 18,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1390,
+            "requested_head_sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+            "id": 111695360902,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+            "app_id": 15368,
+            "started_at": "2026-10-05T09:18:52Z",
+            "completed_at": "2026-10-05T09:19:00Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37284828446/job/111695360902",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1390,
+            "requested_head_sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+            "id": 111691811955,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+            "app_id": 15368,
+            "started_at": "2026-10-05T09:08:59Z",
+            "completed_at": "2026-10-05T09:09:01Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37284827897/job/111691811955",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "fix/main-product-blockers-20261005",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1278,
+      "title": "automation.taskflow: harden durable recovery, provider identity and circuit evidence",
+      "author": "Tomasrgbsf",
+      "initial_snapshot": {
+        "head": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.616Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1278",
+        "head": {
+          "ref": "automation-taskflow-product-closure-20260930",
+          "sha": "c142eae6fa3a6ef4da3074541a649d5241170d04"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-10-11T02:50:36Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:40.036Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1278",
+        "head": {
+          "ref": "automation-taskflow-product-closure-20260930",
+          "sha": "c142eae6fa3a6ef4da3074541a649d5241170d04"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-10-11T02:50:36Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 99,
+        "pages": [
+          {
+            "number": 1278,
+            "sha": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/c142eae6fa3a6ef4da3074541a649d5241170d04/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:30.054Z",
+            "total_count": 99,
+            "returned": 99,
+            "file": "checks-1278-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 99,
+        "required_context_observations": {
+          "CI required": {
+            "observation": "MISSING",
+            "head_sha": "c142eae6fa3a6ef4da3074541a649d5241170d04"
+          },
+          "Architecture required": {
+            "number": 1278,
+            "requested_head_sha": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+            "id": 110163425203,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+            "app_id": 15368,
+            "started_at": "2026-10-01T01:21:29Z",
+            "completed_at": "2026-10-01T01:21:33Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36794251366/job/110163425203",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1237,
+      "title": "learning.operator: single-candidate semantic qualification and readiness convergence",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:09.558Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1237",
+        "head": {
+          "ref": "codex/learning-operator-authoritative-convergence-20260930",
+          "sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-10-11T02:50:38Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:16:39.987Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1237",
+        "head": {
+          "ref": "codex/learning-operator-authoritative-convergence-20260930",
+          "sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-10-11T02:50:38Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 118,
+        "pages": [
+          {
+            "number": 1237,
+            "sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e3e4e650bd6f57aaf520193a6b2febab42e6f9d3/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:30.023Z",
+            "total_count": 118,
+            "returned": 100,
+            "file": "checks-1237-001.json"
+          },
+          {
+            "number": 1237,
+            "sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/e3e4e650bd6f57aaf520193a6b2febab42e6f9d3/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:25.114Z",
+            "total_count": 118,
+            "returned": 18,
+            "file": "checks-1237-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 18,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1237,
+            "requested_head_sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "id": 109995200121,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "app_id": 15368,
+            "started_at": "2026-09-30T17:01:57Z",
+            "completed_at": "2026-09-30T17:02:14Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36732728843/job/109995200121",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1237,
+            "requested_head_sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "id": 109959053484,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+            "app_id": 15368,
+            "started_at": "2026-09-30T15:37:36Z",
+            "completed_at": "2026-09-30T15:37:38Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36732727905/job/109959053484",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1234,
+      "title": "ci(inference): bootstrap trusted artifact acceptor",
+      "author": "Tomasrgbsf",
+      "initial_snapshot": {
+        "head": "92f8715dc5d3ea0060447744312eb494e76babe4",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.984Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1234",
+        "head": {
+          "ref": "codex/inference-acceptor-bootstrap-20260930",
+          "sha": "92f8715dc5d3ea0060447744312eb494e76babe4"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "b1190fba0c1bee32eabd5b5f55526a8faa4a2b76",
+        "updated_at": "2026-10-11T02:50:39Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.338Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1234",
+        "head": {
+          "ref": "codex/inference-acceptor-bootstrap-20260930",
+          "sha": "92f8715dc5d3ea0060447744312eb494e76babe4"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "b1190fba0c1bee32eabd5b5f55526a8faa4a2b76",
+        "updated_at": "2026-10-11T02:50:39Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 58,
+        "pages": [
+          {
+            "number": 1234,
+            "sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/92f8715dc5d3ea0060447744312eb494e76babe4/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:54.825Z",
+            "total_count": 58,
+            "returned": 58,
+            "file": "checks-1234-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 58,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1234,
+            "requested_head_sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+            "id": 109737171734,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+            "app_id": 15368,
+            "started_at": "2026-09-30T05:05:56Z",
+            "completed_at": "2026-09-30T05:06:04Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36658010802/job/109737171734",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1234,
+            "requested_head_sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+            "id": 109712461362,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "92f8715dc5d3ea0060447744312eb494e76babe4",
+            "app_id": 15368,
+            "started_at": "2026-09-30T02:46:32Z",
+            "completed_at": "2026-09-30T02:46:35Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36658010502/job/109712461362",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1227,
+      "title": "fix(memory.retrieval): close lifecycle, bounded product admission, and durable recovery contracts",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.546Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1227",
+        "head": {
+          "ref": "chatgpt/memory-retrieval-hardening-20260930",
+          "sha": "058c16cb7ade579b52b5235e51bb655a8ee46087"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T14:57:30Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.039Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1227",
+        "head": {
+          "ref": "chatgpt/memory-retrieval-hardening-20260930",
+          "sha": "058c16cb7ade579b52b5235e51bb655a8ee46087"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T14:57:30Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 87,
+        "pages": [
+          {
+            "number": 1227,
+            "sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/058c16cb7ade579b52b5235e51bb655a8ee46087/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.009Z",
+            "total_count": 87,
+            "returned": 87,
+            "file": "checks-1227-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 87,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1227,
+            "requested_head_sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+            "id": 109953866713,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+            "app_id": 15368,
+            "started_at": "2026-09-30T15:28:50Z",
+            "completed_at": "2026-09-30T15:28:58Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36732980035/job/109953866713",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1227,
+            "requested_head_sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+            "id": 109951621730,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+            "app_id": 15368,
+            "started_at": "2026-09-30T15:28:10Z",
+            "completed_at": "2026-09-30T15:28:12Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36732978852/job/109951621730",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1199,
+      "title": "prompt.registry: close qualification and evidence identity",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.661Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1199",
+        "head": {
+          "ref": "codex/prompt-registry-full-closeout-20260929",
+          "sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T12:20:09Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.114Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1199",
+        "head": {
+          "ref": "codex/prompt-registry-full-closeout-20260929",
+          "sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T12:20:09Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 120,
+        "pages": [
+          {
+            "number": 1199,
+            "sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/87f3d1d99029a357d1babeeeaa09c6d97364dce0/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.028Z",
+            "total_count": 120,
+            "returned": 100,
+            "file": "checks-1199-001.json"
+          },
+          {
+            "number": 1199,
+            "sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/87f3d1d99029a357d1babeeeaa09c6d97364dce0/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:24.959Z",
+            "total_count": 120,
+            "returned": 20,
+            "file": "checks-1199-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 20,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1199,
+            "requested_head_sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "id": 109951529988,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "app_id": 15368,
+            "started_at": "2026-09-30T15:23:16Z",
+            "completed_at": "2026-09-30T15:23:27Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36714053725/job/109951529988",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1199,
+            "requested_head_sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "id": 109890444006,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+            "app_id": 15368,
+            "started_at": "2026-09-30T13:06:50Z",
+            "completed_at": "2026-09-30T13:06:54Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36714051966/job/109890444006",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1179,
+      "title": "runtime.codex: add protected real-provider qualification and operations runbooks",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.974Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1179",
+        "head": {
+          "ref": "runtime-codex-target-qualification-20260928",
+          "sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "0774c78cd82b110a68383a68b8d0db410f7e84ef",
+        "updated_at": "2026-09-28T15:18:24Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.431Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1179",
+        "head": {
+          "ref": "runtime-codex-target-qualification-20260928",
+          "sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "0774c78cd82b110a68383a68b8d0db410f7e84ef",
+        "updated_at": "2026-09-28T15:18:24Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 64,
+        "pages": [
+          {
+            "number": 1179,
+            "sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5b2ac550ba31197db1cb4a6946df11d14973baa3/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:54.725Z",
+            "total_count": 64,
+            "returned": 64,
+            "file": "checks-1179-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 64,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1179,
+            "requested_head_sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+            "id": 109098425652,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+            "app_id": 15368,
+            "started_at": "2026-09-28T19:55:04Z",
+            "completed_at": "2026-09-28T19:55:14Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36442467260/job/109098425652",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1179,
+            "requested_head_sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+            "id": 109010847455,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+            "app_id": 15368,
+            "started_at": "2026-09-28T16:38:17Z",
+            "completed_at": "2026-09-28T16:38:20Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36442466812/job/109010847455",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1160,
+      "title": "architecture: converge scalable module and runtime boundaries",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.701Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1160",
+        "head": {
+          "ref": "work/architecture-scale-convergence-20260927",
+          "sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T07:01:45Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.235Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1160",
+        "head": {
+          "ref": "work/architecture-scale-convergence-20260927",
+          "sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T07:01:45Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 65,
+        "pages": [
+          {
+            "number": 1160,
+            "sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/82c72395a64b97d8beb1f76901d66fe7fc06e4db/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:54.785Z",
+            "total_count": 65,
+            "returned": 65,
+            "file": "checks-1160-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 65,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1160,
+            "requested_head_sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+            "id": 109871857594,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+            "app_id": 15368,
+            "started_at": "2026-09-30T12:19:09Z",
+            "completed_at": "2026-09-30T12:19:17Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36681092363/job/109871857594",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1160,
+            "requested_head_sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+            "id": 109840243154,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+            "app_id": 15368,
+            "started_at": "2026-09-30T10:57:21Z",
+            "completed_at": "2026-09-30T10:57:25Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36681092306/job/109840243154",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1140,
+      "title": "fix(ndu): converge A–D hardening, recovery, retention and exact qualification",
+      "author": "Franksudoman",
+      "initial_snapshot": {
+        "head": "2063e41e089bb486e0936044593decab0b6194c2",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.771Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1140",
+        "head": {
+          "ref": "work/utility-ndu-abcd-convergence-20260928",
+          "sha": "2063e41e089bb486e0936044593decab0b6194c2"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-29T07:41:40Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.216Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1140",
+        "head": {
+          "ref": "work/utility-ndu-abcd-convergence-20260928",
+          "sha": "2063e41e089bb486e0936044593decab0b6194c2"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-29T07:41:40Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "2063e41e089bb486e0936044593decab0b6194c2",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 140,
+        "pages": [
+          {
+            "number": 1140,
+            "sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/2063e41e089bb486e0936044593decab0b6194c2/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.201Z",
+            "total_count": 140,
+            "returned": 100,
+            "file": "checks-1140-001.json"
+          },
+          {
+            "number": 1140,
+            "sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/2063e41e089bb486e0936044593decab0b6194c2/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:25.166Z",
+            "total_count": 140,
+            "returned": 40,
+            "file": "checks-1140-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 40,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1140,
+            "requested_head_sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "id": 109361407250,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "app_id": 15368,
+            "started_at": "2026-09-29T11:23:22Z",
+            "completed_at": "2026-09-29T11:23:30Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36533556137/job/109361407250",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1140,
+            "requested_head_sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "id": 109301783496,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "2063e41e089bb486e0936044593decab0b6194c2",
+            "app_id": 15368,
+            "started_at": "2026-09-29T08:12:34Z",
+            "completed_at": "2026-09-29T08:12:36Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36533555819/job/109301783496",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1083,
+      "title": "memory.federation: converge qualification, runtime, and authenticated wire boundary",
+      "author": "Tomasrgbsf",
+      "initial_snapshot": {
+        "head": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.756Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1083",
+        "head": {
+          "ref": "feat/memory-federation-full-closure-20260927",
+          "sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T07:54:16Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.249Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1083",
+        "head": {
+          "ref": "feat/memory-federation-full-closure-20260927",
+          "sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T07:54:16Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 91,
+        "pages": [
+          {
+            "number": 1083,
+            "sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5e36ad2d4952992571b60cd02068ad06c2765ddd/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:54.931Z",
+            "total_count": 91,
+            "returned": 91,
+            "file": "checks-1083-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 91,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1083,
+            "requested_head_sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+            "id": 109881519550,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+            "app_id": 15368,
+            "started_at": "2026-09-30T12:44:36Z",
+            "completed_at": "2026-09-30T12:44:44Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36686426782/job/109881519550",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1083,
+            "requested_head_sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+            "id": 109819864991,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+            "app_id": 15368,
+            "started_at": "2026-09-30T09:49:36Z",
+            "completed_at": "2026-09-30T09:49:40Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36686426541/job/109819864991",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1069,
+      "title": "ui.control: isolate recovery and harden browser control boundaries",
+      "author": "Tomasrgbsf",
+      "initial_snapshot": {
+        "head": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:31.193Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1069",
+        "head": {
+          "ref": "work/ui-control-authoritative-closure-20260927",
+          "sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "25f4bc485be7f1f4b556bc0ea75b88c89d80f17c",
+        "updated_at": "2026-09-30T23:57:36Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.790Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1069",
+        "head": {
+          "ref": "work/ui-control-authoritative-closure-20260927",
+          "sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "25f4bc485be7f1f4b556bc0ea75b88c89d80f17c",
+        "updated_at": "2026-09-30T23:57:36Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 82,
+        "pages": [
+          {
+            "number": 1069,
+            "sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5c0bbe30e4a5d408c430e8ab1fcc25638042d82a/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:54.962Z",
+            "total_count": 82,
+            "returned": 82,
+            "file": "checks-1069-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 82,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1069,
+            "requested_head_sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+            "id": 110199048876,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+            "app_id": 15368,
+            "started_at": "2026-10-01T03:25:33Z",
+            "completed_at": "2026-10-01T03:25:40Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36793599787/job/110199048876",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1069,
+            "requested_head_sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+            "id": 110164155934,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+            "app_id": 15368,
+            "started_at": "2026-10-01T01:32:40Z",
+            "completed_at": "2026-10-01T01:32:43Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36793599369/job/110164155934",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1038,
+      "title": "cognitive.store: close product boundary, signed bootstrap, qualification, and lifecycle gaps",
+      "author": "Tomasrgbsf",
+      "initial_snapshot": {
+        "head": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.732Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1038",
+        "head": {
+          "ref": "codex/cognitive-store-full-closure-20260927",
+          "sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T13:25:32Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.304Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1038",
+        "head": {
+          "ref": "codex/cognitive-store-full-closure-20260927",
+          "sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-30T13:25:32Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 116,
+        "pages": [
+          {
+            "number": 1038,
+            "sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b196e2dbec0e0a634e60f7eaeff329afed6afad7/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.308Z",
+            "total_count": 116,
+            "returned": 100,
+            "file": "checks-1038-001.json"
+          },
+          {
+            "number": 1038,
+            "sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/b196e2dbec0e0a634e60f7eaeff329afed6afad7/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:25.121Z",
+            "total_count": 116,
+            "returned": 16,
+            "file": "checks-1038-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 16,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1038,
+            "requested_head_sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "id": 109963256592,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "app_id": 15368,
+            "started_at": "2026-09-30T15:43:41Z",
+            "completed_at": "2026-09-30T15:43:51Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36721544311/job/109963256592",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1038,
+            "requested_head_sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "id": 109919794963,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+            "app_id": 15368,
+            "started_at": "2026-09-30T14:05:10Z",
+            "completed_at": "2026-09-30T14:05:13Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36721543024/job/109919794963",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 1001,
+      "title": "platform.types: close protocol, wire, owner, and exact-candidate qualification gaps",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "18654890257ad54e628445731288df011f679361",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.982Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1001",
+        "head": {
+          "ref": "codex/platform-types-production-convergence-20260925",
+          "sha": "18654890257ad54e628445731288df011f679361"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "1785eca2e5d37916e303953fba2682ce3f819a75",
+        "updated_at": "2026-10-11T02:50:41Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.432Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1001",
+        "head": {
+          "ref": "codex/platform-types-production-convergence-20260925",
+          "sha": "18654890257ad54e628445731288df011f679361"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "78fdb0cf8537e3a84fc6e0a849707559c80881e8"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": true,
+        "mergeable_state": "behind",
+        "merge_commit_sha": "1785eca2e5d37916e303953fba2682ce3f819a75",
+        "updated_at": "2026-10-11T02:50:41Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "18654890257ad54e628445731288df011f679361",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 81,
+        "pages": [
+          {
+            "number": 1001,
+            "sha": "18654890257ad54e628445731288df011f679361",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/18654890257ad54e628445731288df011f679361/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.034Z",
+            "total_count": 81,
+            "returned": 81,
+            "file": "checks-1001-001.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 1,
+        "terminal_count": 81,
+        "required_context_observations": {
+          "CI required": {
+            "number": 1001,
+            "requested_head_sha": "18654890257ad54e628445731288df011f679361",
+            "id": 111421738627,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "18654890257ad54e628445731288df011f679361",
+            "app_id": 15368,
+            "started_at": "2026-10-04T11:01:40Z",
+            "completed_at": "2026-10-04T11:01:47Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37193922713/job/111421738627",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 1001,
+            "requested_head_sha": "18654890257ad54e628445731288df011f679361",
+            "id": 111416767614,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "success",
+            "head_sha": "18654890257ad54e628445731288df011f679361",
+            "app_id": 15368,
+            "started_at": "2026-10-04T10:31:18Z",
+            "completed_at": "2026-10-04T10:31:22Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37193922541/job/111416767614",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    },
+    {
+      "number": 994,
+      "title": "objective.compiler: close projection, protocol, and qualification gaps",
+      "author": "ProfHepta",
+      "initial_snapshot": {
+        "head": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+        "base_ref": "main",
+        "state": "open",
+        "draft": false
+      },
+      "metadata_before_checks": {
+        "collected_at_utc": "2026-10-21T01:13:30.630Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/994",
+        "head": {
+          "ref": "work/objective-compiler-convergence-20260925",
+          "sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-27T00:03:33Z"
+      },
+      "metadata_after_checks": {
+        "collected_at_utc": "2026-10-21T01:17:16.052Z",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/994",
+        "head": {
+          "ref": "work/objective-compiler-convergence-20260925",
+          "sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f"
+        },
+        "base": {
+          "ref": "main",
+          "sha": "a126987b84737dbc2ee2592442a314117bddb4a2"
+        },
+        "state": "open",
+        "draft": false,
+        "merged": false,
+        "merged_at": null,
+        "closed_at": null,
+        "mergeable": false,
+        "mergeable_state": "dirty",
+        "merge_commit_sha": null,
+        "updated_at": "2026-09-27T00:03:33Z"
+      },
+      "changes_since_initial": {
+        "head_changed": false,
+        "state_changed": false,
+        "draft_changed": false,
+        "base_ref_changed": false
+      },
+      "head_binding": "SAME_HEAD_AT_BOUNDED_RECHECK",
+      "check_runs": {
+        "requested_head_sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+        "filter": "latest",
+        "per_page": 100,
+        "total_count": 127,
+        "pages": [
+          {
+            "number": 994,
+            "sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "page": 1,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f/check-runs?per_page=100&filter=latest&page=1",
+            "collected_at_utc": "2026-10-21T01:14:55.226Z",
+            "total_count": 127,
+            "returned": 100,
+            "file": "checks-994-001.json"
+          },
+          {
+            "number": 994,
+            "sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "page": 2,
+            "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/commits/5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f/check-runs?per_page=100&filter=latest&page=2",
+            "collected_at_utc": "2026-10-21T01:15:25.116Z",
+            "total_count": 127,
+            "returned": 27,
+            "file": "checks-994-002.json"
+          }
+        ],
+        "pagination_complete_for_observed_head": true,
+        "same_head_as_bounded_recheck": true,
+        "terminal_page": 2,
+        "terminal_count": 27,
+        "required_context_observations": {
+          "CI required": {
+            "number": 994,
+            "requested_head_sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "id": 108596041731,
+            "name": "CI required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "app_id": 15368,
+            "started_at": "2026-09-27T11:08:34Z",
+            "completed_at": "2026-09-27T11:08:43Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36281339030/job/108596041731",
+            "page": 1
+          },
+          "Architecture required": {
+            "number": 994,
+            "requested_head_sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "id": 108525119891,
+            "name": "Architecture required",
+            "status": "completed",
+            "conclusion": "failure",
+            "head_sha": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+            "app_id": 15368,
+            "started_at": "2026-09-27T03:09:28Z",
+            "completed_at": "2026-09-27T03:09:31Z",
+            "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36281338839/job/108525119891",
+            "page": 1
+          }
+        },
+        "not_applied_to_later_head": false
+      },
+      "base_policy_ref": "main",
+      "merge_qualification": "NOT_ESTABLISHED",
+      "screen_note": "Common main-branch contexts are also shown for stack branches; this does not impose main policy on an unprotected base."
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+name: Native NDU R23 localized rational bounds
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/localized_bounds/**'
+      - '.github/workflows/hepta-native-ndu-localized-r23.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  localized-certificate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Exact rational tests and three complete proof trees
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd"
+          OUT="$RUNNER_TEMP/r23"
+          mkdir -p "$OUT"
+          cd "$BASE/localized_bounds"
+          export PYTHONPATH="$BASE/centered_interval:$BASE/width4_interval:."
+          python -m unittest -v test_r23 2>&1 | tee "$OUT/TESTS.log"
+          for N in 2 3 4; do
+            python r23.py --width "$N" --out "$OUT/w$N" 2>&1 | tee "$OUT/w$N.log"
+          done
+          python audit_r23.py --root "$OUT" 2>&1 | tee "$OUT/AUDIT.log"
+      - name: Archive positive and negative certificates
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-r23-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/r23
+          if-no-files-found: error
+          retention-days: 14

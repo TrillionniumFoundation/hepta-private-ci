@@ -1,0 +1,40 @@
+{
+  "reviewed_at_utc": "2026-10-21T01:27:48.467591+00:00",
+  "result": "PASS_SOURCE_REVIEW",
+  "candidate_sha256": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43",
+  "candidate_blob": "dc6ae36263e1aab8c5c83e13649892ae9d3112c2",
+  "owner_pr": 2743,
+  "owner_head": "4290ec6480944af84646e8846dfe5e3dc5e73f81",
+  "owner_blob_identical": true,
+  "changed_lines": 2,
+  "scope": "ordered aggregate input plus exact migration ledger versions 1..15",
+  "preserved_assertions": [
+    "memory_revisions count=1",
+    "memory_citations count=1",
+    "memory_heads original revision=1",
+    "legacy header identity and fixed digest",
+    "legacy entity/relation counts=0",
+    "kg_projection/kg_nodes/kg_edges/kg_entity_fts rows=0"
+  ],
+  "native_tests_run_by_reviewer": false,
+  "native_tests_owner": "research_state",
+  "production_source_changed": false,
+  "source_urls": [
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2743",
+    "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/pulls/2743/files?per_page=100&page=1"
+  ],
+  "raw_response_hashes": [
+    {
+      "original_file": "pr2743-files.json",
+      "bytes": 1329,
+      "sha256": "aeab226786cd57ca15edbf185f40e3361c569296560231cc2b11f646d092668a",
+      "bundled": false
+    },
+    {
+      "original_file": "pr2743-metadata.json",
+      "bytes": 19366,
+      "sha256": "86f835cef3fa7b44199fdb49f8a1edb4f4433b0885c3ceca7f352f6ba15b08e2",
+      "bundled": false
+    }
+  ]
+}

@@ -363,3 +363,20 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+mod learning_authentication;
+pub use learning_authentication::LearningAuthenticationProfile;
+pub use learning_authentication::LearningSignature;
+pub use learning_authentication::LearningTrustFrontier;
+pub use learning_authentication::LearningVerificationKey;
+
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::parent_anchor as windows_private_owner;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::SynchronousStageFile;
+#[cfg(windows)]
+pub use codex_utils_windows_private_state::stage::replace_synced_state_stage;
+
+#[cfg(all(test, windows))]
+#[path = "windows_state_stage_tests.rs"]
+mod windows_state_stage_tests;

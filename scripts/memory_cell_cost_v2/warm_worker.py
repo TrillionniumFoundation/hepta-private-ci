@@ -7,6 +7,8 @@ from pathlib import Path
 import sys
 import time
 
+from historical_inventory import bind_model_sources
+
 
 GENERATION_LIMITS = {
     "calls": 20,
@@ -167,6 +169,8 @@ def run(request):
         raise ValueError("worker request is not bound to frozen generation limits")
     current = {}
     if request["mode"] == "memory":
+        # Admission binds the actual import root before the model runtime is loaded.
+        bind_model_sources(request["model_code"], request["model_source_pins"])
         # Only this explicitly executed branch can allocate the pretrained model.
         sys.path.insert(0, request["model_code"])
         import torch

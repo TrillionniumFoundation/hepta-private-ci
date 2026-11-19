@@ -46,6 +46,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .owners
             .try_lock()
             .map_err(|_| RuntimeError::CommitUncertain)?;
+        if owners.source_fenced
+            || self
+                .source_abandoned
+                .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(crate::LearningIterationRuntimeErrorV1::CommitUncertain);
+        }
         let scope = owners.receipts.config.scope.clone();
         super::super::validate_config(&owners.receipts.config, &owners.receipts.key)
             .map_err(owner_error)?;

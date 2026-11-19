@@ -1,0 +1,92 @@
+name: NDU continuous latent Riccati experiment
+
+on:
+  push:
+    branches: [research/ndu-latent-riccati-20261021]
+    paths: [experiments/ndu_latent_riccati/CLOUD_RUN_REQUEST.json]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ndu-latent-riccati-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  continuous-latent:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/research/ndu-latent-riccati-20261021'
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 60
+    env:
+      HEPTA_EXPERIMENT_EXPECTED_SHA: ${{ github.sha }}
+      HEPTA_DEDICATED_RUNNER_GROUP: trillionnium-android-gpu
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Record actual runner assignment
+        run: |
+          set -euo pipefail
+          HEPTA_EXPERIMENT_OUTPUT="${RUNNER_TEMP}/ndu-latent-riccati/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          printf 'HEPTA_EXPERIMENT_OUTPUT=%s\n' "$HEPTA_EXPERIMENT_OUTPUT" >> "$GITHUB_ENV"
+          mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
+          {
+            printf 'group_selector=trillionnium-android-gpu\n'
+            printf 'runner_name=%s\n' "$RUNNER_NAME"
+            printf 'runner_environment=%s\n' "${RUNNER_ENVIRONMENT:-}"
+            printf 'runner_os=%s\nrunner_arch=%s\n' "$RUNNER_OS" "$RUNNER_ARCH"
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+            printf 'run_id=%s\nrun_attempt=%s\n' "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+          } | tee "$HEPTA_EXPERIMENT_OUTPUT/workflow-assignment.txt"
+          test "$RUNNER_NAME" = desktop
+          test "${RUNNER_ENVIRONMENT:-}" = self-hosted
+          test "$RUNNER_OS" = Linux
+          test "$RUNNER_ARCH" = X64
+
+      - name: Checkout requested source
+        id: checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Run source-pinned registered CPU experiment
+        id: experiment
+        timeout-minutes: 50
+        run: python3 experiments/ndu_latent_riccati/cloud/launch.py --output "$HEPTA_EXPERIMENT_OUTPUT"
+
+      - name: Preserve workflow outcome
+        if: always()
+        env:
+          EXPERIMENT_JOB_STATUS: ${{ job.status }}
+          EXPERIMENT_CHECKOUT_OUTCOME: ${{ steps.checkout.outcome }}
+          EXPERIMENT_STEP_OUTCOME: ${{ steps.experiment.outcome }}
+        run: |
+          set -euo pipefail
+          HEPTA_EXPERIMENT_OUTPUT="${RUNNER_TEMP}/ndu-latent-riccati/${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir -p "$HEPTA_EXPERIMENT_OUTPUT"
+          {
+            printf 'job_status=%s\n' "$EXPERIMENT_JOB_STATUS"
+            printf 'checkout_outcome=%s\n' "$EXPERIMENT_CHECKOUT_OUTCOME"
+            printf 'experiment_outcome=%s\n' "$EXPERIMENT_STEP_OUTCOME"
+            printf 'source_sha=%s\n' "$GITHUB_SHA"
+          } > "$HEPTA_EXPERIMENT_OUTPUT/workflow-outcome.txt"
+          {
+            printf '## NDU continuous latent Riccati experiment\n\n'
+            printf 'Runner: `%s`; source: `%s`.\n\n' "$RUNNER_NAME" "$GITHUB_SHA"
+            printf 'Checkout: `%s`; experiment: `%s`.\n\n' "$EXPERIMENT_CHECKOUT_OUTCOME" "$EXPERIMENT_STEP_OUTCOME"
+            printf 'Artifacts preserve source, protocol, runtime, training, evaluation and partial-failure evidence. Process completion and scientific efficacy are separate outcomes.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload all available evidence
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-latent-riccati-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-latent-riccati/${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: error
+          retention-days: 30

@@ -1,0 +1,148 @@
+{
+  "captured_rhs": {
+    "ode_solves": 0,
+    "optimizer": 0,
+    "wall_seconds": 0.6666450720000512
+  },
+  "completed_profiles": [
+    {
+      "case": "isolated_first_uniform_control",
+      "coordinates": 3325,
+      "cpu_seconds": 7.010988137,
+      "flow_calls": {
+        "central_fd_primal": 20,
+        "primal_baseline": 1,
+        "variational": 1
+      },
+      "intervals": 128,
+      "maxrss_kib": 272492,
+      "profile": "control-n128",
+      "status": "PASS",
+      "tiny_fine_fd": 2554,
+      "undefined_relative": 1356,
+      "variational_cost": {
+        "augmented_state_scalars": 3990,
+        "cpu_seconds": 2.856342553,
+        "instantaneous_jacobian_nonzeros": 23665,
+        "instantaneous_jacobian_shape": [
+          3990,
+          3990
+        ],
+        "internal_steps": 783,
+        "maximum_rss_kib": 272492,
+        "stage": "variational",
+        "wall_seconds": 2.8728360810000595
+      },
+      "wall_seconds": 7.0487199629999395
+    },
+    {
+      "case": "first_uniform_plus_first_phase_control",
+      "coordinates": 3325,
+      "cpu_seconds": 6.626707895,
+      "flow_calls": {
+        "central_fd_primal": 20,
+        "primal_baseline": 1,
+        "variational": 1
+      },
+      "intervals": 128,
+      "maxrss_kib": 268604,
+      "profile": "mixture-n128",
+      "status": "PASS",
+      "tiny_fine_fd": 2181,
+      "undefined_relative": 44,
+      "variational_cost": {
+        "augmented_state_scalars": 3990,
+        "cpu_seconds": 2.821259274,
+        "instantaneous_jacobian_nonzeros": 23665,
+        "instantaneous_jacobian_shape": [
+          3990,
+          3990
+        ],
+        "internal_steps": 766,
+        "maximum_rss_kib": 268604,
+        "stage": "variational",
+        "wall_seconds": 2.831660417999956
+      },
+      "wall_seconds": 6.637571660000049
+    },
+    {
+      "case": "original_recovered_fixed_posterior",
+      "coordinates": 3325,
+      "cpu_seconds": 6.462250871999999,
+      "flow_calls": {
+        "central_fd_primal": 20,
+        "primal_baseline": 1,
+        "variational": 1
+      },
+      "intervals": 128,
+      "maxrss_kib": 214860,
+      "profile": "original-n128",
+      "status": "PASS",
+      "tiny_fine_fd": 2332,
+      "undefined_relative": 49,
+      "variational_cost": {
+        "augmented_state_scalars": 3990,
+        "cpu_seconds": 2.064778525,
+        "instantaneous_jacobian_nonzeros": 23665,
+        "instantaneous_jacobian_shape": [
+          3990,
+          3990
+        ],
+        "internal_steps": 546,
+        "maximum_rss_kib": 214860,
+        "stage": "variational",
+        "wall_seconds": 2.0671685269999216
+      },
+      "wall_seconds": 6.514998218000073
+    },
+    {
+      "case": "original_recovered_fixed_posterior",
+      "coordinates": 12925,
+      "cpu_seconds": 72.20075547,
+      "flow_calls": {
+        "central_fd_primal": 20,
+        "primal_baseline": 1,
+        "variational": 1
+      },
+      "intervals": 512,
+      "maxrss_kib": 819056,
+      "profile": "original-n512",
+      "status": "PASS",
+      "tiny_fine_fd": 10005,
+      "undefined_relative": 213,
+      "variational_cost": {
+        "augmented_state_scalars": 15510,
+        "cpu_seconds": 37.68078891,
+        "instantaneous_jacobian_nonzeros": 94705,
+        "instantaneous_jacobian_shape": [
+          15510,
+          15510
+        ],
+        "internal_steps": 593,
+        "maximum_rss_kib": 819056,
+        "stage": "variational",
+        "wall_seconds": 37.80395020999981
+      },
+      "wall_seconds": 72.42325465399995
+    }
+  ],
+  "known_completed_profile_calls": {
+    "central_fd_primal": 80,
+    "optimizer": 0,
+    "primal_baseline": 4,
+    "variational": 4
+  },
+  "new_torch_or_optimizer_calls": 0,
+  "prior_numeric_pattern_killed": {
+    "cause": "Unknown; original scratch receipt and input exports were lost after executor replacement. Committed d372 STAGE-SOURCE retains observed terminal/preflight summary. No successful numerical result from that attempt.",
+    "cost": "Unknown",
+    "exit_code": 137
+  },
+  "profile_wall_after_imports_seconds": 92.62454449500001,
+  "regression": {
+    "tests": 8,
+    "wall_seconds": 25.85,
+    "warning_preserved": true
+  },
+  "scope": "Not total project/serving/training cost. Four disclosed local diagnostic profiles after imports. The eight regression tests and captured RHS check have separate recorded costs; prior killed numerical-pattern attempt has unknown incomplete cost, no successful result."
+}

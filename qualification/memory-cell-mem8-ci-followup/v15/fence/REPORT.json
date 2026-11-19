@@ -1,0 +1,287 @@
+{
+  "schema": "mem.fence-pinned-readonly-diagnosis.v1",
+  "scope": "One original failure; no host probe, mutation, rerun, policy change, or source ref update.",
+  "job": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "run_id": 43021840778,
+    "job_id": 130526677869,
+    "name": "Blob size policy / Blob size policy",
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "execution_merge": "8644d1044c50c7d4bfa47834f2602d133433300d",
+    "workflow_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3"
+  },
+  "raw": {
+    "path": "original/job-130526677869-decoded.log",
+    "bytes": 3859,
+    "sha256": "f50cdc9fa4044764eaa7a79468bec7e0dae90b2aa103ec231bfced4d19267f00"
+  },
+  "action": {
+    "repository": "openai/fence",
+    "commit": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+    "version_observed": "v0.10.0",
+    "mode_observed": "audit",
+    "allowlist_additions_observed": 0
+  },
+  "observed_runner": {
+    "kind": "GitHub hosted",
+    "os": "Ubuntu 24.04.5",
+    "image": "ubuntu-24.04",
+    "image_version": "20261101.360.1",
+    "runner_version": "2.338.2",
+    "architecture": "Linux x64 inferred from passing action/main.cts:552-554 before service launch"
+  },
+  "observation": {
+    "service_launch": "2026-11-11T12:37:04.1489099Z",
+    "failed_before_ready": "2026-11-11T12:37:05.6719530Z",
+    "service_state": "loaded/failed/failed; exit-code; ExecMainStatus=1; MainPID=0",
+    "error_code": "local_control_inventory_unavailable",
+    "original_unavailable_reasons": null,
+    "failed_inventory_callsite": null,
+    "follow_on_errors": [
+      "local check-clean-worktree action missing after checkout was skipped",
+      "post-job active Action mount evidence unavailable"
+    ]
+  },
+  "static_findings": [
+    {
+      "id": "aggregate_error",
+      "source": "src/local_control.rs:447-483",
+      "finding": "The verifier checks instability and fixed bounds first, then returns this error if observation status or scan status is Unavailable, or unavailable_inputs is nonempty. It does not encode which underlying reason failed."
+    },
+    {
+      "id": "multiple_causes",
+      "source": "src/local_control.rs:73-105,1276-1345,1600-1884,2406-2459",
+      "finding": "Reasons include /proc/table/process/FD/cgroup acquisition, root-or-ambiguous identity drift, malformed rows, unresolved Unix reachability and incomplete/unreviewed ownership. SocketOwnership and UnixReachability can be synthesized by public_snapshot. The original error is not proof of one particular OS permission or an allowlist mismatch."
+    },
+    {
+      "id": "all_modes_preflight",
+      "source": "src/dns_mediator.rs:2030-2055,3051-3092",
+      "finding": "run_protected_service verifies supported host and pre-activation local-control inventory before branching between audit and block."
+    },
+    {
+      "id": "audit_baseline",
+      "source": "src/dns_mediator.rs:2058-2076,2146-2184",
+      "finding": "Audit establishes and verifies a second local-control baseline before readiness. Both calls can emit this same error. No original snapshot identifies which call failed."
+    },
+    {
+      "id": "workflow_conforms",
+      "source": "repo/.github/workflows/blob-size-policy.yml; action/main.cts:551-565; docs/troubleshooting.md",
+      "finding": "The pinned workflow already selects ubuntu-24.04, has no container job, runs Fence first, and uses audit. Its exact contents match the executed merge workflow. There is no observed violation of the documented runner/order requirements."
+    },
+    {
+      "id": "no_policy_preserving_toggle",
+      "source": "action.yml; src/config.rs:20-34,179-190; src/dns_mediator.rs:3084-3092",
+      "finding": "No input disables or relaxes local-control inventory. Only the reviewed hosted profile is accepted. Network allowlist, artifact compatibility and audit mode do not satisfy unavailable local inventory; changing accepted inventories or checks would alter policy."
+    },
+    {
+      "id": "diagnostic_limit",
+      "source": "action/main.cts:166-183,205-239; action/log.cts:64-66,114-129; src/cli.rs:79-85; src/dns_mediator.rs:2024-2028",
+      "finding": "The action extracts only error.code from the last 20 journal lines for the ordinary warning. Debug groups require RUNNER_DEBUG=1 or ACTIONS_STEP_DEBUG=true. CLI maps the Rust error to the generic protected-lifecycle setup message; full debug output is not guaranteed to contain the discarded LocalControlObservation."
+    }
+  ],
+  "configuration_fix_proven": false,
+  "policy_preserving_fix": "No concrete configuration correction is supported by the original record; existing runner/order/audit inputs already match the pinned requirements.",
+  "minimum_missing_inputs": [
+    {
+      "input": "Original failing LocalControlObservation",
+      "fields": [
+        "status",
+        "stable",
+        "attempts",
+        "limits",
+        "snapshot.scan_status",
+        "snapshot.unavailable_inputs",
+        "snapshot.bounds_exceeded",
+        "snapshot.malformed_row_count",
+        "snapshot.unresolved_unix_listener_count",
+        "snapshot.reachability_complete",
+        "snapshot.ownership_complete"
+      ],
+      "purpose": "Distinguish acquisition, malformed-table, reachability and identity/ownership failure without weakening a policy predicate."
+    },
+    {
+      "input": "Bounded original resident setup diagnostic or report, if retained",
+      "fields": [
+        "invocation_id=fence-43021840778-1",
+        "pre-activation versus audit-baseline phase",
+        "original journal error record",
+        "existing source of failing /proc or socket acquisition"
+      ],
+      "purpose": "Associate the specific observation with the original runner and phase; a later probe/rerun would be a new identity and cannot reconstruct the original observation."
+    }
+  ],
+  "next_action": "Use only already retained original runner/service evidence if available. If it was not retained, the original subreason remains UNKNOWN; a separately authorized, bounded diagnostic qualification would need a new identity while preserving all policy checks. No such execution was requested or performed here.",
+  "claims_excluded": [
+    "Fence repaired",
+    "supported host globally unusable",
+    "specific /proc permission cause",
+    "network allowlist fix",
+    "audit mode fix",
+    "new native/model run"
+  ],
+  "source_files": [
+    {
+      "path": "upstream/action.yml",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "action.yml",
+      "git_blob": "97e91823b99e6b549291901818ebb918116c06d6",
+      "bytes": 1520,
+      "sha256": "26aa17917f78b69320d412e5d4c42617bc458e4f9787afe93055f18e3931430b"
+    },
+    {
+      "path": "upstream/README.md",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "README.md",
+      "git_blob": "d796d200f683acdfa48846460595451da9418032",
+      "bytes": 7126,
+      "sha256": "85b261c2293646972efd958d8cf0d0f779a18e1437fbf6f7e8c1c36dc6ea13b6"
+    },
+    {
+      "path": "upstream/action/main.cts",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "action/main.cts",
+      "git_blob": "019d85e877d1ef75434eeb683913ecdbacbe03cf",
+      "bytes": 19629,
+      "sha256": "6a155e92555a5b2fbd9696820af1b881fff88dff39766868a13a77ccaec654a3"
+    },
+    {
+      "path": "upstream/action/post.cts",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "action/post.cts",
+      "git_blob": "56b8acdece5c6266fdd4824c93b5c302f19c8287",
+      "bytes": 13105,
+      "sha256": "f4bc60f5cee449ce028749f5a1f5fbe9019bfbf505d8dbe699f437edc66f920f"
+    },
+    {
+      "path": "upstream/action/lib.cts",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "action/lib.cts",
+      "git_blob": "85b0bf3ddf893855a8164985188c0c160b59453e",
+      "bytes": 102917,
+      "sha256": "25c53ece64047561cd1e5fba74f31420a75deef68025ef5ec328217fdfd7af63"
+    },
+    {
+      "path": "upstream/action/log.cts",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "action/log.cts",
+      "git_blob": "fee669e107a60a4bf482279de93ff67fa4c34127",
+      "bytes": 7825,
+      "sha256": "b590d2687f658e037cae585d6559dbac8f0399c6d5ef3c4ac052de1ed01164b9"
+    },
+    {
+      "path": "upstream/src/local_control.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/local_control.rs",
+      "git_blob": "491baa1c3b9ee9131b4f36775f44190787935269",
+      "bytes": 139437,
+      "sha256": "6c2df9563957e1230057a9a5315ecf63d9b854836625e3cc89315309202b0eec"
+    },
+    {
+      "path": "upstream/src/config.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/config.rs",
+      "git_blob": "ec11403b2e81cb252e56005b8eda4f0f3a4bc43a",
+      "bytes": 35783,
+      "sha256": "44492dbaf80cd98adcb87fe304e6038301ddffd335115937dadfae86c8dd0719"
+    },
+    {
+      "path": "upstream/src/runtime.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/runtime.rs",
+      "git_blob": "6ceba728603625eda5e552270c87922655bcd9c6",
+      "bytes": 23882,
+      "sha256": "d5e8da4da7a6d1995508cd608671ba03f176cbf414e33a2b364c35ab6df0fd45"
+    },
+    {
+      "path": "upstream/src/hosted_runner.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/hosted_runner.rs",
+      "git_blob": "f220594eef0abae71428764a063eee56ba1ac259",
+      "bytes": 33337,
+      "sha256": "06c83b42d44aade5184c4ac141e702703e0a2fe72a5370f0efd0abba9a7608a9"
+    },
+    {
+      "path": "upstream/src/lifecycle.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/lifecycle.rs",
+      "git_blob": "a660b201a799b5ea7e4a5eefdc38d9edb11b78de",
+      "bytes": 29928,
+      "sha256": "aa1599b15fb72e7276a445334f2d8dc9d7019690b12dc76ccfe00e3c172ad5d9"
+    },
+    {
+      "path": "upstream/src/plan.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/plan.rs",
+      "git_blob": "cefc59f36a00fa378b0782783cdb5804a5ce5d19",
+      "bytes": 46213,
+      "sha256": "d1c7d072072c699724ce499867ff9e9ed80631cba012efe474323b969889e931"
+    },
+    {
+      "path": "upstream/src/lockdown.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/lockdown.rs",
+      "git_blob": "f3a11c45d27b56938a33ae6503ceed4815a33c7f",
+      "bytes": 101414,
+      "sha256": "19638e68de12c1437dbce76290ce273030970d7d5eb0577787c15c21021536ef"
+    },
+    {
+      "path": "upstream/src/cli.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/cli.rs",
+      "git_blob": "84d58b5475800b9499499dd1428ae1b3869391cf",
+      "bytes": 11448,
+      "sha256": "8a7ad77ec6fc4e21f29381bd64091f8d8cb17f39c9c04e046fa621dab56d7e41"
+    },
+    {
+      "path": "upstream/src/error.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/error.rs",
+      "git_blob": "eddf3b0bc888607fe8bd39dd476cb5237250297c",
+      "bytes": 1342,
+      "sha256": "1bbb70636d0a8239633797ee42fe821e7fa2835a31e592409b8abf448594f6bb"
+    },
+    {
+      "path": "upstream/src/dns_mediator.rs",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "src/dns_mediator.rs",
+      "git_blob": "a6cf2753c5479d1f0e99c51ec5a7b430ac0c8750",
+      "bytes": 477073,
+      "sha256": "1011cc6ab78e7b073f1ae276549deb9e3b90df7b7bc4efb24463778a8ff35c81"
+    },
+    {
+      "path": "upstream/docs/troubleshooting.md",
+      "repository": "openai/fence",
+      "ref": "e6b39c80c51cb2b2a39448ddeff74b3b886c0a63",
+      "source_path": "docs/troubleshooting.md",
+      "git_blob": "554c7877c1cf881f046ebf58477dfd7ac1bb39d9",
+      "bytes": 2511,
+      "sha256": "7c5db2c57fb8625e550974bac662a66c0af076acea3bfd563a6207bfbd10e69b"
+    },
+    {
+      "path": "repo/.github/workflows/blob-size-policy.yml",
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "ref": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "execution_merge": "8644d1044c50c7d4bfa47834f2602d133433300d",
+      "source_path": ".github/workflows/blob-size-policy.yml",
+      "git_blob": "d870b6f9c1e025aff458c32f0461c752fcd2f0b3",
+      "bytes": 1809,
+      "sha256": "8740d3752737705d7257c3711d5e4b3df3cd2eadacf050f8dabb1c9e6f17cb0c"
+    }
+  ]
+}

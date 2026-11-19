@@ -1,0 +1,184 @@
+{
+  "created_unix_ns": 1792751161047540135,
+  "plan": {
+    "batch_size": 64,
+    "benefit_gate": {
+      "all_seeds_reported": true,
+      "content_ci95_lower_gt": 0.0,
+      "content_comparisons": [
+        "additive-anchor",
+        "ndu-additive"
+      ],
+      "content_metrics": [
+        "task_utility",
+        "joint_success"
+      ],
+      "content_modes": "always_full",
+      "cpu_net_includes_amortized_build": true,
+      "decoder_corruption_must_reduce_score": true,
+      "effective_ci95_lower_gt": 0.0,
+      "effective_comparison": "ndu_control versus validation-selected efficient static system/mode",
+      "effective_metric": "cpu_net_utility",
+      "single_view_ci95_lower_gt": 0.0,
+      "single_view_comparison": "same ndu_control weights: continuation versus cheaper no-critic one-pass random view; not an isolated routing-mechanism effect or matched continuation opportunities",
+      "single_view_metrics": [
+        "task_utility",
+        "joint_success"
+      ],
+      "strict_build_and_inference_budget_violations": 0
+    },
+    "bootstrap_replicates": 2000,
+    "bootstrap_seed": 77431,
+    "build_cpu_attribution": "entire system build CPU including shared preparation, all three seeds and LR search, divided by three selected seeds; each selected seed serves H requests",
+    "calibration": "fixed training-only stratified matching: six distinct physical sources per each of twelve source classes and six rows per each of twelve target classes, interleaved across classes, three repeats; reference full-service CPU median from first shared base; request CPU includes processing, controller, real generation, sampled caption/PNG and JSON serialization",
+    "calibration_per_class": 6,
+    "calibration_repeats": 3,
+    "calibration_rows": 72,
+    "calibration_salt": "hepta-efficient-r2-calibration-v1",
+    "candidate_validation_reserve_cpu_seconds": 0.06,
+    "candidate_validation_reserve_units": 120000000,
+    "ce_anchor": 0.2,
+    "claims_excluded": [
+      "general NDU/FBSDE",
+      "natural images",
+      "greedy accuracy improvement without evidence",
+      "synchronous AV generation",
+      "long interactions",
+      "production or device qualification",
+      "hardware FLOP or energy equality"
+    ],
+    "compute_price": 0.02,
+    "control_reserve_cpu_seconds": 1.0,
+    "control_reserve_units": 400000000,
+    "controller": {
+      "decision": "fixed-rho full-minus-low predicted utility exceeds unchanged price 0.02",
+      "input": "first cheap thumbnail content distributions only",
+      "input_router": "implemented optional candidate, not searched or qualified in r2",
+      "kind": "continuation",
+      "ridge_regularization": 0.001
+    },
+    "cpu_bootstrap_clusters": "fixed 64-request runtime batch cohorts crossed with model seed; raw content metrics retain physical-source clusters; CPU claims are conditional on this frozen batching profile",
+    "cpu_guard_seconds": 0.03,
+    "cpu_seconds_per_system": 10.0,
+    "data_profile": {
+      "background_range": [
+        0.0,
+        0.04
+      ],
+      "foreground_range": [
+        0.75,
+        1.0
+      ],
+      "instructions_per_source": 8,
+      "noise_range": [
+        0.03,
+        0.12
+      ],
+      "schema": "hepta.joint-generation.independent-data.v1",
+      "seeds": {
+        "test": 130303,
+        "train": 130101,
+        "validation": 130202
+      },
+      "sources_per_class": {
+        "test": 6,
+        "train": 16,
+        "validation": 6
+      },
+      "variants": 2,
+      "vertical_shifts": [
+        -1,
+        0,
+        1
+      ]
+    },
+    "decoder_steps": 300,
+    "experiment_id": "efficient-r2",
+    "hidden": 32,
+    "inference_cap_full_equivalents": 2.0,
+    "learning_rates": [
+      0.001,
+      0.003,
+      0.01
+    ],
+    "maximum_greedy_drop": 0.02,
+    "model_seeds": [
+      11,
+      23,
+      47
+    ],
+    "no_padding": "only applied objective kernels execute; cached fixed decoder objective and one encoder forward per update; cheaper systems spend savings on extra updates up to the same build caps; static baselines do not fit or run an unused critic",
+    "operator_units_per_system": 12000000000,
+    "pretrain_steps": 500,
+    "r1_policy": "sealed forever; no retraining, tuning or re-evaluation against r1 held-out",
+    "retained_artifact_bound_bytes": 33554432,
+    "rho": 1.5,
+    "runtime_backend": "native",
+    "runtime_batch_size": 64,
+    "runtime_profile": "fixed batches up to 64 requests; complete batch CPU and latency retained; not a single-request latency qualification",
+    "schema": "hepta.joint-generation.efficient-budget.v2",
+    "scope": "independent physical-source synthetic text/image qualification; fixed-rho entropic utility",
+    "selection": "global LR and static mode maximize mean validation decoded utility minus measured training-calibrated CPU price; control LR selected by this same content rule before train-only critic fit",
+    "service_horizon": 100000,
+    "static_modes": [
+      "full",
+      "low",
+      "ensemble"
+    ],
+    "systems": [
+      "supervised",
+      "anchor",
+      "additive",
+      "ndu",
+      "ndu_control"
+    ],
+    "tail_reserve_cpu_seconds": 0.3,
+    "tail_reserve_units": 100000000,
+    "test_policy": "one experiment-wide exclusive marker before first test construction; no new-directory repeat or threshold change",
+    "validation_readiness": "do not open test if required validation mean contrasts are nonpositive, greedy retention fails, or a build budget is violated; retain nonzero readiness receipts"
+  },
+  "plan_sha256": "554cb219ed217aaec777bbbc75c66fb147f1ad0abc872125efd78dcbd2cf17fe",
+  "schema": "hepta.joint-generation.efficient-freeze.v2",
+  "source_commit": "32d17e85efc2830c05acc0edb50cda6ba16d3785",
+  "sources": {
+    "cloud_run.py": "e5dbcb587ac47745be9350441cc4e2a6211572395519d48ccb19dcd3b847b20e",
+    "contracts.py": "544cdbebc6e79abf5e55fc4e4d1a0fc30e169c805199ad72b9b420891fd8a61d",
+    "control.py": "1b79169db91317cf80f8cd29793ea8ac4a08dd2088e05095543c139181209c4b",
+    "data.py": "a3ac8701a57c2656a8508949e1bdaf09f8902a91cdbf08dc370e4f676cfb8bcb",
+    "evaluate.py": "879741e81852ab973ad0c69bad65c3398f4126604b71e7c4349a68db5fd5b3e3",
+    "independent/accounting.py": "91933531b5e21e3147dead1a1a32f76931d503242af999fda157aee8b7d4b00b",
+    "independent/calibration.py": "87e0bc2d4e070f31ae77b7c5919af0f0a01f8dec74e9921075a42e6bb68c423d",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/evaluation.py": "aca1100c6bb095a9bb108fdf33f084a5ca22cea2c4450d477059a6d68c5b0d46",
+    "independent/inference.py": "a58694aedd1618da6064b1316502db93c02f10e6148294b34b14260dc5e4f645",
+    "independent/learning.py": "c0cc5ca9d432c176fae0f38d31f8868cda8cd89c9c2328fffd3e21334b830a7f",
+    "independent/native.c": "2534877101c22c912c18a27e26c2f70287c7bebb26a0e0cccb63d9ebd8ba9e24",
+    "independent/native.py": "77df85bda0e3bdee1dcfa8a911f9f9fe0bb1f893b92830acbb6ea5fc462cd66c",
+    "independent/router.py": "92b8e223d2893263a4a141b81749a112b6818da55b62b7af477d021102ed895d",
+    "independent/run.py": "2607442675ecaba96843cb93c4fd7f286edd9f146c75500c97b378708a7144f2",
+    "independent/serve.py": "b2141055450fb543cb44eb79370052e704657e3eabc566a6ac1b25dc271f4bde",
+    "independent/test_accounting.py": "20e6a6c55ce2a5795c0c38dd9e3f6a7adb89583722cdde3d53197d6d03f5dcec",
+    "independent/test_calibration.py": "97213ae6dd1efa0ad552f025fa8513b6a9e63f7d80d09bcf7025b20f203665a0",
+    "independent/test_data_v2.py": "cbee87589848dcfcf4a2f54faeae93edb787c4f8aa5081b65a5a11685596e7d7",
+    "independent/test_evaluation.py": "ba3ee40303e150e86c09a24b0d26e1fbda03f84f7631ba79608d070a7306035f",
+    "independent/test_inference.py": "4daa9642cdd799334fbe0187efe9636593292b5344f2616bb1a82c4d0c9e5cf6",
+    "independent/test_learning.py": "827706f74af09b128c10aa6a198184594313a9d8c2a41090be42f09a4f008510",
+    "independent/test_native.py": "fa7447f426a9316a55656b955e0814a721f6dfb0dbcb3efd45c6d2d625c73a6a",
+    "independent/test_router.py": "e645d7c38b760ecdcc2ea7eec508462fd95ca787566447abc93e06ea3c219ebe",
+    "independent/test_run.py": "336cb9d7b1f354770a35bab4a13c1f122e2b9d570c0b64fe6d208649bce4fa19",
+    "independent/test_serve.py": "a2ef6a75fab3f38b3326e8048bd3a62e4c248768763d30a92475ea8c08151122",
+    "model.py": "36b99a28ea690a5e1c7c82db8debbbf58067d57796502f89cacb146554da4dc8",
+    "multimodal_contract.py": "411924b5b4116b758c444fa244c6eb64083d86b1534e058e2a3aaba269aae108",
+    "serve.py": "e75cb3d003109599f18a95cb5ad8e6c3024e98aef76cb0c0831963b97abedd93",
+    "test_contracts.py": "93a9608a979666d2d8c791ab86074a5d95b3d050271c8e88ab56173df3408261",
+    "test_control.py": "3f50c88f5b7afcede31e6886ce4f90e3c5dbf8b911cd10045ef812964eaeeb24",
+    "test_data.py": "d21db8fdc010eae4d3c45f75a4d84e94df021782b21e1aea952f4955ac0ea744",
+    "test_model.py": "e895ebdd360ef89f0b7a0320363ccbf1ce61a7564772491e5ab8fbf74e22dce3",
+    "test_multimodal_contract.py": "579680aa5389272b6fc4d98ba1eba3d688b585d00f289f3b3aa4f288f4e27c46",
+    "test_serve.py": "b12983dfb64bbea562aac9b717de24b8e5061128f7e4a27c8af37e31a0534aaa",
+    "test_utility.py": "dc019e559169c80be650b6f28ddc458004dda4b47ae56e75a76fd6ae2ccf8d01",
+    "train.py": "b61de784b5ea74093f9fddc6356d6ade9b3625c8b680a2154651645fdb09a737",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "test_opened": false
+}

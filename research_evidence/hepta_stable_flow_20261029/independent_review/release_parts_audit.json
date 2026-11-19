@@ -1,0 +1,134 @@
+{
+  "artifact_integrity_passed": true,
+  "created_unix": 1793282432.494524,
+  "method": "Only synthetic temporary bytes; isolated standard-library Python -I -S subprocesses. One default2MiB boundary specimen, positive exact roundtrip, and minimal corrupt/missing/order/path counterexamples. No scientific archives/data/checkpoints copied or modified.",
+  "rows": [
+    {
+      "bytes": 2097183,
+      "case": "default_2MiB_boundary_split",
+      "parts": 2,
+      "passed": true
+    },
+    {
+      "case": "standard_library_isolated_verify",
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "case": "standard_library_isolated_exact_assemble",
+      "passed": true,
+      "returncode": 0
+    },
+    {
+      "case": "existing_output_refused_unchanged",
+      "passed": true
+    },
+    {
+      "case": "out_of_order_indices_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "reordered_and_renumbered_parts_fail_combined_identity",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "duplicate_index_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "duplicate_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "parent_traversal_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "absolute_path_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "slash_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "backslash_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "dot_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "dotdot_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "NUL_filename_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "wrong_total_length_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "wrong_whole_sha_refused",
+      "passed": true,
+      "returncode": 1
+    },
+    {
+      "case": "missing_part_refused",
+      "passed": true
+    },
+    {
+      "case": "same_size_part_tampering_refused",
+      "passed": true
+    },
+    {
+      "case": "part_length_tampering_refused",
+      "passed": true
+    },
+    {
+      "case": "symlink_part_refused",
+      "passed": true
+    },
+    {
+      "case": "symlink_manifest_refused",
+      "passed": true
+    },
+    {
+      "case": "directory_part_refused",
+      "passed": true
+    },
+    {
+      "case": "restored_fixture_reverified",
+      "passed": true
+    }
+  ],
+  "schema": "hepta-independent-release-parts-audit-20261029-v1",
+  "scope": [
+    "The tool verifies per-part SHA256 and the ordered combined archive byte identity. It does not regenerate experiments or interpret tar members; release.py remains the archive-member verifier.",
+    "Manifest-supplied part names cannot traverse directories. Caller-supplied manifest/output paths may intentionally use ancestor directories; this tool does not claim a repository confinement root.",
+    "Unlisted extra directory files are ignored, not claimed to be part of the archive. Hashes provide identity relative to the published manifest, not an independent signed authenticity guarantee.",
+    "If a file changes during reconstruction, the tool raises and never returns verified success; an unverified partial newly-created output may remain and must not be used."
+  ],
+  "source": {
+    "path": "experiments/call_put_stable_flow_analysis/release_parts.py",
+    "sha256": "524de674a518a5d367f18aabaf2af4a4711edbbf323bcb6d0cf8d8c2d6d8513d",
+    "unchanged_after_tests": true
+  },
+  "status": "complete",
+  "temporary_directory_cleaned": true
+}

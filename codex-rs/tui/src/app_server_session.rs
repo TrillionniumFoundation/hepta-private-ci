@@ -1627,7 +1627,10 @@ fn model_preset_from_api_model(model: ApiModel) -> ModelPreset {
                 .as_ref()
                 .and_then(|info| info.retirement_at)
                 .and_then(|retirement_at| {
-                    chrono::DateTime::<chrono::Utc>::from_timestamp(retirement_at, 0)
+                    codex_utils_time::Timestamp::from_timestamp(
+                        retirement_at,
+                        /*nanoseconds*/ 0,
+                    )
                 }),
         }
     });
@@ -2390,9 +2393,8 @@ mod tests {
 
     #[test]
     fn model_preset_from_api_model_preserves_upgrade_retirement_at() {
-        let retirement_at = chrono::DateTime::parse_from_rfc3339("2030-01-01T00:00:00Z")
-            .expect("valid RFC 3339 timestamp")
-            .with_timezone(&chrono::Utc);
+        let retirement_at = codex_utils_time::Timestamp::parse_from_rfc3339("2030-01-01T00:00:00Z")
+            .expect("valid RFC 3339 timestamp");
         let expected_upgrade = |retirement_at| {
             Some(ModelUpgrade {
                 id: "replacement-model".to_string(),

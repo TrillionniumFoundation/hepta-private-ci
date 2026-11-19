@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "status": "PASS_ZERO_NUMERICAL_WORK_INDEPENDENT_READBACK",
+  "source_commit": "1bf14200490e5b3ca989c092ec170f03f5f16a18",
+  "parent_source_commit": "85c73b040448bc58929e40118d533a5ea65705e2",
+  "workflow_run_id": 43336859045,
+  "workflow_job_id": 131595098649,
+  "workflow_conclusion": "success",
+  "artifact": {
+    "id": 13998440625,
+    "zip_bytes": 1642069,
+    "zip_sha256": "d16d645c67bd06f2f9bb0c12014d1b350d20bf633ce5ab47fb28b636e12f48f3",
+    "members": 15,
+    "crc_test": "PASS"
+  },
+  "result": {
+    "status": "PASS_BOUNDED_N128_SECOND_CYCLE_WARM_ONLY",
+    "coordinates": 1731278,
+    "failures": 0,
+    "bitwise_equal": true,
+    "max_absolute_error": 0,
+    "candidate_bytes": 13850224,
+    "oracle_bytes": 13850224,
+    "candidate_sha256": "57df286a9beaa0c6c48fe1da37f3a8dbe89a29ffa7b00d06e5398c054ad3ff62",
+    "oracle_sha256": "57df286a9beaa0c6c48fe1da37f3a8dbe89a29ffa7b00d06e5398c054ad3ff62",
+    "capsule_coordinate_denominators": [
+      256286,
+      604908,
+      870084
+    ],
+    "capsule_sha256": [
+      "dcc1b6df09366a1152b27c7d9c8aebe9a0c8d83f5e3e959a4f8135984841a6bb",
+      "cb7e679b1bc371e9c2e239ec34e6a5858afdff8bb86eb287bc6c5c687c99b625",
+      "228c4ddc4b45627fe54874cd087f2bbf8c21a4e3752a6d3e6202243967c3194a"
+    ],
+    "cold_container_bytes_exact": [
+      true,
+      true,
+      true
+    ],
+    "calls": {
+      "candidate_dynamic_segments": 10,
+      "candidate_matrix_exponentials": 40,
+      "oracle_dynamic_segments": 10,
+      "oracle_matrix_exponentials": 40,
+      "torch_operations": 0,
+      "optimizer_updates": 0
+    }
+  },
+  "wrapper_cost": {
+    "full_child_tree_wall_seconds": 1.7169098050000002,
+    "full_child_tree_cpu_seconds": 1.6835809999999998,
+    "reported_child_tree_max_rss_kib": 88104,
+    "address_space_limit_bytes": 1073741824,
+    "exit_code": 0,
+    "terminal_status": "TERMINAL_RESULT_REPORTED"
+  },
+  "resource_preflight": {
+    "mem_available_bytes": 15311499264,
+    "minimum_mem_available_bytes": 4294967296
+  },
+  "independent_readback_work": {
+    "candidate_dynamic_segments": 0,
+    "candidate_matrix_exponentials": 0,
+    "oracle_dynamic_segments": 0,
+    "oracle_matrix_exponentials": 0,
+    "torch_operations": 0,
+    "optimizer_updates": 0
+  },
+  "preserved_development_red": {
+    "status": "KILLED_137_NO_RESULT",
+    "cause": "UNKNOWN",
+    "admission": false
+  },
+  "qualification": false,
+  "all_closed": false,
+  "remaining_open": [
+    "coarse/cold independent dynamic lanes",
+    "third-cycle release after .4",
+    "arbitrary histories",
+    "N256/N512 dynamics",
+    "full-network training",
+    "finite-domain qualification",
+    "asynchronous complete cost",
+    "C2 full replay 0/6 and resource freeze",
+    "HPCA external sealed/retention custody and same-budget benefit"
+  ]
+}

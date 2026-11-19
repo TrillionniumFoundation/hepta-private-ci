@@ -351,7 +351,7 @@ class RootHistoricalSourceCaptureClosureTests(unittest.TestCase):
             "data.selector_trust.original_selector(&trust)?",
             "data.target.original_observer_config()?",
             "data.retained_current.original_current()?",
-            "data.selection.original_selection()?",
+            "SelectionData::original_selection(&data.selection)?",
         ))
         self.check_mutation(data, lambda source: source + "\nRootAuthorityDirectory::open(path);\n")
 

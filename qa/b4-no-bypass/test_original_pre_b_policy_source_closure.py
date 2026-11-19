@@ -6,13 +6,13 @@ execution grant, an A-before-launcher invocation, or a Qualified ordinary panel.
 import importlib.util
 import json
 from pathlib import Path
-import re
 import sys
 import tempfile
 import unittest
 
 from protected_record_support import align_protected_record, require_protected_record
 
+from original_current_source_contract_support import load_current_contract, project_case
 from rust_source_marker_support import _tokens, source_marker_span
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -59,48 +59,34 @@ def actual_marker(source, marker, method=None):
 class OriginalPreBPolicyClosureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.contract = json.loads(CONTRACT.read_text())
         cls.manifest = PROOF._load_manifest(ROOT / "CALLERS.toml")
-        cls.rows = cls.contract["added_protected_records"] + [
+        cls.contract, cls.current, cls.rows = load_current_contract(
+            ROOT, cls.manifest, "2", CONTRACT
+        )
+        cls.original_rows = cls.contract["added_protected_records"] + [
             edit["after"] for edit in cls.contract["protected_record_replacements"]
         ]
-        # Keep the archived contract immutable. The reviewed lint repair uses
-        # Map::len on the same object, with the same exact six-field rejection.
-        policy_path = AGENT + "neuron_cell_evaluation_on_policy_policy.rs"
-        previous = "record.as_object().map(|object| object.len()) != Some(6)"
-        current = "record.as_object().map(serde_json::Map::len) != Some(6)"
-        policy_rows = [row for row in cls.rows if row["path"] == policy_path]
-        assert len(policy_rows) == 1
-        rules = policy_rows[0]["required_function_order"]
-        assert len(rules) == 1 and rules[0]["function"] == "fn verify_pre_b_policy("
-        sequence = rules[0]["sequence"]
-        assert sequence.count(previous) == 1
-        sequence[sequence.index(previous)] = "if " + current
-        mutations = [check for check in cls.contract["semantic_mutations"]
-                     if check["path"] == policy_path
-                     and check["function"] == "fn verify_pre_b_policy("
-                     and check["marker"] == previous]
-        assert len(mutations) == 1 and mutations[0]["replacement"] == "false"
-        mutations[0]["marker"] = current
-        cls.rows = [align_protected_record(row, cls.manifest["protected_file"]) for row in cls.rows]
         cls.boundaries = {row.identifier: row for row in PROOF._boundary_rows(cls.manifest)}
 
     def verifies(self, row, source):
-        for sequence in row.get("required_order", []):
-            if sequence[0].startswith("fn "):
-                body = function(source, sequence[0])[2]
-                cursor = 0
-                for marker in sequence:
-                    found = body.find(marker, cursor)
-                    if found < cursor:
-                        raise AssertionError(("guard outside original function", marker))
-                    cursor = found + len(marker)
+        rows = [actual for actual in self.rows if actual["path"] == row["path"]]
+        self.assertEqual(len(rows), self.current["record_counts"][row["path"]])
+        for actual in rows:
+            for sequence in actual.get("required_order", []):
+                if sequence[0].startswith("fn "):
+                    body = function(source, sequence[0])[2]
+                    cursor = 0
+                    for marker in sequence:
+                        try:
+                            _, cursor = source_marker_span(body, marker, cursor)
+                        except ValueError as error:
+                            raise AssertionError(("guard outside original function", marker)) from error
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / row["path"]
             target.parent.mkdir(parents=True)
             target.write_text(source)
-            PROOF._verify_protected_files(root, {"protected_file": [row]})
+            PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def rejects(self, row, source):
         with self.assertRaises((PROOF.VerificationFailure, AssertionError)):
@@ -138,8 +124,8 @@ class OriginalPreBPolicyClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, extra, ())
 
     def test_actual_policy_guards_cannot_move_to_comments(self):
-        for row in self.rows:
-            source = (ROOT / row["path"]).read_text()
+        expected = []
+        for row in self.original_rows:
             scopes = [
                 (item["function"], item["sequence"])
                 for item in row.get("required_function_order", [])
@@ -148,17 +134,20 @@ class OriginalPreBPolicyClosureTests(unittest.TestCase):
                 for sequence in row.get("required_order", [])
                 if sequence[0].startswith("fn ")
             ]
-            for method, sequence in scopes:
-                first, _, body = function(source, method)
-                markers = [value for value in sequence
-                           if body.count(value) == 1 and not value.startswith("fn ")
-                           and value not in ("Ok(())", "&self")]
-                self.assertTrue(markers, (row["path"], method))
-                marker = max(markers, key=len)
-                offset = first + body.index(marker)
-                with self.subTest(path=row["path"], method=method):
-                    self.rejects(row, source[:offset] + source[offset + len(marker):]
-                                 + "\n/* " + marker + " */\n")
+            expected.extend((row["path"], method) for method, _ in scopes)
+        cases = self.current["scope_mutations"]
+        self.assertEqual([(case["path"], case["function"]) for case in cases], expected)
+        for case in cases:
+            row = self.original_rows[case["original_row"]]
+            self.assertEqual(row["path"], case["path"])
+            source = (ROOT / row["path"]).read_text()
+            first, _, body = function(source, case["function"])
+            marker = case["marker"]
+            self.assertEqual(body.count(marker), 1, (row["path"], case["function"]))
+            offset = first + body.index(marker)
+            with self.subTest(path=row["path"], method=case["function"]):
+                self.rejects(row, source[:offset] + source[offset + len(marker):]
+                             + "\n/* " + marker + " */\n")
 
     def test_complete_policy_domains_and_json_fields_are_actual_syntax(self):
         for check in self.contract["actual_literal_markers"]:
@@ -172,6 +161,7 @@ class OriginalPreBPolicyClosureTests(unittest.TestCase):
 
     def test_no_legacy_upgrade_or_post_b_policy_substitution(self):
         for check in self.contract["semantic_mutations"]:
+            check = project_case(self.current, check)
             rows = [row for row in self.rows if row["path"] == check["path"]]
             source = (ROOT / check["path"]).read_text()
             start, end, _ = function(source, check["function"])

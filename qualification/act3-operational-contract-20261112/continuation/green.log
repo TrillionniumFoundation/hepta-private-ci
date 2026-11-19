@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "<string>", line 11, in <module>
+  File "/workspace/scratch/d70a317df5f3/act-work/scripts/act2_learning/durable_lifecycle.py", line 184, in restore
+    self.owner._records()
+  File "/workspace/scratch/d70a317df5f3/act-work/scripts/act2_learning/durable_lifecycle.py", line 86, in _records
+    raise ValueError("original invocation identity drift")
+ValueError: original invocation identity drift

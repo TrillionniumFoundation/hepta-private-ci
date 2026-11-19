@@ -1,0 +1,108 @@
+{
+  "schema": "hepta.mem8.ci9bd2.native-original-artifact-audit.v1",
+  "status": "PASS_EXACT_9BD2_SELECTED_NATIVE_OWNER_AND_PROFILE_CONTRACTS",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "run_id": 43021840437,
+  "attempt": 1,
+  "job_id": 130526675523,
+  "job_started_at": "2026-11-11T12:36:48Z",
+  "job_completed_at": "2026-11-11T13:01:02Z",
+  "archive": {
+    "artifact_id": 13855968988,
+    "bytes": 1316418,
+    "sha256": "f11ebf2d782610851fa5f572ac7d1c1494ee9da52bb6e6e6c2dd572cdbf946b1",
+    "git_blob": "20df30220fb12aee8a0b903be965ef6effbffb2b"
+  },
+  "original_artifact_members_verified": 42,
+  "strict_source_and_log_bound_receipts": 10,
+  "native_execution_observations": 34,
+  "distinct_native_case_ids": 33,
+  "repeated_profile_observations": 1,
+  "memory": {
+    "passed": 11,
+    "failed": 0,
+    "filtered_unselected": 422
+  },
+  "agentd": {
+    "passed": 6,
+    "failed": 0,
+    "filtered_unselected": 782
+  },
+  "qualification_profile": {
+    "passed": 1,
+    "failed": 0,
+    "filtered_unselected": 790,
+    "same_case_name_as_one_default_profile_case": true
+  },
+  "protocol": {
+    "passed": 16,
+    "failed": 0,
+    "filtered_unselected": 0
+  },
+  "drain_child_markers": [
+    "commit",
+    "revoke",
+    "panic"
+  ],
+  "drain_markers_are_not_additional_test_cases": true,
+  "profile_JUnit_guard": {
+    "original_reports": [
+      {
+        "file": "agentd-nextest.junit.xml",
+        "identity": {
+          "bytes": 1772,
+          "sha256": "ba7626c782a0dddde7016e6e0c32c45cad3354da6883b4be5852d3b036ffcc2a",
+          "git_blob": "fa56d5b055fa267b2f8f9f43275a8716876bb008"
+        },
+        "uuid": "e7706915-437b-4279-bcbd-252a0b5b3cd2",
+        "cases": 6,
+        "matching_raw_case_names_and_receipt_interval": true
+      },
+      {
+        "file": "agentd-qualification-profile.junit.xml",
+        "identity": {
+          "bytes": 545,
+          "sha256": "87aeb0dfd578f76261ecfb61e9ce86af2426c82271fb4074be1e4c73b95a9cd6",
+          "git_blob": "b60ec2cf481f86d765474cb017f11deebcb9e351"
+        },
+        "uuid": "f4d9ea43-21bb-48a2-a403-c60bb4f5b9a0",
+        "cases": 1,
+        "matching_raw_case_names_and_receipt_interval": true
+      },
+      {
+        "file": "last-nextest.junit.xml",
+        "identity": {
+          "bytes": 3690,
+          "sha256": "661990c85ae7c467ad351fdd8b1477cb85d7b3d6b3e02eafb8f74e6b8a9efdee",
+          "git_blob": "7124f7aa7d7600069fc8dcdbbd1355837c730f50"
+        },
+        "uuid": "6466e917-64ab-44fb-b973-8141c8ce38c4",
+        "cases": 16,
+        "matching_raw_case_names_and_receipt_interval": true
+      }
+    ],
+    "UUIDs_distinct": true,
+    "exact_case_identity_and_interval_checked": true
+  },
+  "all_format_and_three_fix_commands_passed_source_clean": true,
+  "all_source_before_after_equal_clean": true,
+  "codex_binary_before_after_equal": true,
+  "codex_binary": {
+    "source_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex",
+    "bytes": 560467888,
+    "sha256": "c290f7c8e1651d20751228db14ecf2acfa0e0ed7b7b95d7318de25225bd2f5bb"
+  },
+  "original_full_job_log": {
+    "bytes": 816807,
+    "sha256": "8b3506028479c503873868cb6f595e522e0095c9dad368de5b6fe654d681bfc1",
+    "git_blob": "892a9199b75e9311490515738687b3ffd0ff1b4f"
+  },
+  "ignored_provider_case_executed": false,
+  "real_successor_task_benefit_evaluated": false,
+  "original_owner_or_independent_trust_recovery_established": false,
+  "old_source_result_or_count_transferred": false,
+  "archived_test_code_executed_by_audit": false
+}

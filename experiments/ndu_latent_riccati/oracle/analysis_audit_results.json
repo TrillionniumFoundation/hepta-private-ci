@@ -1,0 +1,37 @@
+{
+  "schema": "ndu-analysis-fixture-audit-v1",
+  "scope": "deterministic artificial fixtures, never heldout evidence",
+  "gates": {
+    "world_means_not_draw_tails": true,
+    "paired_CVaR_translation": true,
+    "identical_pairs_zero_CI": true,
+    "lawful_balanced_styles_entropy_one": true,
+    "invalid_styles_entropy_zero": true,
+    "development_cannot_claim_scientific_success": true,
+    "reordered_draw_indices_fail_pairing": true,
+    "tampered_report_detected": true
+  },
+  "all_passed": true,
+  "fixture_primary_delta": -0.19999999999999996,
+  "fixture_CI": [
+    -0.19999999999999996,
+    -0.19999999999999996
+  ],
+  "fixture_gates": {
+    "heldout_metrics_match_raw_evidence": true,
+    "world_draw_pairing_indices_verified": true,
+    "shared_world_and_noise_provenance_verified": true,
+    "validation_selection_independently_recomputed": true,
+    "validation_same_actuator_budget_eligibility": true,
+    "selected_comparator_within_NDU_test_cpu_budget": true,
+    "equal_update_free_comparator_recorded": true,
+    "free_controller_training_budget_matched": true,
+    "primary_relative_tail_improvement": true,
+    "primary_tail_delta_CI_upper_below_zero": true,
+    "resolved_correctness_noninferiority": true,
+    "lawful_style_entropy_preserved": true,
+    "lawful_output_rate_preserved": true
+  },
+  "analysis_sha256": "4ec3650e2ae1c232745376a8d1e532ad952ed7a0eb34c7ae8d109422061a680a",
+  "audit_sha256": "d89c2ab0ebcb8c35431fe6fbe57882836c0d037e60cb17243a80ee32d7b9f982"
+}

@@ -1,0 +1,471 @@
+{
+  "schema": "hepta.continuation_checkpoint.v1",
+  "assembled_utc": "2026-10-21T01:57:42.837249+00:00",
+  "remote_snapshot_utc": "2026-10-21T01:54:37.379Z",
+  "atomic_snapshot": false,
+  "all_blockers_closed": false,
+  "production_posture": [
+    "SHADOW_ONLY",
+    "DENY_ALL",
+    "NO_GO"
+  ],
+  "repositories": {
+    "primary": {
+      "repository": "TrillionniumFoundation/hepta-private-ci",
+      "main": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "repair": {
+        "pr": 2968,
+        "branch": "agents/hepta-p0-provenance-clippy-20261021",
+        "head": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+        "tree": "0e52330db78ca9fbc9f42dd3554f08d66b9d4268",
+        "base_branch": "codex/hepta-blocker-convergence-20261020",
+        "base": "98b40cb04a23a36a07212ef7d826024f37536057",
+        "ordered_parents": [
+          "0cb777545966333a96be265a69d03c9982231bc7",
+          "98b40cb04a23a36a07212ef7d826024f37536057"
+        ],
+        "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+        "pushed_and_ref_read_back": true
+      },
+      "reader": {
+        "pr": 2969,
+        "draft": true,
+        "branch": "agents/hepta-reader-evidence-bindings-20261021",
+        "head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+        "tree": "9f208412f8b8457df764b3b7026869f4e4718103",
+        "base": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+        "commit_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/commit/ca2768978429a2c9a98641fa2d58a8f587b88874",
+        "pushed_and_ref_read_back": true
+      }
+    },
+    "secondary": {
+      "repository": "TrillionniumFoundation/trillionnium-os-desktop",
+      "main": "e524064d985ad2e1ade2099bc3d701c29484b3eb",
+      "observed_prs": {
+        "os224": {
+          "number": 224,
+          "state": "open",
+          "draft": true,
+          "head": {
+            "sha": "49e5582db15493eed60d62fb16b4c85fc7408307",
+            "ref": "agents/20261021/kernel-permission-exfat-integration"
+          },
+          "base": {
+            "sha": "e524064d985ad2e1ade2099bc3d701c29484b3eb",
+            "ref": "main"
+          },
+          "merge_commit_sha": "d5ec804f95c76083d5bd1587da1d41dd1ebc34cb",
+          "mergeable": true,
+          "mergeable_state": "unstable",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/pull/224"
+        },
+        "os225": {
+          "number": 225,
+          "state": "open",
+          "draft": true,
+          "head": {
+            "sha": "9476f50e9c18745369300b3f2b7d5cf2ad09a713",
+            "ref": "codex/inode-storage-convergence-20261021"
+          },
+          "base": {
+            "sha": "e524064d985ad2e1ade2099bc3d701c29484b3eb",
+            "ref": "main"
+          },
+          "merge_commit_sha": "7227d436dd9eaf06c2601d536ef1dfb9573c504c",
+          "mergeable": true,
+          "mergeable_state": "unstable",
+          "url": "https://github.com/TrillionniumFoundation/trillionnium-os-desktop/pull/225"
+        }
+      },
+      "modified_by_this_session": false
+    }
+  },
+  "changes": [
+    {
+      "wave": 1,
+      "commit": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+      "scope": [
+        "git replacement identity",
+        "canonical SQLite fixture",
+        "test cfg lint scope"
+      ]
+    },
+    {
+      "wave": 2,
+      "commit": "0cb777545966333a96be265a69d03c9982231bc7",
+      "scope": [
+        "hidden index and fsmonitor identity",
+        "optional manifest-only Bazel binaries"
+      ]
+    },
+    {
+      "wave": 3,
+      "commit": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+      "scope": [
+        "preserve current parent ancestry and all 18 owner paths",
+        "reuse exact #2743 migration fixture",
+        "three TLS patch upgrades with generated stable locks"
+      ]
+    },
+    {
+      "wave": "research",
+      "commit": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+      "scope": [
+        "Reader context, checkpoint and digest-alias binding"
+      ]
+    }
+  ],
+  "census": {
+    "primary_initial": {
+      "branches": 2864,
+      "pull_requests": 2967,
+      "pr_number_range": [
+        1,
+        2967
+      ],
+      "open": 1637,
+      "closed": 1330,
+      "merged": 323,
+      "open_draft": 1602,
+      "open_non_draft": 35,
+      "complete_metadata_pagination": true,
+      "complete_source_semantic_review": false,
+      "full_historical_actions_enumeration": false,
+      "metadata_does_not_equal_merge_qualification": true
+    },
+    "primary_nondraft_screen": {
+      "metadata_count": 35,
+      "head_rechecks": 35,
+      "check_sets": 35,
+      "check_pages": 42,
+      "check_runs": 2448,
+      "pages_over_100": 6,
+      "bounded_recheck_head_matches": 34,
+      "observed_race_prs": [
+        2962
+      ],
+      "still_open_non_draft": 35,
+      "mergeable_state_counts": {
+        "unstable": 6,
+        "blocked": 15,
+        "behind": 5,
+        "dirty": 9
+      },
+      "common_context_counts_at_observed_head": {
+        "CI required": {
+          "failure": 33,
+          "MISSING": 2
+        },
+        "Architecture required": {
+          "success": 21,
+          "queued": 1,
+          "failure": 13
+        }
+      },
+      "qualified_merge_candidates": []
+    },
+    "secondary_initial": {
+      "branches": 196,
+      "pull_requests": 215,
+      "open": 29,
+      "merged": 130,
+      "complete_metadata_pagination": true,
+      "complete_source_semantic_review": false
+    },
+    "post_snapshot_delta": "inventory/POST_SNAPSHOT_DELTA.json"
+  },
+  "validation": {
+    "executor_python": {
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "local-validation/secondwave-executor.json",
+      "scope": "Actual Linux Git/process regression suite; unchanged final executor/test bytes"
+    },
+    "memory_native": {
+      "passed": 272,
+      "failed": 0,
+      "skipped": 7,
+      "scope": "Entire selected Memory library under original local nextest defaults; existing ignored qualification/stress/crash probes not run",
+      "source_evidence_kind": "source_equivalent_scoped_local",
+      "test_commit": "6b074e52621d77338112f02119beb0cb1a6f869f",
+      "test_tree_before_patch": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+      "working_diff_sha256": "99ba4b1d81447b477e44bf414f8da398739746f74b591c3e30a8b31385a232a1",
+      "tests_executed_at_published_commit": false,
+      "source_files_identical_to_published_commit": true,
+      "report_only_difference": "qualification/ci-provenance-20261021/THIRD_WAVE.md",
+      "evidence": "research/native/final-combined-memory-lib-result.json"
+    },
+    "cargo_bin_native": {
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "research/native/final-combined-cargo-bin-test-result.json",
+      "scope": "Actual locked Linux workspace package; not native Windows"
+    },
+    "strict_clippy": {
+      "status": "PASS",
+      "packages": [
+        "codex-hepta-memory",
+        "codex-utils-cargo-bin"
+      ],
+      "explicit_denies": [
+        "clippy::correctness",
+        "clippy::await_holding_lock",
+        "clippy::await_holding_invalid_type",
+        "clippy::expect_used",
+        "clippy::unwrap_used"
+      ],
+      "blanket_D_warnings_claimed": false,
+      "evidence": "research/native/final-validation-summary.json"
+    },
+    "reader_python": {
+      "passed": 125,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "research/root-reader-full-suite.json"
+    },
+    "bazel_lock": {
+      "status": "PASS",
+      "generator": "Bazel 9.3.0 / original just bazel-lock-update",
+      "repeat_identical": true,
+      "original_just_bazel_lock_check_exit": 0,
+      "format_before": 28,
+      "format_after": 28,
+      "scope": "Dependency lock generation/check, not whole Bazel build or test"
+    },
+    "cargo_deny": {
+      "version": "0.19.0",
+      "command": "cargo-deny --locked --manifest-path codex-rs/Cargo.toml --all-features check --hide-inclusion-graph --show-stats",
+      "advisory_errors_before": 7,
+      "advisory_errors_after": 4,
+      "status": "FAIL",
+      "remaining_advisories": [
+        "RUSTSEC-2026-0374",
+        "RUSTSEC-2026-0371",
+        "RUSTSEC-2026-0370",
+        "RUSTSEC-2026-0372"
+      ],
+      "policy_unchanged": true,
+      "baseline_source": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+      "candidate_source_before_tls_patch": "0cb777545966333a96be265a69d03c9982231bc7",
+      "candidate_changes": "The generated Cargo.lock and MODULE.bazel.lock recorded under validation.locks",
+      "tests_executed_at_published_commit": false,
+      "scope": "Original local cargo-deny execution on 0cb plus TLS lock patch; matching final lock bytes do not imply a new b114 remote gate result"
+    },
+    "locks": {
+      "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+      "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+      "non_tls_windows_edge_changes": 9,
+      "native_windows_qualified": false
+    }
+  },
+  "model_evidence": {
+    "new_hosted_reader_calls": 64,
+    "new_local_model_calls": 0,
+    "new_memory_calibration_calls": 0,
+    "new_memory_nine_arm_calls": 0,
+    "reader": {
+      "source_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+      "workflow_run": 39524743076,
+      "job": 118976636455,
+      "artifact": 12312374935,
+      "artifact_sha256": "beb82b997808c7e2d158fa51d711fb04259069480c891f16a67f8627bce5210d",
+      "cases": 16,
+      "arms": 4,
+      "presentations": 1,
+      "model": "convaiinnovations/laya",
+      "revision": "c5d78730f3493e4fe16d61507ef4b78eef7318cf",
+      "production_authority": false,
+      "statistical_qualification": false,
+      "independent_holdout_qualification": false,
+      "verification": "research/reader-2969/independent-verification.json"
+    },
+    "memory_historical": {
+      "classification": "HISTORICAL_REVERIFIED",
+      "calibration_calls": 40,
+      "evaluation_calls": 72,
+      "independent_tasks": 8,
+      "reverified_artifact_files": 272,
+      "original_generation_run": 38423223376,
+      "original_generation_terminal": "failure",
+      "archive_verifier_run": 38590620658,
+      "archive_verifier_terminal": "success",
+      "current_verifier_source": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+      "fresh_execution_in_this_session": false,
+      "all_calls_in_attempt_16": false,
+      "independent_new_source_families": 0,
+      "human_semantic_citation_review_completed": false,
+      "training_updates": 0,
+      "total_lifecycle_cost_complete": false
+    }
+  },
+  "environment": {
+    "host": "aca3bc6a1853",
+    "visible_cpu_count": 9,
+    "memory": {
+      "MemTotal": "10206484 kB",
+      "MemAvailable": "5840600 kB",
+      "SwapTotal": "0 kB",
+      "SwapFree": "0 kB"
+    },
+    "disk": {
+      "total": 33770192896,
+      "used": 30234238976,
+      "free": 1801191424
+    },
+    "observed_utc": "2026-10-21T01:37:29.442825+00:00",
+    "remote_dedicated_workstation": "NOT_ACCESSIBLE",
+    "org_runner_inventory": "NOT_ACCESSIBLE",
+    "full_main_protection": "NOT_ACCESSIBLE_403",
+    "no_foreign_processes_killed": true,
+    "no_foreign_worktrees_modified": true,
+    "cleanup_scope": "Only task-owned reproducible caches/install archives, with hashes"
+  },
+  "remote_required_gates": {
+    "status": "NOT_COMPLETE",
+    "snapshot": "ci-live-publication.json",
+    "main_required_contexts": [
+      "CI required",
+      "Architecture required"
+    ],
+    "github_app_id": 15368,
+    "old_or_skipped_results_counted_as_success": false,
+    "prior_snapshot": "ci-live-final.json"
+  },
+  "actions_taken": {
+    "merged_prs": 0,
+    "closed_prs": 0,
+    "deleted_branches": 0,
+    "force_pushes": 0,
+    "manual_workflow_reruns": 0,
+    "manual_workflow_cancellations": 0,
+    "production_promotions": 0,
+    "device_effects": 0
+  },
+  "remaining_blocker_ids": [
+    "DEP-01",
+    "DEP-02",
+    "CI-01",
+    "CI-02",
+    "CI-03",
+    "CI-04",
+    "AUD-01",
+    "SCI-01",
+    "SCI-02",
+    "SCI-03",
+    "OS-01",
+    "OS-02",
+    "OS-03"
+  ],
+  "next_actions_document": "BLOCKERS.md",
+  "research_protocol": "RESEARCH_NEXT_PROTOCOL.md",
+  "classification_rules": {
+    "VERIFIED_NOW": "Executed command or actual source/API/artifact inspection within its recorded scope",
+    "HISTORICAL_REVERIFIED": "Old raw outputs checked now; not fresh inference",
+    "NOT_ACCESSIBLE": "Actual visibility/capability limit; does not imply absence",
+    "INFERRED": "Interpretation explicitly separated from direct observation"
+  },
+  "publication": {
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "branch": "agents/hepta-continuation-checkpoint-20261021",
+    "directory": "qualification/continuation-20261021",
+    "commit_identity": "The containing Git commit identifies this checkpoint; self-reference intentionally omitted",
+    "purpose": "Reviewable evidence checkpoint, not a qualified integration or production branch"
+  },
+  "background_monitoring_created": false,
+  "prior_remote_snapshot_utc": "2026-10-21T01:35:51.434Z",
+  "publication_recheck": {
+    "observed_start_utc": "2026-10-21T01:52:32.147Z",
+    "observed_end_utc": "2026-10-21T01:54:37.379Z",
+    "requests": 14,
+    "snapshot": "ci-live-publication.json",
+    "summary_document": "PUBLICATION_DELTA.md",
+    "results": {
+      "p0": {
+        "head": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+        "base": "98b40cb04a23a36a07212ef7d826024f37536057",
+        "counts": {
+          "queued": 17,
+          "skipped": 2,
+          "success": 4
+        },
+        "head_race": false,
+        "base_race": false,
+        "required_context_observations": {
+          "CI required": [],
+          "Architecture required": []
+        }
+      },
+      "reader": {
+        "head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+        "base": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+        "counts": {
+          "success": 18,
+          "skipped": 10,
+          "failure": 4,
+          "in_progress": 12
+        },
+        "head_race": false,
+        "base_race": false,
+        "required_context_observations": {
+          "CI required": [],
+          "Architecture required": [
+            {
+              "id": 118985386163,
+              "name": "Architecture required",
+              "head_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+              "status": "completed",
+              "conclusion": "success",
+              "details_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39524742971/job/118985386163",
+              "app_id": 15368
+            }
+          ]
+        }
+      },
+      "os224": {
+        "head": "49e5582db15493eed60d62fb16b4c85fc7408307",
+        "base": "e524064d985ad2e1ade2099bc3d701c29484b3eb",
+        "counts": {
+          "success": 6,
+          "in_progress": 1
+        },
+        "head_race": false,
+        "base_race": false,
+        "required_context_observations": {
+          "CI required": [],
+          "Architecture required": []
+        }
+      },
+      "os225": {
+        "head": "9476f50e9c18745369300b3f2b7d5cf2ad09a713",
+        "base": "e524064d985ad2e1ade2099bc3d701c29484b3eb",
+        "counts": {
+          "success": 6,
+          "in_progress": 1
+        },
+        "head_race": false,
+        "base_race": false,
+        "required_context_observations": {
+          "CI required": [],
+          "Architecture required": []
+        }
+      }
+    }
+  },
+  "publication_windows_failure_evidence": {
+    "path": "PUBLICATION_WINDOWS_FAILURES.json",
+    "source_head": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+    "base_head": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "actual_checkout_merge": "1aeb57e168bd3c5465a386f99fd541e31c3555b3",
+    "retrieved_until_utc": "2026-10-21T01:57:24Z",
+    "jobs": [
+      118977201830,
+      118977201936,
+      118977201768
+    ],
+    "raw_logs_persisted": false,
+    "evidence_classification": "NOT_READER_ATTRIBUTION",
+    "sha256": "4f0a2954da496ead81bc24ea18293bd1246c8b9125651a4063963adcea3ea96a"
+  }
+}
