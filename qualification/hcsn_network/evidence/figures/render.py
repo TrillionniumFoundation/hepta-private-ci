@@ -69,7 +69,8 @@ def main():
         panel.axhline(4.5, color="#cbd2db", linestyle="--", linewidth=.8)
     for seed, marker in markers.items():
         ax.scatter([], [], marker=marker, color="#515d73", s=32, label=f"seed {seed}")
-    ax.legend(loc="lower right", frameon=False, ncol=3, fontsize=8, bbox_to_anchor=(1., 1.02))
+    fig.legend(*ax.get_legend_handles_labels(), loc="upper center", frameon=False,
+               ncol=3, fontsize=9, bbox_to_anchor=(.61, .94))
     fig.suptitle("PenDigits: current HCSN prototype did not show a task advantage", x=.5, y=.98, fontsize=16, fontweight="bold")
     fig.text(.03, .075, "Same 3,498 independent-writer test records for every frozen model; seed SD is not independent-dataset uncertainty.", fontsize=9)
     fig.text(.03, .05, "60 s selection window on shared CPU resources; actual late-update and full-process costs are retained. FP64; 240-286 parameters.", fontsize=9)
