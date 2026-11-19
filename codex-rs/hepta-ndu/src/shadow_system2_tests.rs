@@ -169,7 +169,13 @@ fn depth_projection_never_emits_negative_risk_or_uncertainty() {
 
 #[test]
 fn shadow_identifiers_reject_controls_separators_and_unicode() {
-    for invalid in ["bad\nline", "bad\tfield", "bad/path", "bad id", "bad\u{202e}"] {
+    for invalid in [
+        "bad\nline",
+        "bad\tfield",
+        "bad/path",
+        "bad id",
+        "bad\u{202e}",
+    ] {
         let mut invalid_policy = policy();
         invalid_policy.policy_id = invalid.to_owned();
         let input = request(&invalid_policy);

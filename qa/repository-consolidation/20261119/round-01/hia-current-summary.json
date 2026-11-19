@@ -1,0 +1,60 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "captured_at_utc": "2026-11-19T02:21:51.685315+00:00",
+  "source": "Root-provided exact ls-remote heads-refresh.txt plus independent local full-graph ancestry checks for every changed/new tip",
+  "heads_refresh_sha256": "073758419549eccff2f9db4c78a901c3d6659ee5922cfd86b6c2d7debd38b34d",
+  "branch_count": 7615,
+  "protected_count": 389,
+  "ordinary_count": 7225,
+  "main": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "root_descendant_count": 366,
+  "retained_historical_nonroot_count": 23,
+  "historical_protected_pin_count": 404,
+  "retained_all_prior_protected_names": true,
+  "initial_graph_and_coverage_snapshot": "hia-ref-snapshots/initial-7614/hia-current-summary.json",
+  "changed_refs": [
+    {
+      "name": "codex/chrono-otel-joint-20261118-2e9b",
+      "before": null,
+      "after": "a4d52eadab774ad651825fb2bcc07ab2ec89893a",
+      "new_hia_root_mask": 2,
+      "protected": true
+    },
+    {
+      "name": "codex/hia-example-validation-continuation-20261118-a11",
+      "before": "9a7a2646ef0297526d36e562bf16631c182a9e4a",
+      "after": "6e2135d8bf6bab6a6e4b222ab4cf30e96cbdc81f",
+      "new_hia_root_mask": 1,
+      "protected": true
+    },
+    {
+      "name": "research/e1-b3-materials-20261118-2e9b",
+      "before": "928dcad44d049ae0b229f0b5bbe37d0f23de1f96",
+      "after": "b6ffc41158ac3357b28c6d681f460331a55b819f",
+      "new_hia_root_mask": 2,
+      "protected": true
+    },
+    {
+      "name": "research/e1e6-joint-20261118-2e9b",
+      "before": "5888d867bd9fc4531107f50e7d6d0e3bca82283a",
+      "after": "2a63b74a9f95f1e2165d75802f51a57c9de8c552",
+      "new_hia_root_mask": 2,
+      "protected": true
+    },
+    {
+      "name": "research/e6-operation-scopes-20261118-2e9b",
+      "before": "2755b3bbea4a2b563649f3d27e14608e5e62f6a4",
+      "after": "97d6cb0bd4f385a22c9e994121e622e878fa4139",
+      "new_hia_root_mask": 0,
+      "protected": false
+    },
+    {
+      "name": "research/upstream-layout-learning-20261118-2e9b",
+      "before": "48c5b1f3c201d29aad408b526bb97c5c46be0699",
+      "after": "c2a8c2e675c989cd3358ccc9d6be0806fc990bc9",
+      "new_hia_root_mask": 2,
+      "protected": true
+    }
+  ],
+  "ambiguity": "The differently named chrono/otel joint branch descends from the HIA root and is protected. Updated ordinary e6-operation-scopes remains outside both HIA roots. Historical pins and protected names remain excluded even if tips move. Recheck exact refs immediately before publication/deletion."
+}

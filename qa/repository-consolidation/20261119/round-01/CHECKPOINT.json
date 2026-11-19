@@ -1,0 +1,254 @@
+{
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "created_utc": "2026-11-19T02:43:01.096147+00:00",
+  "state": "partial_review_checkpoint_not_completed_consolidation",
+  "baseline": "36b3560de2bee1c05acb18ca6f53dbe9d69fd2eb",
+  "candidate_before_format_and_report": "fbc935918db65e12ea6d539d19a8797dcdfb07b1",
+  "main_at_last_read": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "census_total_branches": 7615,
+  "ordinary_branches": 7225,
+  "protected_hia_branches": 389,
+  "covered_ordinary_branch_tips": 2083,
+  "remaining_ordinary_branch_tips": 5142,
+  "protected_tip_or_root_ancestry_intersections": 0,
+  "normal_merge_commits": 11,
+  "local_history": [
+    {
+      "local_commit": "57daae0c0b8347e8bc67efef2027b918a6fa0704",
+      "tree": "2c3270c15ad77c4b6246062b8cdd9a679397f4e3",
+      "parents": [
+        "36b3560de2bee1c05acb18ca6f53dbe9d69fd2eb"
+      ],
+      "subject": "fix: preserve native diagnostic evidence and propagate handoff errors"
+    },
+    {
+      "local_commit": "e8d200693dab5f28a35762a32ef5f2f345ef4249",
+      "tree": "2c3270c15ad77c4b6246062b8cdd9a679397f4e3",
+      "parents": [
+        "57daae0c0b8347e8bc67efef2027b918a6fa0704",
+        "efc656c44122f8bb6983f6919ed7d721e6c5e6a6"
+      ],
+      "subject": "Merge commit 'efc656c44122f8bb6983f6919ed7d721e6c5e6a6' into HEAD"
+    },
+    {
+      "local_commit": "4231aef0abcb61f5b64dd0c001e531f031e657a7",
+      "tree": "abdffe2ea998251623618edaf78a2e3e2583885f",
+      "parents": [
+        "e8d200693dab5f28a35762a32ef5f2f345ef4249",
+        "880c77381f2c6f1334f1eb9567cc75d9e04dd56a"
+      ],
+      "subject": "Merge commit '880c77381f2c6f1334f1eb9567cc75d9e04dd56a' into HEAD"
+    },
+    {
+      "local_commit": "52459b2bdf45fbd0dd7990882f148e591167599e",
+      "tree": "6822e2901047c8b2526d0d3bbcd7d7f220a4c36d",
+      "parents": [
+        "4231aef0abcb61f5b64dd0c001e531f031e657a7",
+        "6ab2a6a034458a20d54cbee9da95c7ec701b4e9d"
+      ],
+      "subject": "Merge reviewed ordinary history codex/mem11-host-audit-diagnostic-20261112-21bb"
+    },
+    {
+      "local_commit": "f1840246306f711cde7ea36611a50df3907a4722",
+      "tree": "3388bb63d959236207850aef54edc7f36f917f2f",
+      "parents": [
+        "52459b2bdf45fbd0dd7990882f148e591167599e",
+        "23acdf7051334cbef23b518e228b4790ba34c852"
+      ],
+      "subject": "Merge reviewed ordinary history docs/hcsn-current-c2-terminal-correction-20261111-t3"
+    },
+    {
+      "local_commit": "449d6b8d1e109923f2a0fca96a18ab05d2b36da8",
+      "tree": "8fbf1ccdb74f3fb280ea5682b49270060f42f59c",
+      "parents": [
+        "f1840246306f711cde7ea36611a50df3907a4722",
+        "a5f32fb86588bd88b5408dea6c920172d48f6e75"
+      ],
+      "subject": "Merge reviewed ordinary history codex/hcsn-c1-single-clock-api-20261110-c385"
+    },
+    {
+      "local_commit": "df4bd270a38012586bad926970cb40a5db182feb",
+      "tree": "231470d196955a00add4a8bb353271ff2dfd8f35",
+      "parents": [
+        "449d6b8d1e109923f2a0fca96a18ab05d2b36da8",
+        "0575bbb58437945e9726a08b08464647e5cd5c30"
+      ],
+      "subject": "Merge reviewed ordinary history codex/p0-group-subject-receipt-binding-20261023"
+    },
+    {
+      "local_commit": "cb536551015a1dac1a859d4f98c777429934c4f8",
+      "tree": "cfaf76d064d14a7217c473529c987f83dd76a56d",
+      "parents": [
+        "df4bd270a38012586bad926970cb40a5db182feb",
+        "4146fc33d8d5de756922ed895561853e2382288e"
+      ],
+      "subject": "Merge reviewed ordinary history codex/utf8-settlement-bound"
+    },
+    {
+      "local_commit": "50018f53b0fd46320be7390aeef6277ff5ab7898",
+      "tree": "be59bd4b28158026ec4c258b761dd701842f1d0c",
+      "parents": [
+        "cb536551015a1dac1a859d4f98c777429934c4f8",
+        "ea4b1e0452adb10c8cb0b7eae2ba1754689d11c6"
+      ],
+      "subject": "Merge reviewed ordinary history codex/framework-state-eval-20261112-8166"
+    },
+    {
+      "local_commit": "49261bd39af706c69d32d1c14da131232cbc6b1a",
+      "tree": "28cdf666668be88b80d387fa8c9b7bda06a4bac0",
+      "parents": [
+        "50018f53b0fd46320be7390aeef6277ff5ab7898",
+        "2924190c7f01b04167feb16f9f45496feab10bec"
+      ],
+      "subject": "Merge reviewed ordinary history research/p0-shared-encoder-output-provenance-20261023"
+    },
+    {
+      "local_commit": "e4cf4c9c6952419109375463c67e4de9b02905de",
+      "tree": "2640141be972b90b3d8541c14ae5e89110d8432a",
+      "parents": [
+        "49261bd39af706c69d32d1c14da131232cbc6b1a",
+        "a7d794b7f091e1a2b6912c475e7f23908167ceb6"
+      ],
+      "subject": "Merge audited passive evidence a7d794b7f091 with byte-preserving storage"
+    },
+    {
+      "local_commit": "fbc935918db65e12ea6d539d19a8797dcdfb07b1",
+      "tree": "d748bb7754038876dcd68a2431ec0458469100d5",
+      "parents": [
+        "e4cf4c9c6952419109375463c67e4de9b02905de",
+        "f515d4fac88171d93be0cb648dca434a2b926856"
+      ],
+      "subject": "Merge audited passive evidence f515d4fac881 with byte-preserving storage"
+    }
+  ],
+  "remote_updates_at_report_creation": [],
+  "branch_deletions_at_report_creation": [],
+  "evidence": [
+    {
+      "source": "hia-all-refs.json",
+      "stored": "hia-all-refs.json.gz",
+      "original_sha256": "12a14a91a5f660f102464187552ac0411a8167229f9fdb6b60017bb57eda17b1",
+      "original_bytes": 950000,
+      "stored_bytes": 285751
+    },
+    {
+      "source": "hia-ordinary-refs.json",
+      "stored": "hia-ordinary-refs.json.gz",
+      "original_sha256": "bf473255598c9864e2680cda5bc8b59f0149e440ce2708390a0d778deb9a68a3",
+      "original_bytes": 902222,
+      "stored_bytes": 272030
+    },
+    {
+      "source": "hia-protected-refs.json",
+      "stored": "hia-protected-refs.json.gz",
+      "original_sha256": "099879a0807887bfc315cd868d3d75985ccea6d11ad3247668c01155c5718363",
+      "original_bytes": 114190,
+      "stored_bytes": 14068
+    },
+    {
+      "source": "hia-historical-protected-pins.json",
+      "stored": "hia-historical-protected-pins.json.gz",
+      "original_sha256": "6d56cc00fc48de2366befc8f438cede9c4e4734d01bf6429b88a92a249fd9c7b",
+      "original_bytes": 18587,
+      "stored_bytes": 9963
+    },
+    {
+      "source": "frontier-heads.json",
+      "stored": "frontier-heads.json.gz",
+      "original_sha256": "6b73a1e79fa0e8d6eb25eb6fc47c9011222ede6b61b42155d3dfc2f91d37d67d",
+      "original_bytes": 1953023,
+      "stored_bytes": 257205
+    },
+    {
+      "source": "hia-current-summary.json",
+      "stored": "hia-current-summary.json",
+      "sha256": "71550ae4a28c6065fb73aa3e039833d6d7ab4e1d1737a917da5c6a3ec0ece24d",
+      "bytes": 2516
+    },
+    {
+      "source": "frontier-summary.json",
+      "stored": "frontier-summary.json",
+      "sha256": "d1c70ef2aec89bbe0ec331c673031cadf4fffe88c51b929fc5dde1fb611c4fa7",
+      "bytes": 7572
+    },
+    {
+      "source": "ordinary-native-merges.json",
+      "stored": "ordinary-native-merges.json",
+      "sha256": "95982b291c2896a567cbf641fdcf28bc164a4f573743370ea331d6566b5b99e7",
+      "bytes": 5461
+    },
+    {
+      "source": "passive-native-merges.json",
+      "stored": "passive-native-merges.json",
+      "sha256": "1e87350e778d37bd0506395dae6337cdcb76aa3068d85f58fea288ffefd5945d",
+      "bytes": 4844
+    },
+    {
+      "source": "frontier-passive-packaging-validation.json",
+      "stored": "frontier-passive-packaging-validation.json",
+      "sha256": "3615444ae0c355fb14b23ffed8d751ad7b0cce356f2f3ec279020fa9de78ff8a",
+      "bytes": 45668
+    },
+    {
+      "source": "small-batch-collector-tests.log",
+      "stored": "small-batch-collector-tests.log.gz",
+      "original_sha256": "cf02ecbecea6eceb413d4d84ddbf5d89cdbdd18fb4f9eb6b149a1c0374078364",
+      "original_bytes": 1374,
+      "stored_bytes": 335
+    },
+    {
+      "source": "small-batch-isolation-tests.log",
+      "stored": "small-batch-isolation-tests.log.gz",
+      "original_sha256": "31d5a167706a61c1378a191f71ff8e606c19fe20fbc5a2f8bda73ed3b4159807",
+      "original_bytes": 1194,
+      "stored_bytes": 323
+    },
+    {
+      "source": "continuation-native-tests-attempt2.log",
+      "stored": "continuation-native-tests-attempt2.log.gz",
+      "original_sha256": "35d4fde5fc1f9b23b0f7cef5d5e6c329aaba76da77f7dc875a6f4733b676e3e8",
+      "original_bytes": 2045,
+      "stored_bytes": 628
+    }
+  ],
+  "validation": [
+    {
+      "name": "Windows evidence collector regression tests",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "name": "Bounded host isolation diagnostics",
+      "passed": 6,
+      "failed": 0
+    },
+    {
+      "name": "Single-clock continuation with real CPU Torch 2.8.0",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "name": "Original 512000-byte blob gate for candidate change set",
+      "status": "passed",
+      "paths_checked": 184
+    },
+    {
+      "name": "just fmt --base 36b3560de2bee1c05acb18ca6f53dbe9d69fd2eb",
+      "status": "passed",
+      "changes": "Two NDU test files formatted; included in checkpoint follow-up commit."
+    },
+    {
+      "name": "Rust Agentd handoff tests and unchanged NextUse diagnostic",
+      "status": "pending",
+      "reason": "Local test-binary compilation was SIGKILL twice before tests ran. ROG disk-full attempt also failed before tests. Fresh isolated ext4 build is in progress."
+    },
+    {
+      "name": "CI required on exact candidate",
+      "status": "pending"
+    },
+    {
+      "name": "Architecture required on exact candidate",
+      "status": "pending"
+    }
+  ]
+}

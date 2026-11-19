@@ -143,11 +143,7 @@ fn malformed_abstain_net_cannot_hide_behind_positive_continuation() {
     candidates[1].current_value_q32 = i64::MIN;
     candidates[1].continuation_value_q32 = i64::MAX;
     assert_eq!(
-        decide_group_continuation_v1(
-            &subject,
-            &make_trace(&subject, &candidates),
-            &candidates,
-        ),
+        decide_group_continuation_v1(&subject, &make_trace(&subject, &candidates), &candidates,),
         Err(GroupSystem2Error::ArithmeticOverflow)
     );
 }
@@ -212,7 +208,9 @@ fn same_generation_cross_group_or_encoder_trace_is_rejected() {
     let original = subject();
     let candidates = candidate_fixtures();
     let trace = make_trace(&original, &candidates);
-    let expected = Err(GroupSystem2Error::TraceBindingMismatch("subject_binding_digest"));
+    let expected = Err(GroupSystem2Error::TraceBindingMismatch(
+        "subject_binding_digest",
+    ));
 
     let mut changed = original.clone();
     changed.group_id = "group:other".to_owned();
@@ -295,7 +293,13 @@ fn trace_identity_and_generation_mismatch_fail_closed() {
 
 #[test]
 fn stable_group_ids_reject_control_and_noncanonical_tokens() {
-    for invalid in ["bad\nline", "bad\tfield", "bad/route", "bad id", "bad\u{202e}"] {
+    for invalid in [
+        "bad\nline",
+        "bad\tfield",
+        "bad/route",
+        "bad id",
+        "bad\u{202e}",
+    ] {
         let candidates = candidate_fixtures();
 
         let mut invalid_subject = subject();
