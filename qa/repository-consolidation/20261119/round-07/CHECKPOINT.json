@@ -10,11 +10,11 @@
   "target": "Only ordinary Rust main remains; all HIA branches and historical ancestry remain protected.",
   "counts": {
     "live_ref_count": 7647,
-    "protected_live_names": 397,
-    "historical_and_current_pins": 417,
-    "ordinary_live_names": 7249,
+    "protected_live_names": 477,
+    "historical_and_current_pins": 497,
+    "ordinary_live_names": 7169,
     "ordinary_covered": 2776,
-    "ordinary_pending": 4473,
+    "ordinary_pending": 4393,
     "main_exact_retirement_eligible": 0
   },
   "ordinary_original_parent_history_preserved": true,
@@ -35,57 +35,69 @@
     "Batch audit metadata with substantive reviewed changes; avoid inventory-only updates that cancel active required CI."
   ],
   "evidence_files": {
-    "pending-ordinary.json.gz": {
-      "bytes": 166871,
-      "sha256": "0a9e0d0815fc52a32f7bf812983553309010a4ecb711478426ed703845d8eaa0"
+    "REPORT.md": {
+      "bytes": 6239,
+      "sha256": "63f2fac7493856078e4aae5802ebed067dd9d823c4959147d7dca0fcc345ec15"
     },
     "covered-ordinary.json.gz": {
-      "bytes": 101515,
-      "sha256": "95783c18ee2c4609eb8e2819f2b16eecc1e9cc042bd302ad39be1e2229d2b326"
-    },
-    "windows-source-resolution.json": {
-      "bytes": 12157,
-      "sha256": "4152550f5ee220e7ac6ddb3745a28db11f4fdc6711bda90c5c2cb63937600345"
-    },
-    "small-original-merge-reviews.json": {
-      "bytes": 21460,
-      "sha256": "bebeface9755a86ea57cb5f8b5811a41194e950c3be40d122343ccceb00a8cd9"
-    },
-    "validation-summary.json": {
-      "bytes": 1644,
-      "sha256": "93371c1b5548b2b54d1950ff1ced8d7cc56afa09fe99d2b2bfa21e4d54975222"
-    },
-    "retained-history-whitespace-result.json": {
-      "bytes": 2003,
-      "sha256": "ecaf2f7c45cf2ec3682247ebacb8abf45b2a873257c969061f6b58fa04df393c"
-    },
-    "windows-production-integration-map.json": {
-      "bytes": 20100,
-      "sha256": "bb66a8f694b5f6b95d48652df50945e93f076018e6cf3e3b6a8932a0a9b3f72e"
-    },
-    "protected-history-pins.json": {
-      "bytes": 19185,
-      "sha256": "494b6f3e2fca84b24815c607b11743e13da01abe5a21b7d6b8cb2f2372e33e3d"
+      "bytes": 101516,
+      "sha256": "2ae52115e27ba294740622d66ebc763b362f0525b679761b0423f757e2c761fc"
     },
     "live-refs.json.gz": {
       "bytes": 285371,
       "sha256": "00a54cc197f5919d9fe3b71cda3509770f9c48fc84f7c12afaf8155f303acabe"
     },
-    "source-protection-and-coverage.json": {
-      "bytes": 943,
-      "sha256": "b8c56200a5212a1a65f05b4c6d7d5ef06c36f621310058d62cead07f693e7593"
-    },
-    "windows-10fb-native-summary.json": {
-      "bytes": 12654,
-      "sha256": "5a1d70da6c6571621ebad4be393f06c833183a5923af9858fc591261c64c2dee"
+    "new-protected-ancestry-witnesses.json": {
+      "bytes": 68272,
+      "sha256": "7a9ee1c8ddabc7cbcd4ded76979fe278cfc8286c5910362efce6ef6d1405c94b"
     },
     "nonworkflow-conflict-resolution.json": {
       "bytes": 599,
       "sha256": "6e19a0f62a37a98a35a1438d17ddb1a6dc31931429ac47b3549cbb9deb8680c1"
     },
-    "REPORT.md": {
-      "bytes": 5692,
-      "sha256": "0c1d60b976217a202898a60d1dce90c2e4e8658feeadebc265d53c3081b097dc"
+    "pending-ordinary.json.gz": {
+      "bytes": 163796,
+      "sha256": "ffe466f3fe930e3640571b794538f157ac4521f093e248201d56aa4ede7e0b3f"
+    },
+    "protected-history-pins.json": {
+      "bytes": 22865,
+      "sha256": "15a3f9889328f3426e009945ce9326c3cabeeaa71cb0125639b874e2f763c9b3"
+    },
+    "protected-refs.json": {
+      "bytes": 167665,
+      "sha256": "c5eac3cb70a916e15afed46d5f351d1b2cd42f415d8e23d1f9b915428acb9572"
+    },
+    "retained-history-whitespace-result.json": {
+      "bytes": 2003,
+      "sha256": "ecaf2f7c45cf2ec3682247ebacb8abf45b2a873257c969061f6b58fa04df393c"
+    },
+    "small-original-merge-reviews.json": {
+      "bytes": 21460,
+      "sha256": "bebeface9755a86ea57cb5f8b5811a41194e950c3be40d122343ccceb00a8cd9"
+    },
+    "source-protection-and-coverage.json": {
+      "bytes": 5823,
+      "sha256": "5d5c0b87f43ff13bf49cc6492b177afc73028b5fa2e6d474a9ae302624ff4975"
+    },
+    "validation-summary.json": {
+      "bytes": 1644,
+      "sha256": "93371c1b5548b2b54d1950ff1ced8d7cc56afa09fe99d2b2bfa21e4d54975222"
+    },
+    "windows-10fb-native-summary.json": {
+      "bytes": 12654,
+      "sha256": "5a1d70da6c6571621ebad4be393f06c833183a5923af9858fc591261c64c2dee"
+    },
+    "windows-production-integration-map.json": {
+      "bytes": 20100,
+      "sha256": "bb66a8f694b5f6b95d48652df50945e93f076018e6cf3e3b6a8932a0a9b3f72e"
+    },
+    "windows-source-resolution.json": {
+      "bytes": 12157,
+      "sha256": "4152550f5ee220e7ac6ddb3745a28db11f4fdc6711bda90c5c2cb63937600345"
     }
-  }
+  },
+  "updated_utc": "2026-11-19T17:07:46.427272+00:00",
+  "protection_audit_commit": "275cbf2ad6f3f05a1d0e42b3f521f28b53a0dc08",
+  "protection_audit_tree": "ea3ddd3b9274ffd02744b79f8981eb3ac5894a40",
+  "classification_correction": "Expanded397to477protected names by preserving80descendants of historical HIA pins before publication; no newly protected tip was ever included or changed."
 }

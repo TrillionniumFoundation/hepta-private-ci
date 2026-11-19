@@ -7,11 +7,19 @@ is the existing integration branch and PR #6293. It is not a main qualification.
 ## Coverage and protection
 
 The latest single-response GitHub ref census contains 7,647 unique branches:
-7,249 ordinary names, 397 protected HIA names, and main. The reviewed source
-contains the exact current tips of 2,776 ordinary names; 4,473 remain pending.
-All 44,504 candidate ancestors have complete parent metadata. None of the 417
-historical or current HIA pins occurs in this ancestry. The newly observed HIA
-tip `70827abaa7fcb4abbd44d53466ce9a60244b405e` is protected alongside its prior tip.
+7,169 ordinary names, 477 protected HIA names, and main. The reviewed source
+contains the exact current tips of 2,776 ordinary names; 4,393 remain pending.
+A prepublication reconciliation corrected the earlier 397-name classification:
+80 additional names inherit historical HIA pins even though their names do not
+contain HIA. Each added protection has an independently walked ancestry witness.
+None of these 80 tips was included in the candidate; no HIA ref was written.
+
+The expanded audit binds the subsequent audit commit `275cbf2ad6f3f05a1d0e42b3f521f28b53a0dc08`:
+all 44,505 ancestors have complete parent metadata and none of the 497 historical
+or current protection pins occurs in this ancestry. The source remains the exact
+f55 tree identified above. The newly observed HIA tip
+`70827abaa7fcb4abbd44d53466ce9a60244b405e` is protected alongside its prior tip.
+The earlier 397-name / 417-pin inventory is superseded for future decisions.
 
 Main remains `732e934ba496d90fbe042b8d41d479ef901643e5`. No ordinary current tip
 is eligible for retirement from main. This work has made no main update, HIA
