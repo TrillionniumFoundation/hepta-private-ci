@@ -844,7 +844,7 @@ fn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {
     );
 
     assert_eq!(receipt.future_window_digest, ctx.future_window_digest);
-    let mut altered_window = receipt.clone();
+    let mut altered_window = receipt;
     altered_window.future_window_digest = Digest32::of_bytes(b"forged-future-window");
     assert_eq!(
         verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_window),
@@ -1233,7 +1233,7 @@ fn receipt_integrity_replay_rejects_tampered_fields() {
     tampered_frontier.frontier.clear();
     let mut tampered_allocation = receipt.clone();
     tampered_allocation.allocations[0].weight = FixedQ32::ZERO;
-    let mut tampered_digest = receipt.clone();
+    let mut tampered_digest = receipt;
     tampered_digest.selection_digest = Digest32::ZERO;
 
     for forged in [
@@ -1557,7 +1557,7 @@ fn selection_digest_rejects_forged_candidate_snapshot_without_full_replay() {
     // This is an intentionally invalid input for digest-only consumers:
     // complete replay would reject it, but the advertised selection hash
     // must also change to prevent acceptance without full replay.
-    let mut foreign = canonical.clone();
+    let mut foreign = canonical;
     foreign[0].snapshot_digest = Digest32::of_bytes(b"foreign-candidate-snapshot");
     assert_ne!(
         digest_selection(&context, &budget, &foreign, &covariance, &receipt),

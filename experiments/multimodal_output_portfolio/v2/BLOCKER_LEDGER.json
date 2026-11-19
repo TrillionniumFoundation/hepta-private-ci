@@ -1,0 +1,30 @@
+{
+  "schema": "hepta.controlled-generation.blockers.v2",
+  "source_commit": "c5c6b9df0a83a9a2f95d5583b95909829a982b06",
+  "all_blockers_closed": false,
+  "bounded_local_implementation_and_confirmation_complete": true,
+  "primary_registered_experiment_passed": true,
+  "evidence": ["RESULTS.md", "review_development.json", "review_confirmation.json", "evidence/confirmation-001-summary.json", "evidence/cloud-status.json"],
+  "closed": [
+    {"id": "runtime", "scope": "Pinned Python3.12, NumPy1.26.4, Torch2.5.1 CPU environment executes the experiment."},
+    {"id": "actual_generation", "scope": "Real learned initialization, residual refinement and immutable four-modality emission; exact saved-weight replay succeeds."},
+    {"id": "finite_control", "scope": "Calibrated finite action/portfolio problem solved within the documented numerical tolerance, verified by an independent bottom-up oracle."},
+    {"id": "budget_and_cost", "scope": "Mandatory output reserve, each declared event charge, lazy input encoding, actual Linear forward work and offline costs are auditable."},
+    {"id": "utility_gradient", "scope": "Utility-only gradients reach initial latent and all decoders; diagnostics distinguish anchor and decay from NDU credit."},
+    {"id": "fair_supervised_comparison", "scope": "Identical warmup parent, optimizer updates and dense Linear forward work; unequal total lifecycle compute remains explicitly reported."},
+    {"id": "evidence_integrity", "scope": "Preselected policies, source freeze, independent worlds, 23 passing tests, 169344 trace checks, 9216 direct primary-output replays and complete manifests."},
+    {"id": "primary_efficacy", "scope": "Only the registered IID budget12 finite synthetic contrast; all seven gates pass. This does not imply universal quality or control superiority."},
+    {"id": "historical_evidence", "scope": "Old v1/v1.1 sources and failed efficacy results retained unchanged; no pooled claims across versions."}
+  ],
+  "open": [
+    {"id": "cloud_execution", "status": "external_assignment_unverified", "finding": "Hosted and dedicated jobs are queued with runner_id0 and no executed steps at the status receipt timestamp.", "closure": "Externally assigned successful execution on the required desktop runner/group, with nonzero runner ID and actual steps; separately attest hosted verification.", "constraint": "The connected tools provide no runner administration; the cause of nonassignment is unknown."},
+    {"id": "useful_iterative_refinement", "status": "not_established", "finding": "All primary worlds use depth0. Utility refinement credit is weak and mostly zero at recorded points.", "closure": "Fresh preregistered evidence that genuine iterative generation and latent-dependent decisions improve outcomes under matched costs; forcing a depth or adding a depth reward is insufficient."},
+    {"id": "continuation_and_preference_added_value", "status": "not_established", "finding": "Joint NDU versus joint myopic and fixed-risk tail intervals include zero; joint NDU versus joint static also includes zero.", "closure": "Fresh controlled evidence isolating these mechanisms from generator training and evidence acquisition."},
+    {"id": "dependence_shift_robustness", "status": "failed_stress_test", "finding": "Correlation-shift CVaR90 jointNDU0.981852 exceeds jointStatic0.770293; all_shared_wrong correctness is0.", "closure": "A separately specified robustness objective and fresh stress evaluation, including a defensible independent-evidence or uncertainty mechanism for common errors."},
+    {"id": "within_refinement_feedback", "status": "not_implemented", "finding": "Depth is selected before generation commitment; no new latent diagnostic changes allocation during refinement.", "closure": "Observable latent generation state, feasible per-step actions and calibrated continuation values with an immutable emission contract."},
+    {"id": "native_hepta_runtime", "status": "not_integrated", "finding": "This experiment is Python research code, not trained native DecisionCell policy/value execution.", "closure": "Native runtime wiring, conformance checks and measured execution without promoting unverified registry claims."},
+    {"id": "learned_preference_and_general_fbsde", "status": "not_implemented", "finding": "Preference uses a bounded disagreement heuristic; the solver is finite recursive control rather than a general stochastic FBSDE.", "closure": "Identifiable preference dynamics and a separately validated continuous stochastic solver when those capabilities are claimed."},
+    {"id": "natural_data_foundation_model", "status": "not_validated", "finding": "Eight synthetic concepts, approximately660k parameters and frozen encoders during NDU fine-tuning.", "closure": "Natural text/speech/image/video tasks, appropriate model scale, all-parameter training evidence and independent generalization evaluation."}
+  ],
+  "rule_for_further_work": "Preserve this result and all negative controls. Changes after inspecting heldout require a new protocol and new confirmation data; no retroactive threshold or baseline changes."
+}

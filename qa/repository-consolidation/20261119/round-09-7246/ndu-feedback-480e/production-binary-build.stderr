@@ -1,0 +1,13 @@
+warning: method `append` is never used
+   --> hepta-infer-core/src/durable_control.rs:806:8
+    |
+264 | impl DurableInferenceControl {
+    | ---------------------------- method in this implementation
+...
+806 |     fn append(&mut self, encoded: &str) -> Result<(), Error> {
+    |        ^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `codex-hepta-infer-core` (lib) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s

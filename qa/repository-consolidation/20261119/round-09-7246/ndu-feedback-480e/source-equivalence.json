@@ -1,0 +1,957 @@
+{
+  "schema": "hepta.ndu480e.source-equivalence.v1",
+  "base": "2df7993caa719c46d316f320e90b16d96b8ff2d7",
+  "original_source": "480e83532df57ec691ce70ff7ecb572717887a7e",
+  "final_source_commit": "74b4d37db870120b3795d849734d9b4e811d46e4",
+  "final_source_tree": "c9dd5dcf42c96f34fa8846690a562a4b3aad41e9",
+  "ordered_parents": [
+    "2df7993caa719c46d316f320e90b16d96b8ff2d7",
+    "480e83532df57ec691ce70ff7ecb572717887a7e"
+  ],
+  "changed_source_paths": 136,
+  "original_paths": [
+    {
+      "path": ".github/workflows/ndu-controlled-generation-v2.yml",
+      "original_blob": "193d14515aefe064f63f1f32cff834d0be2f7f37",
+      "merged_blob": "193d14515aefe064f63f1f32cff834d0be2f7f37",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": ".github/workflows/ndu-modality-portfolio-shadow.yml",
+      "original_blob": "0cb7295e64bdec850a65bd4e7c4e2335e89dbaec",
+      "merged_blob": "0cb7295e64bdec850a65bd4e7c4e2335e89dbaec",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": ".github/workflows/ndu-output-portfolio-pilot.yml",
+      "original_blob": "39152a16b03d23d84c74756e1de635034ea4a792",
+      "merged_blob": "39152a16b03d23d84c74756e1de635034ea4a792",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": ".github/workflows/ndu-v2-hosted-recovery.yml",
+      "original_blob": "9536a1b4ab54f668f1793dce4e91a0a66c51ad9a",
+      "merged_blob": "9536a1b4ab54f668f1793dce4e91a0a66c51ad9a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs",
+      "original_blob": "e1999faac139dee3d3ca8a44a218250fe7a767e9",
+      "merged_blob": "e1999faac139dee3d3ca8a44a218250fe7a767e9",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation.rs",
+      "original_blob": "bcd8beeacbada65810c9d2addbf37dcac64e1449",
+      "merged_blob": "bcd8beeacbada65810c9d2addbf37dcac64e1449",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs",
+      "original_blob": "1be2be0b3df960012025d8f7871afa2631d977c9",
+      "merged_blob": "1be2be0b3df960012025d8f7871afa2631d977c9",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_tests.rs",
+      "original_blob": "6a6d653afb660d48dd4e89dee78c326c66486bdf",
+      "merged_blob": "6a6d653afb660d48dd4e89dee78c326c66486bdf",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "original_blob": "c20599efc5768f76f7a52a4fafd3f5304f2dd345",
+      "merged_blob": "fb26ee7594dc958477424571338df2331acb9d1e",
+      "mode": "100644",
+      "original_postimage_exact": false
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/CLOUD_RUN_REQUEST.json",
+      "original_blob": "71ac3f10a6f83da744dc7db8ee6d5632e5af18d6",
+      "merged_blob": "71ac3f10a6f83da744dc7db8ee6d5632e5af18d6",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/README.md",
+      "original_blob": "a31801d30954c8e5290068c40f20611f32411183",
+      "merged_blob": "a31801d30954c8e5290068c40f20611f32411183",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/analysis/plot_results.py",
+      "original_blob": "0bc4e216f0f8b8b2e006b3b7370a3363358fb86d",
+      "merged_blob": "0bc4e216f0f8b8b2e006b3b7370a3363358fb86d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/audit.py",
+      "original_blob": "876fdd938d561d6f60339f3d2ef6dd882e941078",
+      "merged_blob": "876fdd938d561d6f60339f3d2ef6dd882e941078",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/control.py",
+      "original_blob": "6d101ff15c932c134a7768de6d70696a3b6edfb6",
+      "merged_blob": "6d101ff15c932c134a7768de6d70696a3b6edfb6",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/controlled_model.py",
+      "original_blob": "c10de67b4d1ceaf52bcc9131cf6fd82c678f6062",
+      "merged_blob": "c10de67b4d1ceaf52bcc9131cf6fd82c678f6062",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evaluate.py",
+      "original_blob": "a3ec2249eb366b5a0d298c7c1a8478a577577f97",
+      "merged_blob": "a3ec2249eb366b5a0d298c7c1a8478a577577f97",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/RESULTS.md",
+      "original_blob": "08eceaff5cc8b8afacac1803fad5194933213f8b",
+      "merged_blob": "08eceaff5cc8b8afacac1803fad5194933213f8b",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/RESULTS_V1_1.md",
+      "original_blob": "99cd062ba611b7175961bf3127653e07ac5e7809",
+      "merged_blob": "99cd062ba611b7175961bf3127653e07ac5e7809",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/bundle_manifest.json",
+      "original_blob": "edaf27813a39d857b478af51d52f7fc4c2189f1f",
+      "merged_blob": "edaf27813a39d857b478af51d52f7fc4c2189f1f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/bundle_manifest_v1_1.json",
+      "original_blob": "c2f3cfdbe54ef267ca0d20122a8818c4e48f9e20",
+      "merged_blob": "c2f3cfdbe54ef267ca0d20122a8818c4e48f9e20",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/cloud_execution_status.json",
+      "original_blob": "ac27e6de37b282ad024cc4db64da573dad2b5796",
+      "merged_blob": "ac27e6de37b282ad024cc4db64da573dad2b5796",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/cloud_execution_status_v1_1.json",
+      "original_blob": "e32ddebbf7cfa53163c8ff1c9800bebf7c822fbb",
+      "merged_blob": "e32ddebbf7cfa53163c8ff1c9800bebf7c822fbb",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/development_model_smoke.json",
+      "original_blob": "5703400d3510ad2a2da4c51a469cf69363e09c96",
+      "merged_blob": "5703400d3510ad2a2da4c51a469cf69363e09c96",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/independent_review.json",
+      "original_blob": "7d5d81ac1a0c3274134698cbb625e0cfd525fc7f",
+      "merged_blob": "7d5d81ac1a0c3274134698cbb625e0cfd525fc7f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/independent_review_v1_1.json",
+      "original_blob": "83537311bb5f0703f055d98eeac4bb6025ce0481",
+      "merged_blob": "83537311bb5f0703f055d98eeac4bb6025ce0481",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1.png",
+      "original_blob": "bc4ce652ca9c31ce7523b161f0506282f97ec8f4",
+      "merged_blob": "bc4ce652ca9c31ce7523b161f0506282f97ec8f4",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1.svg",
+      "original_blob": "582ac1dc47ac0cdc60ed79193d5b6035e0e43a85",
+      "merged_blob": "582ac1dc47ac0cdc60ed79193d5b6035e0e43a85",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1.png",
+      "original_blob": "3cd0523093133ceb96ea792bcc70f9bf76501ec2",
+      "merged_blob": "3cd0523093133ceb96ea792bcc70f9bf76501ec2",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1.svg",
+      "original_blob": "7c7c20e4583fcab5320397d4dcbb807d226d8823",
+      "merged_blob": "7c7c20e4583fcab5320397d4dcbb807d226d8823",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_1_summary.json",
+      "original_blob": "12231efc3307a298b2bf303cda3b6c917d80d891",
+      "merged_blob": "12231efc3307a298b2bf303cda3b6c917d80d891",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/evidence/local_preflight_v1_summary.json",
+      "original_blob": "4703adb5b642ffd44a7110d8f761fc5107e7eab7",
+      "merged_blob": "4703adb5b642ffd44a7110d8f761fc5107e7eab7",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/generation_control.py",
+      "original_blob": "a16634ce63d889863ac25601cb984ef5421dd1b5",
+      "merged_blob": "a16634ce63d889863ac25601cb984ef5421dd1b5",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/metrics.py",
+      "original_blob": "e590af988a1ec4afca56fcd2eb64ae850546305b",
+      "merged_blob": "e590af988a1ec4afca56fcd2eb64ae850546305b",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/model.py",
+      "original_blob": "c81fb76a51d73cc18a6c1982685879a8f7f7c49a",
+      "merged_blob": "c81fb76a51d73cc18a6c1982685879a8f7f7c49a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/README.md",
+      "original_blob": "2fdb39d5a030c7aa3a7f93dc89a0dd325deae045",
+      "merged_blob": "2fdb39d5a030c7aa3a7f93dc89a0dd325deae045",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/audio_codec_smoke.py",
+      "original_blob": "d6ad774006cee7137ba91431e9b89ed04efe9e09",
+      "merged_blob": "d6ad774006cee7137ba91431e9b89ed04efe9e09",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/codec_smoke.py",
+      "original_blob": "c162175d76b1dc9f865c3ee0fb364d6523daf46d",
+      "merged_blob": "c162175d76b1dc9f865c3ee0fb364d6523daf46d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-001-source.py",
+      "original_blob": "66f3e752c02a889421cf3a2ef4b35a07d0af4638",
+      "merged_blob": "66f3e752c02a889421cf3a2ef4b35a07d0af4638",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-001.json",
+      "original_blob": "94ba164e39656c03c67d520bdd9cdc8405cdf510",
+      "merged_blob": "94ba164e39656c03c67d520bdd9cdc8405cdf510",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002-source.py",
+      "original_blob": "b53d95c190f147ef7a2915aee79717b815bbc44b",
+      "merged_blob": "b53d95c190f147ef7a2915aee79717b815bbc44b",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-002.json",
+      "original_blob": "d1899ba59f6f60e8ea7e98eaba37966e1f82daf2",
+      "merged_blob": "d1899ba59f6f60e8ea7e98eaba37966e1f82daf2",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-003-source.py",
+      "original_blob": "d6ad774006cee7137ba91431e9b89ed04efe9e09",
+      "merged_blob": "d6ad774006cee7137ba91431e9b89ed04efe9e09",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-003.json",
+      "original_blob": "39e81bacb6dcdd9c5857ecf8a09ebba0933e74b3",
+      "merged_blob": "39e81bacb6dcdd9c5857ecf8a09ebba0933e74b3",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/audio-codec-independent-verification.json",
+      "original_blob": "d36c33caf1a64c1fa06e8f048f3fe9f82a21725c",
+      "merged_blob": "d36c33caf1a64c1fa06e8f048f3fe9f82a21725c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/codec-001.json",
+      "original_blob": "bd7f49d265f035dee877f22d837947411ef0fefe",
+      "merged_blob": "bd7f49d265f035dee877f22d837947411ef0fefe",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/ingestion-001.json",
+      "original_blob": "11623874775101eb2681d9a1011e8a4c03bf235f",
+      "merged_blob": "11623874775101eb2681d9a1011e8a4c03bf235f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/review-text-interface-001.json",
+      "original_blob": "9ea18da58599e4203eb91694e67412aaaaa78f59",
+      "merged_blob": "9ea18da58599e4203eb91694e67412aaaaa78f59",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/text-interface-001.json",
+      "original_blob": "239fbfcedee2bb73029f7141dd11a6c81e948491",
+      "merged_blob": "239fbfcedee2bb73029f7141dd11a6c81e948491",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/evidence/verify_audio_codec.py",
+      "original_blob": "feea097149168aed6e8139d0db0b5c2e09fedb7d",
+      "merged_blob": "feea097149168aed6e8139d0db0b5c2e09fedb7d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/ingest.py",
+      "original_blob": "0b2664e5ba10e7ac5c07d6f86beec0b856100066",
+      "merged_blob": "0b2664e5ba10e7ac5c07d6f86beec0b856100066",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/natural_io/text_model_smoke.py",
+      "original_blob": "e9d82303938204c7c143aeacf633b6841f54de52",
+      "merged_blob": "e9d82303938204c7c143aeacf633b6841f54de52",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/protocol.json",
+      "original_blob": "e498cb15d20360e213ff5ea2d0ecfbb438fe9811",
+      "merged_blob": "e498cb15d20360e213ff5ea2d0ecfbb438fe9811",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/requirements.txt",
+      "original_blob": "e0aa6df995c24792d710c70b9be1e46e873d8944",
+      "merged_blob": "e0aa6df995c24792d710c70b9be1e46e873d8944",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/run_cloud.sh",
+      "original_blob": "970962435ac13abe5d36cb7eadff112f6342a033",
+      "merged_blob": "970962435ac13abe5d36cb7eadff112f6342a033",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/run_experiment.py",
+      "original_blob": "a0e485405ba8ac59df8b4728a3932a74f125fae0",
+      "merged_blob": "a0e485405ba8ac59df8b4728a3932a74f125fae0",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/test_controlled_model.py",
+      "original_blob": "0c804096b0094aead2b5e4498823e6a270e9efb5",
+      "merged_blob": "0c804096b0094aead2b5e4498823e6a270e9efb5",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/test_generation_control.py",
+      "original_blob": "0030b2ada51c6964c2f070759c65b93464eab531",
+      "merged_blob": "0030b2ada51c6964c2f070759c65b93464eab531",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/BLOCKER_LEDGER.json",
+      "original_blob": "71012e9b0df61ea58ae8548f9931374a74cc02de",
+      "merged_blob": "71012e9b0df61ea58ae8548f9931374a74cc02de",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/CLOUD_RUN_REQUEST.json",
+      "original_blob": "f351ac078beebe454a3a4ee17f8a47418cefaf95",
+      "merged_blob": "f351ac078beebe454a3a4ee17f8a47418cefaf95",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/README.md",
+      "original_blob": "d0bc2a850dcfa1de7ccb744e37e16b9fc936b83a",
+      "merged_blob": "d0bc2a850dcfa1de7ccb744e37e16b9fc936b83a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/RESULTS.md",
+      "original_blob": "84f98910b8c36374b1bcf5f66d102b2acb902049",
+      "merged_blob": "84f98910b8c36374b1bcf5f66d102b2acb902049",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evaluation.py",
+      "original_blob": "8571d10e989d11f63d836d135bbb7791966dd2ed",
+      "merged_blob": "8571d10e989d11f63d836d135bbb7791966dd2ed",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/audit_confirmation.py",
+      "original_blob": "d38162594c1b843cf6707420ddfb653ebe5a463e",
+      "merged_blob": "d38162594c1b843cf6707420ddfb653ebe5a463e",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/cloud-status.json",
+      "original_blob": "3a22ad88e89ed7783051484b319be44cf4e1e4a4",
+      "merged_blob": "3a22ad88e89ed7783051484b319be44cf4e1e4a4",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/evidence/confirmation-001-summary.json",
+      "original_blob": "a692d9fe449d4045e4f5cb87369cadf9c384d146",
+      "merged_blob": "a692d9fe449d4045e4f5cb87369cadf9c384d146",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/protocol.json",
+      "original_blob": "0262995de6db5b359465eb27cb4bd442075bc512",
+      "merged_blob": "0262995de6db5b359465eb27cb4bd442075bc512",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/reporting.py",
+      "original_blob": "dfc0e5ae9440d8b5ea1e34c2eeb5ce8ac83c53c0",
+      "merged_blob": "dfc0e5ae9440d8b5ea1e34c2eeb5ce8ac83c53c0",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/review_confirmation.json",
+      "original_blob": "4a37c4e01442efbeaccd448ecbefa78b3fe5d9c8",
+      "merged_blob": "4a37c4e01442efbeaccd448ecbefa78b3fe5d9c8",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/review_development.json",
+      "original_blob": "9f65b044938b565d992aa010eb14947f91e9f832",
+      "merged_blob": "9f65b044938b565d992aa010eb14947f91e9f832",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/run.py",
+      "original_blob": "7cfe8c6e6595da030a5e7c49ecdf3dd2e613469a",
+      "merged_blob": "7cfe8c6e6595da030a5e7c49ecdf3dd2e613469a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/run_cloud.sh",
+      "original_blob": "b8eb54d8f82e197bac23fac8807d86db7b164e40",
+      "merged_blob": "b8eb54d8f82e197bac23fac8807d86db7b164e40",
+      "mode": "100755",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/test_evaluation.py",
+      "original_blob": "913076d3e4b32b102eab9c279d69bd7a526c399a",
+      "merged_blob": "913076d3e4b32b102eab9c279d69bd7a526c399a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/test_training.py",
+      "original_blob": "dc975dc261a7e808ee33b7aa54ca0628f7b3db2d",
+      "merged_blob": "dc975dc261a7e808ee33b7aa54ca0628f7b3db2d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v2/training.py",
+      "original_blob": "d08fb9393f82f85640c7d7eafed70cdf06aeea13",
+      "merged_blob": "d08fb9393f82f85640c7d7eafed70cdf06aeea13",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/BLOCKER_LEDGER.json",
+      "original_blob": "65ec4d0d669f6eaa2f33f6d76325a49097a3629d",
+      "merged_blob": "65ec4d0d669f6eaa2f33f6d76325a49097a3629d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/HOSTED_RECOVERY_REQUEST.json",
+      "original_blob": "bd00566ae559080939bd0574d34b6706ade2ca76",
+      "merged_blob": "bd00566ae559080939bd0574d34b6706ade2ca76",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/NATURAL_DATA_PLAN.md",
+      "original_blob": "360207645cf726d531eab81873b07e468c49dedf",
+      "merged_blob": "360207645cf726d531eab81873b07e468c49dedf",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/PRODUCTION_INTEGRATION.md",
+      "original_blob": "5d34c552ef7424835ee2264586a73d8241f01e05",
+      "merged_blob": "5d34c552ef7424835ee2264586a73d8241f01e05",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/README.md",
+      "original_blob": "4fbe333dbe291471cd34bd2e5954e2a8f6e23814",
+      "merged_blob": "4fbe333dbe291471cd34bd2e5954e2a8f6e23814",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/RESULTS.md",
+      "original_blob": "e0c47fdb5585eae815f468ca95cf2d6c623117a8",
+      "merged_blob": "e0c47fdb5585eae815f468ca95cf2d6c623117a8",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/THEORY.md",
+      "original_blob": "fe161d94878130726cf82ffda14faadc9281f28c",
+      "merged_blob": "fe161d94878130726cf82ffda14faadc9281f28c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_confirmation.py",
+      "original_blob": "6703fb747f7043cb9702e984fdf00caef1732af0",
+      "merged_blob": "6703fb747f7043cb9702e984fdf00caef1732af0",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/audit_source_control.py",
+      "original_blob": "b782a41a0a34cac0ecde9bdc1d1973ac5fd761ff",
+      "merged_blob": "b782a41a0a34cac0ecde9bdc1d1973ac5fd761ff",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/cloud-diagnosis.json",
+      "original_blob": "f3557abc9b75ff8aae34083d59ac37501f203b8c",
+      "merged_blob": "f3557abc9b75ff8aae34083d59ac37501f203b8c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/cloud-recovery-observation.json",
+      "original_blob": "df895a08f40a5f1ebdc38983097824d25dd303a8",
+      "merged_blob": "df895a08f40a5f1ebdc38983097824d25dd303a8",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_build_final.json",
+      "original_blob": "bd085ca658ee17f4fb482313691d6f4a1079eeb6",
+      "merged_blob": "bd085ca658ee17f4fb482313691d6f4a1079eeb6",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_parity_development.json",
+      "original_blob": "77234cec3b0d3c1c169799ecd7a354b628573e51",
+      "merged_blob": "77234cec3b0d3c1c169799ecd7a354b628573e51",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/native_verification.json",
+      "original_blob": "34ad07e2c0aea01251b962aeee3be5e343cdc36f",
+      "merged_blob": "34ad07e2c0aea01251b962aeee3be5e343cdc36f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_confirmation.json",
+      "original_blob": "ba0f3489a26ad8aa9dad4d38c629de6d85e3d33d",
+      "merged_blob": "ba0f3489a26ad8aa9dad4d38c629de6d85e3d33d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_development.json",
+      "original_blob": "6cd88ba1b04bd84299137ed9d18e6fe363f69b5f",
+      "merged_blob": "6cd88ba1b04bd84299137ed9d18e6fe363f69b5f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/evidence/review_source_control.json",
+      "original_blob": "41786ee6ed34a45edaf194fdc5d5b6509d07fdd8",
+      "merged_blob": "41786ee6ed34a45edaf194fdc5d5b6509d07fdd8",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_control.py",
+      "original_blob": "f20a678a4cc2cc705bf9ada70e5e75d65826ea2f",
+      "merged_blob": "f20a678a4cc2cc705bf9ada70e5e75d65826ea2f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_evaluation.py",
+      "original_blob": "9cbad70a95bd7477dd9341ae3462eeb51d24cf89",
+      "merged_blob": "9cbad70a95bd7477dd9341ae3462eeb51d24cf89",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_model.py",
+      "original_blob": "5a54a0b301d464dbabd0fb63a96c83d33e3746ff",
+      "merged_blob": "5a54a0b301d464dbabd0fb63a96c83d33e3746ff",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/feedback_training.py",
+      "original_blob": "5e83729501cbcfbbc0e028f2a014cad274264b9a",
+      "merged_blob": "5e83729501cbcfbbc0e028f2a014cad274264b9a",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/native_bridge.py",
+      "original_blob": "391d3c64406445b308965447bc88d5f94418ca34",
+      "merged_blob": "391d3c64406445b308965447bc88d5f94418ca34",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/native_parity.py",
+      "original_blob": "7e0269bb23af99b85ab3d8b334b99ca82e5cf4d7",
+      "merged_blob": "7e0269bb23af99b85ab3d8b334b99ca82e5cf4d7",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/preference.py",
+      "original_blob": "c972e2e9335f32d475a83509daea1b487f4f3b33",
+      "merged_blob": "c972e2e9335f32d475a83509daea1b487f4f3b33",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/protocol.json",
+      "original_blob": "f131a492ae05451c7c5a116018bfec393550eaa9",
+      "merged_blob": "f131a492ae05451c7c5a116018bfec393550eaa9",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/recover_v2_hosted.sh",
+      "original_blob": "de83adc2b375febe241bd29fb254b8c3bffa11ba",
+      "merged_blob": "de83adc2b375febe241bd29fb254b8c3bffa11ba",
+      "mode": "100755",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/reporting.py",
+      "original_blob": "0b2cc01bb55356f4336cfc804ab6462fa3d6374c",
+      "merged_blob": "0b2cc01bb55356f4336cfc804ab6462fa3d6374c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/risk.py",
+      "original_blob": "e32bb763413a592ee328ecb0b347acf69162f9d0",
+      "merged_blob": "e32bb763413a592ee328ecb0b347acf69162f9d0",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/run.py",
+      "original_blob": "dddba9b8794626af589a018761a445ee71328189",
+      "merged_blob": "dddba9b8794626af589a018761a445ee71328189",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/source_control.py",
+      "original_blob": "21884fb189787bfd6f36ac77a3abeab62b5a916f",
+      "merged_blob": "21884fb189787bfd6f36ac77a3abeab62b5a916f",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_feedback_control.py",
+      "original_blob": "3a8ac2b8d36dccbba856d4a8de8ec860de9e93c6",
+      "merged_blob": "3a8ac2b8d36dccbba856d4a8de8ec860de9e93c6",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_feedback_model.py",
+      "original_blob": "daef4929e228fd87d8e94f4526a327bc07532933",
+      "merged_blob": "daef4929e228fd87d8e94f4526a327bc07532933",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_preference.py",
+      "original_blob": "34169c97fe2b5a3a0497ec60728bef531a90770c",
+      "merged_blob": "34169c97fe2b5a3a0497ec60728bef531a90770c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_risk.py",
+      "original_blob": "2cbe8154dfd54ce36818672f8b9b77340aac1996",
+      "merged_blob": "2cbe8154dfd54ce36818672f8b9b77340aac1996",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v3/test_source_control.py",
+      "original_blob": "1a378cf08684d12f64bb0012f1bd02db3d5b3377",
+      "merged_blob": "1a378cf08684d12f64bb0012f1bd02db3d5b3377",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/README.md",
+      "original_blob": "c47e29d2dd0759cf9f80d9758c0b6ba1879d2e12",
+      "merged_blob": "c47e29d2dd0759cf9f80d9758c0b6ba1879d2e12",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/counterfactual_audit.py",
+      "original_blob": "eea6e9f0ac76fa5a1994c703a64911308a1fd274",
+      "merged_blob": "eea6e9f0ac76fa5a1994c703a64911308a1fd274",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/information_acquisition.py",
+      "original_blob": "c5298be3362314c723d5483b78b178f729690685",
+      "merged_blob": "c5298be3362314c723d5483b78b178f729690685",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/joint_evidence_generation.py",
+      "original_blob": "bc263f944d1c18ea497d46c9f48e4135bac61f59",
+      "merged_blob": "bc263f944d1c18ea497d46c9f48e4135bac61f59",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/portfolio.py",
+      "original_blob": "e1b7aa3b6e67ec4f71e054180140b78623b9984d",
+      "merged_blob": "e1b7aa3b6e67ec4f71e054180140b78623b9984d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_audit.py",
+      "original_blob": "55026b63712dbad7f9a4c366d0c8e703d31e2634",
+      "merged_blob": "55026b63712dbad7f9a4c366d0c8e703d31e2634",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_path_mass.py",
+      "original_blob": "697021c7701bf07bd87dfe4a8251f10060997617",
+      "merged_blob": "697021c7701bf07bd87dfe4a8251f10060997617",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_counterfactual_public_state_replay.py",
+      "original_blob": "3152d68e3b397fd7569893ebae3f796a74e745e3",
+      "merged_blob": "3152d68e3b397fd7569893ebae3f796a74e745e3",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_exact_fraction_support.py",
+      "original_blob": "f30f57c39be7bff6b040d144ae1100f9932bfa7c",
+      "merged_blob": "f30f57c39be7bff6b040d144ae1100f9932bfa7c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_execute_boundary.py",
+      "original_blob": "77aa72804b29231696cd37e483b1166282fb4a66",
+      "merged_blob": "77aa72804b29231696cd37e483b1166282fb4a66",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_extreme_risk.py",
+      "original_blob": "e2bf965896d16848973408c69ac1f8e87312b570",
+      "merged_blob": "e2bf965896d16848973408c69ac1f8e87312b570",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_fresh_audit_admission.py",
+      "original_blob": "e0646e66d1e7525921063e339c94e74205ffa82e",
+      "merged_blob": "e0646e66d1e7525921063e339c94e74205ffa82e",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_fresh_root_custody.py",
+      "original_blob": "c82ee91a6c88d270bfe91cb17c1d51cd4c9faade",
+      "merged_blob": "c82ee91a6c88d270bfe91cb17c1d51cd4c9faade",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_immutable_portfolio_admission.py",
+      "original_blob": "874ce1351bdf42c4e452dd61f296f3146c02c47b",
+      "merged_blob": "874ce1351bdf42c4e452dd61f296f3146c02c47b",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_information_acquisition.py",
+      "original_blob": "04d3aa5ca869e915b8b86433c41452e8529ac0b3",
+      "merged_blob": "04d3aa5ca869e915b8b86433c41452e8529ac0b3",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_joint_evidence_generation.py",
+      "original_blob": "677adbce539eb14062115561dd66c9ddcba4f324",
+      "merged_blob": "677adbce539eb14062115561dd66c9ddcba4f324",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_joint_generation_admission.py",
+      "original_blob": "4f8fd43984a56517cf6186a9f65fb19a8a63ac75",
+      "merged_blob": "4f8fd43984a56517cf6186a9f65fb19a8a63ac75",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_near_neutral_risk.py",
+      "original_blob": "61df5d30060b8fe6cf18f1d4dcb764f41901e34d",
+      "merged_blob": "61df5d30060b8fe6cf18f1d4dcb764f41901e34d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_numeric_admission.py",
+      "original_blob": "3a4d659cba7aed49b54bfd19827956f83819636c",
+      "merged_blob": "3a4d659cba7aed49b54bfd19827956f83819636c",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_policy_replay_admission.py",
+      "original_blob": "dcdfea43cad45c5e9813cb60f34ee5fc242400ee",
+      "merged_blob": "dcdfea43cad45c5e9813cb60f34ee5fc242400ee",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_portfolio.py",
+      "original_blob": "c87b882224486ecd6f64d2307714a4867f5ab480",
+      "merged_blob": "c87b882224486ecd6f64d2307714a4867f5ab480",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/v4/test_reallocation.py",
+      "original_blob": "f930c33cdacf2fde95cf71ca9e91067f4bbd08bb",
+      "merged_blob": "f930c33cdacf2fde95cf71ca9e91067f4bbd08bb",
+      "mode": "100644",
+      "original_postimage_exact": true
+    },
+    {
+      "path": "experiments/multimodal_output_portfolio/world.py",
+      "original_blob": "be7bd475e733d09ee28f2744c0f34d81dcdfa50d",
+      "merged_blob": "be7bd475e733d09ee28f2744c0f34d81dcdfa50d",
+      "mode": "100644",
+      "original_postimage_exact": true
+    }
+  ],
+  "original_new_postimages_exact": 131,
+  "current_library_preserved_as_exact_line_subsequence": true,
+  "current_library_line_count": 335,
+  "unsafe_guard_preserved": true,
+  "intentional_additional_paths": [
+    ".github/blob-size-allowlist.txt",
+    "codex-rs/hepta-ndu/Cargo.toml",
+    "codex-rs/hepta-ndu/src/group_tests.rs",
+    "codex-rs/hepta-ndu/src/output_portfolio_tests.rs"
+  ],
+  "intentional_additional_changes": [
+    "Two exact content pins for reviewed original PNG bytes.",
+    "Explicit same-name/same-path Cargo binary declaration to bind rules_rs metadata discovery to its watched package manifest; other automatic targets remain enabled.",
+    "Five final-use clone removals in two existing test files, produced by required scoped just fix and reviewed with all assertions and all other bytes unchanged."
+  ],
+  "cargo_lock_unchanged": true,
+  "module_lock_unchanged": true,
+  "original_assertions_unchanged": true,
+  "original_svg_whitespace": "The original two generated SVGs each contain 310 trailing path-attribute spaces. They remain exact original bytes; no new whitespace exemption was added. All other source changes pass git diff --check."
+}

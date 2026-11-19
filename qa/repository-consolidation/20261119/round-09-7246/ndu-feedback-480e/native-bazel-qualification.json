@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.ndu480e.bazel-target-qualification.v1",
+  "source_commit": "83154c9ff185a4c2e6e41de4a23c3ac6acfb62a8",
+  "source_tree": "647e88d88611b35a3dca1c0425ae3d121c4dfb7d",
+  "status": "PASS",
+  "steps": [
+    {
+      "name": "canonical-bazel-lock-check-attempt02",
+      "argv": [
+        "$USER_CARGO_BIN/just",
+        "bazel-lock-check"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 4.042189598083496,
+      "stdout_bytes": 18,
+      "stdout_sha256": "3e7b29182cce6e36002b75542488111789f464957b5728ab4de90ab2cf4c4fe3",
+      "stderr_bytes": 2286,
+      "stderr_sha256": "35a4839ea76ca3653ec92f4d7af5fb0025a56aa24d5c3f345ca1ae7d5e332745"
+    },
+    {
+      "name": "bazel-feedback-binary-query-attempt02",
+      "argv": [
+        "$QUALIFICATION_ROOT/python/bin/python",
+        "$QUALIFICATION_ROOT/source-candidate/.github/scripts/run_bazel_with_buildbuddy.py",
+        "query",
+        "--lockfile_mode=error",
+        "//codex-rs/hepta-ndu:ndu-feedback-generation"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.0473039150238037,
+      "stdout_bytes": 45,
+      "stdout_sha256": "1f83612551b5e9d0986db96faca61db0cf965209c5c451d02bef0adb380cc068",
+      "stderr_bytes": 146,
+      "stderr_sha256": "b2e9487e2f36ef0e974463c5facb8185f0583e880acd185235cf6b70e43c6916"
+    }
+  ],
+  "started_at": 1795112623.2903235,
+  "disk_free_before": 7158005760,
+  "primary_source": [
+    {
+      "path": "rs/extensions.bzl",
+      "sha256": "58c14568d92044c37273c4f55b94ed1b11899690e6403ea92f48c3f1ce69ceea",
+      "bytes": 43607
+    },
+    {
+      "path": "rs/private/cargo_workspace_graph.bzl",
+      "sha256": "d2e0ed14798e938289af72a3d2269d8a542d8fe81356b2acd16a0c1801e52798",
+      "bytes": 30271
+    }
+  ],
+  "cargo_target_bytes": 1362245782,
+  "lock_sha256_before": {
+    "codex-rs/Cargo.lock": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+    "MODULE.bazel.lock": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501"
+  },
+  "resolved_target": "//codex-rs/hepta-ndu:ndu-feedback-generation",
+  "lock_sha256_after": {
+    "codex-rs/Cargo.lock": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+    "MODULE.bazel.lock": "5336311a0fa5c53fd5b3f5ef966d661afed27453a69d84ff3dd55dbc431ff501"
+  },
+  "source_files_unchanged": true,
+  "finished_at": 1795112628.5759902,
+  "disk_free_after": 7155335168
+}

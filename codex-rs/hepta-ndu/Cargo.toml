@@ -10,6 +10,10 @@ name = "codex_hepta_ndu"
 path = "src/lib.rs"
 doctest = false
 
+[[bin]]
+name = "ndu-feedback-generation"
+path = "src/bin/ndu-feedback-generation.rs"
+
 [lints]
 workspace = true
 

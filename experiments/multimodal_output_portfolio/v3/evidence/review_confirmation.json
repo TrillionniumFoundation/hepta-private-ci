@@ -1,0 +1,471 @@
+{
+  "schema": "hepta.feedback-generation.independent-audit.v3",
+  "audit_passed": true,
+  "confirmatory": true,
+  "run": "/tmp/hepta-v3-confirmation-001",
+  "source_commit": "9653b066563df803b6f18c0045c49b9f73312c50",
+  "audit_script_sha256": "e72b7bb21f096af148e14af4993bdee697f2d8e03b57da99426a491b94d88fa6",
+  "artifact_manifest_sha256": "4a4d7df4b4e8819c6d15138141908138b2d78ac542de38184b1b34b4a99183b9",
+  "artifact_hashes_verified": 41,
+  "source_hashes_verified": 31,
+  "development_source_drift": [],
+  "old_files_unchanged": 49,
+  "current_protocol_matches_run": true,
+  "native": {
+    "sessions": 24576,
+    "requests": 126322,
+    "hash_verified": true,
+    "current_binary_matches_run": true,
+    "final_source_build_receipt_verified": true
+  },
+  "primary_independent": {
+    "estimate": -0.27833614794504397,
+    "ci_low": -0.3506952419043328,
+    "ci_high": -0.2263499531490681,
+    "n_seeds": 3,
+    "n_worlds_per_seed": 1024,
+    "bootstrap_replicates": 1000,
+    "linear_mac_ratio": 0.9769562829189122,
+    "gates": {
+      "mean_external_loss": true,
+      "paired_ci_upper": true,
+      "online_linear_mac_ratio": true,
+      "output_budget_contracts": true,
+      "registered_seeds": true
+    },
+    "pass": true
+  },
+  "secondary_independent": {
+    "nominal_noise:ndu_feedback-ndu_myopic": {
+      "mean_loss": {
+        "estimate": -0.12053361764300168,
+        "ci_low": -0.3613264717917561,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.12147079752225916,
+        "ci_low": -0.3634705612103383,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": 0.028157552083333332,
+        "ci_low": 0.0,
+        "ci_high": 0.084393310546875,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "nominal_noise:ndu_feedback-matched_supervised_feedback": {
+      "mean_loss": {
+        "estimate": -0.005234676526822209,
+        "ci_low": -0.010738270424420273,
+        "ci_high": -0.001678298992814173,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.013840433823194775,
+        "ci_low": -0.03619859849087066,
+        "ci_high": 0.0027988540014183697,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.0021158854166666665,
+        "ci_low": -0.006754557291666667,
+        "ci_high": 0.0005696614583333334,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "nominal_noise:ndu_robust-ndu_feedback": {
+      "mean_loss": {
+        "estimate": 0.045476180030718134,
+        "ci_low": 0.0,
+        "ci_high": 0.13085273816822435,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": 4.161392982523123e-05,
+        "ci_low": -0.020082791254060366,
+        "ci_high": 0.022824993131261302,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.0146484375,
+        "ci_low": -0.04053955078125,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "nominal_noise:ndu_feedback-ndu_no_refine": {
+      "mean_loss": {
+        "estimate": -0.41401182776401885,
+        "ci_low": -0.4617375340693134,
+        "ci_high": -0.36487307210905784,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.37975480043408355,
+        "ci_low": -0.6095818953153274,
+        "ci_high": -0.1894692405858109,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": 0.142578125,
+        "ci_low": 0.08674723307291667,
+        "ci_high": 0.18847859700520833,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "nominal_noise:ndu_feedback-clean_no_disturbance_reference": {
+      "mean_loss": {
+        "estimate": 0.10293866567341654,
+        "ci_low": 0.06892523882972096,
+        "ci_high": 0.14598873426203487,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": 0.7940826507071798,
+        "ci_low": 0.6168734898055018,
+        "ci_high": 1.069169293211511,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.022379557291666668,
+        "ci_low": -0.032063802083333336,
+        "ci_high": -0.01513671875,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "noise_shift:ndu_feedback-ndu_myopic": {
+      "mean_loss": {
+        "estimate": -0.1200098791342491,
+        "ci_low": -0.3579977417435669,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.08152837364264827,
+        "ci_low": -0.24396758054095843,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": 0.027669270833333332,
+        "ci_low": 0.0,
+        "ci_high": 0.08139648437499998,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "noise_shift:ndu_feedback-matched_supervised_feedback": {
+      "mean_loss": {
+        "estimate": -0.009130874447391154,
+        "ci_low": -0.01629794538866781,
+        "ci_high": -0.004824197246587093,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": 0.0025942620318573826,
+        "ci_low": -0.03258480428241655,
+        "ci_high": 0.03986787064433867,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.010172526041666666,
+        "ci_low": -0.027347819010416666,
+        "ci_high": 0.0013020833333333333,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "noise_shift:ndu_robust-ndu_feedback": {
+      "mean_loss": {
+        "estimate": 0.007612035085191889,
+        "ci_low": 0.0,
+        "ci_high": 0.023844835343384146,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.10736223819870945,
+        "ci_low": -0.31695329604993405,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.008382161458333334,
+        "ci_low": -0.0263671875,
+        "ci_high": 0.0,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "noise_shift:ndu_feedback-ndu_no_refine": {
+      "mean_loss": {
+        "estimate": -0.3533704201308641,
+        "ci_low": -0.4896799876399511,
+        "ci_high": -0.2131187659400191,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": -0.138496418923821,
+        "ci_low": -0.4874506373661691,
+        "ci_high": 0.3088561312383686,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": 0.14469401041666666,
+        "ci_low": 0.08251139322916667,
+        "ci_high": 0.234539794921875,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    },
+    "noise_shift:ndu_feedback-clean_no_disturbance_reference": {
+      "mean_loss": {
+        "estimate": 0.5600542005505741,
+        "ci_low": 0.44265040825522395,
+        "ci_high": 0.7587809664308396,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "cvar90": {
+        "estimate": 1.0593795806689394,
+        "ci_low": 0.7656632009182567,
+        "ci_high": 1.591379510879764,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      },
+      "mean_quality": {
+        "estimate": -0.14664713541666666,
+        "ci_low": -0.20534261067708334,
+        "ci_high": -0.11181640625,
+        "n_seeds": 3,
+        "n_worlds_per_seed": 1024,
+        "bootstrap_replicates": 1000
+      }
+    }
+  },
+  "per_seed_primary_and_continuation": [
+    {
+      "seed": 17,
+      "primary_mean_loss_delta": -0.3599385105534757,
+      "primary_linear_mac_ratio": 0.9938705740844545,
+      "recursive_minus_myopic_mean_loss": 0.0,
+      "recursive_and_myopic_loss_arrays_identical": true,
+      "recursive_and_myopic_depth_arrays_identical": true
+    },
+    {
+      "seed": 29,
+      "primary_mean_loss_delta": -0.22853477147613416,
+      "primary_linear_mac_ratio": 0.9691685267857143,
+      "recursive_minus_myopic_mean_loss": 0.0,
+      "recursive_and_myopic_loss_arrays_identical": true,
+      "recursive_and_myopic_depth_arrays_identical": true
+    },
+    {
+      "seed": 43,
+      "primary_mean_loss_delta": -0.246535161805522,
+      "primary_linear_mac_ratio": 0.9682489067055393,
+      "recursive_minus_myopic_mean_loss": -0.361600852929005,
+      "recursive_and_myopic_loss_arrays_identical": false,
+      "recursive_and_myopic_depth_arrays_identical": false
+    }
+  ],
+  "nominal_arm_mean_external_loss": {
+    "matched_supervised_static": 0.3752110236958804,
+    "matched_supervised_feedback": 0.10858883925007524,
+    "ndu_static": 0.381690310668297,
+    "ndu_feedback": 0.10335416272325304,
+    "ndu_myopic": 0.2238877803662547,
+    "ndu_robust": 0.1488303427539712,
+    "ndu_no_refine": 0.5173659904872719,
+    "clean_no_disturbance_reference": 0.0004154970498365011
+  },
+  "independent_bellman_trees": 12,
+  "independent_bellman_states": 11520,
+  "feedback_arm_worlds_replayed": 49152,
+  "feedback_discrete_trajectory_cache_entries": 1448,
+  "nominal_ndu_depth_counts": {
+    "0": 1523,
+    "1": 838,
+    "2": 684,
+    "3": 27
+  },
+  "nominal_refined_fraction": 0.5042317708333334,
+  "observed_latent_adaptive_groups": 54,
+  "training_gradient_receipts": [
+    {
+      "seed": 17,
+      "steps": 30,
+      "nonzero_utility_only_steps": 30,
+      "recorded_gradient_gate": true
+    },
+    {
+      "seed": 29,
+      "steps": 30,
+      "nonzero_utility_only_steps": 30,
+      "recorded_gradient_gate": true
+    },
+    {
+      "seed": 43,
+      "steps": 30,
+      "nonzero_utility_only_steps": 30,
+      "recorded_gradient_gate": true
+    }
+  ],
+  "synthetic_preference_action_changes": [
+    {
+      "seed": 17,
+      "gamma": 0.5393810158716406,
+      "changed_nodes": 98
+    },
+    {
+      "seed": 17,
+      "gamma": 1.9905573796904719,
+      "changed_nodes": 0
+    },
+    {
+      "seed": 17,
+      "gamma": 5.021172267917791,
+      "changed_nodes": 63
+    },
+    {
+      "seed": 29,
+      "gamma": 0.5646349218600335,
+      "changed_nodes": 0
+    },
+    {
+      "seed": 29,
+      "gamma": 2.041256549672653,
+      "changed_nodes": 0
+    },
+    {
+      "seed": 29,
+      "gamma": 5.046589418596341,
+      "changed_nodes": 0
+    },
+    {
+      "seed": 43,
+      "gamma": 0.44210628445262046,
+      "changed_nodes": 3
+    },
+    {
+      "seed": 43,
+      "gamma": 1.968419987139896,
+      "changed_nodes": 0
+    },
+    {
+      "seed": 43,
+      "gamma": 4.98485950934446,
+      "changed_nodes": 0
+    }
+  ],
+  "training_gradient_steps_checked": 90,
+  "synthetic_preference_profiles_checked": 9,
+  "source_replay": {
+    "arm_worlds_replayed": 36864,
+    "stress_gates": [
+      {
+        "seed": 17,
+        "scenario": "correlation_shift",
+        "quality": 0.9853515625,
+        "pass": true
+      },
+      {
+        "seed": 17,
+        "scenario": "all_shared_wrong",
+        "quality": 0.9794921875,
+        "pass": true
+      },
+      {
+        "seed": 29,
+        "scenario": "correlation_shift",
+        "quality": 0.97265625,
+        "pass": true
+      },
+      {
+        "seed": 29,
+        "scenario": "all_shared_wrong",
+        "quality": 0.9912109375,
+        "pass": true
+      },
+      {
+        "seed": 43,
+        "scenario": "correlation_shift",
+        "quality": 0.970703125,
+        "pass": true
+      },
+      {
+        "seed": 43,
+        "scenario": "all_shared_wrong",
+        "quality": 0.9794921875,
+        "pass": true
+      }
+    ],
+    "scope": "raw decoder outputs, paid witness binding and scores; source policy calibration/optimality not independently re-solved here"
+  },
+  "bsde_scope": "analytic entropic Gaussian special case only",
+  "audit_wall_seconds": 60.42535662800037,
+  "audit_process_cpu_seconds": 80.70592023900001,
+  "audit_forward_linear_macs": 14719611904,
+  "audit_cost_separate_from_experiment": true,
+  "limits": [
+    "No reporting, metrics, controller or neural model implementation used for neural replay/statistics.",
+    "Frozen benchmark renderer is reused to reconstruct input and canonical target data.",
+    "Gradient values are source-reviewed recorded training receipts, not an independent optimizer replay.",
+    "Native hashes are local integrity evidence, not authenticated remote/kernel attestations.",
+    "No natural-data, general FBSDE, global-optimizer, production-runtime or dedicated-runner claim."
+  ]
+}

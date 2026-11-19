@@ -1,0 +1,347 @@
+{
+  "schema": "hepta.natural-input-ingestion-smoke.v1",
+  "completed_at_utc": "2026-10-23T05:00:26.366816+00:00",
+  "status": "passed_input_ingestion_only",
+  "source": {
+    "title": "Lachender Hans (Tierpark Zittau).webm",
+    "author": "Fiver, der Hellseher",
+    "source_page": "https://commons.wikimedia.org/wiki/File:Lachender_Hans_(Tierpark_Zittau).webm",
+    "source_page_revision": "https://commons.wikimedia.org/w/index.php?title=File:Lachender_Hans_(Tierpark_Zittau).webm&oldid=1138468463",
+    "original_file_url": "https://upload.wikimedia.org/wikipedia/commons/5/5f/Lachender_Hans_%28Tierpark_Zittau%29.webm",
+    "license": "CC-BY-SA-4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "source_creation_date": "2022-05-08",
+    "source_declaration": "own work by the credited uploader",
+    "expected_bytes": 12123649,
+    "expected_sha1": "42b0f35d2c2f44197c97c6ce2686ed9fc7ca28d7",
+    "caption_language": "de",
+    "caption_provenance": "human-provided Description field on the pinned Commons file page",
+    "caption_is_generated": false,
+    "caption_is_time_aligned_transcript": false
+  },
+  "source_sha256": "bc957c8a0382d9a4d2d54acbfc61c61e5fd57bcef909364bad3f41a5957c91ef",
+  "source_sha1_verified": "42b0f35d2c2f44197c97c6ce2686ed9fc7ca28d7",
+  "download_status": "downloaded_exact_public_original",
+  "original_ffprobe": {
+    "programs": [],
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 3840,
+        "height": 2160,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "25/1",
+        "avg_frame_rate": "25/1",
+        "time_base": "1/1000",
+        "start_time": "0.003000",
+        "nb_read_frames": "262"
+      },
+      {
+        "index": 1,
+        "codec_name": "vorbis",
+        "codec_type": "audio",
+        "sample_rate": "44100",
+        "channels": 2,
+        "channel_layout": "stereo",
+        "r_frame_rate": "0/0",
+        "avg_frame_rate": "0/0",
+        "time_base": "1/1000",
+        "start_time": "0.000000",
+        "nb_read_frames": "788"
+      }
+    ],
+    "format": {
+      "filename": "/tmp/hepta-natural-io-001/original.webm",
+      "format_name": "matroska,webm",
+      "start_time": "0.000000",
+      "duration": "10.483000",
+      "size": "12123649",
+      "bit_rate": "9252045"
+    }
+  },
+  "derived_four_frame_ffprobe": {
+    "programs": [],
+    "streams": [
+      {
+        "index": 0,
+        "codec_name": "vp9",
+        "codec_type": "video",
+        "width": 128,
+        "height": 72,
+        "pix_fmt": "yuv420p",
+        "r_frame_rate": "1/1",
+        "avg_frame_rate": "1/1",
+        "time_base": "1/1000",
+        "start_time": "0.000000",
+        "nb_read_frames": "4"
+      }
+    ],
+    "format": {
+      "filename": "/tmp/hepta-natural-io-001/recorded-four-frames.webm",
+      "format_name": "matroska,webm",
+      "start_time": "0.000000",
+      "duration": "4.000000",
+      "size": "8595",
+      "bit_rate": "17190"
+    }
+  },
+  "audio_pcm_header": {
+    "sample_rate": 16000,
+    "channels": 1,
+    "sample_width_bytes": 2,
+    "frames": 167602
+  },
+  "input_tensors": {
+    "human_description_utf8_bytes": {
+      "shape": [
+        55
+      ],
+      "dtype": "uint8",
+      "all_finite": true,
+      "min": 32.0,
+      "max": 118.0,
+      "mean": 92.96363636363637,
+      "std": 26.37006818094653
+    },
+    "recorded_audio": {
+      "shape": [
+        1,
+        167602
+      ],
+      "dtype": "float32",
+      "all_finite": true,
+      "min": -0.75390625,
+      "max": 0.85992431640625,
+      "mean": 4.930460363539169e-06,
+      "std": 0.1240295022726059
+    },
+    "recorded_frame": {
+      "shape": [
+        3,
+        144,
+        256
+      ],
+      "dtype": "float32",
+      "all_finite": true,
+      "min": 0.03529411926865578,
+      "max": 1.0,
+      "mean": 0.43797436356544495,
+      "std": 0.16098003089427948
+    },
+    "recorded_temporal_video": {
+      "shape": [
+        4,
+        3,
+        72,
+        128
+      ],
+      "dtype": "float32",
+      "all_finite": true,
+      "min": 0.03529411926865578,
+      "max": 1.0,
+      "mean": 0.44657301902770996,
+      "std": 0.1445520669221878
+    }
+  },
+  "video_mean_absolute_frame_difference": 0.07959923893213272,
+  "paired_provenance": {
+    "audio_and_video": "same original captured recording",
+    "image": "one extracted natural-video frame, not independently captured still photography",
+    "text": "human file description, not generated text or timed speech transcript"
+  },
+  "artifacts": {
+    "original.webm": {
+      "path": "/tmp/hepta-natural-io-001/original.webm",
+      "sha256": "bc957c8a0382d9a4d2d54acbfc61c61e5fd57bcef909364bad3f41a5957c91ef",
+      "bytes": 12123649
+    },
+    "recorded-audio-16khz.wav": {
+      "path": "/tmp/hepta-natural-io-001/recorded-audio-16khz.wav",
+      "sha256": "e81fc702ce828c0711c4bfd2133619b0e58aba17cf4685d7a5aa9b90ebada384",
+      "bytes": 335282
+    },
+    "recorded-frame.png": {
+      "path": "/tmp/hepta-natural-io-001/recorded-frame.png",
+      "sha256": "3525ac07bd4a572d26a7e3be4d572e1628beeb10d45e9a7b280cbb9519ecc15a",
+      "bytes": 94028
+    },
+    "recorded-four-frames.webm": {
+      "path": "/tmp/hepta-natural-io-001/recorded-four-frames.webm",
+      "sha256": "0875d318cb7ad50c979e703852d9119904d4a2a57e23cb7377be75a379045fbf",
+      "bytes": 8595
+    },
+    "human-description.de.txt": {
+      "path": "/tmp/hepta-natural-io-001/human-description.de.txt",
+      "sha256": "fc94c0783f5be90a070d4c066eadd6c1d7e92177c93661078abcbf575bcd8a31",
+      "bytes": 56
+    },
+    "input-tensors.npz": {
+      "path": "/tmp/hepta-natural-io-001/input-tensors.npz",
+      "sha256": "555595f70b23959b93c28b669cabce8c3cb28b5c7ef1523dff9aa03636f3db2d",
+      "bytes": 693934
+    },
+    "ATTRIBUTION.json": {
+      "path": "/tmp/hepta-natural-io-001/ATTRIBUTION.json",
+      "sha256": "da492455cee3e92567a632d6aafbd62ac3917bfe860e64bf32b547e12ea21e7b",
+      "bytes": 1318
+    }
+  },
+  "commands": [
+    {
+      "argv": [
+        "ffprobe",
+        "-v",
+        "error",
+        "-threads",
+        "1",
+        "-count_frames",
+        "-show_entries",
+        "stream=index,codec_type,codec_name,width,height,pix_fmt,sample_rate,channels,channel_layout,r_frame_rate,avg_frame_rate,time_base,start_time,duration,nb_frames,nb_read_frames:format=filename,format_name,start_time,duration,size,bit_rate",
+        "-of",
+        "json",
+        "/tmp/hepta-natural-io-001/original.webm"
+      ],
+      "wall_seconds": 4.688953021000998,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-v",
+        "error",
+        "-nostdin",
+        "-threads",
+        "1",
+        "-i",
+        "/tmp/hepta-natural-io-001/original.webm",
+        "-map",
+        "0:a:0",
+        "-vn",
+        "-ac",
+        "1",
+        "-ar",
+        "16000",
+        "-c:a",
+        "pcm_s16le",
+        "/tmp/hepta-natural-io-001/recorded-audio-16khz.wav"
+      ],
+      "wall_seconds": 0.20112169200001517,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-v",
+        "error",
+        "-nostdin",
+        "-threads",
+        "1",
+        "-ss",
+        "2",
+        "-i",
+        "/tmp/hepta-natural-io-001/original.webm",
+        "-map",
+        "0:v:0",
+        "-frames:v",
+        "1",
+        "-vf",
+        "scale=256:-2",
+        "/tmp/hepta-natural-io-001/recorded-frame.png"
+      ],
+      "wall_seconds": 1.1563556969995261,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-v",
+        "error",
+        "-nostdin",
+        "-threads",
+        "1",
+        "-ss",
+        "1",
+        "-i",
+        "/tmp/hepta-natural-io-001/original.webm",
+        "-map",
+        "0:v:0",
+        "-an",
+        "-t",
+        "4",
+        "-vf",
+        "fps=1,scale=128:-2",
+        "-frames:v",
+        "4",
+        "-c:v",
+        "libvpx-vp9",
+        "-threads",
+        "1",
+        "-b:v",
+        "0",
+        "-crf",
+        "35",
+        "/tmp/hepta-natural-io-001/recorded-four-frames.webm"
+      ],
+      "wall_seconds": 2.4111038890005148,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ffprobe",
+        "-v",
+        "error",
+        "-threads",
+        "1",
+        "-count_frames",
+        "-show_entries",
+        "stream=index,codec_type,codec_name,width,height,pix_fmt,sample_rate,channels,channel_layout,r_frame_rate,avg_frame_rate,time_base,start_time,duration,nb_frames,nb_read_frames:format=filename,format_name,start_time,duration,size,bit_rate",
+        "-of",
+        "json",
+        "/tmp/hepta-natural-io-001/recorded-four-frames.webm"
+      ],
+      "wall_seconds": 0.08862662000137789,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ffmpeg",
+        "-v",
+        "error",
+        "-nostdin",
+        "-threads",
+        "1",
+        "-i",
+        "/tmp/hepta-natural-io-001/recorded-four-frames.webm",
+        "-map",
+        "0:v:0",
+        "-f",
+        "rawvideo",
+        "-pix_fmt",
+        "rgb24",
+        "pipe:1"
+      ],
+      "wall_seconds": 0.06458183799986728,
+      "returncode": 0,
+      "stderr": ""
+    }
+  ],
+  "wall_seconds": 9.530618920000052,
+  "source_code_sha256": "495f1236942d26bc4ad3575d171da4d27f6d1c911e6a97e7ea239f9faad5b86d",
+  "scope": {
+    "actual_natural_input_io": true,
+    "four_independent_capture_modalities": false,
+    "pretrained_model_loaded": false,
+    "neural_generation_performed": false,
+    "training_performed": false,
+    "output_quality_evaluated": false,
+    "natural_foundation_model_blocker_closed": false,
+    "formal_v3_protocol_or_confirmation_changed": false
+  }
+}
