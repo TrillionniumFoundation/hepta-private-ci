@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-architecture-convergence-${{ github.event.pull_request.head.ref || github.ref_name }}
+  group: hepta-architecture-convergence-${{ github.event.pull_request.head.repo.full_name || github.repository }}::${{ github.event.pull_request.head.ref || github.ref_name }}
   cancel-in-progress: true
 
 env:
@@ -283,7 +283,7 @@ jobs:
 
   required:
     name: Architecture required
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs: qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 5
