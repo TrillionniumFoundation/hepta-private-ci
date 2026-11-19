@@ -2,6 +2,7 @@
 """Format repository sources or check that they are already formatted."""
 
 import argparse
+import hashlib
 import os
 import shlex
 import subprocess
@@ -18,6 +19,72 @@ from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
+
+# These exact upstream bytes are syntax-highlighting test inputs, not Rust
+# implementation. Some deliberately contain invalid syntax. The original Git
+# blob IDs and commits are recorded in the vendor's HEPTA_VERBATIM_FIXTURES.json.
+# Any change needs a new explicit review; neither a directory nor a glob is exempt.
+VERBATIM_FIXTURE_PREFIX = "codex-rs/third_party/syntect-5.3.0-maintained-codec/testdata"
+VERBATIM_FIXTURES = {
+    f"{VERBATIM_FIXTURE_PREFIX}/Packages/Rust/syntax_test_rust.rs": (
+        "12cc528a46e2681af786bd1a024b64517a616ab9191829f81aa548b18c14d9f3",
+        37068,
+    ),
+    f"{VERBATIM_FIXTURE_PREFIX}/issue28.rs": (
+        "2f660b2c5a8739bbe90545cb45f218fae6a7d2a902e044274042092aee605017",
+        28,
+    ),
+    f"{VERBATIM_FIXTURE_PREFIX}/issue33.rs": (
+        "579e35846711308d28bd6cb02476a0b1c96ae2aede50105e6bc8dbc0a80ced8f",
+        215,
+    ),
+    f"{VERBATIM_FIXTURE_PREFIX}/parser.rs": (
+        "8b21ecd498165716362abea58cc8904ba8b9b02c8983d45cb501194585a93ae6",
+        243245,
+    ),
+    f"{VERBATIM_FIXTURE_PREFIX}/spacegray/fileicons-test/rust.rs": (
+        "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        0,
+    ),
+}
+
+
+def verified_verbatim_fixture_paths() -> frozenset[str]:
+    """Identify exact test-input bytes, rejecting drift before any formatter runs."""
+    root = REPO_ROOT.resolve()
+    prefix = Path(VERBATIM_FIXTURE_PREFIX)
+    for relative, (expected_sha256, expected_size) in VERBATIM_FIXTURES.items():
+        path = Path(relative)
+        if (
+            path.is_absolute()
+            or ".." in path.parts
+            or "\\" in relative
+            or path.as_posix() != relative
+            or not path.is_relative_to(prefix)
+        ):
+            raise ValueError(
+                f"verbatim fixture path escapes its fixed prefix: {relative!r}"
+            )
+        source = root / path
+        try:
+            resolved = source.resolve(strict=True)
+            if not resolved.is_relative_to(root / prefix) or any(
+                parent.is_symlink()
+                for parent in (source, *source.parents)
+                if parent.is_relative_to(root)
+            ):
+                raise ValueError(
+                    f"verbatim fixture path escapes or aliases: {relative!r}"
+                )
+            if not source.is_file() or source.stat().st_size != expected_size:
+                raise ValueError(f"verbatim fixture bytes changed: {relative!r}")
+            if hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha256:
+                raise ValueError(f"verbatim fixture bytes changed: {relative!r}")
+        except OSError as error:
+            raise ValueError(
+                f"cannot verify verbatim fixture {relative!r}: {error}"
+            ) from error
+    return frozenset(VERBATIM_FIXTURES)
 
 
 @dataclass(frozen=True)
@@ -72,6 +139,7 @@ def is_starlark_file(path: Path) -> bool:
 def buildifier_formatter_group(
     *, check: bool, paths: list[str] | None = None
 ) -> FormatterGroup:
+    verbatim = verified_verbatim_fixture_paths()
     repository_files = (
         [os.fsencode(path) for path in paths]
         if paths is not None
@@ -85,7 +153,7 @@ def buildifier_formatter_group(
         if not encoded_path:
             continue
         path = Path(os.fsdecode(encoded_path))
-        if is_starlark_file(path):
+        if path.as_posix() not in verbatim and is_starlark_file(path):
             buildifier_files.append(path.as_posix())
     buildifier_files.sort()
 
@@ -164,6 +232,7 @@ def python_scripts_formatter_group(
 
 
 def formatter_groups(*, check: bool) -> tuple[FormatterGroup, ...]:
+    verified_verbatim_fixture_paths()
     return (
         just_formatter_group(check=check),
         rust_formatter_group(check=check),
@@ -377,7 +446,7 @@ def rust_configuration_scope(paths: list[str]) -> list[str]:
                 raise ValueError(f"Rust format input escapes repository: {value!r}")
             if target.is_file():
                 selected.add(value)
-    return sorted(selected)
+    return sorted(selected - verified_verbatim_fixture_paths())
 
 
 def scoped_formatter_groups(

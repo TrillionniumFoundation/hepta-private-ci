@@ -196,6 +196,7 @@ members = [
     "model-provider",
 ]
 exclude = [
+    "third_party/syntect-5.3.0-maintained-codec",
     "third_party/oauth2-5.0.0-time",
     "third_party/rmcp-3.9.0-time",
     "third_party/i18n-config-0.4.8",
@@ -740,6 +741,8 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Preserve existing syntax/theme dump bytes with maintained codec and YAML implementations.
+syntect = { path = "third_party/syntect-5.3.0-maintained-codec" }
 # Preserve Matrix IndexedDB listener behavior while removing archived derive macros.
 wasm_evt_listener = { path = "third_party/wasm_evt_listener-0.1.0-maintained" }
 # Owned compatibility adapter delegates all macro expansion to maintained pastey.
