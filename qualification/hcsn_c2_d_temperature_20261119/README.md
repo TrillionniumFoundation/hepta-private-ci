@@ -1,5 +1,33 @@
 # Fixed D-only temperature calibration
 
+## Completed result
+
+All **21 selected models** now have their original-rule D temperature fitted and independently checked. The single native job `1a1f3c89f0f-ffbe-e2d` finished with exit 0, complete durable output and a confirmed terminal receipt. Every solution is interior, every long-double final-bracket sign check is strictly satisfied, and every event retains its original argmax. Calibration decreased D NLL for all 21 models. D remains the development set used for model and temperature selection; these results are not confirmation-E scores.
+
+| Family | Mean raw D NLL, three seeds | Mean calibrated D NLL, three seeds |
+|---|---:|---:|
+| GRU | 0.952863405814 | 0.918674704779 |
+| CfC | 1.177879344459 | 1.157678641261 |
+| PLIF | 1.909886874100 | 1.693413904518 |
+| Event-time LIF | 1.230211799214 | 1.196745410142 |
+| S4D | 1.332453731606 | 1.298978278153 |
+| Attention | 1.072262180062 | 1.069139091274 |
+| HCSN | 1.101994439951 | 1.079613489821 |
+
+The fixed roster generated exactly 21 scalar optimizations, **1,064** objective/gradient/Hessian evaluations, **980** bisection updates and **126** independent long-double evaluations. The largest float64-versus-long-double discrepancy across the checked quantities is **1.4210854715202004e-14**, within the predeclared 1e-10 implementation-consistency threshold. No neural model forward, backward, optimizer construction, restore or update ran. No E payload or label was accessed.
+
+HCSN temperatures for seeds 101 / 211 / 307 are **0.9589969639163112 / 0.7097894492128152 / 1.2391356744310171**. All 21 exact values, input/model bindings, final brackets, objective evaluations and independent arithmetic results are retained in the original individual receipts.
+
+The supervisor measured the complete numerical child, including startup, imports, input and runtime verification, all fits, independent arithmetic and output finalization: **33.64987031597411 s wall / 32.927284 s CPU / 231,584 KiB peak RSS**. Stage time through archive and transport-part creation was **33.85831926204264 s**, below the existing 600-second stage limit. No numerical retry, kill, memory breach or budget overrun occurred. Controller/MCP latency, subsequent downloads, publication and unmeasured outer service startup remain outside these scientific timers.
+
+The immutable source was published before dispatch at commit `a81f9e13cab9d27b0a59248e68dc11f32c61b652`, tree `0e68b16b22e2040e5245b81f514d7ece107b0849`, byte-identical to the already prepared local tree. Original prepared sources and requests were reused without modification. The 274,640-byte archive has SHA256 `c0bd19d9ff00dcafb7da8700d54c3febf8d48af3fe5d1ccc34c96446028560ca`; all **43** member sizes and hashes match. The complete temperature manifest has SHA256 `033c394cfc63833e090a7a08dfe942911da2ecc44ff18e426082f404b08372b4`.
+
+`audit_archive.py` independently reconciled the downloaded archive, frozen sources, runtime, 21 selected-model receipts, all saved bisection chains, journal counts, original stopping criteria, terminal cost and durable native result. Its read-only body used 0.07005816700257128 s wall / 0.06795188899999999 s CPU and 17,644 KiB peak RSS. This archive audit does not refit temperatures or regenerate D logits; the numerical cross-check is the separately implemented long-double reference executed in the native stage.
+
+Two MCP start/reconciliation calls timed out before returning the native identity. The same exact request and idempotency key subsequently recovered the **same successful job**, with `reused=true` and `retried_launch=false`. The original timeouts, failed registry inventory and early absent-file observations remain in `evidence/dispatch/MCP_OBSERVATIONS.json`; the confirmed native result is in `RECOVERED_JOB.json`. Create-only materialization and immutable receipts prevented overwriting or duplicate calibration. The final direct status/read calls confirm complete, untruncated durable output and empty stderr.
+
+**Closed:** all 21 original-rule D temperature receipts and their bound complete manifest. **Still open:** the original controller terminal outcome, independent original six-fit training replay, E feature/label custody, all 21 frozen E predictions and original E admission. A fresh status query still reports that the original controller supervisor disappeared without a confirmed terminal receipt; its result remains UNKNOWN. The six-fit full replay count remains 0/6 and scientific admission remains HOLD.
+
 ## Frozen scope
 
 This namespace prepares the original confirmation-E candidate's 21 D temperature parameters using the immutable roster in Draft #6757, head `2c170f64ec1788f45b1b5fe5d6caadbd2bdf507e`. It does not admit or launch E. The original controller remains UNKNOWN, independent original C2 full training replay remains 0/6, and scientific admission remains HOLD.
@@ -32,4 +60,4 @@ The supervisor measures the complete child wall/CPU/RSS using `wait4`, including
 
 `TEMPERATURE_MANIFEST.json` will bind all completed parameter receipts, source freeze, fixed input ledger, event counts and costs. Its E execution authority always remains false. Even a complete calibration manifest does not resolve the original controller, independent full-training replay, numerical/causal qualification, isolated E payload custody, 21 E predictions or the original separate E admission decision.
 
-The source-freeze commit precedes the sole native dispatch. Final results are appended as evidence without changing the dispatched source. This prepared README makes no claim that the 21 production calibrations have already run.
+The source-freeze commit precedes the sole native dispatch. Final results are appended as evidence without changing the dispatched source. The pre-execution README is preserved byte for byte in the native archive; the completed result above was added only after recovering the full original outputs.

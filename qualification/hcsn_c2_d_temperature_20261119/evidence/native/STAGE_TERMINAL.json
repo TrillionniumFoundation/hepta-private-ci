@@ -1,0 +1,42 @@
+{
+  "E_access": false,
+  "E_execution_authorized": false,
+  "archive": {
+    "bytes": 12157,
+    "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/ARCHIVE.json",
+    "sha256": "ca2afebcb7086366cb660f9a376effc91cc351245d0921ea01b9ae4cc1188520"
+  },
+  "automatic_retries": 0,
+  "child": {
+    "child_peak_rss_kib": 231584,
+    "excludes": "Native service startup, supervisor setup/archive, controller transport and publication",
+    "exit_code": 0,
+    "full_child_cpu_seconds": 32.927284,
+    "full_child_wall_seconds": 33.64987031597411,
+    "includes": "Python child startup, imports, runtime/input verification, all attempted fits, independent arithmetic, receipts and child finalization",
+    "killed_at_phase_limit": false,
+    "schema": "full-D-calibration-child-cost-v1",
+    "stderr": {
+      "bytes": 0,
+      "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/child.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 3212,
+      "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/child.stdout",
+      "sha256": "acf0c530f1db64cfff28b50038df474aee1bc55858e1ef9524d1587f2c01cfda"
+    }
+  },
+  "cost_scope": "From dispatch wrapper monotonic timestamp after its standard-library imports through archive/transport-file creation; native startup and final terminal serialization/exit remain outside this timer.",
+  "schema": "bounded-D-calibration-stage-terminal-v1",
+  "scientific_admission": "HOLD",
+  "source_freeze": {
+    "bytes": 1301,
+    "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/SOURCE_FREEZE.json",
+    "sha256": "86d02f22e45b60c39cfeb59167153f287a10ff0bca1bb9b0c61b73a052c5d3f5"
+  },
+  "source_parent_commit": "2c170f64ec1788f45b1b5fe5d6caadbd2bdf507e",
+  "stage_elapsed_before_terminal_receipt_seconds": 33.85831926204264,
+  "whole_stage_cap_seconds": 600,
+  "within_phase_cap_before_terminal_write": true
+}
