@@ -1,0 +1,47 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "Action completed."
+    }
+  ],
+  "structuredContent": {
+    "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6763",
+    "number": 6763,
+    "state": "open",
+    "merged": false,
+    "mergeable": true,
+    "draft": true,
+    "body": "## Problem\n\nThe unchanged scalar renewal check at rate 1.7, refractory delay 1/5 and T = 61/100 failed by about 6.69e-12 in both the previous operator and the exact zero-age optimization. A bounded diagnosis isolated native Torch 2.8.0 CPU matrix exponentials: four saved small-norm matrices have errors up to 1.1433324330207104e-11 against an independent 80-decimal reference.\n\nAn exact symbolic audit of the official compute_T8 source (blob 2d7c2ff067c69a813588a1bd0e072ea763de8ef0) finds incorrect degree-five through degree-eight coefficients. The same polynomial affects FP32: diag(-.5, -.25) differs from the specified elementwise torch.exp scalar reference by 2.0623207092285156e-5.\n\n## Change\n\nThis Draft stacks on #6761 and implements degree-12 Torch Horner evaluation in Work.exponential for FP64 one-norm <= .1 and FP32 one-norm <= .6. Larger norms retain the native path. The value, gradient and second-derivative graph is preserved, as are the existing state and work limits. Separate counters distinguish Horner actions from native matrix-exp calls.\n\nThe exact-series remainder bounds are below 1.78e-23 and 3.83e-13 respectively; these bounds exclude floating-point roundoff. Retained MP80 comparisons assess roundoff independently. No global Torch monkeypatch is introduced.\n\nFinal kernel SHA-256: e1731b349de811177dc402ee0ee70f08a25289bb844837b679cabef2d63bdfb6.\n\n## Executed qualification\n\n- All 35 frozen core/network tests pass on the final source, including the original strict probe copied byte-for-byte with its original thresholds.\n- At T=.61, maximum value error is 4.440892098500626e-16, rate-gradient error 0, content-gradient error 5.828670879282072e-16, and rate second-derivative error 4.163336342344337e-17.\n- The FP32 diagonal counterexample now has maximum absolute difference 0 against the specified elementwise torch.exp scalar reference. This is a numerical equality check, with the independent MP80 comparisons retained separately.\n- Final-source changing-law validation: full-field error 3.3306690738754696e-16, balance error 4.440892098500626e-16, independent delayed-ODE finite-difference gradient discrepancy 3.312292141954831e-10, fresh-process continuation error 1.1102230246251565e-16.\n- A separate agent's four-point noncommuting 3x3 MP80 block-Frechet checks cover values, first derivatives and mixed/ordinary second derivatives. The original FP64-only snapshot and the final FP32 snapshot are retained under their distinct source identities; all their fixed gates pass.\n- Final local regression cost: 12.718117 wall / 12.664961 CPU seconds, peak RSS 295076 KiB. Final changing-law child: 9.873107 wall / 9.744735 CPU seconds, peak RSS 258104 KiB. Both were bounded to CPU 7, 4 GiB, 125 CPU seconds and 150 wall seconds.\n\nThe dedicated workflow now includes both precision regression modules on the actual PR head. Same-head CI is pending at PR creation and will be read back independently without moving this source branch.\n\n## Evidence and scope\n\nqualification/hcsn_currentstate/small_norm_exponential_20261119 contains the original negative diagnostic, exact symbolic proof, all requests/source hashes, both verification stages, raw states/matrices, full child costs, independent reviews, and the prior #6761 CI artifact. MANIFEST.json binds the 95 other changed files. The final tree is 6e9f9080429bdcf494e50930f7c156d5f618f948.\n\nCPU Torch 2.8.0+cpu is qualified here; GPU/TF32 are unqualified. The earlier 831-file task-training archive remains tied to its original frozen implementation. These numerical/integration checks do not constitute new task training or transfer earlier task gains to this repaired kernel. The original negative records and N256 bitwise gate are unchanged. No merge or production activation is requested.",
+    "title": "HCSN: repair small-norm matrix exponentials for FP32 and FP64",
+    "base": "research/hcsn-zero-age-exact-20261119-2f21",
+    "base_sha": "390b644beec80dc057b2603cc2a0bdf69af7c3de",
+    "head": "fix/hcsn-smallnorm-exponential-20261119-2f215",
+    "head_sha": "1aabc1f81ffa23a8b1589647c4f952e90b0c8a66",
+    "head_repo_id": 1320694176,
+    "head_repo_full_name": "TrillionniumFoundation/hepta-private-ci",
+    "merge_commit_sha": "89edca32d42f6042461f843a65bf5873a8be9d0d",
+    "user": {
+      "login": "ProfHepta",
+      "name": "ProfHepta",
+      "email": null,
+      "avatar_url": "https://avatars.githubusercontent.com/u/102159240?v=4",
+      "id": 102159240
+    },
+    "requested_reviewers": null,
+    "requested_team_reviewers": null,
+    "diff": null,
+    "comments": null,
+    "created_at": "2026-11-19T13:15:18Z",
+    "updated_at": "2026-11-19T13:15:18Z",
+    "closed_at": null,
+    "merged_at": null,
+    "commits": 7,
+    "changed_files": 96,
+    "additions": 5545,
+    "deletions": 1,
+    "display_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6763",
+    "display_title": "HCSN: repair small-norm matrix exponentials for FP32 and FP64"
+  },
+  "isError": false
+}

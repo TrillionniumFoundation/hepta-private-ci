@@ -1,0 +1,168 @@
+{
+  "schema": "hcsn-source-bound-ci-artifact-retention-v1",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request": 6763,
+  "source_head": "1aabc1f81ffa23a8b1589647c4f952e90b0c8a66",
+  "source_kernel_sha256": "e1731b349de811177dc402ee0ee70f08a25289bb844837b679cabef2d63bdfb6",
+  "workflow_run": 44531647366,
+  "workflow_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44531647366",
+  "dedicated_workflow_conclusion": "success",
+  "artifact_id": 14534162060,
+  "archive_sha256": "cfdfd65de0cc2adef26886f3ce36c0f759ed347d86b29e592bc1e7320b792fb5",
+  "archive_bytes": 16686,
+  "verified_source_head": "1aabc1f81ffa23a8b1589647c4f952e90b0c8a66",
+  "test_transcript_counts": {
+    "RESET_SNAPSHOT_STDERR.txt": {
+      "tests_run": [
+        2
+      ],
+      "ok_lines": 1
+    },
+    "STDERR.txt": {
+      "tests_run": [
+        6
+      ],
+      "ok_lines": 1
+    },
+    "ZERO_AGE_STDERR.txt": {
+      "tests_run": [
+        27
+      ],
+      "ok_lines": 1
+    }
+  },
+  "timevarying_summary": {
+    "full_field_max_error": 3.885780586188048e-16,
+    "balance_max_error": 5.551115123125783e-16,
+    "gradient_max_abs_error": 2.2921659362240554e-10,
+    "cold_continuation_max_abs_error": 1.1102230246251565e-16
+  },
+  "scope": "Dedicated numerical/network qualification on the final precision source. Other repository workflows have separate statuses. The historical task-training freeze predates this source. The artifact is retained without moving the tested source branch.",
+  "files": [
+    {
+      "path": "ARTIFACT_API.json",
+      "bytes": 1101,
+      "sha256": "7c5f4b7d10ad6a543e567fb6d837740d24191e052c6dc05eaece1d3865e9ea3e"
+    },
+    {
+      "path": "JOBS_CHECK002_API.json",
+      "bytes": 4323,
+      "sha256": "9a0d1332a754f99da9a88c5349d060964ede097db4415ff6c140750c3c40d874"
+    },
+    {
+      "path": "JOBS_FINAL_API.json",
+      "bytes": 4550,
+      "sha256": "4ed1ad5284c5ffde6fe2e16e12ab7b9e1fbe2d25fbff1f2e39aa5e3dc49e767a"
+    },
+    {
+      "path": "JOBS_INITIAL_API.json",
+      "bytes": 3769,
+      "sha256": "df705452317fb1dae52c25124258dfcbce0d0acdf14f110c414ef20f9da2ec17"
+    },
+    {
+      "path": "PR_SOURCE_IDENTITY_API.json",
+      "bytes": 5340,
+      "sha256": "d410a221cb190db1f2a8a02abdd48bcd1fd1ed4a880fb85a6a666ce44de88b09"
+    },
+    {
+      "path": "RUNS_FINAL_API.json",
+      "bytes": 2441,
+      "sha256": "155b96ea61af6665b7555b633cdab57ea586f944252e6960742c0b7c781fb0c3"
+    },
+    {
+      "path": "RUNS_INITIAL_API.json",
+      "bytes": 2435,
+      "sha256": "21bb86739107c1ac26f21536545bb10137966cf44bfa928f84f4d7f89139c15b"
+    },
+    {
+      "path": "artifact/RESET_SNAPSHOT_STDERR.txt",
+      "bytes": 470,
+      "sha256": "f40610db3d06ddb7c86e9f65d9148835efba29efe5c444cbe5683b72be74c1fa"
+    },
+    {
+      "path": "artifact/RESET_SNAPSHOT_STDOUT.txt",
+      "bytes": 235,
+      "sha256": "fe3d6db7a43b81285167338f344b64148589b42551ea7e4fcf8fc02064655337"
+    },
+    {
+      "path": "artifact/RUNTIME.txt",
+      "bytes": 238,
+      "sha256": "9939113122e33fe2165b4b4c584fa9a7a5f28b57fc15a7b825c853f35abede68"
+    },
+    {
+      "path": "artifact/SOURCE_HEAD.txt",
+      "bytes": 41,
+      "sha256": "e17ae0390d0164716c735b30bd5a70986b24508f681d12faa3b4a91627a2634c"
+    },
+    {
+      "path": "artifact/STDERR.txt",
+      "bytes": 1244,
+      "sha256": "b4f7a2a759466422857f851d45378453e4ed89e2ac81a107d050e1c49fa63420"
+    },
+    {
+      "path": "artifact/STDOUT.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact/STUDY.json",
+      "bytes": 3447,
+      "sha256": "d81b68e2742c4c62ca328df2381f7dbfc33fa104c28429ab0f5d650789c780a5"
+    },
+    {
+      "path": "artifact/TIMEVARYING/COLD_INPUT.pt",
+      "bytes": 14641,
+      "sha256": "15296a1f4f193100f3a714a2942872090f9d3153855ec594048e9c8c02be9e39"
+    },
+    {
+      "path": "artifact/TIMEVARYING/COLD_OUTPUT.pt",
+      "bytes": 24798,
+      "sha256": "937e80e372f1466d9416ed90ed63b580c4daf025f72e21de40ce8c7b247c590a"
+    },
+    {
+      "path": "artifact/TIMEVARYING/RAW.npz",
+      "bytes": 2860,
+      "sha256": "59ab15ef3d62d5b9f1cfe483e7ad179f28108332542ef4d55cbb7ae728b22103"
+    },
+    {
+      "path": "artifact/TIMEVARYING/RESULT.json",
+      "bytes": 1864,
+      "sha256": "ed1a0a5c841ac0d0692491fcfeeb7aa39c3ae02ad25454265da37a212ad85d3f"
+    },
+    {
+      "path": "artifact/TIMEVARYING/cold.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact/TIMEVARYING/cold.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact/TIMEVARYING/stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "artifact/TIMEVARYING/stdout",
+      "bytes": 1566,
+      "sha256": "5f0b59efc056be66ef7c9d9877ca73ce5ae5691d1a02a6fef3fb14aa472e7a1f"
+    },
+    {
+      "path": "artifact/ZERO_AGE_STDERR.txt",
+      "bytes": 5118,
+      "sha256": "3053cd1c97a6316c5706e60b34709a819f688d477e2dcf21fe2c76c07658b064"
+    },
+    {
+      "path": "artifact/ZERO_AGE_STDOUT.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "hcsn-precision-ci-44531647366.zip",
+      "bytes": 16686,
+      "sha256": "cfdfd65de0cc2adef26886f3ce36c0f759ed347d86b29e592bc1e7320b792fb5"
+    }
+  ]
+}
