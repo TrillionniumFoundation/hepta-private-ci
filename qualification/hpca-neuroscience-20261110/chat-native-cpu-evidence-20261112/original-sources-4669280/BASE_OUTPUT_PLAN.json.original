@@ -1,0 +1,73 @@
+{
+  "schema": "hpca-base-output-diagnostic-plan-v1",
+  "scope": "PUBLIC_OPERATOR_BASE_ONLY_DIAGNOSTIC_NOT_INDEPENDENT",
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "task_plan_sha256": "acb16047e5942d317262ddb8273a2d62e9131e758d6627dcf1c2f42081d98043",
+  "previous_two_choice_sha256": "3002553ec485b19247f510863e9c78d2cce7747434ad7737f68b7dd3f9a74a2a",
+  "model_repository": "HuggingFaceTB/SmolLM2-135M-Instruct",
+  "model_revision": "12fd25f77366fa6b3b4b768ec3050bf629380bac",
+  "expected_existing_identities": {
+    "model.safetensors": "5af571cbf074e6d21a03528d2330792e532ca608f24ac70a143f6b369968ab8c",
+    "config.json": "8eb740e8bbe4cff95ea7b4588d17a2432deb16e8075bc5828ff7ba9be94d982a",
+    "tokenizer.json": "9ca9acddb6525a194ec8ac7a87f24fbba7232a9a15ffa1af0c1224fcd888e47c"
+  },
+  "download_files": [
+    "config.json",
+    "generation_config.json",
+    "model.safetensors",
+    "tokenizer.json",
+    "tokenizer_config.json",
+    "special_tokens_map.json",
+    "vocab.json",
+    "merges.txt"
+  ],
+  "runtime": {
+    "python": "3.14.4",
+    "torch": "2.9.1+cpu",
+    "transformers": "4.57.3",
+    "threads": 4,
+    "device": "cpu",
+    "dtype": "float32",
+    "attention": "eager"
+  },
+  "population": {
+    "public_tasks": 24,
+    "base_models": 1,
+    "adapters": 0,
+    "new_two_choice_forward_calls": 24,
+    "greedy_generation_attempts": 24,
+    "max_new_tokens": 8
+  },
+  "protocol": {
+    "prompt": "question.strip() + newline + Answer:",
+    "chat_template": false,
+    "class_candidates": [
+      " yes",
+      " no"
+    ],
+    "threshold": 0.5,
+    "free_decode": "unchanged greedy protocol; reject inherited constraints",
+    "primary_denominator": 24,
+    "invalid_answer": "incorrect",
+    "selection": "none",
+    "retuning": "none"
+  },
+  "measures": [
+    "two-choice probability and label decision",
+    "full-vocabulary probability mass of the two label tokens",
+    "label token ranks and top next token",
+    "greedy text, emitted token IDs, validity and accuracy over all 24",
+    "paired descriptive agreement and base-score drift against prior retained scores",
+    "download/import/preflight/model-load/scoring/generation/process lifecycle wall, CPU and RSS"
+  ],
+  "not_credited": [
+    "old nine-condition 216-attempt completion",
+    "eight-adapter replay",
+    "independent future B",
+    "calibrated decision threshold",
+    "old-capability retention",
+    "training/scheduling benefit",
+    "owner admission or production adoption"
+  ],
+  "maximum_download_bytes": 1073741824
+}

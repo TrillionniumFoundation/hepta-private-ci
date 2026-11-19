@@ -10,6 +10,7 @@ import chat_evidence_audit as audit
 
 ROOT = Path(__file__).resolve().parent
 EVIDENCE = ROOT / "chat-native-cpu-evidence-20261112" / "execution"
+ORIGINAL_SOURCES = EVIDENCE.parent / "original-sources-4669280"
 
 
 class EvidenceAdmission(unittest.TestCase):
@@ -18,6 +19,18 @@ class EvidenceAdmission(unittest.TestCase):
         self.pre = (EVIDENCE / "PREEXECUTION.json").read_bytes()
         self.journal = (EVIDENCE / "ROWS.jsonl").read_bytes()
         self.plan = (ROOT / "HPCA_V2_OOD_PLAN.json").read_bytes()
+
+    def original_source_fixture(self):
+        # Historical producer files are data, never imported or executed.
+        # Keep their stored .original bytes outside ordinary source formatting.
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        source = Path(directory.name)
+        for name, expected in audit.EXPECTED_SOURCES.items():
+            data = (ORIGINAL_SOURCES / (name + ".original")).read_bytes()
+            self.assertEqual(audit.digest(data), expected, name)
+            (source / name).write_bytes(data)
+        return source
 
     def mutated(self, change):
         result, pre = json.loads(self.result), json.loads(self.pre)
@@ -156,14 +169,43 @@ class EvidenceAdmission(unittest.TestCase):
         self.assertEqual(process.stdout, "")
 
     def test_cli_original_checks_exact_source_bytes(self):
+        source = self.original_source_fixture()
         process = subprocess.run([
             sys.executable, str(ROOT / "chat_evidence_audit.py"),
-            "--evidence-dir", str(EVIDENCE), "--source-dir", str(ROOT)],
+            "--evidence-dir", str(EVIDENCE), "--source-dir", str(source)],
             capture_output=True, text=True, check=False)
         self.assertEqual(process.returncode, 0, process.stderr)
         report = json.loads(process.stdout)
         self.assertEqual(report["source_files_rechecked"], 6)
         self.assertEqual(report["model_bytes_recheck"], "NOT_RUN")
+
+    def test_cli_current_producer_cannot_impersonate_original_source(self):
+        self.assertNotEqual(
+            audit.digest((ROOT / "freegen_contract.py").read_bytes()),
+            audit.EXPECTED_SOURCES["freegen_contract.py"])
+        for flags in ([], ["-O"]):
+            with self.subTest(flags=flags):
+                process = subprocess.run([
+                    sys.executable, *flags, str(ROOT / "chat_evidence_audit.py"),
+                    "--evidence-dir", str(EVIDENCE), "--source-dir", str(ROOT)],
+                    capture_output=True, text=True, check=False)
+                self.assertEqual(process.returncode, 1)
+                self.assertIn("source drift: freegen_contract.py", process.stderr)
+                self.assertEqual(process.stdout, "")
+
+    def test_cli_frozen_source_byte_mutation_rejected_in_both_modes(self):
+        source = self.original_source_fixture()
+        producer = source / "freegen_contract.py"
+        producer.write_bytes(producer.read_bytes() + b"\n")
+        for flags in ([], ["-O"]):
+            with self.subTest(flags=flags):
+                process = subprocess.run([
+                    sys.executable, *flags, str(ROOT / "chat_evidence_audit.py"),
+                    "--evidence-dir", str(EVIDENCE), "--source-dir", str(source)],
+                    capture_output=True, text=True, check=False)
+                self.assertEqual(process.returncode, 1)
+                self.assertIn("source drift: freegen_contract.py", process.stderr)
+                self.assertEqual(process.stdout, "")
 
 
 if __name__ == "__main__":
