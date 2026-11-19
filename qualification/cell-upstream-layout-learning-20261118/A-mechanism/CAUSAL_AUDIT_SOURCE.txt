@@ -1,0 +1,28 @@
+import hashlib,importlib,inspect,json,math,os,pathlib,sys,time
+os.environ["CUDA_VISIBLE_DEVICES"]=""
+os.environ["HF_HUB_OFFLINE"]="1"
+os.environ["TRANSFORMERS_OFFLINE"]="1"
+os.nice(19)
+root=pathlib.Path("/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2")
+source=root/"source/qualification/cell-upstream-layout-learning-20261118"
+sys.path.insert(0,str(source))
+ctx=importlib.import_module("layout_context");layout=importlib.import_module("layout_sft")
+from transformers.models.qwen2 import modeling_qwen2
+def details(module,expected=None):
+ p=pathlib.Path(inspect.getfile(module));b=p.read_bytes();g=hashlib.sha1(b"blob "+str(len(b)).encode()+b"\0"+b).hexdigest()
+ return {"path":str(p),"sha256":hashlib.sha256(b).hexdigest(),"git_blob_sha1":g,"expected_published_git_blob":expected,"matches_published_git_blob":g==expected if expected else None}
+info={"layout":details(layout,"8d61be377e1193bdfa12644c81695666856a6bba"),"actual_numeric":details(layout.numeric,"2758c33f80532635a800c0ae391864fcedeaf7a5"),"qwen2_runtime":details(modeling_qwen2),"selected_token_loss_source":inspect.getsource(layout.numeric.selected_token_loss),"qwen2_causal_forward_source":inspect.getsource(modeling_qwen2.Qwen2ForCausalLM.forward),"backward_group_source":inspect.getsource(layout.backward_group),"initialization":{},"steps":{},"model_calls":0,"verifier_calls":0,"B3_materials_read":False}
+for mode in ("document_evidence","native_feedback"):
+ p=root/"retained"/mode
+ info["initialization"][mode]=json.loads((p/"INITIALIZATION.json").read_bytes())
+ steps=[json.loads(line) for line in (p/"STEPS.jsonl").read_bytes().splitlines()]
+ losses=[s["loss"] for s in steps];norms=[s["gradient_norm_before_clip"] for s in steps]
+ groups=[]
+ for group in range(8):
+  matches=[s for s in steps if s["group"]==group]
+  groups.append({"group":group,"task_id":matches[0]["task_id"],"first_step":matches[0]["step"],"last_step":matches[-1]["step"],"first_loss":matches[0]["loss"],"last_loss":matches[-1]["loss"],"first_grad_norm":matches[0]["gradient_norm_before_clip"],"last_grad_norm":matches[-1]["gradient_norm_before_clip"],"updates":len(matches)})
+ info["steps"][mode]={"steps":len(steps),"loss_min":min(losses),"loss_max":max(losses),"gradient_norm_min":min(norms),"gradient_norm_max":max(norms),"all_finite":all(math.isfinite(x) for x in losses+norms),"all_grad_norms_positive":all(x>0 for x in norms),"first_cycle_mean_loss":sum(losses[:8])/8,"last_cycle_mean_loss":sum(losses[-8:])/8,"by_group":groups,"steps_sha256":hashlib.sha256((p/"STEPS.jsonl").read_bytes()).hexdigest()}
+info["CUDA_initialized"]=layout.probe._libraries()[0].cuda.is_initialized()
+p=root/"a-mechanism-1/CAUSAL_ALIGNMENT.json"
+with p.open("xb") as f:f.write((json.dumps(info,sort_keys=True,separators=(",",":"))+"\n").encode())
+print(json.dumps({"path":str(p),"sha256":hashlib.sha256(p.read_bytes()).hexdigest(),"text":p.read_text()}),flush=True)
