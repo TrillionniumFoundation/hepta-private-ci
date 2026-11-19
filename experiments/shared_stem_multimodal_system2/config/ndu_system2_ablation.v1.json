@@ -1,0 +1,74 @@
+{
+  "schema": "hepta.shared-stem-experiment-config.v1",
+  "version": 1,
+  "experiment_id": "EXPERIMENT-4-NDU-SYSTEM2-ABLATION",
+  "kind": "ndu_system2_ablation",
+  "description": "Ablates System 2 replay, routing, split proposals and resource allocation under one frozen objective.",
+  "arms": [
+    {
+      "id": "no_system2",
+      "system2_mode": "disabled"
+    },
+    {
+      "id": "replay_only",
+      "system2_mode": "replay_only"
+    },
+    {
+      "id": "routing",
+      "system2_mode": "routing"
+    },
+    {
+      "id": "split_proposal",
+      "system2_mode": "split_proposal"
+    },
+    {
+      "id": "full_resource_allocation",
+      "system2_mode": "full_resource_allocation"
+    }
+  ],
+  "required_metrics": [
+    "task_utility",
+    "active_flops",
+    "latency_ms",
+    "peak_rss_bytes",
+    "gpu_peak_bytes",
+    "retention_score",
+    "old_task_regression"
+  ],
+  "evaluation": {
+    "split": "holdout",
+    "paired_by": "example_id",
+    "min_rows_per_arm": 1,
+    "context_fields": [
+      "objective_digest",
+      "stem_digest",
+      "dataset_digest",
+      "host_profile_digest",
+      "measurement_interval_digest",
+      "seed",
+      "cell_count",
+      "training_budget"
+    ],
+    "same_stem_digest_required": true,
+    "same_seed_required": true,
+    "independent_semantic_judgement": false,
+    "artifact_digest_stability_required": true,
+    "control_arm": "no_system2",
+    "baseline": {
+      "enabled": false,
+      "kind": "none",
+      "paired_by": "example_id",
+      "required_metrics": []
+    }
+  },
+  "budgets": {
+    "max_active_flops": 1000000000000000,
+    "max_latency_ms": 60000,
+    "max_peak_memory_bytes": 1099511627776
+  },
+  "authority": {
+    "production_accepted": false,
+    "selection_authority": false,
+    "training_authority": false
+  }
+}
