@@ -1,0 +1,31 @@
+{
+  "model_calls": 0,
+  "optimizer_steps": 0,
+  "processes": [
+    {
+      "child_cpu_seconds": 0.046633999999999995,
+      "child_wall_seconds": 0.04737468399980571,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "qualification.hcsn_n256_strict_metadata_20261119.controls"
+      ],
+      "exit_code": 0,
+      "mode": "normal"
+    },
+    {
+      "child_cpu_seconds": 0.625751,
+      "child_wall_seconds": 0.6261862950050272,
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-O",
+        "-m",
+        "qualification.hcsn_n256_strict_metadata_20261119.controls"
+      ],
+      "exit_code": 0,
+      "mode": "optimized"
+    }
+  ],
+  "source_freeze_sha256": "0cc5e5551dba8ace26d1201a8c894e0dd5e44cb446b137d7f23b1f80473c937a",
+  "status": "PASS"
+}
