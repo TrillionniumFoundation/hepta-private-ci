@@ -1,0 +1,34 @@
+{
+  "suite": "native-feedback",
+  "source_tree_before_tests": "a498e119e6214723e4c8aae523892dd73407df68",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts",
+    "-p",
+    "test_hepta_native_feedback.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/724669789c83/integration",
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pythonpath": "",
+  "started_at": "2026-11-19T17:34:03.332536+00:00",
+  "elapsed_seconds": 11.153313180999248,
+  "exit_code": 0,
+  "source_before_matches_shared_snapshot": true,
+  "source_unchanged": true,
+  "changed_source_paths": [],
+  "summary": [
+    "Ran 24 tests in 10.979s",
+    "OK"
+  ],
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 4183,
+  "stderr_sha256": "065ef103fae058d9267dac4ee44003b198485d5eff261760114baf321b4c6c42"
+}

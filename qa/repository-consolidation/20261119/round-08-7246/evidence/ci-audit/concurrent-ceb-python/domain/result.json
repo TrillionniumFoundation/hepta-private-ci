@@ -1,0 +1,37 @@
+{
+  "suite": "domain",
+  "source_tree_before_tests": "a498e119e6214723e4c8aae523892dd73407df68",
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "scripts/memory_cell_domain",
+    "-p",
+    "test_*.py",
+    "-v"
+  ],
+  "cwd": "/workspace/scratch/724669789c83/integration",
+  "python": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+  "python_version": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "pythonpath": "/workspace/scratch/724669789c83/integration/scripts/memory_cell:/workspace/scratch/724669789c83/integration/scripts/memory_cell_growth:/workspace/scratch/724669789c83/integration/scripts/memory_cell_catalog:/workspace/scratch/724669789c83/integration/scripts/memory_cell_hardening:/workspace/scratch/724669789c83/integration/scripts/memory_cell_router:/workspace/scratch/724669789c83/integration/scripts/memory_cell_codec:/workspace/scratch/724669789c83/integration/scripts/memory_cell_population:/workspace/scratch/724669789c83/integration/scripts/memory_cell_domain",
+  "started_at": "2026-11-19T17:34:03.332582+00:00",
+  "elapsed_seconds": 0.43823013099608943,
+  "exit_code": 1,
+  "source_before_matches_shared_snapshot": true,
+  "source_unchanged": true,
+  "changed_source_paths": [],
+  "summary": [
+    "ERROR: test_domain_controls (unittest.loader._FailedTest.test_domain_controls)",
+    "ImportError: Failed to import test module: test_domain_controls",
+    "ModuleNotFoundError: No module named 'torch'",
+    "Ran 16 tests in 0.045s",
+    "FAILED (errors=1)"
+  ],
+  "stdout_bytes": 0,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_bytes": 3817,
+  "stderr_sha256": "5f4ea88d96da7f230e211c6bf5edc05e3cfa5d8a4535ee15de346dc6ff480d57"
+}

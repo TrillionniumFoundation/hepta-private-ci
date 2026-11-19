@@ -1,0 +1,234 @@
+{
+  "all_19_inputs_match_incoming": true,
+  "base": "ceb13e41b9d0f6505e98b155a4fd72b09c127901",
+  "changed_source_paths": [
+    ".github/workflows/blocking-ci.yml",
+    ".github/workflows/hepta-architecture-convergence.yml",
+    "codex-rs/cli/Cargo.toml",
+    "scripts/tests/test_hepta_ci_scope.py"
+  ],
+  "cli_root": {
+    "bytes": 55,
+    "sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+    "source": "#![recursion_limit = \"256\"]\n\ninclude!(\"main_impl.rs\");\n",
+    "wrappers_byte_identical": true
+  },
+  "combined_result": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "git_archive_log_matches": true,
+    "git_archive_result_matches": true,
+    "result_sha256": "7a3385cff0b946e6f08b7e5b6622014af23900cc03f51d5109a5acab5015ad58",
+    "skipped": 0,
+    "stderr_sha256": "fa715fdc28b10876f7524d2d099fdfe1d0d799e3f94f035cda679a3ffcb5855d",
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests": 68,
+    "unittest_seconds": 6.065
+  },
+  "four_source_deltas_only": true,
+  "incoming_tip": "4144e3685640bb0da2889855b58797683c67f696",
+  "new_union_reuse_limit": "68-test result binds all 19 incoming-tip inputs. Root95c8 has listed differing inputs, notably maintained Cargo.lock; this does not claim a new combined-root 68-test execution or native compilation.",
+  "notes": [
+    "Workflow diffs only revise concurrency comments and keys. All jobs, conditions, matrices, scopes, permissions, required aggregation and cancel-in-progress remain unchanged.",
+    "PR key now distinguishes repository, PR number, exact source SHA. Main push/manual dispatch fallbacks retain per-ref cancellation behavior.",
+    "CLI Cargo manifest changes only explicit codex root to an existing byte-identical same-directory wrapper. autobins=false, codex name/default-run, hepta/logs_client, dependencies and shared implementation are retained.",
+    "Scope test retains all original methods and checks, strengthens root recursion-limit location and direct include statement, and additionally rejects crate-level recursion_limit in shared implementation."
+  ],
+  "original_scope_test_method_count": 25,
+  "original_scope_test_methods_preserved": true,
+  "root_premerge": "95c8b665afa8a13a34985c4462889c7b16190faa",
+  "schema": "hepta.concurrent-4144-independent-review.v1",
+  "tested_inputs": [
+    {
+      "path": "scripts/tests/test_hepta_ci_scope.py",
+      "root95c8_matches_test": false,
+      "root95c8_sha256": "33bc35b333497ce94031175f016d38a06e13630c225b341faccc7122e62763e5",
+      "tested_sha256": "09ed2ecf682cd71f1e5f58eaf6f4e2a41d5a85b7c7d3df9b222cd645b16d0485",
+      "tip_matches_test": true,
+      "tip_sha256": "09ed2ecf682cd71f1e5f58eaf6f4e2a41d5a85b7c7d3df9b222cd645b16d0485",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/tests/test_hepta_ci_dependencies.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "33f26d60e6ffd40e65a1e1a3a140b14b34ab9bc2449794b9c57ba26c6ab64ee2",
+      "tested_sha256": "33f26d60e6ffd40e65a1e1a3a140b14b34ab9bc2449794b9c57ba26c6ab64ee2",
+      "tip_matches_test": true,
+      "tip_sha256": "33f26d60e6ffd40e65a1e1a3a140b14b34ab9bc2449794b9c57ba26c6ab64ee2",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/tests/test_hepta_ci_trees.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "bed54d17c9aaaad0218e590edeceaa967609f2bf92bca5c19547aebb3c745c9c",
+      "tested_sha256": "bed54d17c9aaaad0218e590edeceaa967609f2bf92bca5c19547aebb3c745c9c",
+      "tip_matches_test": true,
+      "tip_sha256": "bed54d17c9aaaad0218e590edeceaa967609f2bf92bca5c19547aebb3c745c9c",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/hepta_ci_scope.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "53ba85431d0361f9a5c8ef9b9ba3a554921a5639d5044f53a75f3e7b6378ff9c",
+      "tested_sha256": "53ba85431d0361f9a5c8ef9b9ba3a554921a5639d5044f53a75f3e7b6378ff9c",
+      "tip_matches_test": true,
+      "tip_sha256": "53ba85431d0361f9a5c8ef9b9ba3a554921a5639d5044f53a75f3e7b6378ff9c",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/hepta_ci_dependencies.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+      "tested_sha256": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+      "tip_matches_test": true,
+      "tip_sha256": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/hepta_ci_trees.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "6c3ee1f19ebc661819ed477a492107f1905676c37b93f3187d6e1ce40c47fe97",
+      "tested_sha256": "6c3ee1f19ebc661819ed477a492107f1905676c37b93f3187d6e1ce40c47fe97",
+      "tip_matches_test": true,
+      "tip_sha256": "6c3ee1f19ebc661819ed477a492107f1905676c37b93f3187d6e1ce40c47fe97",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/hepta_ci_module_paths.py",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "e7e55689dc83587c035d07c0ff8220a7f1f824b72014edcddac85d9b99464c15",
+      "tested_sha256": "e7e55689dc83587c035d07c0ff8220a7f1f824b72014edcddac85d9b99464c15",
+      "tip_matches_test": true,
+      "tip_sha256": "e7e55689dc83587c035d07c0ff8220a7f1f824b72014edcddac85d9b99464c15",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": ".github/workflows/blocking-ci.yml",
+      "root95c8_matches_test": false,
+      "root95c8_sha256": "8acf268c367f16ef0a22a864ea91b1267bc4f8dbaa001280187600be3a6bf6bc",
+      "tested_sha256": "bd68466e8ca733d01279e2e8883f01f17a286465669ba00f0c3a9dd89d540dfe",
+      "tip_matches_test": true,
+      "tip_sha256": "bd68466e8ca733d01279e2e8883f01f17a286465669ba00f0c3a9dd89d540dfe",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "root95c8_matches_test": false,
+      "root95c8_sha256": "0b81a5a17c41bb6a0ab09a2b77992d2d0894e1b5052153aadb9b0755b41e1054",
+      "tested_sha256": "dd48476f6ab78c14b804bfd7a9332effc6219d3b22cb7227737e0844835217f1",
+      "tip_matches_test": true,
+      "tip_sha256": "dd48476f6ab78c14b804bfd7a9332effc6219d3b22cb7227737e0844835217f1",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": ".github/workflows/v8-canary.yml",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "a87b7a39f4b1e0a01674788053e4573a4c4cd50324e5edbd50359da29c9b6fcd",
+      "tested_sha256": "a87b7a39f4b1e0a01674788053e4573a4c4cd50324e5edbd50359da29c9b6fcd",
+      "tip_matches_test": true,
+      "tip_sha256": "a87b7a39f4b1e0a01674788053e4573a4c4cd50324e5edbd50359da29c9b6fcd",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "7c3f5bae344061193190028920dd2007992ddc479171c69ffab2dc5b57cdf004",
+      "tested_sha256": "7c3f5bae344061193190028920dd2007992ddc479171c69ffab2dc5b57cdf004",
+      "tip_matches_test": true,
+      "tip_sha256": "7c3f5bae344061193190028920dd2007992ddc479171c69ffab2dc5b57cdf004",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "root95c8_matches_test": false,
+      "root95c8_sha256": "77b97b277e334533fafeedc0dd5294ee0adaf71b8890e56adf3cf68d54370cc8",
+      "tested_sha256": "0d07fb66bca0191cc8d288b13235353e7072e9aba77238322a6101e331ff5012",
+      "tip_matches_test": true,
+      "tip_sha256": "0d07fb66bca0191cc8d288b13235353e7072e9aba77238322a6101e331ff5012",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/cli/Cargo.toml",
+      "root95c8_matches_test": false,
+      "root95c8_sha256": "3d27785e7d3d05cc07b39b708de70688d5c97bce7cb79b636d13640ae8688198",
+      "tested_sha256": "1816bcd8b45bd0a90ac6ece402d0ef40b1cab52eea0790e1b5e3119d439806e3",
+      "tip_matches_test": true,
+      "tip_sha256": "1816bcd8b45bd0a90ac6ece402d0ef40b1cab52eea0790e1b5e3119d439806e3",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/cli/src/codex.rs",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "tested_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "tip_matches_test": true,
+      "tip_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/cli/src/main.rs",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "tested_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "tip_matches_test": true,
+      "tip_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/cli/src/hepta.rs",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "eaf7fd2742a54b0f0b57a060018b7dc1afd73e679c598db340e7ea0c01bcd9e1",
+      "tested_sha256": "eaf7fd2742a54b0f0b57a060018b7dc1afd73e679c598db340e7ea0c01bcd9e1",
+      "tip_matches_test": true,
+      "tip_sha256": "eaf7fd2742a54b0f0b57a060018b7dc1afd73e679c598db340e7ea0c01bcd9e1",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "codex-rs/cli/src/main_impl.rs",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+      "tested_sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+      "tip_matches_test": true,
+      "tip_sha256": "097ca019533619d964fa67f018e0a140645779f17a0e9a17212ad5398636a513",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/pyproject.toml",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "0c3ab8d5b7ea30fdd76605a1520c3c47d277ad319a670e96414df08c22cc61b2",
+      "tested_sha256": "0c3ab8d5b7ea30fdd76605a1520c3c47d277ad319a670e96414df08c22cc61b2",
+      "tip_matches_test": true,
+      "tip_sha256": "0c3ab8d5b7ea30fdd76605a1520c3c47d277ad319a670e96414df08c22cc61b2",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    },
+    {
+      "path": "scripts/uv.lock",
+      "root95c8_matches_test": true,
+      "root95c8_sha256": "3f43073d767c529ab96172b69593142ba234cd35f9ed25c9f5735440f056a2a3",
+      "tested_sha256": "3f43073d767c529ab96172b69593142ba234cd35f9ed25c9f5735440f056a2a3",
+      "tip_matches_test": true,
+      "tip_sha256": "3f43073d767c529ab96172b69593142ba234cd35f9ed25c9f5735440f056a2a3",
+      "unchanged_during_test": true,
+      "validation_snapshot_matches_test": true
+    }
+  ]
+}
