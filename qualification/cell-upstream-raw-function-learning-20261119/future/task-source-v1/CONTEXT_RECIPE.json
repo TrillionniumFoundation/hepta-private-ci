@@ -1,0 +1,46 @@
+{
+  "schema": "hepta.future-shared-raw-function-context.v1",
+  "weights_frozen_sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6",
+  "preparation_source_sha256": "cf3e7d0e207b5553618d6eee436b2550d6205c76151b655296c4e193d1a7fbbc",
+  "native_source_sha256": "76951164a8c899d11a8c18ae1aafa7eb04a1d80083c2dbd6dfd3ceb21fdfa171",
+  "common_to": [
+    "NoUpdate_parent",
+    "document_evidence",
+    "native_feedback"
+  ],
+  "before_any_new_A_or_future_model_outputs": true,
+  "source_context": [
+    "complete original allowed function including decorators and unchanged signature",
+    "complete same-module definition/binding closure by static loaded-name intersection",
+    "one statically resolvable direct same-project import hop used by target, then complete same-module closure; no project code executes during construction",
+    "all displayed source is BEFORE; no maintainer AFTER function appears in model input"
+  ],
+  "test_context": [
+    "for each entire declared original oracle file: all AST-changed top-level function/class/assignment definitions relative to sole-parent original, with complete same-file binding closure",
+    "when no such changed definition exists, display full original test-file AST",
+    "do not omit parameter cases within any shown definition; the real oracle still executes every original case in the declared whole-file scope"
+  ],
+  "budgets": {
+    "input_tokens": 8192,
+    "new_tokens": 2048,
+    "native_context": 32768,
+    "planned_prior_answer_reserve": 2048,
+    "planned_feedback_reserve": 2048,
+    "planned_wrapper_reserve": 256,
+    "reference_payload_fits_same_2048_container": true
+  },
+  "strict_preflight": [
+    "exact full AFTER file reconstructed by unchanged shared codec",
+    "original before/after pair already strictly qualified",
+    "complete actual reference second-round transcripts with both original before/after feedback measured",
+    "no input/output truncation; reject candidate when complete context plus planning reserves does not fit",
+    "planning reserve is not a mathematical bound on arbitrary generated text; each actual complete request is independently checked before generation",
+    "frozen original tokenizer/config/chat template and source inventory, zero model weights loaded"
+  ],
+  "dedup": "canonical repository, original source bytes, exact normalized before/after target function AST, and whole original oracle test-file AST compared against frozen old inventory; cross-new-task dedup at panel assembly",
+  "license": "Separate exact retained license/notices review required before final panel freeze. CPU context pass alone does not select or qualify a source.",
+  "no_model_calls_during_preparation": true,
+  "no_training": true,
+  "unchanged_global_new_call_cap": 56,
+  "unchanged_future_call_cap": 32
+}
