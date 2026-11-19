@@ -299,5 +299,77 @@
     }
   ],
   "complete_repository_ci_claimed": false,
-  "remote_ref_writes": []
+  "remote_ref_writes": [],
+  "evidence_packaging": {
+    "previous_commit": "52ca238682a078723e56bdd7d2f8f6495d1cd408",
+    "original_archive_sha256": "2302474a2c848d56e70a7722be5bcdedd58c94a2c93c0341c5c835d316e4120a",
+    "archive_members_unchanged": 154,
+    "raw_part_codespell_attempt_exit": 65,
+    "failure_records": [
+      {
+        "path": "raw-parts-codespell-attempt01.json.gz",
+        "encoding": "gzip",
+        "stored_bytes": 471,
+        "stored_sha256": "ea0e7c97e99fa5850d7d18f7291c22107fb4847945d2ecf4392a70f7d52a3229",
+        "decoded_bytes": 1221,
+        "decoded_sha256": "e81741ea8e6e8523ff466c18de474bd721d1953bcddf8df22e60e430f0fecb7e",
+        "original_record_name": "alias-root-binary-codespell.json"
+      },
+      {
+        "path": "raw-parts-codespell-attempt01.stdout.gz",
+        "encoding": "gzip",
+        "stored_bytes": 567,
+        "stored_sha256": "8c200981165ed53b789837bb87b746663b29ac527c09dfe3d9cb275aba5bf3f7",
+        "decoded_bytes": 3968,
+        "decoded_sha256": "1da226b0c213253a1f82f14fa7269659fac59dbe7743a8e69e9acb6fc3727914",
+        "original_record_name": "alias-root-binary-codespell.stdout"
+      },
+      {
+        "path": "raw-parts-codespell-attempt01.stderr.gz",
+        "encoding": "gzip",
+        "stored_bytes": 171,
+        "stored_sha256": "83e3d4f82417bdb15e64a4f60d17f9efcdf0ae29eff40656a4ab3ddcefb307d7",
+        "decoded_bytes": 186,
+        "decoded_sha256": "4c72b5a36dfdd8206afc0f85b3b437a22e4ce393ddd98517a932de2870cc9b2b",
+        "original_record_name": "alias-root-binary-codespell.stderr"
+      }
+    ],
+    "wrapped_parts_check": {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-m",
+        "codespell_lib",
+        "--config",
+        "/workspace/scratch/724669789c83/integration/.codespellrc",
+        "-I",
+        "/workspace/scratch/724669789c83/integration/.codespellignore",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-000.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-001.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-002.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-003.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-004.gz",
+        "qa/repository-consolidation/20261119/round-09/cargo-bazel-aliases/evidence.tar.gz.part-005.gz"
+      ],
+      "exit": 0,
+      "seconds": 0.24885124199499842,
+      "configurations": [
+        {
+          "path": "/workspace/scratch/724669789c83/integration/.codespellrc",
+          "bytes": 971,
+          "sha256": "5bfccdc05f01df2e988212edf7ac7cbf5652c40356ef0917c3ef4448c898a66d"
+        },
+        {
+          "path": "/workspace/scratch/724669789c83/integration/.codespellignore",
+          "bytes": 105,
+          "sha256": "48abab15a4ee9d5ee0b62338b162baae4a6193f172ff84c92596b7c8426c6ad0"
+        }
+      ],
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "scope": "All six complete gzip wrappers under the same original matcher, config and dictionary. No policy changes."
+    },
+    "decoded_part_limit_bytes": 400000,
+    "maximum_stored_part_bytes": 400143,
+    "policy_changes": []
+  }
 }

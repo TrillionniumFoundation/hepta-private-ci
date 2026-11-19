@@ -71,6 +71,10 @@ The first local blob-policy invocation found the original allowlist absent from 
 
 ## Evidence and scope
 
-`evidence-index.json` lists every archived member and its byte count and SHA256. The compressed archive is split into exact chunks of at most 400,000 bytes, with whole-archive and per-part hashes. Concatenate the parts in the listed order, verify the archive hash, and extract it to recover the original native logs, durable process records, source manifests, original CI evidence, and local verification receipts.
+`evidence-index.json` lists every archived member and its byte count and SHA256. The original compressed archive is split into exact decoded chunks of at most 400,000 bytes. Each chunk is independently wrapped in gzip with a zero timestamp; stored parts are at most 400,143 bytes. Verify the stored part hashes, decompress each part separately, verify its decoded byte count and hash, then concatenate the decoded chunks in the listed order. Verify the resulting original archive hash before extracting it. The original archive SHA256 remains `2302474a2c848d56e70a7722be5bcdedd58c94a2c93c0341c5c835d316e4120a`, and all 154 archived members retain their original bytes.
 
 `validation-summary.json` describes the scoped results, and `source-postimages.json` binds the exact source commit. This evidence establishes the dependency and alias repair described above. It does not establish that unrelated repository CI checks or the main-branch merge gates have completed. No remote ref is updated by these source and evidence commits.
+
+## Packaging follow-up
+
+The full original Codespell matcher rejected raw part 004 with exit code 65 after its binary heuristic interpreted a compressed-data fragment as text. The initial text-only QA scan had not covered that case. This follow-up wraps each original chunk in a complete gzip stream; it changes neither source nor archive content and adds no exclusion or dictionary entry. The original failing command, stdout and stderr are retained as separately compressed files listed in the index. Reconstruction must decompress each part before concatenation; concatenating the stored wrappers directly does not recover the original archive.
