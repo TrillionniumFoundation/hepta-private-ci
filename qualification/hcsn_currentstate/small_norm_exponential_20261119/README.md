@@ -24,9 +24,12 @@ coefficients differ from Taylor's coefficients. With `x3=2/3`, the published
 restores all coefficients through degree eight. The complete exact
 `Q(sqrt(177))` calculation and original result are retained.
 
-FP32 is also affected. For `diag(-.5,-.25)`, native matrix-exp differs from
-the correctly rounded FP32 scalar exponential by **2.0623207092285156e-5**.
-The repaired operator returns the same FP32 values as that scalar reference.
+FP32 is also affected. For `diag(-.5,-.25)`, the reference applies elementwise
+`torch.exp` to the FP32 diagonal entries. Native matrix-exp differs from
+that specified scalar reference by **2.0623207092285156e-5**; the repaired
+operator's maximum absolute difference is **0**. This check records numerical
+equality to the scalar reference. The independent MP80 matrix and derivative
+checks below provide a separate comparison.
 The initial FP64-only repair, its source commit, and all its successful
 checks remain available as a separate development stage; the final profile
 includes both dtypes.
