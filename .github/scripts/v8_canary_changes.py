@@ -128,7 +128,9 @@ def v8_version_at_revision(revision: str, *, root: Path = ROOT) -> str:
     )
 
 
-def historical_v8_version_at_revision(revision: str, *, root: Path = ROOT) -> str | None:
+def historical_v8_version_at_revision(
+    revision: str, *, root: Path = ROOT
+) -> str | None:
     """Force full canaries if the merge-base lock cannot describe a V8 version.
 
     A malformed historical lock is *not* acceptance of the candidate. The
@@ -180,7 +182,9 @@ def main() -> None:
         raise SystemExit("--base and --head are required unless --force is set")
     else:
         files = changed_files(args.base, args.head)
-        base_version = historical_v8_version_at_revision(merge_base(args.base, args.head))
+        base_version = historical_v8_version_at_revision(
+            merge_base(args.base, args.head)
+        )
         # Never downgrade a broken candidate HEAD to a passing canary.
         head_version = v8_version_at_revision(args.head)
 
@@ -190,7 +194,9 @@ def main() -> None:
         if base_version is None:
             # Unknown historical V8 version cannot prove these builds safe to
             # skip. Run both full matrices, including Windows source builds.
-            canary_reason = "unparseable merge-base Cargo.lock: full V8 validation required"
+            canary_reason = (
+                "unparseable merge-base Cargo.lock: full V8 validation required"
+            )
             windows_source_reason = canary_reason
         elif base_version != head_version:
             canary_reason = f"v8 version changed from {base_version} to {head_version}"
