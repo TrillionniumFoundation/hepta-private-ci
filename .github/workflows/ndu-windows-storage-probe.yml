@@ -10,6 +10,7 @@ on:
       - ".github/scripts/windows-appcontainer-probe/win32_api.py"
       - ".github/scripts/windows-appcontainer-probe/child_trace.c"
       - ".github/scripts/windows-appcontainer-probe/child_trace.py"
+      - ".github/scripts/windows-appcontainer-probe/cmd_entry_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -804,7 +805,7 @@ jobs:
           HEAD = os.environ["EXPECTED_HEAD"]
           PINS = {
               ".github/scripts/windows-appcontainer-probe/probe.py": "d73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192",
-              ".github/scripts/windows-appcontainer-probe/win32_api.py": "9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10",
+              ".github/scripts/windows-appcontainer-probe/win32_api.py": "8ab21a803609960daf9e2769179b1250d3cec78b7b8337f6f3ce5fe51e7fce45",
           }
 
           def require(condition, message):
@@ -874,6 +875,76 @@ jobs:
           raise SystemExit(0 if state["status"] == "PASS" else 1)
           '@ | python -B -
           exit $LASTEXITCODE
+      - name: Observe fixed LPAC cmd entry paths and native image identity
+        if: always()
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'hepta-lpac-cmd-entry'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          $pins = [ordered]@{
+            '.github/scripts/windows-appcontainer-probe/probe.py' = 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192'
+            '.github/scripts/windows-appcontainer-probe/win32_api.py' = '8ab21a803609960daf9e2769179b1250d3cec78b7b8337f6f3ce5fe51e7fce45'
+            '.github/scripts/windows-appcontainer-probe/cmd_entry_probe.py' = 'bd5f2d801259f9ceda55954c3fa12ddbe8436567fe65fb28ace8a669aedbe6df'
+          }
+          $actual = (& git -C $env:GITHUB_WORKSPACE rev-parse HEAD).Trim()
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $observed = [ordered]@{}
+          foreach ($path in $pins.Keys) {
+            $observed[$path] = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $env:GITHUB_WORKSPACE $path)).Hash.ToLowerInvariant()
+          }
+          [ordered]@{ head = $actual; sha256 = $observed } | ConvertTo-Json -Depth 4 |
+            Set-Content -Encoding utf8NoBOM -LiteralPath (Join-Path $out 'source-before.json')
+          if ($actual -ne $env:EXPECTED_HEAD) { throw 'diagnostic checkout differs from the exact PR head' }
+          foreach ($path in $pins.Keys) {
+            if ($observed[$path] -ne $pins[$path]) { throw "reviewed source bytes differ: $path" }
+          }
+          function Get-NativeIdentity {
+            $cmdPath = Join-Path ([Environment]::SystemDirectory) 'cmd.exe'
+            $file = Get-Item -LiteralPath $cmdPath
+            $version = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($cmdPath)
+            $versionKey = 'Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion'
+            return [ordered]@{
+              cmd = [ordered]@{
+                path = $cmdPath
+                bytes = $file.Length
+                sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $cmdPath).Hash.ToLowerInvariant()
+                file_version = $version.FileVersion
+                product_version = $version.ProductVersion
+                file_version_parts = @($version.FileMajorPart, $version.FileMinorPart, $version.FileBuildPart, $version.FilePrivatePart)
+              }
+              os = [ordered]@{
+                environment_version = [Environment]::OSVersion.Version.ToString()
+                build_number = Get-ItemPropertyValue -LiteralPath $versionKey -Name CurrentBuildNumber
+                update_build_revision = Get-ItemPropertyValue -LiteralPath $versionKey -Name UBR
+              }
+            }
+          }
+          $nativeBefore = Get-NativeIdentity
+          $nativeBefore | ConvertTo-Json -Depth 5 |
+            Set-Content -Encoding utf8NoBOM -LiteralPath (Join-Path $out 'native-identity-before.json')
+          if (-not $nativeBefore.cmd.file_version) { throw 'native cmd file version is unavailable' }
+          python -B .github/scripts/windows-appcontainer-probe/cmd_entry_probe.py --repo "$env:GITHUB_WORKSPACE" --source-head "$env:EXPECTED_HEAD" --output (Join-Path $out 'observation.json') 1> (Join-Path $out 'probe.stdout') 2> (Join-Path $out 'probe.stderr')
+          $probeExit = $LASTEXITCODE
+          $nativeAfter = Get-NativeIdentity
+          $nativeAfter | ConvertTo-Json -Depth 5 |
+            Set-Content -Encoding utf8NoBOM -LiteralPath (Join-Path $out 'native-identity-after.json')
+          [ordered]@{ expected_head = $env:EXPECTED_HEAD; exit_code = $probeExit } |
+            ConvertTo-Json | Set-Content -Encoding utf8NoBOM -LiteralPath (Join-Path $out 'invocation-result.json')
+          $observation = Get-Content -Raw -LiteralPath (Join-Path $out 'observation.json') | ConvertFrom-Json
+          if ($nativeBefore.cmd.sha256 -ne $nativeAfter.cmd.sha256 -or
+              $nativeBefore.cmd.sha256 -ne $observation.cmd_image_before.sha256 -or
+              $nativeAfter.cmd.sha256 -ne $observation.cmd_image_after.sha256) {
+            throw 'native cmd image identity changed or differs between observers'
+          }
+          exit $probeExit
+      - name: Preserve LPAC cmd entry observations and native identity
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-lpac-cmd-entry-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-lpac-cmd-entry
+          if-no-files-found: error
       - name: Trace actual primary-token Win32 errors in separate owned fixtures
         if: always()
         shell: pwsh
@@ -891,7 +962,7 @@ jobs:
               raise RuntimeError('diagnostic checkout differs from original PR head')
           pins = {
               '.github/scripts/windows-appcontainer-probe/probe.py': 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192',
-              '.github/scripts/windows-appcontainer-probe/win32_api.py': '9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10',
+              '.github/scripts/windows-appcontainer-probe/win32_api.py': '8ab21a803609960daf9e2769179b1250d3cec78b7b8337f6f3ce5fe51e7fce45',
               '.github/scripts/windows-appcontainer-probe/child_trace.c': 'c59a908daa1df6c827d5d3245de563c3952f9e28fb044555ea3417581e07d697',
               '.github/scripts/windows-appcontainer-probe/child_trace.py': 'f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8',
           }

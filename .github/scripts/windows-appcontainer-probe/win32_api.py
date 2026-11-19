@@ -24,6 +24,11 @@ LABEL_INFO = 0x10
 PROTECTED_DACL = 0x80000000
 WAIT_TIMEOUT = 258
 MAXIMUM_ALLOWED = 0x02000000
+CMD_DIAGNOSTIC_COMMANDS = {
+    "original-batch": "child-probe.cmd",
+    "inline-exit71": '"exit /b 71"',
+    "inline-stdout": '"echo HEPTA_LPAC_INLINE_STDOUT"',
+}
 
 
 class SecurityAttributes(C.Structure):
@@ -606,7 +611,13 @@ class Api:
                 errors.append(str(error))
         require(not errors, f"close owned child standard handles: {errors}")
 
-    def create_suspended(self, package_sid, cwd, lpac, stdio_handles):
+    def create_suspended(
+        self, package_sid, cwd, lpac, stdio_handles, *, diagnostic_command="original-batch"
+    ):
+        require(
+            diagnostic_command in CMD_DIAGNOSTIC_COMMANDS,
+            "unknown fixed cmd diagnostic command",
+        )
         size = C.c_size_t()
         require(len(stdio_handles) == 3, "exact stdin/stdout/stderr handle set")
         require(len(set(stdio_handles)) == 3, "distinct child standard handles")
@@ -685,9 +696,9 @@ class Api:
                     ]
                 )
             )
-            # Fixed command text, relative fixture names, no user-supplied shell text.
+            # Named fixed diagnostics; callers cannot supply shell command text.
             command = C.create_unicode_buffer(
-                f'"{executable}" /d /s /c child-probe.cmd'
+                f'"{executable}" /d /s /c {CMD_DIAGNOSTIC_COMMANDS[diagnostic_command]}'
             )
             startup, process = StartupInfoEx(), ProcessInfo()
             startup.StartupInfo.cb = C.sizeof(startup)
