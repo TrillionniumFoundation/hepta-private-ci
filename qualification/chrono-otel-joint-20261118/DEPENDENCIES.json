@@ -1,0 +1,40 @@
+{
+  "base": "03d782a7af68da6f0572be029693aba22548b415",
+  "before": {
+    "package_count": 1524,
+    "source_less_candidate_roots": 194,
+    "affected_candidate_roots": 121,
+    "direct_candidate_roots": 25,
+    "indirect_only_candidate_roots": 96
+  },
+  "after": {
+    "package_count": 1524,
+    "source_less_candidate_roots": 194,
+    "affected_candidate_roots": 121,
+    "direct_candidate_roots": 24,
+    "indirect_only_candidate_roots": 97
+  },
+  "delta": {
+    "new_edges": [],
+    "remaining_edges": 32,
+    "retired_edges": [
+      [
+        "workspace_local",
+        "codex-otel",
+        "0.0.0"
+      ]
+    ]
+  },
+  "remaining_otel_paths": [
+    {
+      "path": [
+        "codex-otel@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-otel@0.0.0"
+    }
+  ],
+  "require_zero_actual_exit": 2,
+  "whole_chrono_retirement_closed": false
+}
