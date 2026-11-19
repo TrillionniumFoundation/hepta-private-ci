@@ -1,5 +1,9 @@
 # N256: complete multistep state with event-time reset
 
+**Execution completed:** the single precommitted study and independent reader
+passed. See [RESULTS.md](RESULTS.md) for all actual values, costs and unchanged
+limits. The specification below is retained as the pre-execution record.
+
 This is a new finite-model successor to the unexecuted v3 sparse full-roster
 candidate. It preserves the published #6742 sparse/dense bitwise failure and
 does not invoke the protected original full-roster entry point. The new source,
