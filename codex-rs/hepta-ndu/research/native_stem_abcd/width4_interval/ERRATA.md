@@ -1,0 +1,5 @@
+# R21 preserved source annotation
+
+The executed `model.py` uses **H1=a*X+c** for widths 3 and 4. A short docstring in `forward()` still says `3: eps1 forward cell`; that phrase is a stale comment from the pre-efficacy prototype and must NOT be used to interpret the actual experiment. Preference state P1 depends on epsilon1, but H1 in R21 does not. The frozen protocol, proof, independent 16-leaf state/effect verification, results, and this annotation all specify the actual executed H1. The original source bytes, prefit source hashes, 120 training records, and audit results are deliberately NOT altered after fitting just to repair the comment. No effect on the computed objective, gradients, Hessians, accepted weights or results.
+
+The first development test invocation used an incorrect module search path and failed before executing any substantive tests; it was rerun from the source directory, with 18/18 new tests passing. The separate 25/25 R18, 18/18 R19, and 20/20 R20 legacy tests also passed. No runs were silently dropped.

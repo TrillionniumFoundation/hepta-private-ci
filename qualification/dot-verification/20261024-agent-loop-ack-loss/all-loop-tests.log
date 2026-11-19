@@ -1,0 +1,295 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 1.84s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID d82cccfd-6792-4e9a-84e2-86f9056e95d4 with nextest profile: local
+    Starting 30 tests across 5 binaries
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_round_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_skipped_revision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_round_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_token_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_skipped_revision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss cancel_intent_reply_loss_reloads_before_both_owner_acks
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Intent before_write=false retain_receipt=true model_executions=0 effect_executions=0 effect_observations=0 model_cancellations=1 effect_cancellations=1
+    test cancel_intent_reply_loss_reloads_before_both_owner_acks ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_token_drift ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_intent_rejects_unchanged_revision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+  stdout ───
+
+    running 1 test
+    test cancel_ack_rejects_unchanged_revision ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 7 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::commit_ack_loss cancel_terminal_reply_loss_does_not_repeat_owner_cancellation
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Ack before_write=false retain_receipt=true model_executions=0 effect_executions=0 effect_observations=0 model_cancellations=1 effect_cancellations=1
+    test cancel_terminal_reply_loss_does_not_repeat_owner_cancellation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::commit_ack_loss prewrite_failure_reobserves_same_key_with_owner_receipt
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Tool before_write=true retain_receipt=true model_executions=2 effect_executions=1 effect_observations=2 model_cancellations=0 effect_cancellations=0
+    test prewrite_failure_reobserves_same_key_with_owner_receipt ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss missing_owner_receipt_negative_control_executes_twice
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Tool before_write=true retain_receipt=false model_executions=2 effect_executions=2 effect_observations=2 model_cancellations=0 effect_cancellations=0
+    test missing_owner_receipt_negative_control_executes_twice ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss tool_commit_reply_loss_does_not_repeat_effect_observation
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Tool before_write=false retain_receipt=true model_executions=2 effect_executions=1 effect_observations=1 model_cancellations=0 effect_cancellations=0
+    test tool_commit_reply_loss_does_not_repeat_effect_observation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::commit_ack_loss model_commit_reply_loss_reloads_committed_tool_cursor
+  stdout ───
+
+    running 1 test
+    ACK_LOSS_DIAGNOSTIC point=Model before_write=false retain_receipt=true model_executions=2 effect_executions=1 effect_observations=1 model_cancellations=0 effect_cancellations=0
+    test model_commit_reply_loss_reloads_committed_tool_cursor ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::context_owner foreign_objective_cannot_reuse_valid_context_receipts
+  stdout ───
+
+    running 1 test
+    test foreign_objective_cannot_reuse_valid_context_receipts ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-agent-loop::context_owner context_recompile_preserves_mandatory_instruction_and_tool
+  stdout ───
+
+    running 1 test
+    test context_recompile_preserves_mandatory_instruction_and_tool ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+
+        PASS [   0.006s] codex-hepta-agent-loop::context_owner output_reservation_must_fit_the_existing_model_profile
+  stdout ───
+
+    running 1 test
+    test output_reservation_must_fit_the_existing_model_profile ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop commit_interruption_reconciles_effect_without_executing_it_twice
+  stdout ───
+
+    running 1 test
+    test commit_interruption_reconciles_effect_without_executing_it_twice ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop cancellation_waits_for_effect_owner_acknowledgement
+  stdout ───
+
+    running 1 test
+    test cancellation_waits_for_effect_owner_acknowledgement ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop deadline_cancels_a_stalled_stream_without_terminal_success
+  stdout ───
+
+    running 1 test
+    test deadline_cancels_a_stalled_stream_without_terminal_success ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop oversized_context_is_rejected_before_provider_dispatch
+  stdout ───
+
+    running 1 test
+    test oversized_context_is_rejected_before_provider_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.008s] codex-hepta-agent-loop::context_owner revoked_context_is_rejected_before_native_dispatch
+  stdout ───
+
+    running 1 test
+    test revoked_context_is_rejected_before_native_dispatch ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop foreign_completion_cannot_dispatch_a_tool
+  stdout ───
+
+    running 1 test
+    test foreign_completion_cannot_dispatch_a_tool ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop duplicate_provider_calls_are_rejected_before_any_effect
+  stdout ───
+
+    running 1 test
+    test duplicate_provider_calls_are_rejected_before_any_effect ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop partial_stream_never_executes_tools_and_reconnect_uses_original_request
+  stdout ───
+
+    running 1 test
+    test partial_stream_never_executes_tools_and_reconnect_uses_original_request ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop stalled_model_cancellation_does_not_prevent_effect_cancellation
+  stdout ───
+
+    running 1 test
+    test stalled_model_cancellation_does_not_prevent_effect_cancellation ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop streamed_tool_turn_commits_before_dispatch_and_resumes_model
+  stdout ───
+
+    running 1 test
+    test streamed_tool_turn_commits_before_dispatch_and_resumes_model ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop text_only_completion_without_retained_provider_items_is_rejected
+  stdout ───
+
+    running 1 test
+    test text_only_completion_without_retained_provider_items_is_rejected ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.005s] codex-hepta-agent-loop::owner_loop reconnect_does_not_reset_the_original_deadline
+  stdout ───
+
+    running 1 test
+    test reconnect_does_not_reset_the_original_deadline ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop unresolved_effect_keeps_exact_key_across_loop_instances
+  stdout ───
+
+    running 1 test
+    test unresolved_effect_keeps_exact_key_across_loop_instances ... ok
+
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+────────────
+     Summary [   0.018s] 30 tests run: 30 passed, 0 skipped

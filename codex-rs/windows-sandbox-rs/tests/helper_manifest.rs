@@ -119,6 +119,14 @@ fn manifest_only_runfiles_resolve_the_exact_helper_with_spaces_in_physical_path(
 #[test]
 fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
     let setup_executable = locate_setup_executable()?;
+    let runner_selected = codex_utils_cargo_bin::cargo_bin("codex-windows-sandbox-setup")
+        .context("locate the Windows sandbox setup executable through runner metadata")?;
+    anyhow::ensure!(
+        dunce::canonicalize(&setup_executable)? == dunce::canonicalize(&runner_selected)?,
+        "runner metadata and exact helper manifest identify different executables"
+    );
+    std::fs::metadata(&setup_executable)
+        .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
     let setup_path = setup_executable
         .as_os_str()
         .encode_wide()

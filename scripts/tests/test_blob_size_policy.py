@@ -146,6 +146,46 @@ class BlobSizePolicyTests(unittest.TestCase):
         self.assertNotIn("oversized-24.bin", rendered)
         self.assertLess(len(rendered.encode("utf-8")), 32768)
 
+    def test_bulk_inventory_matches_original_git_queries_for_real_changes(self):
+        # Include duplicate objects, literal path separators, mode-only changes,
+        # binary modifications, and a rename treated as delete plus addition.
+        (self.repo / "baseline.txt").write_bytes(b"\0changed")
+        names = ["space asset.txt", "tab\tasset.txt", "line\nasset.txt", "測試.txt"]
+        for name in names:
+            (self.repo / name).write_bytes(b"same text\n")
+        self.git("add", ".")
+        self.git("commit", "-qm", "mixed source changes")
+        self.git("mv", "space asset.txt", "renamed asset.txt")
+        self.git("update-index", "--chmod=+x", "tab\tasset.txt")
+        self.git("commit", "-qm", "rename and mode change")
+        head = self.git("rev-parse", "HEAD").strip()
+
+        spec = importlib.util.spec_from_file_location(
+            "blob_policy_bulk_fixture", CHECKER
+        )
+        checker = importlib.util.module_from_spec(spec)
+        sys.modules[spec.name] = checker
+        self.addCleanup(sys.modules.pop, spec.name)
+        spec.loader.exec_module(checker)
+        previous = Path.cwd()
+        try:
+            os.chdir(self.repo)
+            expected = [
+                checker.ChangedBlob(
+                    path=path,
+                    size_bytes=checker.blob_size(head, path),
+                    is_allowlisted=False,
+                    is_binary=checker.is_binary_change(self.base, head, path),
+                )
+                for path in checker.get_changed_paths(self.base, head)
+            ]
+            self.assertEqual(
+                checker.collect_changed_blobs(self.base, head, {}), expected
+            )
+            self.assertEqual(checker.collect_changed_blobs(head, head, {}), [])
+        finally:
+            os.chdir(previous)
+
 
 class BlobSizeSummaryTests(unittest.TestCase):
     def setUp(self):

@@ -81,6 +81,24 @@ class CreditTests(unittest.TestCase):
         self.assertEqual(receipt.matched, 0)
         self.assertEqual(receipt.deltas, (0.0, 0.0))
 
+    def test_owner_visible_zero_feedback_is_valid_no_update(self):
+        # Owner-side causal filtering must not need any future outcome.
+        blind = credit(cutoff_sequence=2, feedback_list=[])
+        withheld = credit(cutoff_sequence=2)
+        self.assertEqual(blind.deltas, (0.0, 0.0))
+        self.assertEqual((blind.matched, blind.expired, blind.future_withheld),
+                         (0, 0, 0))
+        self.assertEqual(blind.causal_training_digest,
+                         withheld.causal_training_digest)
+        self.assertNotEqual(blind.transcript_digest,
+                            withheld.transcript_digest)
+        self.assertEqual(blind.authority, "DENY_ALL")
+        self.assertEqual(credit(feedback_list=[]).deltas, (0.0, 0.0))
+
+    def test_zero_feedback_does_not_permit_empty_actions(self):
+        with self.assertRaises(ContractError):
+            credit(action_list=[], feedback_list=[])
+
     def test_frozen_prefix_ignores_future_receipt_count_and_labels(self):
         initial = credit(cutoff_sequence=2, feedback_list=[outcomes()[0]])
         altered = replace(outcomes()[0], receipt_digest=digest("future-alt"),

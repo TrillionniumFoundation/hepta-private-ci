@@ -1,0 +1,589 @@
+{
+  "candidate": "e3443eb41426a1dc496793e1fa5fc19c98f1eb74",
+  "incoming": "6cfa2345cc26e271d443d32e3fff669f7492d1bc",
+  "preview_tree": "9b498917427ae97f80b34e6ec4adaa10a49eaa38",
+  "paths": {
+    ".github/blob-size-allowlist.txt": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "The conflicting current exact hash/path entries are a superset of the incoming three entries; retain them and all nonconflicting additions.",
+      "candidate_sha256": "878652af7fc8ac66308b787a931cdb2840525a3248d60a8a9e850bbf3104b33e",
+      "incoming_sha256": "2224a46323a583ca6c05d0da54ef8fd4c748a7f4ca55dcf99cc5e861616041e6",
+      "resolved_sha256": "878652af7fc8ac66308b787a931cdb2840525a3248d60a8a9e850bbf3104b33e",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/codespell-custody.json": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Union exact archived path SHA-256 pins from both branches. No changed-digest override is allowed.",
+      "candidate_sha256": "93009e551b846325940b260912b7660bbf663f1e46fb26053482d7f32d30883f",
+      "incoming_sha256": "2c7724d4a9c7a6dc3a4bdafeb3dc7414ba2d39345d44a1f2efcca17448686a0d",
+      "resolved_sha256": "b61c01344de627eb9555554abd9086348b938a1cd3d83d2d1de46e024c27645a",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/rbe-openssh/PLAN.md": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain the current distinction between dedicated image publication and native validation, exact-source restrictions, offline helper tests, and deleted-ref guards.",
+      "candidate_sha256": "bf8697da442e757f529ba7ac39dbc0012733408b16984fa74f5f04c5e5d9fcda",
+      "incoming_sha256": "678b4c06079bb37531dc27970b354ae6fcdd9413dd801807c789458f6d73bd2c",
+      "resolved_sha256": "bf8697da442e757f529ba7ac39dbc0012733408b16984fa74f5f04c5e5d9fcda",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/scripts/codespell_custody.py": {
+      "conflicts": 1,
+      "choices": [
+        "custody_admission"
+      ],
+      "rationale": "Union exact binary-archive and qualification-source admission; retain incoming hard-coded qualification digests and all canonical-path, symlink, single-link, and byte checks.",
+      "candidate_sha256": "1bf331419fc6dcd7e5e432fc07c8da27013ac3ba59cb905280589a628b629a7e",
+      "incoming_sha256": "8642fa6241529ac262c63c909df109ad869fed73b4aeed0f96baba3eb7e92e3d",
+      "resolved_sha256": "0a141a9ab4ac8c0a4a93fac3ea0dba46c3366826d92dc8e077cef64807099400",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/scripts/aggregate_windows_current_ci.py": {
+      "conflicts": 8,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "AST comparison confirms the current semantics add the eight required native cases (175 total) and omission/forged-log regressions to the incoming 167-case implementation; retain all nonconflicting incoming edits.",
+      "candidate_sha256": "286c45c0079e2e4e71d21aedd407752cf908e08db461fc0492f10b7de7cf65b5",
+      "incoming_sha256": "488750ca6a5a44d29b57e46962cd336e85d48f8e6a200a846a5272a3d0623a91",
+      "resolved_sha256": "286c45c0079e2e4e71d21aedd407752cf908e08db461fc0492f10b7de7cf65b5",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/scripts/windows_current_ci.py": {
+      "conflicts": 10,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "AST comparison confirms the current semantics add the eight required native cases (175 total) and omission/forged-log regressions to the incoming 167-case implementation; retain all nonconflicting incoming edits.",
+      "candidate_sha256": "1b885ce7862faeebe9e215f22300fd47d562bd13778408199c94e47be22d0506",
+      "incoming_sha256": "2f815f22d6720f6a7652b7ed1dc9455ac024e4dc2f6e800eb9ac70491ea139b5",
+      "resolved_sha256": "1b885ce7862faeebe9e215f22300fd47d562bd13778408199c94e47be22d0506",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/scripts/test_windows_current_ci_shards.py": {
+      "conflicts": 18,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "AST comparison confirms the current semantics add the eight required native cases (175 total) and omission/forged-log regressions to the incoming 167-case implementation; retain all nonconflicting incoming edits.",
+      "candidate_sha256": "744da2221ac8a26e9a6123241e2c1073d0862966e7d35cefb1fc5b953a11ea5f",
+      "incoming_sha256": "758f2f0272c1132b3b2d6104de29c5127a58c662104a15fe88ab59d2bed09518",
+      "resolved_sha256": "744da2221ac8a26e9a6123241e2c1073d0862966e7d35cefb1fc5b953a11ea5f",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/blocking-ci.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current same-branch cancellation of obsolete runs; matrix and blocking checks remain unchanged by this conflict.",
+      "candidate_sha256": "bf4ab1d53113b2e9dfeb671c40dfabf1c95ec16bc81bc3f58ae8088098b59f8c",
+      "incoming_sha256": "42da2acef54a85f22335224c755b1cab4d8c9b3bfd5ccd540653b1ccdb1a89c1",
+      "resolved_sha256": "8acf268c367f16ef0a22a864ea91b1267bc4f8dbaa001280187600be3a6bf6bc",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/codespell.yml": {
+      "conflicts": 1,
+      "choices": [
+        "custody_skip"
+      ],
+      "rationale": "Use validated custody exclusions for the seven pinned original HCSN files and retain the independent current MEM9 binary-archive exclusion.",
+      "candidate_sha256": "8c455228174bded8728b1efc351e45481192af2d1a3dff349e64295b18865281",
+      "incoming_sha256": "ca655d4d20c2b36d309d41ee7d705547b0e792ae2a1d2848e56800f238247ac3",
+      "resolved_sha256": "167f0d0ffb727372600e1b0d2a13199b819a8d7b3dca5b08be4ab3d9473eb5df",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hcsn-boundary-audit.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain the current pinned CPU Torch 2.8 runtime used by this gate; no unrelated runtime upgrade is introduced during history consolidation.",
+      "candidate_sha256": "dbfef8f2a34b844b2536040e3736b397caaf3b4843f3e6f3425f8077ddfb983e",
+      "incoming_sha256": "a068618ffe9304f1bbd8aeb066150de0331c1ba11aac7d13f398cbb2b8ffa1a4",
+      "resolved_sha256": "dbfef8f2a34b844b2536040e3736b397caaf3b4843f3e6f3425f8077ddfb983e",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hcsn-differentiable.yml": {
+      "conflicts": 6,
+      "choices": [
+        "incoming",
+        "incoming",
+        "candidate",
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Add incoming persistence/localization triggers, persistence materialization and inherited tests, projected-gradient required result, and full successor test discovery. Preserve current Torch pin and all nonconflicting checks.",
+      "candidate_sha256": "b6e905fb6ce429130dd59156a8f9435f312d1f7581f93c2b6882f4270269dec6",
+      "incoming_sha256": "195378e15b20eb62d63de4eab48aa20d2a36e91cad1aa026dbe4f5c3c0b59107",
+      "resolved_sha256": "009c8c66decbb35544f4bdf8b194510a8fc53d147860ff09f2679b4bb9472865",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-act2-observer.yml": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "Incoming push branch list contains all four current branches plus three related source-owner proof branches.",
+      "candidate_sha256": "3253d1c129ac813e89540644308024175c9d638c25741254b5bddbfd94e1e38e",
+      "incoming_sha256": "3ef6b243bf83da6787b6770e7e264b02fbb7718e4c358f448508533df9a2ed98",
+      "resolved_sha256": "3ef6b243bf83da6787b6770e7e264b02fbb7718e4c358f448508533df9a2ed98",
+      "changed_from_candidate": true,
+      "changed_from_incoming": false,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-architecture-convergence.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Retain current cancellation grouping and incoming accurate diagnostic distinguishing locked resolution failures from proven lockfile drift.",
+      "candidate_sha256": "937df5463c2209f55e9feee83d712adf2c2e38655b30e587ac3351178305be8d",
+      "incoming_sha256": "aec8e6edd77608fdc88c3ea3d1a5f26eed6090276dcc4ecd5ac3cf4dd889ccd9",
+      "resolved_sha256": "0b81a5a17c41bb6a0ab09a2b77992d2d0894e1b5052153aadb9b0755b41e1054",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-daemon-learning-native.yml": {
+      "conflicts": 1,
+      "choices": [
+        "incoming"
+      ],
+      "rationale": "The learning-ledger trigger already occurs in the following unchanged list; avoid duplicating the same path without removing its coverage.",
+      "candidate_sha256": "43ff161154aaac778658aec7fcab223e54fe91e7b33d1b8029fc874f62dce4d2",
+      "incoming_sha256": "cab9c0501c6d458ac03938c9d5ffdaadcea52bb3821358f4bb067124cbaa6221",
+      "resolved_sha256": "ac2042687cd93b9e18a08ee0da1de60026c28af7498878cee16a3f20e2d81a5f",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-lockfile-regenerate.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Retain explicit false-default manual regeneration authorization and add exact-source reviewable patch/status artifact export without branch writes.",
+      "candidate_sha256": "c4f135896f49e5b67c9aa5d5ab6f4190f6f89dca8b751a7a102890ff7004697c",
+      "incoming_sha256": "6e2d2dc95c19ed965197f5d3448db1739024d478cd3fc19538f0849b2874b2ec",
+      "resolved_sha256": "45ee8c724b4ba3399fef248a70a3917e3da63104c2e9d9934a14b01418805e1a",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-ai-matrix-shadow.yml": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "ai_paths",
+        "candidate",
+        "candidate",
+        "ai_suites"
+      ],
+      "rationale": "Union independent matrix-contract and frozen-acceptance suites and trigger paths, preserving exact-source checks and non-cancelling source-bound evidence.",
+      "candidate_sha256": "1c656d4a00b2d3c5eb5f89c29b109d967c7a2934184b23e9b0f04efd05dd03e1",
+      "incoming_sha256": "1f55bde88687051c498d497a44b80c79ac107fec7b76439217381944542910e2",
+      "resolved_sha256": "967f58e47b1c6f79a11bfb88c0f86b8dac2e4e10585e7584dc03ec408b7e96b9",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-budget-shadow.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Preserve current manual-only research selection; incoming PR trigger would restore unrequested automatic research execution.",
+      "candidate_sha256": "2a6a53bf991754502e5bd62d9c53af90e58b08e1a634677e2442f7f7b5825763",
+      "incoming_sha256": "b1d95acffd0279cae0d5a9ec93bb07624cf51bce1e83c811ac84b13b804cb6bb",
+      "resolved_sha256": "5ba20008f6fe2d45010fb902a0cd0024712c0b4001d8ef7bae685e5ec2857355",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-current-relay.yml": {
+      "conflicts": 2,
+      "choices": [
+        "union",
+        "both_job_guards"
+      ],
+      "rationale": "Declare both current run_research and incoming accept_model_terms inputs; preserve current manual-only launch and require both for the target relay job. Incoming model-step conditions remain intact.",
+      "candidate_sha256": "51519d342531fc756ba6aa6ba9c02834bd6bef98ce0e54ff220ea5bda8f487b9",
+      "incoming_sha256": "53afaee9045fdcc8e20758fba94023cbf82f763295e99e9fc399011c3ba468f0",
+      "resolved_sha256": "4fde2b80d7f62e0228f2480275d974c4a4113df9e06be1cd1233bd148130f5e0",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-multihost-relay.yml": {
+      "conflicts": 2,
+      "choices": [
+        "union",
+        "both_job_guards"
+      ],
+      "rationale": "Declare both current run_research and incoming accept_model_terms inputs; preserve current manual-only launch and require both for the target relay job. Incoming model-step conditions remain intact.",
+      "candidate_sha256": "188e9aca884550d23afaedbe3a8f1e4c03748d49d0e90a1d6f5a06973d74491c",
+      "incoming_sha256": "f3a1ae442d643dae012309410a092b06d3a475e6b2b7806b1c2f114b1f70992e",
+      "resolved_sha256": "39ac0b9c378171ed31e041cb9c4385ccd155b9baa024efc988c9d215a821e6a2",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-native-process.yml": {
+      "conflicts": 2,
+      "choices": [
+        "append_terms_input",
+        "candidate"
+      ],
+      "rationale": "Preserve manual-only repository-bound native research and exact dispatch source, add incoming model-terms input, and retain every incoming conditional model step and request receipt.",
+      "candidate_sha256": "f81a92201af740e68bd5243c50fa9ff612cac223fad80d7bc365c80ec9212cd5",
+      "incoming_sha256": "b86f1b78364a3354501a46a68a71aa2f7ec0015d92207a0b6ba4a85520a549d9",
+      "resolved_sha256": "893e9c8254f0147a9e3ad5abf0f9ae8ce23072c6d600f2dc461df6ccf44f4487",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-population-shadow.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current explicit false-default manual research selection.",
+      "candidate_sha256": "78bea288b030de97d67d14e1eae57e4c0723a63db3c8c19643a7fbbe8b00de45",
+      "incoming_sha256": "e6fe7211bf327ac23e254d24688ffef9974379937b586ac747c6790444309b8d",
+      "resolved_sha256": "55683f99eb106f22ded8aec6aed4219c397942fa01e82ffc9f9df8d7a848d310",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-repair-solver.yml": {
+      "conflicts": 2,
+      "choices": [
+        "append_terms_input",
+        "candidate"
+      ],
+      "rationale": "Retain manual-only research selection and add incoming model-terms input plus guarded acquisition/execution steps and request evidence.",
+      "candidate_sha256": "d3bc36d3c3963a1a6da5e5385dd12d7e6a8e750f79811606986fc44497bb0696",
+      "incoming_sha256": "665513dd4ccd627cf6cbb2ea5243d2632ad12198a960b2c80f2fca2b6ebf9b4f",
+      "resolved_sha256": "463d1ff3cd955f9bf898e5e164ac87b460d73e0def19a27ff42eda9e584014b5",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-memory-system-shadow.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current explicit false-default manual research selection.",
+      "candidate_sha256": "b7eef0ec558d698e6cb03b18c69116199d353bd4e243981eac4de60b4709ad5e",
+      "incoming_sha256": "8f6f2755ed6026e16092dfc5ee2092f6afe00d2af699f3a1309cee8f506307c5",
+      "resolved_sha256": "5c24eefd6af1af090c7df2af13e2a2e9562cecc9a274dfbcb60440846b64baa0",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-native-memory.yml": {
+      "conflicts": 2,
+      "choices": [
+        "union",
+        "candidate"
+      ],
+      "rationale": "Declare current research-selection and incoming terms inputs together; retain manual launch guard and conditional model execution plus request evidence.",
+      "candidate_sha256": "8d1740e307f005b0c7f47d415cae8312904ec6887cdcde2e91709c2722e1fd61",
+      "incoming_sha256": "8950fbd4b51df36632b2474506c7278c4a438f508c55d5ce9256a5f30bec7f75",
+      "resolved_sha256": "fb504752c745c4458c4196c37059cb76e44587fef918d1fb4e9bb039718ebc62",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-ndu-recursion.yml": {
+      "conflicts": 1,
+      "choices": [
+        "union"
+      ],
+      "rationale": "Both SNG-R affine/nonlinear FBSDE and S1 continuation/control regression suites are independent and retained.",
+      "candidate_sha256": "70c4dd631df28901b79fc0cde1a8c43445b5b73f5cb8132c73ee024ee5349a56",
+      "incoming_sha256": "47aceab7bb0d5dc2d0651da44cb0e8e34bbfcada3f20281211981092bdde1d74",
+      "resolved_sha256": "c74a39a842410eaa04d4817acef1596c9b1e54d2bcf3522bc7541b4edb8d0d12",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-neuron-experiments.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Both cache commands assign the identical runner-local path; retain the current spelling.",
+      "candidate_sha256": "9ac17b02eaf21510994452f462b19951f88c7d83a1248b828c6405874ac80a9d",
+      "incoming_sha256": "1a67e5a9e741bf3201802e28621e72dccf32301d8e92a3a6a29f1e2f50ebefcc",
+      "resolved_sha256": "9ac17b02eaf21510994452f462b19951f88c7d83a1248b828c6405874ac80a9d",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-parametric-catalog-shadow.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve current explicit manual-only research selection.",
+      "candidate_sha256": "6acda45e4c3c92290a1c192692192a36a714931855aad994c3dcb282dc6cd5bf",
+      "incoming_sha256": "3f179d2484597009197e42758d6e4e48f4006298e6f3fbddf4d7b7479f69bf0d",
+      "resolved_sha256": "31faa15f52aebb419a5905be63ebbb871233159686bc4f2713044dcf18c5bc06",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-parametric-memory-shadow.yml": {
+      "conflicts": 2,
+      "choices": [
+        "append_terms_input",
+        "candidate"
+      ],
+      "rationale": "Preserve current manual-only selection, add incoming terms input, and retain guarded model acquisition/confirmation plus request receipts.",
+      "candidate_sha256": "fdb128c0b0a831452a5443908bf70053252320af99b3206e8601ff6374b6e0fa",
+      "incoming_sha256": "32549b1b35c35bd670fcb04632ed4ac7abaf1e194044b26b85a9d8668c53695e",
+      "resolved_sha256": "c6bf6411f39e8236c5e48149dd6baa5bbe6cdb8a790b228e0be7a94d4163ff74",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-parametric-next-shadow.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Preserve current explicit manual-only research selection.",
+      "candidate_sha256": "c6637eb3f651d31054d3499324b2b66e87fc807d0aa585d028c8abf449a9754b",
+      "incoming_sha256": "11ad82b9040e323eca51611f6ec2ce725269ffd6aa1ba33749f57a9e3af0cdb4",
+      "resolved_sha256": "1d82f8d6e393fb2a8e3af94de1e8cb877a3421cdbfa60815db237ca3636b9af3",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-rbe-openssh-image.yml": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current helper trigger coverage, three offline helper regression suites, and deleted-ref refusal in build/publish/native jobs. Nonconflicting incoming changes are retained.",
+      "candidate_sha256": "0e5f29bf480fdb33a1f6ee98b44f06b9735654de7cce5094498fecbfbc9105af",
+      "incoming_sha256": "7393d40cd6d9aa2d3c41040138c7fb228cffbd839aeb2f33a3d21ca6452546e0",
+      "resolved_sha256": "0e5f29bf480fdb33a1f6ee98b44f06b9735654de7cce5094498fecbfbc9105af",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-shared-stem-bakeoff-shadow.yml": {
+      "conflicts": 4,
+      "choices": [
+        "candidate",
+        "candidate",
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current separate research/real-checkpoint selection and operator terms consent. Bind incoming request receipts to the existing explicit terms input and selected real study; retain current execution guards and all incoming evidence steps.",
+      "candidate_sha256": "df0a85d3421154b3866aa6729a0044824891d9a25116e977ccc03acb55ecfe79",
+      "incoming_sha256": "075ede7ef007ebf7184bc76cd6d32ca3007cfbab86f833525770a138ac39e952",
+      "resolved_sha256": "8c290392210fface873be4199b293ee47bf56a7b105ca0e262c17b00826cd513",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-windows-current-ci.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Keep current wrapper/toolchain/Cargo trigger paths and 19-group, 175-exact-case native requirement; do not restore stale 167-case scope.",
+      "candidate_sha256": "03377c2cb638b47cc6bfd015f63913168a9e274b65e165abfc86807fcd7efecd",
+      "incoming_sha256": "f1dcbc32f766e9c6675ace1bedf492b805fade02639f206d0d4493eda37bb122",
+      "resolved_sha256": "03377c2cb638b47cc6bfd015f63913168a9e274b65e165abfc86807fcd7efecd",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-windows-federation-revoke.yml": {
+      "conflicts": 3,
+      "choices": [
+        "candidate",
+        "candidate",
+        "incoming"
+      ],
+      "rationale": "Union current ConPTY trigger coverage and long-path setup with incoming native Linux D-Bus prerequisites and explicit Rust 1.96 pin.",
+      "candidate_sha256": "adc4a44b0db839f65d5c49a914e04d8674a6a5c5d2671ab0b5c067c6ec11f3d6",
+      "incoming_sha256": "ec118beb34b57a6a70511d3944f0253781f662b65e3d1e3db91b7a4d92953a3b",
+      "resolved_sha256": "3fbde7a4baa1210a7d5853f74189c5675cb9fa0f0db66916beed409292c7669d",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/hepta-windows-private-state-native.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain exactly one signed-credit receipt upload and one native LEARN log upload, both with 14-day retention; avoid duplicate artifact-name failure.",
+      "candidate_sha256": "ac276c4d630fcd92ceabc5a0eb2c7ac6644358ac2d659769ce9b478c33bf21f9",
+      "incoming_sha256": "ab8910a7d20e0ee922e28c777342e4401cc58ec574598a88a98fcc129f5cb49c",
+      "resolved_sha256": "ac276c4d630fcd92ceabc5a0eb2c7ac6644358ac2d659769ce9b478c33bf21f9",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/ndu-v6.yml": {
+      "conflicts": 5,
+      "choices": [
+        "candidate",
+        "incoming",
+        "incoming",
+        "incoming",
+        "incoming"
+      ],
+      "rationale": "Union current native Linux sandbox prerequisites with incoming composition-model-driver-qualification feature coverage. Requires incoming feature declarations/implementation in both affected crates.",
+      "candidate_sha256": "f5795c19672c96d09d35444de399a0ae7c3f5fdaf7b9ba12d83b1eaedfa45a83",
+      "incoming_sha256": "d848334570bea267534c3dc461bf9da231f2a54f918cc68f842c07be0ec2e7e8",
+      "resolved_sha256": "5349bf7f0e6c2a2a22d309a8a2c3c0b2e21908b83ba5118c535d0d6c4910da86",
+      "changed_from_candidate": true,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/repo-checks.yml": {
+      "conflicts": 1,
+      "choices": [
+        "candidate"
+      ],
+      "rationale": "Retain current 40-minute gate budget based on the recorded 25.1-minute full caller proof plus remaining checks; incoming 30-minute budget is superseded.",
+      "candidate_sha256": "3d5f02b1260d6f7363f33df75d32862e994f357951e0366d6f61ed3cf92c8191",
+      "incoming_sha256": "8c8d3ac66c8e62e2394c954402c00824b4af2d5dbe4f4e257aa89ee757fa3baa",
+      "resolved_sha256": "3d5f02b1260d6f7363f33df75d32862e994f357951e0366d6f61ed3cf92c8191",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    },
+    ".github/workflows/v8-canary.yml": {
+      "conflicts": 2,
+      "choices": [
+        "candidate",
+        "candidate"
+      ],
+      "rationale": "Retain current same-branch cancellation and host-independent metadata job runner; all native x86/ARM Linux/macOS and Windows source-build matrix coverage is retained from the merge preview.",
+      "candidate_sha256": "664ec581ce6836e2d97734458dbae6d6ac5a7228983e1103085ddc8853b2fdfb",
+      "incoming_sha256": "0dfa057d61636327eb591babec0eabafbcf34ead3af9343b70a3459c57f44102",
+      "resolved_sha256": "664ec581ce6836e2d97734458dbae6d6ac5a7228983e1103085ddc8853b2fdfb",
+      "changed_from_candidate": false,
+      "changed_from_incoming": true,
+      "git_mode": "100644"
+    }
+  },
+  "validation": {
+    "yaml_workflows_parsed": 30,
+    "duplicate_keys": 0,
+    "undefined_dispatch_inputs": 0,
+    "missing_job_dependencies": 0,
+    "windows_receipt_unit_tests_passed": 43,
+    "custody_unit_tests_passed": 14,
+    "custody_entries_matching_preview": 24,
+    "native_windows_execution": "NOT_RUN",
+    "scope": "CI postimages only; repository-wide merge source/test dependencies remain root integration work",
+    "composition_feature_dependency": [
+      "codex-rs/hepta-agentd/Cargo.toml",
+      "codex-rs/hepta-infer-worker-host/Cargo.toml"
+    ]
+  },
+  "syntax_semantics": {
+    ".github/scripts/aggregate_windows_current_ci.py": {
+      "matches_current_candidate_ast": true
+    },
+    ".github/scripts/windows_current_ci.py": {
+      "matches_current_candidate_ast": true
+    },
+    ".github/scripts/test_windows_current_ci_shards.py": {
+      "matches_current_candidate_ast": true
+    }
+  },
+  "preserved_native_requirement": {
+    "groups": 19,
+    "cases": 175,
+    "old_incoming_cases": 167
+  }
+}

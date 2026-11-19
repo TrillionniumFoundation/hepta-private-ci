@@ -11,6 +11,8 @@ use codex_hepta_types::StableId;
 use serde_json::Value;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::fs::File;
+use std::io::Read;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -36,6 +38,20 @@ fn array<'a>(v: &'a Value, key: &str) -> Result<&'a Vec<Value>> {
 fn number(v: &Value, key: &str) -> Result<u64> {
     v[key].as_u64().context("integer field")
 }
+fn read_bounded_file(path: &Path, limit: u64) -> Result<Vec<u8>> {
+    let file = File::open(path)?;
+    let metadata = file.metadata()?;
+    ensure!(metadata.is_file() && metadata.len() <= limit);
+    let mut bytes = Vec::new();
+    file.take(limit.checked_add(1).context("byte limit overflow")?)
+        .read_to_end(&mut bytes)?;
+    ensure!(
+        bytes.len() as u64 <= limit,
+        "source grew beyond its byte limit"
+    );
+    Ok(bytes)
+}
+
 fn read_pinned(root: &Path, relative: &str, pins: &Value) -> Result<Vec<u8>> {
     ensure!(
         Path::new(relative)
@@ -50,7 +66,7 @@ fn read_pinned(root: &Path, relative: &str, pins: &Value) -> Result<Vec<u8>> {
             && metadata.len() <= 64 * 1024 * 1024
     );
     ensure!(path.canonicalize()?.starts_with(root.canonicalize()?));
-    let raw = std::fs::read(path)?;
+    let raw = read_bounded_file(&path, 64 * 1024 * 1024)?;
     ensure!(
         Digest32::of_bytes(&raw) == pin(pins, relative)?,
         "source file changed: {relative}"
@@ -71,8 +87,7 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub fn load(path: &Path, expected: Digest32, expected_rows: Digest32) -> Result<Self> {
-        ensure!(std::fs::metadata(path)?.len() <= 8 * 1024 * 1024);
-        let bytes = std::fs::read(path)?;
+        let bytes = read_bounded_file(path, 8 * 1024 * 1024)?;
         ensure!(
             Digest32::of_bytes(&bytes) == expected,
             "independent fixture pin"

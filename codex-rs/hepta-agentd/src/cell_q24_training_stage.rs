@@ -22,6 +22,8 @@ use crate::CellQ24TrainingOwnerErrorV1;
 use crate::CellQ24TrainingOwnerV1;
 use crate::cell_composed_q24::OriginalQ24DatasetReadV1;
 use crate::cell_composed_q24::OriginalQ24OwnerReadV1;
+#[cfg(target_os = "linux")]
+use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1;
 
 #[path = "cell_q24_training_stage_construction.rs"]
@@ -30,8 +32,6 @@ mod construction;
 #[cfg(target_os = "linux")]
 #[path = "cell_q24_training_stage_operation.rs"]
 mod operation;
-#[cfg(target_os = "linux")]
-use crate::cell_q24_training_source::OriginalCellQ24TrainingSourceOperationV1;
 #[cfg(target_os = "linux")]
 pub(crate) use operation::OriginalQ24TrainingOperationEvidenceV1;
 #[cfg(target_os = "linux")]
@@ -140,68 +140,11 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
         let (completed, new_work_started_at) = self
             .in_lane(move |owners, _source| {
-                match owners.receipts.journal.read(&owners.receipts.saved) {
-                    Ok(_) => owners
-                        .read_original_completion()
-                        .map(|completed| (completed, None)),
-                    Err(LearningOriginalOwnerErrorV1::Store(
-                        ProductEvaluationExecutionStoreErrorV1::Missing,
-                    )) => {
-                        let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
-                        let receipts: &mut OriginalCellQ24TrainingReceiptOwnerV1<RW> =
-                            &mut owners.receipts;
-                        let retained_outcome = match CellQ24TrainingOwnerV1::readback(training) {
-                            Ok(outcome) => Some(outcome),
-                            Err(CellQ24TrainingOwnerErrorV1::Store(
-                                ProductEvaluationExecutionStoreErrorV1::Missing,
-                            )) => None,
-                            Err(error) => return Err(error.into()),
-                        };
-                        // Readback can block on the original witness. Check time
-                        // after that I/O, before any new training or receipt claim.
-                        let now =
-                            super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                        receipts
-                            .config
-                            .verifier
-                            .require_signer_binding(
-                                LearningEvidenceRoleV1::Generator,
-                                &receipts.config.signer,
-                                now,
-                            )
-                            .map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                        if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds
-                            || now < operation_started_at
-                        {
-                            return Err(Error::DeadlineExceeded);
-                        }
-                        let outcome = match retained_outcome {
-                            Some(outcome) => outcome,
-                            None => training.fit_or_readback(&cancellation)?,
-                        };
-                        #[cfg(target_os = "linux")]
-                        training.require_live_source_if_captured()?;
-                        let fresh_now =
-                            super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
-                        if fresh_now < now
-                            || fresh_now
-                                >= receipts.config.dataset.request.envelope.expiry_unix_seconds
-                        {
-                            return Err(Error::DeadlineExceeded);
-                        }
-                        let (receipt, attestation) =
-                            receipts.attest_original_completion(training)?;
-                        Ok((
-                            OriginalCellQ24TrainingCompletionV1 {
-                                outcome,
-                                receipt,
-                                attestation,
-                            },
-                            Some(operation_started_at),
-                        ))
-                    }
-                    Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
-                }
+                owners.execute_original_training_with_source_at(
+                    &cancellation,
+                    &OriginalQ24OwnerReadV1,
+                    operation_started_at,
+                )
             })
             .await?;
         if let Some(started_at) = new_work_started_at {
@@ -251,7 +194,7 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
         dataset: &LearningIterationSnapshotV1,
         expected: &LearningIterationReceiptV1,
     ) -> Result<SignedLearningEvidenceV1, Error> {
-        let completed = OriginalCellQ24TrainingStageV1::readback(self, dataset).await?;
+        let completed = self.readback(dataset).await?;
         if &completed.receipt != expected {
             return Err(Error::Binding("exact original Training receipt"));
         }
@@ -286,6 +229,13 @@ impl<TW: AnchorWitnessStore + Send + 'static, RW: AnchorWitnessStore + Send + 's
             .owners
             .try_lock()
             .map_err(|_| crate::LearningIterationRuntimeErrorV1::CommitUncertain)?;
+        if owners.source_fenced
+            || self
+                .source_abandoned
+                .load(std::sync::atomic::Ordering::Acquire)
+        {
+            return Err(crate::LearningIterationRuntimeErrorV1::CommitUncertain);
+        }
         let scope = owners.receipts.config.scope.clone();
         let training: &mut CellQ24TrainingOwnerV1<TW> = &mut owners.training;
         training
@@ -400,8 +350,39 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
     ) -> Result<OriginalCellQ24TrainingCompletionV1, Error> {
         let operation_started_at =
             super::now().map_err(OriginalCellQ24TrainingReceiptErrorV1::from)?;
+        let (completed, new_work_started_at) = self.execute_original_training_with_source_at(
+            cancellation,
+            source,
+            operation_started_at,
+        )?;
+        if let Some(started_at) = new_work_started_at {
+            let fresh_now = super::now().map_err(|_| Error::CommitUncertain)?;
+            if fresh_now < started_at
+                || fresh_now
+                    >= self
+                        .receipts
+                        .config
+                        .dataset
+                        .request
+                        .envelope
+                        .expiry_unix_seconds
+            {
+                return Err(Error::CommitUncertain);
+            }
+        }
+        Ok(completed)
+    }
+
+    fn execute_original_training_with_source_at(
+        &mut self,
+        cancellation: &AtomicBool,
+        source: &impl OriginalQ24DatasetReadV1,
+        operation_started_at: u64,
+    ) -> Result<(OriginalCellQ24TrainingCompletionV1, Option<u64>), Error> {
         match self.receipts.journal.read(&self.receipts.saved) {
-            Ok(_) => self.read_original_completion_with_source(source),
+            Ok(_) => self
+                .read_original_completion_with_source(source)
+                .map(|completed| (completed, None)),
             Err(LearningOriginalOwnerErrorV1::Store(
                 ProductEvaluationExecutionStoreErrorV1::Missing,
             )) => {
@@ -447,17 +428,14 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
                 }
                 let (receipt, attestation) =
                     receipts.attest_completion_with_source(training, source)?;
-                let completed_at = super::now().map_err(|_| Error::CommitUncertain)?;
-                if completed_at < operation_started_at
-                    || completed_at >= receipts.config.dataset.request.envelope.expiry_unix_seconds
-                {
-                    return Err(Error::CommitUncertain);
-                }
-                Ok(OriginalCellQ24TrainingCompletionV1 {
-                    outcome,
-                    receipt,
-                    attestation,
-                })
+                Ok((
+                    OriginalCellQ24TrainingCompletionV1 {
+                        outcome,
+                        receipt,
+                        attestation,
+                    },
+                    Some(operation_started_at),
+                ))
             }
             Err(error) => Err(OriginalCellQ24TrainingReceiptErrorV1::from(error).into()),
         }
@@ -486,8 +464,7 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
     }
 
     /// A source RPC can block after work finishes. Re-read both original owners
-    /// after that RPC without claiming Missing or retrying Pending. Any failure
-    /// is handled by the occupied lane as an uncertain completion.
+    /// after that RPC without claiming Missing or retrying Pending.
     #[cfg(target_os = "linux")]
     fn require_captured_tail_current(&mut self) -> Result<(), Error> {
         self.training.require_original_dataset_scope(
@@ -510,8 +487,7 @@ impl<TW: AnchorWitnessStore, RW: AnchorWitnessStore> Owners<TW, RW> {
         Ok(())
     }
 
-    /// Keep the original signature window valid after all blocking tail reads.
-    /// This verifies the exact retained bytes; it never signs or extends time.
+    /// Verify retained signature bytes at fresh time without extending them.
     #[cfg(target_os = "linux")]
     fn require_retained_attestation_current(
         &self,

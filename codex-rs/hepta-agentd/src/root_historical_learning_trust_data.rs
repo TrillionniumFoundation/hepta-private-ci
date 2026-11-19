@@ -177,7 +177,7 @@ pub(crate) fn require_original_trust_reply(
     }
     canonical_digest(profile)?;
     canonical_digest(&response.data_cut)?;
-    response.pin.require_initial(initial)?;
+    HistoricalLearningTrustPinV1::require_initial(&response.pin, initial)?;
     // This is strict public data validation only. The actual client performs
     // activation with its original live Root clock before forming a capsule.
     Ok(response)

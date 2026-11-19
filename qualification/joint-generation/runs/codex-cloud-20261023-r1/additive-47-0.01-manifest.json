@@ -1,0 +1,46 @@
+{
+  "arm": "additive",
+  "artifact_sha256": "0a3beaa2014bd384847ffad441dccb6f788134468a444aa00d606ba686b3b942",
+  "capabilities": [
+    "text",
+    "image"
+  ],
+  "compute_price": 0.02,
+  "content_parameters_changed": true,
+  "controller_file": "additive-47-0.01-controller.npz",
+  "controller_sha256": "99585f062ccfa11dd02b5f90ba65e09a6d71a1d28923fe614b69dab1a77c41b2",
+  "controller_training": {
+    "model_forward_rows": 3120,
+    "outcome_cells": 449280,
+    "ridge_features": 31,
+    "rows": 1560,
+    "wall_seconds": 0.12790976400000886
+  },
+  "cost": {
+    "examples": 19200,
+    "joint_outcome_cells": 5529600,
+    "tensor_macs": 431308800,
+    "updates": 300,
+    "utility_profiles_per_update": [
+      0,
+      1.5
+    ],
+    "wall_seconds": 0.4777044719999992
+  },
+  "learning_rate": 0.01,
+  "model_file": "additive-47-0.01.npz",
+  "model_sha256": "b97265f258e0fca3269bfdc1b05f1b5988ab334a6912643a0683d5a108f2eca1",
+  "name": "additive-47-0.01",
+  "qualification_only": true,
+  "rho": 1.5,
+  "seed": 47,
+  "validation": {
+    "consistency": 0.9611470049990194,
+    "greedy_joint_success": 0.9728682170542635,
+    "joint_success": 0.9435426473419407,
+    "ndu": 0.9221226178096741,
+    "pixel_mse": 0.0017143931434250566,
+    "task_utility": 0.9462858449667145
+  },
+  "validation_seconds": 0.008267635999999356
+}

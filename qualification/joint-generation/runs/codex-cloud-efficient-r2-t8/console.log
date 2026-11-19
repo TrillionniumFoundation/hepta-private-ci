@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 882, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 875, in main
+    return train(args.freeze, args.out)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 643, in train
+    guard_cpu_budget("shared", plan, run, shared,
+  File "/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py", line 133, in guard_cpu_budget
+    raise error
+independent.accounting.BudgetExceeded: shared:shared_preparation_complete actual CPU 12.274880402s exceeds frozen cap 10.000000000s

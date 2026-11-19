@@ -1,0 +1,80 @@
+{
+  "adam_or_restore_qualified": false,
+  "arrays_sha256": "123704eabaa765f47f92b0f5c68a8f835ad0859c2b15a808b26bac3ffc3c5fac",
+  "backward_journal": [],
+  "calls": {
+    "adjoint_calls": 0,
+    "backward_attempts": 0,
+    "forward_basis_calls": 0,
+    "guard_rejections": 0,
+    "metadata_checks": 2,
+    "model_forward_calls": 1,
+    "optimizer_updates": 0
+  },
+  "checks": [],
+  "discrete_bdf_program_reverse": false,
+  "error": {
+    "message": "attribute 'metadata' of 'torch._C._FunctionBase' objects is not writable",
+    "traceback": "Traceback (most recent call last):\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/native_probe.py\", line 140, in main\n    output, _ = amplitude_flow(\n                ^^^^^^^^^^^^^^^\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/torch_flow.py\", line 333, in amplitude_flow\n    output = _Amplitude.apply(\n             ^^^^^^^^^^^^^^^^^\n  File \"/opt/hostedtoolcache/Python/3.12.16/x64/lib/python3.12/site-packages/torch/autograd/function.py\", line 576, in apply\n    return super().apply(*args, **kwargs)  # type: ignore[misc]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/qualification/hcsn_adjoint_torch/torch_flow.py\", line 212, in forward\n    ctx.problem, ctx.metadata, ctx.options, ctx.budget = (\n                 ^^^^^^^^^^^^\nAttributeError: attribute 'metadata' of 'torch._C._FunctionBase' objects is not writable\n",
+    "type": "AttributeError"
+  },
+  "first_order_only": true,
+  "fixed_physics_support_only": true,
+  "forward_journal": [
+    {
+      "cpu_seconds": 0.20386859800000012,
+      "internal_steps": 542,
+      "label": "uniform_baseline",
+      "problem_identity": "8a90ff25dec687524652b8a3cea238f1996df1ec3336c129e8b3b816647b1477",
+      "wall_seconds": 0.20386804700000027
+    }
+  ],
+  "full_network_qualified": false,
+  "gradcheck_eps": 0.0002,
+  "guards": [],
+  "n512_qualified": false,
+  "process_peak_rss_kib": 341780,
+  "rare_tail_relative_qualified": false,
+  "recorded_array_scalars": 171,
+  "runtime": {
+    "device": "cpu",
+    "executable": "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+    "numpy": "2.3.5",
+    "platform": "Linux-7.0.0-1017-azure-x86_64-with-glibc2.39",
+    "python": "3.12.16 (main, Oct 26 2026, 02:50:49) [GCC 13.3.0]",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu",
+    "torch_git": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7",
+    "torch_interop_threads": 1,
+    "torch_threads": 1
+  },
+  "source_after": {
+    ".github/workflows/hcsn-continuous-adjoint-torch.yml": "003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d",
+    "qualification/hcsn_adjoint_torch/TORCH-REQUEST.json": "df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8",
+    "qualification/hcsn_adjoint_torch/native_probe.py": "acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f",
+    "qualification/hcsn_adjoint_torch/torch_flow.py": "2ed90108ca8523617b3dd117d524b74511b12b7482764379b1cef429a68c456b",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_before": {
+    ".github/workflows/hcsn-continuous-adjoint-torch.yml": "003386e7811ef4615ed3584d3bfe86f60110f895c106e2f89543d1f830c3ed8d",
+    "qualification/hcsn_adjoint_torch/TORCH-REQUEST.json": "df6221d1aca3d289dbc9b001d1c112277cebed5ae63ef96a06ccc0c204f6a2c8",
+    "qualification/hcsn_adjoint_torch/native_probe.py": "acb198097f49d01beb83236ee1f635f87dff534a1aab1b101887e878b1d87e2f",
+    "qualification/hcsn_adjoint_torch/torch_flow.py": "2ed90108ca8523617b3dd117d524b74511b12b7482764379b1cef429a68c456b",
+    "qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "qualification/hcsn_initial_adjoint/solver.py": "05e2e970604c71a36f816b2089d7ebfe78f4f99d55473724e3d6c02935e22e91",
+    "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4"
+  },
+  "source_commit": "bc1b94039dea52c5426b99ba617f7a2f59742377",
+  "source_unchanged": true,
+  "status": "HOLD",
+  "validation_cpu_seconds": 0.20823052899999994,
+  "validation_wall_seconds": 0.20823229299999468
+}

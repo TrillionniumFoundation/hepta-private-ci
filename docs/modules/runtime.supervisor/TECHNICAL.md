@@ -436,3 +436,42 @@ and held Root lifetime. It must then use the same original Config/Registry,
 writer, lease, checkpoint and FinalUse owners. The finite HOS2 entry, actual
 guest execution and original 8 MiB ELF / 16 MiB load limits remain separate
 gates; these transport and real-child regressions do not qualify those gates.
+
+### 2026-11-05 candidate: writer-handoff lock lifetime
+
+The candidate takes only the four writer-handoff files from fixed R6 source
+`eac9ca08f2414c619a5058868ebbedf683b18685`. The journal's private File becomes a
+`LockedHandoffFile` guard before fallible create/recovery I/O. Its destructor
+explicitly unlocks in the acquiring process, so a passive duplicated descriptor
+does not retain a departed logical owner's lock, including after recovery errors.
+
+A fork child shares the inherited open-file description and must only close its
+copied descriptor. The acquiring PID suppresses explicit unlock in that child;
+it is not durable writer identity or authority. Independently opened contenders,
+the domain writer's durable generation fence and the exact acknowledged minimum
+remain required. The journal format, phase transitions, unknown-effect refusal,
+receipt digest, bounded recovery, tail repair and poisoning rules are unchanged.
+
+| Regression boundary | Required native observation |
+| --- | --- |
+| Owner drop with passive duplicate | Independent recovery stays Busy while the owner lives, then succeeds after owner drop even while the duplicate remains open. |
+| Failed recovery with passive duplicate | Missing-header recovery releases only its acquired lock, and an independently opened successor can lock the file. |
+| Actual Unix fork-copy drop | The child exits after dropping its copied guard; the parent observes that exact child and verifies its own lock remains held until parent drop. |
+| Broader supervisor regression | Existing handoff and full supervisor cases run on the recorded candidate with terminal receipts. |
+
+The fork fixture retains its fixed two-second observation/cleanup window. If that
+window expires, missing terminal observation remains failed/unknown; the fixture's
+deadline checks can prevent further cleanup attempts, so a clean child exit must
+not be inferred. The source transplant does not change runtime process deadlines,
+Root handoff, signed admission, R4/R5 app-server behavior or production defaults.
+
+Native RED/GREEN and full-suite results are recorded separately under their actual
+execution commit/tree, command, terminal status and raw artifacts. This source
+addendum does not assert an execution result, transfer historical execution evidence
+or change
+production implementation, product execution, activation or release claims.
+
+The sourceReviewAddendum reviewedPostimages entries retain the bytes inspected
+during the pre-format review and its historical integration base. They are not
+final candidate or execution hashes; current source-object observations and
+execution receipts are bound separately.

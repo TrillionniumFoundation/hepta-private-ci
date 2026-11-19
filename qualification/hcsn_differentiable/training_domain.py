@@ -10,8 +10,10 @@ from dataclasses import asdict
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
+import stat
 
 import torch
 
@@ -231,7 +233,6 @@ class TrainingDomainRecorder:
         self.closed = True
 
 
-
 def _unique_trace_object(pairs):
     """Reject JSON field ambiguity at every nesting depth."""
     value = {}
@@ -262,21 +263,69 @@ def _strict_trace_row(line):
     )
 
 
+_TRACE_READ_LIMIT = 64 * 1024 * 1024
+
+
+def _read_trace_bytes(path):
+    """Read one bounded regular file through a single retained descriptor."""
+    flags = os.O_RDONLY
+    for name in ("O_NONBLOCK", "O_NOFOLLOW", "O_CLOEXEC", "O_BINARY"):
+        flags |= getattr(os, name, 0)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError as error:
+        raise ValueError("trace must be an accessible regular file") from error
+    try:
+        with os.fdopen(descriptor, "rb", closefd=False) as stream:
+            before = os.fstat(descriptor)
+            if not stat.S_ISREG(before.st_mode):
+                raise ValueError("trace must be a regular file")
+            if before.st_size > _TRACE_READ_LIMIT:
+                raise ValueError("trace exceeds the declared 64 MiB read budget")
+            data = stream.read(_TRACE_READ_LIMIT + 1)
+            after = os.fstat(descriptor)
+        if len(data) > _TRACE_READ_LIMIT:
+            raise ValueError("trace exceeds the declared 64 MiB read budget")
+
+        def identity(item):
+            return (
+                item.st_dev,
+                item.st_ino,
+                item.st_size,
+                item.st_mtime_ns,
+                item.st_ctime_ns,
+            )
+
+        if len(data) != before.st_size or identity(before) != identity(after):
+            raise ValueError("trace changed during the bounded read")
+        return data
+    finally:
+        os.close(descriptor)
+
+
 def read_trace(path):
-    path = Path(path)
-    if path.stat().st_size > 64 * 1024 * 1024:
-        raise ValueError("trace exceeds the declared 64 MiB read budget")
-    data = path.read_bytes()
+    data = _read_trace_bytes(path)
     lines = data.splitlines(keepends=True)
     rows = [_strict_trace_row(line) for line in lines]
     if (
         len(rows) < 2
         or any(type(row) is not dict for row in rows)
+        or rows[0].get("kind") != "header"
         or rows[0].get("schema") != "hcsn-training-domain-v1"
         or rows[-1].get("kind") != "end"
     ):
         raise ValueError("trace is incomplete or has an unsupported schema")
     footer = rows[-1]
+    if (
+        any(
+            type(footer.get(name)) is not int or footer[name] < 0
+            for name in ("retained_records", "seen_records", "dropped_records")
+        )
+        or type(footer.get("truncated")) is not bool
+    ):
+        raise ValueError(
+            "trace counts must be nonnegative integers and a boolean truncation marker"
+        )
     if hashlib.sha256(b"".join(lines[:-1])).hexdigest() != footer["prefix_sha256"]:
         raise ValueError("trace prefix digest mismatch")
     visits = rows[1:-1]
@@ -286,7 +335,9 @@ def read_trace(path):
         or footer["dropped_records"] != footer["seen_records"] - len(visits)
         or footer["truncated"] != (footer["dropped_records"] != 0)
         or any(
-            row.get("kind") != "visit" or row.get("index") != i
+            row.get("kind") != "visit"
+            or type(row.get("index")) is not int
+            or row["index"] != i
             for i, row in enumerate(visits)
         )
     ):

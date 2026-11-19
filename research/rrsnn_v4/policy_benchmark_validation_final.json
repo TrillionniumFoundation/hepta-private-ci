@@ -1,0 +1,495 @@
+{
+  "all_passed": true,
+  "checks": [
+    "all four encoders match the existing closed-loop evaluator on every action and ledger",
+    "same-seed replay has identical actions, outcomes and actual internal event counts",
+    "allocated state equals metadata without padding",
+    "weights and buffers unchanged",
+    "development workload is prefix-stable and common across policies",
+    "source identity unchanged during validation"
+  ],
+  "fresh_process_per_condition": false,
+  "production_checkpoints_opened": false,
+  "production_or_holdout_data_opened": false,
+  "resources_after": {
+    "cpu_affinity": [
+      2
+    ],
+    "disk_free_bytes": 295673856,
+    "memory.current": 7354650624,
+    "memory.events": {
+      "high": 0,
+      "low": 0,
+      "max": 1900605,
+      "oom": 1,
+      "oom_group_kill": 0,
+      "oom_kill": 1
+    },
+    "memory.max": 8589934592,
+    "process_peak_rss_mib": 215.13671875
+  },
+  "resources_before": {
+    "cpu_affinity": [
+      2
+    ],
+    "disk_free_bytes": 295673856,
+    "memory.current": 7344209920,
+    "memory.events": {
+      "high": 0,
+      "low": 0,
+      "max": 1900605,
+      "oom": 1,
+      "oom_group_kill": 0,
+      "oom_kill": 1
+    },
+    "memory.max": 8589934592,
+    "process_peak_rss_mib": 194.15234375
+  },
+  "results": {
+    "alif": {
+      "independent_evaluator_equal": true,
+      "same_seed_replay_equal": true,
+      "state_storage": {
+        "batch_size": 4,
+        "bytes_per_episode": 164.0,
+        "excluded": "model weights, RNG object, Python containers/scalars, task queues, temporary working arrays and process/framework overhead",
+        "fields": [
+          {
+            "bytes": 128,
+            "field": "state.voltage"
+          },
+          {
+            "bytes": 128,
+            "field": "state.context"
+          },
+          {
+            "bytes": 128,
+            "field": "state.refractory_remaining"
+          },
+          {
+            "bytes": 128,
+            "field": "state.spike_trace"
+          },
+          {
+            "bytes": 16,
+            "field": "state.time"
+          },
+          {
+            "bytes": 128,
+            "field": "state.adaptation_trace"
+          }
+        ],
+        "resident_numeric_bytes": 656
+      },
+      "summary": {
+        "actual_internal_spikes": 4,
+        "actual_state_bytes_per_policy": [
+          164.0
+        ],
+        "amortized_policy_observation_wall_seconds": {
+          "maximum": 0.00301991925,
+          "mean": 0.0007009093522727273,
+          "minimum": 0.00022485125,
+          "p50": 0.00052981525,
+          "p95": 0.0011575290374999999,
+          "p99": 0.0026290793774999986,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_episode_cpu_seconds": {
+          "maximum": 0.0577935,
+          "mean": 0.0447467175,
+          "minimum": 0.031699935,
+          "p50": 0.0447467175,
+          "p95": 0.056488821749999994,
+          "p99": 0.057532564349999996,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_episode_wall_seconds": {
+          "maximum": 0.057805685,
+          "mean": 0.044759845500000006,
+          "minimum": 0.031714006,
+          "p50": 0.044759845500000006,
+          "p95": 0.05650110105,
+          "p99": 0.05754476821,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_observation_cpu_seconds": {
+          "maximum": 0.012065991,
+          "mean": 0.0027977829090909093,
+          "minimum": 0.000894978,
+          "p50": 0.0021138084999999997,
+          "p95": 0.0046256788,
+          "p99": 0.010504589969999993,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_observation_wall_seconds": {
+          "maximum": 0.012079677,
+          "mean": 0.002803637409090909,
+          "minimum": 0.000899405,
+          "p50": 0.002119261,
+          "p95": 0.0046301161499999995,
+          "p99": 0.010516317509999994,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batched_step_empirical_fraction_granularity": 0.045454545454545456,
+        "budget_spent": 26,
+        "communication_output_pulses": 26,
+        "episode_empirical_fraction_granularity": 0.5,
+        "full_loop_policy_episodes_per_wall_second": 89.36581338289024,
+        "full_loop_policy_observations_per_cpu_second": 983.3123513473363,
+        "full_loop_policy_observations_per_wall_second": 983.0239472117926,
+        "latency_qualification": "p95/p99 are descriptive empirical quantiles, with only 2 complete episode samples and 22 inner batched-step samples. This does not establish extreme-tail precision or an SLA. Inner steps are correlated within episodes. Amortized per-policy time is batch time divided by active instances, not a single-request latency or an independent sample.",
+        "measured_full_cpu_seconds": 0.089493435,
+        "measured_full_wall_seconds": 0.08951969100000001,
+        "model_only_policy_observations_per_cpu_second": 1429.7034937924223,
+        "model_only_policy_observations_per_wall_second": 1426.7180153288853
+      }
+    },
+    "ctrnn_state_cpu": {
+      "independent_evaluator_equal": true,
+      "same_seed_replay_equal": true,
+      "state_storage": {
+        "batch_size": 4,
+        "bytes_per_episode": 292.0,
+        "excluded": "model weights, RNG object, Python containers/scalars, task queues, temporary working arrays and process/framework overhead",
+        "fields": [
+          {
+            "bytes": 1024,
+            "field": "state.memory"
+          },
+          {
+            "bytes": 128,
+            "field": "state.context"
+          },
+          {
+            "bytes": 16,
+            "field": "state.time"
+          }
+        ],
+        "resident_numeric_bytes": 1168
+      },
+      "summary": {
+        "actual_internal_spikes": 0,
+        "actual_state_bytes_per_policy": [
+          292.0
+        ],
+        "amortized_policy_observation_wall_seconds": {
+          "maximum": 0.000442457,
+          "mean": 0.00014353701136363636,
+          "minimum": 6.31245e-05,
+          "p50": 0.000127810125,
+          "p95": 0.0003247838999999999,
+          "p99": 0.0004185447724999999,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_episode_cpu_seconds": {
+          "maximum": 0.020181093,
+          "mean": 0.0175647815,
+          "minimum": 0.01494847,
+          "p50": 0.0175647815,
+          "p95": 0.01991946185,
+          "p99": 0.02012876677,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_episode_wall_seconds": {
+          "maximum": 0.02018485,
+          "mean": 0.0175677705,
+          "minimum": 0.014950691,
+          "p50": 0.0175677705,
+          "p95": 0.019923142050000002,
+          "p99": 0.02013250841,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_observation_cpu_seconds": {
+          "maximum": 0.001764847,
+          "mean": 0.0005697438181818181,
+          "minimum": 0.000249409,
+          "p50": 0.0005068285,
+          "p95": 0.001294111,
+          "p99": 0.0016691829699999996,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_observation_wall_seconds": {
+          "maximum": 0.001769828,
+          "mean": 0.0005741480454545454,
+          "minimum": 0.000252498,
+          "p50": 0.0005112405,
+          "p95": 0.0012991355999999996,
+          "p99": 0.0016741790899999997,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batched_step_empirical_fraction_granularity": 0.045454545454545456,
+        "budget_spent": 22,
+        "communication_output_pulses": 20,
+        "episode_empirical_fraction_granularity": 0.5,
+        "full_loop_policy_episodes_per_wall_second": 227.68967752624044,
+        "full_loop_policy_observations_per_cpu_second": 2505.01265842675,
+        "full_loop_policy_observations_per_wall_second": 2504.586452788645,
+        "latency_qualification": "p95/p99 are descriptive empirical quantiles, with only 2 complete episode samples and 22 inner batched-step samples. This does not establish extreme-tail precision or an SLA. Inner steps are correlated within episodes. Amortized per-policy time is batch time divided by active instances, not a single-request latency or an independent sample.",
+        "measured_full_cpu_seconds": 0.035129563,
+        "measured_full_wall_seconds": 0.035135541,
+        "model_only_policy_observations_per_cpu_second": 7020.699255263371,
+        "model_only_policy_observations_per_wall_second": 6966.844234109084
+      }
+    },
+    "resource_lif": {
+      "independent_evaluator_equal": true,
+      "same_seed_replay_equal": true,
+      "state_storage": {
+        "batch_size": 4,
+        "bytes_per_episode": 164.0,
+        "excluded": "model weights, RNG object, Python containers/scalars, task queues, temporary working arrays and process/framework overhead",
+        "fields": [
+          {
+            "bytes": 128,
+            "field": "state.voltage"
+          },
+          {
+            "bytes": 128,
+            "field": "state.context"
+          },
+          {
+            "bytes": 128,
+            "field": "state.refractory_remaining"
+          },
+          {
+            "bytes": 128,
+            "field": "state.spike_trace"
+          },
+          {
+            "bytes": 16,
+            "field": "state.time"
+          },
+          {
+            "bytes": 128,
+            "field": "state.held_threshold"
+          }
+        ],
+        "resident_numeric_bytes": 656
+      },
+      "summary": {
+        "actual_internal_spikes": 0,
+        "actual_state_bytes_per_policy": [
+          164.0
+        ],
+        "amortized_policy_observation_wall_seconds": {
+          "maximum": 0.0180150815,
+          "mean": 0.0018738797272727275,
+          "minimum": 0.00015331475,
+          "p50": 0.00037427049999999996,
+          "p95": 0.005878566724999999,
+          "p99": 0.015471196834999989,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_episode_cpu_seconds": {
+          "maximum": 0.564246378,
+          "mean": 0.295765778,
+          "minimum": 0.027285178,
+          "p50": 0.295765778,
+          "p95": 0.5373983179999999,
+          "p99": 0.558876766,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_episode_wall_seconds": {
+          "maximum": 0.564992705,
+          "mean": 0.2961403465,
+          "minimum": 0.027287988,
+          "p50": 0.2961403465,
+          "p95": 0.53810746915,
+          "p99": 0.55961565783,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_observation_cpu_seconds": {
+          "maximum": 0.072034737,
+          "mean": 0.007489038181818183,
+          "minimum": 0.000608788,
+          "p50": 0.001491745,
+          "p95": 0.023510351,
+          "p99": 0.06186389687999996,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_observation_wall_seconds": {
+          "maximum": 0.072060326,
+          "mean": 0.00749551890909091,
+          "minimum": 0.000613259,
+          "p50": 0.0014970819999999998,
+          "p95": 0.023514266899999997,
+          "p99": 0.061884787339999955,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batched_step_empirical_fraction_granularity": 0.045454545454545456,
+        "budget_spent": 26,
+        "communication_output_pulses": 26,
+        "episode_empirical_fraction_granularity": 0.5,
+        "full_loop_policy_episodes_per_wall_second": 13.507109204385294,
+        "full_loop_policy_observations_per_cpu_second": 148.76636606686796,
+        "full_loop_policy_observations_per_wall_second": 148.57820124823823,
+        "latency_qualification": "p95/p99 are descriptive empirical quantiles, with only 2 complete episode samples and 22 inner batched-step samples. This does not establish extreme-tail precision or an SLA. Inner steps are correlated within episodes. Amortized per-policy time is batch time divided by active instances, not a single-request latency or an independent sample.",
+        "measured_full_cpu_seconds": 0.591531556,
+        "measured_full_wall_seconds": 0.592280693,
+        "model_only_policy_observations_per_cpu_second": 534.1139813803011,
+        "model_only_policy_observations_per_wall_second": 533.652179190505
+      }
+    },
+    "rr_full": {
+      "independent_evaluator_equal": true,
+      "same_seed_replay_equal": true,
+      "state_storage": {
+        "batch_size": 4,
+        "bytes_per_episode": 309.0,
+        "excluded": "model weights, RNG object, Python containers/scalars, task queues, temporary working arrays and process/framework overhead",
+        "fields": [
+          {
+            "bytes": 256,
+            "field": "state.indices"
+          },
+          {
+            "bytes": 256,
+            "field": "state.trace"
+          },
+          {
+            "bytes": 128,
+            "field": "state.context"
+          },
+          {
+            "bytes": 128,
+            "field": "state.drift"
+          },
+          {
+            "bytes": 128,
+            "field": "state.boundary"
+          },
+          {
+            "bytes": 32,
+            "field": "state.time"
+          },
+          {
+            "bytes": 256,
+            "field": "state.total_counts"
+          },
+          {
+            "bytes": 4,
+            "field": "state.observed"
+          },
+          {
+            "bytes": 32,
+            "field": "state.pending_initial_score"
+          },
+          {
+            "bytes": 16,
+            "field": "state.initial_resource"
+          }
+        ],
+        "resident_numeric_bytes": 1236
+      },
+      "summary": {
+        "actual_internal_spikes": 50,
+        "actual_state_bytes_per_policy": [
+          309.0
+        ],
+        "amortized_policy_observation_wall_seconds": {
+          "maximum": 0.00506485375,
+          "mean": 0.0016888011590909093,
+          "minimum": 0.00077402925,
+          "p50": 0.00151369975,
+          "p95": 0.0026309731999999996,
+          "p99": 0.004558535822499998,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_episode_cpu_seconds": {
+          "maximum": 0.099698291,
+          "mean": 0.0970068795,
+          "minimum": 0.094315468,
+          "p50": 0.0970068795,
+          "p95": 0.09942914985,
+          "p99": 0.09964446277,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_episode_wall_seconds": {
+          "maximum": 0.099724565,
+          "mean": 0.0970200745,
+          "minimum": 0.094315584,
+          "p50": 0.0970200745,
+          "p95": 0.09945411595,
+          "p99": 0.09967047519,
+          "quantile_method": "linear empirical quantile",
+          "samples": 2
+        },
+        "batch_observation_cpu_seconds": {
+          "maximum": 0.020254623,
+          "mean": 0.006748928318181816,
+          "minimum": 0.003088748,
+          "p50": 0.006048991,
+          "p95": 0.010518844699999998,
+          "p99": 0.01822927883999999,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batch_observation_wall_seconds": {
+          "maximum": 0.020259415,
+          "mean": 0.006755204636363637,
+          "minimum": 0.003096117,
+          "p50": 0.006054799,
+          "p95": 0.010523892799999999,
+          "p99": 0.01823414328999999,
+          "quantile_method": "linear empirical quantile",
+          "samples": 22
+        },
+        "batched_step_empirical_fraction_granularity": 0.045454545454545456,
+        "budget_spent": 26,
+        "communication_output_pulses": 24,
+        "episode_empirical_fraction_granularity": 0.5,
+        "full_loop_policy_episodes_per_wall_second": 41.228580998461304,
+        "full_loop_policy_observations_per_cpu_second": 453.57607859141575,
+        "full_loop_policy_observations_per_wall_second": 453.51439098307435,
+        "latency_qualification": "p95/p99 are descriptive empirical quantiles, with only 2 complete episode samples and 22 inner batched-step samples. This does not establish extreme-tail precision or an SLA. Inner steps are correlated within episodes. Amortized per-policy time is batch time divided by active instances, not a single-request latency or an independent sample.",
+        "measured_full_cpu_seconds": 0.194013759,
+        "measured_full_wall_seconds": 0.194040149,
+        "model_only_policy_observations_per_cpu_second": 592.6866920817455,
+        "model_only_policy_observations_per_wall_second": 592.1360218264567
+      }
+    }
+  },
+  "schema": "rrsnn-v4-policy-benchmark-development-1",
+  "sizing_qualification": "Tiny functional probe only; its shared process RSS and 2-repeat quantiles are not production performance claims.",
+  "sources_sha256": {
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "policy_benchmark.py": "538db3796a1548d6920c2282367efeaf78f77489c84b083c7548f06a77a2235e",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4"
+  },
+  "task_superiority_claim": false,
+  "unique_development_episodes": 4,
+  "workload": {
+    "actions": 81,
+    "causal_scope": "Exogenous values/deadlines/resource events and public observation schedules are common. Live items and remaining budget follow each policy's own actions.",
+    "distinct_public_schedules": 1,
+    "observations_per_episode": 44,
+    "policy_instances": 4,
+    "raw_input_features": 22,
+    "scenario_seed": 86241001,
+    "scenario_sha256": "7011e6beaba3b85a22ec7f282c6cb8f8b9c6b03010c3953a7d6d05db3da7cbd6",
+    "schedule_sha256": "35722eb7f2a9a76a271e990d045b503e321ffee7b27767c9734290c7eeed7286",
+    "source": "Separate generated development performance workload; no task data split is loaded."
+  }
+}

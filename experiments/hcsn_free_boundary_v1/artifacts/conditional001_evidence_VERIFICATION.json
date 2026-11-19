@@ -1,0 +1,67 @@
+{
+  "all_logical_members_match_original_source_bytes_and_sha256": true,
+  "archive_sha256": "0c1d90c87908ce20ba8c454073609cd61415397db67f62603d428bb33ec26463",
+  "archive_tool_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "compressed_bytes": 7971636,
+  "conditional_comparison_sha256": "369496afe59d60c51f124e461e8ae28aba19d60ae43604e40f427613b7e2741d",
+  "conditional_registered_files_verified_unchanged": 41,
+  "conditional_report_sha256": "79dcfda29318a2863b2fb5bd57f3c4555d111900eff77c70f1ce45713fe68abd",
+  "created_utc": "2026-10-29T15:06:45.751623+00:00",
+  "equal_updates_core002_included": false,
+  "existing_original_files_inode_mtime_size_sha256_nlink_unchanged": 397,
+  "free_space": {
+    "check": "Before each compressed-part write, require reserve plus part plus 2MiB metadata margin; checks do not control other concurrent writers",
+    "finish_bytes": 83390464,
+    "minimum_observed_bytes": 83390464,
+    "reserve_bytes": 52428800,
+    "start_bytes": 102146048
+  },
+  "git_write_performed": false,
+  "logical_path_prefix": "results/conditional001/",
+  "manifest": "conditional001_evidence.json",
+  "manifest_sha256": "81e8d9a5f2e4e8ecc6a9bda1d9a83311041839b0e15aefc0c7092928e46511ac",
+  "members_verified": 397,
+  "only_own_staging_cleaned": true,
+  "original_frozen_files_verified_unchanged": 38,
+  "part_bytes": 4194304,
+  "parts": [
+    {
+      "bytes": 4194304,
+      "git_blob_sha1": "d48fa14013568eda52a0efc565b19b61c56d997b",
+      "path": "conditional001_evidence.tar.xz.part0000",
+      "sha256": "4f2221069affdabacd736197b3e833e42d8ab4b8c670876ab12b6947e7da273c",
+      "verified": true
+    },
+    {
+      "bytes": 3777332,
+      "git_blob_sha1": "b67f5cc9722d80cf6834b5c66f74086631c878b2",
+      "path": "conditional001_evidence.tar.xz.part0001",
+      "sha256": "1bb6dae82270c0adaa1cd5933f7c938b95e9460e7807d4fcf318e9e61c24cb12",
+      "verified": true
+    }
+  ],
+  "parts_verified": 2,
+  "restore_destination": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1",
+  "restore_forbade_TemporaryFile": true,
+  "restore_result": {
+    "archive_sha256": "0c1d90c87908ce20ba8c454073609cd61415397db67f62603d428bb33ec26463",
+    "restored_or_already_identical": 397
+  },
+  "schema": "hcsn-conditional-evidence-verification.v1",
+  "source_directories_or_protocols_modified": false,
+  "source_directory": "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_free_boundary_v1/results/conditional001",
+  "staging_cleanup_confirmed": true,
+  "staging_method": "independent hardlinks, same inodes; no source data copy",
+  "staging_removed": "/workspace/scratch/58af017d4789/conditional001_archive_9b7vqc9t",
+  "status": "passed",
+  "timing": {
+    "identical_restore_cpu_seconds": 0.38682745799999996,
+    "identical_restore_wall_seconds": 0.3869487019983353,
+    "operation_cpu_seconds_excluding_imports": 6.996303266,
+    "operation_wall_seconds_excluding_imports": 7.037720487001934,
+    "pack_cpu_seconds": 6.399714725,
+    "pack_wall_seconds": 6.4029084959911415,
+    "peak_process_rss_kib_linux": 125032
+  },
+  "uncompressed_file_bytes": 15300473
+}

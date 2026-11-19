@@ -1,0 +1,9 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/final_report.py", line 418, in <module>
+    run(args.output, args.costs)
+  File "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/final_report.py", line 212, in run
+    largest_gain = max((row for row in enum if row['cells']==8), key=lambda row: row['initial_relative_improvement'])
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: '>' not supported between instances of 'NoneType' and 'float'

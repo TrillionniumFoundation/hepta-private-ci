@@ -1,0 +1,426 @@
+{
+  "schema": "rrsnn-v4-batched-evaluation-validation-1",
+  "all_passed": true,
+  "scalar_vs_batch_cases": [
+    {
+      "variant": "lif",
+      "scenario": 0,
+      "expected_utility": 0.7790044562228975,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "lif",
+      "scenario": 1,
+      "expected_utility": 0.8824342251321469,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "lif",
+      "scenario": 2,
+      "expected_utility": 0.598271965967469,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "alif",
+      "scenario": 0,
+      "expected_utility": 0.4306029994935761,
+      "internal_spikes": 1,
+      "passed": true
+    },
+    {
+      "variant": "alif",
+      "scenario": 1,
+      "expected_utility": 1.0435714297152725,
+      "internal_spikes": 2,
+      "passed": true
+    },
+    {
+      "variant": "alif",
+      "scenario": 2,
+      "expected_utility": 0.26293403301968304,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "resource_lif",
+      "scenario": 0,
+      "expected_utility": 0.7953338609498165,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "resource_lif",
+      "scenario": 1,
+      "expected_utility": 0.8693707013506117,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "resource_lif",
+      "scenario": 2,
+      "expected_utility": 0.7033346753494104,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn",
+      "scenario": 0,
+      "expected_utility": 0.6048037278582369,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn",
+      "scenario": 1,
+      "expected_utility": 1.4102124912090346,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn",
+      "scenario": 2,
+      "expected_utility": 1.0025284774912757,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn_matched",
+      "scenario": 0,
+      "expected_utility": 0.6389791621019795,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn_matched",
+      "scenario": 1,
+      "expected_utility": 1.1538102200801192,
+      "internal_spikes": 0,
+      "passed": true
+    },
+    {
+      "variant": "ctrnn_matched",
+      "scenario": 2,
+      "expected_utility": 0.6837393896771076,
+      "internal_spikes": 0,
+      "passed": true
+    }
+  ],
+  "paired_development_groups": 2,
+  "rr_single_row_identical_stream_cases": [
+    {
+      "scenario": 0,
+      "latent_seed": 901400,
+      "actual_internal_spikes": 5,
+      "expected_utility": 0.9630028274237097,
+      "passed": true
+    },
+    {
+      "scenario": 1,
+      "latent_seed": 901401,
+      "actual_internal_spikes": 2,
+      "expected_utility": 1.463604054927604,
+      "passed": true
+    },
+    {
+      "scenario": 2,
+      "latent_seed": 901402,
+      "actual_internal_spikes": 1,
+      "expected_utility": 0.08546742370963846,
+      "passed": true
+    }
+  ],
+  "strict_paired_pre_cue_state_and_rng_cases": [
+    {
+      "group": 0,
+      "actor_seed": 901601,
+      "conditions": [
+        "A0",
+        "A2",
+        "B0",
+        "B2"
+      ],
+      "witness": {
+        "initial_state_sha256": "cd4f73fba8c51b1f06198a4bc663988656ba41f7094b6d8fe7ba9be60464b546",
+        "initial_rng_sha256": "24ba6a85e6a0b6d34dd8861c95bb1a793512a41fdf3256b8e10d2ce7d5d7e372",
+        "post_initialization_rng_sha256": "dcdd25975a6eb69ac30e95ef8d629519b8649509d3a221a322a468c95d047062"
+      },
+      "initial_state_snapshot": {
+        "indices": {
+          "dtype": "int64",
+          "shape": [
+            8
+          ],
+          "value": [
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            9
+          ]
+        },
+        "trace": {
+          "dtype": "float64",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "context": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "drift": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "boundary": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25
+          ]
+        },
+        "time": {
+          "dtype": "float64",
+          "shape": [],
+          "value": 0.0
+        },
+        "total_counts": {
+          "dtype": "int64",
+          "shape": [
+            8
+          ],
+          "value": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "observed": {
+          "dtype": "bool",
+          "shape": [],
+          "value": false
+        },
+        "pending_initial_score": {
+          "dtype": "float64",
+          "shape": [],
+          "value": -3.041180769543754
+        },
+        "initial_resource": {
+          "dtype": "float32",
+          "shape": [
+            1
+          ],
+          "value": [
+            0.0
+          ]
+        }
+      }
+    },
+    {
+      "group": 1,
+      "actor_seed": 1001604,
+      "conditions": [
+        "A0",
+        "A2",
+        "B0",
+        "B2"
+      ],
+      "witness": {
+        "initial_state_sha256": "cd4f73fba8c51b1f06198a4bc663988656ba41f7094b6d8fe7ba9be60464b546",
+        "initial_rng_sha256": "7c57c7e7bd589672c0e518a7982ba1fea4750d92afcdfa5116c513fd58f4a5ca",
+        "post_initialization_rng_sha256": "b4b276e0758fd10452d391fddb0ed26ba3480af6e6c680756bf0941ebb50fcf3"
+      },
+      "initial_state_snapshot": {
+        "indices": {
+          "dtype": "int64",
+          "shape": [
+            8
+          ],
+          "value": [
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            10,
+            9
+          ]
+        },
+        "trace": {
+          "dtype": "float64",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "context": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "drift": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ]
+        },
+        "boundary": {
+          "dtype": "float32",
+          "shape": [
+            8
+          ],
+          "value": [
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25,
+            1.25
+          ]
+        },
+        "time": {
+          "dtype": "float64",
+          "shape": [],
+          "value": 0.0
+        },
+        "total_counts": {
+          "dtype": "int64",
+          "shape": [
+            8
+          ],
+          "value": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "observed": {
+          "dtype": "bool",
+          "shape": [],
+          "value": false
+        },
+        "pending_initial_score": {
+          "dtype": "float64",
+          "shape": [],
+          "value": -3.041180769543754
+        },
+        "initial_resource": {
+          "dtype": "float32",
+          "shape": [
+            1
+          ],
+          "value": [
+            0.0
+          ]
+        }
+      }
+    }
+  ],
+  "two_freeze_and_cpu_run_identity_rejections": [
+    "training_protocol_sha256",
+    "protocol_sha256",
+    "seed",
+    "checkpoint_protocol_sha256",
+    "checkpoint_run_name"
+  ],
+  "rr_batching_limit": "Multirow random draw consumption differs; one-row same-stream replay checks do not claim path equality across arbitrary batch sizes.",
+  "only_development_data_used": true,
+  "production_splits_generated": false,
+  "source_sha256": {
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+    "prepare_data.py": "592abdc964eb515db6abee381ff99a9867bd4e644943e1ce48e897672c508e7c",
+    "evaluate.py": "04509ce268f11b02e8c601e605adafe7e1dd114582e4c236f56a91dea048162c"
+  }
+}

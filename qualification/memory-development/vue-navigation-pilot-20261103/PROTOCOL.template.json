@@ -1,0 +1,74 @@
+{
+  "status": "POST_RUN_SANITIZED_TEMPLATE_NOT_A_PREREGISTRATION",
+  "scope": "single_source_development_pilot_not_confirmation",
+  "source": {
+    "repository": "USER_SUPPLIED_REPOSITORY",
+    "revision": "USER_SUPPLIED_REVISION",
+    "rights": "Review full selected files and exceptions before use; source attribution is not a code license."
+  },
+  "sampling": {
+    "planned_source_files": 32,
+    "planned_tasks": 16,
+    "rule": "Freeze a metadata-only deterministic sample before source-body access. No redraw, replacement, or result-conditioned selection. Original paths, seed and revision are withheld."
+  },
+  "representation": {
+    "mode": "rawMarkdown-v1",
+    "bounds": {
+      "max_files": 32,
+      "max_bytes_per_file": 131072,
+      "max_lines_per_file": 8192,
+      "max_sections_per_file": 1024
+    },
+    "boundaries": "Column-zero ATX headings outside fences; exact contiguous original text; explicit anchors only. Raw dynamic text is inert. No rendering or includes.",
+    "source_locator": "Resolve only in the same-source fixed manifest. Leading / maps to src/. Relative paths normalize without escaping src/. Exact .html changes to .md; extensionless leaf adds .md. No directory/index guess, implicit anchor, external URL, or fallback.",
+    "citation": "https://github.com/<repository>/blob/<revision>/<canonical-path>#L<start>-L<end>. Placeholder repository in this derivative changes citation byte lengths; mapping logic is unchanged."
+  },
+  "tasks": {
+    "planned": 16,
+    "minimum_valid": 8,
+    "strata": [
+      "direct",
+      "reference",
+      "condition"
+    ],
+    "authoring": "Author and reviewer do not inspect retrieval output before freeze. Record intended action, necessary factual conditions/exceptions, exact supporting raw spans, complete sufficient parent-set alternatives, and eligibility. One pre-evaluation factual correction round. This describes operational role separation, not external independence.",
+    "exclusions": "Keep every planned slot and reason; do not replace invalid anchors. Keep otherwise valid budget-infeasible tasks."
+  },
+  "scoring": {
+    "machine": {
+      "controls": [
+        "bm25",
+        "prf",
+        "hash_links"
+      ],
+      "control_tie_order": [
+        "bm25",
+        "prf",
+        "hash_links"
+      ],
+      "candidate": "links",
+      "planned_tasks": 16,
+      "minimum_valid": 8,
+      "minimum_direct": 1,
+      "minimum_gain_each": 2,
+      "maximum_direct_losses": 0,
+      "maximum_cold_time_ratio": 2.0
+    },
+    "meaning": "Complete support-pack coverage, not generated-answer correctness. Verify exact raw spans, reviewed obligations, canonical adapter binding and full payload serialization before set containment.",
+    "denominators": "Report eligible and all planned tasks, with excluded slots counted as failure in planned sensitivity.",
+    "diagnostic": "BM25 top8 is descriptive only and never enters the primary screen."
+  },
+  "runtime": {
+    "cold_runs_per_arm": 1,
+    "warm_repeats": 3,
+    "process_timeout_seconds": 300,
+    "address_space_limit_bytes": 1073741824,
+    "cpu_threads": 1,
+    "experimental_model_calls": 0,
+    "network_requests": 0,
+    "cold_definition": "Parent before process spawn to parent receipt of durable cold-output event. Child waits for ACK before warm work. Includes startup, raw reads, parse, graph where applicable, index, query, pack, and output write.",
+    "limits": "Fresh process on shared host; no cold OS cache or dedicated hardware claim. Acquisition, rights review and authoring are upstream costs. Export/toy times cannot reproduce the original corpus timing.",
+    "failure_policy": "Primary execution failure means INCONCLUSIVE; record failed work and missing/censored time honestly. No performance-driven retry or post-result tuning."
+  },
+  "publication": "Template and code do not grant data acquisition, evaluation, publication, deployment, or additional copyright permissions."
+}

@@ -1,0 +1,64 @@
+{
+  "all_four_head_only_scales_present": true,
+  "authority": "DENY_ALL",
+  "complete_neuron_p1_qualified": false,
+  "execution_source_sha256": "a1e21a9d84ce7eea047aab6691a4dcbcb0b6db4c65db3735e427b796a2dff0aa",
+  "independent_host_attested": false,
+  "pretrained_stem_executed": false,
+  "production_accepted": false,
+  "rows": [
+    {
+      "actual_batch_trials": 100,
+      "cells": 64,
+      "head_parameter_count": 623616,
+      "observed_batch_p50_ns": 222789,
+      "observed_batch_p95_ns": 349526,
+      "observed_batch_p99_ns": 363417,
+      "reported_cpu_ns": 24751180,
+      "reported_head_bytes": 2494464,
+      "reported_wall_ns": 24820320
+    },
+    {
+      "actual_batch_trials": 100,
+      "cells": 256,
+      "head_parameter_count": 2494464,
+      "observed_batch_p50_ns": 802184,
+      "observed_batch_p95_ns": 1073024,
+      "observed_batch_p99_ns": 1957579,
+      "reported_cpu_ns": 86420230,
+      "reported_head_bytes": 9977856,
+      "reported_wall_ns": 86351143
+    },
+    {
+      "actual_batch_trials": 100,
+      "cells": 1024,
+      "head_parameter_count": 9977856,
+      "observed_batch_p50_ns": 3487297,
+      "observed_batch_p95_ns": 4602263,
+      "observed_batch_p99_ns": 5340593,
+      "reported_cpu_ns": 367245801,
+      "reported_head_bytes": 39911424,
+      "reported_wall_ns": 367004918
+    },
+    {
+      "actual_batch_trials": 100,
+      "cells": 4096,
+      "head_parameter_count": 39911424,
+      "observed_batch_p50_ns": 14759940,
+      "observed_batch_p95_ns": 18205825,
+      "observed_batch_p99_ns": 19040091,
+      "reported_cpu_ns": 1511769147,
+      "reported_head_bytes": 159645696,
+      "reported_wall_ns": 1511589855
+    }
+  ],
+  "runtime": {
+    "declared_blas_threads": "1",
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "seed": 7347
+  },
+  "schema": "hepta.ndu-stem.head-only-panel-audit.v1",
+  "structurally_consistent": true,
+  "synthetic_shared_feature_sha256": "51ac20df85a61b184f0a1732c34471a2d2b1fc9815f5cf6a5d03379070df8d70"
+}

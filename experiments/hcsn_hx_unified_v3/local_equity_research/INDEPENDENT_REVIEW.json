@@ -1,0 +1,75 @@
+{
+  "decision": "ACCEPT_FIXED_DOMAIN_RESEARCH_FASTPATH_UNDER_IEEE_RN_PREMISES",
+  "source_hashes": {
+    "precompute.py": "df6a9089f3adb4455e102e46c142a8a3883ade72cbcf0d7d594848d2284067c5",
+    "generate.py": "fd1f5e25ee07a9743331a06fcbd1c688a084174d9ad8e573cce171b97e8af90d",
+    "fastpath.py": "edaf78eb4d07d3615226e9928257109a194f4d5e0aeb934c10abd84ea93945b3",
+    "validate_benchmark.py": "8f82623aa17f7dc9e9a323eb20cb25288642394974cbe3f2a6fcdfdd3765baed"
+  },
+  "independent_replay_exit": 0,
+  "whole_domain_coefficient_certificate_matches_except_time": true,
+  "generated_runtime_byte_identical": true,
+  "seven_positive_ball_checks_identical": true,
+  "four_domain_controls_rejected": true,
+  "relative_uniform_bound": "2^-49",
+  "computed_uniform_bound_upper_less_than": "9.986e-16",
+  "scope": [
+    "One exact rational HX parameter tuple and exact smoothfit root; fixed full inward-rounded binary64 local interval.",
+    "Proof uses interval fifth derivative of same analytic solution, positive exact-equity lower bound, root splitting and coefficient errors, argument perturbation, gamma6 rounding.",
+    "Strengthened proof propagates rounded interval endpoints through each Horner/product operation, verifies unrounded intermediates normal/finite then inflates by RN.",
+    "First subtraction exact by Sterbenz; second subtraction root-error beta covers it; operation order matches proof.",
+    "CPython binary64 RN ties-even with unchanged rounding mode and no altered globals/fast-math is an assumption, not authenticated by smoke probes.",
+    "Original 2^-40 acceptance budget remains; publishing looser rounded bound2^-49 is supported by whole-domain bound, not selected point errors.",
+    "No production adoption, arbitrary parameter or platform certification."
+  ],
+  "cost_scope": [
+    "Warm crossover in worker receipt charges mathematical precompute body plus fast module import only.",
+    "Does not include precompute process/FLINT/oracle imports, generator runtime/file IO or all scientific validation costs.",
+    "Independent timing is a separate rerun, not pooled host replication. Cold setup accounting remains separate pending worker evidence."
+  ],
+  "independent_timing": {
+    "fast_module_import_seconds": 0.00035911399754695594,
+    "ball_import_seconds": 0.02757828900939785,
+    "old_wrapper_setup_seconds": 0.0004941890074405819,
+    "precompute_seconds": 0.0019113339949399233,
+    "fast_seconds_per_call_batches": [
+      2.3554700601380318e-07,
+      2.1797000954393297e-07,
+      2.3031899763736874e-07,
+      2.3137551033869387e-07,
+      2.476350055076182e-07
+    ],
+    "ball_seconds_per_call_batches": [
+      0.0007735938503174111,
+      0.0007472755503840744,
+      0.0007165470000472851,
+      0.0008272185994428582,
+      0.0008534693508408964
+    ],
+    "median_fast_seconds_per_call": 2.3137551033869387e-07,
+    "median_ball_seconds_per_call": 0.0007735938503174111,
+    "charged_setup_seconds": 0.0022704479924868792,
+    "estimated_warm_break_even_calls": 3,
+    "direct_crossing_checks": [
+      {
+        "calls": 2,
+        "charged_fast_total_seconds": 0.0022758159902878106,
+        "observed_old_calls_seconds": 0.001746463996823877,
+        "fast_lower": false
+      },
+      {
+        "calls": 3,
+        "charged_fast_total_seconds": 0.002274623984703794,
+        "observed_old_calls_seconds": 0.0021529499790631235,
+        "fast_lower": false
+      },
+      {
+        "calls": 4,
+        "charged_fast_total_seconds": 0.0022743440058548003,
+        "observed_old_calls_seconds": 0.0034001680032815784,
+        "fast_lower": true
+      }
+    ],
+    "elapsed_inprocess_seconds": 0.14250720498966984
+  }
+}

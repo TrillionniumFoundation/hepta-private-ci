@@ -116,5 +116,34 @@ class PopulationGeneratorTests(unittest.TestCase):
         np.testing.assert_allclose(np.array(errors[:-1])/errors[1:], 4, rtol=1e-10, atol=0)
 
 
+    def test_rejects_nonincreasing_grid_even_below_absolute_tolerance(self):
+        for dtype in (torch.float32, torch.float64):
+            for middle in (0.0, -1e-12):
+                with self.subTest(dtype=dtype, middle=middle):
+                    edges = torch.tensor([0.0, middle, 2e-12], dtype=dtype)
+                    with self.assertRaisesRegex(ValueError, "uniform and increasing"):
+                        finite_volume_generator(edges, torch.zeros_like(edges), 1e-12)
+
+    def test_rejects_nonuniform_grid_even_below_absolute_tolerance(self):
+        for dtype in (torch.float32, torch.float64):
+            with self.subTest(dtype=dtype):
+                edges = torch.tensor([0.0, .25e-12, 2e-12], dtype=dtype)
+                with self.assertRaisesRegex(ValueError, "uniform and increasing"):
+                    finite_volume_generator(edges, torch.zeros_like(edges), 1e-12)
+
+    def test_tiny_uniform_grid_preserves_independent_absorbing_flux(self):
+        for dtype in (torch.float32, torch.float64):
+            with self.subTest(dtype=dtype):
+                edges = torch.tensor([0.0, 1e-12, 2e-12], dtype=dtype)
+                actual = finite_volume_generator(edges, torch.zeros_like(edges), 1e-12)
+                # D/h^2 = 1/2; each boundary lies half a cell from its centre.
+                expected = torch.tensor([[-1.5, .5, 1.0, 0.0],
+                                         [.5, -1.5, 0.0, 1.0],
+                                         [0.0, 0.0, 0.0, 0.0],
+                                         [0.0, 0.0, 0.0, 0.0]], dtype=dtype)
+                torch.testing.assert_close(actual, expected,
+                                           rtol=4*torch.finfo(dtype).eps, atol=0)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -138,7 +138,8 @@ fn bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_cu
                 "resident_kib": resident_kib,
                 "disk_bytes": disk_bytes,
                 "records_preserved": recovered.len(),
-                "compaction_implemented": false,
+                "compaction_implemented": true,
+                "compaction_exercised": false,
                 "concurrent_writers_implemented": false,
             })
         );

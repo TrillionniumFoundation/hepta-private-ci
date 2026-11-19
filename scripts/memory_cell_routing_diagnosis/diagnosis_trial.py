@@ -15,6 +15,7 @@ from diagnosis_common import (
     identity,
     inputs,
     panels,
+    pinned_bytes,
     protocol,
     retain,
     verify_base,
@@ -110,9 +111,8 @@ def validate_prepared(output):
     loaded = {}
     for name, key in names.items():
         path = output / f"{name}.json"
-        if file_sha(path) != receipt[key]:
-            raise ValueError("prepared evidence pin changed")
-        loaded[name] = json.loads(path.read_text())
+        payload = pinned_bytes(path, receipt[key], "prepared evidence pin changed")
+        loaded[name] = json.loads(payload.decode("utf-8"))
     registered = loaded["protocol"]
     configure(registered["repo"])
     if registered != protocol(

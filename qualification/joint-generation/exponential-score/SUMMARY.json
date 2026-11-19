@@ -1,0 +1,81 @@
+{
+  "result": {
+    "dataset_rows": 0,
+    "literal_tests": {
+      "errors": 0,
+      "failures": 0,
+      "run": 17
+    },
+    "measurements": {
+      "global": {
+        "complete_anchor_FD_coordinates": 8,
+        "max_complete_FD": 4.8792513730527495e-11,
+        "max_utility_FD": 5.890636473748637e-11,
+        "utility_FD_coordinates": 8
+      },
+      "legacy_group": {
+        "finite_difference_coordinates": 8,
+        "max_FD_error": 5.73196221390071e-11
+      },
+      "legacy_integration": {
+        "aligned_anchor_FD_coordinates": 8,
+        "aligned_group_utility_FD_coordinates": 8,
+        "maximum_aligned_anchor_FD_error": 3.481658852281383e-11,
+        "maximum_aligned_group_utility_FD_error": 3.346549345826415e-11
+      },
+      "score": {
+        "fullanchor_FD_coordinates": 8,
+        "max_fullanchor_FD": 2.808449336261752e-11,
+        "max_utility_FD": 2.1933067368600304e-11,
+        "utility_FD_coordinates": 8
+      }
+    },
+    "model_restores": 0,
+    "objective_key": "f02c85e19e2497d40d678e2e95a1f7cf32f2e92b861679bd3c3a5eefe2ee62dd",
+    "objective_profile": {
+      "anchor": "excluded; caller adds ordinary mean separately",
+      "batch_rows": 64,
+      "mode": "fixed-zero-exponential-score-v1",
+      "reward_units": "unchanged original RGB reward",
+      "reward_zero": 0.0,
+      "rho": 1.5,
+      "row_gradient": "negative mean rowCE includes1/64",
+      "schema": "rgb-fixed64-exponential-utility-score-v1"
+    },
+    "scope": "Literal fixed-zero exponential score qualification only; no scientific benefit, training, models or scientific datasets.",
+    "source_freeze_sha256": "a4223c29d4791f7cd4a64bc8710d8373feba8328fab2931220f2185000c026d0",
+    "status": "COMPLETE_PAYLOAD_FREE_EXPONENTIAL_SCORE",
+    "training_updates": 0
+  },
+  "scientific_benefit": "NOT_EVALUATED",
+  "whole_waited_child": {
+    "automatic_retry": false,
+    "complete_wait": true,
+    "exit_code": 0,
+    "limits": {
+      "AS_bytes": 536870912,
+      "CPU_seconds": 5,
+      "affinity": [
+        0
+      ],
+      "file_bytes": 4194304,
+      "numerical_threads": 1,
+      "wall_seconds": 30
+    },
+    "max_rss_kib": 30952,
+    "new_synthetic_only_shared_lock": true,
+    "not_original_digit_lock": true,
+    "preparation_review_and_shared_upstream_costs": "OUTSIDE_CHILD_NOT_ZERO",
+    "raw_wait_status": 0,
+    "result_sha256": "f8253b33e3dbba612ae9697211fea9e79adeb918108d8d53060da1d2821f4a86",
+    "source_freeze_sha256": "a4223c29d4791f7cd4a64bc8710d8373feba8328fab2931220f2185000c026d0",
+    "status": "COMPLETE_PAYLOAD_FREE_EXPONENTIAL_SCORE",
+    "supervisor_CPU_observed_prefix_seconds": 0.003104625000000003,
+    "supervisor_final_tail": "UNKNOWN_NOT_ZERO",
+    "system_CPU_seconds": 0.024249,
+    "timed_out": false,
+    "user_CPU_seconds": 0.231959,
+    "wall_seconds": 0.2668410219994257,
+    "whole_child_CPU_seconds": 0.256208
+  }
+}

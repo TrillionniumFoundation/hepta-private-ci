@@ -1,0 +1,40 @@
+{
+  "schema": "hcsn-visit897-n128-stretch-field-static-request-v1",
+  "identity": "hcsn-visit897-n128-stretch-field-static-20261112-c06d",
+  "idempotency_key": "hcsn-visit897-n128-stretch-field-static-20261112-c06d-001",
+  "parent_pr": 6270,
+  "parent_head": "ec608133a275a97f6712561a08af218fee4ebe26",
+  "parent_terminal": {
+    "run_id": 43285117987,
+    "job_id": 131416350055,
+    "artifact_id": 13973049539,
+    "artifact_sha256": "389b82348b8a91c67f4e8523d1251fbe7efe9e3b4407eaf44469bb23bce25c84",
+    "status": "UNKNOWN_TERMINAL_NO_RESULT_NO_READMISSION",
+    "failure": "AttributeError: 'GradedSpatialGenerator' object has no attribute 'grading'"
+  },
+  "exact_change": {
+    "path": "qualification/hcsn_source_migration_vjp_n128/large_adjoint.py",
+    "removed": "or model.spatial.grading != 6.0",
+    "added": "or model.spatial.stretch != 6.0",
+    "parent_blob_sha256": "adff7aa227287200eda6cb14fd62adaa9ed3a4b57891978baa83f35e4f26591a"
+  },
+  "purpose": "Bind the frozen dataclass field name without changing geometry, physics, thresholds, denominators, inputs, or numerical scope.",
+  "static_only": true,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "maximum_candidate_imports": 0,
+  "maximum_model_forwards": 0,
+  "maximum_adjoints": 0,
+  "maximum_backward_attempts": 0,
+  "maximum_optimizer_updates": 0,
+  "branch": "research/hcsn-visit897-n128-stretch-field-static-20261112-c06d",
+  "stop_conditions": [
+    "the diff is not exactly one grading-to-stretch field rename plus this static package",
+    "the frozen GradedSpatialGenerator dataclass or its nodes/rates implementation changed",
+    "the exact stretch equality gate is absent or weakened",
+    "any parent RED or UNKNOWN record is reclassified",
+    "any candidate import or numerical operation occurs"
+  ],
+  "global_status": "HOLD",
+  "all_closed": false
+}

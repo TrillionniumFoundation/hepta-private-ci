@@ -1,0 +1,904 @@
+diff --git a/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md b/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md
+new file mode 100644
+index 0000000..2842cb3
+--- /dev/null
++++ b/docs/research/HCSN_P0_P2_REGENERATIVE_QVI_AND_DETERMINISTIC_REFRACTORY_20261031.md
+@@ -0,0 +1,52 @@
++# HCSN P0/P2 独立再生 QVI 与确定不应期参考
++
++**日期**：2026-10-31。**交付性质**：`RESEARCH_ONLY`, `DENY_ALL`; add-only offline overlay，未通过整仓测试/未取得生产权限；不能把简化神经 QVI 视为 He–Xiong 完整债权—股权内生均衡。
++
++## P0：有全局 QVI 数学证明的标量子问题
++
++状态：`dX = mu dt + sigma dW`，`rho>0`、`sigma>0`、固定重置位置 `r<K`，发放即时收益为 `x-K`；经过**确定**的 `tau>=0` 之后从 `r` 再生。
++
++- `L f = mu f' + sigma² f''/2`；`M J(x) = x-K + exp(-rho*tau) J(r)`；`max{LJ-rho*J, MJ-J}=0`。
++- 正根 `k=(sqrt(mu²+2*rho*sigma²)-mu)/sigma²`（代码采用防抵消的等价式）。
++- `log q0 = -rho*tau - k*(K-r)`、`psi(z)=z+expm1(logq0-z)`。唯一 `z∈(0,1)`；`b=K+z/k`, `q=exp(logq0-z)=1-z`。
++- `J(x)=exp(k*(x-b))/k`（`x<b`），`J(x)=x-K+q/k`（`x>=b`）。
++- 解析域中：继续区 `J-MJ=(exp(y)-1-y)/k>=0`，其中 `y=k*(x-b)<0`；停止区 `(L-rho)J <= -sigma²*k/2 < 0`；边界满足 value matching 与 smooth pasting。因此**仅这个子问题**有全局 QVI 校验。
++- 实现了六个参数方向（drift/sigma/discount/cost/reset/refractory）的隐式边界梯度；和独立 Lambert-W 表达式、中心有限差分及完全分离的稀疏有限网格 Howard 策略迭代比对。
++- 浮点中遇到未解决的根分支、超大/超小指数、非有限参数和非单调网格生成元时直接拒绝，避免把失效误报为成功。二进制浮点检验不是有向舍入区间证明。
++
++**不可推断的结论**：这不是原论文耦合的 `HX Eq.(8)/(12)/(A7)` 完整模型；不能由标量 QVI 证明多神经元耦合固定点、多模态内容质量或移动自由边界的全局收敛。
++
++## P2：确定不应期与重复发放
++
++在一段恒定速率 `lambda>0` 下，ACTIVE 等待 `Exp(lambda)` 首发；每次事件后进入恰好 `tau>=0` 的 REFRACTORY，不应期后重新 ACTIVE。令 `N_T` 为 `[0,T]` 内发放次数：
++
++`Pr(N_T>=n) = P(Gamma(n,lambda) <= T-(n-1)*tau)`，当 `T>(n-1)*tau` 时成立，否则为 0。期望事件次数是 `E[N_T]=sum_{n>=1}Pr(N_T>=n)`，而首次发放概率始终为 `1-exp(-lambda*T)`。零不应期精确退化为 Poisson 事件计数。
++
++- 新 `constant_rate_stats` 输出首次发放概率、期望次数、>=2 次与 >=3 次概率；有限 `tau` 有最多 `ceil(T/tau)` 个非零尾项；大于数值预算则拒绝。
++- 另有 `PathState`（版本、物理时钟、确定不应期剩余量、未消耗的指数 hazard、事件计数、SHA-256 counter-seed 伪随机流）与 `advance_path`，允许速率分段改变、无需偷看未来。哈希只用于**确定性随机性**，不证明 checkpoint 真实性或权限。
++- 做独立采样（每种参数 20,000 路径 × 3 组合）、400 个分段与单步组合一致性案例、跨 Python 进程状态恢复，以及过量事件/格式/初始 checkpoint 拒绝测试。
++
++**不可推断的结论**：没有构建真实 HX 首达过程、全网 CTMC/Erlang、多模态任务或真实 Rust 原生 runtime；分段浮点事件时间临界情况没有全域有向舍入保证。平均事件计数不能当作低能耗证据。
++
++## P1–P5 的后续依赖
++
++| 门禁 | 本地参考能推进什么 | 仍需真实关闭证据 |
++|---|---|---|
++| P0 | 真实再生 QVI 子问题与独立离散校验 | HX 债券/股权自洽固定点、全域障碍、FP32/BF16 严格区间、负例分类 |
++| P1 | 比较自由边界本身与普通双门控的增量机制 | 冻结新数据/新种子，Call/Risk/Margin 单/双/联合消融，同斜率/参数/成本 |
++| P2 | 多次发放和确定不应期参考、可恢复因果事件流 | 真正训练 Selective Copy/MQAR、覆盖写、长时召回、神经记忆与真实复位 |
++| P3 | 可供模态事件流校验的参考 | 独立四模态 Encoder、成对跨模态对齐、OOD 与缺失模态质量 |
++| P4 | 无生产代码修改 | Rust/GPU 原生 64/256/1024/4096 Cell、真实焦耳与故障重放 |
++| P5 | 不授予扩容资格 | 同数据同质量下，对 Transformer/SSM/双门控的净收益显著为正 |
++
++本地历史 HCSN `0/4` 机制增量未通过、`0/18` 外部质量门未通过的结果依然有效；本 patch 不包含新训练或可以反转这些结果的证据。
++
++## 执行
++
++在补丁根目录：
++
++```bash
++python -m unittest discover -v -s .
++```
++
++依赖：Python >=3.11，NumPy、SciPy；为独立测试提供 `scipy.special.lambertw`、`scipy.sparse` 与 `scipy.special.gammainc`。所有示例数据都是数学/随机模拟参考，不是已训练权重。
+diff --git a/experiments/hcsn_distributional_v2/deterministic_refractory_reference.py b/experiments/hcsn_distributional_v2/deterministic_refractory_reference.py
+new file mode 100644
+index 0000000..e6f3b89
+--- /dev/null
++++ b/experiments/hcsn_distributional_v2/deterministic_refractory_reference.py
+@@ -0,0 +1,206 @@
++"""P2 deterministic-refractory renewal reference, separate from HX QVI.
++
++An ACTIVE neuron fires after Exp(lam), then spends exactly tau units in
++REFRACTORY and only then samples another Exp(lam) wait.  Under a constant
++lambda, its n-th event time is Gamma(n, rate=lambda)+(n-1)*tau, hence
++
++    Pr[N_T >= n] = gammainc(n, lam*(T-(n-1)*tau))  if T>(n-1)*tau.
++
++E[N_T] is the sum over n>=1; P(N_T>=1) is NOT E[N_T].  The finite positive
++refractory imposes a finite number of nonzero terms on bounded windows.
++Tau=0 is handled as the exact Poisson limit.  This is a mathematical reference
++for repeated events; it is NOT a proof of real HX barrier dynamics, nor a
++classifier, nor a training result.
++
++Also provides a deterministic counter-hash exponential-hazard stream for
++piecewise-constant-rate pathwise checkpoint/replay.  Hashing is used only for
++reproducible pseudorandomness, not authority or anti-tampering.  The interval
++transitions have ordinary f64 roundoff and should not claim bitwise semigroup
++agreement at a crossing closer than numerical precision to an interval edge.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass
++from hashlib import sha256
++import math
++
++from scipy.special import gammainc
++
++
++class RenewalDomainError(ValueError):
++    pass
++
++
++@dataclass(frozen=True)
++class RenewalStats:
++    first_fire_probability: float
++    expected_event_count: float
++    two_or_more_probability: float
++    three_or_more_probability: float
++    nonzero_tail_terms: int
++
++
++def constant_rate_stats(lam: float, refractory: float, horizon: float,
++                        *, max_terms: int = 4096) -> RenewalStats:
++    for name, value in (('lam',lam),('refractory',refractory),('horizon',horizon)):
++        if type(value) not in (int,float) or not math.isfinite(value):
++            raise RenewalDomainError(f'{name} must be finite number')
++    if not (lam>0 and refractory>=0 and horizon>=0) or type(max_terms) is not int or max_terms<3:
++        raise RenewalDomainError('require lam>0, tau,T>=0, max_terms>=3')
++    if horizon==0:
++        return RenewalStats(0.,0.,0.,0.,0)
++    exposure=lam*horizon
++    if not math.isfinite(exposure):
++        raise RenewalDomainError('lam*T overflow')
++    first=-math.expm1(-exposure)
++    if refractory==0:
++        stats=RenewalStats(first,exposure,float(gammainc(2,exposure)),
++                           float(gammainc(3,exposure)), -1)
++    else:
++        count_ratio=horizon/refractory
++        if not math.isfinite(count_ratio) or count_ratio>max_terms:
++            raise RenewalDomainError('too many possible refractory cycles: explicit refusal')
++        largest=math.ceil(count_ratio)
++        terms=[]
++        for n in range(1,largest+1):
++            remaining=horizon-(n-1)*refractory
++            if remaining<=0:
++                break
++            if n==1:
++                prob=first
++            else:
++                prob=float(gammainc(n,lam*remaining))
++            if not math.isfinite(prob) or not 0<=prob<=1:
++                raise ArithmeticError('gamma-renewal tail unresolved')
++            if terms and prob>terms[-1]+8*max(math.ulp(prob),math.ulp(terms[-1])):
++                raise ArithmeticError('P(N>=n) monotonic ordering unresolved')
++            terms.append(prob)
++        stats=RenewalStats(first,math.fsum(terms),
++                           terms[1] if len(terms)>1 else 0.,
++                           terms[2] if len(terms)>2 else 0.,len(terms))
++    if (not all(math.isfinite(v) for v in (stats.first_fire_probability,
++           stats.expected_event_count, stats.two_or_more_probability,
++           stats.three_or_more_probability)) or
++           not 0<=stats.three_or_more_probability<=stats.two_or_more_probability
++           <=stats.first_fire_probability<=1 or
++           stats.expected_event_count+2e-14<stats.first_fire_probability):
++        raise ArithmeticError('renewal statistics physical envelope violated')
++    return stats
++
++
++def _next_exponential_budget(seed: int, counter: int) -> float:
++    if (type(seed) is not int or type(counter) is not int or
++            not 0<=seed<2**64 or not 0<=counter<2**64):
++        raise RenewalDomainError('seed/counter must be unsigned 64-bit integers')
++    data=seed.to_bytes(8,'big')+counter.to_bytes(8,'big')
++    digest=sha256(data).digest()
++    # 53-bit midpoint avoids log(0), log(1), and unstable division.
++    raw=int.from_bytes(digest[:8],'big')>>11
++    u=(raw+.5)/2**53
++    result=-math.log1p(-u)
++    if result<=0 or not math.isfinite(result):
++        raise ArithmeticError('non-positive exponential hazard budget')
++    return result
++
++
++@dataclass(frozen=True)
++class PathState:
++    physical_time: float
++    refractory: float
++    refractory_remaining: float
++    active_hazard_remaining: float
++    fired_count: int
++    rng_counter: int
++    rng_seed: int
++    version: int = 1
++
++    @classmethod
++    def initial(cls, seed: int, refractory: float) -> 'PathState':
++        if type(refractory) not in (int,float) or not math.isfinite(refractory) or refractory<0:
++            raise RenewalDomainError('deterministic refractory must be finite nonnegative')
++        return cls(0.,float(refractory),0.,_next_exponential_budget(seed,0),0,1,seed)
++
++
++def advance_path(state: PathState, lam: float, dt: float,
++                 *, max_events: int=10_000) -> PathState:
++    """Causal path update for a given piecewise-constant rate and time interval.
++
++    Checkpoint ALL fields.  Exact same prefix and seed gives exact same state;
++    replay from JSON is deterministic.  This is NOT a cryptographic provenance
++    gate: a forged checkpoint may pass the structural checks.
++    """
++    if not isinstance(state,PathState) or type(state.version) is not int or state.version!=1:
++        raise RenewalDomainError('supported complete PathState checkpoint required')
++    if type(lam) not in (int,float) or type(dt) not in (int,float) or not all(
++            math.isfinite(v) for v in (lam,dt)) or lam<=0 or dt<0:
++        raise RenewalDomainError('finite lam>0 and dt>=0 required')
++    if type(max_events) is not int or max_events<1:
++        raise RenewalDomainError('invalid max_events')
++    if (not all(math.isfinite(v) for v in
++            (state.physical_time,state.refractory,state.refractory_remaining,
++             state.active_hazard_remaining)) or
++            state.physical_time<0 or state.refractory<0 or
++            not 0<=state.refractory_remaining<=state.refractory or
++            state.active_hazard_remaining<=0 or type(state.fired_count) is not int or
++            state.fired_count<0 or type(state.rng_counter) is not int or
++            state.rng_counter<=0 or state.fired_count+1!=state.rng_counter or
++            type(state.rng_seed) is not int or not 0<=state.rng_seed<2**64):
++        raise RenewalDomainError('invalid state fields/counters')
++    if state.physical_time==0:
++        if (state.fired_count!=0 or state.refractory_remaining!=0 or
++                state.active_hazard_remaining != _next_exponential_budget(state.rng_seed,0)):
++            raise RenewalDomainError('impossible time-zero FIRE/refractory/RNG checkpoint')
++    if dt==0:
++        return state
++    new_time=math.fsum((state.physical_time,dt))
++    if not math.isfinite(new_time) or new_time<=state.physical_time:
++        raise ArithmeticError('physical clock step unresolved in float64')
++    todo=float(dt)
++    refractory_remaining=state.refractory_remaining
++    hazard=state.active_hazard_remaining
++    count=state.fired_count
++    counter=state.rng_counter
++    fired_this_step=0
++    while todo>0:
++        if refractory_remaining>0:
++            if todo<=refractory_remaining:
++                refractory_remaining-=todo
++                todo=0.
++                break
++            todo-=refractory_remaining
++            refractory_remaining=0.
++            if todo<=0:
++                break
++        integrated=lam*todo
++        if not math.isfinite(integrated):
++            raise ArithmeticError('integrated intensity overflow')
++        if integrated<hazard:
++            hazard-=integrated
++            if hazard<=0:
++                raise ArithmeticError('remaining integrated hazard erased in f64')
++            todo=0.
++            break
++        if fired_this_step>=max_events:
++            raise ArithmeticError('too many events; explicit bounded reference refusal')
++        time_to_fire=hazard/lam
++        if time_to_fire<0 or not math.isfinite(time_to_fire) or time_to_fire>todo:
++            raise ArithmeticError('first fire time unresolved')
++        if time_to_fire==0 and todo>0:
++            raise ArithmeticError('event interval rounds to zero in f64')
++        left=todo-time_to_fire
++        if left==todo and todo>0:
++            raise ArithmeticError('event time subtraction erased in f64')
++        todo=left
++        count+=1
++        fired_this_step+=1
++        if counter>=2**64:
++            raise ArithmeticError('counter overflow')
++        hazard=_next_exponential_budget(state.rng_seed,counter)
++        counter+=1
++        refractory_remaining=state.refractory
++    result=PathState(new_time,state.refractory,refractory_remaining,hazard,
++                     count,counter,state.rng_seed)
++    if not all(math.isfinite(v) for v in (result.active_hazard_remaining,
++            result.refractory_remaining)):
++        raise ArithmeticError('nonfinite post-transition state')
++    return result
+diff --git a/experiments/hcsn_distributional_v2/test_deterministic_refractory_reference.py b/experiments/hcsn_distributional_v2/test_deterministic_refractory_reference.py
+new file mode 100644
+index 0000000..c39f21e
+--- /dev/null
++++ b/experiments/hcsn_distributional_v2/test_deterministic_refractory_reference.py
+@@ -0,0 +1,129 @@
++"""P2 deterministic refractory renewal / causal checkpoint tests."""
++from dataclasses import asdict, replace
++import json
++import math
++import random
++import subprocess
++import sys
++import unittest
++
++from .deterministic_refractory_reference import (
++    PathState, RenewalDomainError, constant_rate_stats, advance_path)
++
++
++class DeterministicRefractoryTests(unittest.TestCase):
++    def test_tau_zero_is_poisson_and_analytical_first_fire_independent_tau(self):
++        for lam,T in ((.1,.01),(.8,3),(7.,2),(.01,10)):
++            poisson=constant_rate_stats(lam,0,T)
++            self.assertAlmostEqual(poisson.expected_event_count,lam*T)
++            for tau in (.01,.2,1,20):
++                v=constant_rate_stats(lam,tau,T)
++                self.assertAlmostEqual(v.first_fire_probability,
++                                       poisson.first_fire_probability,places=13)
++                self.assertLessEqual(v.expected_event_count,poisson.expected_event_count+1e-12)
++                self.assertLessEqual(v.three_or_more_probability,v.two_or_more_probability)
++
++    def test_expected_repeated_events_differ_from_one_event_probability(self):
++        r=constant_rate_stats(5,.1,6)
++        self.assertGreater(r.expected_event_count,10)
++        self.assertLessEqual(r.first_fire_probability,1)
++        self.assertGreater(r.expected_event_count,r.first_fire_probability+8)
++        self.assertGreater(r.three_or_more_probability,.9)
++
++    def test_monte_carlo_independent_exp_plus_deterministic_refractory(self):
++        rng=random.Random(2026103103)
++        for lam,tau,T in ((1.2,.3,4),(.5,1,3),(3,.1,2)):
++            n=20_000
++            counts=[]
++            for _ in range(n):
++                t=0.;count=0
++                while True:
++                    t+=rng.expovariate(lam)
++                    if t>T:
++                        break
++                    count+=1
++                    t+=tau
++                counts.append(count)
++            expected=constant_rate_stats(lam,tau,T)
++            empirical_count=sum(counts)/n
++            empirical_fired=sum(x>=1 for x in counts)/n
++            self.assertLess(abs(empirical_count-expected.expected_event_count),.065)
++            self.assertLess(abs(empirical_fired-expected.first_fire_probability),.02)
++            self.assertLess(abs(sum(x>=2 for x in counts)/n-
++                                expected.two_or_more_probability),.025)
++
++    def test_refractory_suppresses_repeated_not_first_event(self):
++        fixed=[constant_rate_stats(1.,tau,8.) for tau in (0,.1,.5,2,10)]
++        self.assertTrue(all(abs(f.first_fire_probability-fixed[0].first_fire_probability)<1e-15
++                            for f in fixed))
++        self.assertTrue(all(fixed[i+1].expected_event_count<=fixed[i].expected_event_count+1e-14
++                            for i in range(len(fixed)-1)))
++
++    def test_stream_split_matches_unsplit_event_count_and_state(self):
++        rng=random.Random(2026103104)
++        for case in range(400):
++            seed=rng.randrange(2**32);lam=rng.uniform(.1,5)
++            tau=rng.uniform(.01,.7);a=rng.uniform(.01,2);b=rng.uniform(.01,2)
++            init=PathState.initial(seed,tau)
++            split=advance_path(advance_path(init,lam,a),lam,b)
++            full=advance_path(init,lam,a+b)
++            with self.subTest(case=case):
++                self.assertEqual(split.fired_count,full.fired_count)
++                self.assertEqual(split.rng_counter,full.rng_counter)
++                self.assertLess(abs(split.active_hazard_remaining-full.active_hazard_remaining),2e-12)
++                self.assertLess(abs(split.refractory_remaining-full.refractory_remaining),2e-12)
++
++    def test_segmented_rate_switch_and_json_process_replay(self):
++        segs=[(1.3,.41),(2.1,1.2),(.7,.56),(3.5,1.7),(.4,.8)]
++        prefix=PathState.initial(20261031,.31)
++        for lam,dt in segs[:3]:
++            prefix=advance_path(prefix,lam,dt)
++        encoded=json.dumps(asdict(prefix),sort_keys=True)
++        restored=PathState(**json.loads(encoded))
++        self.assertEqual(prefix,restored)
++        local=restored
++        for lam,dt in segs[3:]:
++            local=advance_path(local,lam,dt)
++        # Another Python process proves the checkpoint includes the RNG budget,
++        # not merely event counts or the active/refractory flag.
++        source=("import json; from dataclasses import asdict; "
++            "from experiments.hcsn_distributional_v2.deterministic_refractory_reference "
++            "import PathState,advance_path; "
++            "s=PathState(**json.loads("+repr(encoded)+")); "
++            "s=advance_path(s,3.5,1.7); s=advance_path(s,.4,.8); "
++            "print(json.dumps(asdict(s),sort_keys=True))")
++        remote=subprocess.check_output([sys.executable,'-c',source],text=True)
++        self.assertEqual(json.loads(remote),asdict(local))
++        sibling=advance_path(restored,1.3,2.5)
++        self.assertNotEqual(sibling.fired_count,local.fired_count)
++        self.assertEqual(restored,PathState(**json.loads(encoded)))
++
++    def test_causal_prefix_does_not_depend_on_future_rate(self):
++        init=PathState.initial(23,.04)
++        one=advance_path(init,1.,.125)
++        two=advance_path(init,1.,.125)
++        self.assertEqual(one,two)
++        left=advance_path(one,.2,4)
++        right=advance_path(two,3.,4)
++        self.assertNotEqual(left.fired_count,right.fired_count)
++
++    def test_invalid_checkpoint_and_numerical_budgets_refuse(self):
++        init=PathState.initial(11,.5)
++        with self.assertRaises(RenewalDomainError):
++            advance_path(replace(init,version=2),1,.5)
++        with self.assertRaises(RenewalDomainError):
++            advance_path(replace(init,fired_count=2),1,.5)
++        with self.assertRaises(RenewalDomainError):
++            advance_path(replace(init,physical_time=0.,fired_count=1,rng_counter=2),1,.5)
++        with self.assertRaises(RenewalDomainError):
++            advance_path(replace(init,active_hazard_remaining=init.active_hazard_remaining/2),1,.5)
++        with self.assertRaises(RenewalDomainError):
++            constant_rate_stats(10,.0001,10,max_terms=100)
++        with self.assertRaises(RenewalDomainError):
++            constant_rate_stats(0,.5,1)
++        with self.assertRaises(ArithmeticError):
++            advance_path(init,10**10,20,max_events=3)
++
++
++if __name__=='__main__':
++    unittest.main()
+diff --git a/experiments/hcsn_hx_unified_v3/p0_p2_diagnostic.py b/experiments/hcsn_hx_unified_v3/p0_p2_diagnostic.py
+new file mode 100644
+index 0000000..87a9b4a
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/p0_p2_diagnostic.py
+@@ -0,0 +1,74 @@
++"""Deterministic, bounded, fail-closed P0+P2 research diagnostics.
++
++Executable from repo root via:
++  python -m experiments.hcsn_hx_unified_v3.p0_p2_diagnostic
++No source-data access, no trained checkpoint, no GPU/CI claims.
++"""
++from __future__ import annotations
++import json
++import math
++import random
++from scipy.special import lambertw
++
++from .regenerative_qvi_oracle_v2 import RegenerativeNeuron,UnresolvedQVI
++from experiments.hcsn_distributional_v2.deterministic_refractory_reference import (
++    constant_rate_stats,PathState,advance_path)
++
++
++def run() -> dict:
++    rng=random.Random(2026103117)
++    n_p0=2500
++    valid=0
++    rejected=0
++    max_lambert_gap=0.
++    for _ in range(n_p0):
++        p=RegenerativeNeuron(rng.uniform(-1,1),rng.uniform(.15,2.0),
++                rng.uniform(.03,2),rng.uniform(.2,5),rng.uniform(-4,-.1),
++                rng.uniform(0,2))
++        try:
++            s=p.solution
++            z=1+lambertw(-math.exp(-p.discount*p.refractory-p.kappa*(p.cost-p.reset))
++                         /math.e,k=0).real
++            expected=p.cost+z/p.kappa
++            max_lambert_gap=max(max_lambert_gap,abs(s.boundary-expected))
++            for v in (-3,-1,-1e-5,0,1e-5,1,3):
++                probe=p.qvi(s.boundary+v/s.kappa)
++                if probe.max_qvi_residual>1e-12:
++                    raise AssertionError('analytic QVI sign violation')
++            valid+=1
++        except UnresolvedQVI:
++            rejected+=1
++    n_p2=2500
++    max_first_gap=0.
++    for _ in range(n_p2):
++        lam=rng.uniform(.05,8)
++        tau=rng.uniform(.03,2)
++        T=rng.uniform(.05,8)
++        report=constant_rate_stats(lam,tau,T)
++        max_first_gap=max(max_first_gap,
++            abs(report.first_fire_probability-(-math.expm1(-lam*T))))
++        if report.expected_event_count+1e-12<report.first_fire_probability:
++            raise AssertionError('expected count smaller than first event probability')
++    for _ in range(1000):
++        seed=rng.randrange(2**32);tau=rng.uniform(.01,1)
++        init=PathState.initial(seed,tau)
++        lam=rng.uniform(.1,5);t1=rng.uniform(.03,1);t2=rng.uniform(.03,1)
++        a=advance_path(advance_path(init,lam,t1),lam,t2)
++        b=advance_path(init,lam,t1+t2)
++        if a.fired_count!=b.fired_count:
++            raise AssertionError('causal split changes event count')
++    return {
++        'scope':'OFFLINE_P0_QVI_SUBSET_AND_P2_RENEWAL_REFERENCE',
++        'random_seed':2026103117,
++        'p0_tested':n_p0,'p0_admitted':valid,'p0_explicit_refusals':rejected,
++        'p0_lambert_w_max_abs_boundary_gap':max_lambert_gap,
++        'p2_analytic_cases':n_p2,'p2_first_event_probability_max_abs_gap':max_first_gap,
++        'p2_split_stream_cases':1000,
++        'exact_HX_coupled_equilibrium':False,
++        'native_Rust_GPU_executed':False,
++        'all_blockers_closed':False,'production_activation_allowed':False,
++        'decision':'DENY_ALL_RESEARCH_ONLY'
++    }
++
++if __name__ == '__main__':
++    print(json.dumps(run(),ensure_ascii=False,indent=2,sort_keys=True))
+diff --git a/experiments/hcsn_hx_unified_v3/regenerative_qvi_oracle_v2.py b/experiments/hcsn_hx_unified_v3/regenerative_qvi_oracle_v2.py
+new file mode 100644
+index 0000000..6c65e8f
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/regenerative_qvi_oracle_v2.py
+@@ -0,0 +1,275 @@
++"""P0 research reference: *regenerative neuron* one-dimensional optimal stopping.
++
++This is not the coupled He--Xiong (2012) debt/equity model.  It is an
++independent, declared-domain QVI for a Brownian state, affine firing reward,
++fixed reset, and deterministic refractory time.  Mathematical verification is
++restricted to the stated scalar constant-coefficient real-arithmetic domain;
++binary64 output and the independent finite-domain grid are diagnostics, not
++certified enclosures.
++
++With L=mu*d/dx + sigma**2/2*d²/dx², rho>0, r<K and refractory tau>=0,
++    M J(x) = x-K + exp(-rho*tau)*J(r)
++    max(L J-rho*J, M J-J) = 0.
++
++Let kappa>0 solve sigma²*kappa²/2 + mu*kappa-rho=0.  Let
++q0=exp(-rho*tau-kappa*(K-r)), z be the unique root in (0,1) of
++    psi(z)=z-1+q0*exp(-z)=0.
++Then b=K+z/kappa, q=q0*exp(-z)=1-z, and
++    J(x)=exp(kappa*(x-b))/kappa    for x<b,
++         x-K+q/kappa               for x>=b.
++
++Exact proof: in continuation (L-rho)J=0 by characteristic equation,
++J-MJ=(exp(y)-1-y)/kappa>=0 with y=kappa*(x-b)<0.  In stopping,
++MJ-J=0 and (L-rho)J=mu-rho*J<=mu-rho/kappa=-sigma²*kappa/2<0.
++Matching, smooth fit, growth/transversality and the strict root monotonicity
++psi'(z)=1-q0*exp(-z)>0 verify the scalar QVI.  This does NOT establish
++whole-network optimality, HX self-consistent equilibrium, or low-precision
++correctness; firing at the boundary remains a discrete action.
++"""
++from __future__ import annotations
++
++from dataclasses import dataclass, replace
++import math
++
++import numpy as np
++from scipy.optimize import brentq
++from scipy.sparse import lil_matrix
++from scipy.sparse.linalg import spsolve
++
++
++class UnresolvedQVI(ValueError):
++    """Parameter, arithmetic or independently checked policy is not admissible."""
++
++
++@dataclass(frozen=True)
++class RegenerativeNeuron:
++    drift: float
++    sigma: float
++    discount: float
++    cost: float
++    reset: float
++    refractory: float
++
++    def __post_init__(self):
++        for name, value in vars(self).items():
++            if type(value) not in (int, float) or not math.isfinite(value):
++                raise UnresolvedQVI(f'{name}: finite numeric input required')
++        if not (self.sigma>0 and self.discount>0 and self.reset<self.cost
++                and self.refractory>=0):
++            raise UnresolvedQVI('require sigma,rho>0; reset<K; tau>=0')
++
++    @property
++    def kappa(self) -> float:
++        root=math.hypot(self.drift, self.sigma*math.sqrt(2*self.discount))
++        if self.drift>=0:
++            k=2*self.discount/(root+self.drift)
++        else:
++            k=(root-self.drift)/(self.sigma*self.sigma)
++        if not math.isfinite(k) or k<=0:
++            raise UnresolvedQVI('positive characteristic root unresolved')
++        residual=math.fsum((.5*self.sigma**2*k*k,self.drift*k,-self.discount))
++        if abs(residual)>1e-10*max(1.,self.discount):
++            raise UnresolvedQVI('characteristic residual above f64 reference tolerance')
++        return k
++
++    @property
++    def solution(self) -> 'Solution':
++        k=self.kappa
++        logq=-self.discount*self.refractory-k*(self.cost-self.reset)
++        if not math.isfinite(logq) or logq>=0 or logq < -30:
++            raise UnresolvedQVI('q0 is singular or too small for a distinct f64 root')
++        # expm1 avoids 1-exp(-epsilon) catastrophic cancellation.
++        def rootfn(z: float) -> float:
++            return z+math.expm1(logq-z)
++        if rootfn(0.)>=0 or rootfn(1.)<=0:
++            raise UnresolvedQVI('expected root bracket lost in f64')
++        z=brentq(rootfn,0.,1.,xtol=5e-16,rtol=9e-16)
++        if not 1e-10<z<1 or abs(rootfn(z))>2e-13*z:
++            raise UnresolvedQVI('ill-conditioned root, or insufficient residual')
++        b=self.cost+z/k
++        if not math.isfinite(b) or b<=self.cost or b<=self.reset:
++            raise UnresolvedQVI('boundary not represented strictly beyond cost/reset')
++        q=math.exp(logq-z)
++        if abs((q+z)-1)>2e-13:
++            raise UnresolvedQVI('regenerative discount consistency failed')
++        return Solution(kappa=k, boundary=b, q=q, root=z, root_residual=rootfn(z))
++
++    def value(self, x: float) -> float:
++        if type(x) not in (int,float) or not math.isfinite(x):
++            raise UnresolvedQVI('state must be finite')
++        s=self.solution
++        if x>=s.boundary:
++            v=math.fsum((x,-self.cost,s.q/s.kappa))
++        else:
++            exponent=s.kappa*(x-s.boundary)
++            if exponent < -700:
++                raise UnresolvedQVI('continuation value below supported f64 range')
++            v=math.exp(exponent)/s.kappa
++        if not math.isfinite(v) or v<=0:
++            raise UnresolvedQVI('value not strictly positive in reference domain')
++        return v
++
++    def qvi(self, x: float) -> 'QVIProbe':
++        if not isinstance(x,(float,int)) or isinstance(x,bool) or not math.isfinite(x):
++            raise UnresolvedQVI('state must be finite')
++        s=self.solution
++        exercise=math.fsum((x,-self.cost,s.q/s.kappa))
++        if x>=s.boundary:
++            value=exercise
++            residual_generator=self.drift-self.discount*value
++            residual_obstacle=0.
++            regime='FIRE'
++        else:
++            y=s.kappa*(x-s.boundary)
++            if y < -700:
++                raise UnresolvedQVI('continuation value too small')
++            value=math.exp(y)/s.kappa
++            # exp(y)-1-y >= 0 exactly.  Avoid numerical sign reversal
++            # near the free boundary by an explicit positive series.
++            if abs(y)<.05:
++                factor=1+y/3+y*y/12+y**3/60+y**4/360+y**5/2520
++                gap=.5*y*y*factor/s.kappa
++            else:
++                gap=(math.expm1(y)-y)/s.kappa
++            if gap<0 or not math.isfinite(gap):
++                raise UnresolvedQVI('QVI obstacle gap unresolved')
++            residual_generator=0.  # characteristic identity, not FD residual
++            residual_obstacle=-gap
++            regime='CONTINUE'
++        if not math.isfinite(value) or value<=0 or residual_generator>1e-12:
++            raise UnresolvedQVI('QVI reference outside declared finite domain')
++        return QVIProbe(regime, value, exercise, residual_generator,
++                        residual_obstacle, max(residual_generator,residual_obstacle))
++
++    def boundary_sensitivities(self) -> dict[str,float]:
++        s=self.solution
++        k,b,q,z=s.kappa,s.boundary,s.q,s.root
++        D=math.hypot(self.drift,self.sigma*math.sqrt(2*self.discount))
++        if D<=0 or k*z<=1e-14:
++            raise UnresolvedQVI('implicit boundary sensitivity singular')
++        projection=(b-self.cost)-q*(b-self.reset)
++        dk_mu=-k/D
++        dk_sigma=-self.sigma*k*k/D
++        dk_discount=1/D
++        factor=-1/(k*z)
++        out={
++            'drift':factor*(dk_mu*projection),
++            'sigma':factor*(dk_sigma*projection),
++            'discount':factor*(dk_discount*projection-q*self.refractory),
++            'cost':1/z,
++            'reset':-q/z,
++            'refractory':q*self.discount/(k*z),
++        }
++        if not all(math.isfinite(v) for v in out.values()):
++            raise UnresolvedQVI('implicit sensitivities non-finite')
++        return out
++
++
++@dataclass(frozen=True)
++class Solution:
++    kappa: float
++    boundary: float
++    q: float
++    root: float
++    root_residual: float
++
++
++@dataclass(frozen=True)
++class QVIProbe:
++    regime: str
++    value: float
++    immediate_fire_value: float
++    generator_residual: float
++    obstacle_residual: float
++    max_qvi_residual: float
++
++
++@dataclass(frozen=True)
++class GridOracle:
++    xs: np.ndarray
++    values: np.ndarray
++    stop: np.ndarray
++    grid_boundary: float
++    max_complementarity_residual: float
++    iterations: int
++    lower_boundary_value: float
++
++
++def independent_grid_oracle(p: RegenerativeNeuron, *, n:int=257,
++                            width_below:float=12., width_above:float=6.) -> GridOracle:
++    """Independent finite-state regenerative-policy iteration (no analytic b in optimizer).
++
++    Analytic boundary is used ONLY to center a finite comparison domain. The
++    lower endpoint is Dirichlet zero (a truncation approximation), and the
++    upper endpoint is forced FIRE.  Runtime QVI can differ from continuous
++    oracle due to mesh, truncation and reset interpolation; this is expected.
++    """
++    if type(n) is not int or n<31 or n>4097 or n%2!=1:
++        raise UnresolvedQVI('odd grid size within [31,4097] required')
++    if not (all(math.isfinite(v) for v in (width_below,width_above))
++            and width_below>4 and width_above>2):
++        raise UnresolvedQVI('invalid finite-grid domain widths')
++    s=p.solution
++    xmin=min(s.boundary-width_below/s.kappa,p.reset-1./s.kappa)
++    xmax=s.boundary+width_above/s.kappa
++    if not all(math.isfinite(v) for v in (xmin,xmax)) or not xmin<p.reset<xmax:
++        raise UnresolvedQVI('reset not interior to reference grid')
++    xs=np.linspace(xmin,xmax,n)
++    h=(xmax-xmin)/(n-1)
++    a=.5*p.sigma**2/h**2
++    lc=a-p.drift/(2*h)
++    rc=a+p.drift/(2*h)
++    if min(lc,rc)<0:
++        lc=a+max(-p.drift,0)/h
++        rc=a+max(p.drift,0)/h
++    if not all(math.isfinite(v) for v in (a,lc,rc)) or min(lc,rc)<0:
++        raise UnresolvedQVI('grid operator not monotone')
++    denom=p.discount+lc+rc
++    idx=int(np.searchsorted(xs,p.reset,side='right'))
++    if idx<=0 or idx>=n:
++        raise UnresolvedQVI('reset interpolation outside grid')
++    w=(p.reset-xs[idx-1])/h
++    discount=math.exp(-p.discount*p.refractory)
++    stop=np.asarray(xs>p.cost,dtype=bool)
++    stop[0]=False
++    stop[-1]=True
++    values=np.zeros(n)
++    for it in range(1,151):
++        A=lil_matrix((n,n),dtype=float)
++        rhs=np.zeros(n)
++        A[0,0]=1.
++        for i in range(1,n):
++            if stop[i]:
++                A[i,i]=1.
++                A[i,idx-1]-=discount*(1-w)
++                A[i,idx]-=discount*w
++                rhs[i]=xs[i]-p.cost
++            else:
++                A[i,i]=denom
++                A[i,i-1]=-lc
++                if i+1<n:
++                    A[i,i+1]=-rc
++        values=np.asarray(spsolve(A.tocsr(),rhs))
++        if not np.isfinite(values).all():
++            raise UnresolvedQVI('finite-grid value solve nonfinite')
++        resetv=(1-w)*values[idx-1]+w*values[idx]
++        cont=(lc*values[:-2]+rc*values[2:])/denom
++        exercise=xs[1:-1]-p.cost+discount*resetv
++        better=np.asarray(exercise >= cont)
++        candidate=stop.copy()
++        candidate[1:-1]=better
++        if np.array_equal(candidate,stop):
++            break
++        stop=candidate
++    else:
++        raise UnresolvedQVI('independent regenerative policy iteration not converged')
++    resetv=(1-w)*values[idx-1]+w*values[idx]
++    cont_res=lc*values[:-2]+rc*values[2:]-denom*values[1:-1]
++    obs_res=xs[1:-1]-p.cost+discount*resetv-values[1:-1]
++    res=float(np.max(np.abs(np.maximum(cont_res,obs_res))))
++    if res>1e-7*max(1.,p.cost) or not np.isfinite(res):
++        raise UnresolvedQVI(f'discrete Bellman residual {res} too large')
++    stopinds=np.flatnonzero(stop[1:-1])+1
++    if len(stopinds)<1:
++        raise UnresolvedQVI('finite-grid contains no interior FIRE region')
++    return GridOracle(xs,values,stop,float(xs[stopinds[0]]),res,it,float(values[0]))
+diff --git a/experiments/hcsn_hx_unified_v3/test_regenerative_qvi_oracle_v2.py b/experiments/hcsn_hx_unified_v3/test_regenerative_qvi_oracle_v2.py
+new file mode 100644
+index 0000000..d7866fc
+--- /dev/null
++++ b/experiments/hcsn_hx_unified_v3/test_regenerative_qvi_oracle_v2.py
+@@ -0,0 +1,132 @@
++"""P0 bounded scalar regenerative QVI: independent numerical and adversarial tests."""
++import math
++import random
++import unittest
++from dataclasses import replace
++
++import numpy as np
++from scipy.special import lambertw
++
++from .regenerative_qvi_oracle_v2 import (
++    RegenerativeNeuron, UnresolvedQVI, independent_grid_oracle)
++
++
++class RegenerativeQVIV2Tests(unittest.TestCase):
++    @staticmethod
++    def params():
++        return RegenerativeNeuron(.13,.63,.2,1.4,-.2,.3)
++
++    def test_closed_boundary_against_independent_lambert_w(self):
++        rng=random.Random(2026103100)
++        admitted=0
++        refused=0
++        for _ in range(120):
++            p=RegenerativeNeuron(
++                rng.uniform(-1,1),rng.uniform(.2,2),rng.uniform(.04,2),
++                rng.uniform(.1,5),rng.uniform(-4,-.1),rng.uniform(0,2))
++            try:
++                s=p.solution
++            except UnresolvedQVI:
++                refused+=1
++                continue  # explicit f64-domain refusal is not a successful check
++            admitted+=1
++            q0=math.exp(-p.discount*p.refractory-p.kappa*(p.cost-p.reset))
++            z_ref=1+lambertw(-q0/math.e,k=0).real
++            b_ref=p.cost+z_ref/p.kappa
++            self.assertLess(abs(s.boundary-b_ref),2e-11*max(1,abs(b_ref)))
++            self.assertGreater(s.boundary,p.cost)
++            self.assertTrue(0<s.q<1)
++            self.assertLess(abs(s.kappa*(s.boundary-p.cost)-(1-s.q)),1e-11)
++        self.assertGreater(admitted,75)
++        self.assertEqual(admitted+refused,120)
++
++    def test_analytic_global_qvi_for_160_random_parameter_sets(self):
++        rng=random.Random(2026103101)
++        for _ in range(160):
++            p=RegenerativeNeuron(rng.uniform(-.4,.5),rng.uniform(.3,1.5),
++                    rng.uniform(.06,1.),rng.uniform(.5,3.),
++                    rng.uniform(-3.,-.5),rng.uniform(0,1.))
++            b=p.solution.boundary
++            for offset in (-5,-2,-1,-.5,-1e-5,0,1e-5,.5,1,5):
++                x=b+offset/p.kappa
++                probe=p.qvi(x)
++                self.assertLessEqual(probe.max_qvi_residual,1e-12)
++                self.assertLessEqual(probe.generator_residual,1e-12)
++                self.assertLessEqual(probe.obstacle_residual,1e-12)
++                self.assertGreater(probe.value,0)
++                self.assertEqual(probe.regime,'FIRE' if x>=b else 'CONTINUE')
++
++    def test_matching_smooth_fit_and_local_derivatives(self):
++        p=self.params();s=p.solution;b=s.boundary
++        ref=p.qvi(b)
++        self.assertAlmostEqual(ref.value,1/s.kappa,places=12)
++        self.assertAlmostEqual(ref.immediate_fire_value,ref.value,places=12)
++        h=1e-4
++        left=(p.value(b-h)-p.value(b-2*h))/h
++        right=(p.value(b+2*h)-p.value(b+h))/h
++        self.assertLess(abs(left-1),2e-4)
++        self.assertLess(abs(right-1),1e-10)
++        self.assertLess(abs(p.qvi(b-h).obstacle_residual),h*h*s.kappa)
++
++    def test_all_six_implicit_boundary_directions_against_centered_differences(self):
++        rng=random.Random(2026103102)
++        for _ in range(25):
++            p=RegenerativeNeuron(rng.uniform(-.5,.5),rng.uniform(.4,1.2),
++                rng.uniform(.1,.8),rng.uniform(.8,3.),rng.uniform(-2,-.5),
++                rng.uniform(.2,.9))
++            derivatives=p.boundary_sensitivities()
++            for key,expected in derivatives.items():
++                original=getattr(p,key)
++                h=1e-5*max(1,abs(original))
++                up=replace(p,**{key:original+h}).solution.boundary
++                down=replace(p,**{key:original-h}).solution.boundary
++                observed=(up-down)/(2*h)
++                with self.subTest(key=key):
++                    self.assertLess(abs(expected-observed)/max(1,abs(expected)),1e-7)
++
++    def test_independent_grid_policy_iteration_convergence(self):
++        p=self.params();s=p.solution
++        xs=[s.boundary-.8/s.kappa,s.boundary-.1/s.kappa,s.boundary+.2/s.kappa]
++        errs=[]
++        for n in (65,129,257,513):
++            g=independent_grid_oracle(p,n=n)
++            self.assertLess(g.max_complementarity_residual,1e-9)
++            self.assertLess(abs(g.grid_boundary-s.boundary),.25)
++            errs.append(max(abs(np.interp(x,g.xs,g.values)-p.value(x)) for x in xs))
++        self.assertTrue(all(errs[i+1]<errs[i] for i in range(3)),errs)
++        self.assertLess(errs[-1],2e-4)
++
++    def test_refractory_reduces_future_regeneration_value(self):
++        p=self.params()
++        short=replace(p,refractory=0)
++        long=replace(p,refractory=2)
++        self.assertLess(short.solution.boundary,long.solution.boundary)
++        self.assertGreater(short.value(p.solution.boundary-1),long.value(p.solution.boundary-1))
++
++    def test_invalid_inputs_fail_closed(self):
++        p=self.params()
++        invalid=(dict(sigma=0.),dict(discount=0.),dict(reset=2),
++                 dict(refractory=-1.),dict(drift=float('nan')))
++        for delta in invalid:
++            with self.subTest(delta=delta),self.assertRaises(UnresolvedQVI):
++                replace(p,**delta)
++        with self.assertRaises(UnresolvedQVI):
++            p.qvi(float('inf'))
++        with self.assertRaises(UnresolvedQVI):
++            independent_grid_oracle(p,n=64)
++
++    def test_underresolved_root_and_float_exponent_refuse(self):
++        p=RegenerativeNeuron(0.,1.,.5,1.,1.-1e-13,0.)
++        # Very shallow boundary can cause a numerically ill-conditioned root.
++        try:
++            s=p.solution
++            self.assertGreater(s.root,1e-10)
++        except UnresolvedQVI:
++            pass
++        p=self.params()
++        with self.assertRaises(UnresolvedQVI):
++            p.value(p.solution.boundary-2000)
++
++
++if __name__=='__main__':
++    unittest.main()

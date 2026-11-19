@@ -1,0 +1,7 @@
+{
+  "finding": "Popen return to live-map registration can be interrupted by raising SIGALRM before shared cleanup obtains the child PID. Prior scoped review documented exclusion, but parent requires closure before admission. No RUN exists and no execution authorized under this freeze.",
+  "prior_review_sha256": "1192d02a74bc44defe0ffbb149a7be9a8bc268942792c6fc03d9d2a2e0205850",
+  "proposed_direction": "Single-thread fork/exec with SIGALRM blocked around fork plus parent shared-live registration, child default alarm and safe setup before exec; no blocking exec-status handshake while masked. Still requires full new source review and separate run admission.",
+  "source_freeze_sha256": "30675ce264e636dcb794e52a664202a3d7ffc9bfe2bbbbbe52b601e2a52f1b6c",
+  "status": "EXECUTION_BLOCKED_BY_PARENT_PENDING_SPAWN_WINDOW_REPAIR"
+}

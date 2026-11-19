@@ -72,7 +72,7 @@ impl CompositionManifestV1 {
     }
 
     pub fn from_model_manifest(
-        manifest: &crate::model_worker::ModelManifest,
+        manifest: &crate::model_manifest::ModelManifest,
         cell_id: String,
         normalization_digest: String,
         head_digest: String,
@@ -519,7 +519,7 @@ impl<D: CompositionDriver> CompositionWorker<D> {
 
     pub fn attach_model_manifest(
         &mut self,
-        manifest: &crate::model_worker::ModelManifest,
+        manifest: &crate::model_manifest::ModelManifest,
         cell_id: String,
         normalization_digest: String,
         head_digest: String,
@@ -624,6 +624,12 @@ impl<D: CompositionDriver> CompositionWorker<D> {
 
     pub fn resident_encoder_count(&self) -> usize {
         self.pool.resident_encoder_count()
+    }
+
+    /// Logical resident byte accounting for qualification only. A real
+    /// backend must independently report physical allocations.
+    pub fn total_resident_memory_bytes(&self) -> Result<u64, CompositionError> {
+        self.pool.total_resident_memory_bytes()
     }
 
     pub fn active_cell_count(&self) -> usize {

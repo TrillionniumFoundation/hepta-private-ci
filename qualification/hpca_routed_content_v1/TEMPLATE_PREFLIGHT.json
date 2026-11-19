@@ -1,0 +1,56 @@
+{
+  "counterexample": "prior content template pair%2 equaled color truth parity; no model execution occurred",
+  "fix": "floor(pair/4)%2",
+  "new_model_generations": 0,
+  "observed_counts": [
+    {
+      "group": 0,
+      "n": 8,
+      "template": "assigned",
+      "truth": "no"
+    },
+    {
+      "group": 0,
+      "n": 8,
+      "template": "assigned",
+      "truth": "yes"
+    },
+    {
+      "group": 0,
+      "n": 8,
+      "template": "read-fact",
+      "truth": "no"
+    },
+    {
+      "group": 0,
+      "n": 8,
+      "template": "read-fact",
+      "truth": "yes"
+    },
+    {
+      "group": 1,
+      "n": 8,
+      "template": "assigned",
+      "truth": "no"
+    },
+    {
+      "group": 1,
+      "n": 8,
+      "template": "assigned",
+      "truth": "yes"
+    },
+    {
+      "group": 1,
+      "n": 8,
+      "template": "read-fact",
+      "truth": "no"
+    },
+    {
+      "group": 1,
+      "n": 8,
+      "template": "read-fact",
+      "truth": "yes"
+    }
+  ],
+  "task_sha256": "87a8caa9539642d7c0e0e0cd0b400b134a456e4565d01bf06521618471b31756"
+}

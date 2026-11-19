@@ -11,7 +11,8 @@ import hashlib
 import io
 import json
 import math
-from pathlib import Path
+import os
+import stat
 import re
 
 import torch
@@ -200,9 +201,16 @@ def model_bytes(model, **extra):
 
 def load_training_checkpoint(path, expected_sha256):
     """Recover exact tensors; the owner must check saved binding/time against its context."""
-    if Path(path).stat().st_size > 32*1024*1024:
-        raise ValueError("checkpoint byte budget exceeded")
-    with Path(path).open("rb") as stream:
+    # Open once without waiting for a FIFO writer, then inspect and hash the
+    # same descriptor. Regular-file symlinks keep their existing behavior.
+    def checkpoint_opener(name, flags):
+        return os.open(name, flags | getattr(os, "O_NONBLOCK", 0))
+    with open(path, "rb", opener=checkpoint_opener) as stream:
+        info = os.fstat(stream.fileno())
+        if not stat.S_ISREG(info.st_mode):
+            raise ValueError("checkpoint must be a regular file")
+        if info.st_size > 32*1024*1024:
+            raise ValueError("checkpoint byte budget exceeded")
         payload = stream.read(32*1024*1024+1)
     if len(payload) > 32*1024*1024 or hashlib.sha256(payload).hexdigest() != sha256(expected_sha256):
         raise ValueError("checkpoint byte identity/size mismatch")

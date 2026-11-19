@@ -28,6 +28,7 @@ jobs:
       - name: Checkout exact candidate without credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
@@ -52,3 +53,18 @@ jobs:
           path: |
             MODULE.bazel.lock
             codex-rs/Cargo.lock
+      - name: Retain an exact-source patch for review
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/hepta-lock-refresh-proposal"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/hepta-lock-refresh-proposal/source.txt"
+          git diff --binary -- MODULE.bazel.lock codex-rs/Cargo.lock > "$RUNNER_TEMP/hepta-lock-refresh-proposal/lockfiles.patch"
+          git status --porcelain=v1 > "$RUNNER_TEMP/hepta-lock-refresh-proposal/worktree-status.txt"
+      - name: Upload the reviewable proposal without writing a branch
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lock-refresh-proposal-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-lock-refresh-proposal/
+          if-no-files-found: error
+          retention-days: 7

@@ -5,6 +5,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::File;
+use std::io::Read;
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -26,6 +27,20 @@ pub(super) fn id(value: &str) -> Result<StableId> {
 
 pub(super) fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+fn read_bounded_file(path: &Path, limit: u64) -> Result<Vec<u8>> {
+    let file = File::open(path)?;
+    let metadata = file.metadata()?;
+    ensure!(metadata.is_file() && metadata.len() <= limit);
+    let mut bytes = Vec::new();
+    file.take(limit.checked_add(1).context("byte limit overflow")?)
+        .read_to_end(&mut bytes)?;
+    ensure!(
+        bytes.len() as u64 <= limit,
+        "source grew beyond its byte limit"
+    );
+    Ok(bytes)
 }
 
 #[derive(Clone, Deserialize)]
@@ -67,11 +82,7 @@ pub(super) struct Fixture {
 
 impl Fixture {
     pub fn load(path: &Path, expected: Digest32) -> Result<Self> {
-        let raw = std::fs::read(path)?;
-        ensure!(
-            raw.len() <= 1024 * 1024,
-            "fixture exceeds the bounded import profile"
-        );
+        let raw = read_bounded_file(path, 1024 * 1024)?;
         ensure!(
             Digest32::of_bytes(&raw) == expected,
             "independently supplied fixture pin differs"
@@ -143,10 +154,34 @@ impl Fixture {
         Ok(fixture)
     }
 
+    fn read_pinned_source(&self, relative: &str) -> Result<Vec<u8>> {
+        ensure!(
+            Path::new(relative)
+                .components()
+                .all(|part| matches!(part, Component::Normal(_)))
+        );
+        let path = self.source_root.join(relative);
+        let metadata = std::fs::symlink_metadata(&path)?;
+        ensure!(metadata.is_file() && !metadata.file_type().is_symlink());
+        ensure!(
+            metadata.len() <= 64 * 1024 * 1024
+                && path
+                    .canonicalize()?
+                    .starts_with(self.source_root.canonicalize()?)
+        );
+        let bytes = read_bounded_file(&path, 64 * 1024 * 1024)?;
+        ensure!(
+            Digest32::of_bytes(&bytes).to_string()
+                == *self.source_pins.get(relative).context("source pin")?,
+            "old source bytes changed: {relative}"
+        );
+        Ok(bytes)
+    }
+
     pub fn verify_sources(&self) -> Result<()> {
         ensure!(self.source_root.is_absolute() && self.source_pins.len() == 21);
         // Do not open any outcome artifact of an unfinished run.
-        let status_bytes = std::fs::read(self.source_root.join("status.json"))?;
+        let status_bytes = self.read_pinned_source("status.json")?;
         ensure!(
             Digest32::of_bytes(&status_bytes).to_string()
                 == *self.source_pins.get("status.json").context("status pin")?
@@ -155,28 +190,13 @@ impl Fixture {
         ensure!(status["state"] == "completed");
         let expected_rows = status["rows"].as_u64().context("completed row count")?;
         ensure!(expected_rows >= 7);
-        let root = self.source_root.canonicalize()?;
-        for (relative, expected) in &self.source_pins {
-            ensure!(
-                Path::new(relative)
-                    .components()
-                    .all(|p| matches!(p, Component::Normal(_)))
-            );
-            let path = self.source_root.join(relative);
-            let metadata = std::fs::symlink_metadata(&path)?;
-            ensure!(metadata.is_file() && !metadata.file_type().is_symlink());
-            ensure!(metadata.len() <= 64 * 1024 * 1024 && path.canonicalize()?.starts_with(&root));
-            ensure!(
-                Digest32::of_bytes(&std::fs::read(path)?).to_string() == *expected,
-                "old source bytes changed: {relative}"
-            );
+        for relative in self.source_pins.keys() {
+            self.read_pinned_source(relative)?;
         }
-        let protocol: Value =
-            serde_json::from_slice(&std::fs::read(self.source_root.join("protocol.json"))?)?;
+        let protocol: Value = serde_json::from_slice(&self.read_pinned_source("protocol.json")?)?;
         ensure!(protocol == serde_json::from_str::<Value>(&self.protocol_json)?);
         let canonical_protocol_digest = digest(&self.protocol_json).to_string();
-        let summary: Value =
-            serde_json::from_slice(&std::fs::read(self.source_root.join("summary.json"))?)?;
+        let summary: Value = serde_json::from_slice(&self.read_pinned_source("summary.json")?)?;
         ensure!(summary == serde_json::from_str::<Value>(&self.summary_json)?);
         ensure!(status["summary_sha256"] == digest(&self.summary_json).to_string());
         ensure!(
@@ -192,7 +212,8 @@ impl Fixture {
         );
         // Membership is checked against the full independently pinned old log,
         // rather than accepting any caller-authored nonzero support digest.
-        let source = std::fs::read_to_string(self.source_root.join("rows.jsonl"))?;
+        let source_bytes = self.read_pinned_source("rows.jsonl")?;
+        let source = std::str::from_utf8(&source_bytes)?;
         let wanted = self
             .records
             .iter()

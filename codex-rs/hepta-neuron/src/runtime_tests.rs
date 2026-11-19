@@ -659,3 +659,6 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
 
 #[path = "runtime_shadow_tests.rs"]
 mod shadow_tests;
+
+#[path = "runtime_product_composition_tests.rs"]
+mod product_composition_tests;

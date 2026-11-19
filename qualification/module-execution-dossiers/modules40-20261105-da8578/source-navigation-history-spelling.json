@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.source-navigation-observation-rebind.v1",
+  "schemaVersion": 1,
+  "sourceCandidate": {
+    "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+    "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+  },
+  "scope": "source_navigation_only",
+  "executionEvidenceTransferred": false,
+  "qualificationRulesModified": false,
+  "historicalSourceBasesModified": false,
+  "historicalExecutionRecordsModified": false,
+  "qualificationAfterCommitRequired": true,
+  "priorRecordRecovery": "git cat-file blob <previousMap.blob>; verify SHA-256 and byte count",
+  "records": [
+    {
+      "module": "inference.worker",
+      "mapPath": "docs/modules/inference.worker/IMPLEMENTATION_MAP.json",
+      "previousMap": {
+        "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+        "tree": "81e2217141060f123adbe1da78c3dbecf57f3073",
+        "blob": "a46ddaadd19cd3d222bab4f39710ff1d0158e3a6",
+        "sha256": "06b6001715b991a6a93dadf646deec15d8e69360c66063d93d37749b31cf4dbb",
+        "bytes": 6838
+      },
+      "previousSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "previousObservedAtHead": {
+        "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
+        "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+      },
+      "replacementSourceBase": {
+        "commit": "de47d561266c97d8350de71ae710b650a3b61447",
+        "tree": "b1d01b56a15c87c340192289087f20c8cc571eff"
+      },
+      "replacementObservedAtHead": {
+        "commit": "c4863123b65f895be0eb14e0958d5cfe6c9c78bd",
+        "tree": "81e2217141060f123adbe1da78c3dbecf57f3073"
+      },
+      "previousClaimBoundary": {
+        "nativeSourceMappingComplete": true,
+        "repositoryControlledDocumentationGapsClosed": true,
+        "repositoryControlledMappingGapsClosed": true,
+        "repositoryControlledSourceBoundaryGapsClosed": false,
+        "productExecutionComplete": false,
+        "deploymentQualificationComplete": false,
+        "independentAcceptanceComplete": false,
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productExecutionProved": false,
+        "independentAcceptance": false,
+        "activation": false,
+        "release": false,
+        "implementedOperationMappingComplete": true
+      },
+      "mappingSourceIdentityMode": "exact_blob",
+      "withdrawnClaims": [],
+      "historicalCandidateRecordsModified": false,
+      "replacementSha256": "eb7af971ed46e79f800a327f7c5d73234587687512cf46a3e50bc91ee8032c40"
+    }
+  ]
+}

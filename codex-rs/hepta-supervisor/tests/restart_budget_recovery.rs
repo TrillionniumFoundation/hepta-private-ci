@@ -388,6 +388,12 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         &event.kind,
         SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
     )));
+    assert!(
+        queued
+            .events
+            .iter()
+            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
+    );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(999)),
         TickReport::default()

@@ -1,0 +1,148 @@
+name: hepta-hdcf-class-withheld-v13
+
+on:
+  push:
+    branches:
+      - research/hdcf-class-withheld-v13-20261017
+    paths:
+      - 'qualification/hdcf-research/class_withheld_transfer_v13.py'
+      - 'qualification/hdcf-research/test_class_withheld_transfer_v13.py'
+      - 'qualification/hdcf-research/ORIGINAL_CLASS_WITHHELD_V13.md'
+      - '.github/workflows/hepta-hdcf-class-withheld-v13.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hdcf-v13-original-class-hold-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  original-class-withheld-physical-organ:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Verify exact HEAD, frozen original owner and reject missing predecessor code
+        working-directory: qualification/hdcf-research
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+          test -f organ_query_binding_v12.py
+          test -f review_organ_binding_v12.py
+          test -f original_beans_v9.py
+          python3 -m py_compile class_withheld_transfer_v13.py test_class_withheld_transfer_v13.py
+      - name: Install pinned CPU fitting and independent original source verification dependencies
+        run: |
+          set -euo pipefail
+          python3 -m pip install --disable-pip-version-check numpy==2.3.5 pyarrow==20.0.0 huggingface-hub==0.36.0
+          python3 -m pip check
+      - name: Reacquire only exact original TRAIN source JPEG and pretrained feature ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          python3 original_beans_v9.py download --kind source --out "$RUNNER_TEMP/original-source.zip"
+          python3 original_beans_v9.py download --kind features --out "$RUNNER_TEMP/original-features.zip"
+      - name: Actually fit three class-excluded Organs; blind-seal 24 TEST-image predictions
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          test ! -e "$RUNNER_TEMP/original-targets.zip"
+          test ! -e "$RUNNER_TEMP/original-beans-test.parquet"
+          python3 class_withheld_transfer_v13.py train \
+            --source-zip "$RUNNER_TEMP/original-source.zip" \
+            --feature-zip "$RUNNER_TEMP/original-features.zip" \
+            --out "$RUNNER_TEMP/v13-blind-sealed.json"
+          test -s "$RUNNER_TEMP/v13-blind-sealed.json"
+          sha256sum "$RUNNER_TEMP/v13-blind-sealed.json" > "$RUNNER_TEMP/v13-blind-sealed.sha256"
+      - name: Download withheld original publisher target bytes only AFTER train/prediction seal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          sha256sum --check "$RUNNER_TEMP/v13-blind-sealed.sha256"
+          python3 original_beans_v9.py download --kind targets --out "$RUNNER_TEMP/original-targets.zip"
+          python3 - <<'PY'
+          import hashlib,os
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          import original_beans_v9 as v
+          for split,digest in [('train',v.TRAIN_SHA),('test',v.TEST_SHA)]:
+              original=Path(hf_hub_download(repo_type='dataset',repo_id='AI-Lab-Makerere/beans',
+                  filename=f'data/{split}-00000-of-00001.parquet', revision=v.DATA_REV))
+              with original.open('rb') as inp:
+                  assert hashlib.file_digest(inp,'sha256').hexdigest()==digest
+              copied=Path(os.environ['RUNNER_TEMP'])/f'original-beans-{split}.parquet'
+              with copied.open('xb') as out, original.open('rb') as inp:
+                  for b in iter(lambda:inp.read(1024*1024), b''):
+                      out.write(b)
+          PY
+      - name: Execute authentic-byte 16-test adversarial suite twice (never skip)
+        env:
+          HDCF_V13_SOURCE_ZIP: ${{ runner.temp }}/original-source.zip
+          HDCF_V13_FEATURE_ZIP: ${{ runner.temp }}/original-features.zip
+          HDCF_V13_TARGET_ZIP: ${{ runner.temp }}/original-targets.zip
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_class_withheld_transfer_v13
+          python3 -O -m unittest -v test_class_withheld_transfer_v13
+      - name: Independent postseal replay and source-publisher original byte adjudication
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          umask 077
+          sha256sum --check "$RUNNER_TEMP/v13-blind-sealed.sha256"
+          python3 class_withheld_transfer_v13.py review \
+            --source-zip "$RUNNER_TEMP/original-source.zip" \
+            --feature-zip "$RUNNER_TEMP/original-features.zip" \
+            --target-zip "$RUNNER_TEMP/original-targets.zip" \
+            --predictions "$RUNNER_TEMP/v13-blind-sealed.json" \
+            --publisher-train "$RUNNER_TEMP/original-beans-train.parquet" \
+            --publisher-test "$RUNNER_TEMP/original-beans-test.parquet" \
+            --out "$RUNNER_TEMP/v13-sanitized-no-go.json"
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          result=json.loads((Path(os.environ['RUNNER_TEMP'])/'v13-sanitized-no-go.json').read_text())
+          assert result['publisher_byte_reverification'] is True
+          assert result['actual_organ_sgd_completed'] is True
+          assert result['held_images']==24 and result['trained_organ_count']==3
+          assert [result['unseen_class_per_fold'][k]['unseen_correct'] for k in
+                  ('angular_leaf_spot','bean_rust','healthy')] == [1,1,0]
+          assert result['privileged_frozen_visual_prototype_correct']==20
+          assert result['new_text_paraphrases_encoded'] is False
+          assert result['unseen_class_learned_semantics_proven'] is False
+          assert result['production_authorized'] is False
+          assert result['disposition']=='HOLD_NO_GO_DENY_ALL'
+          print('ORIGINAL_V13_REAL_CLASS_WITHHELD_FITTING_REPLAYED_HOLD_DENY_ALL')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hdcf-v13-original-class-withheld-independent-negative
+          path: ${{ runner.temp }}/v13-sanitized-no-go.json
+          retention-days: 7
+          if-no-files-found: error

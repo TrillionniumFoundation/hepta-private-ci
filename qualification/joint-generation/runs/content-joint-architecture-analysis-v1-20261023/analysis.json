@@ -1,0 +1,732 @@
+{
+  "budget_proposal": {
+    "existing_H_A_ledgers_cannot_be_reset": true,
+    "existing_probe_ledger_costs": {
+      "A": {
+        "audit_active_CPU": 0.2397470690000001,
+        "audit_added_CPU": 0.488017937,
+        "audit_scheduler_CPU": 0.0006944109999999504,
+        "audit_shared_CPU": 0.247576457,
+        "combined_added_CPU": 1.5274524790000008,
+        "combined_added_units": 183603672,
+        "combined_complete_CPU": 6.937385919999999,
+        "combined_complete_units": 11847662223,
+        "original_added_CPU": 1.0394345420000008
+      },
+      "H": {
+        "audit_active_CPU": 0.25872450099999994,
+        "audit_added_CPU": 0.506995369,
+        "audit_scheduler_CPU": 0.0006944109999999504,
+        "audit_shared_CPU": 0.247576457,
+        "combined_added_CPU": 1.5671764390000005,
+        "combined_added_units": 183606120,
+        "combined_complete_CPU": 6.590750701000006,
+        "combined_complete_units": 11847956433,
+        "original_added_CPU": 1.0601810700000005
+      }
+    },
+    "historical_reference_models_not_free_selectable_candidates": true,
+    "minimum_future_shared_units": 3486924537,
+    "old_shared_preparation_CPU": 2.075925876,
+    "old_shared_preparation_units": 3486924537,
+    "paired_models_per_objective_family": 6,
+    "preparation_note": "New adapter compilation, hash checks, import and allocation costs must be added",
+    "reserve_CPU": 2.0,
+    "reserve_units": 500000000,
+    "status": "NEW TRAIN protocol proposal only; NOT a reset of any old ledger",
+    "unit_only_update_upper_bounds": {
+      "A": {
+        "independent": 580,
+        "native12": 642
+      },
+      "H": {
+        "independent": 594,
+        "native12": 645
+      },
+      "N": {
+        "independent": 578,
+        "native12": 640
+      },
+      "S": {
+        "independent": 594,
+        "native12": 645
+      }
+    },
+    "upper_bound_training_CPU_per_model_before_new_setup": 0.9873456873333334,
+    "upper_bound_training_units_per_model_before_new_setup": 1335512577
+  },
+  "decoder_forward_calls": 0,
+  "descriptive_analysis_CPU_before_receipt": 0.017438803000000003,
+  "dimensions": [
+    202,
+    12,
+    192,
+    32
+  ],
+  "formal_data_opened": false,
+  "input_and_source_sha256": {
+    "content_joint/ARCHITECTURE.md": "0b135fdb81222ac0d081b58819a3017f107ac2e0527b0c4aabfa274d19769002",
+    "content_joint/TRAIN_PROTOCOL_DRAFT.md": "28d567caf3143f2acc8cdd439af6f50bdf99163a6531289e73192babc2f512c8",
+    "content_joint/analyze.py": "d641bc983f021955c65e1e5e94d0301e8f09204517187e6118764a48529b0edf",
+    "content_reconcile/RESULTS.md": "5ae8e07aad57d4815dec913f60ea4fccb342ea161524003b6ebe126e6ad98521",
+    "data.py": "2e7401afac84deec2149fad89fe3a2b461046b6cd667408070c7da9ec130e0a3",
+    "independent/accounting.py": "3deccbaee86f5142391ddd1472522e331055935d4f17c458eb050c177650509b",
+    "independent/data_v2.py": "8f25960bf6ab43e461f7866a41c0f33742d04ba70cb62cd656b3bad478db2764",
+    "independent/evaluation.py": "d4fe0415390721c54cad4e86b65e25db1a06b4c2f72b3719eb425c520c4c3632",
+    "independent/learning.py": "d3073d3fb652addde680d8aa569f32c898d782b35135e187e99fdd321a453941",
+    "independent/native.c": "0d2be36cc6d9dbf3f22efeb7ff973f5ae7b049a74fb60a676db9c0b68d6ccc62",
+    "independent/native_adam.py": "fd3ee0501230509c1a534c18e01d48ef515828de3ddcdba0b170809bc53e5baa",
+    "model.py": "b1892fb8568336034cd52f7e280a6dbbad5b5cc48c072edf2455815e4c817291",
+    "runs/content-control-train-r2-20261023/A-11-0.01/model.npz": "1feacc1c643e382f429c5cfe520684208011796e5918f4fca2b3c67a3d959505",
+    "runs/content-control-train-r2-20261023/A-23-0.01/model.npz": "8d28adfbd98bd29942656d91483987d605a3cee31950791f3228f314e0c8c086",
+    "runs/content-control-train-r2-20261023/A-47-0.01/model.npz": "847d42e4cc0879766137761c746578859190b0ede7179329bf336fb219925b35",
+    "runs/content-control-train-r2-20261023/H-11-0.01/model.npz": "77baab23cb40665818f4ba04710671982e2049a82f1aeb968766830f6a81bd8b",
+    "runs/content-control-train-r2-20261023/H-23-0.01/model.npz": "e500ba305bebbcba79bd2f41f2ea47fc5af1af9d6da78fff10aaa69747b5a5b8",
+    "runs/content-control-train-r2-20261023/H-47-0.01/model.npz": "f1f38e1a3f6f2911a6d58d65e45ceefaddff03bada5ff2f60ae50c2e75fe8c15",
+    "runs/content-control-train-r2-20261023/S-11-0.01/model.npz": "5bb4ea11ed3e44f548ba2aab5061015d158b401ee9ea46ddb4d9eb449637849c",
+    "runs/content-control-train-r2-20261023/S-23-0.01/model.npz": "e3de93410a5db0fed26f0a07eb261cd9f4eeb94650ccb0980aabf1f7cfda328e",
+    "runs/content-control-train-r2-20261023/S-47-0.01/model.npz": "0b04b457bba1dc2dfb1efde7dad11f77a8aba95178e945b86b454598f229470c",
+    "runs/content-control-train-r2-20261023/base-11.npz": "71e085b079c1148af15f0986ccf4b40fe658e239bfe905f73fba148cfb042db0",
+    "runs/content-control-train-r2-20261023/base-23.npz": "9431e72401c427ef0abbb7e969cd79bf4ae8601fe219a1233d9e459307490a8c",
+    "runs/content-control-train-r2-20261023/base-47.npz": "5b8a5a152ca56bc704106888795b7b24d287c32b7f5493cb56d249a4735ec84c",
+    "runs/content-control-train-r2-20261023/build.json": "69041da185310f1453c1d2896487379104fca1f0a63a64333c0c4b74597d646d",
+    "runs/content-control-train-r2-20261023/train-result.json": "db7145293943e0e8413b121598dafa7be5097dd02c9c9c3fb542f0bde5989644",
+    "runs/content-reconcile-probe-v1-20261023/R-11.npz": "03b2688e1b9ec8a514eed5a38e60f5f99d6a670cb22aa04ea66c5525c39bdcf3",
+    "runs/content-reconcile-probe-v1-20261023/R-23.npz": "f3348d9bee48b01e2b8571d7ab4e9297af00481fa3d3f42eab417d2d303e45ff",
+    "runs/content-reconcile-probe-v1-20261023/R-47.npz": "1ba347d4a004d59f7dec7e58365c133949df35056262f81aa15e170c51e0ca5c",
+    "runs/content-reconcile-probe-v1-20261023/evidence/audit-result.json": "59564463e9fd4492a70b94016b74f8105ad201a5d0fc088b1030cd2dfdaceb9d",
+    "runs/content-reconcile-probe-v1-20261023/evidence/descriptive-decomposition.json": "c9c9ab7bc1fda2afb2c7735776c39a5ff5c43b674c9372236926cffd613353b5",
+    "utility.py": "bbfcbad5557107e3d9be587f55cd91889e2c1b0d6c3d87d07ec329ff54251037"
+  },
+  "model_forward_calls": 0,
+  "prices": {
+    "compare_ops": 1,
+    "div_ops": 4,
+    "exp_ops": 8,
+    "log_ops": 8,
+    "macs": 2,
+    "pow_ops": 8,
+    "scalar_ops": 1,
+    "sort_items": 1,
+    "sqrt_ops": 4,
+    "tanh_ops": 8
+  },
+  "quoted_architectures": {
+    "independent24": {
+      "head_parameters": 792,
+      "parameter_gradient_two_moment_bytes": 233216,
+      "per_batch_head_probability_bytes": 12288,
+      "service": {
+        "status": "original implemented inventory",
+        "total": 19236
+      },
+      "total_parameters_including_fixed_decoder": 9784,
+      "trainable_parameters": 7288,
+      "training": {
+        "A": {
+          "operators": {
+            "compare_ops": 24378,
+            "div_ops": 26475,
+            "exp_ops": 1536,
+            "log_ops": 128,
+            "macs": 993280,
+            "pow_ops": 12,
+            "scalar_ops": 124344,
+            "sqrt_ops": 7289,
+            "tanh_ops": 2048
+          },
+          "units": 2300130
+        },
+        "H": {
+          "operators": {
+            "compare_ops": 21882,
+            "div_ops": 24938,
+            "exp_ops": 1536,
+            "log_ops": 128,
+            "macs": 974848,
+            "pow_ops": 12,
+            "scalar_ops": 118008,
+            "sqrt_ops": 7289,
+            "tanh_ops": 2048
+          },
+          "units": 2248286
+        },
+        "N": {
+          "operators": {
+            "compare_ops": 24378,
+            "div_ops": 28075,
+            "exp_ops": 1536,
+            "log_ops": 192,
+            "macs": 993280,
+            "pow_ops": 12,
+            "scalar_ops": 124408,
+            "sqrt_ops": 7289,
+            "tanh_ops": 2048
+          },
+          "units": 2307106
+        },
+        "S": {
+          "operators": {
+            "compare_ops": 21882,
+            "div_ops": 24938,
+            "exp_ops": 1536,
+            "log_ops": 128,
+            "macs": 974848,
+            "pow_ops": 12,
+            "scalar_ops": 118008,
+            "sqrt_ops": 7289,
+            "tanh_ops": 2048
+          },
+          "units": 2248286
+        }
+      }
+    },
+    "joint144": {
+      "head_parameters": 4752,
+      "parameter_gradient_two_moment_bytes": 359936,
+      "per_batch_head_probability_bytes": 73728,
+      "service": {
+        "actual_CPU": "unmeasured; includes future full setup/return/export",
+        "decoder": 3264,
+        "forward": 24734,
+        "sample_and_quantize": 1208,
+        "total": 29206
+      },
+      "status": "prospective inventory; no executable training or CPU measurement",
+      "total_parameters_including_fixed_decoder": 13744,
+      "trainable_parameters": 11248,
+      "training": {
+        "A": {
+          "operators": {
+            "compare_ops": 36082,
+            "div_ops": 62931,
+            "exp_ops": 9216,
+            "log_ops": 128,
+            "macs": 1721344,
+            "pow_ops": 8,
+            "scalar_ops": 277136,
+            "sqrt_ops": 11249,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 128,
+              "div_ops": 10753,
+              "log_ops": 128,
+              "scalar_ops": 44928
+            },
+            "backward": {
+              "macs": 1003520,
+              "scalar_ops": 19280
+            },
+            "checks": {
+              "compare_ops": 26800
+            },
+            "forward": {
+              "compare_ops": 9152,
+              "div_ops": 9216,
+              "exp_ops": 9216,
+              "macs": 708608,
+              "scalar_ops": 29632,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 33745,
+              "pow_ops": 8,
+              "scalar_ops": 146240,
+              "sqrt_ops": 11249
+            },
+            "utility": {
+              "div_ops": 9217,
+              "macs": 9216,
+              "scalar_ops": 37056
+            }
+          },
+          "quoted_units": 4143826
+        },
+        "H": {
+          "operators": {
+            "compare_ops": 33586,
+            "div_ops": 53714,
+            "exp_ops": 9216,
+            "log_ops": 128,
+            "macs": 1712128,
+            "pow_ops": 8,
+            "scalar_ops": 240080,
+            "sqrt_ops": 11249,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 128,
+              "div_ops": 10753,
+              "log_ops": 128,
+              "scalar_ops": 44928
+            },
+            "backward": {
+              "macs": 1003520,
+              "scalar_ops": 19280
+            },
+            "checks": {
+              "compare_ops": 24304
+            },
+            "forward": {
+              "compare_ops": 9152,
+              "div_ops": 9216,
+              "exp_ops": 9216,
+              "macs": 708608,
+              "scalar_ops": 29632,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 33745,
+              "pow_ops": 8,
+              "scalar_ops": 146240,
+              "sqrt_ops": 11249
+            },
+            "utility": {}
+          },
+          "quoted_units": 4048974
+        },
+        "N": {
+          "operators": {
+            "compare_ops": 36082,
+            "div_ops": 72212,
+            "exp_ops": 9216,
+            "log_ops": 192,
+            "macs": 1721344,
+            "pow_ops": 8,
+            "scalar_ops": 286416,
+            "sqrt_ops": 11249,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 128,
+              "div_ops": 10753,
+              "log_ops": 128,
+              "scalar_ops": 44928
+            },
+            "backward": {
+              "macs": 1003520,
+              "scalar_ops": 19280
+            },
+            "checks": {
+              "compare_ops": 26800
+            },
+            "forward": {
+              "compare_ops": 9152,
+              "div_ops": 9216,
+              "exp_ops": 9216,
+              "macs": 708608,
+              "scalar_ops": 29632,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 33745,
+              "pow_ops": 8,
+              "scalar_ops": 146240,
+              "sqrt_ops": 11249
+            },
+            "utility": {
+              "div_ops": 18498,
+              "log_ops": 64,
+              "macs": 9216,
+              "scalar_ops": 46336
+            }
+          },
+          "quoted_units": 4190742
+        },
+        "S": {
+          "operators": {
+            "compare_ops": 33586,
+            "div_ops": 53714,
+            "exp_ops": 9216,
+            "log_ops": 128,
+            "macs": 1712128,
+            "pow_ops": 8,
+            "scalar_ops": 240080,
+            "sqrt_ops": 11249,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 128,
+              "div_ops": 10753,
+              "log_ops": 128,
+              "scalar_ops": 44928
+            },
+            "backward": {
+              "macs": 1003520,
+              "scalar_ops": 19280
+            },
+            "checks": {
+              "compare_ops": 24304
+            },
+            "forward": {
+              "compare_ops": 9152,
+              "div_ops": 9216,
+              "exp_ops": 9216,
+              "macs": 708608,
+              "scalar_ops": 29632,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 33745,
+              "pow_ops": 8,
+              "scalar_ops": 146240,
+              "sqrt_ops": 11249
+            },
+            "utility": {}
+          },
+          "quoted_units": 4048974
+        }
+      }
+    },
+    "native12": {
+      "head_parameters": 396,
+      "parameter_gradient_two_moment_bytes": 220544,
+      "per_batch_head_probability_bytes": 6144,
+      "service": {
+        "actual_CPU": "unmeasured; includes future full setup/return/export",
+        "decoder": 3264,
+        "forward": 14174,
+        "sample_and_quantize": 804,
+        "total": 18242
+      },
+      "status": "prospective inventory; no executable training or CPU measurement",
+      "total_parameters_including_fixed_decoder": 9388,
+      "trainable_parameters": 6892,
+      "training": {
+        "A": {
+          "operators": {
+            "compare_ops": 23214,
+            "div_ops": 22983,
+            "exp_ops": 768,
+            "log_ops": 64,
+            "macs": 901888,
+            "pow_ops": 8,
+            "scalar_ops": 110624,
+            "sqrt_ops": 6893,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 64,
+              "div_ops": 769,
+              "log_ops": 64,
+              "scalar_ops": 2496
+            },
+            "backward": {
+              "macs": 462848,
+              "scalar_ops": 10964
+            },
+            "checks": {
+              "compare_ops": 22444
+            },
+            "forward": {
+              "compare_ops": 704,
+              "div_ops": 768,
+              "exp_ops": 768,
+              "macs": 438272,
+              "scalar_ops": 4288,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 20677,
+              "pow_ops": 8,
+              "scalar_ops": 89612,
+              "sqrt_ops": 6893
+            },
+            "utility": {
+              "div_ops": 769,
+              "macs": 768,
+              "scalar_ops": 3264
+            }
+          },
+          "quoted_units": 2080222
+        },
+        "H": {
+          "operators": {
+            "compare_ops": 20718,
+            "div_ops": 22214,
+            "exp_ops": 768,
+            "log_ops": 64,
+            "macs": 901120,
+            "pow_ops": 8,
+            "scalar_ops": 107360,
+            "sqrt_ops": 6893,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 64,
+              "div_ops": 769,
+              "log_ops": 64,
+              "scalar_ops": 2496
+            },
+            "backward": {
+              "macs": 462848,
+              "scalar_ops": 10964
+            },
+            "checks": {
+              "compare_ops": 19948
+            },
+            "forward": {
+              "compare_ops": 704,
+              "div_ops": 768,
+              "exp_ops": 768,
+              "macs": 438272,
+              "scalar_ops": 4288,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 20677,
+              "pow_ops": 8,
+              "scalar_ops": 89612,
+              "sqrt_ops": 6893
+            },
+            "utility": {}
+          },
+          "quoted_units": 2069850
+        },
+        "N": {
+          "operators": {
+            "compare_ops": 23214,
+            "div_ops": 23816,
+            "exp_ops": 768,
+            "log_ops": 128,
+            "macs": 901888,
+            "pow_ops": 8,
+            "scalar_ops": 111456,
+            "sqrt_ops": 6893,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 64,
+              "div_ops": 769,
+              "log_ops": 64,
+              "scalar_ops": 2496
+            },
+            "backward": {
+              "macs": 462848,
+              "scalar_ops": 10964
+            },
+            "checks": {
+              "compare_ops": 22444
+            },
+            "forward": {
+              "compare_ops": 704,
+              "div_ops": 768,
+              "exp_ops": 768,
+              "macs": 438272,
+              "scalar_ops": 4288,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 20677,
+              "pow_ops": 8,
+              "scalar_ops": 89612,
+              "sqrt_ops": 6893
+            },
+            "utility": {
+              "div_ops": 1602,
+              "log_ops": 64,
+              "macs": 768,
+              "scalar_ops": 4096
+            }
+          },
+          "quoted_units": 2084898
+        },
+        "S": {
+          "operators": {
+            "compare_ops": 20718,
+            "div_ops": 22214,
+            "exp_ops": 768,
+            "log_ops": 64,
+            "macs": 901120,
+            "pow_ops": 8,
+            "scalar_ops": 107360,
+            "sqrt_ops": 6893,
+            "tanh_ops": 2048
+          },
+          "parts": {
+            "anchor": {
+              "compare_ops": 64,
+              "div_ops": 769,
+              "log_ops": 64,
+              "scalar_ops": 2496
+            },
+            "backward": {
+              "macs": 462848,
+              "scalar_ops": 10964
+            },
+            "checks": {
+              "compare_ops": 19948
+            },
+            "forward": {
+              "compare_ops": 704,
+              "div_ops": 768,
+              "exp_ops": 768,
+              "macs": 438272,
+              "scalar_ops": 4288,
+              "tanh_ops": 2048
+            },
+            "optimizer": {
+              "compare_ops": 2,
+              "div_ops": 20677,
+              "pow_ops": 8,
+              "scalar_ops": 89612,
+              "sqrt_ops": 6893
+            },
+            "utility": {}
+          },
+          "quoted_units": 2069850
+        }
+      }
+    }
+  },
+  "rendered_images": 0,
+  "sampling_draws": 0,
+  "scope": "source and saved TRAIN table analysis only",
+  "semantic_checks": {
+    "11": {
+      "checked_target_offdiagonal_comparisons": 1584,
+      "decoded_correct_code_mse_minmax": [
+        3.611854123761898e-05,
+        4.8547803889658726e-05
+      ],
+      "image_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "nearest_template_margin_min": 0.01981015581784385,
+      "quantization_identity_certified": true,
+      "quantization_pairwise_margin_bound": 0.00392156862745098,
+      "same_image_agreement_reward_gain_minmax": [
+        0.04999999999999996,
+        0.95
+      ],
+      "text_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unrestricted_best_pair_is_target_diagonal": true
+    },
+    "23": {
+      "checked_target_offdiagonal_comparisons": 1584,
+      "decoded_correct_code_mse_minmax": [
+        3.5956481480331434e-05,
+        4.820558652053271e-05
+      ],
+      "image_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "nearest_template_margin_min": 0.019813820978756284,
+      "quantization_identity_certified": true,
+      "quantization_pairwise_margin_bound": 0.00392156862745098,
+      "same_image_agreement_reward_gain_minmax": [
+        0.04999999999999996,
+        0.95
+      ],
+      "text_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unrestricted_best_pair_is_target_diagonal": true
+    },
+    "47": {
+      "checked_target_offdiagonal_comparisons": 1584,
+      "decoded_correct_code_mse_minmax": [
+        3.59897196072382e-05,
+        4.834378562771846e-05
+      ],
+      "image_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "nearest_template_margin_min": 0.019815183991759862,
+      "quantization_identity_certified": true,
+      "quantization_pairwise_margin_bound": 0.00392156862745098,
+      "same_image_agreement_reward_gain_minmax": [
+        0.04999999999999996,
+        0.95
+      ],
+      "text_sem": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ],
+      "unrestricted_best_pair_is_target_diagonal": true
+    }
+  },
+  "training_runs": 0
+}

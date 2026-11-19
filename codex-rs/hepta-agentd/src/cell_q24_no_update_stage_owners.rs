@@ -26,6 +26,9 @@ mod auth;
 mod execution;
 #[path = "cell_q24_no_update_stage_inputs.rs"]
 mod inputs;
+#[cfg(test)]
+#[path = "cell_q24_stage_state_slot.rs"]
+mod slot;
 #[path = "cell_q24_no_update_stage_state.rs"]
 mod state;
 #[path = "cell_q24_original_state_slot.rs"]

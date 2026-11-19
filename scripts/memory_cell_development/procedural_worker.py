@@ -17,7 +17,8 @@ resource.setrlimit(resource.RLIMIT_CPU, (180, 185))
 torch.set_num_threads(2)
 if request["mode"] == "train":
     raw = Path(request["training_spec"]).read_bytes()
-    assert sha(raw) == request["training_spec_sha256"]
+    if not (sha(raw) == request["training_spec_sha256"]):
+        raise AssertionError()
     protocol = json.loads(raw)
     cell = SourceMemoryCell(
         request["model"], rank=protocol["rank"], seed=request["seed"]
@@ -40,6 +41,7 @@ if request["mode"] == "train":
         + resource.getrusage(resource.RUSAGE_SELF).ru_stime,
     )
 else:
-    assert request["mode"] == "read"
+    if not (request["mode"] == "read"):
+        raise AssertionError()
     result = run(request["payload"])
 print(json.dumps(result, sort_keys=True, allow_nan=False))

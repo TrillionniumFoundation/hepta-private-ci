@@ -1,0 +1,8 @@
+{
+  "full_check_exit": 1,
+  "full_check_only_failure": "Python scripts formatting on30files",
+  "correction": "frozenRuff format30exactpaths; allASTequal",
+  "unchanged_other_groups": "Rust, Just, Bazel/Starlark, Python SDK passed original full check",
+  "followup_python_full_check_exit": 0,
+  "followup_output": "1134 files already formatted"
+}

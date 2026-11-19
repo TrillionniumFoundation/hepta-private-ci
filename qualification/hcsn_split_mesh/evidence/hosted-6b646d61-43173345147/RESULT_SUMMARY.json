@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-split-hosted-summary-v1",
+  "run_id": 43173345147,
+  "job_id": 131031618165,
+  "artifact_id": 13922594278,
+  "observed_head": "6b646d61017b84f87b5b105e55111474f2c2234c",
+  "code_commit": "4281b300e7833cdb095d6b77bf29d81b05dbe5d7",
+  "status": "PASS_DISCRETE_CHECKS_ONLY",
+  "tests_passed": 4,
+  "skips": 0,
+  "test_seconds": 7.116,
+  "qualifier_seconds": 7.632843030000004,
+  "python": "3.12.16",
+  "numpy": "2.3.5",
+  "scipy": "1.17.0",
+  "source_count": 33,
+  "source_before_after_and_manifest_equal": true,
+  "generator_max_fd_absolute_error": 9.327662837677053e-7,
+  "generator_atol": 0.000002,
+  "generator_rtol": 2e-7,
+  "dde_forward_max_absolute_error": 4.4610899696539974e-10,
+  "dde_max_fd_absolute_error": 0.000011239178233646285,
+  "dde_max_tolerance_ratio": 0.14357374922965216,
+  "dde_atol": 0.000004,
+  "dde_rtol": 0.0005,
+  "retained_continuum_failures": [
+    {
+      "case": "retained_continuum_failures",
+      "geometry": {
+        "delay": 0.2,
+        "endpoint": 2,
+        "grading": 1,
+        "left_intervals": 32,
+        "right_grading": 0,
+        "right_intervals": 32
+      },
+      "records": [
+        {
+          "continuum_halfline": 1.9367990970040437e-23,
+          "ctmc": 4.0258038596278504e-17,
+          "relative_error": 2078585.191957237,
+          "time": 0.01,
+          "upper_reach_probability_bound": 4.775335692287433e-198
+        },
+        {
+          "continuum_halfline": 0.0019850919213766746,
+          "ctmc": 0.0019871358933324875,
+          "relative_error": 0.0010296611123152832,
+          "time": 0.1,
+          "upper_reach_probability_bound": 1.1559855968678395e-21
+        }
+      ]
+    },
+    {
+      "case": "retained_continuum_failures",
+      "geometry": {
+        "delay": 0.2,
+        "endpoint": 2,
+        "grading": 0,
+        "left_intervals": 32,
+        "right_grading": 0,
+        "right_intervals": 32
+      },
+      "records": [
+        {
+          "continuum_halfline": 1.9367990970040437e-23,
+          "ctmc": 1.5574113082154263e-17,
+          "relative_error": 804115.0854652002,
+          "time": 0.01,
+          "upper_reach_probability_bound": 4.775335692287433e-198
+        },
+        {
+          "continuum_halfline": 0.0019850919213766746,
+          "ctmc": 0.0019743033913152954,
+          "relative_error": -0.005434776065129099,
+          "time": 0.1,
+          "upper_reach_probability_bound": 1.1559855968678395e-21
+        }
+      ]
+    }
+  ],
+  "torch_adapter_supplied": false,
+  "continuum_rare_gate_closed": false,
+  "common_source_changed": false,
+  "independent_case_search_expanded": false
+}

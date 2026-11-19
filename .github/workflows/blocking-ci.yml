@@ -178,10 +178,25 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
+  learning-operator-qualification:
+    name: learning.operator qualification
+    needs: scope
+    if: needs.scope.outputs.learning == 'true' || needs.scope.outputs.full_repo == 'true'
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    uses: ./.github/workflows/learning-operator-required.yml
+    secrets: inherit
+
   hepta-scoped:
-    name: Hepta scoped native checks
+    name: Hepta scoped native checks / shard ${{ matrix.shard }}
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3]
     runs-on: ubuntu-24.04
     timeout-minutes: 75
     env:
@@ -250,7 +265,7 @@ jobs:
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config libdbus-1-dev
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
@@ -293,7 +308,7 @@ jobs:
             --package codex-hepta-infer-worker-host \
             --output-dir "$RUNNER_TEMP/impact-test-helpers" --verify-only
 
-      - name: Test affected owners and reverse consumers, not a hand-written package list
+      - name: Test exact affected-owner and reverse-consumer shard
         env:
           CARGO_INCREMENTAL: "0"
           CARGO_PROFILE_DEV_DEBUG: "0"
@@ -302,9 +317,11 @@ jobs:
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEPTA_CI_LANE: source-head
+          SHARD_INDEX: ${{ matrix.shard }}
         run: >-
           python3 scripts/hepta_ci_exec.py --timeout-seconds 3600 --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --shard-count 4 --shard-index "$SHARD_INDEX"
           --output "$RUNNER_TEMP/cargo-impact.json" --run
 
       - name: Record scoped native disk usage after consumer tests
@@ -321,7 +338,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.shard }}
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
@@ -716,6 +733,7 @@ jobs:
       - repo-checks
       - rust-ci
       - sdk
+      - learning-operator-qualification
       - hepta-scoped
       - ledgerwriter-owner-replay
       - taskflow-owner-replay
@@ -731,6 +749,7 @@ jobs:
       - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
+          LEARNING: ${{ needs.scope.outputs.learning }}
           NATIVE: ${{ needs.scope.outputs.native }}
           FULL_REPO: ${{ needs.scope.outputs.full_repo }}
           NDU_V6: ${{ needs.scope.outputs.ndu_v6 }}
@@ -744,6 +763,7 @@ jobs:
             python3 - <<'PY'
           import json
           import os
+          learning = os.environ["LEARNING"] == "true"
           native = os.environ["NATIVE"] == "true"
           full = os.environ["FULL_REPO"] == "true"
           replay_requested = os.environ["LEDGERWRITER_REPLAY_REQUESTED"] == "true"
@@ -760,6 +780,8 @@ jobs:
               allowed.append("hepta-contract-gate")
           if not full:
               allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+          if not (learning or full):
+              allowed.append("learning-operator-qualification")
           if not (native and not full):
               allowed.append("hepta-scoped")
           if not (not native and not full):

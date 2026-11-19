@@ -1,0 +1,42 @@
+{
+  "actual_costs": {
+    "child_cpu_seconds": 0.9650269999999999,
+    "child_reported_max_rss_kib": 20188,
+    "supervisor_body_cpu_seconds": 0.09174101799999998,
+    "supervisor_startup_imports_included_in_cpu": false,
+    "wall_seconds": 1.9660728309999982
+  },
+  "artifact_id": 13951651852,
+  "derived_counts": {
+    "controller_workers": 13,
+    "failed_exec_attempts": 1,
+    "known_zero_cases": 2,
+    "toy_and_model_forward_adjoint_optimizer_calls": 0,
+    "toy_bodies_spawned_and_reaped": 10,
+    "unknown_null_cases": 11,
+    "verified_planned_self_SIGKILL_exits": 3
+  },
+  "job_id": 131234720335,
+  "logs": "Artifact contains 25 worker/toy stdout and 25 stderr files, all empty. The supervisor hosted-job log is outside this ZIP, so no claim is made about all job stderr.",
+  "original_zip": {
+    "bytes": 70427,
+    "crc_members": 119,
+    "sha256": "591680f81beb90e6509f529b74ddda31d9b1099b7d10a5c6474ee5a65a022222"
+  },
+  "passed": true,
+  "program_provenance": "Own primary inspector formatted and linted before its sole full audit, then copied to tested byte-identical source; no post-audit source edits or replay. Nested process audit retains its own manifest-schema read error and successful tested source separately.",
+  "protocol_credit": "No previous historical UNKNOWN numerical execution is resolved and no numerical/model/optimizer/n512/full-network/adoption credit transfers.",
+  "reservation": "Only seeded starting_no_pid contains reserved metadata(3,3,2); no synthetic model calls or optimizer updates were credited.",
+  "review_sections": {
+    "primary_cpu_seconds": 0.013417421999999998,
+    "primary_wall_seconds": 0.013424037999357097,
+    "process_metadata_cpu_seconds": 0.027510165,
+    "process_metadata_wall_seconds": 0.036714679,
+    "scope": "Only measured stdlib read-inspector sections; no fixture, worker, toy, source-AST execution, numerical imports or APIs."
+  },
+  "reviewer": "/root/review_spatial",
+  "run_id": 43233514011,
+  "schema": "hcsn-6254-independent-actual-audit-summary-v1",
+  "scope": "Real existing zero-work controller fault cases in injected globals using pinned original function ASTs, not execution of the whole numerical controller. Killed targets have no final WORKER report; reconciliation is separate. All post-spawn kills happen after toy reap, with no active-child or power-loss qualification.",
+  "source_commit": "e6d989320e6ad9310b68f650bc8805618cba34fc"
+}

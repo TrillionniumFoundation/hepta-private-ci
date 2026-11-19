@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -138,10 +139,15 @@ def restore(args):
         receipt = api(f"actions/artifacts/{ARTIFACT}/zip", args.download_to)
         retain(args.out / "download.json", receipt)
         archive = args.download_to
-    if archive.stat().st_size != ZIP_BYTES or file_sha(archive) != ZIP_SHA:
+    with archive.open("rb") as stream:
+        archive_bytes = stream.read(ZIP_BYTES + 1)
+    if (
+        len(archive_bytes) != ZIP_BYTES
+        or hashlib.sha256(archive_bytes).hexdigest() != ZIP_SHA
+    ):
         raise ValueError("previously qualified ZIP bytes differ")
     rows = {}
-    with zipfile.ZipFile(archive) as source:
+    with zipfile.ZipFile(io.BytesIO(archive_bytes)) as source:
         names = source.namelist()
         if len(names) != 5758 or len(names) != len(set(names)):
             raise ValueError("qualified archive membership differs")

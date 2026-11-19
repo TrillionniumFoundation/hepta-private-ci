@@ -1,0 +1,236 @@
+{
+  "actual_formal_updates_each_mode": 2272,
+  "checkpoint_checks_each_mode": 104,
+  "cost_scope": "single local collection; policy phase includes own Head setup/journal/prediction; cold attribution adds prior fitting; whole commands recorded separately. Archive, serialization outside phases, model acquisition and audit not silently interpreted as zero full-service cost.",
+  "coverage_is_not_a_guarantee": true,
+  "cross_mode": {
+    "clock_equality_required": false,
+    "diagnostic_records_match": 4,
+    "policy_records_match": 20,
+    "prior_fit_records_match": 12
+  },
+  "diagnostic_updates_each_mode": 512,
+  "execution_scope": "isolated ChatGPT source slice; not dot, full repository or hosted CI",
+  "fit_sizes_prior_target": [
+    32,
+    48
+  ],
+  "fresh_encoder_calls": 0,
+  "fresh_original_reader_calls": 0,
+  "hosted_ci_verified": false,
+  "independent_signer": false,
+  "inherited_tests_each_mode": 266,
+  "inner_folds_per_outer": 3,
+  "mean_absolute_forecast_error": 0.09982638888888887,
+  "model_interval_observed_coverage": [
+    16,
+    16
+  ],
+  "ndu_specific_superiority": false,
+  "neural_preference_training": false,
+  "new_sources": 0,
+  "new_tests_each_mode": 32,
+  "online_policy_updates_each_mode": 224,
+  "original32_holdout_used_for_new_training_or_scoring": false,
+  "outer_folds": 4,
+  "paired_rescues_harms_vs_fixed8": {
+    "belief_ndu": [
+      0,
+      0
+    ],
+    "belief_neutral": [
+      0,
+      0
+    ],
+    "fixed32": [
+      0,
+      0
+    ]
+  },
+  "parent_sha": "e605e7aea52b1727cd2c49ef8d23510300c45552",
+  "policy_records_each_mode": 20,
+  "prior_updates_each_mode": 1536,
+  "production_accepted": false,
+  "rational_decisions_each_mode": 16,
+  "raw_sha256": {
+    "audit-normal.json": "9f014022b9e835a60c0efaa74c0112b606c92a70f4338b5844a5ea3c769cb224",
+    "audit-optimized.json": "09fb037c9ff1b72f5026b855df0cc86945658af81cc3d3fd099f25b3f5d32991",
+    "cross-mode.json": "097b3748c1cfa8345a64c0f8d7465525377698794deebaa4bcdbe3e82dc89828",
+    "study-completed.json": "bfd526957732c6fe23400d5bfab127dec21e2f0f36637c62ae12f61fda5745ab",
+    "tests-completed.json": "a265c918443b339c27e108fd03464190071fadbd4489532b7a7efc15182fcf84",
+    "workflow-check.json": "51b4e6c87fbc9cea129db2eb0c49af85567959260f5522e33174c97ca540f302"
+  },
+  "remote_updated": false,
+  "remote_write_status": "current connector exposes reads only; git CLI cannot resolve github.com",
+  "schema": "hepta.nested-transfer.local-observation.v1",
+  "signed_forecast_bias": -0.07233796296296295,
+  "source_class": "retrospective original TRAIN-record nested exclusion, not new sources",
+  "source_family_independence_verified": false,
+  "source_git_blobs": {
+    ".github/workflows/hepta-ndu-merton-news.yml": "e971f209cec02ec34dc43f97ee4388e5e0d667ad",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/README.md": "a95ce4393a45de02b4990190e0cbf2f7e215dc6f",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/audit_nested.py": "f1644278d5f2fa4593a558e65d2da63b29430b2d",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/nested.py": "1692d1b52d29ec432d7bf3e208eeb040071a193b",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/protocol.json": "66cb09d11efe3b31c6d051da108f846659611b36",
+    "experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer/test_nested.py": "6b77f655e6adc82f7c5e41d0f7bf15f0711e634f"
+  },
+  "summaries": {
+    "normal": [
+      {
+        "actual_updates": 0,
+        "arm": "fixed0",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 2.215087,
+        "correct": 17,
+        "cpu_ms": 2.215087,
+        "denominator": 64,
+        "selected_steps": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "fixed8",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 7.793331,
+        "correct": 49,
+        "cpu_ms": 7.793331,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "actual_updates": 128,
+        "arm": "fixed32",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 12.157375,
+        "correct": 49,
+        "cpu_ms": 12.157375,
+        "denominator": 64,
+        "selected_steps": [
+          32,
+          32,
+          32,
+          32
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "belief_neutral",
+        "calibration_calls": 4,
+        "cold_cpu_ms": 98.127719,
+        "correct": 49,
+        "cpu_ms": 17.087799,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "belief_ndu",
+        "calibration_calls": 4,
+        "cold_cpu_ms": 101.799506,
+        "correct": 49,
+        "cpu_ms": 20.759586,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      }
+    ],
+    "optimized": [
+      {
+        "actual_updates": 0,
+        "arm": "fixed0",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 2.35263,
+        "correct": 17,
+        "cpu_ms": 2.35263,
+        "denominator": 64,
+        "selected_steps": [
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "fixed8",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 8.487801,
+        "correct": 49,
+        "cpu_ms": 8.487801,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "actual_updates": 128,
+        "arm": "fixed32",
+        "calibration_calls": 0,
+        "cold_cpu_ms": 12.381437,
+        "correct": 49,
+        "cpu_ms": 12.381437,
+        "denominator": 64,
+        "selected_steps": [
+          32,
+          32,
+          32,
+          32
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "belief_neutral",
+        "calibration_calls": 4,
+        "cold_cpu_ms": 92.213234,
+        "correct": 49,
+        "cpu_ms": 14.905011,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      },
+      {
+        "actual_updates": 32,
+        "arm": "belief_ndu",
+        "calibration_calls": 4,
+        "cold_cpu_ms": 96.978572,
+        "correct": 49,
+        "cpu_ms": 19.670349,
+        "denominator": 64,
+        "selected_steps": [
+          8,
+          8,
+          8,
+          8
+        ]
+      }
+    ]
+  },
+  "total_tests_each_mode": 298,
+  "transfer_qualified": false,
+  "unique_outer_evaluation_records": 64
+}

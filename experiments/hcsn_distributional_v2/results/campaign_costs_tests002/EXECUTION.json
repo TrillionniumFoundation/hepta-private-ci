@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "unittest",
+    "experiments.hcsn_distributional_v2.campaign_costs_tests",
+    "-v"
+  ],
+  "exit_code": 0,
+  "complete_child_cpu_seconds": 0.103825,
+  "wall_seconds": 0.24098970200066105,
+  "outer_parent_self_cpu_seconds_to_cutoff": 0.041085451,
+  "source_sha256": {
+    "campaign_costs.py": "4cbc73ed3cf5ba29819a8773c3492bbc3f821005d0ff911d243c5e7781b6ccf9",
+    "campaign_costs_tests.py": "33d8d6541abfbd7503494ed4e4df3a41a908c513accab5b71bf27b82298c90ab"
+  },
+  "log_sha256": "cd6fdd8b21a3e70f1494cae84fe4548d4cfcccc22fba44428f9f5ec8b692688c",
+  "scope": "Complete eight-test tiny-fixture cost-audit child, including original content receipt field regression; supervisor self CPU is separate."
+}

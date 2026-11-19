@@ -39,6 +39,13 @@ pub enum ContractErrorCodeV1 {
     UnicodePolicyViolation,
     SelectorUnresolved,
     AuthorityGranted,
+    EmptyCollection,
+    EmptyDigest,
+    InvalidValue,
+    MissingValue,
+    StateConflict,
+    NonCanonicalEncoding,
+    ContractMismatch,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
@@ -310,3 +317,55 @@ pub fn canonical_contract_digest_domain_bound_v1<T: CognitiveContractV1>(
     }
     .digest(&payload))
 }
+
+/// Frozen canonicalization profile used by cognitive contract Wire V1.
+pub const CANONICALIZATION_ALGORITHM_V1: &str =
+    "canonical-json-utf8-sorted-keys-integer-only-preserve-unicode-v1";
+
+/// Wire V1 preserves the exact Unicode scalar sequence supplied by the caller.
+///
+/// In particular, Wire V1 never rewrites NFC to NFD or NFD to NFC. Producers
+/// that own identifier grammars may impose a stronger profile before creating
+/// a contract value, but the generic cognitive codec does not silently change
+/// text and therefore cannot make two byte-distinct identifiers compare equal.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum UnicodeNormalizationPolicyV1 {
+    PreserveCodePoints,
+}
+
+pub const UNICODE_NORMALIZATION_POLICY_V1: UnicodeNormalizationPolicyV1 =
+    UnicodeNormalizationPolicyV1::PreserveCodePoints;
+
+/// Type-local structural validation with an owner-selected error type.
+/// This additive interface preserves the existing structured-error V1 trait.
+/// Successful validation grants no authentication, writer or freshness authority.
+pub trait ValidateStructuralContractV1 {
+    type Error;
+
+    fn validate_structural_contract_v1(&self) -> Result<(), Self::Error>;
+}
+
+impl<T: ValidateStructuralContractV1> Validated<T> {
+    pub fn from_structural_contract(value: T) -> Result<Self, T::Error> {
+        value.validate_structural_contract_v1()?;
+        Ok(Self(value))
+    }
+}
+
+impl<T> Validated<T> {
+    #[must_use]
+    pub const fn as_inner(&self) -> &T {
+        &self.0
+    }
+}
+
+impl<T> AsRef<T> for Validated<T> {
+    fn as_ref(&self) -> &T {
+        self.as_inner()
+    }
+}
+
+#[cfg(test)]
+#[path = "contract_convergence_tests.rs"]
+mod convergence_tests;

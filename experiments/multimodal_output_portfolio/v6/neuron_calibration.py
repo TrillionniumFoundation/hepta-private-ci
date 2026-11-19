@@ -181,6 +181,9 @@ def run(experiment, cache, specification, output):
 
     write("specification.json", json.loads(specification.read_bytes()))
     try:
+        calibrator_source = Path(__file__).read_bytes()
+        with (output / "calibrator-source.py").open("xb") as file:
+            file.write(calibrator_source)
         import numpy as np
         import torch
         from experiments.multimodal_output_portfolio.v6 import neural, owner_worker
@@ -191,7 +194,8 @@ def run(experiment, cache, specification, output):
         original_registration = completed_registration(experiment)
         checkpoint, reward = experiment / "seed-17-terminal_entropic_ndu.pt", experiment / "reward-observer.pt"
         paths = {"checkpoint": checkpoint, "reward_a": reward, "calibrator_source": Path(__file__)}
-        pins = {name: sha(path.read_bytes()) for name, path in paths.items()}
+        pins = {name: sha(calibrator_source if name == "calibrator_source" else path.read_bytes())
+                for name, path in paths.items()}
         if owner_worker.source_digest() != OWNER_SOURCE_SHA256:
             raise ValueError("Original generation implementation changed before calibration")
         write("registration.json", {**pins, "owner_source_sha256": OWNER_SOURCE_SHA256,

@@ -4,7 +4,7 @@ use super::PairedEvaluationError;
 use super::PairedFinalHoldoutProviderV1;
 use super::ProductProviderErrorV1;
 use super::holdout_release::OriginalPairedFinalHoldoutConsumptionV1;
-use super::holdout_release::release_original_paired_holdout;
+use super::holdout_release::release_original_frozen_paired_holdout;
 use super::tests::sign;
 use super::tests::trust;
 use crate::FencedFinalHoldoutOwnerV1;
@@ -214,7 +214,7 @@ fn paired_release_refuses_a_stale_original_owner_before_provider_callback() {
             .expect("replacement");
     let before = store.state.borrow().clone();
     assert_eq!(
-        release_original_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
+        release_original_frozen_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
         Err(PairedEvaluationError::Holdout(
             FencedHoldoutError::StaleFence
         )),
@@ -239,7 +239,7 @@ fn paired_release_rechecks_the_original_owner_after_success_and_error() {
         let plan = provider.plan.clone();
         let receipt = owner.consume_paired(&plan).expect("paired recorded");
         assert_eq!(
-            release_original_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
+            release_original_frozen_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
             Err(PairedEvaluationError::Holdout(FencedHoldoutError::Poisoned)),
         );
         assert_eq!(provider.releases, 1);
@@ -266,7 +266,7 @@ fn paired_release_checks_the_owner_even_when_provider_ignores_its_borrow() {
     let plan = provider.plan.clone();
     let receipt = owner.consume_paired(&plan).expect("paired recorded");
     assert_eq!(
-        release_original_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
+        release_original_frozen_paired_holdout(&mut owner, &plan, &receipt, &mut provider),
         Err(PairedEvaluationError::Holdout(
             FencedHoldoutError::StaleFence
         )),

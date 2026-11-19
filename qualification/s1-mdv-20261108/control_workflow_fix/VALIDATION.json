@@ -1,0 +1,69 @@
+{
+  "all_other_parent_structure_unchanged": true,
+  "component_tests_reexecuted": false,
+  "existing_local_projections": {
+    "baselines/.github/workflows/hepta-ndu-recursion.yml": {
+      "equals_published_bad_yaml": true,
+      "git_blob": "cedfb0b7b0902e9f797215ada347174b7c938e9a",
+      "modified": false,
+      "sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706"
+    },
+    "control-combined/.github/workflows/hepta-ndu-recursion.yml": {
+      "equals_published_bad_yaml": true,
+      "git_blob": "cedfb0b7b0902e9f797215ada347174b7c938e9a",
+      "modified": false,
+      "sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706"
+    },
+    "native-bundle-r1/control/changes/.github/workflows/hepta-ndu-recursion.yml": {
+      "equals_published_bad_yaml": true,
+      "git_blob": "cedfb0b7b0902e9f797215ada347174b7c938e9a",
+      "modified": false,
+      "sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706"
+    }
+  },
+  "fix_added_lines": 1,
+  "fix_deleted_lines": 0,
+  "pyyaml_version": "6.0.3",
+  "remote_mutations": 0,
+  "scope": "Static YAML shape and exact-source comparison only; no Actions or Python component tests run",
+  "source_identity": {
+    "corrected": {
+      "bytes": 6788,
+      "git_blob": "9b502753efe5fb492df46d9d74baae051b110fd9",
+      "sha256": "4766d3c303b515ea5817e4261d9b4c4573c959088655ff26b1c5b1844738f921"
+    },
+    "parent": {
+      "bytes": 6433,
+      "git_blob": "e365f4b8fb187163682244f04bb0f6750402c355",
+      "sha256": "fd45c5a1e0600eb8a564eb5e100e2480063294ae1c458c82cb99c3169c8ea2f0"
+    },
+    "published": {
+      "bytes": 6737,
+      "git_blob": "cedfb0b7b0902e9f797215ada347174b7c938e9a",
+      "sha256": "fc1f833652f5d9e400501a40bff27f85e92b8e6bff0e2e0d5222ea82dfa4d706"
+    }
+  },
+  "state": "PASS",
+  "workflow_checks": {
+    "corrected": {
+      "actions": 3,
+      "errors": [],
+      "jobs": 1,
+      "steps": 15
+    },
+    "parent": {
+      "actions": 3,
+      "errors": [],
+      "jobs": 1,
+      "steps": 14
+    },
+    "published": {
+      "actions": 3,
+      "errors": [
+        "ndu:5:S1 decision controls and continuation regressions: require exactly one of run or uses"
+      ],
+      "jobs": 1,
+      "steps": 14
+    }
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "schema": "ctrl.fit40.exact-key-reconciliation.v1",
+  "recorded_at_utc": "2026-11-11 00:23:25 UTC",
+  "operation_key": "ctrl-fit40-gap-20261111-f7c0ded86bcc-v1",
+  "unique_operation_keys": 1,
+  "start_api_calls": 2,
+  "exact_reconciliation_calls": 1,
+  "reconciliation_started_at": "2026-11-11T00:20:21.209Z",
+  "reconciliation_finished_at": "2026-11-11T00:22:21.284Z",
+  "identical_stored_parameters_used": true,
+  "parameters_changed": false,
+  "new_key_used": false,
+  "bounded_inventory_first": {
+    "has_more": true,
+    "inventory_complete": false,
+    "jobs": [],
+    "next_cursor": "pending:720f206be051cfc96f5d757a2bc8b7688134cd39ccff6d78c3f45c28e000d8e7:0",
+    "observation_atomic": false,
+    "observation_deadline_seconds": 30,
+    "observation_started_unix_ms": null,
+    "observer_mode": "continuous_background",
+    "snapshot_semantics": "registry_metadata_at_observation",
+    "snapshot_sha256": null,
+    "status_authoritative": false,
+    "total": null,
+    "validation_pending": true
+  },
+  "bounded_inventory_continuation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "durable inventory observation deadline exceeded; no partial inventory returned"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "reconciliation_response": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "receipt_probe": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qq/ctrl-fit40-gap-20261111-f7c0ded86bcc-v1/RECEIPT.json\",\"sha256\":\"32f2bd60f1ea5a61c3a581947f70a804eec6a85185fafb35e9dc67a86a9b5f7d\",\"size\":4357,\"version\":\"66306:48138767:4357:1794355708510194930:1794355708510194930\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "state": "UNKNOWN",
+  "business_job_id": null,
+  "native_terminal_observed": false,
+  "actual_gap_categories": null,
+  "production_admission": false,
+  "adoption_action": "NoUpdate",
+  "interpretation": "Two API calls refer to the same durable idempotent operation. No authoritative job/terminal receipt was returned. File absence at a later observation does not prove nonexecution."
+}

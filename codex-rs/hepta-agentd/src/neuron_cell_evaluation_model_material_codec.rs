@@ -265,3 +265,7 @@ impl<'a> Reader<'a> {
 #[cfg(test)]
 #[path = "neuron_cell_evaluation_model_material_codec_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "neuron_cell_evaluation_model_material_profile_tests.rs"]
+mod profile_tests;

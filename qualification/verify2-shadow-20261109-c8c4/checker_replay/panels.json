@@ -1,0 +1,578 @@
+[
+  {
+    "checker_evidence_sha256": [
+      "ae0778e988093feea6eab4deff4790a966a48bece84247ae134a1837c53b55e8",
+      "604cb4577080a77451d48e01b4f1a0b5d58da15406374a7c5c40636424c75a30",
+      "ddd9efd9cb772ec011fc62288a2f1ea66d0eb957f0d5db673647c93cd0801d1f",
+      "27e274fdbd684c7ae84a9709f4e787e45b4247d763c1f6d337142f768b907bdb",
+      "0eb4cc3e040bc6378ba5fc2c9eaac408482487305f4ff8307ac308c06451c4c8",
+      "1d6060aaf9f2e60dfc4ce67f4b3a009f9d100e3c9fa6dea27895385b2a107e93"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": false,
+    "label_evidence_sha256": "e47d9c76de5f7328b643851f9f79dc81916e0a1b3c55493c0d6843cc2b8c29aa",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/088fa4f028a93192e08a0516",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "47cd5362754482ebc22619f46ba0b9fc04b245deedebec9dea41d59b7d2c9a9d",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "9fe4b6a61cbf9f6a0e640eb2e1667996aae084301a236a232ebbbc8f5adf33aa",
+      "f387863ebe60b24c14df968ecc5dcca7b40850676c62ce9b80491539f7910507",
+      "256bb47f5ad01db40519a67a7d1c925ccb992e330a4e0a029a29f54dd7d09937",
+      "b6b05d3e231ed9dbd7a9821c416ddb8b86a06f72d0699668afed65403d921ef3",
+      "dab9e36302d898c9dbe3bd20db4058bb0c4d3cde3eb44617fc392f024ffd1a87",
+      "a5b3068812544b5bfedc3ae28e5eb0f4a3de53672e7d8abf9fa916ae055894a5"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "b0675723de317577335e8ee51b9031e7e726d5ccc46ae5af3185ce184ec6a737",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/1c001b3d2cc736d21569e031",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "e1fa39d68ceda4223081b74f3460ebb5db34befa5f92b1e04a093a78518da650",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "213b9ab4cdff8eb82d5ab90986afd24deab9358a4d81eb00bf211cf53a7b1b30",
+      "7277d198b5221e79dc8266859b2ca6c01486a69cda320b50b967c62be7bdfba0",
+      "6d6a0add5081b349eece926c49d28ab1739671b31b1e10f9965153952f2c422e",
+      "fc1bccfa75df7350d0c4d0a7045eea674bbaa9849a2030b8ac36f38a4b378058",
+      "cf95aff612458524ba87fca6e9b261099a84adbe31f0c2813f166b2bbcec9a6c",
+      "9ba39753c3e2f0f5556ee8f4ae9c920753d0d70adb295b386ce43cd7e1c767e0"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "2d901e277311708ca889760861b7f66cbc2cf126c639050532b0ec63f4ffff63",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/456e6f6de5aba51468c14c41",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "b858a869e637b305dc188efc655fd27d84983d1c3fdd9f80597b721f91e2664b",
+    "source_group": "calibration/synthetic-template/0"
+  },
+  {
+    "checker_evidence_sha256": [
+      "ff30e866a284fe8579b101dd1c20ec919f7da4d3d6d9b818823efc11ba150da2",
+      "3f1c1507594b728b47c5f5bdbb38f14a56fc86c0e7889b352a5cf28b2d562d22",
+      "7bcf371ee020ea8daefaa88ae3f7349dbafd96c29dec63a391e596ebc9660316",
+      "bb7d2e56fa59ced8552a9c5563abd14d37c208ac3123a2afc5ec982c98300a90",
+      "de4a79aebae2f0c380b7fcefbc1856ce85a55fef843910b387386873a36635cd",
+      "10cdec26d6147c50c06bbdb2482bfe3dd7d3b6e7c82e1017b2d512217a22f46a"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": false,
+    "label_evidence_sha256": "0edc74c77b1e3eb1288bf518db464e53be49a75a6ef46c89934ec3c6dd6d5ec5",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/5471f3631d0b0c3de5a51328",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "7327972dc28ab703d0731d118d06454d721801ab5ffbd1cc59c693ba4f1b6634",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "4e29f0977b2bc59e0a3037042f56eff735c42de08f154d41a36b9f5cad100f53",
+      "f5fae02b7161a82f51e674f94ae81cafbf99e41d271a9ad5ef71190a5eeb980c",
+      "6ae22fb9998e269c0423f14db6b46c5b87e89d7ccbda6b866beb1b35d374900d",
+      "8d04ebf05a96c0cdde230e04f02c63c52ba17db2f99e0bee87174d75b6ada71a",
+      "218b29ccd405edf25b5fd8d3d221f34ef0aac8dafd5174ddfbc29fcfb7719563",
+      "ae7ad22b6ef5d4cb4c0ec3ece227b686c593f18ced277a5932c4b75c19ec24ab"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "4b94cf83551b42074a59f1badc25996000d2f3b8345b980dfc0f83f8814e1624",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/6f9e583fe42d0520ee0d28ff",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "57b077fd5ba2a61ecb7ac3e852a18b12e73fdc7e46db51f57f6af2bdf3974a77",
+    "source_group": "calibration/synthetic-template/0"
+  },
+  {
+    "checker_evidence_sha256": [
+      "fa063359f245e8ae3bf918afe046aaf702f33f467d3d25c3e0770b5090bab8f9",
+      "dec3304723f3049abb0be05e016f886540db161a35b313b82baa30105fd54545",
+      "9057da4dc85a365f8786905bbe65b319f91d1a3b1556d6d6f904d61297312fc2",
+      "c52b55a555da29c869089f44912dd1c92e7f623faa5660d5882e2e50e25f750b",
+      "3f9b129831bf5a64a109423eef00a0fb16259485e9a56c265397d122333c6b3b",
+      "5c5423d2a9def4330678b44c08476c98292b7d847145ae461a9ef0650c7fb638"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "3af809ab4d4cbe16429f38eb74faf3cc646c8ea8fb184e6f3d289cb2ea83829b",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/791c9148b69e51b91407d68c",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "a7a757bfcc7846898d558dad1b1f6a27492a0fbcf6c1ee7d025419124144f6e8",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "97e84ea1e3360d892db0ba173807ecec71f6eee851bbd2311cf698bd95fde242",
+      "af10f7253f06441a63a8ac3eef4e944aa25ba3665e411ef020d3b02cd3569282",
+      "22e96bd2083e396e96aa1d5cee12518fe737775d5d60ec23372b62c20651d5ce",
+      "d1c8cfdba21db3a664c71249e4e34a74fb548eb078fb35f8592b03023375fbec",
+      "25bf708bca1d8cbe4d223e01fe31ccaeabe40b2e54c5877806bfcdf65810cd4c",
+      "22adb79b1c9b421853ed39b16845afe4ee78b14eee2a0dffea8d08a7361bc25c"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": false,
+    "label_evidence_sha256": "d85fcbce043f77d567344c655147cdf234ab3a8262a4424d904344443824766b",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/ad42879349db78fbae91c027",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "ce74646d95df8e2ea2a790b24f2d046a502ef5b04e27577301a652f537a2204c",
+    "source_group": "calibration/synthetic-template/0"
+  },
+  {
+    "checker_evidence_sha256": [
+      "a10251f09d92c0b0705b97b44db79a626d87db2391199ca61c3068158b1b6289",
+      "a24aa181f49819d6946df3a4cccc4152b42b076e93b29b8a6da28cbb26a2cd1d",
+      "587284624a346eedb958307a0a58260423167a5e3a0c42cad675b6a29f1e343e",
+      "7cf4e9cdbce84dcb505593fde6f542acc35794f54cb7a4846c624a8554446ca2",
+      "03d7fb39f810445cfe4aa5e7c50032dfabdcbf4f5a9e07c86a495e40147e6224",
+      "713b02b4b5a5675a933cf4023fb89a5eda49af9e24ec422e2b2eeb909c273bce"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "fdfccdc53491417813b24e1fb09cbac91b56d93bc7c11f7d320a2933901c33f3",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/bdc6b90a5cf0c68a9f261485",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "2ac6660e327e8a9e0bed1d8bb8a790c53e790e5f932c701a42305b6e14dd1752",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "da4aa7be503038e627d7b8fe720041049593160597f08e8386c697f1867a138d",
+      "207c4704bcef1b956b27f8cbcc0af41ca5e43d4b4821bebc8bf3f9c0458f5f01",
+      "baf12153c3e3cb300904011486ccae545a315d05aae2a0742f60abd79bb82dfa",
+      "d7735ebb0e5da7a2eaeeaa5ae68fcbd4efd3b6ca97501957a567b677938ef259",
+      "a8b6fdbbe60ed86c6a92fdee2f4836740065acc9480dd9ad6564583409f3b89e",
+      "c0c587841c960da23a92e1d19c3763235484d6d1c1e4fc2ced7767caffe526cf"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": false,
+    "label_evidence_sha256": "7ef3c5f1779fe28642c390e978be107cbfaa96ede0c01f0288a4b12c3c3bb035",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/c622f5476f98be1d213cddd5",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "9518d0a856940002ccc888d6cc21b530bac0b01ea91cebf1a6d1993636d9f2bb",
+    "source_group": "calibration/synthetic-template/0"
+  },
+  {
+    "checker_evidence_sha256": [
+      "451dc4b3abf140671c2a15acca9d8f7cea78a03e0bfff095d9925906df5af40b",
+      "b6a180c59b49d29f2af8b0bdb9fa90bb5735ea37a7bd7b7f80ac755a48e0ab99",
+      "e64a977f17bcbec38b2497a77399294e40cf3c40cadb07aaa7d3db7bec06aa0c",
+      "8b9aaf5fd627d62d50431aff1a16014d5f4845e95cf12aa01249ec72018b4c4b",
+      "6937a9d113acaa7fc74d57e16ec1f37aa9d064b4c8e2ce0730a1c8f66c5e27aa",
+      "d9b3ed9433b1bb732c308638229ac350450f77b7efdad5623bd81421eef27f58"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "9ef362a73a5c87c070c62ff98089bd9ce6b129c9841cbd44ed868c1eb5708a15",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/ccacc79ebdd3aad1f165cef4",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "f0426521872c27cd0db19ebfcbe389262634bdaceaeee9fb13617ea5da3c72ac",
+    "source_group": "calibration/synthetic-template/1"
+  },
+  {
+    "checker_evidence_sha256": [
+      "1c3a728deb5efb5d072a2d2b26d16434e4d1bd9104573bdad7c22bafec828be6",
+      "0552dd15aa922af8e36d84bf5b84e75f0114ee405c2a171e1ccfd41f8fface7e",
+      "5a3051ebcb14aab6f75775f6ea0039dbf50311d63867b7d95f0983919b1ad410",
+      "f088e13be564ffd7709bc05bae87dac6e3b2aab4c1c2a112448a10a885804139",
+      "8f6eaf520266b91fc2a587c144cdf2f4c27ba26b8b31b42d37e9da33bed14862",
+      "89090ba264b002f9ba4b2330657adb4b81c6e8595f98ed37ea63f2529a1fd99c"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "c06384d7d68a85dc6a4655caf2b2c83f350fba2008968230c544697710aded2e",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/f5a704543f7db142c68dac09",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "02fe4bb2d662d020d8c3f99f21c3e644f0d6f36646bd9bccbdae1b2cb0647e34",
+    "source_group": "calibration/synthetic-template/0"
+  },
+  {
+    "checker_evidence_sha256": [
+      "7b095f3d6e7b210f16e6042b26943f4424bfeccbc0b66e360643f20e693b4c62",
+      "2c6c8449182e753bddefb57e36c58d7dcf20d33ff6be563e67ea41ab5ba03597",
+      "8ee72209889f410d9add44bcbfed83d5cf89ea0f58a9e67df9489d8d0475de94",
+      "096a4e268fbd30fa426a77bc158238a0042753624159e739dd3b6acf14c2d84b",
+      "048d8fff4e798617bbb020a04348d2345fb4d629a4b6240a6e40a17d08215b7f",
+      "96e5604dfa29c777ec56043ef868ed9eea66bf4c6da31fa1f2291072a457d2cb"
+    ],
+    "checker_ids": [
+      "qwen-neutral",
+      "qwen-auditor",
+      "qwen-readout0",
+      "qwen-readout1",
+      "smol-neutral",
+      "qwen-repeat"
+    ],
+    "checker_versions": [
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8",
+      "f98aff7329f1711936e3404eb616982de3decf8ebb992fd2c70df73fe032bf1a",
+      "58c1b2ea7272962aeabeb9e2e3f33a180eadf7f70ea12107268c382f6d8586f1",
+      "bbec4fb45b64993343f31d98aaa36864ba9837e24c68ade0f67a06fdd083fe93",
+      "6ee91dae55002ca7d7160a886c2d54fcd65d43d128f47f504e1bbc26ca35128b",
+      "5f199f36106c1e132f07032016a8ba6ca2845cee76785ec340f409ebe1b3f7d8"
+    ],
+    "error": true,
+    "label_evidence_sha256": "eb5075fbb9665cde07cf5e95d7157ee5b8c004cccc4165e49584784cba17f442",
+    "missing_label_reason": null,
+    "outcomes": [
+      "pass",
+      "pass",
+      "fail",
+      "fail",
+      "pass",
+      "pass"
+    ],
+    "panel_id": "calibration/fdb0de404b516ed1f4ff45eb",
+    "scope": {
+      "context_sha256": "41c7922868e5a669d97dfaa7d73afa813b2ca988eb33c3c1d5d16bab53df2052",
+      "continuation_policy_sha256": "2c415d92435f0bca53194ff7e8109d1ea6170d3d8c5da10d0a43e2632e4d93de",
+      "domain": "sqlite_two_field_ack_only_model_pilot_v1",
+      "event": "goal_value_error_at_step3_without_optional_interruption",
+      "horizon_end": 3,
+      "horizon_start": 0
+    },
+    "snapshot_sha256": "1e642448a1d0a769bbb94b4d7fecaf219aa52faab057841990643ce29c59e9e2",
+    "source_group": "calibration/synthetic-template/0"
+  }
+]

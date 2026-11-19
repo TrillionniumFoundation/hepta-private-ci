@@ -1,9 +1,20 @@
 use crate::elevated_admission::require_elevated_filesystem_isolation;
 use crate::legacy_admission::require_legacy_filesystem_isolation;
 use crate::winutil::to_wide;
+#[path = "fresh_managed_base.rs"]
+pub(crate) mod fresh_managed_base;
+#[path = "token_full_restriction.rs"]
+mod full_restriction;
+#[path = "token_prepared_filesystem.rs"]
+mod prepared_filesystem;
+#[path = "token_query.rs"]
+mod token_query;
 use anyhow::Result;
 use anyhow::anyhow;
+pub use full_restriction::UnqualifiedFullRestrictionToken;
+pub(crate) use prepared_filesystem::PreparedFilesystemToken;
 use std::ffi::c_void;
+pub(crate) use token_query::TokenBytes;
 use windows_sys::Win32::Foundation::CloseHandle;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::GetLastError;
@@ -363,8 +374,6 @@ pub unsafe fn create_readonly_token_with_cap(
 
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
-/// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
 pub unsafe fn create_readonly_token_with_cap_from(
     base_token: HANDLE,
     psid_capability: *mut c_void,
@@ -379,7 +388,10 @@ pub unsafe fn create_readonly_token_with_cap_from(
     Ok((new_token, psid_capability))
 }
 
-/// Restrict legacy workspace writes to the provided capability SIDs alone.
+/// Construct an unqualified legacy token for internal diagnostics only.
+///
+/// This primitive does not constrain ambient parent `FILE_DELETE_CHILD` grants
+/// and must not be exposed as a filesystem sandbox entrypoint.
 ///
 /// # Safety
 /// Caller must close the returned token handle; base_token must be a valid primary token.
@@ -396,14 +408,36 @@ pub unsafe fn create_workspace_write_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Test-only diagnostic constructor with a separate read-only restricting cohort.
+/// Read-only SIDs constrain read access but are not added to the child-object
+/// default DACL, which grants only the write-capability SIDs.
+#[cfg(test)]
+pub(crate) unsafe fn create_workspace_write_token_with_caps_and_read_sids_from(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+    read_only_sids: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        read_only_sids,
+        RestrictingIdentity::Exclude,
+    )
+}
+
+/// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// This FFI helper does not verify a dedicated sandbox identity and provides no
+/// filesystem isolation guarantee. The input can be the current user's token.
+/// Its restricting set also includes the logon SID and `Everyone`; outside ACL
+/// grants, including parent `FILE_DELETE_CHILD`, remain possible. Using this
+/// helper does not qualify or authorize a managed sandbox launch.
 ///
 /// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// `base_token` must be a valid primary token with `TOKEN_DUPLICATE` access.
+/// All supplied SID pointers must remain valid during the call. The caller
+/// must close the returned token handle. These are FFI validity requirements,
+/// not a filesystem security contract.
 pub unsafe fn create_workspace_write_token_with_caps_and_user_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
@@ -434,14 +468,19 @@ pub unsafe fn create_readonly_token_with_caps_from(
     )
 }
 
-/// Create a restricted token that includes all provided capability SIDs, the token user SID, and
-/// any additional restricting SIDs.
+/// Construct a raw `WRITE_RESTRICTED` token including capability, user and additional SIDs.
 ///
-/// This is intended for the elevated sandbox backend, where the token user is the dedicated
-/// sandbox account rather than the real signed-in user.
+/// This FFI helper does not verify a dedicated sandbox identity and provides no
+/// read-only filesystem guarantee. The input can be the current user's token.
+/// Its restricting set also includes the logon SID and `Everyone`; outside ACL
+/// grants, including parent `FILE_DELETE_CHILD`, remain possible. Using this
+/// helper does not qualify or authorize a managed sandbox launch.
 ///
 /// # Safety
-/// Caller must close the returned token handle; base_token must be a valid primary token.
+/// `base_token` must be a valid primary token with `TOKEN_DUPLICATE` access.
+/// All supplied SID pointers must remain valid during the call. The caller
+/// must close the returned token handle. These are FFI validity requirements,
+/// not a filesystem security contract.
 pub unsafe fn create_readonly_token_with_caps_and_user_from(
     base_token: HANDLE,
     psid_capabilities: &[*mut c_void],
@@ -452,6 +491,64 @@ pub unsafe fn create_readonly_token_with_caps_and_user_from(
         base_token,
         psid_capabilities,
         additional_restricting_sids,
+    )
+}
+
+/// Construct a diagnostic token solely for the owned-child stdio probe.
+/// This test-only value does not qualify a filesystem sandbox or production launch.
+///
+/// # Safety
+/// The base token and capability SIDs must be valid during the call. The caller
+/// must close the returned token handle.
+#[cfg(test)]
+pub(crate) unsafe fn create_readonly_token_for_stdio_probe(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        &[],
+        RestrictingIdentity::Include,
+    )
+}
+
+/// Preserve the original WRITE_RESTRICTED mechanism for the owned MIC fixture.
+/// This test-only token does not qualify a filesystem sandbox or production launch.
+///
+/// # Safety
+/// The base token and capability SIDs must be valid during the call. The caller
+/// must close the returned token handle.
+#[cfg(test)]
+pub(crate) unsafe fn create_write_restricted_token_for_mic_probe(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_and_explicit_flags_from(
+        base_token,
+        psid_capabilities,
+        &[],
+        RestrictingIdentity::Exclude,
+        DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED,
+    )
+}
+
+/// Construct a diagnostic token solely for the separate-desktop-role fixture.
+/// It uses the final private workspace mechanism and grants no launch qualification.
+///
+/// # Safety
+/// The base token and capability SIDs must be valid during the call. The caller
+/// must close the returned token handle.
+#[cfg(test)]
+pub(crate) unsafe fn create_workspace_token_for_desktop_probe(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+) -> Result<HANDLE> {
+    create_token_with_caps_from(
+        base_token,
+        psid_capabilities,
+        &[],
+        RestrictingIdentity::Exclude,
     )
 }
 
@@ -486,6 +583,34 @@ unsafe fn create_token_with_caps_from(
     extra_restricting_sids: &[*mut c_void],
     restricting_identity: RestrictingIdentity,
 ) -> Result<HANDLE> {
+    // Capability-only workspace tokens must require BOTH the ordinary token
+    // identity and a capability SID for every access. WRITE_RESTRICTED checks
+    // only the restricting SID set for writes; FILE_DELETE_CHILD is not a
+    // sufficient boundary under inherited broad-identity directory ACEs.
+    let flags = DISABLE_MAX_PRIVILEGE
+        | LUA_TOKEN
+        | if matches!(restricting_identity, RestrictingIdentity::Include) {
+            WRITE_RESTRICTED
+        } else {
+            0
+        };
+
+    create_token_with_caps_and_explicit_flags_from(
+        base_token,
+        psid_capabilities,
+        extra_restricting_sids,
+        restricting_identity,
+        flags,
+    )
+}
+
+unsafe fn create_token_with_caps_and_explicit_flags_from(
+    base_token: HANDLE,
+    psid_capabilities: &[*mut c_void],
+    extra_restricting_sids: &[*mut c_void],
+    restricting_identity: RestrictingIdentity,
+    flags: u32,
+) -> Result<HANDLE> {
     if psid_capabilities.is_empty() {
         return Err(anyhow!("no capability SIDs provided"));
     }
@@ -517,7 +642,6 @@ unsafe fn create_token_with_caps_from(
     }
 
     let mut new_token: HANDLE = 0;
-    let flags = DISABLE_MAX_PRIVILEGE | LUA_TOKEN | WRITE_RESTRICTED;
     let ok = CreateRestrictedToken(
         base_token,
         flags,

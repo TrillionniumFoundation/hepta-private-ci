@@ -58,6 +58,9 @@ mod original_reader;
 mod read_view;
 #[cfg(target_os = "linux")]
 pub use original_reader::LearningArtifactReadViewV1;
+#[path = "owner_withdrawal_frontier.rs"]
+mod withdrawal_frontier;
+
 #[path = "owner_host_readback.rs"]
 mod readback;
 #[path = "owner_withdrawal_frontier.rs"]

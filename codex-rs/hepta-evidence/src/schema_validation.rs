@@ -38,7 +38,9 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "length(key_epoch) = 8",
             "length(sequence) = 8",
             "length(expires_at_ms) = 8",
-            "length(signature) = 64",
+            "auth_version in (1, 2)",
+            "auth_version = 1 and length(signature) = 64",
+            "auth_version = 2 and length(signature) = 3309",
             "length(payload) <= 16384",
             "'queued', 'leased', 'acked', 'expired', 'quarantined'",
             "attempts between 0 and 16",
@@ -763,6 +765,7 @@ pub(crate) async fn verify_provider_ephemeral_input_projection(
 }
 
 pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), EvidenceError> {
+    crate::authbus_crypto_profile::verify_schema(pool).await?;
     for spec in REQUIRED_SCHEMA_OBJECTS
         .iter()
         .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)

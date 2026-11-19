@@ -1,0 +1,22 @@
+{
+  "created_unix": 1793282844.0747736,
+  "free_bytes_after": 225198080,
+  "purpose": "Reclaim cached public package downloads to preserve capacity for current experiments; installed packages and project/source/evidence files are not deleted or modified. Pip can download these immutable packages again.",
+  "records": [
+    {
+      "cache_path": "/root/.cache/pip/http-v2/5/0/7/4/0/5074029185bbcc0ac1dee3a4f31271c064165b5049abd17d8f61c6c2.body",
+      "deleted_download_cache_bytes": 183914597,
+      "installed_package_modified": false,
+      "sha256": "cb9a8ba8137ab24e36bf1742cb79a1294bd374db570f09fc15a5e1318160db4e",
+      "verified_wheel_metadata": "torch-2.8.0+cpu.dist-info/METADATA"
+    },
+    {
+      "cache_path": "/root/.cache/pip/http-v2/2/1/0/5/e/2105ec538da48523061cbfc3b6bc12b289fce3d5d455aef24f2c98c1.body",
+      "deleted_download_cache_bytes": 10577491,
+      "installed_package_modified": false,
+      "sha256": "7fa4b0f931cdbcb8a52044f370a3eb429fb42eb88807b0e800fcaa98dd42b24e",
+      "verified_wheel_metadata": "ruff-0.17.3.dist-info/METADATA"
+    }
+  ],
+  "schema": "hepta-reproducible-download-cache-reclaim-v1"
+}

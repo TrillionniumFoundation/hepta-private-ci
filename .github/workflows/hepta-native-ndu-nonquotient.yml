@@ -1,0 +1,51 @@
+name: Native NDU nonquotient global-cost certificate
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/nonquotient_bnb/**'
+      - '.github/workflows/hepta-native-ndu-nonquotient.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  bound-and-replay:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Install deterministic CPU dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Exact rational bound, historical tests, 64 fits, full replay and tamper
+        shell: bash
+        run: |
+          set -euo pipefail
+          ROOT="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd"
+          SRC="$ROOT/nonquotient_bnb"
+          OUT="$RUNNER_TEMP/ndu-r19"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/SOURCE_SHA.txt"
+          python -m pip freeze > "$OUT/ENVIRONMENT.txt"
+          (cd "$ROOT/asymmetric_2d" && python -m unittest -v test_math) 2>&1 | tee "$OUT/TESTS_R18.log"
+          (cd "$SRC" && python -m unittest -v test_math) 2>&1 | tee "$OUT/TESTS_R19.log"
+          python "$SRC/global_bound.py" --out "$OUT/CERTIFICATE.json" --frontier "$OUT/FRONTIER.jsonl" 2>&1 | tee "$OUT/PROOF.log"
+          python "$SRC/run.py" sweep --out "$OUT/runs" 2>&1 | tee "$OUT/SWEEP.log"
+          python "$SRC/audit/verify.py" --source "$SRC" --runs "$OUT/runs" --proof "$OUT/CERTIFICATE.json" --out "$OUT/verified" 2>&1 | tee "$OUT/AUDIT.log"
+          NDU_R19_SOURCE="$SRC" NDU_R19_RUNS="$OUT/runs" NDU_R19_PROOF="$OUT/CERTIFICATE.json" python -O "$SRC/audit/test_tamper.py" 2>&1 | tee "$OUT/TAMPER.log"
+      - name: Preserve negative and positive evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-r19-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-r19
+          if-no-files-found: error
+          retention-days: 14

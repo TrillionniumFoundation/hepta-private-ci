@@ -1,0 +1,33 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 1.34s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 058d9d5f-5e90-4fcd-a22c-8371c6ffbcb4 with nextest profile: local
+    Starting 20 tests across 3 binaries
+        PASS [   0.003s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_token_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_round_drift
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_unchanged_revision
+        PASS [   0.004s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_skipped_revision
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_ack_rejects_skipped_revision
+        PASS [   0.005s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_round_drift
+        PASS [   0.006s] codex-hepta-agent-loop::cancellation_successor cancel_intent_rejects_token_drift
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop commit_interruption_reconciles_effect_without_executing_it_twice
+        PASS [   0.006s] codex-hepta-agent-loop::owner_loop cancellation_waits_for_effect_owner_acknowledgement
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop foreign_completion_cannot_dispatch_a_tool
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop duplicate_provider_calls_are_rejected_before_any_effect
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop deadline_cancels_a_stalled_stream_without_terminal_success
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop partial_stream_never_executes_tools_and_reconnect_uses_original_request
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop reconnect_does_not_reset_the_original_deadline
+        PASS [   0.004s] codex-hepta-agent-loop::owner_loop oversized_context_is_rejected_before_provider_dispatch
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop stalled_model_cancellation_does_not_prevent_effect_cancellation
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop text_only_completion_without_retained_provider_items_is_rejected
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop streamed_tool_turn_commits_before_dispatch_and_resumes_model
+        PASS [   0.003s] codex-hepta-agent-loop::owner_loop unresolved_effect_keeps_exact_key_across_loop_instances
+────────────
+     Summary [   0.011s] 20 tests run: 20 passed, 0 skipped

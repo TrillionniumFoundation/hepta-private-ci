@@ -1,0 +1,22 @@
+{
+  "archive_source_sha256": "7aefcc785977bb391116750d04e9abd8bfa1db28381ee06227bac501c61eceab",
+  "checks": {
+    "all_five_v1_destinations_correct": true,
+    "different_existing_content_refused_and_preserved": true,
+    "equal_updates_destination_is_its_study_root": true,
+    "five_v1_and_schema_discovered_v2": true,
+    "full_restore_requires_explicit_raw_root": true,
+    "identical_existing_files_reused": true,
+    "later_nested_v2_manifest_auto_discovered": true,
+    "listing_did_not_extract": true,
+    "only_v2_skips_v1_conflict_and_needs_no_raw_root": true,
+    "sealed_fixture_receipt_destination_rejected": true,
+    "sealed_real_receipt_destination_rejected_without_write": true,
+    "v2_restored_to_package_root": true
+  },
+  "large_project_bundles_restored": 0,
+  "new_training_or_inference": false,
+  "restore_source_sha256": "f0db60de1e6b03665e9bcf708ffc757977763f9481641e4104fcf1f01e593244",
+  "scope": "Only tiny temporary fixtures; expected failures are retained in their own receipt directories",
+  "status": "passed"
+}

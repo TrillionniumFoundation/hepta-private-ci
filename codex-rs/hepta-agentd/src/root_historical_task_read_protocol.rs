@@ -128,7 +128,7 @@ impl HistoricalTaskReadProfileV1 {
         canonical_digest(&self.deployment)?;
         canonical_digest(&self.writer)?;
         let initial = initial.require_binding(identity, proof)?;
-        self.learning_trust.require_initial(&initial)?;
+        HistoricalLearningTrustPinV1::require_initial(&self.learning_trust, &initial)?;
         Ok(initial)
     }
 }

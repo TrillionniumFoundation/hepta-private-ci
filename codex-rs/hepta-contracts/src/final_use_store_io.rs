@@ -1,12 +1,29 @@
-//! Existing private store I/O, separated from profile and journal parsing.
+//! Platform I/O preserves original path checks and explicit held-owner inputs.
 
 use super::FinalUseError;
+#[cfg(windows)]
+pub(super) use super::windows_io::Directory;
+#[cfg(windows)]
+pub(super) use super::windows_io::entry_exists;
+#[cfg(windows)]
+pub(super) use super::windows_io::lock_directory;
+#[cfg(windows)]
+pub(super) use super::windows_io::open_private;
+#[cfg(windows)]
+pub(super) use super::windows_io::replace_claims;
+#[cfg(windows)]
+pub(super) use super::windows_io::replace_state;
+#[cfg(windows)]
+pub(super) use super::windows_io::validate_windows_prewrite;
+#[cfg(not(windows))]
+pub(super) use std::fs::File as Directory;
 use std::fs::File;
 use std::io::Read;
+#[cfg(not(windows))]
 use std::path::Path;
 
 pub(super) fn read_bounded(
-    directory: &File,
+    directory: &Directory,
     name: &str,
     maximum: usize,
 ) -> Result<Vec<u8>, FinalUseError> {
@@ -87,25 +104,11 @@ pub(super) fn open_private(
     Ok(file)
 }
 
-#[cfg(windows)]
-pub(super) fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
-    super::windows::prepare_directory(root)
-}
-
-#[cfg(windows)]
-pub(super) fn open_private(
-    directory: &File,
-    name: &str,
-    access: Access,
-) -> Result<File, FinalUseError> {
-    super::windows::open_private(directory, name, access)
-}
-
-#[cfg(all(not(unix), not(windows)))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(all(not(unix), not(windows)))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn open_private(
     _directory: &File,
     _name: &str,
@@ -124,13 +127,13 @@ pub(super) fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUs
 }
 
 #[cfg(unix)]
-pub(super) fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+pub(super) fn replace_state(directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     rustix::fs::renameat(directory, "authority.next", directory, "authority.json")
         .map_err(|_| FinalUseError::Unavailable)
 }
 
 #[cfg(unix)]
-pub(super) fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+pub(super) fn replace_claims(directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     rustix::fs::renameat(
         directory,
         "authority.claims.next",
@@ -140,40 +143,26 @@ pub(super) fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(windows)]
-pub(super) fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
-    super::windows::entry_exists(directory, name)
-}
-
-#[cfg(windows)]
-pub(super) fn replace_state(directory: &File) -> Result<(), FinalUseError> {
-    super::windows::replace_state(directory)
-}
-
-#[cfg(windows)]
-pub(super) fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
-    super::windows::replace_claims(directory)
-}
-
-#[cfg(all(not(unix), not(windows)))]
+#[cfg(not(any(unix, windows)))]
 pub(super) fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(all(not(unix), not(windows)))]
-pub(super) fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+pub(super) fn replace_state(_directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(all(not(unix), not(windows)))]
-pub(super) fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
+#[cfg(not(any(unix, windows)))]
+pub(super) fn replace_claims(_directory: &File, _stage: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
 
 pub(super) struct LockedDirectory {
-    pub(super) root: File,
+    pub(super) root: Directory,
     pub(super) initialized: bool,
-    pub(super) lock: File,
+    pub(super) lock: Option<File>,
 }
 
+#[cfg(not(windows))]
 pub(super) fn lock_directory(path: &Path) -> Result<LockedDirectory, FinalUseError> {
     let root = prepare_directory(path)?;
     let initialized = entry_exists(&root, "authority.lock")?;
@@ -182,6 +171,6 @@ pub(super) fn lock_directory(path: &Path) -> Result<LockedDirectory, FinalUseErr
     Ok(LockedDirectory {
         root,
         initialized,
-        lock,
+        lock: Some(lock),
     })
 }

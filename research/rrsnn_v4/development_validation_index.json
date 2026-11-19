@@ -1,0 +1,60 @@
+{
+  "schema": "rrsnn.v4-development-validation-index.1",
+  "scope": "development fixtures only; no heldout utility results",
+  "records": [
+    {
+      "file": "task_validation.json",
+      "sha256": "074cf43375f36e008e0c2ce23681c0aebcb59008e61e5a469815532b3cad43b3",
+      "schema": "rrsnn-v4-task-validation-1",
+      "passed": true
+    },
+    {
+      "file": "baseline_validation_results.json",
+      "sha256": "a4e6f0189c71f750b0ac70a8879be1fb494670c7f0f70b6c3b8e8667bb989a59",
+      "schema": "rr-v4-baseline-validation-1",
+      "passed": true
+    },
+    {
+      "file": "model_validation.json",
+      "sha256": "29ebc332c6db7bbf5e37ed45aec6b2e9443769b84367eef642ba760c3ec7ae30",
+      "schema": "rrsnn.v4-model-validation.1",
+      "passed": true
+    },
+    {
+      "file": "training_smoke_results.json",
+      "sha256": "67291a967bb70d3384f80113dfe714308400059c679b51b2dad7dd82255ac796",
+      "schema": "rr-v4-training-smoke-1",
+      "passed": true
+    },
+    {
+      "file": "evaluation_validation.json",
+      "sha256": "8bb28b34859e6d9b02d528a17dd1969f03003b520922438bb175ae9b96fa04e9",
+      "schema": "rrsnn-v4-batched-evaluation-validation-1",
+      "passed": true
+    },
+    {
+      "file": "aggregation_validation.json",
+      "sha256": "7f78c4d3faf2ddcd19630d3a19d9f8f435ea5ad29d749a53f43c8f2fc1e7967b",
+      "schema": "rrsnn-v4-aggregation-development-1",
+      "passed": true
+    },
+    {
+      "file": "evaluation_runner_validation.json",
+      "sha256": "4efa180b652999fa14e28bab4d4ffc8580d66ce5712e468d3c2247599fb7d8fd",
+      "schema": "rrsnn-v4-evaluation-runner-development-1",
+      "passed": true
+    },
+    {
+      "file": "numerical_control_validation.json",
+      "sha256": "1e558bcfd4c6c5c45034bb73a6382b70684cdd0eb3cf12c9649e90580fe944cc",
+      "schema": "rrsnn-v4-numerical-control-development-1",
+      "passed": true
+    },
+    {
+      "file": "policy_benchmark_validation_final.json",
+      "sha256": "fd99bd930c4ce7120b83a10d47edf0ac4eb043fd803cc8955ce333adeef12f71",
+      "schema": "rrsnn-v4-policy-benchmark-development-1",
+      "passed": true
+    }
+  ]
+}

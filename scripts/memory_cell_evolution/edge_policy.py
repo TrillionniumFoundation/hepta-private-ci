@@ -165,7 +165,8 @@ class EdgePolicy:
         self.directory = Path(learned_directory) if learned_directory else None
         self.model = None
         if recipe == "learned-next-cell":
-            value = json.loads((self.directory / "policy.json").read_bytes())
+            policy_bytes = (self.directory / "policy.json").read_bytes()
+            value = json.loads(policy_bytes)
             require(
                 value["targets"] == self.targets
                 and value["final_outputs_used"] is False,
@@ -184,7 +185,7 @@ class EdgePolicy:
             )
             self.binding = dict(
                 recipe=recipe,
-                sha256=file_digest(self.directory / "policy.json"),
+                sha256=hashlib.sha256(policy_bytes).hexdigest(),
                 ancestry_roots=roots(value["ancestry_roots"]),
             )
         else:
@@ -200,7 +201,12 @@ class EdgePolicy:
                 file_digest(self.directory / "policy.json") == self.binding["sha256"],
                 "edge policy changed after freeze",
             )
-            value = json.loads((self.directory / "policy.json").read_bytes())
+            policy_bytes = (self.directory / "policy.json").read_bytes()
+            require(
+                hashlib.sha256(policy_bytes).hexdigest() == self.binding["sha256"],
+                "edge policy changed after freeze",
+            )
+            value = json.loads(policy_bytes)
             require(
                 file_digest(self.directory / "router.bin") == value["router_sha256"],
                 "edge weights changed after freeze",

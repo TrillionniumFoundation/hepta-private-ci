@@ -1,0 +1,23 @@
+test_duplicate_archive_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_duplicate_archive_member_is_rejected) ... ok
+test_duplicate_index_original_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_duplicate_index_original_is_rejected) ... ok
+test_exact_synthetic_bytes_survive_relocation (test_cpu_migration.ArchiveAdmissionTests.test_exact_synthetic_bytes_survive_relocation) ... ok
+test_index_hash_disagreement_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_index_hash_disagreement_is_rejected) ... ok
+test_index_path_redirection_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_index_path_redirection_is_rejected) ... ok
+test_json_ambiguity_and_nonfinite_values_are_rejected (test_cpu_migration.ArchiveAdmissionTests.test_json_ambiguity_and_nonfinite_values_are_rejected) ... ok
+test_ordered_parts_reconstruct_exact_archive_bytes (test_cpu_migration.ArchiveAdmissionTests.test_ordered_parts_reconstruct_exact_archive_bytes) ... ok
+test_part_hash_mutation_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_part_hash_mutation_is_rejected) ... ok
+test_part_traversal_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_part_traversal_is_rejected) ... ok
+test_symlink_archive_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_symlink_archive_member_is_rejected) ... ok
+test_traversal_and_alias_paths_are_rejected (test_cpu_migration.ArchiveAdmissionTests.test_traversal_and_alias_paths_are_rejected) ... ok
+test_unindexed_member_is_rejected (test_cpu_migration.ArchiveAdmissionTests.test_unindexed_member_is_rejected) ... ok
+test_wrong_archive_identity_fails_before_extraction (test_cpu_migration.ArchiveAdmissionTests.test_wrong_archive_identity_fails_before_extraction) ... ok
+test_changed_cpu_torch_source_is_rejected (test_cpu_migration.DerivedPlanTests.test_changed_cpu_torch_source_is_rejected) ... ok
+test_cuda_profile_cannot_be_silently_reused (test_cpu_migration.DerivedPlanTests.test_cuda_profile_cannot_be_silently_reused) ... ok
+test_only_prepared_location_changes_and_source_bytes_are_retained (test_cpu_migration.DerivedPlanTests.test_only_prepared_location_changes_and_source_bytes_are_retained) ... ok
+test_unbound_prepared_path_is_rejected (test_cpu_migration.DerivedPlanTests.test_unbound_prepared_path_is_rejected) ... ok
+test_wrong_checkpoint_selection_is_rejected (test_cpu_migration.DerivedPlanTests.test_wrong_checkpoint_selection_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.078s
+
+OK

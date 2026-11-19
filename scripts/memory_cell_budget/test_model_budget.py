@@ -33,16 +33,28 @@ class ModelBudgetTests(unittest.TestCase):
                 result = dict(
                     receipts=[dict(steps=3, input_tokens=40, supervised_tokens=10)],
                     worker_process_io_before_stdout=dict(rchar=12, wchar=8),
+                    source_binding=json.loads(kwargs["input_text"])["source_binding"],
                 )
                 return dict(stdout=json.dumps(result), receipt_path=str(path))
 
             module = types.SimpleNamespace(ChildFailure=ValueError, run_child=child)
-            with patch.dict("sys.modules", {"model_process": module}):
+            with (
+                patch.dict("sys.modules", {"model_process": module}),
+                patch(
+                    "model_budget.bind_implementation",
+                    return_value={
+                        "study": str(root),
+                        "implementation": str(root),
+                        "seal_sha256": "0" * 64,
+                    },
+                ),
+            ):
                 result = model_call(
                     ledger,
                     "train",
-                    dict(phase="arm"),
+                    dict(phase="arm", study=str(root)),
                     implementation=root,
+                    study=root,
                     directory=root / "first",
                     expected_updates=3,
                 )
@@ -54,8 +66,9 @@ class ModelBudgetTests(unittest.TestCase):
                     model_call(
                         ledger,
                         "train",
-                        dict(phase="arm"),
+                        dict(phase="arm", study=str(root)),
                         implementation=root,
+                        study=root,
                         directory=root / "replay",
                         expected_updates=3,
                     )
@@ -78,28 +91,42 @@ class ModelBudgetTests(unittest.TestCase):
                 return dict(
                     stdout=json.dumps(
                         dict(
+                            source_binding=json.loads(kwargs["input_text"])[
+                                "source_binding"
+                            ],
                             receipts=[
                                 dict(steps=3, input_tokens=40, supervised_tokens=10)
-                            ]
+                            ],
                         )
                     ),
                     receipt_path=str(path),
                 )
 
-            with patch.dict(
-                "sys.modules",
-                {
-                    "model_process": types.SimpleNamespace(
-                        ChildFailure=ValueError, run_child=child
-                    )
-                },
+            with (
+                patch(
+                    "model_budget.bind_implementation",
+                    return_value={
+                        "study": str(root),
+                        "implementation": str(root),
+                        "seal_sha256": "0" * 64,
+                    },
+                ),
+                patch.dict(
+                    "sys.modules",
+                    {
+                        "model_process": types.SimpleNamespace(
+                            ChildFailure=ValueError, run_child=child
+                        )
+                    },
+                ),
             ):
                 with self.assertRaises(KeyError):
                     model_call(
                         ledger,
                         "train",
-                        dict(phase="arm"),
+                        dict(phase="arm", study=str(root)),
                         implementation=root,
+                        study=root,
                         directory=root / "failed",
                         expected_updates=3,
                     )

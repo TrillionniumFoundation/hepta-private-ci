@@ -1,0 +1,89 @@
+{
+  "schema": "hcsn-uuid-fix-source-ci-transition-v1",
+  "checked_at_utc": "2026-11-05T17:49:31Z",
+  "branch": "research/hcsn-hx-20261105",
+  "current_run": {
+    "id": 42078258351,
+    "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "name": "Hepta HCSN research",
+    "status": "queued",
+    "conclusion": null,
+    "event": "push",
+    "created_at": "2026-11-05T17:48:48Z",
+    "updated_at": "2026-11-05T17:48:50Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42078258351",
+    "run_attempt": 1
+  },
+  "current_jobs": [
+    {
+      "id": 127424159520,
+      "run_id": 42078258351,
+      "workflow_name": "Hepta HCSN research",
+      "head_branch": "research/hcsn-hx-20261105",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42078258351",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdqxJfIA",
+      "head_sha": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127424159520",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42078258351/job/127424159520",
+      "status": "queued",
+      "conclusion": null,
+      "created_at": "2026-11-05T17:48:50Z",
+      "started_at": "2026-11-05T17:48:50Z",
+      "completed_at": null,
+      "name": "kernel-and-mechanisms",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127424159520",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": null,
+      "runner_name": null,
+      "runner_group_id": null,
+      "runner_group_name": null
+    }
+  ],
+  "previous_run": {
+    "id": 42066954076,
+    "head_sha": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+    "name": "Hepta HCSN research",
+    "status": "completed",
+    "conclusion": "cancelled",
+    "event": "push",
+    "created_at": "2026-11-05T16:41:03Z",
+    "updated_at": "2026-11-05T17:48:50Z",
+    "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42066954076",
+    "run_attempt": 1
+  },
+  "previous_jobs": [
+    {
+      "id": 127383593260,
+      "run_id": 42066954076,
+      "workflow_name": "Hepta HCSN research",
+      "head_branch": "research/hcsn-hx-20261105",
+      "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/42066954076",
+      "run_attempt": 1,
+      "node_id": "CR_kwDOTrgxoM8AAAAdqKdhLA",
+      "head_sha": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/127383593260",
+      "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42066954076/job/127383593260",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "created_at": "2026-11-05T16:41:05Z",
+      "started_at": "2026-11-05T16:41:05Z",
+      "completed_at": "2026-11-05T17:48:49Z",
+      "name": "kernel-and-mechanisms",
+      "steps": [],
+      "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/127383593260",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "runner_id": 0,
+      "runner_name": "",
+      "runner_group_id": 0,
+      "runner_group_name": ""
+    }
+  ],
+  "ci_pass_observed": false,
+  "no_rerun_or_dispatch": true
+}

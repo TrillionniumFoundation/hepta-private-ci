@@ -1,0 +1,94 @@
+{
+  "audit_script_sha256": "c852cf93987f15650d7d6493130923a0c4f58936e6704f65362a81242d68d79a",
+  "boundaries": [
+    "One delayed original return after math completed beforedeadline. Not natural computational timeout, preemption or general latency SLA.",
+    "Local saved ACK metadata is deadline disposition, not external command/remote client ACK. Trusted local epoch/pins/root, no production owner auth or actual reboot proof.",
+    "Source and saved success do not guarantee generated/terminal persistence after other identity/budget/storage failures; diagnostic not authority to adopt/redo. Those failure branches not injected here.",
+    "Fixed classword/grayRGB row, no scientific improvement, new natural data or general text/audio.",
+    "Posthoc resource caps/per-process hard limits not strict aggregate256 budget; hard ancestor/kernel/storage failure can still prevent full receipts. No retry/limit change observed or authorized."
+  ],
+  "evidence_sha256": {
+    "COST_COVERAGE.json": "bbf29bb358cd8d2a03e31aff5b45179405a440fd370b6431709f61d0447b625a",
+    "FREEZE.json": "27009841810567ffba63bacc300e3551aaa03c8f5590801cff9ec7ec62e5833f",
+    "INDEPENDENT_SOURCE_REVIEW.json": "17ee04da3d4791222842eebef10222a98df39e5f6c30701e81362ab20bc099d1",
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": "fc893ee5e1748bf6642c98ec5ef4f47e0c55939da0913b17acd19298d281cb56",
+    "RUN_ONCE/RESULT.json": "0dbed6bff0f34f3871e24191c607fa36d97610d5bbdcb17b0e932fc173c4fdcc",
+    "RUN_ONCE/ROLE_RECEIPTS.json": "48faf64f4dead459b004bbe61688bf4066a3186c41ec1ca10bd9c0d9493bddbc",
+    "RUN_ONCE/chain/DEADLINE_PACKET.json": "2a77e19c227f08e6c3b56dc178c3ac797ed88777eaea4532c464696188ecf281",
+    "RUN_ONCE/chain/RETURN_READY.json": "8f7f440440378a529b5fd4a8e8fbbba2b918ab43c9c91b7040beb619f5f5b719",
+    "RUN_ONCE/chain/TERMINAL_VERIFIED.json": "b178f431d005c980f44a815b2cc0423243648f0c631e4658958bccb93a3344fc",
+    "SAVED_FINDINGS.md": "2110932dc7c144a66b82b3b280d3714dca1d2622974e636c50334946b583e978"
+  },
+  "method": "Independent saved-only stdlib canonical JSON/hash/ref/chronology, exact detached-negative reconstruction, ZIP-NPY header/raw-array comparison and frozen source control-flow. Did not import/run candidate verifier, protocol, model, optimizer, RNG or reference.",
+  "notes_and_cost": "SAVED_FINDINGS and COST_COVERAGE agree with independent records, aside from harmless float formatting; pending label is pre-review historical status.",
+  "resources_and_cost": {
+    "accounting": "Full wait4 includes actual math, deliberate barrier wait/IPC, all parsing/hash/serialization, semantic negatives, recovery and teardown once. Role/supervisor decomposition not extra charges. Outer prefix additional, finaltail unknown. Receipt floating lower .5996220229999999 vs decimal .599622023 rounding only. Historical training/engineering/source/review and this audit additional; no cumulative-index reassessment. No strict global proof.",
+    "complete_wait": true,
+    "known_lower_bound_CPU_seconds": "0.599622023",
+    "largest_reaped_RSS_kib": 33672,
+    "limits": {
+      "AS": [
+        268435456,
+        268435456
+      ],
+      "CPU": [
+        2,
+        2
+      ],
+      "FSIZE": [
+        2097152,
+        2097152
+      ]
+    },
+    "outer_prefix_CPU_seconds": "0.052969023",
+    "outer_tail": "unknown_not_zero",
+    "supervisor_partition_CPU_seconds_decimal": "0.24116700000000003",
+    "terminal_budget_pass": true,
+    "wall_seconds": 3.4107392209989484,
+    "whole_subtree_CPU_seconds": "0.546653",
+    "workers_CPU_seconds_decimal": "0.30548599999999997"
+  },
+  "source_freeze_sha256": "27009841810567ffba63bacc300e3551aaa03c8f5590801cff9ec7ec62e5833f",
+  "status": "PASS_SAVED_SCOPED_REAL_RESULT_DELAYED_RETURN_DEADLINE",
+  "verified": {
+    "RUN_bytes": 3252983,
+    "RUN_files": 44,
+    "chronology": {
+      "ack_pre_send_ns": 231989352383024,
+      "cancel_intent_ns": 231989347352835,
+      "cancelled_ns": 231989349943612,
+      "computed_ns": 231986485967887,
+      "deadline_observed_ns": 231989345725429,
+      "generated_ns": 231989343061643,
+      "intent_return_ns": 231989349939205,
+      "origin_ns": 231986311736275,
+      "original_deadline_ns": 231989311736275,
+      "pre_return_sample_ns": 231989335704901,
+      "release_observed_ns": 231989335699974,
+      "release_send_begin_ns": 231989335203797,
+      "reserved_ns": 231986477481969
+    },
+    "chronology_interpretation": "Original math return captured before unchanged origin+3s deadline. Supervisor releases afterdeadline+20ms; child observes release then samples before writing release diagnostic and actual wrapper return. Generated save/expiry decision follow. This is injected delayed return, not math taking past deadline. No assumption send-write completion must precede receive is needed.",
+    "counter_basis": "Saved original-call diagnostic/producer/recovery results plus exact frozen control-flow; not independent instruction tracing. Recover startup/parser CPU still charged despite zero model.",
+    "frozen_files": 28,
+    "identity": "Reconstructed artifact from old pinned artifact replacing only freeze; request from pinned raw replacing artifact/run_id/original OS deadline. Independently derived raw/profile-policy qualified SHA/fullspec/namespace, route and wire, manifest/epoch/root/lock, diagnostic and release pins. All unchanged original sources/input files rehashed.",
+    "inventory_matches_outer_receipt": true,
+    "models": "Complete Content78 and Actor20 NPZ entries, headers/raw arrays/parameters/Adam equal original and AFTER; composite artifact hashes match every array. Old selected wire and numerical route preserved, no new reference compute.",
+    "original_inputs_terminal_rehashed": 13,
+    "processes": "Outer reaps supervisor8 exit0; producer9 exits0 and is reaped before frozen pure-stdlib verifier runs, then recovery10 starts and exits0. All shared events monotonic and inside outer launch/reap; two role receipts complete. No kill in successful path.",
+    "refusals": "Rebuilt all three detached fixtures byte-exact: changedreason with higher observation/ACK refs rebound; legal manifestdeadline+1s and recomputed pin but unchanged raw; zeroed generated hash with higher refs rebound. Errors respectively deadline command binding / manifest request-source-root binding / generated record binding. Three before/after pairs and recovery inventory pair match complete actual terminal root, no originals modified. Recovery exact live deadline expired before backend imports or lease, not terminal/flock masking.",
+    "states": "All seven fixed namespace files independently reconstructed; reserved -> generated -> deadline observation -> generated cancel-intent -> cancelled -> savedACK. Full outer/inner checksums, identities, route/wire, references and entire TERMINAL_VERIFIED summary match. next_index0, no pending fragment, text/image empty, controller1+generator1 retained, no piece00 intent. 34884 returned bytes known and saved but zero output published.",
+    "work": {
+      "Actor_predictions": 1,
+      "checks": 17,
+      "encoded_rows": 1,
+      "fresh_models": 0,
+      "new_reference_calls": 0,
+      "optimizer_steps": 0,
+      "producer_restores": 2,
+      "recovery_restores": 0,
+      "refusals": 4,
+      "selective_serve": 1
+    }
+  }
+}

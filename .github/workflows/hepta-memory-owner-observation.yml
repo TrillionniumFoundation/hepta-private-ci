@@ -1,0 +1,47 @@
+name: MemoryCell actual Supervisor observation
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-supervisor/**"
+      - ".github/workflows/hepta-memory-owner-observation.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-owner-observation-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  observe-owner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest
+      - name: Test read-only transport, cancellation and the actual restarted daemon
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-owner-observation
+          just test -p codex-hepta-supervisor --lib observation::tests 2>&1 | tee /tmp/memory-owner-observation/transport-tests.log
+          just test -p codex-hepta-supervisor --test daemon_product 2>&1 | tee /tmp/memory-owner-observation/actual-daemon.log
+          cd codex-rs
+          cargo check -p codex-hepta-supervisor --example observe_memory_owner 2>&1 | tee /tmp/memory-owner-observation/client-check.log
+          cargo clippy -p codex-hepta-supervisor --lib --example observe_memory_owner --test daemon_product -- -D warnings 2>&1 | tee /tmp/memory-owner-observation/clippy.log
+      - name: Preserve source identity and limits
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-owner-observation
+          git rev-parse HEAD > /tmp/memory-owner-observation/tested-commit.txt
+          printf '%s\n' 'Actual product binary in temporary local fixture. No deployed remote host, signature, prospective window or independent acceptance.' > /tmp/memory-owner-observation/SCOPE.txt
+          (cd /tmp/memory-owner-observation && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-owner-observation-validation
+          path: /tmp/memory-owner-observation
+          if-no-files-found: error

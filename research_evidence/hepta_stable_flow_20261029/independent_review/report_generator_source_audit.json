@@ -1,0 +1,173 @@
+{
+  "artifact_integrity_passed": true,
+  "bound_artifacts": [
+    {
+      "bytes": 25981,
+      "path": "experiments/call_put_stable_flow_analysis/report.py",
+      "sha256": "e70cdda964bba6f6e35cf020e726541f1b203f3520af2b327cd31f6e781bf905"
+    },
+    {
+      "bytes": 47971,
+      "path": "experiments/call_put_stable_flow_analysis/report_sections.py",
+      "sha256": "cd770e9c18962bbdde69cf4a3cbe5a456303b3e82ce09a99e6ef132d8c709b34"
+    },
+    {
+      "bytes": 6459,
+      "path": "experiments/call_put_stable_flow_analysis/report_figures.py",
+      "sha256": "d74849d3d2cffec1677fccdc0688d8d5c659cebca977fc04ab949e7153db6222"
+    },
+    {
+      "bytes": 5580,
+      "path": "experiments/call_put_stable_flow_analysis/report_dynamics.py",
+      "sha256": "c7098d3b97a3268eca61279771cba1759c7e1f88f7634ebd4b9d388378024250"
+    },
+    {
+      "bytes": 15665,
+      "path": "experiments/call_put_stable_flow_analysis/ANALYSIS.md",
+      "sha256": "cd9996da39f1eb0978ed9817a6d8c1d7253743e65697f8d6cebace59c21f68fd"
+    },
+    {
+      "bytes": 17113,
+      "path": "experiments/call_put_stable_flow_analysis/release.py",
+      "sha256": "fa792a60abcdea334ff591ae3b12aaa74fac1469f8d18a3c8a621bfe62fad923"
+    },
+    {
+      "bytes": 7025,
+      "path": "experiments/call_put_stable_flow_analysis/release_parts.py",
+      "sha256": "524de674a518a5d367f18aabaf2af4a4711edbbf323bcb6d0cf8d8c2d6d8513d"
+    },
+    {
+      "bytes": 3689,
+      "path": "research_evidence/hepta_stable_flow_20261029/historical_context/RECOVERY_STATUS.json",
+      "sha256": "2d74b0db22f7615c4a6e131caf427a183c738d566f15bcc907ca7ec6ef7a1911"
+    },
+    {
+      "bytes": 706,
+      "path": "research_evidence/hepta_stable_flow_20261029/historical_context/provenance.json",
+      "sha256": "f028ab00c608928b42cf81a01568dfa56c7390f82880ff7b6f9499c8a8dd73c5"
+    },
+    {
+      "bytes": 16594,
+      "path": "research_evidence/hepta_stable_flow_20261029/formal_run001/protocol.json",
+      "sha256": "f94ff6491a2e98c1288ee2476404943f920042800d468435eba46d5235c0197b"
+    },
+    {
+      "bytes": 8464,
+      "path": "research_evidence/hepta_stable_flow_20261029/trained_numerics_appendix001/protocol.json",
+      "sha256": "5d22bec38799f63e10a58b7bc8ff91feb179a4c0108ddc9272a07dbf4b1d9934"
+    },
+    {
+      "bytes": 8899,
+      "path": "research_evidence/hepta_stable_flow_20261029/inference_cost_appendix001/protocol.json",
+      "sha256": "b605b13d59a34701f1aaf8dfb2987c490fc72b12d003539dec3d84ce26505f5c"
+    }
+  ],
+  "checks": {
+    "all_qualification_cases_passed": true,
+    "historical_context_disclaimer_present": true,
+    "historical_context_exact_bytes": true,
+    "historical_context_sha_matches": true,
+    "historical_context_size_matches": true,
+    "no_formal_validation_test_or_score_read": true,
+    "no_generated_formal_report": true,
+    "own_temporary_directory_cleaned": true
+  },
+  "created_unix": 1793282899.9323761,
+  "method": "Read-only generator/schema/protocol review and pure in-memory synthetic comparison fixtures. Expected t intervals supplied by scipy.stats.t.ppf rather than the generator inversion formula. No formal VAL/TEST arrays, selected models or scores were opened. No report with synthetic scientific results was written.",
+  "pure_function_qualification": [
+    {
+      "case": "independent_SciPy_t_df2_intervals_and_registered_families_accepted",
+      "passed": true
+    },
+    {
+      "case": "valid_reordered_comparisons_accepted",
+      "passed": true
+    },
+    {
+      "case": "incorrect_displayed_mean_rejected",
+      "passed": true
+    },
+    {
+      "case": "incorrect_family_size_rejected",
+      "passed": true
+    },
+    {
+      "case": "duplicate_replacing_missing_identity_rejected",
+      "passed": true
+    },
+    {
+      "case": "missing_comparison_rejected",
+      "passed": true
+    },
+    {
+      "case": "extra_comparison_rejected",
+      "passed": true
+    },
+    {
+      "case": "unregistered_comparator_rejected",
+      "passed": true
+    },
+    {
+      "case": "missing_prerequisites_block_before_any_read_or_output_directory",
+      "passed": true
+    },
+    {
+      "case": "outside_scope_recovery_rejected_by_input_scope",
+      "passed": true
+    },
+    {
+      "case": "excluded_releases_rejected_by_input_scope",
+      "passed": true
+    },
+    {
+      "case": "parent_component_rejected_by_input_scope",
+      "passed": true
+    },
+    {
+      "case": "in_scope_path_accepted:experiments/call_put_stable_flow_analysis/report.py",
+      "passed": true
+    },
+    {
+      "case": "in_scope_path_accepted:research_evidence/hepta_stable_flow_20261029/historical_context/RECOVERY_STATUS.json",
+      "passed": true
+    }
+  ],
+  "remaining_scope": [
+    "The final report has not yet been generated. Actual alias/checkpoint coverage, source-to-report numerical values, complete raw output recomputation and visual rendering must be checked after all formal artifacts exist.",
+    "This source review does not assert scientific gate success, final archive completion, remote publication completion, or closure of all research hypotheses."
+  ],
+  "resolved_findings": [
+    {
+      "finding": "Post-tick zero Call observation overstated absence/necessity of full-trajectory Call or boundary crossings",
+      "resolution": "Text now states coexistence on32 fixed training probes, explicitly excluding claims about internal substeps, other examples, training history or causal ablation; overview calls untrained parameter work a diagnostic."
+    },
+    {
+      "finding": "Open mathematical parameter intervals could be read as floating-point guarantees",
+      "resolution": "Text restricts them to finite raw parameters in real arithmetic and states floating sigmoid saturation may reach endpoints."
+    },
+    {
+      "finding": "Comparison mean/family display fields and unique24 comparison coverage were not rechecked",
+      "resolution": "Generator now verifies displayed mean, family4/8 and exact unique comparison identity set. All six minimal counterexamples are rejected."
+    },
+    {
+      "finding": "Old recovery status input lay outside the complete archive scopes",
+      "resolution": "Exact3689B historical_context copy plus provenance is retained inside new evidence. Report consumes both and verifies size/SHA. Inputs reject non-scope and releases paths."
+    },
+    {
+      "finding": "Hyperbolic source statement should distinguish invariant plane from3D dynamics",
+      "resolution": "The report now names the v=0 q/z invariant plane and retains the stable v eigenvalue for full3D."
+    }
+  ],
+  "reviewed_contracts": [
+    "Preconditions stop before held-out result I/O if the primary results, selection seal, numerical/runtime summaries or quality join are missing. Actual completeness and source/checkpoint hashes are checked in loading before report output creation.",
+    "60 selected aliases,20 score groups,3 fixed seeds and both budgets are reported without changing selection. CPU15/30 and update192/384 eligibility is explained, not conflated with total-process or wall-clock costs.",
+    "Accuracy and CE are separately declared families; main analytic-vs-matched has4 comparisons per metric and secondary sigmoid/ordinary8. Quality floors and effect sizes match frozen protocol. n3 and shared-test-set limitations are explicit.",
+    "Primary analytic-vs-matched attribution is global operator shape after matching local constraints. Parser, matrix memory and address priors are shared; ordinary and frozen diagnostic differences and nominal versus actual parameter activity are disclosed.",
+    "Numerical alias24/DOP8 tables preserve failed and reference_unresolved statuses; same-h dtype, finite-mesh consistency, registered-h mesh and flow-trace DOP objectives are separated. No success-only numerical execution condition is introduced.",
+    "CPU timing uses all20 selected seed81301 aliases atB1/B32,3warmups/11samples; measured process/wall costs and nominal605B state payload are distinguished. Quality-band ratios are descriptive and absent for ineligible pairs.",
+    "Figures label seed sample SD separately from adjusted paired intervals and timing min/max separately from statistical confidence intervals. Low-quality arms and negative results remain displayed.",
+    "Every consumed scientific file is hash/size recorded and rechecked before rendering. Final_scientific_audit is not an input; the final audit will bind the generated report and its receipt afterward."
+  ],
+  "schema": "hepta-independent-report-generator-source-audit-20261029-v1",
+  "status": "source_review_complete_pending_generated_report"
+}

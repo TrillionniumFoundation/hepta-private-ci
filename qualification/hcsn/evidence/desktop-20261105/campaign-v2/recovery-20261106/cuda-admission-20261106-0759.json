@@ -1,0 +1,387 @@
+{
+  "schema": "hcsn-original-cuda-admission-public-v1",
+  "original_campaign_job": "1a1acdd69f2-fc05-5757",
+  "candidate_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "raw_receipt_note": "Hashes identify retained original byte-for-byte receipts, not these normalized public objects.",
+  "admission": {
+    "status": "admitted",
+    "selected_policy": 1,
+    "config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "admitted_utc": "2026-11-06T07:59:11.384247+00:00",
+    "selection_uses_heldout": false,
+    "original_b_outcome": "original_b_oom",
+    "applies_to_all_b_runs": 20,
+    "gate_receipts": {
+      "baseline-strict-tests": "02a5d1263744cbae6e2f60b64452b13dc5c1b9bd0353968b62b2d423a68144b8",
+      "candidate-strict-tests": "cf42cc90b6dbaf9755c554a118ad1eca38b8fca476515fa44075e43ee66093b0",
+      "original-a-fullshape": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+      "original-b-fullshape": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+      "parity-cpu": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+      "parity-cuda": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+      "candidate-fullshape-population_flux": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+      "candidate-fullshape-population_flux_no_recovery": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+      "original-mamba2-fullshape": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00"
+    }
+  },
+  "admission_raw_receipt": {
+    "relative_path": "campaigns/full-v2/admission.json",
+    "sha256": "97e0cbc2eba58e72a898152e648c319113b8eb4c2f6610fad5095e5f582e8751",
+    "size": 1220
+  },
+  "parity": [
+    {
+      "device": "cpu",
+      "status": "passed",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/parity-cpu.json",
+        "sha256": "191e8d9eafadf7e25500c6ad291cbf1ec8358c62faccb611e478f5d309b779b6",
+        "size": 78949
+      },
+      "scope": "one-update parity fixture; not full-budget qualification",
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "record_count": 16,
+      "comparison_leaf_count": 504,
+      "all_records_passed": true,
+      "all_recorded_comparisons_exact": true,
+      "maximum_absolute_error_over_all_recorded_comparisons": 0.0,
+      "maximum_rms_error_over_all_recorded_comparisons": 0.0,
+      "dtypes": [
+        "float32",
+        "float64"
+      ],
+      "tasks": [
+        "adding",
+        "delayed_recall"
+      ],
+      "recovery_values": [
+        false,
+        true
+      ],
+      "input_requires_grad_values": [
+        false,
+        true
+      ],
+      "segment_steps": [
+        1,
+        4
+      ],
+      "checker_sha256": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509",
+      "candidate_module_sha256": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+      "manifest_sha256": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b"
+    },
+    {
+      "device": "cuda:0",
+      "status": "passed",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/parity-cuda.json",
+        "sha256": "12941e9cbb2524686e54241993dca35b3ffab64acdcd88282fac4e305751b0b2",
+        "size": 78945
+      },
+      "scope": "one-update parity fixture; not full-budget qualification",
+      "shape": [
+        2,
+        9,
+        2
+      ],
+      "hidden_size": 3,
+      "bins": 32,
+      "record_count": 16,
+      "comparison_leaf_count": 504,
+      "all_records_passed": true,
+      "all_recorded_comparisons_exact": true,
+      "maximum_absolute_error_over_all_recorded_comparisons": 0.0,
+      "maximum_rms_error_over_all_recorded_comparisons": 0.0,
+      "dtypes": [
+        "float32",
+        "float64"
+      ],
+      "tasks": [
+        "adding",
+        "delayed_recall"
+      ],
+      "recovery_values": [
+        false,
+        true
+      ],
+      "input_requires_grad_values": [
+        false,
+        true
+      ],
+      "segment_steps": [
+        1,
+        4
+      ],
+      "checker_sha256": "664a508d7e1c70ee81efe077225b5f4f751bb790efc83cecfc6f1494a09bb509",
+      "candidate_module_sha256": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+      "manifest_sha256": "d864fdb4819a7f21c7e1a8178686b6bf9ec82df92cf88609240faa918876f51b"
+    }
+  ],
+  "fullshape_probes": [
+    {
+      "name": "original-a-fullshape",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/original-a-fullshape.json",
+        "sha256": "3bf0eb469933b80dfc2535882f135091509a600ed383373fad68a4e0eb9a6e98",
+        "size": 8432
+      },
+      "status": "completed",
+      "model": "hx_dual",
+      "task": "delayed_recall",
+      "seed": 0,
+      "scope": "one random-initialized FP32 CUDA training step, same registered first batch",
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "counts_toward_170_runs": false,
+      "heldout_evaluated": false,
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "parameters": 5633,
+      "finite": {
+        "prediction": true,
+        "loss": true,
+        "gradients": true,
+        "updated_parameters": true
+      },
+      "memory_fraction": 0.5,
+      "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+      "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+      "peak_allocated_bytes": 778152960,
+      "peak_reserved_bytes": 799014912,
+      "wall_seconds": 15.987102776998654,
+      "source_unchanged": true,
+      "terminal_cuda_synchronized": true,
+      "physical_energy": {
+        "joules_by_physical_counter": null,
+        "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported"
+        ],
+        "interval_completion": "synchronized"
+      }
+    },
+    {
+      "name": "original-b-fullshape",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/original-b-fullshape.json",
+        "sha256": "30b72b62cbd462109bdd7179fd22ad855f8e537f78799235d7fc1b6e103a11a1",
+        "size": 12042
+      },
+      "status": "failed",
+      "model": "population_flux",
+      "task": "delayed_recall",
+      "seed": 0,
+      "scope": "one random-initialized FP32 CUDA training step, same registered first batch",
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "counts_toward_170_runs": false,
+      "heldout_evaluated": false,
+      "optimizer_steps_completed": 0,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "parameters": 4353,
+      "finite": {},
+      "memory_fraction": 0.5,
+      "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+      "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+      "peak_allocated_bytes": 4068922368,
+      "peak_reserved_bytes": 4091543552,
+      "wall_seconds": 2.499847101047635,
+      "source_unchanged": true,
+      "failure_stage": "forward",
+      "oom": true,
+      "terminal_cuda_synchronized": true,
+      "physical_energy": {
+        "joules_by_physical_counter": null,
+        "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported"
+        ],
+        "interval_completion": "synchronized"
+      }
+    },
+    {
+      "name": "candidate-fullshape-population_flux",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/candidate-fullshape-population_flux.json",
+        "sha256": "807585f80f04ab933bc599c0c1b87014faaa5dbc29c4fa6cf2317e71eaa21ad0",
+        "size": 10037
+      },
+      "status": "completed",
+      "model": "population_flux",
+      "task": "delayed_recall",
+      "seed": 0,
+      "scope": "candidate-only rematerialized B; one random-initialized FP32 CUDA training step, same registered first batch",
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "counts_toward_170_runs": false,
+      "heldout_evaluated": false,
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "parameters": 4353,
+      "finite": {
+        "prediction": true,
+        "loss": true,
+        "gradients": true,
+        "updated_parameters": true
+      },
+      "memory_fraction": 0.5,
+      "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+      "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+      "peak_allocated_bytes": 833757184,
+      "peak_reserved_bytes": 857735168,
+      "wall_seconds": 7.429685393930413,
+      "source_unchanged": true,
+      "candidate_unchanged": true,
+      "probe_unchanged": true,
+      "terminal_cuda_synchronized": true,
+      "physical_energy": {
+        "joules_by_physical_counter": null,
+        "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported"
+        ],
+        "interval_completion": "synchronized"
+      }
+    },
+    {
+      "name": "candidate-fullshape-population_flux_no_recovery",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/candidate-fullshape-population_flux_no_recovery.json",
+        "sha256": "8a023efca7a6329ec08e25277f4a5e5c46e33edd32559c6b14792a62a4d3effd",
+        "size": 10050
+      },
+      "status": "completed",
+      "model": "population_flux_no_recovery",
+      "task": "delayed_recall",
+      "seed": 0,
+      "scope": "candidate-only rematerialized B; one random-initialized FP32 CUDA training step, same registered first batch",
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "counts_toward_170_runs": false,
+      "heldout_evaluated": false,
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "parameters": 4353,
+      "finite": {
+        "prediction": true,
+        "loss": true,
+        "gradients": true,
+        "updated_parameters": true
+      },
+      "memory_fraction": 0.5,
+      "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+      "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+      "peak_allocated_bytes": 833757184,
+      "peak_reserved_bytes": 857735168,
+      "wall_seconds": 7.447462097974494,
+      "source_unchanged": true,
+      "candidate_unchanged": true,
+      "probe_unchanged": true,
+      "terminal_cuda_synchronized": true,
+      "physical_energy": {
+        "joules_by_physical_counter": null,
+        "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported"
+        ],
+        "interval_completion": "synchronized"
+      }
+    },
+    {
+      "name": "original-mamba2-fullshape",
+      "raw_receipt": {
+        "relative_path": "campaigns/full-v2/original-mamba2-fullshape.json",
+        "sha256": "80e4c5619488bae114595ddacba6867ff4b66f9938e1f8f095dc841f6f712a00",
+        "size": 8428
+      },
+      "status": "completed",
+      "model": "mamba2",
+      "task": "delayed_recall",
+      "seed": 0,
+      "scope": "one random-initialized FP32 CUDA training step, same registered first batch",
+      "input_shape": [
+        64,
+        64,
+        2
+      ],
+      "counts_toward_170_runs": false,
+      "heldout_evaluated": false,
+      "optimizer_steps_completed": 1,
+      "training_examples_submitted": 64,
+      "training_tokens_submitted": 4096,
+      "parameters": 28345,
+      "finite": {
+        "prediction": true,
+        "loss": true,
+        "gradients": true,
+        "updated_parameters": true
+      },
+      "memory_fraction": 0.5,
+      "memory_scope": "training split and model resident; one Adam step; no validation/test tensors or best-state copies",
+      "memory_limit_scope": "PyTorch process allocator only; not GPU reservation or a limit on external CUDA allocations",
+      "peak_allocated_bytes": 150528512,
+      "peak_reserved_bytes": 165675008,
+      "wall_seconds": 21.760878294939175,
+      "source_unchanged": true,
+      "terminal_cuda_synchronized": true,
+      "physical_energy": {
+        "joules_by_physical_counter": null,
+        "scope": "instrumented single-step wall interval; whole device/package, not process attribution",
+        "missing_reason": "RAPL inaccessible: PermissionError; RAPL inaccessible: PermissionError; NVML unavailable: NVMLError_NotSupported",
+        "partial_unavailable_reasons": [
+          "RAPL inaccessible: PermissionError",
+          "RAPL inaccessible: PermissionError",
+          "NVML unavailable: NVMLError_NotSupported"
+        ],
+        "interval_completion": "synchronized"
+      }
+    }
+  ],
+  "uniform_b_policy": {
+    "population_checkpoint_steps": 1,
+    "applies_to_registered_identities": 20,
+    "selected_using_heldout": false,
+    "original_b_oom_preserved": true
+  },
+  "qualification_limits": [
+    "All fullshape probes are single random-initialized training steps and do not count toward the 170 full-budget identities.",
+    "Parity establishes agreement only for the fixed one-update fixture, not full-budget training or grid independence.",
+    "Reported times are one-step wall intervals; Mamba2 may include cold compilation. They are not steady-state throughput or tail-latency comparisons.",
+    "This original matrix is not an activity-parameter-matched real-streaming-multimodal experiment.",
+    "GPU physical power/energy is unsupported and CPU RAPL access is unavailable; missing joules remain null."
+  ]
+}

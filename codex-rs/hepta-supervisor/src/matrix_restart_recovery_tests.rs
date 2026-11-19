@@ -1,6 +1,8 @@
 //! Exercise the public recovery lifecycle with real Fleet and restart files.
 //! The existing FakeControl models process observations, not durable state.
 
+use std::time::Duration;
+
 use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::ReleaseId;
 use pretty_assertions::assert_eq;
@@ -287,5 +289,198 @@ fn companion_identity_failure_is_fatal_even_when_main_adoption_has_a_fault()
         Some(main)
     );
     assert_eq!(control.matrix_counts(&fleet.first), (0, 0, 0));
+    Ok(())
+}
+
+#[test]
+fn matrix_budget_restore_preserves_main_pending_claim() -> Result<(), SupervisorError> {
+    let (fleet, control, mut supervisor, now) = ready_paired_supervisor("matrix-main-isolation")?;
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("agent");
+    crate::restart_budget::claim_restart(
+        record.layout.run_root(),
+        3,
+        Duration::from_secs(300),
+        Duration::from_millis(250),
+    )
+    .expect("independent main claim");
+    let before = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+    drop(supervisor);
+
+    let (recovered, report) = Supervisor::recover(fleet.registry, control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let state = recovered.snapshot(&fleet.first).expect("recovered");
+    assert_eq!(state.restart_attempt, 1);
+    assert!(!state.restart_pending);
+    assert_eq!(state.matrix.restart_attempt, 1);
+    assert_eq!(
+        crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+        before
+    );
+    Ok(())
+}
+
+#[test]
+fn recovered_matrix_retry_waits_for_full_backoff_without_changing_main_budget()
+-> Result<(), SupervisorError> {
+    let (fleet, control, mut supervisor, now) =
+        ready_paired_supervisor("matrix-recovery-retry-boundary")?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("agent");
+    let main_before = read_main_restart_budget(record.layout.run_root())?;
+    let main_attempt_before = supervisor
+        .snapshot(&fleet.first)
+        .expect("target")
+        .restart_attempt;
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_none());
+    assert_eq!(
+        read_restart_journal(record.layout.run_root())?
+            .expect("companion after observed exit")
+            .matrix
+            .attempts,
+        1
+    );
+    assert_eq!(
+        read_main_restart_budget(record.layout.run_root())?,
+        main_before
+    );
+    let record_path = record
+        .layout
+        .run_root()
+        .join(crate::restart_journal::RESTART_JOURNAL_FILE);
+    let record_before_recovery = std::fs::read(&record_path)?;
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    let restored = recovered.snapshot(&fleet.first).expect("recovered");
+    assert_eq!(restored.restart_attempt, main_attempt_before);
+    assert_eq!(restored.matrix.restart_attempt, 1);
+    assert!(!restored.matrix.active);
+    assert_eq!(std::fs::read(&record_path)?, record_before_recovery);
+
+    assert_eq!(
+        recovered.tick(now + Duration::from_millis(249)),
+        TickReport::default()
+    );
+    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_none());
+    assert_eq!(
+        read_main_restart_budget(record.layout.run_root())?,
+        main_before
+    );
+    assert_eq!(std::fs::read(&record_path)?, record_before_recovery);
+
+    assert_eq!(
+        recovered.tick(now + Duration::from_millis(250)),
+        TickReport::default()
+    );
+    assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some());
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("target")
+            .restart_attempt,
+        main_attempt_before
+    );
+    assert_eq!(
+        read_main_restart_budget(record.layout.run_root())?,
+        main_before
+    );
+    assert_eq!(std::fs::read(&record_path)?, record_before_recovery);
+    Ok(())
+}
+
+#[test]
+fn exhausted_matrix_window_recovers_degraded_without_an_orphan_lease() -> Result<(), SupervisorError>
+{
+    let (fleet, control, mut supervisor, now) =
+        ready_paired_supervisor("matrix-recovery-exhausted-no-lease")?;
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("agent");
+    let main_before = read_main_restart_budget(record.layout.run_root())?;
+    let main_attempt_before = supervisor
+        .snapshot(&fleet.first)
+        .expect("target")
+        .restart_attempt;
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_none());
+    let original = read_restart_journal(record.layout.run_root())?.expect("companion after exit");
+    assert_eq!(original.matrix.attempts, 1);
+    let exhausted = RestartBudgetJournal::new(
+        original.agent_id,
+        original.release_id,
+        original.main,
+        DurableRestartWindow {
+            attempts: RESTART_ATTEMPT_BUDGET,
+            window_started_unix_millis: original.matrix.window_started_unix_millis,
+        },
+    )?;
+    write_restart_journal(record.layout.run_root(), &exhausted)?;
+    assert_eq!(
+        read_restart_journal(record.layout.run_root())?,
+        Some(exhausted)
+    );
+    assert_eq!(
+        read_main_restart_budget(record.layout.run_root())?,
+        main_before
+    );
+    let record_path = record
+        .layout
+        .run_root()
+        .join(crate::restart_journal::RESTART_JOURNAL_FILE);
+    let record_before_recovery = std::fs::read(&record_path)?;
+    drop(supervisor);
+
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    assert_eq!(report, TickReport::default());
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_none());
+    let restored = recovered.snapshot(&fleet.first).expect("recovered");
+    assert_eq!(restored.restart_attempt, main_attempt_before);
+    assert_eq!(restored.matrix.restart_attempt, RESTART_ATTEMPT_BUDGET);
+    assert!(!restored.matrix.active);
+    assert!(restored.matrix.degraded);
+    assert_eq!(std::fs::read(&record_path)?, record_before_recovery);
+
+    assert_eq!(
+        recovered.tick(now + Duration::from_secs(1)),
+        TickReport::default()
+    );
+    assert_eq!(control.matrix_spawn_count(&fleet.first), 1);
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_none());
+    assert_eq!(
+        recovered
+            .snapshot(&fleet.first)
+            .expect("target")
+            .restart_attempt,
+        main_attempt_before
+    );
+    assert_eq!(
+        read_main_restart_budget(record.layout.run_root())?,
+        main_before
+    );
+    assert_eq!(std::fs::read(&record_path)?, record_before_recovery);
     Ok(())
 }

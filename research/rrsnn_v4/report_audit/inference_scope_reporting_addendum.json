@@ -1,0 +1,10 @@
+{
+  "schema": "rrsnn-v4-inference-scope-reporting-addendum-1",
+  "template_before_sha256": "a327206f9649f4759a53d6f28b63f3ba2fe1bce51bf01f988afde586e7929cd0",
+  "template_after_sha256": "883962c7c9a7254c991b0ba207df5799a38f398fe69e0124e71fd7b5303db406",
+  "builder_after_sha256": "56690e29b01db894f403d6e0dc0591cd3c44a06926c9db3e7534877e538c79ff",
+  "scope_evidence_sha256": "9b7059d9732124488506251a199f53d7ecf1a2d9c3b230fff19e030f37cc1ad9",
+  "new_actor_or_profiling": false,
+  "experimental_source_changes": false,
+  "added_text": "\n\n只读源码核查显示，当前 RR 推理仍分配稠密生成矩阵及完整路径计数／停留时间，并计算路径 log-likelihood，保留了训练所需的统计计算。尚未通过 profiling 分离各部分开销，也未测量精简推理版本，不能据此推算优化比例或把当前峰值视为所有解析神经算子的固有下限。具体函数、冻结源身份及已完成窗口的高水位记录见 `policy_benchmark_results/inference_scope.json`。"
+}

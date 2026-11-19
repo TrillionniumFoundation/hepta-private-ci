@@ -1,0 +1,13 @@
+{
+  "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 python -m independent.run train --freeze independent/frozen-r2-balanced.json --out runs/codex-cloud-efficient-r2-t3",
+  "exit_code": 2,
+  "source_commit": "5c33a5373aeae85bc0cefa34cfb46dba29c2125a",
+  "execution_commit": "ac42472306a3c2f228beddac5fad280ff9d10801",
+  "freeze_sha256": "6dc5d626acbfa16c7a883691cc5cc3566e6e4cb0c4c164e288b2ea9ee204fb7e",
+  "selection_ready": false,
+  "formal_test_opened": false,
+  "observed_finish_record_utc": "2026-10-23T11:05:36Z",
+  "selected_cloud_environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "cpu_budget_violations": []
+}

@@ -25,13 +25,75 @@ const TEST_CURATED_PLUGIN_SHA: &str = "0123456789abcdef0123456789abcdef01234567"
 
 #[cfg(unix)]
 #[test]
+fn zip_archive_never_restores_privileged_mode_bits() {
+    assert_eq!(safe_zip_file_mode(0o104755), 0o755);
+    assert_eq!(safe_zip_file_mode(0o102644), 0o644);
+    assert_eq!(safe_zip_file_mode(0o17777), 0o777);
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_symlinked_extraction_root() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, &destination).expect("symlink staging");
+    let archive = curated_repo_zipball_bytes(TEST_CURATED_PLUGIN_SHA);
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("staging symlink must not redirect extraction");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join(".agents").exists());
+}
+
+#[cfg(unix)]
+#[test]
+fn zip_archive_rejects_preexisting_symlink_in_staging_tree() {
+    let temp = tempdir().expect("create staging parent");
+    let destination = temp.path().join("staging");
+    let outside = temp.path().join("outside");
+    std::fs::create_dir_all(&destination).expect("create staging");
+    std::fs::create_dir_all(&outside).expect("create outside");
+    std::os::unix::fs::symlink(&outside, destination.join("plugins")).expect("symlink directory");
+
+    let cursor = std::io::Cursor::new(Vec::new());
+    let mut writer = ZipWriter::new(cursor);
+    writer
+        .start_file("root/plugins/untrusted.txt", SimpleFileOptions::default())
+        .expect("start archive file");
+    writer
+        .write_all(b"must not escape")
+        .expect("write archive file");
+    let archive = writer.finish().expect("finish archive").into_inner();
+
+    let error = extract_zipball_to_dir(&archive, &destination)
+        .expect_err("preexisting symlink must not be traversed");
+    assert!(error.contains("symbolic link"), "{error}");
+    assert!(!outside.join("untrusted.txt").exists());
+}
+
+#[cfg(unix)]
+#[test]
 fn downloaded_zip_permissions_do_not_preserve_privileged_bits() {
     use std::os::unix::fs::PermissionsExt;
 
     let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("{error:?}"));
     let path = directory.path().join("payload");
     std::fs::write(&path, b"fixture").unwrap_or_else(|error| panic!("{error:?}"));
-    apply_zip_permissions(Some(0o104755), &path).unwrap_or_else(|error| panic!("{error:?}"));
+    let mut writer = ZipWriter::new(std::io::Cursor::new(Vec::new()));
+    let options = SimpleFileOptions::default()
+        .system(System::Unix)
+        .external_attributes(0o104755 << 16);
+    writer
+        .start_file("payload", options)
+        .expect("permission entry");
+    writer.write_all(b"fixture").expect("permission payload");
+    let bytes = writer.finish().expect("permission archive").into_inner();
+    let mut archive = ZipArchive::new(std::io::Cursor::new(bytes)).expect("permission archive");
+    let entry = archive.by_name("payload").expect("permission entry");
+    assert_eq!(entry.external_attributes() >> 16, 0o104755);
+    apply_zip_permissions(&entry, &path).unwrap_or_else(|error| panic!("{error:?}"));
     let metadata = std::fs::metadata(&path).unwrap_or_else(|error| panic!("{error:?}"));
     assert_eq!(metadata.permissions().mode() & 0o7777, 0o755);
 }

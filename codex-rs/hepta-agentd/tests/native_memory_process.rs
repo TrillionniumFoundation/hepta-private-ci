@@ -97,6 +97,61 @@ fn command(f: &Fixture, digest: Digest32, tag: &str) -> Result<Command> {
     Ok(command)
 }
 
+// A failed readiness/control/restart assertion must not abandon its own daemon.
+// Normal cleanup still requires the original drain and successful exit. This
+// fallback only runs when a Child remains alive during unwinding or early Err.
+struct OwnedDaemon(Child);
+
+impl std::ops::Deref for OwnedDaemon {
+    type Target = Child;
+
+    fn deref(&self) -> &Child {
+        &self.0
+    }
+}
+
+impl std::ops::DerefMut for OwnedDaemon {
+    fn deref_mut(&mut self) -> &mut Child {
+        &mut self.0
+    }
+}
+
+impl Drop for OwnedDaemon {
+    fn drop(&mut self) {
+        if self.0.try_wait().is_ok_and(|status| status.is_some()) {
+            return;
+        }
+        let pid = self.0.id();
+        if let Err(error) = self.0.kill() {
+            eprintln!("owned native-memory fixture cleanup kill failed: pid={pid}: {error}");
+        }
+        // Cleanup only: this does not extend readiness, RPC, drain or wait_exit.
+        // If the OS refuses termination/reaping, retain that explicit failure
+        // diagnostic instead of blocking this test or claiming clean shutdown.
+        let deadline = std::time::Instant::now() + Duration::from_secs(3);
+        loop {
+            match self.0.try_wait() {
+                Ok(Some(_)) => return,
+                Ok(None) if std::time::Instant::now() < deadline => {
+                    std::thread::sleep(Duration::from_millis(10));
+                }
+                Ok(None) => {
+                    eprintln!(
+                        "owned native-memory fixture cleanup could not reap pid={pid} within its cleanup watchdog"
+                    );
+                    return;
+                }
+                Err(error) => {
+                    eprintln!(
+                        "owned native-memory fixture cleanup wait failed: pid={pid}: {error}"
+                    );
+                    return;
+                }
+            }
+        }
+    }
+}
+
 async fn wait_exit(child: &mut Child) -> Result<std::process::ExitStatus> {
     let until = tokio::time::Instant::now() + Duration::from_secs(30);
     loop {
@@ -278,7 +333,7 @@ async fn reject_old_cut_after_restart(f: &mut Fixture) -> Result<()> {
     f.bootstrap = f.identity.home_root.join("restart-bootstrap.json");
     retain(&f.bootstrap, &descriptor)?;
     f.bootstrap_sha256 = Digest32::of_bytes(&std::fs::read(&f.bootstrap)?);
-    let mut replay = command(f, f.bootstrap_sha256, "restart-old-cut")?.spawn()?;
+    let mut replay = OwnedDaemon(command(f, f.bootstrap_sha256, "restart-old-cut")?.spawn()?);
     let exit = wait_exit(&mut replay).await?;
     let stderr = std::fs::read_to_string(f.root.join("restart-old-cut.stderr"))?;
     retain(
@@ -359,7 +414,8 @@ async fn exercise(f: &Fixture, child: &mut Child, positive: bool) -> Result<Valu
 async fn default_daemon_current_process_refuses_pin_drift_and_revoked_read_without_model()
 -> Result<()> {
     let mut f = prepare(root("negative")?, /*trained*/ None).await?;
-    let mut rejected = command(&f, Digest32::of_bytes(b"wrong bootstrap"), "wrong-pin")?.spawn()?;
+    let mut rejected =
+        OwnedDaemon(command(&f, Digest32::of_bytes(b"wrong bootstrap"), "wrong-pin")?.spawn()?);
     ensure!(
         !wait_exit(&mut rejected).await?.success(),
         "default daemon accepted wrong bootstrap pin"
@@ -368,7 +424,7 @@ async fn default_daemon_current_process_refuses_pin_drift_and_revoked_read_witho
         std::fs::read_to_string(f.root.join("wrong-pin.stderr"))?.contains("pinned file drift"),
         "unexpected startup failure"
     );
-    let mut daemon = command(&f, f.bootstrap_sha256, "daemon")?.spawn()?;
+    let mut daemon = OwnedDaemon(command(&f, f.bootstrap_sha256, "daemon")?.spawn()?);
     exercise(&f, &mut daemon, /*positive*/ false).await?;
     reject_old_cut_after_restart(&mut f).await?;
     println!("actual default process evidence: {}", f.root.display());
@@ -388,7 +444,7 @@ async fn pretrained_default_daemon_current_process_delivers_once_then_refuses_re
             .ok_or_else(|| anyhow::anyhow!("explicit source document required"))?,
     )?;
     let mut f = prepare(root("positive")?, Some((model, document))).await?;
-    let mut daemon = command(&f, f.bootstrap_sha256, "daemon")?.spawn()?;
+    let mut daemon = OwnedDaemon(command(&f, f.bootstrap_sha256, "daemon")?.spawn()?);
     exercise(&f, &mut daemon, /*positive*/ true).await?;
     reject_old_cut_after_restart(&mut f).await?;
     println!(

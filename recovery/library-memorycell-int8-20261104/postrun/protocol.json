@@ -1,0 +1,55 @@
+{
+  "protocol_id": "memorycell-quantization-engineering-20261104-v1",
+  "purpose": "Engineering-only finite fictional workload; not retrieval utility, learning, or historical replication",
+  "model_id": "cross-encoder/ms-marco-MiniLM-L6-v2",
+  "model_revision": "233902d25c440f23af6f7d6e94d2946bac0bee0a",
+  "model_safetensors_sha256": "821d1aa69520101d6e0737f78a042ae25b19e5cb9160701909d10434f4aeb0ae",
+  "runtime_versions": {
+    "torch": "2.5.1+cpu",
+    "transformers": "4.57.1",
+    "safetensors": "0.6.2"
+  },
+  "order": [
+    "fp32",
+    "int8",
+    "int8",
+    "fp32",
+    "fp32",
+    "int8",
+    "int8",
+    "fp32",
+    "fp32",
+    "int8",
+    "int8",
+    "fp32"
+  ],
+  "threads": 1,
+  "quantized_engine": "fbgemm",
+  "max_length": 384,
+  "batch_size": 4,
+  "warmup_cycles": 2,
+  "timed_cycles": 5,
+  "tie_epsilon": 1e-06,
+  "projection_queries": 500,
+  "budget": {
+    "wall_seconds": 600,
+    "worker_seconds": 45,
+    "rss_bytes": 2147483648,
+    "poll_seconds": 0.05
+  },
+  "gates": {
+    "max_abs_raw_logit_difference": 1.0,
+    "mean_abs_raw_logit_difference": 0.25,
+    "minimum_top_set_overlap_queries": 11,
+    "repeat_max_abs_logit_difference": 1e-06,
+    "max_state_serialized_bytes_ratio": 0.75,
+    "minimum_each_pair_warm_throughput_ratio": 1.1,
+    "maximum_each_pair_p95_latency_ratio": 1.05,
+    "maximum_each_pair_projected_500_query_cost_ratio": 1.0,
+    "minimum_identical_top_set_queries": 11,
+    "minimum_margin_concordance": 0.98,
+    "minimum_margin_comparable_pairs": 36
+  },
+  "expected_linear_count": 38,
+  "ranking_reference_margin": 0.1
+}

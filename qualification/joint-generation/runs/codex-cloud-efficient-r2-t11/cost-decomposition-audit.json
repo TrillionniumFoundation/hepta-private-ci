@@ -1,0 +1,572 @@
+{
+  "basis": {
+    "build_checks": {
+      "additive": {
+        "cost_matches": true,
+        "ledger_matches": true,
+        "sha256": "9f1f001e947a73d22a834a94613e267c7346f2262c93edf1e79ce5f4a6d6cf62"
+      },
+      "anchor": {
+        "cost_matches": true,
+        "ledger_matches": true,
+        "sha256": "015cd36429c22f3722b12f9e2850126fc65dc7a32f4b82f2467f9a3746144ad2"
+      },
+      "ndu": {
+        "cost_matches": true,
+        "ledger_matches": true,
+        "sha256": "be90e42b9585296e976ed1694c35c5548ba003ad5765746bb5190c4e0c72caab"
+      },
+      "ndu_control": {
+        "cost_matches": true,
+        "ledger_matches": true,
+        "sha256": "c36667a22f30b7a0a1d2e1082fb491a83e2491b839671a209bb3f2085ebf1889"
+      },
+      "supervised": {
+        "cost_matches": true,
+        "ledger_matches": true,
+        "sha256": "86ae0bb07e8ff1677cd03a74304c0278f5c42e0509d86e02c320d20d12da18bc"
+      }
+    },
+    "execution_commit": "50be6fa39057596c9f2eff3b3796d805aff6ba9f",
+    "freeze_sha256": "1fd8848ceedbb52e9606d3195d236e4980e466a60e792ef212b53e899972094e",
+    "plan_sha256": "df041a749c9f757a6c432cd013603f8eece441014505839398ff079e73d1d085",
+    "selection_sha256": "43667a768d2b951b2bf6965c32683a5e9114fb6832a33af924ae161581b5c157",
+    "source_commit": "d45f99d572f13668e79d93b3a7158efa39c597c8"
+  },
+  "common_cpu_seconds": 2.502427883,
+  "compute_price": 0.02,
+  "limits": [
+    "Unit reservation is not actual padding. Zero N/NC residual rounds reject prospective round+changed-model validation+tail before drawing RNG.",
+    "NC final remaining units exceed one bare round plus changed-validation work only after smaller actual tail spending is known; that cannot retrospectively authorize a round before recalculating critic/calibration/validation under the frozen schedule.",
+    "Seed11 service slowdown is retained in full. No timing outlier is deleted, averaged away by selection, or used to change price/gates.",
+    "All findings are validation receipt descriptions; no heldout acceptance or causal update-count attribution."
+  ],
+  "means": {
+    "NC_service_cpu_ns_per_request": 99517.43287037038,
+    "N_service_cpu_ns_per_request": 96076.2199074074,
+    "actual_net": -0.002636908089270973,
+    "build_cpu_term": -0.0002084281417520531,
+    "complete_cpu_term": -0.0011451636988100969,
+    "content": -0.0017022640939371818,
+    "identity_residual": -2.1337098754514727e-16,
+    "prepare_cpu_term": 4.7396190680046643e-07,
+    "reconstructed_net": -0.0026369080892706853,
+    "routing": 0.0002105197034765934,
+    "service_cpu_term": -0.0009372095189648443,
+    "stored_contrast": -0.0026369080892708987
+  },
+  "native_adam_source_audit": {
+    "blocking_findings": [],
+    "boundaries": "Five adaptation arms prepare a per-model adapter inside active candidate setup; nine explicit P scans reserved and charged per arm. Allocation, binding, ctypes conversion and C dispatch remain actual CPU. Original per-step inventory retained, charged once before forward/backward/optimizer. C adds no duplicate ledger. Selected refinement retains the same adapter/moments. Common compilation fully charged to each arm. Shared decoder300/dense500 use default optimizer, unchanged.",
+    "frozen_source": "d45f99d572",
+    "scope": "Cost/CPU boundary only; already verified bitwise math was not retested."
+  },
+  "outcome": {
+    "contrasts": {
+      "additive-anchor:joint_success": 0.012207052205590893,
+      "additive-anchor:task_utility": 0.01200263645742942,
+      "ndu-additive:joint_success": 0.011616848781294395,
+      "ndu-additive:task_utility": 0.010907967160042572,
+      "ndu_control-ndu:cpu_net_utility": -0.0026369080892708987,
+      "ndu_control-random:joint_success": 0.0002191328152788182,
+      "ndu_control-random:task_utility": 0.0002105197034765934
+    },
+    "cpu_budget_violations": [],
+    "exit_code": 2,
+    "selection_ready": false,
+    "test_opened": false
+  },
+  "per_seed": [
+    {
+      "NC_build_cpu_ns": 2845852009.6666684,
+      "NC_continuation_utility": 0.9685267601144708,
+      "NC_full_utility": 0.9687638908791116,
+      "NC_prepare_cpu_ns": 1102724,
+      "NC_refinement_updates": 0,
+      "NC_search_updates": 488,
+      "NC_service_cpu_ns_per_request": 120589.69010416667,
+      "NC_service_units_per_request": 20404.072916666668,
+      "NC_updates": 488,
+      "N_build_cpu_ns": 2769322097.3333354,
+      "N_full_utility": 0.9724935239019659,
+      "N_prepare_cpu_ns": 1769964,
+      "N_refinement_updates": 0,
+      "N_search_updates": 513,
+      "N_service_cpu_ns_per_request": 86507.85677083333,
+      "N_service_units_per_request": 19236.0,
+      "N_updates": 513,
+      "actual_net": -0.013455514167566851,
+      "build_cpu_term": -0.0002084281417520531,
+      "complete_cpu_term": -0.009488750380071687,
+      "content": -0.0037296330228542285,
+      "continuation_fraction": 0.6414930555555556,
+      "cost_ratio": 0.147438371141678,
+      "decision_price": 0.00294876742283356,
+      "prepare_cpu_term": 1.8172187718823055e-06,
+      "random_full_probability": 1.0,
+      "raw_calibration_paired_deltas_ns": [
+        -15114.486111111111,
+        22066.722222222223,
+        10827.180555555555
+      ],
+      "reconstructed_net": -0.01345551416756674,
+      "reference_full_cpu_ns": 73435.296875,
+      "routing": -0.00023713076464082494,
+      "seed": 11,
+      "service_cpu_term": -0.009282139457091516
+    },
+    {
+      "NC_build_cpu_ns": 2845852009.6666684,
+      "NC_continuation_utility": 0.958681773762332,
+      "NC_full_utility": 0.9586368653052306,
+      "NC_prepare_cpu_ns": 820530,
+      "NC_refinement_updates": 0,
+      "NC_search_updates": 488,
+      "NC_service_cpu_ns_per_request": 85230.87326388889,
+      "NC_service_units_per_request": 21310.416666666668,
+      "NC_updates": 488,
+      "N_build_cpu_ns": 2769322097.3333354,
+      "N_full_utility": 0.9583068570954395,
+      "N_prepare_cpu_ns": 766980,
+      "N_refinement_updates": 0,
+      "N_search_updates": 514,
+      "N_service_cpu_ns_per_request": 101931.44965277778,
+      "N_service_units_per_request": 19236.0,
+      "N_updates": 514,
+      "actual_net": 0.004714721214201134,
+      "build_cpu_term": -0.0002084281417520531,
+      "complete_cpu_term": 0.004339804547308998,
+      "content": 0.00033000820979112166,
+      "continuation_fraction": 0.7013888888888888,
+      "cost_ratio": 0.0,
+      "decision_price": 0.0,
+      "prepare_cpu_term": -1.45842673152535e-07,
+      "random_full_probability": 1.0,
+      "raw_calibration_paired_deltas_ns": [
+        -13337.444444444445,
+        -40238.23611111111,
+        310.4166666666667
+      ],
+      "reconstructed_net": 0.004714721214201486,
+      "reference_full_cpu_ns": 73435.296875,
+      "routing": 4.490845710136693e-05,
+      "seed": 23,
+      "service_cpu_term": 0.004548378531734203
+    },
+    {
+      "NC_build_cpu_ns": 2845852009.6666684,
+      "NC_continuation_utility": 0.9680545496864466,
+      "NC_full_utility": 0.9672307682684773,
+      "NC_prepare_cpu_ns": 640258,
+      "NC_refinement_updates": 0,
+      "NC_search_updates": 488,
+      "NC_service_cpu_ns_per_request": 92731.73524305556,
+      "NC_service_units_per_request": 19865.520833333332,
+      "NC_updates": 488,
+      "N_build_cpu_ns": 2769322097.3333354,
+      "N_full_utility": 0.9689379357372258,
+      "N_prepare_cpu_ns": 548651,
+      "N_refinement_updates": 0,
+      "N_search_updates": 514,
+      "N_service_cpu_ns_per_request": 99789.35329861111,
+      "N_service_units_per_request": 19236.0,
+      "N_updates": 514,
+      "actual_net": 0.0008300686855527983,
+      "build_cpu_term": -0.0002084281417520531,
+      "complete_cpu_term": 0.0017134547363323982,
+      "content": -0.0017071674687484384,
+      "continuation_fraction": 0.6059027777777777,
+      "cost_ratio": 0.294876742283356,
+      "decision_price": 0.00589753484566712,
+      "prepare_cpu_term": -2.4949037832837116e-07,
+      "random_full_probability": 1.0,
+      "raw_calibration_paired_deltas_ns": [
+        21654.36111111111,
+        35486.958333333336,
+        4325.263888888889
+      ],
+      "reconstructed_net": 0.000830068685553198,
+      "reference_full_cpu_ns": 73435.296875,
+      "routing": 0.0008237814179692382,
+      "seed": 47,
+      "service_cpu_term": 0.0019221323684627796
+    }
+  ],
+  "runtime_snapshot": {
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "errors": {},
+    "numpy_geterr": {
+      "divide": "warn",
+      "invalid": "warn",
+      "over": "warn",
+      "under": "ignore"
+    },
+    "numpy_path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy/__init__.py",
+    "numpy_version": "2.3.5",
+    "observed_process_threads": 1,
+    "profile_active": false,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "sampling": {
+      "cpu_ns": 32309698,
+      "wall_ns": 34395380
+    },
+    "schema": "hepta.numerical-runtime.v1",
+    "scope": "same-process boundary observation; no configuration changes or peak-thread claim",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "sha256": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12",
+        "threading_layer": "pthreads",
+        "user_api": "blas",
+        "version": "0.3.30"
+      }
+    ],
+    "threadpools_truncated": false,
+    "trace_active": false
+  },
+  "schema": "hepta.t11-cost-audit.v1",
+  "scope": "Read-only arithmetic on saved selection and five build receipts; no test/model/dataset construction or runtime probe. /tmp outputs only.",
+  "service_horizon": 100000,
+  "systems": {
+    "additive": {
+      "actual_cpu_seconds": 8.678063300000012,
+      "candidate_CPU_required_stop_count": 1,
+      "candidate_cpu_cap_seconds": 0.7397302352222223,
+      "candidate_unit_cap": 891655951,
+      "candidate_unit_stop_count": 8,
+      "forecast_uses_actual_units": true,
+      "next_round_cpu_forecast_upper_using_saved_max_step": 9.035717202216505,
+      "operator_units": 11996106665,
+      "optimizer_setup": {
+        "calls": 9,
+        "charged_units": 65592,
+        "comparisons": 65592,
+        "expected_parameters_P": 7288,
+        "expected_total_comparisons": 65592,
+        "matches": true
+      },
+      "refinement_actual_units_reconcile": true,
+      "refinement_stop_inference": "unit reserve/next-round condition rejects; CPU may also bind",
+      "remaining_units": 3893335,
+      "remaining_units_at_loop_stop": 165837175,
+      "required_next_round_plus_tail_units": 168905670,
+      "residual_rounds": 37,
+      "search_actual_units_reconcile": true,
+      "selected_search_updates": [
+        515,
+        516,
+        376
+      ],
+      "selected_updates": [
+        552,
+        553,
+        413
+      ],
+      "stage_accounting": {
+        "search_train": {
+          "actual_formula_matches": true,
+          "actual_units": 7767442346,
+          "average_actual_units": 1725714.806931793,
+          "backward_macs_valid": true,
+          "dense_quote": 2300130,
+          "envelope_sum_not_charged": 10445065610,
+          "folds": 4501,
+          "forward_macs_valid": true,
+          "full_rows": 143918,
+          "logical_calls_valid": true,
+          "low_rows": 144146,
+          "merges": 4501,
+          "priced_formula_units": 7767442346,
+          "row_geometry_valid": true,
+          "updates": 4501,
+          "upper_quote": 2320610
+        },
+        "selected_refinement": {
+          "actual_formula_matches": true,
+          "actual_units": 191624046,
+          "average_actual_units": 1726342.7567567567,
+          "backward_macs_valid": true,
+          "dense_quote": 2300130,
+          "envelope_sum_not_charged": 257587710,
+          "folds": 111,
+          "forward_macs_valid": true,
+          "full_rows": 3553,
+          "logical_calls_valid": true,
+          "low_rows": 3551,
+          "merges": 111,
+          "priced_formula_units": 191624046,
+          "row_geometry_valid": true,
+          "updates": 111,
+          "upper_quote": 2320610
+        }
+      },
+      "unit_condition_at_stop": false,
+      "unit_deficit": 3068495
+    },
+    "anchor": {
+      "actual_cpu_seconds": 7.787462691000013,
+      "candidate_CPU_required_stop_count": 0,
+      "candidate_cpu_cap_seconds": 0.7397302352222223,
+      "candidate_unit_cap": 891794479,
+      "candidate_unit_stop_count": 9,
+      "forecast_uses_actual_units": true,
+      "next_round_cpu_forecast_upper_using_saved_max_step": 7.973661077627237,
+      "operator_units": 11955587535,
+      "optimizer_setup": {
+        "calls": 9,
+        "charged_units": 65592,
+        "comparisons": 65592,
+        "expected_parameters_P": 7288,
+        "expected_total_comparisons": 65592,
+        "matches": true
+      },
+      "refinement_actual_units_reconcile": true,
+      "refinement_stop_inference": "unit reserve/next-round condition rejects; CPU may also bind",
+      "remaining_units": 44412465,
+      "remaining_units_at_loop_stop": 118192881,
+      "required_next_round_plus_tail_units": 168750138,
+      "residual_rounds": 0,
+      "search_actual_units_reconcile": true,
+      "selected_search_updates": [
+        531,
+        532,
+        532
+      ],
+      "selected_updates": [
+        531,
+        532,
+        532
+      ],
+      "stage_accounting": {
+        "search_train": {
+          "actual_formula_matches": true,
+          "actual_units": 8007957438,
+          "average_actual_units": 1673554.3235109719,
+          "backward_macs_valid": true,
+          "dense_quote": 2248286,
+          "envelope_sum_not_charged": 10856045310,
+          "folds": 4785,
+          "forward_macs_valid": true,
+          "full_rows": 152916,
+          "logical_calls_valid": true,
+          "low_rows": 153324,
+          "merges": 4785,
+          "priced_formula_units": 8007957438,
+          "row_geometry_valid": true,
+          "updates": 4785,
+          "upper_quote": 2268766
+        },
+        "selected_refinement": {
+          "actual_units": 0,
+          "not_executed": true,
+          "updates": 0
+        }
+      },
+      "unit_condition_at_stop": false,
+      "unit_deficit": 50557257
+    },
+    "ndu": {
+      "actual_cpu_seconds": 8.307966292000007,
+      "candidate_CPU_required_stop_count": 0,
+      "candidate_cpu_cap_seconds": 0.7397302352222223,
+      "candidate_unit_cap": 891636955,
+      "candidate_unit_stop_count": 9,
+      "forecast_uses_actual_units": true,
+      "next_round_cpu_forecast_upper_using_saved_max_step": 8.393236812362982,
+      "operator_units": 11958840147,
+      "optimizer_setup": {
+        "calls": 9,
+        "charged_units": 65592,
+        "comparisons": 65592,
+        "expected_parameters_P": 7288,
+        "expected_total_comparisons": 65592,
+        "matches": true
+      },
+      "refinement_actual_units_reconcile": true,
+      "refinement_stop_inference": "unit reserve/next-round condition rejects; CPU may also bind",
+      "remaining_units": 41159853,
+      "remaining_units_at_loop_stop": 114940269,
+      "required_next_round_plus_tail_units": 168926598,
+      "residual_rounds": 0,
+      "search_actual_units_reconcile": true,
+      "selected_search_updates": [
+        513,
+        514,
+        514
+      ],
+      "selected_updates": [
+        513,
+        514,
+        514
+      ],
+      "stage_accounting": {
+        "search_train": {
+          "actual_formula_matches": true,
+          "actual_units": 8009792334,
+          "average_actual_units": 1732596.221933809,
+          "backward_macs_valid": true,
+          "dense_quote": 2307106,
+          "envelope_sum_not_charged": 10760430078,
+          "folds": 4623,
+          "forward_macs_valid": true,
+          "full_rows": 147795,
+          "logical_calls_valid": true,
+          "low_rows": 148077,
+          "merges": 4623,
+          "priced_formula_units": 8009792334,
+          "row_geometry_valid": true,
+          "updates": 4623,
+          "upper_quote": 2327586
+        },
+        "selected_refinement": {
+          "actual_units": 0,
+          "not_executed": true,
+          "updates": 0
+        }
+      },
+      "unit_condition_at_stop": false,
+      "unit_deficit": 53986329
+    },
+    "ndu_control": {
+      "actual_cpu_seconds": 8.537556029000005,
+      "candidate_CPU_required_stop_count": 0,
+      "candidate_cpu_cap_seconds": 0.6286191241111111,
+      "candidate_unit_cap": 847192511,
+      "candidate_unit_stop_count": 9,
+      "forecast_uses_actual_units": true,
+      "next_round_cpu_forecast_upper_using_saved_max_step": 8.962709196356647,
+      "operator_units": 11901341862,
+      "optimizer_setup": {
+        "calls": 9,
+        "charged_units": 65592,
+        "comparisons": 65592,
+        "expected_parameters_P": 7288,
+        "expected_total_comparisons": 65592,
+        "matches": true
+      },
+      "refinement_actual_units_reconcile": true,
+      "refinement_stop_inference": "unit reserve/next-round condition rejects; CPU may also bind",
+      "remaining_units": 98658138,
+      "remaining_units_at_loop_stop": 514366155,
+      "required_next_round_plus_tail_units": 529179051,
+      "residual_rounds": 0,
+      "search_actual_units_reconcile": true,
+      "selected_search_updates": [
+        488,
+        488,
+        488
+      ],
+      "selected_updates": [
+        488,
+        488,
+        488
+      ],
+      "stage_accounting": {
+        "search_train": {
+          "actual_formula_matches": true,
+          "actual_units": 7610366448,
+          "average_actual_units": 1732779.2459016393,
+          "backward_macs_valid": true,
+          "dense_quote": 2307106,
+          "envelope_sum_not_charged": 10222757712,
+          "folds": 4392,
+          "forward_macs_valid": true,
+          "full_rows": 140454,
+          "logical_calls_valid": true,
+          "low_rows": 140634,
+          "merges": 4392,
+          "priced_formula_units": 7610366448,
+          "row_geometry_valid": true,
+          "updates": 4392,
+          "upper_quote": 2327586
+        },
+        "selected_refinement": {
+          "actual_units": 0,
+          "not_executed": true,
+          "updates": 0
+        }
+      },
+      "unit_condition_at_stop": false,
+      "unit_deficit": 14812896
+    },
+    "supervised": {
+      "actual_cpu_seconds": 7.611380792000014,
+      "candidate_CPU_required_stop_count": 0,
+      "candidate_cpu_cap_seconds": 0.7397302352222223,
+      "candidate_unit_cap": 891794479,
+      "candidate_unit_stop_count": 9,
+      "forecast_uses_actual_units": true,
+      "next_round_cpu_forecast_upper_using_saved_max_step": 7.7213578003656576,
+      "operator_units": 11955587535,
+      "optimizer_setup": {
+        "calls": 9,
+        "charged_units": 65592,
+        "comparisons": 65592,
+        "expected_parameters_P": 7288,
+        "expected_total_comparisons": 65592,
+        "matches": true
+      },
+      "refinement_actual_units_reconcile": true,
+      "refinement_stop_inference": "unit reserve/next-round condition rejects; CPU may also bind",
+      "remaining_units": 44412465,
+      "remaining_units_at_loop_stop": 118192881,
+      "required_next_round_plus_tail_units": 168750138,
+      "residual_rounds": 0,
+      "search_actual_units_reconcile": true,
+      "selected_search_updates": [
+        531,
+        532,
+        532
+      ],
+      "selected_updates": [
+        531,
+        532,
+        532
+      ],
+      "stage_accounting": {
+        "search_train": {
+          "actual_formula_matches": true,
+          "actual_units": 8007957438,
+          "average_actual_units": 1673554.3235109719,
+          "backward_macs_valid": true,
+          "dense_quote": 2248286,
+          "envelope_sum_not_charged": 10856045310,
+          "folds": 4785,
+          "forward_macs_valid": true,
+          "full_rows": 152916,
+          "logical_calls_valid": true,
+          "low_rows": 153324,
+          "merges": 4785,
+          "priced_formula_units": 8007957438,
+          "row_geometry_valid": true,
+          "updates": 4785,
+          "upper_quote": 2268766
+        },
+        "selected_refinement": {
+          "actual_units": 0,
+          "not_executed": true,
+          "updates": 0
+        }
+      },
+      "unit_condition_at_stop": false,
+      "unit_deficit": 50557257
+    }
+  }
+}

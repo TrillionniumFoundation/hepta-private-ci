@@ -15,28 +15,17 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use crate::model_manifest::ModelManifest;
+
+#[path = "model_memory_accounting.rs"]
+mod memory_accounting;
+pub use memory_accounting::ModelMemoryAccounting;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
 const MAX_NEURON_FEATURES: usize = 512;
 const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ModelManifest {
-    pub model_id: String,
-    pub model_digest: String,
-    pub weights_digest: String,
-    pub tokenizer_digest: String,
-    pub preprocessor_digest: String,
-    /// Digest of the exact feature normalizer used before the shared Encoder
-    /// snapshot. This is separate from preprocessing and is required by the
-    /// V3 shared-feature admission contract.
-    pub normalizer_digest: String,
-    pub quantization_digest: String,
-    pub runtime_digest: String,
-    pub device_digest: String,
-    pub maximum_tokens: u32,
-}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResourceGrant {
@@ -153,6 +142,12 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub trait ModelDriver {
+    /// Declare the scope of load-time memory observations. The worker freezes
+    /// this choice at construction; existing drivers retain per-model charging.
+    fn memory_accounting(&self) -> ModelMemoryAccounting {
+        ModelMemoryAccounting::PerModel
+    }
+
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
@@ -174,6 +169,7 @@ pub struct InferenceWorker<D: ModelDriver> {
     worker_id: String,
     generation: u64,
     grant: ResourceGrant,
+    memory_accounting: ModelMemoryAccounting,
     driver: D,
     poisoned: bool,
     models: BTreeMap<String, LoadedModel>,
@@ -193,10 +189,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if generation == 0 || generation != grant.generation {
             return Err(Error::InvalidGrant);
         }
+        let memory_accounting = driver.memory_accounting();
         Ok(Self {
             worker_id,
             generation,
             grant,
+            memory_accounting,
             driver,
             poisoned: false,
             models: BTreeMap::new(),
@@ -230,14 +228,19 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             return Err(error);
         }
-        // Account for all resident model handles, not merely the new model.
-        let total_after_load = self
-            .models
-            .values()
-            .try_fold(0_u64, |total, loaded| {
-                total.checked_add(loaded.handle.observed_memory_bytes)
-            })
-            .and_then(|total| total.checked_add(handle.observed_memory_bytes));
+        // Per-model drivers retain checked aggregation across every handle.
+        // A shared driver reports the entire current worker total in its new
+        // handle; adding prior snapshots would charge the same encoder twice.
+        let total_after_load = match self.memory_accounting {
+            ModelMemoryAccounting::PerModel => self
+                .models
+                .values()
+                .try_fold(0_u64, |total, loaded| {
+                    total.checked_add(loaded.handle.observed_memory_bytes)
+                })
+                .and_then(|total| total.checked_add(handle.observed_memory_bytes)),
+            ModelMemoryAccounting::WorkerWide => Some(handle.observed_memory_bytes),
+        };
         if !matches!(total_after_load, Some(total) if total <= self.grant.maximum_memory_bytes) {
             if self.driver.unload(handle).is_err() {
                 self.poisoned = true;

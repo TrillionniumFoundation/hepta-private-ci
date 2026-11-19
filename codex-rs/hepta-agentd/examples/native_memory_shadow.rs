@@ -70,13 +70,14 @@ async fn probe(
     retain(&root.join("production-source.json"), &production)?;
     let claim = claim(&document, production)?;
     retain(&root.join("hnmf-event.json"), &claim.event)?;
-    let model: NativeMemoryModelConfigV1 = serde_json::from_slice(&std::fs::read(config_path)?)?;
+    let config_bytes = std::fs::read(config_path)?;
+    let model: NativeMemoryModelConfigV1 = serde_json::from_slice(&config_bytes)?;
     let registered = descriptor(&model)?;
     retain(
         &root.join("registered-shadow-profile.json"),
         &serde_json::json!({
             "schema": "hepta.memory-cell.controlled-shadow-profile.v1",
-            "config_sha256": Digest32::of_bytes(&std::fs::read(config_path)?).to_string(),
+            "config_sha256": Digest32::of_bytes(&config_bytes).to_string(),
             "model": model, "shadow_profile_digest": registered.semantic_digest()?.to_string(),
             "shadow_profile": format!("{registered:?}"), "sparse_profile": format!("{:?}", profile(&model)?.sparse),
             "resource_limits_are_configured_not_measured": true, "calibration": null,

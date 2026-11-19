@@ -1,0 +1,198 @@
+name: Hepta V16 HotpotQA grounded group STOP (DENY_ALL)
+on:
+  push:
+    branches: [research/stem-v16-hotpot-group-stop-20261016]
+    paths:
+      - 'qualification/stem-cell-v1/v16_hotpot_group.py'
+      - 'qualification/stem-cell-v1/v16_hotpot_group_review.py'
+      - 'qualification/stem-cell-v1/test_v16_hotpot_group.py'
+      - '.github/workflows/hepta-v16-hotpot-group-stop.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/v16_hotpot_group.py'
+      - 'qualification/stem-cell-v1/v16_hotpot_group_review.py'
+      - 'qualification/stem-cell-v1/test_v16_hotpot_group.py'
+      - '.github/workflows/hepta-v16-hotpot-group-stop.yml'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: hepta-v16-natural-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  source-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Run genuine stdlib source/negative tests with and without assertions
+        shell: bash
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/v16-exact-head.txt"
+          python -S -m unittest -v test_v16_hotpot_group 2>&1 | tee "$RUNNER_TEMP/v16-tests.log"
+          python -O -S -m unittest -v test_v16_hotpot_group 2>&1 | tee "$RUNNER_TEMP/v16-optimized.log"
+          python -m compileall -q qualification/stem-cell-v1/v16_hotpot_group.py qualification/stem-cell-v1/v16_hotpot_group_review.py qualification/stem-cell-v1/test_v16_hotpot_group.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: v16-source-contract-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v16-exact-head.txt
+            ${{ runner.temp }}/v16-tests.log
+            ${{ runner.temp }}/v16-optimized.log
+          retention-days: 5
+          if-no-files-found: warn
+
+  original-source-owner:
+    # Restrict expensive original-data work to a single research-branch push.
+    if: github.event_name == 'push'
+    needs: source-contract
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - name: Download pinned original human HotpotQA corpus and separate held labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fL --retry 2 --connect-timeout 25 --max-time 900 \
+            'https://curtis.ml.cmu.edu/datasets/hotpot/hotpot_dev_distractor_v1.json' \
+            -o "$RUNNER_TEMP/official-v16.json"
+          echo '4e9ecb5c8d3b719f624d66b60f8d56bf227f03914f5f0753d6fa1b359d7104ea  '"$RUNNER_TEMP/official-v16.json" | sha256sum -c -
+          python -S qualification/stem-cell-v1/v15_hotpot_source.py \
+            --official-source "$RUNNER_TEMP/official-v16.json" \
+            --output "$RUNNER_TEMP/original-v16" > "$RUNNER_TEMP/source-result.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v16-public-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/original-v16/public.json
+            ${{ runner.temp }}/original-v16/manifest.json
+          if-no-files-found: error
+          retention-days: 5
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v16-hidden-${{ github.run_id }}
+          path: ${{ runner.temp }}/original-v16/hidden-restricted.json
+          if-no-files-found: error
+          retention-days: 5
+
+  source-blind-proposer:
+    needs: original-source-owner
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v16-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/v16-public
+      - name: Seal finite BIND/COMPOSE/VERIFY/STOP group decisions without gold
+        shell: bash
+        run: |
+          set -euo pipefail
+          test ! -e "$RUNNER_TEMP/v16-public/hidden-restricted.json"
+          python -S qualification/stem-cell-v1/v16_hotpot_group.py plan \
+            --public "$RUNNER_TEMP/v16-public/public.json" \
+            --owner "$RUNNER_TEMP/v16-public/manifest.json" \
+            --output "$RUNNER_TEMP/v16-plan.json"
+          python -S qualification/stem-cell-v1/v16_hotpot_group.py propose \
+            --public "$RUNNER_TEMP/v16-public/public.json" \
+            --owner "$RUNNER_TEMP/v16-public/manifest.json" \
+            --plan "$RUNNER_TEMP/v16-plan.json" \
+            --output "$RUNNER_TEMP/v16-seal.json" > "$RUNNER_TEMP/v16-producer.log"
+          python -S - "$RUNNER_TEMP/v16-seal.json" <<'PY'
+          import json,sys
+          data=json.load(open(sys.argv[1]))
+          assert data['completed_questions']==7405
+          assert data['no_pretrained_reader_calls'] and data['no_answer_generation']
+          assert data['authority']=='DENY_ALL' and not data['production_accepted']
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v16-sealed-group-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v16-plan.json
+            ${{ runner.temp }}/v16-seal.json
+          if-no-files-found: error
+          retention-days: 5
+
+  independently-replayed-human-support:
+    needs: [original-source-owner, source-blind-proposer]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.13'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v16-public-${{ github.run_id }}
+          path: ${{ runner.temp }}/v16-public
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v16-sealed-group-${{ github.run_id }}
+          path: ${{ runner.temp }}/v16-sealed
+      # Original gold only available to this separate job, after proposer seal.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: v16-hidden-${{ github.run_id }}
+          path: ${{ runner.temp }}/v16-held
+      - name: Independently replay all actions and score genuine publisher support
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -S qualification/stem-cell-v1/v16_hotpot_group_review.py \
+            --public "$RUNNER_TEMP/v16-public/public.json" \
+            --owner "$RUNNER_TEMP/v16-public/manifest.json" \
+            --hidden "$RUNNER_TEMP/v16-held/hidden-restricted.json" \
+            --plan "$RUNNER_TEMP/v16-sealed/v16-plan.json" \
+            --seal "$RUNNER_TEMP/v16-sealed/v16-seal.json" \
+            --output "$RUNNER_TEMP/v16-independent-review.json" > "$RUNNER_TEMP/v16-review-summary.log"
+          python -S - "$RUNNER_TEMP/v16-independent-review.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['reviewed_questions']==7405 and len(r['summary'])==8
+          assert r['ndu_and_ordinary_same_profile_identical'] is True
+          assert r['human_support_retrieval_only'] is True
+          assert r['actual_pretrained_reader_forwards']==0
+          assert r['actual_NDU_FBSDE_solutions']==0
+          assert r['authority']=='DENY_ALL' and r['production_accepted'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: v16-hotpot-human-support-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/v16-independent-review.json
+            ${{ runner.temp }}/v16-review-summary.log
+          if-no-files-found: error
+          retention-days: 5

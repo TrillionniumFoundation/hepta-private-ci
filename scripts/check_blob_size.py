@@ -105,17 +105,77 @@ def blob_size(commit: str, path: str) -> int:
 def collect_changed_blobs(
     base: str, head: str, allowlist: dict[str, str | None]
 ) -> list[ChangedBlob]:
-    blobs: list[ChangedBlob] = []
-    for path in get_changed_paths(base, head):
-        blobs.append(
-            ChangedBlob(
-                path=path,
-                size_bytes=blob_size(head, path),
-                is_allowlisted=is_blob_allowlisted(head, path, allowlist),
-                is_binary=is_binary_change(base, head, path),
-            )
+    # Read each diff once. Starting a separate Git diff for every path makes a
+    # large history consolidation quadratic in the number of changed files.
+    # NUL separators preserve literal tabs, newlines, and non-ASCII path names.
+    raw = run_git(
+        "diff",
+        "--raw",
+        "--no-abbrev",
+        "--diff-filter=AM",
+        "--no-renames",
+        "-z",
+        base,
+        head,
+    ).split("\0")
+    if raw[-1] != "" or (len(raw) - 1) % 2:
+        raise ValueError("Malformed Git changed-object inventory")
+    objects: dict[str, str] = {}
+    for index in range(0, len(raw) - 1, 2):
+        header, path = raw[index : index + 2]
+        fields = header.split()
+        if len(fields) != 5 or not fields[0].startswith(":") or path in objects:
+            raise ValueError("Malformed or duplicate Git changed-object record")
+        objects[path] = fields[3]
+    if not objects:
+        return []
+
+    object_ids = list(dict.fromkeys(objects.values()))
+    result = subprocess.run(
+        ["git", "cat-file", "--batch-check=%(objectname) %(objectsize)"],
+        input="\n".join(object_ids) + "\n",
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    sizes: dict[str, int] = {}
+    records = result.stdout.splitlines()
+    if len(records) != len(object_ids):
+        raise ValueError("Incomplete Git object-size inventory")
+    for expected, record in zip(object_ids, records, strict=True):
+        actual, size = record.split()
+        if actual != expected or not size.isdecimal():
+            raise ValueError("Missing or mismatched Git object size")
+        sizes[actual] = int(size)
+
+    binary: dict[str, bool] = {}
+    numstat = run_git(
+        "diff",
+        "--numstat",
+        "--diff-filter=AM",
+        "--no-renames",
+        "-z",
+        base,
+        head,
+    )
+    for record in numstat.split("\0"):
+        if not record:
+            continue
+        added, deleted, path = record.split("\t", 2)
+        if path in binary:
+            raise ValueError("Duplicate Git numeric-diff record")
+        binary[path] = added == "-" and deleted == "-"
+    if objects.keys() != binary.keys():
+        raise ValueError("Git changed-object and numeric-diff inventories differ")
+    return [
+        ChangedBlob(
+            path=path,
+            size_bytes=sizes[oid],
+            is_allowlisted=is_blob_allowlisted(head, path, allowlist),
+            is_binary=binary[path],
         )
-    return blobs
+        for path, oid in objects.items()
+    ]
 
 
 def format_kib(size_bytes: int) -> str:

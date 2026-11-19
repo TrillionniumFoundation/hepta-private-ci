@@ -1,0 +1,370 @@
+﻿2026-11-12T10:33:03.7197072Z Current runner version: '2.338.2'
+2026-11-12T10:33:03.7226193Z ##[group]Runner Image Provisioner
+2026-11-12T10:33:03.7227269Z Hosted Compute Agent
+2026-11-12T10:33:03.7227999Z Version: 20261028.624
+2026-11-12T10:33:03.7228855Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-12T10:33:03.7229733Z Build Date: 2026-10-28T21:51:42Z
+2026-11-12T10:33:03.7230549Z Worker ID: {bfd7a34e-1fa1-4b2a-8080-7d81ab824f94}
+2026-11-12T10:33:03.7231585Z Region: eastus2
+2026-11-12T10:33:03.7232256Z Cloud: Azure
+2026-11-12T10:33:03.7233005Z ##[endgroup]
+2026-11-12T10:33:03.7234961Z ##[group]Operating System
+2026-11-12T10:33:03.7235820Z Ubuntu
+2026-11-12T10:33:03.7236561Z 24.04.5
+2026-11-12T10:33:03.7237164Z LTS
+2026-11-12T10:33:03.7237861Z ##[endgroup]
+2026-11-12T10:33:03.7238529Z ##[group]Runner Image
+2026-11-12T10:33:03.7239340Z Image: ubuntu-24.04
+2026-11-12T10:33:03.7240031Z Version: 20261101.360.1
+2026-11-12T10:33:03.7241686Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261101.360/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-12T10:33:03.7243602Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261101.360
+2026-11-12T10:33:03.7245149Z ##[endgroup]
+2026-11-12T10:33:03.7246511Z ##[group]GITHUB_TOKEN Permissions
+2026-11-12T10:33:03.7248589Z Contents: read
+2026-11-12T10:33:03.7249299Z Metadata: read
+2026-11-12T10:33:03.7249979Z ##[endgroup]
+2026-11-12T10:33:03.7253114Z Secret source: Actions
+2026-11-12T10:33:03.7254552Z Cache mode: write
+2026-11-12T10:33:03.7255428Z Prepare workflow directory
+2026-11-12T10:33:03.7849032Z Prepare all required actions
+2026-11-12T10:33:03.7908236Z Getting action download info
+2026-11-12T10:33:03.9896236Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-12T10:33:04.1029200Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-11-12T10:33:04.2372441Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-12T10:33:04.4571638Z Complete job name: initial-amplitudes
+2026-11-12T10:33:04.5271777Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-11-12T10:33:04.5272577Z with:
+2026-11-12T10:33:04.5272955Z   ref: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:04.5273442Z   persist-credentials: false
+2026-11-12T10:33:04.5274078Z   repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T10:33:04.5277258Z   token: ***
+2026-11-12T10:33:04.5277610Z   ssh-strict: true
+2026-11-12T10:33:04.5277959Z   ssh-user: git
+2026-11-12T10:33:04.5278314Z   clean: true
+2026-11-12T10:33:04.5278685Z   sparse-checkout-cone-mode: true
+2026-11-12T10:33:04.5279103Z   fetch-depth: 1
+2026-11-12T10:33:04.5279448Z   fetch-tags: false
+2026-11-12T10:33:04.5279801Z   show-progress: true
+2026-11-12T10:33:04.5280154Z   lfs: false
+2026-11-12T10:33:04.5280485Z   submodules: false
+2026-11-12T10:33:04.5280865Z   set-safe-directory: true
+2026-11-12T10:33:04.5281268Z   allow-unsafe-pr-checkout: false
+2026-11-12T10:33:04.5281831Z env:
+2026-11-12T10:33:04.5282204Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:04.5282583Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:04.5282939Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:04.5283316Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:04.5283788Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:04.5284402Z ##[endgroup]
+2026-11-12T10:33:04.7754623Z Syncing repository: TrillionniumFoundation/hepta-private-ci
+2026-11-12T10:33:04.7756650Z ##[group]Getting Git version info
+2026-11-12T10:33:04.7757518Z Working directory is '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T10:33:04.7758920Z [command]/usr/bin/git version
+2026-11-12T10:33:04.7821969Z git version 2.56.0
+2026-11-12T10:33:04.7841748Z ##[endgroup]
+2026-11-12T10:33:04.7861049Z Temporarily overriding HOME='/home/runner/work/_temp/34b731a2-cac6-4311-b873-a713361193db' before making global git config changes
+2026-11-12T10:33:04.7863686Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T10:33:04.7865848Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T10:33:04.7931872Z Deleting the contents of '/home/runner/work/hepta-private-ci/hepta-private-ci'
+2026-11-12T10:33:04.7935720Z ##[group]Initializing the repository
+2026-11-12T10:33:04.7939824Z [command]/usr/bin/git init /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T10:33:04.8252314Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-12T10:33:04.8254121Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-12T10:33:04.8255755Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-12T10:33:04.8256998Z hint: call:
+2026-11-12T10:33:04.8257667Z hint:
+2026-11-12T10:33:04.8258492Z hint: 	git config --global init.defaultBranch <name>
+2026-11-12T10:33:04.8259499Z hint:
+2026-11-12T10:33:04.8260614Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-12T10:33:04.8261831Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-12T10:33:04.8262695Z hint:
+2026-11-12T10:33:04.8263180Z hint: 	git branch -m <name>
+2026-11-12T10:33:04.8263741Z hint:
+2026-11-12T10:33:04.8264692Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-12T10:33:04.8265786Z Initialized empty Git repository in /home/runner/work/hepta-private-ci/hepta-private-ci/.git/
+2026-11-12T10:33:04.8284774Z [command]/usr/bin/git remote add origin https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T10:33:04.8346757Z ##[endgroup]
+2026-11-12T10:33:04.8347721Z ##[group]Disabling automatic garbage collection
+2026-11-12T10:33:04.8355873Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-12T10:33:04.8395192Z ##[endgroup]
+2026-11-12T10:33:04.8396194Z ##[group]Setting up auth
+2026-11-12T10:33:04.8402095Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T10:33:04.8448863Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T10:33:04.8889178Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T10:33:04.8929420Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T10:33:04.9139334Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T10:33:04.9177959Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T10:33:04.9389925Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-12T10:33:04.9434740Z ##[endgroup]
+2026-11-12T10:33:04.9435763Z ##[group]Fetching the repository
+2026-11-12T10:33:04.9445060Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:10.1577965Z From https://github.com/TrillionniumFoundation/hepta-private-ci
+2026-11-12T10:33:10.1653661Z  * branch            4962e28c1ffa073e5e994194f3b5785659af236c -> FETCH_HEAD
+2026-11-12T10:33:10.1666410Z ##[endgroup]
+2026-11-12T10:33:10.1667768Z ##[group]Determining the checkout info
+2026-11-12T10:33:10.1669204Z ##[endgroup]
+2026-11-12T10:33:10.1670079Z [command]/usr/bin/git sparse-checkout disable
+2026-11-12T10:33:10.1672392Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-12T10:33:10.1689904Z ##[group]Checking out the ref
+2026-11-12T10:33:10.1692775Z [command]/usr/bin/git checkout --progress --force 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:10.9580495Z Note: switching to '4962e28c1ffa073e5e994194f3b5785659af236c'.
+2026-11-12T10:33:10.9581209Z 
+2026-11-12T10:33:10.9581517Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-12T10:33:10.9582238Z changes and commit them, and you can discard any commits you make in this
+2026-11-12T10:33:10.9582913Z state without impacting any branches by switching back to a branch.
+2026-11-12T10:33:10.9583326Z 
+2026-11-12T10:33:10.9583634Z If you want to create a new branch to retain commits you create, you may
+2026-11-12T10:33:10.9584516Z do so (now or later) by using -c with the switch command. Example:
+2026-11-12T10:33:10.9584896Z 
+2026-11-12T10:33:10.9585076Z   git switch -c <new-branch-name>
+2026-11-12T10:33:10.9585347Z 
+2026-11-12T10:33:10.9585555Z Or undo this operation with:
+2026-11-12T10:33:10.9585815Z 
+2026-11-12T10:33:10.9585969Z   git switch -
+2026-11-12T10:33:10.9586240Z 
+2026-11-12T10:33:10.9586649Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-12T10:33:10.9587081Z 
+2026-11-12T10:33:10.9587429Z HEAD is now at 4962e28 ci(hcsn): preserve exact frozen evidence in spelling checks
+2026-11-12T10:33:10.9615198Z ##[endgroup]
+2026-11-12T10:33:10.9670325Z [command]/usr/bin/git log -1 --format=%H
+2026-11-12T10:33:10.9699465Z 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:10.9707800Z ##[group]Removing auth
+2026-11-12T10:33:10.9710627Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T10:33:10.9744507Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T10:33:10.9969420Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T10:33:11.0000515Z http.https://github.com/.extraheader
+2026-11-12T10:33:11.0006640Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-12T10:33:11.0042128Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T10:33:11.0263683Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T10:33:11.0299265Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T10:33:11.0517668Z ##[endgroup]
+2026-11-12T10:33:11.0750157Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-11-12T10:33:11.0750574Z with:
+2026-11-12T10:33:11.0750804Z   python-version: 3.12
+2026-11-12T10:33:11.0751055Z   check-latest: false
+2026-11-12T10:33:11.0753138Z   token: ***
+2026-11-12T10:33:11.0753536Z   update-environment: true
+2026-11-12T10:33:11.0753998Z   allow-prereleases: false
+2026-11-12T10:33:11.0754267Z   freethreaded: false
+2026-11-12T10:33:11.0754505Z env:
+2026-11-12T10:33:11.0754732Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:11.0754979Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:11.0755218Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:11.0755466Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:11.0755786Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:11.0756122Z ##[endgroup]
+2026-11-12T10:33:11.1925359Z ##[group]Installed versions
+2026-11-12T10:33:11.1994602Z (node:2194) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T10:33:11.1995738Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T10:33:11.1996384Z Successfully set up CPython (3.12.16)
+2026-11-12T10:33:11.1997275Z ##[endgroup]
+2026-11-12T10:33:11.2157938Z ##[group]Run python -m pip install numpy==2.3.5 scipy==1.17.0
+2026-11-12T10:33:11.2158540Z [36;1mpython -m pip install numpy==2.3.5 scipy==1.17.0[0m
+2026-11-12T10:33:11.2189469Z shell: /usr/bin/bash -e {0}
+2026-11-12T10:33:11.2189816Z env:
+2026-11-12T10:33:11.2190094Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:11.2190387Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:11.2190662Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:11.2190956Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:11.2191318Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:11.2191751Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:11.2192212Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:11.2192658Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:11.2193071Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:11.2193592Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:11.2194302Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:11.2194694Z ##[endgroup]
+2026-11-12T10:33:14.0611603Z Collecting numpy==2.3.5
+2026-11-12T10:33:14.1108038Z   Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-12T10:33:14.2303251Z Collecting scipy==1.17.0
+2026-11-12T10:33:14.2374593Z   Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (62 kB)
+2026-11-12T10:33:14.2808227Z Downloading numpy-2.3.5-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.6 MB)
+2026-11-12T10:33:14.6385958Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.6/16.6 MB 48.0 MB/s  0:00:00
+2026-11-12T10:33:14.6453613Z Downloading scipy-1.17.0-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (35.0 MB)
+2026-11-12T10:33:14.9700226Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 35.0/35.0 MB 107.8 MB/s  0:00:00
+2026-11-12T10:33:15.1807769Z Installing collected packages: numpy, scipy
+2026-11-12T10:33:20.4087877Z 
+2026-11-12T10:33:20.4096509Z Successfully installed numpy-2.3.5 scipy-1.17.0
+2026-11-12T10:33:20.4104263Z 
+2026-11-12T10:33:20.4104674Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-12T10:33:20.4105183Z [notice] To update, run: pip install --upgrade pip
+2026-11-12T10:33:20.4717134Z ##[group]Run python -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu
+2026-11-12T10:33:20.4717727Z [36;1mpython -m pip install torch==2.8.0 --index-url https://download.pytorch.org/whl/cpu[0m
+2026-11-12T10:33:20.4736829Z shell: /usr/bin/bash -e {0}
+2026-11-12T10:33:20.4737043Z env:
+2026-11-12T10:33:20.4737210Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:20.4737407Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:20.4737579Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:20.4737766Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:20.4738018Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:20.4738350Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:20.4738676Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:20.4739020Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:20.4739308Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:20.4739656Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:20.4739965Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:20.4740247Z ##[endgroup]
+2026-11-12T10:33:20.7513630Z Looking in indexes: https://download.pytorch.org/whl/cpu
+2026-11-12T10:33:20.9758936Z Collecting torch==2.8.0
+2026-11-12T10:33:21.0367994Z   Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl.metadata (29 kB)
+2026-11-12T10:33:21.0664533Z Collecting filelock (from torch==2.8.0)
+2026-11-12T10:33:21.1144804Z   Downloading filelock-4.2.4-py3-none-any.whl.metadata (2.0 kB)
+2026-11-12T10:33:21.1513704Z Collecting typing-extensions>=4.10.0 (from torch==2.8.0)
+2026-11-12T10:33:21.1584638Z   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+2026-11-12T10:33:21.1719426Z Collecting setuptools (from torch==2.8.0)
+2026-11-12T10:33:21.1794750Z   Downloading setuptools-78.1.0-py3-none-any.whl.metadata (6.6 kB)
+2026-11-12T10:33:21.2001556Z Collecting sympy>=1.13.3 (from torch==2.8.0)
+2026-11-12T10:33:21.2072316Z   Downloading sympy-1.14.0-py3-none-any.whl.metadata (12 kB)
+2026-11-12T10:33:21.2349091Z Collecting networkx (from torch==2.8.0)
+2026-11-12T10:33:21.2418598Z   Downloading networkx-3.7-py3-none-any.whl.metadata (6.7 kB)
+2026-11-12T10:33:21.2579327Z Collecting jinja2 (from torch==2.8.0)
+2026-11-12T10:33:21.2657005Z   Downloading jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+2026-11-12T10:33:21.2986797Z Collecting fsspec (from torch==2.8.0)
+2026-11-12T10:33:21.3054734Z   Downloading fsspec-2026.9.0-py3-none-any.whl.metadata (10 kB)
+2026-11-12T10:33:21.3361437Z Collecting mpmath<1.4,>=1.1.0 (from sympy>=1.13.3->torch==2.8.0)
+2026-11-12T10:33:21.3429734Z   Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+2026-11-12T10:33:21.3757947Z Collecting MarkupSafe>=2.0 (from jinja2->torch==2.8.0)
+2026-11-12T10:33:21.3844555Z   Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+2026-11-12T10:33:21.4020868Z Downloading torch-2.8.0%2Bcpu-cp312-cp312-manylinux_2_28_x86_64.whl (183.9 MB)
+2026-11-12T10:33:22.8481929Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 183.9/183.9 MB 128.4 MB/s  0:00:01
+2026-11-12T10:33:22.8552897Z Downloading sympy-1.14.0-py3-none-any.whl (6.3 MB)
+2026-11-12T10:33:22.9288082Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 104.3 MB/s  0:00:00
+2026-11-12T10:33:22.9359659Z Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+2026-11-12T10:33:22.9420465Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 66.9 MB/s  0:00:00
+2026-11-12T10:33:22.9490782Z Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+2026-11-12T10:33:22.9579366Z Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+2026-11-12T10:33:22.9668824Z Downloading fsspec-2026.9.0-py3-none-any.whl (221 kB)
+2026-11-12T10:33:22.9768935Z Downloading jinja2-3.1.6-py3-none-any.whl (134 kB)
+2026-11-12T10:33:22.9864791Z Downloading markupsafe-3.0.3-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+2026-11-12T10:33:22.9950716Z Downloading networkx-3.7-py3-none-any.whl (2.1 MB)
+2026-11-12T10:33:23.0123129Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.1/2.1 MB 127.7 MB/s  0:00:00
+2026-11-12T10:33:23.0200867Z Downloading setuptools-78.1.0-py3-none-any.whl (1.3 MB)
+2026-11-12T10:33:23.0361147Z    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 74.7 MB/s  0:00:00
+2026-11-12T10:33:23.3441033Z Installing collected packages: mpmath, typing-extensions, sympy, setuptools, networkx, MarkupSafe, fsspec, filelock, jinja2, torch
+2026-11-12T10:33:38.9491124Z 
+2026-11-12T10:33:38.9506496Z Successfully installed MarkupSafe-3.0.3 filelock-4.2.4 fsspec-2026.9.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.7 setuptools-78.1.0 sympy-1.14.0 torch-2.8.0+cpu typing-extensions-4.16.0
+2026-11-12T10:33:38.9513163Z 
+2026-11-12T10:33:38.9513710Z [notice] A new release of pip is available: 26.2.2 -> 26.3
+2026-11-12T10:33:38.9514670Z [notice] To update, run: pip install --upgrade pip
+2026-11-12T10:33:39.0318934Z ##[group]Run python - <<'PY'
+2026-11-12T10:33:39.0319217Z [36;1mpython - <<'PY'[0m
+2026-11-12T10:33:39.0319424Z [36;1mimport hashlib, json, os, tarfile[0m
+2026-11-12T10:33:39.0319657Z [36;1mfrom pathlib import Path[0m
+2026-11-12T10:33:39.0319899Z [36;1mdestination = Path(os.environ['RUNNER_TEMP'])[0m
+2026-11-12T10:33:39.0320281Z [36;1moriginal = Path('qualification/hcsn_initial_vjp/evidence/NUMPY001-ORIGINALS.tar.gz')[0m
+2026-11-12T10:33:39.0320844Z [36;1massert hashlib.sha256(original.read_bytes()).hexdigest() == '85e543dc770257e5470af867415d6d1f55e859fac116f37204fc0e5a6bb2348e'[0m
+2026-11-12T10:33:39.0321342Z [36;1mprefix = 'qualification/hcsn_initial_vjp/evidence/numpy001/'[0m
+2026-11-12T10:33:39.0321642Z [36;1mwith tarfile.open(original) as archive:[0m
+2026-11-12T10:33:39.0321951Z [36;1m    expected = archive.extractfile(prefix+'ARRAYS.npz').read()[0m
+2026-11-12T10:33:39.0322563Z [36;1m    result = json.loads(archive.extractfile(prefix+'RESULT.json').read())[0m
+2026-11-12T10:33:39.0322987Z [36;1massert hashlib.sha256(expected).hexdigest() == result['arrays_sha256'][0m
+2026-11-12T10:33:39.0323359Z [36;1m(destination/'initial-expected.npz').write_bytes(expected)[0m
+2026-11-12T10:33:39.0323801Z [36;1mpinned = json.loads(Path('qualification/hcsn_initial_vjp/evidence/native001/SOURCE.json').read_text())[0m
+2026-11-12T10:33:39.0324454Z [36;1mpinned['source_commit'] = os.environ['CANDIDATE_COMMIT'][0m
+2026-11-12T10:33:39.0324913Z [36;1mpinned['source_sha256'] = {name: hashlib.sha256(Path(name).read_bytes()).hexdigest() for name in pinned['source_sha256']}[0m
+2026-11-12T10:33:39.0325370Z [36;1mpinned['expected_arrays_sha256'] = result['arrays_sha256'][0m
+2026-11-12T10:33:39.0325791Z [36;1m(destination/'initial-source.json').write_text(json.dumps(pinned,indent=2,sort_keys=True)+'\n')[0m
+2026-11-12T10:33:39.0326159Z [36;1mPY[0m
+2026-11-12T10:33:39.0344883Z shell: /usr/bin/bash -e {0}
+2026-11-12T10:33:39.0345097Z env:
+2026-11-12T10:33:39.0345272Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:39.0345461Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:39.0345629Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:39.0345804Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:39.0346058Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:39.0346366Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0346694Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:39.0347037Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0347343Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0347633Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0347932Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:39.0348191Z ##[endgroup]
+2026-11-12T10:33:39.0879013Z ##[group]Run python -B -m qualification.hcsn_initial_vjp.native_probe --source-manifest "$RUNNER_TEMP/initial-source.json" --expected-arrays "$RUNNER_TEMP/initial-expected.npz" --output "$RUNNER_TEMP/initial-amplitudes"
+2026-11-12T10:33:39.0880145Z [36;1mpython -B -m qualification.hcsn_initial_vjp.native_probe --source-manifest "$RUNNER_TEMP/initial-source.json" --expected-arrays "$RUNNER_TEMP/initial-expected.npz" --output "$RUNNER_TEMP/initial-amplitudes"[0m
+2026-11-12T10:33:39.0898581Z shell: /usr/bin/bash -e {0}
+2026-11-12T10:33:39.0898786Z env:
+2026-11-12T10:33:39.0898955Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:39.0899147Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:39.0899318Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:39.0899495Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:39.0899737Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:39.0900051Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0918858Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:39.0919312Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0919650Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0919957Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:39.0920256Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:39.0920513Z ##[endgroup]
+2026-11-12T10:33:50.2024518Z {"status": "PASS", "source_commit": "4962e28c1ffa073e5e994194f3b5785659af236c", "source_sha256_before": {"qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22", "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441", "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c", "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0", "qualification/hcsn_initial_vjp/check_linear_map.py": "57a138bd12e3332a9836d6e847bc562240b670df04c197cd094a4f51155c30ad", "qualification/hcsn_initial_vjp/linear_map.py": "df18f00b50490944e3db9c07987be9e7d9383374e10fe1bf18413845c4464e99", "qualification/hcsn_initial_vjp/native_probe.py": "66f96add734125fd62ee2cbd10b51ad489110dcbe2d1c14394a9997c808074c5", "qualification/hcsn_initial_vjp/reference_uniform_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773", "qualification/hcsn_initial_vjp/torch_flow.py": "93342358ca74ee25e1988352f0e5f12a0db1bab46308dab1e432d98b805413f2", "qualification/hcsn_joint_dde/graded_sensitivities.py": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548", "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4", "qualification/hcsn_joint_dde/sensitivities.py": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a", "qualification/hcsn_joint_dde/torch_physical.py": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"}, "source_sha256_after": {"qualification/hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22", "qualification/hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441", "qualification/hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c", "qualification/hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0", "qualification/hcsn_initial_vjp/check_linear_map.py": "57a138bd12e3332a9836d6e847bc562240b670df04c197cd094a4f51155c30ad", "qualification/hcsn_initial_vjp/linear_map.py": "df18f00b50490944e3db9c07987be9e7d9383374e10fe1bf18413845c4464e99", "qualification/hcsn_initial_vjp/native_probe.py": "66f96add734125fd62ee2cbd10b51ad489110dcbe2d1c14394a9997c808074c5", "qualification/hcsn_initial_vjp/reference_uniform_cascade.py": "0b7cfbf9e462d4d5eba84b0b6446010209d3559a58e72c4cca4e1ffeb307c773", "qualification/hcsn_initial_vjp/torch_flow.py": "93342358ca74ee25e1988352f0e5f12a0db1bab46308dab1e432d98b805413f2", "qualification/hcsn_joint_dde/graded_sensitivities.py": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548", "qualification/hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4", "qualification/hcsn_joint_dde/sensitivities.py": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a", "qualification/hcsn_joint_dde/torch_physical.py": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"}, "expected_arrays_sha256": "2dcfe03f2911cb0b6c55b2c24f095d7688d150eb84177d1bb7e4970daa8fa305", "results": [{"geometry": "uniform", "primal_maximum_error": 7.268040336239068e-12, "full_vjp_maximum_error": 2.220446049250313e-16, "raw_gradcheck": true, "uniform_native_graph_vjp_maximum_error": 1.3119971775665817e-10, "normalized_client_graph_gradcheck": true, "normalized_native_graph_vjp_maximum_error": 4.197497904812053e-11, "normal_and_unsafe_guards_all_four_inputs": true, "old_physical_only_rejects_trainable_prior": true}, {"geometry": "graded", "primal_maximum_error": 6.538127287833428e-11, "full_vjp_maximum_error": 2.220446049250313e-16, "raw_gradcheck": true}], "calls": [{"label": "uniform_vjp", "wall_seconds": 0.15790905800000132, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15614979099999715, "cpu_seconds": 0.156150754}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.1566018759999963, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15582756999999958, "cpu_seconds": 0.15573885300000012}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.15443386300000128, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15366448099999985, "cpu_seconds": 0.15364151599999998}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.1505559480000045, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.14976941999999838, "cpu_seconds": 0.14975707700000007}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.15436279799999397, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15362465700000172, "cpu_seconds": 0.15361151200000034}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.15176132099999506, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15100837699999659, "cpu_seconds": 0.15099605699999996}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.1514704889999976, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15073688599999713, "cpu_seconds": 0.15072447300000036}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.15066953900000613, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.14990109899999737, "cpu_seconds": 0.1498408109999998}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.151562638999998, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15082460900000427, "cpu_seconds": 0.15079982600000008}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.15414978700000148, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15340073300000512, "cpu_seconds": 0.15336847199999992}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_raw_gradcheck", "wall_seconds": 0.1570976099999939, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.1562528830000005, "cpu_seconds": 0.15625097299999968}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.15524696399999982, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15445249199999722, "cpu_seconds": 0.15437747999999996}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.15541334400000295, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15469333300000443, "cpu_seconds": 0.15467168599999992}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.15606998799999872, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15529484500000024, "cpu_seconds": 0.15527052600000024}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.15849264399999896, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15771107999999856, "cpu_seconds": 0.15770225800000004}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.16008484199999629, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.1591838400000043, "cpu_seconds": 0.15918286800000025}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.1597659839999963, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15882119699999464, "cpu_seconds": 0.15881216700000067}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.1558752060000046, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15501822099999885, "cpu_seconds": 0.15501877200000003}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.15782099499999447, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15698523100000017, "cpu_seconds": 0.15692894000000024}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "uniform_normalized_client_graph", "wall_seconds": 0.16501555000000678, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.16419082299999843, "cpu_seconds": 0.16417373200000007}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input0_unsafeFalse", "wall_seconds": 0.158824500999998, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15800238700000335, "cpu_seconds": 0.1579882330000002}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input0_unsafeTrue", "wall_seconds": 0.16387370700000048, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.1629290600000033, "cpu_seconds": 0.16292717000000057}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input1_unsafeFalse", "wall_seconds": 0.1582455829999958, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.15732391899999953, "cpu_seconds": 0.1573233759999999}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input1_unsafeTrue", "wall_seconds": 0.16153800199999324, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.1605064239999976, "cpu_seconds": 0.16043195399999988}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input2_unsafeFalse", "wall_seconds": 0.1565896379999998, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.1555450310000026, "cpu_seconds": 0.15553565000000003}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input2_unsafeTrue", "wall_seconds": 0.1611652630000009, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.16017200299999956, "cpu_seconds": 0.1601700140000002}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input3_unsafeFalse", "wall_seconds": 0.16299955500000607, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.16210369099999866, "cpu_seconds": 0.16209014500000052}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "mutation_input3_unsafeTrue", "wall_seconds": 0.16185532800000146, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 9], "signed_channels": 9, "internal_steps": 575, "wall_seconds": 0.16096643499999885, "cpu_seconds": 0.16096569599999988}], "map_scalars": 432, "directions": 9, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_vjp", "wall_seconds": 0.3660208969999985, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.36521357600000215, "cpu_seconds": 0.3651425769999994}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3532167460000011, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3523604419999984, "cpu_seconds": 0.35233836899999993}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3583324809999979, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3572305369999924, "cpu_seconds": 0.35713751699999996}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.34935941900000955, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3485592290000028, "cpu_seconds": 0.3485335249999997}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.345054159, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3441874190000078, "cpu_seconds": 0.3441652770000001}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3504917470000066, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.34928408499999364, "cpu_seconds": 0.3492178329999991}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3508593700000091, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3500549829999926, "cpu_seconds": 0.3500271640000001}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3396563710000038, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.33883647099999337, "cpu_seconds": 0.33883384800000016}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3422556669999892, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3414541679999985, "cpu_seconds": 0.34136345499999976}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.34061475200000757, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3398432259999993, "cpu_seconds": 0.3398361170000008}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}, {"label": "graded_raw_gradcheck", "wall_seconds": 0.3403275579999985, "basis_forward_calls": 1, "basis_costs": [{"directions": [0, 14], "signed_channels": 14, "internal_steps": 1410, "wall_seconds": 0.3394784740000034, "cpu_seconds": 0.3394703039999989}], "map_scalars": 952, "directions": 14, "physics_gradients": false, "support_gradients": false, "migration_gradients": false, "large_grid_qualified": false, "optimizer_updates": 0, "all_four_inputs_guarded": true, "first_order_only": true}], "api_forward_calls": 39, "basis_ode_forward_calls": 39, "native_uniform_oracle_forward_calls": 2, "optimizer_updates": 0, "runtime": {"python": "3.12.16", "numpy": "2.3.5", "scipy": "1.17.0", "torch": "2.8.0+cpu", "torch_build": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7", "device": "cpu", "threads": 1}, "wall_seconds": 9.160633599, "cpu_seconds": 8.614676007, "maximum_rss_kib": 423980, "arrays_sha256": "fd28bcc2244c648ffc9fff10c0fee40cec8b8edbc4158d3ee480a3af53bf1115", "fixed_physics_support_only": true, "full_network_ad": false}
+2026-11-12T10:33:50.6916443Z ##[group]Run git diff --exit-code && git diff --cached --exit-code
+2026-11-12T10:33:50.6916835Z [36;1mgit diff --exit-code && git diff --cached --exit-code[0m
+2026-11-12T10:33:50.6934970Z shell: /usr/bin/bash -e {0}
+2026-11-12T10:33:50.6935194Z env:
+2026-11-12T10:33:50.6935360Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:50.6935551Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:50.6935718Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:50.6935897Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:50.6936136Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:50.6936450Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:50.6936788Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:50.6937107Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:50.6937397Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:50.6937723Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:50.6938012Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:50.6938264Z ##[endgroup]
+2026-11-12T10:33:51.2140264Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-11-12T10:33:51.2140745Z with:
+2026-11-12T10:33:51.2140928Z   name: initial-amplitude-originals
+2026-11-12T10:33:51.2141287Z   path: /home/runner/work/_temp/initial-amplitudes
+/home/runner/work/_temp/initial-source.json
+
+2026-11-12T10:33:51.2141635Z   if-no-files-found: error
+2026-11-12T10:33:51.2141825Z   compression-level: 6
+2026-11-12T10:33:51.2142004Z   overwrite: false
+2026-11-12T10:33:51.2142175Z   include-hidden-files: false
+2026-11-12T10:33:51.2142361Z env:
+2026-11-12T10:33:51.2142521Z   OPENBLAS_NUM_THREADS: 1
+2026-11-12T10:33:51.2142701Z   OMP_NUM_THREADS: 1
+2026-11-12T10:33:51.2142872Z   MKL_NUM_THREADS: 1
+2026-11-12T10:33:51.2143046Z   PYTHONDONTWRITEBYTECODE: 1
+2026-11-12T10:33:51.2143277Z   CANDIDATE_COMMIT: 4962e28c1ffa073e5e994194f3b5785659af236c
+2026-11-12T10:33:51.2143573Z   pythonLocation: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:51.2144109Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib/pkgconfig
+2026-11-12T10:33:51.2144441Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:51.2144757Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:51.2145046Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.12.16/x64
+2026-11-12T10:33:51.2145337Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.12.16/x64/lib
+2026-11-12T10:33:51.2145585Z ##[endgroup]
+2026-11-12T10:33:51.3561073Z (node:2300) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T10:33:51.3561975Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T10:33:51.3616463Z Multiple search paths detected. Calculating the least common ancestor of all paths
+2026-11-12T10:33:51.3618337Z The least common ancestor is /home/runner/work/_temp. This will be the root directory of the artifact
+2026-11-12T10:33:51.3619089Z With the provided path, there will be 4 files uploaded
+2026-11-12T10:33:51.3636239Z Artifact name is valid!
+2026-11-12T10:33:51.3641386Z Root directory input is valid!
+2026-11-12T10:33:51.5673474Z Beginning upload of artifact content to blob storage
+2026-11-12T10:33:51.5891856Z (node:2300) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-12T10:33:51.6252393Z Uploaded bytes 11597
+2026-11-12T10:33:51.6383927Z Finished uploading artifact content to blob storage!
+2026-11-12T10:33:51.6384690Z SHA256 digest of uploaded artifact zip is 1dd17c8ac54cab00242af1d7ce88a1cefcde24c7ecaf3ba8634fd1bdcf978e7c
+2026-11-12T10:33:51.6386152Z Finalizing artifact upload
+2026-11-12T10:33:52.1626927Z Artifact initial-amplitude-originals.zip successfully finalized. Artifact ID 13936125116
+2026-11-12T10:33:52.1627680Z Artifact initial-amplitude-originals has been successfully uploaded! Final size is 11597 bytes. Artifact ID is 13936125116
+2026-11-12T10:33:52.1632518Z Artifact download URL: https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43200740354/artifacts/13936125116
+2026-11-12T10:33:52.1814097Z Post job cleanup.
+2026-11-12T10:33:52.2814581Z (node:2312) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-12T10:33:52.2815180Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-12T10:33:52.2977338Z Post job cleanup.
+2026-11-12T10:33:52.3767839Z [command]/usr/bin/git version
+2026-11-12T10:33:52.3807001Z git version 2.56.0
+2026-11-12T10:33:52.3837532Z Temporarily overriding HOME='/home/runner/work/_temp/dae02b9f-a654-4061-bcab-187eaa89e9a5' before making global git config changes
+2026-11-12T10:33:52.3838528Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-12T10:33:52.3841902Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/hepta-private-ci/hepta-private-ci
+2026-11-12T10:33:52.3881595Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-12T10:33:52.3918552Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-12T10:33:52.4166619Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-12T10:33:52.4200598Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-12T10:33:52.4467435Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-12T10:33:52.4509610Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-12T10:33:52.4908192Z Cleaning up orphan processes
+2026-11-12T10:33:52.5248379Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

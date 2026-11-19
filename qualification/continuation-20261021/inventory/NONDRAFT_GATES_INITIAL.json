@@ -1,0 +1,918 @@
+[
+  {
+    "number": 2964,
+    "title": "ci: isolate Bazel failure-status preservation with four regression tests",
+    "head": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+    "base_ref": "integration/v8-main-convergence-20261020",
+    "metadata": {
+      "n": 2964,
+      "head": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+      "base": "ddf193c6bb46c2d1e4c6255639686b345ead10aa",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 1,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:55.898Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.796Z",
+      "total_count": 43,
+      "returned": 43,
+      "required": [
+        {
+          "id": 118902273627,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39481413753/job/118902273627"
+        },
+        {
+          "id": 118846284911,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "fad7f6b342e9a087bbc921862ba93f67b1873f51",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39481413662/job/118846284911"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2962,
+    "title": "fix(agentd): remove obsolete legacy learning writer paths",
+    "head": "98793d7f18a18ff326823852f2044206b4f4db85",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2962,
+      "head": "98793d7f18a18ff326823852f2044206b4f4db85",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 8,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.028Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.788Z",
+      "total_count": 59,
+      "returned": 59,
+      "required": []
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2961,
+    "title": "fix(ci, runtime): retain native CI policy and repair protocol/runtime regressions",
+    "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+    "base_ref": "integration/v8-main-convergence-20261020",
+    "metadata": {
+      "n": 2961,
+      "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+      "base": "ddf193c6bb46c2d1e4c6255639686b345ead10aa",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 1,
+      "review_comments": 6,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:55.977Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.826Z",
+      "total_count": 69,
+      "returned": 69,
+      "required": [
+        {
+          "id": 118946099974,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39484972929/job/118946099974"
+        },
+        {
+          "id": 118864193850,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39484972848/job/118864193850"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2959,
+    "title": "ci: integrated blocker closure for NDU qualification",
+    "head": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+    "base_ref": "codex/group-ndu-deterministic-20261017",
+    "metadata": {
+      "n": 2959,
+      "head": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+      "base": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 3,
+      "review_comments": 13,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:55.914Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.711Z",
+      "total_count": 55,
+      "returned": 55,
+      "required": [
+        {
+          "id": 118959638609,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39488408194/job/118959638609"
+        },
+        {
+          "id": 118888530135,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39488407906/job/118888530135"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2937,
+    "title": "Integrate V8 baseline, shared Cells and exact Objective history",
+    "head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2937,
+      "head": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.063Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.863Z",
+      "total_count": 71,
+      "returned": 71,
+      "required": [
+        {
+          "id": 118959540432,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39490343769/job/118959540432"
+        },
+        {
+          "id": 118908805348,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "b58d870a2c38ebee0aa0b974d9f03767c888fa7e",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39490343489/job/118908805348"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2883,
+    "title": "ci: reduce scoped native build storage",
+    "head": "a8ce72907288d1836612446b87cb1d5c184993ac",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2883,
+      "head": "a8ce72907288d1836612446b87cb1d5c184993ac",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.176Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.647Z",
+      "total_count": 49,
+      "returned": 49,
+      "required": [
+        {
+          "id": 117901811235,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39198531514/job/117901811235"
+        },
+        {
+          "id": 117893995807,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "a8ce72907288d1836612446b87cb1d5c184993ac",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39198531447/job/117893995807"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2882,
+    "title": "test(hepta-fleet): assert fixture host admission without unwrap",
+    "head": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2882,
+      "head": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.382Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.650Z",
+      "total_count": 24,
+      "returned": 24,
+      "required": [
+        {
+          "id": 117882974089,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39195438324/job/117882974089"
+        },
+        {
+          "id": 117881115008,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "b34cb44f06db0a66acb3d25b183a2a05c4cebc7e",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39195438433/job/117881115008"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2815,
+    "title": "feat(hepta-agentd): read exact durable Objective admission through owner",
+    "head": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2815,
+      "head": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 1,
+      "review_comments": 2,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.035Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.764Z",
+      "total_count": 49,
+      "returned": 49,
+      "required": [
+        {
+          "id": 118507168335,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39371448635/job/118507168335"
+        },
+        {
+          "id": 118469026506,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "995b6fb9ef73ada7c3348b01deb28940a2c4a2d1",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39371448508/job/118469026506"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2709,
+    "title": "fix(app-server): authenticate Unix control peers before WebSocket upgrade",
+    "head": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2709,
+      "head": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.068Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.653Z",
+      "total_count": 49,
+      "returned": 49,
+      "required": [
+        {
+          "id": 117592379737,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39090184551/job/117592379737"
+        },
+        {
+          "id": 117571628430,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "db3dca79d410976a074e0a13e88c3ebd20d9975f",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39090184505/job/117571628430"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2697,
+    "title": "fix(agentd): authenticate control socket peers before frames",
+    "head": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2697,
+      "head": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.262Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.600Z",
+      "total_count": 24,
+      "returned": 24,
+      "required": [
+        {
+          "id": 117480196194,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39038734923/job/117480196194"
+        },
+        {
+          "id": 117440150609,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "5810df76d82c4189e2ff8bd6da55d21adf5a646d",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39038734950/job/117440150609"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2611,
+    "title": "research(ndu): SNG-R short-horizon FBSDE shooting and DAG shadow reference",
+    "head": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2611,
+      "head": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 3,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.049Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.749Z",
+      "total_count": 49,
+      "returned": 49,
+      "required": [
+        {
+          "id": 117675246984,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39106846517/job/117675246984"
+        },
+        {
+          "id": 117622837510,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "cc594bbb1494f3dc3f5adff360a58eee958f2054",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39106846485/job/117622837510"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2607,
+    "title": "feat(memory-cell): original-byte factorial controls, real Reader evidence and bounded pairing",
+    "head": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+    "base_ref": "codex/memory-cell-evidence-20261008",
+    "metadata": {
+      "n": 2607,
+      "head": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+      "base": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:46:56.003Z"
+    },
+    "checks": {
+      "collected_at_utc": "2026-10-21T00:47:47.906Z",
+      "total_count": 69,
+      "returned": 69,
+      "required": [
+        {
+          "id": 118947884205,
+          "name": "CI required",
+          "status": "completed",
+          "conclusion": "failure",
+          "head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39486617411/job/118947884205"
+        },
+        {
+          "id": 118891643109,
+          "name": "Architecture required",
+          "status": "completed",
+          "conclusion": "success",
+          "head_sha": "bcce62f0c36a79fe2712437c26c40e9456e80d4c",
+          "app_id": 15368,
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/39486617397/job/118891643109"
+        }
+      ]
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2606,
+    "title": "docs: record remaining cargo-deny security blockers",
+    "head": "28607454e2c648bc1ee7e4c31acffd976652829e",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2606,
+      "head": "28607454e2c648bc1ee7e4c31acffd976652829e",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.694Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2605,
+    "title": "security: update rustls to patched 0.23.46",
+    "head": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2605,
+      "head": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 1,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.718Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2599,
+    "title": "ci: remove clippy denied unwraps from test fixtures",
+    "head": "924f96d71622c031346b1cb473ed7807d0780867",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2599,
+      "head": "924f96d71622c031346b1cb473ed7807d0780867",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.838Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2566,
+    "title": "CI: real 500-job fanout with source-pinned shards and live capacity audit",
+    "head": "1b2a24b727511220724418bc057f031e81ba5eea",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2566,
+      "head": "1b2a24b727511220724418bc057f031e81ba5eea",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 26,
+      "review_comments": 2,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.779Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2406,
+    "title": "fix(actions): allow CI aggregate jobs to stop on cancellation",
+    "head": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2406,
+      "head": "fd3811f84f044a107d58a20e0ef59bd29013f232",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.936Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2365,
+    "title": "feat(memory-cell): experimental associative memory kernel with matched type-split and artifact-only tests",
+    "head": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+    "base_ref": "codex/memory-cell-evidence-20261008",
+    "metadata": {
+      "n": 2365,
+      "head": "da3f14b9b16bb8d6d4b4e29f2315b3c379908b84",
+      "base": "32b0dd1cf50160bc77f1b0e8b7e92cc7325aa994",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 10,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.688Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 2273,
+    "title": "feat: add NDU resource portfolio and snapshot-bound shadow pipeline",
+    "head": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+    "base_ref": "main",
+    "metadata": {
+      "n": 2273,
+      "head": "6b885ae432f5d100260dec48615e6a4e0903e55c",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.720Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1682,
+    "title": "Add shared Stem, Head matrix, and governed fast paths",
+    "head": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+    "base_ref": "main",
+    "metadata": {
+      "n": 1682,
+      "head": "e89570ddb8bd21c8c89d6278456014d8245c745a",
+      "base": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+      "mergeable": true,
+      "mergeable_state": "behind",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.745Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1452,
+    "title": "feat(memory-cell): complete native census, bounded serving and adjudication handoff",
+    "head": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+    "base_ref": "main",
+    "metadata": {
+      "n": 1452,
+      "head": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+      "base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "mergeable": true,
+      "mergeable_state": "blocked",
+      "comments": 327,
+      "review_comments": 4,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.913Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1390,
+    "title": "fix(acceptance): verify pinned SSHSIG without Unix subprocesses",
+    "head": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+    "base_ref": "fix/main-product-blockers-20261005",
+    "metadata": {
+      "n": 1390,
+      "head": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b",
+      "base": "f349a05435c4b442c1799d854aafdee84c286337",
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "comments": 2,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.622Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1278,
+    "title": "automation.taskflow: harden durable recovery, provider identity and circuit evidence",
+    "head": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+    "base_ref": "main",
+    "metadata": {
+      "n": 1278,
+      "head": "c142eae6fa3a6ef4da3074541a649d5241170d04",
+      "base": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "comments": 0,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.398Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1237,
+    "title": "learning.operator: single-candidate semantic qualification and readiness convergence",
+    "head": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+    "base_ref": "main",
+    "metadata": {
+      "n": 1237,
+      "head": "e3e4e650bd6f57aaf520193a6b2febab42e6f9d3",
+      "base": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+      "mergeable": false,
+      "mergeable_state": "dirty",
+      "comments": 1,
+      "review_comments": 0,
+      "state": "open",
+      "draft": false,
+      "at": "2026-10-21T00:47:28.489Z"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1234,
+    "title": "ci(inference): bootstrap trusted artifact acceptor",
+    "head": "92f8715dc5d3ea0060447744312eb494e76babe4",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1227,
+    "title": "fix(memory.retrieval): close lifecycle, bounded product admission, and durable recovery contracts",
+    "head": "058c16cb7ade579b52b5235e51bb655a8ee46087",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1199,
+    "title": "prompt.registry: close qualification and evidence identity",
+    "head": "87f3d1d99029a357d1babeeeaa09c6d97364dce0",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1179,
+    "title": "runtime.codex: add protected real-provider qualification and operations runbooks",
+    "head": "5b2ac550ba31197db1cb4a6946df11d14973baa3",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1160,
+    "title": "architecture: converge scalable module and runtime boundaries",
+    "head": "82c72395a64b97d8beb1f76901d66fe7fc06e4db",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1140,
+    "title": "fix(ndu): converge A–D hardening, recovery, retention and exact qualification",
+    "head": "2063e41e089bb486e0936044593decab0b6194c2",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1083,
+    "title": "memory.federation: converge qualification, runtime, and authenticated wire boundary",
+    "head": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1069,
+    "title": "ui.control: isolate recovery and harden browser control boundaries",
+    "head": "5c0bbe30e4a5d408c430e8ab1fcc25638042d82a",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1038,
+    "title": "cognitive.store: close product boundary, signed bootstrap, qualification, and lifecycle gaps",
+    "head": "b196e2dbec0e0a634e60f7eaeff329afed6afad7",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 1001,
+    "title": "platform.types: close protocol, wire, owner, and exact-candidate qualification gaps",
+    "head": "18654890257ad54e628445731288df011f679361",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  },
+  {
+    "number": 994,
+    "title": "objective.compiler: close projection, protocol, and qualification gaps",
+    "head": "5fb67266c83b1d7ef41be7fb765fdfecfa24ad5f",
+    "base_ref": "main",
+    "metadata": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "checks": {
+      "status": "NOT_RETRIEVED_IN_FOCUSED_PASS"
+    },
+    "merge_qualified": false
+  }
+]

@@ -28,7 +28,7 @@ FUNCTIONS = {
         "fn into_command_owner(", "fn original_command_profile(",
     },
     SOURCES: {
-        "fn prepare(", "fn predecessors(", "fn read_original(",
+        "fn prepare(", "fn predecessors(", "fn read_original(", "fn timing(",
     },
     BINDING: {
         "fn validate_config(", "fn authenticate_roles(", "fn authenticate(",
@@ -72,7 +72,12 @@ class OriginalModelSelectionClosureTests(unittest.TestCase):
         for path, expected in FUNCTIONS.items():
             rows = [row for row in self.manifest["protected_file"] if row["path"] == path]
             self.assertEqual(len(rows), 1)
-            functions = rows[0]["required_function_order"]
+            scoped = [
+                row for row in rows
+                if {rule["function"] for rule in row["required_function_order"]} == expected
+            ]
+            self.assertEqual(len(scoped), 1)
+            functions = scoped[0]["required_function_order"]
             self.assertEqual({row["function"] for row in functions}, expected)
             for function in functions:
                 for index, marker in enumerate(function["sequence"]):

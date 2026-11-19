@@ -1,0 +1,109 @@
+{
+  "approval": {
+    "adopt": false,
+    "execute_original": false,
+    "production": false,
+    "scientific": "HOLD_NO_GO"
+  },
+  "base_exact_head": "cec5f9ec172f0338d1869bb4cba85f99925ee5b6",
+  "base_source_pr": 6021,
+  "import_exact_head": "1527bb89a49d2a69738e7c4652f4d5f37f656248",
+  "import_source_pr": 6014,
+  "independent_full_training_replays_passed": 0,
+  "limitations": "No complete new six-fit training, independent replay, model quality, fair resource comparison, posterior P1 numerical qualification, QVI causal benefit or multimodal/energy acceptance. Hosted CI for new head must be inspected.",
+  "merge_strategy": "Import five exclusive source, policy and test files; manually reconcile controller and workflow; preserve original #6014 archival logs by source PR link without duplicating historical evidence files",
+  "native_environment": {
+    "cuda_build": "12.8",
+    "host": "heptaruntime desktop",
+    "numpy": "2.3.5",
+    "python": "3.12.3",
+    "torch": "2.8.0+cu128"
+  },
+  "native_green": {
+    "errors": 0,
+    "exit_code": 0,
+    "failures": 0,
+    "id": "1a1cca77278-2564-ff1",
+    "scope": "C2 successor isolated native tests including Torch round trip and frozen-source preflight; no training/evaluation/replay",
+    "skipped": 0,
+    "tests": 50
+  },
+  "native_intermediate": {
+    "exit_code": 1,
+    "id": "1a1cca5af95-2564-fec",
+    "result": "7/7 and 6/6 target tests passed, 3 frozen-lineage subtest errors due to sparse checkout missing populated tracked archive bytes; not a science failure"
+  },
+  "native_logs": {
+    "COMBINED-GREEN.native.log": {
+      "bytes": 8063,
+      "sha256": "f5e9570c112040a2ddbc92faa5f0f2d4db48ea7ab0d985f5e11436536265d2e8"
+    },
+    "ENV.native.log": {
+      "bytes": 54,
+      "sha256": "571d7b9a7b3c17c30ed69afad8ace182ade6d8ca80f33429179c7aaf7cfcf88e"
+    },
+    "TARGETED-GREEN.native.log": {
+      "bytes": 7487,
+      "sha256": "5aed3b7d08669bc69e2319747ed94d6ea1527997149bba1fd51d0eeac4055634"
+    },
+    "TARGETED.native.log": {
+      "bytes": 3122,
+      "sha256": "ef0ea7dfd376149044a9fafad28e4ef5e717c7ceac41f0b31ccca9234078fb13"
+    }
+  },
+  "native_red": {
+    "exit_code": 1,
+    "id": "1a1cca1c82b-2564-fde",
+    "result": "1/6 positive gate assertion failed after valid parent helper was imported but isolated AST fixture omitted it; 7 strict controller tests passed"
+  },
+  "original_c2_job": "1a1c74f3308-be2a-75",
+  "original_c2_status": "finalizing_outcome_unknown_no_authoritative_terminal",
+  "planned_full_training_fits": 6,
+  "producer_terminal_reports": 4,
+  "recorded_utc": "2026-11-11T22:10:55.037099+00:00",
+  "schema": "hcsn-p0p5-converged-c2-prospective-source-v1",
+  "shared_exact_content_base": "3cad9347f5729ce19937202347467095fda36357",
+  "source_blobs": {
+    ".github/workflows/hcsn-differentiable.yml": {
+      "bytes": 15369,
+      "git_blob": "aa4c4f21b2dc9afb7be3709ddd3fae9318a4b41e",
+      "sha256": "2b7431d81374bf3031bdd26ef16130d9704861b63813cb38c33104824026b653"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/CONTRACT.json": {
+      "bytes": 2410,
+      "git_blob": "6c2d82d9a2b4fc8c3bbf9e97d5ec8c1b8794a3a6",
+      "sha256": "bc814b8913f5d5777f771030623bcd1f862a526f35144a8da0164e1da60f8e51"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/OPTIMIZATION-POSTERIOR-POLICY-v2.json": {
+      "bytes": 1859,
+      "git_blob": "c6df89355bc77a75d1b1add9734665b980976e20",
+      "sha256": "a1d5d5b8c11194506e9dea49e6b48eaa9c1edc72c6bc975d1e98bdc241b34875"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/POSTERIOR-POLICY.json": {
+      "bytes": 2635,
+      "git_blob": "4387789535d92f9e51460d05865188c7b9b25d53",
+      "sha256": "8be888e29389321a1e41921244931b7950aa2db63a0d870d55cc5e3fc412a137"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py": {
+      "bytes": 29306,
+      "git_blob": "a0415e6d26023df350afc7ef2c5af1ac2adc1c49",
+      "sha256": "e23ba4cec9052cb001f0b9eb342cfc9510b4714e0293b1d101e4b9ccca988857"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_controller_strict_terminal_json.py": {
+      "bytes": 3814,
+      "git_blob": "a5aba062596e0feac21f5b43ed19adf103457110",
+      "sha256": "c8535af9ed95c0dbc7554ccbfbc341a20e048d923331f88b24c5f13e055b03d8"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_frozen_policy_lineage.py": {
+      "bytes": 2879,
+      "git_blob": "cac82d76c44caac0556e9bb3b18f5b760a48b2fd",
+      "sha256": "7256b9d1750bbc7902a566ea1db54dd3bf8a146eb34e81f91625db4fcd2f6150"
+    },
+    "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_result_json_admission.py": {
+      "bytes": 4605,
+      "git_blob": "b1f23698c1c514d55f9dcb046d782d32f7015597",
+      "sha256": "34f7c50db0918ed7d9659b738d921bb4c3a0c6aebf48eb9c7c32e86b6af84b7a"
+    }
+  },
+  "zero_byte_interrupted_checkpoints": 2
+}

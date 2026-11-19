@@ -1,0 +1,2385 @@
+{
+  "action_crossing": {
+    "initial_gate_trained": false,
+    "oracle_semantics": "uses labels; not an observable/achievable routing gain",
+    "paths": [
+      "TT",
+      "TI",
+      "IT",
+      "II",
+      "J"
+    ],
+    "per_seed_row_oracle_gap": [
+      0.00034548053254114183,
+      0.00021259404420004987,
+      0.00019401774379288462
+    ],
+    "per_seed_source_oracle_gap": [
+      0.0002405917610039827,
+      7.102013941823193e-05,
+      8.705922501855284e-05
+    ],
+    "source_winner_counts": [
+      {
+        "II": 0,
+        "IT": 18,
+        "J": 0,
+        "TI": 30,
+        "TT": 0
+      },
+      {
+        "II": 0,
+        "IT": 12,
+        "J": 0,
+        "TI": 36,
+        "TT": 0
+      },
+      {
+        "II": 0,
+        "IT": 15,
+        "J": 1,
+        "TI": 32,
+        "TT": 0
+      }
+    ]
+  },
+  "analysis_cpu_before_receipt": 0.7397060729999999,
+  "arms": {
+    "A": {
+      "build_cpu": 5.409933440999998,
+      "means": {
+        "consistency": 0.9828226996923227,
+        "cpu_net_utility": 0.9639175888737231,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9746241060317082,
+        "pixel_mse": 0.000567718234067553,
+        "task_utility": 0.9759983567193097
+      },
+      "per_seed": [
+        {
+          "decoder_corruption_drop": 0.9712032327864953,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 1353968,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 1353968,
+            "prepare_cpu_ns": 79735,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9831666285333561,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.9744419825962461,
+            "pixel_mse": 0.0005650396051391665,
+            "task_utility": 0.9758526032743529
+          },
+          "reload_exact": true,
+          "seed": 11,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 4435954,
+                "offset": 0,
+                "output_bytes": 25729,
+                "outputs_sha256": "713e16eb47e62b621d942652b12c676f879bd902416d7d5e790f7ec71b5206f5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4546092,
+                "offset": 64,
+                "output_bytes": 25554,
+                "outputs_sha256": "4f9cdc03e91bf5f1d6b96cf7969c9f14ac390e29ebc6c7d20565219f680b9fef",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4978330,
+                "offset": 128,
+                "output_bytes": 25432,
+                "outputs_sha256": "685e7c90d3b31b037021da9c513d2cad20592db2a9a9b88920fec3fe10b2035a",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5489956,
+                "offset": 192,
+                "output_bytes": 25052,
+                "outputs_sha256": "68c6a9aab9bea251a667efe72e61a5ac215a1786e572ff5fa6cb7d49dc1b0692",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5186081,
+                "offset": 256,
+                "output_bytes": 25798,
+                "outputs_sha256": "972daf6d71443a2df7fee29b8444a0f2af4aed5e5efd166946cc7f23f484d43e",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4057022,
+                "offset": 320,
+                "output_bytes": 25790,
+                "outputs_sha256": "94f6f34e3cfb471c9b21b05c6743829897c3cd6a3d5a8cfb2c7c5d8c85e876d7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4473673,
+                "offset": 384,
+                "output_bytes": 25575,
+                "outputs_sha256": "f4c6a16410fe15c835becb1428c196bed2ccdf1fec0728b5df270dfaabac97dd",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4759319,
+                "offset": 448,
+                "output_bytes": 25094,
+                "outputs_sha256": "99dfd6bcda393218dde76cf1063cc2c3f7a45ff6d255c697bac369c192e9dc69",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4201225,
+                "offset": 512,
+                "output_bytes": 25889,
+                "outputs_sha256": "7b8ccd4a7bb0a4ddfc27e4b643ae6fcebc956e17e2ca3c57dfdc40af1a721c89",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6470760,
+                "offset": 576,
+                "output_bytes": 25683,
+                "outputs_sha256": "42185a80d848a149edeb58a9b16f813d94fa61837afdc275549bfed8f0a19c48",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5991752,
+                "offset": 640,
+                "output_bytes": 25086,
+                "outputs_sha256": "a91b4dc4449ccab95508cb54f82a64792072055257ec9b78dbbc6cc9854c8e39",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 9955577,
+                "offset": 704,
+                "output_bytes": 25156,
+                "outputs_sha256": "12e478b1a2fdd6708900cebb82285fc637e69fb32353b5c7276e15c2595dfb8d",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 64545741,
+            "prepare_cpu_ns": 56435,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.969513054552538,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 716256,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 716256,
+            "prepare_cpu_ns": 52856,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9807112942436169,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.9722602961165644,
+            "pixel_mse": 0.0005836482046918084,
+            "task_utility": 0.9737646926164317
+          },
+          "reload_exact": true,
+          "seed": 23,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 4471004,
+                "offset": 0,
+                "output_bytes": 25737,
+                "outputs_sha256": "a6b7991ed236de8ad3c3fefc97bdf8bbc9eed1a93bf23dabcd7f0e61f64c51f5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4491568,
+                "offset": 64,
+                "output_bytes": 25594,
+                "outputs_sha256": "609c70e067c6df5c721db0e3f41447477978a0c7b9687e6da774e197b82318fa",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4489605,
+                "offset": 128,
+                "output_bytes": 25398,
+                "outputs_sha256": "b65053bf25bc9c9cac87caac28e9dea91263472b9dbc6442d2b8fb738d23202c",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5611310,
+                "offset": 192,
+                "output_bytes": 25288,
+                "outputs_sha256": "23eed7e00985fccefd86d7fea4aac866520712881925e976a0895d765ae98b9e",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4850687,
+                "offset": 256,
+                "output_bytes": 25555,
+                "outputs_sha256": "9136f003b32415f261b64d5ade2dbe4c4b3c60f76cdf2211d79aa8963d3c2775",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 8237834,
+                "offset": 320,
+                "output_bytes": 25708,
+                "outputs_sha256": "a221d01894b01c741033608a3d6ee2249f406097fa138d356533a31aa80fff66",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 8334717,
+                "offset": 384,
+                "output_bytes": 25294,
+                "outputs_sha256": "ff96c7e47a2240779214050c40d9805d52cddb40559e944382841a56377125b9",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6895127,
+                "offset": 448,
+                "output_bytes": 24882,
+                "outputs_sha256": "4a43293866724c0a02af6be6ebcef54cfbe9abcf829623c268d3e5372d45f066",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5313268,
+                "offset": 512,
+                "output_bytes": 25708,
+                "outputs_sha256": "9d2458116b9df41aad29069a77efcac1489ed5ecdea6b03876042f6221c314b7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4092316,
+                "offset": 576,
+                "output_bytes": 25804,
+                "outputs_sha256": "13999e3948fb686b87b95cb83710d694c32c5a86cb518b3da11098c73bf07ffe",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4611206,
+                "offset": 640,
+                "output_bytes": 24803,
+                "outputs_sha256": "7bf30b493e519ead346a283a4d07e430c76b2dd4e6da41a8c7791fab97fb5db5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4407838,
+                "offset": 704,
+                "output_bytes": 25108,
+                "outputs_sha256": "eba0a79482eaa4e995fb2c24a25a3a968ec268319e1b999c140f39c8b43a09ac",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 65806480,
+            "prepare_cpu_ns": 216789,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9732615321204882,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 447063,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 447063,
+            "prepare_cpu_ns": 351128,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9845901762999948,
+            "greedy_joint_success": 0.9908854166666666,
+            "joint_success": 0.9771700393823144,
+            "pixel_mse": 0.0005544668923716842,
+            "task_utility": 0.9783777742671442
+          },
+          "reload_exact": true,
+          "seed": 47,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 11503666,
+                "offset": 0,
+                "output_bytes": 25840,
+                "outputs_sha256": "b33c3297956f936bed9a3cc89a781ae86dcac8e50b9fbe95053bd941443d90c1",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 10412498,
+                "offset": 64,
+                "output_bytes": 25746,
+                "outputs_sha256": "06385028aeae12afa93874a9bc4819b12a03dd674b823283dd9c3160134ca98b",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5484846,
+                "offset": 128,
+                "output_bytes": 25479,
+                "outputs_sha256": "8d7f22348b81a86be00350707a29a0758f92f4c665244b2ac201907e1afb4c2f",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5018157,
+                "offset": 192,
+                "output_bytes": 25415,
+                "outputs_sha256": "bcad62dd7cc8aeb6a4a030220ac090befbba1d5007fcdad49f81c2e51f15930d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4519144,
+                "offset": 256,
+                "output_bytes": 25771,
+                "outputs_sha256": "439bb76dcf291683ab690e9355026a17389429f2e37f9545c143635f4f372bd3",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4926905,
+                "offset": 320,
+                "output_bytes": 25693,
+                "outputs_sha256": "d36b97f1de4bae882ced67e520be9ff4cf9b321b8cd5dbfa4307d52b62ce3195",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5518360,
+                "offset": 384,
+                "output_bytes": 25364,
+                "outputs_sha256": "db5c5770c867aa1d9e05ec6e0336fd56656ae8888e22b6355aae9efebf1da480",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4111613,
+                "offset": 448,
+                "output_bytes": 25002,
+                "outputs_sha256": "313dde2607d031f80ddd93f6dced8daab56152f61d98fef291f9a65b55033f01",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4779609,
+                "offset": 512,
+                "output_bytes": 25872,
+                "outputs_sha256": "671ca766a22b51ae231af1fb372f42f7d3d01ca584092bba4cab644acbad580d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4864285,
+                "offset": 576,
+                "output_bytes": 25854,
+                "outputs_sha256": "ca2a2e13672c848f92b827df51d4811c53e44fb582943b9071d3763256cd2b49",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4984237,
+                "offset": 640,
+                "output_bytes": 25097,
+                "outputs_sha256": "683c30e6b5206aefb5fa7f143e00ed9a38818d50118173b84d3165be8b8a88d5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4045581,
+                "offset": 704,
+                "output_bytes": 25372,
+                "outputs_sha256": "0edd9b871ff75fa96cba939f88a3e3a1cb0d4433d626410eaa261a996eba5115",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 70168901,
+            "prepare_cpu_ns": 149830,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        }
+      ],
+      "reference_cpu_ns": 173939.703125,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "units": 11664058551
+    },
+    "A_R": {
+      "build_cpu": 8.345216788999998,
+      "means": {
+        "consistency": 0.9777314279794628,
+        "cpu_net_utility": 0.9561335006251918,
+        "greedy_joint_success": 0.9856770833333334,
+        "joint_success": 0.966800444943955,
+        "pixel_mse": 0.0006723760909451326,
+        "task_utility": 0.9686188358792897
+      },
+      "per_seed": [
+        {
+          "decoder_corruption_drop": 0.9660928967532216,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 434707,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 434707,
+            "prepare_cpu_ns": 51128,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9778037068905632,
+            "greedy_joint_success": 0.984375,
+            "joint_success": 0.9669153403373297,
+            "pixel_mse": 0.0006588726959327595,
+            "task_utility": 0.9687350475051755
+          },
+          "reload_exact": true,
+          "seed": 11,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 7487725,
+                "offset": 0,
+                "output_bytes": 25731,
+                "outputs_sha256": "1b303669681a91cdb1f46c8b2afab1d58f29183ee34770b0b71cde7b973cee54",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6187836,
+                "offset": 64,
+                "output_bytes": 25554,
+                "outputs_sha256": "bd3c163d06097747ef8e2ee7d9ede8bbc2abe92bd49ed4df0f08ae3b09b91b09",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4773530,
+                "offset": 128,
+                "output_bytes": 25432,
+                "outputs_sha256": "685e7c90d3b31b037021da9c513d2cad20592db2a9a9b88920fec3fe10b2035a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4908582,
+                "offset": 192,
+                "output_bytes": 25052,
+                "outputs_sha256": "68c6a9aab9bea251a667efe72e61a5ac215a1786e572ff5fa6cb7d49dc1b0692",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4077113,
+                "offset": 256,
+                "output_bytes": 25795,
+                "outputs_sha256": "e15ac8c1f3e129e378870827dce669b982bafaed7062d5db6a8f2c2a1e36025a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5137710,
+                "offset": 320,
+                "output_bytes": 25756,
+                "outputs_sha256": "0e2e89855e56c159223e06a11587f9cee68dda7c959613a27a6d9f55463cec56",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4157103,
+                "offset": 384,
+                "output_bytes": 25539,
+                "outputs_sha256": "3c06956b7090c176a1df72b6aeb018d4c4f0fe3027c8124ac15c63d6f7411de0",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4243576,
+                "offset": 448,
+                "output_bytes": 25094,
+                "outputs_sha256": "6e6703bb0bc6dfbe29a89917ef5a0b390fb55a27c106180115ebc94c7c1f21de",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4686108,
+                "offset": 512,
+                "output_bytes": 25889,
+                "outputs_sha256": "7b8ccd4a7bb0a4ddfc27e4b643ae6fcebc956e17e2ca3c57dfdc40af1a721c89",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4901440,
+                "offset": 576,
+                "output_bytes": 25649,
+                "outputs_sha256": "0b4099eb87d3bf1d5550dedd013e5e7e0b39edb3426da774ad36a841e2c2aeec",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4553371,
+                "offset": 640,
+                "output_bytes": 25086,
+                "outputs_sha256": "a91b4dc4449ccab95508cb54f82a64792072055257ec9b78dbbc6cc9854c8e39",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4108760,
+                "offset": 704,
+                "output_bytes": 25156,
+                "outputs_sha256": "12e478b1a2fdd6708900cebb82285fc637e69fb32353b5c7276e15c2595dfb8d",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 59222854,
+            "prepare_cpu_ns": 47873,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.962380274038006,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 629289,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 629289,
+            "prepare_cpu_ns": 49767,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9752316947919514,
+            "greedy_joint_success": 0.9830729166666666,
+            "joint_success": 0.9622639914144857,
+            "pixel_mse": 0.0007738332684656153,
+            "task_utility": 0.9643139500776114
+          },
+          "reload_exact": true,
+          "seed": 23,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 5013374,
+                "offset": 0,
+                "output_bytes": 25766,
+                "outputs_sha256": "95b09b1e759444b51fe88d742398b892672b53a46ef2d7b2ca4d69feb5fd8d6a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4789925,
+                "offset": 64,
+                "output_bytes": 25512,
+                "outputs_sha256": "e9f9995daadb3aa0672f9d7d8a83e464ec433702413b8f1f81e5c593a9be38d1",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4599394,
+                "offset": 128,
+                "output_bytes": 25398,
+                "outputs_sha256": "b65053bf25bc9c9cac87caac28e9dea91263472b9dbc6442d2b8fb738d23202c",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4895226,
+                "offset": 192,
+                "output_bytes": 25288,
+                "outputs_sha256": "23eed7e00985fccefd86d7fea4aac866520712881925e976a0895d765ae98b9e",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5059321,
+                "offset": 256,
+                "output_bytes": 25598,
+                "outputs_sha256": "f0bf45430e6075d8eca2f21dd7183e1d877682cb847d28f67b9caec56e88c203",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4764688,
+                "offset": 320,
+                "output_bytes": 25674,
+                "outputs_sha256": "66f757d3d78b5ac772d2dec1ab0692d3de7910a4946de2ccca10046c4d5989c7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 7099523,
+                "offset": 384,
+                "output_bytes": 25317,
+                "outputs_sha256": "e1dc1d192a58888d2e597afed1c58d2b115fc08e5b003a228c8494fe6b2bdffe",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 7871015,
+                "offset": 448,
+                "output_bytes": 24847,
+                "outputs_sha256": "d978844edc11aa5d62217aa95c9fc49913b3a779845ed0ab9434ff731834f9c2",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 3787005,
+                "offset": 512,
+                "output_bytes": 25708,
+                "outputs_sha256": "9d2458116b9df41aad29069a77efcac1489ed5ecdea6b03876042f6221c314b7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5212839,
+                "offset": 576,
+                "output_bytes": 25804,
+                "outputs_sha256": "13999e3948fb686b87b95cb83710d694c32c5a86cb518b3da11098c73bf07ffe",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4678314,
+                "offset": 640,
+                "output_bytes": 24803,
+                "outputs_sha256": "7bf30b493e519ead346a283a4d07e430c76b2dd4e6da41a8c7791fab97fb5db5",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4355271,
+                "offset": 704,
+                "output_bytes": 25110,
+                "outputs_sha256": "151362269b09b9c973e380d50bb917e8eaedd1c212bf2c69aab10c1bcc431a6f",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 62125895,
+            "prepare_cpu_ns": 46316,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9693279423715125,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 856207,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 856207,
+            "prepare_cpu_ns": 55565,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9801588822558737,
+            "greedy_joint_success": 0.9895833333333334,
+            "joint_success": 0.9712220030800497,
+            "pixel_mse": 0.000584422308437023,
+            "task_utility": 0.9728075100550821
+          },
+          "reload_exact": true,
+          "seed": 47,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 5388334,
+                "offset": 0,
+                "output_bytes": 25717,
+                "outputs_sha256": "4dcd593974f79b1a67fdbdfb14acbe76b0c3834c73fe741205a6d688d5100172",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5841485,
+                "offset": 64,
+                "output_bytes": 25746,
+                "outputs_sha256": "06385028aeae12afa93874a9bc4819b12a03dd674b823283dd9c3160134ca98b",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4661193,
+                "offset": 128,
+                "output_bytes": 25479,
+                "outputs_sha256": "8d7f22348b81a86be00350707a29a0758f92f4c665244b2ac201907e1afb4c2f",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4641631,
+                "offset": 192,
+                "output_bytes": 25415,
+                "outputs_sha256": "bcad62dd7cc8aeb6a4a030220ac090befbba1d5007fcdad49f81c2e51f15930d",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4282524,
+                "offset": 256,
+                "output_bytes": 25803,
+                "outputs_sha256": "03cda24d450a6b55d21b750b0c0abf16c053ed1947eaba4c35261627699f5101",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4499993,
+                "offset": 320,
+                "output_bytes": 25733,
+                "outputs_sha256": "dbdfec4afdc1fc9e7bac780dfe398611bec50f29091ca3399634e857f9de71b7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5361093,
+                "offset": 384,
+                "output_bytes": 25365,
+                "outputs_sha256": "1c7689394869f1f8afa862bf84cb89b30d01524d63a456d9684f18843c6f1dfc",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4525824,
+                "offset": 448,
+                "output_bytes": 25002,
+                "outputs_sha256": "313dde2607d031f80ddd93f6dced8daab56152f61d98fef291f9a65b55033f01",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6051042,
+                "offset": 512,
+                "output_bytes": 25880,
+                "outputs_sha256": "489f07e0553d34c6058d9adc890513b36512a06950373d22041e7b128f611e22",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5439191,
+                "offset": 576,
+                "output_bytes": 25847,
+                "outputs_sha256": "4f0b068c098a040d0efafbd7c60c0133082a047531d5f21e6a4a022795069bd8",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5736714,
+                "offset": 640,
+                "output_bytes": 25097,
+                "outputs_sha256": "683c30e6b5206aefb5fa7f143e00ed9a38818d50118173b84d3165be8b8a88d5",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 8309192,
+                "offset": 704,
+                "output_bytes": 25371,
+                "outputs_sha256": "6f60452a93ac48fc58b8068ef6be0ec3c34514e23b97d0498b0950f2af1aad93",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 64738216,
+            "prepare_cpu_ns": 48067,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        }
+      ],
+      "reference_cpu_ns": 173939.703125,
+      "selected": {
+        "lr": 0.01,
+        "path": "TI"
+      },
+      "units": 10621075206
+    },
+    "H": {
+      "build_cpu": 5.023574262000006,
+      "means": {
+        "consistency": 0.9800989402444853,
+        "cpu_net_utility": 0.9618206949136313,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9718837535496964,
+        "pixel_mse": 0.0006505827131175105,
+        "task_utility": 0.9733570267361861
+      },
+      "per_seed": [
+        {
+          "decoder_corruption_drop": 0.9686426607255817,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 787526,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 787526,
+            "prepare_cpu_ns": 46100,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9807180200575464,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.9712787712324186,
+            "pixel_mse": 0.0006666312344410945,
+            "task_utility": 0.9728252905513952
+          },
+          "reload_exact": true,
+          "seed": 11,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 5404725,
+                "offset": 0,
+                "output_bytes": 25731,
+                "outputs_sha256": "1b303669681a91cdb1f46c8b2afab1d58f29183ee34770b0b71cde7b973cee54",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5634226,
+                "offset": 64,
+                "output_bytes": 25554,
+                "outputs_sha256": "4f9cdc03e91bf5f1d6b96cf7969c9f14ac390e29ebc6c7d20565219f680b9fef",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4081128,
+                "offset": 128,
+                "output_bytes": 25432,
+                "outputs_sha256": "685e7c90d3b31b037021da9c513d2cad20592db2a9a9b88920fec3fe10b2035a",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5881658,
+                "offset": 192,
+                "output_bytes": 25052,
+                "outputs_sha256": "68c6a9aab9bea251a667efe72e61a5ac215a1786e572ff5fa6cb7d49dc1b0692",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 12738906,
+                "offset": 256,
+                "output_bytes": 25797,
+                "outputs_sha256": "dd894bbe222ba6679881413e04baf278e31fde7cab20aaa11752510eb8f191d0",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4751686,
+                "offset": 320,
+                "output_bytes": 25722,
+                "outputs_sha256": "839901a29625675cec5ff58e123ce5a0177e874e88390938836c9587aca3d0ce",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5860386,
+                "offset": 384,
+                "output_bytes": 25575,
+                "outputs_sha256": "f4c6a16410fe15c835becb1428c196bed2ccdf1fec0728b5df270dfaabac97dd",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5394139,
+                "offset": 448,
+                "output_bytes": 25094,
+                "outputs_sha256": "6e6703bb0bc6dfbe29a89917ef5a0b390fb55a27c106180115ebc94c7c1f21de",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5045177,
+                "offset": 512,
+                "output_bytes": 25853,
+                "outputs_sha256": "7d9a97c695e0812a3ae555273a5406731857b3b7d72ee1ebdab8fd6332208c31",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4250598,
+                "offset": 576,
+                "output_bytes": 25683,
+                "outputs_sha256": "42185a80d848a149edeb58a9b16f813d94fa61837afdc275549bfed8f0a19c48",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4736985,
+                "offset": 640,
+                "output_bytes": 25086,
+                "outputs_sha256": "a91b4dc4449ccab95508cb54f82a64792072055257ec9b78dbbc6cc9854c8e39",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4510829,
+                "offset": 704,
+                "output_bytes": 25156,
+                "outputs_sha256": "12e478b1a2fdd6708900cebb82285fc637e69fb32353b5c7276e15c2595dfb8d",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 68290443,
+            "prepare_cpu_ns": 61420,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.96732274704324,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 443116,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 443116,
+            "prepare_cpu_ns": 44331,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9781239983555441,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.969872767951193,
+            "pixel_mse": 0.0006618571516273259,
+            "task_utility": 0.9714328237454525
+          },
+          "reload_exact": true,
+          "seed": 23,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 4450259,
+                "offset": 0,
+                "output_bytes": 25708,
+                "outputs_sha256": "07b07248c31fd9f7b16b0079c57bcb1c9dae54a9840aa83344fec25a4bb75ae7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5107199,
+                "offset": 64,
+                "output_bytes": 25594,
+                "outputs_sha256": "609c70e067c6df5c721db0e3f41447477978a0c7b9687e6da774e197b82318fa",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4591814,
+                "offset": 128,
+                "output_bytes": 25398,
+                "outputs_sha256": "b65053bf25bc9c9cac87caac28e9dea91263472b9dbc6442d2b8fb738d23202c",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 3741035,
+                "offset": 192,
+                "output_bytes": 25288,
+                "outputs_sha256": "23eed7e00985fccefd86d7fea4aac866520712881925e976a0895d765ae98b9e",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 3729678,
+                "offset": 256,
+                "output_bytes": 25555,
+                "outputs_sha256": "9136f003b32415f261b64d5ade2dbe4c4b3c60f76cdf2211d79aa8963d3c2775",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4184278,
+                "offset": 320,
+                "output_bytes": 25708,
+                "outputs_sha256": "a221d01894b01c741033608a3d6ee2249f406097fa138d356533a31aa80fff66",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4717835,
+                "offset": 384,
+                "output_bytes": 25294,
+                "outputs_sha256": "ff96c7e47a2240779214050c40d9805d52cddb40559e944382841a56377125b9",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5476751,
+                "offset": 448,
+                "output_bytes": 24882,
+                "outputs_sha256": "4a43293866724c0a02af6be6ebcef54cfbe9abcf829623c268d3e5372d45f066",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 7754563,
+                "offset": 512,
+                "output_bytes": 25708,
+                "outputs_sha256": "9d2458116b9df41aad29069a77efcac1489ed5ecdea6b03876042f6221c314b7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 8301029,
+                "offset": 576,
+                "output_bytes": 25804,
+                "outputs_sha256": "13999e3948fb686b87b95cb83710d694c32c5a86cb518b3da11098c73bf07ffe",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4472358,
+                "offset": 640,
+                "output_bytes": 24803,
+                "outputs_sha256": "7bf30b493e519ead346a283a4d07e430c76b2dd4e6da41a8c7791fab97fb5db5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4231063,
+                "offset": 704,
+                "output_bytes": 25110,
+                "outputs_sha256": "151362269b09b9c973e380d50bb917e8eaedd1c212bf2c69aab10c1bcc431a6f",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 60757862,
+            "prepare_cpu_ns": 145679,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9707347675479102,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 593851,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 593851,
+            "prepare_cpu_ns": 49192,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9814548023203655,
+            "greedy_joint_success": 0.9908854166666666,
+            "joint_success": 0.9744997214654773,
+            "pixel_mse": 0.0006232597532841112,
+            "task_utility": 0.9758129659117104
+          },
+          "reload_exact": true,
+          "seed": 47,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 5320873,
+                "offset": 0,
+                "output_bytes": 25842,
+                "outputs_sha256": "7ef7afb4ff5eeab07e437423e8e6c98e60e452a035ba53f916e3f830a871bb49",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 7057345,
+                "offset": 64,
+                "output_bytes": 25746,
+                "outputs_sha256": "06385028aeae12afa93874a9bc4819b12a03dd674b823283dd9c3160134ca98b",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4554371,
+                "offset": 128,
+                "output_bytes": 25479,
+                "outputs_sha256": "8d7f22348b81a86be00350707a29a0758f92f4c665244b2ac201907e1afb4c2f",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5681447,
+                "offset": 192,
+                "output_bytes": 25415,
+                "outputs_sha256": "bcad62dd7cc8aeb6a4a030220ac090befbba1d5007fcdad49f81c2e51f15930d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5256191,
+                "offset": 256,
+                "output_bytes": 25772,
+                "outputs_sha256": "bc3493f52c0074b228fac6987c64de8311ec75471c534ae87a5f14274c3250ac",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4278425,
+                "offset": 320,
+                "output_bytes": 25733,
+                "outputs_sha256": "dbdfec4afdc1fc9e7bac780dfe398611bec50f29091ca3399634e857f9de71b7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4029125,
+                "offset": 384,
+                "output_bytes": 25364,
+                "outputs_sha256": "db5c5770c867aa1d9e05ec6e0336fd56656ae8888e22b6355aae9efebf1da480",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5520289,
+                "offset": 448,
+                "output_bytes": 25002,
+                "outputs_sha256": "313dde2607d031f80ddd93f6dced8daab56152f61d98fef291f9a65b55033f01",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6395806,
+                "offset": 512,
+                "output_bytes": 25872,
+                "outputs_sha256": "671ca766a22b51ae231af1fb372f42f7d3d01ca584092bba4cab644acbad580d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5486029,
+                "offset": 576,
+                "output_bytes": 25847,
+                "outputs_sha256": "4f0b068c098a040d0efafbd7c60c0133082a047531d5f21e6a4a022795069bd8",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4691827,
+                "offset": 640,
+                "output_bytes": 25097,
+                "outputs_sha256": "683c30e6b5206aefb5fa7f143e00ed9a38818d50118173b84d3165be8b8a88d5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5260227,
+                "offset": 704,
+                "output_bytes": 25371,
+                "outputs_sha256": "f0d455b5b2fe7622c60694f11631f6d1f1b34e732c3809c57d7ad6c0eb37b71b",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 63531955,
+            "prepare_cpu_ns": 55937,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        }
+      ],
+      "reference_cpu_ns": 173939.703125,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "units": 11664350313
+    },
+    "H_R": {
+      "build_cpu": 8.127059989000006,
+      "means": {
+        "consistency": 0.978758032575718,
+        "cpu_net_utility": 0.9565279346933471,
+        "greedy_joint_success": 0.9852430555555555,
+        "joint_success": 0.9676408715272645,
+        "pixel_mse": 0.0006483857519882129,
+        "task_utility": 0.9694408355821
+      },
+      "per_seed": [
+        {
+          "decoder_corruption_drop": 0.9669970298667234,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 549245,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 549245,
+            "prepare_cpu_ns": 49732,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9787754302903181,
+            "greedy_joint_success": 0.9830729166666666,
+            "joint_success": 0.9680174220461257,
+            "pixel_mse": 0.0006303446638065348,
+            "task_utility": 0.9697871657335243
+          },
+          "reload_exact": true,
+          "seed": 11,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 7621905,
+                "offset": 0,
+                "output_bytes": 25731,
+                "outputs_sha256": "1b303669681a91cdb1f46c8b2afab1d58f29183ee34770b0b71cde7b973cee54",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 10561432,
+                "offset": 64,
+                "output_bytes": 25554,
+                "outputs_sha256": "bd3c163d06097747ef8e2ee7d9ede8bbc2abe92bd49ed4df0f08ae3b09b91b09",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5388846,
+                "offset": 128,
+                "output_bytes": 25432,
+                "outputs_sha256": "685e7c90d3b31b037021da9c513d2cad20592db2a9a9b88920fec3fe10b2035a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5411188,
+                "offset": 192,
+                "output_bytes": 25052,
+                "outputs_sha256": "68c6a9aab9bea251a667efe72e61a5ac215a1786e572ff5fa6cb7d49dc1b0692",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4915401,
+                "offset": 256,
+                "output_bytes": 25795,
+                "outputs_sha256": "e15ac8c1f3e129e378870827dce669b982bafaed7062d5db6a8f2c2a1e36025a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5158776,
+                "offset": 320,
+                "output_bytes": 25756,
+                "outputs_sha256": "0e2e89855e56c159223e06a11587f9cee68dda7c959613a27a6d9f55463cec56",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6315287,
+                "offset": 384,
+                "output_bytes": 25539,
+                "outputs_sha256": "3c06956b7090c176a1df72b6aeb018d4c4f0fe3027c8124ac15c63d6f7411de0",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 9674340,
+                "offset": 448,
+                "output_bytes": 25094,
+                "outputs_sha256": "6e6703bb0bc6dfbe29a89917ef5a0b390fb55a27c106180115ebc94c7c1f21de",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4877489,
+                "offset": 512,
+                "output_bytes": 25889,
+                "outputs_sha256": "7b8ccd4a7bb0a4ddfc27e4b643ae6fcebc956e17e2ca3c57dfdc40af1a721c89",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5283345,
+                "offset": 576,
+                "output_bytes": 25651,
+                "outputs_sha256": "f2804a24f18645791272fcdf583c4ada24c255409d6080dccfb32ee120b850e6",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4213250,
+                "offset": 640,
+                "output_bytes": 25086,
+                "outputs_sha256": "a91b4dc4449ccab95508cb54f82a64792072055257ec9b78dbbc6cc9854c8e39",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4773479,
+                "offset": 704,
+                "output_bytes": 25156,
+                "outputs_sha256": "12e478b1a2fdd6708900cebb82285fc637e69fb32353b5c7276e15c2595dfb8d",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 74194738,
+            "prepare_cpu_ns": 53070,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9632319572001435,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 635768,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 635768,
+            "prepare_cpu_ns": 51283,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9763522356271186,
+            "greedy_joint_success": 0.9830729166666666,
+            "joint_success": 0.963175669140241,
+            "pixel_mse": 0.000754023180440282,
+            "task_utility": 0.9652026270976387
+          },
+          "reload_exact": true,
+          "seed": 23,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 7918883,
+                "offset": 0,
+                "output_bytes": 25765,
+                "outputs_sha256": "8773d1e39128ea962cbc03ba81ed091e4963210e6d006157cf8537cd9c844ec8",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4537139,
+                "offset": 64,
+                "output_bytes": 25512,
+                "outputs_sha256": "e9f9995daadb3aa0672f9d7d8a83e464ec433702413b8f1f81e5c593a9be38d1",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4745634,
+                "offset": 128,
+                "output_bytes": 25398,
+                "outputs_sha256": "b65053bf25bc9c9cac87caac28e9dea91263472b9dbc6442d2b8fb738d23202c",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5282011,
+                "offset": 192,
+                "output_bytes": 25288,
+                "outputs_sha256": "23eed7e00985fccefd86d7fea4aac866520712881925e976a0895d765ae98b9e",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4626109,
+                "offset": 256,
+                "output_bytes": 25598,
+                "outputs_sha256": "f0bf45430e6075d8eca2f21dd7183e1d877682cb847d28f67b9caec56e88c203",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4157964,
+                "offset": 320,
+                "output_bytes": 25674,
+                "outputs_sha256": "66f757d3d78b5ac772d2dec1ab0692d3de7910a4946de2ccca10046c4d5989c7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 3785425,
+                "offset": 384,
+                "output_bytes": 25317,
+                "outputs_sha256": "0b5be1e477d9d854816b437550e33a0bee530aa036904293a272f58b0955169a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4455690,
+                "offset": 448,
+                "output_bytes": 24840,
+                "outputs_sha256": "3430a334b41a3c01dd7ea4bd1f46b85de5afa10c93de22372410419f2264f2de",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4892416,
+                "offset": 512,
+                "output_bytes": 25708,
+                "outputs_sha256": "9d2458116b9df41aad29069a77efcac1489ed5ecdea6b03876042f6221c314b7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5050667,
+                "offset": 576,
+                "output_bytes": 25798,
+                "outputs_sha256": "1cabe6fec5fc0e13ef54aa74330d9938645818da02210c0f9090391eb1f29347",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4867190,
+                "offset": 640,
+                "output_bytes": 24803,
+                "outputs_sha256": "7bf30b493e519ead346a283a4d07e430c76b2dd4e6da41a8c7791fab97fb5db5",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5169704,
+                "offset": 704,
+                "output_bytes": 25110,
+                "outputs_sha256": "151362269b09b9c973e380d50bb917e8eaedd1c212bf2c69aab10c1bcc431a6f",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 59488832,
+            "prepare_cpu_ns": 54930,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9698866750341243,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 1093814,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 21978
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 1093814,
+            "prepare_cpu_ns": 51284,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9811464318097171,
+            "greedy_joint_success": 0.9895833333333334,
+            "joint_success": 0.9717295233954267,
+            "pixel_mse": 0.000560789411717822,
+            "task_utility": 0.9733327139151369
+          },
+          "reload_exact": true,
+          "seed": 47,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 5294627,
+                "offset": 0,
+                "output_bytes": 25717,
+                "outputs_sha256": "4dcd593974f79b1a67fdbdfb14acbe76b0c3834c73fe741205a6d688d5100172",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4856412,
+                "offset": 64,
+                "output_bytes": 25746,
+                "outputs_sha256": "06385028aeae12afa93874a9bc4819b12a03dd674b823283dd9c3160134ca98b",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6776602,
+                "offset": 128,
+                "output_bytes": 25479,
+                "outputs_sha256": "8d7f22348b81a86be00350707a29a0758f92f4c665244b2ac201907e1afb4c2f",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5722842,
+                "offset": 192,
+                "output_bytes": 25415,
+                "outputs_sha256": "bcad62dd7cc8aeb6a4a030220ac090befbba1d5007fcdad49f81c2e51f15930d",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6105448,
+                "offset": 256,
+                "output_bytes": 25770,
+                "outputs_sha256": "cf5f00a0b8a3b22967cb77c82aeb56b35ea87853782c3af5d817ce6eba08700a",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 6750737,
+                "offset": 320,
+                "output_bytes": 25733,
+                "outputs_sha256": "dbdfec4afdc1fc9e7bac780dfe398611bec50f29091ca3399634e857f9de71b7",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4098912,
+                "offset": 384,
+                "output_bytes": 25365,
+                "outputs_sha256": "dadf323f7c95480b8ea8ab43db0c4abe6ebc670d0e7be6b547571b0dba969cfd",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4435517,
+                "offset": 448,
+                "output_bytes": 25002,
+                "outputs_sha256": "313dde2607d031f80ddd93f6dced8daab56152f61d98fef291f9a65b55033f01",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4194140,
+                "offset": 512,
+                "output_bytes": 25880,
+                "outputs_sha256": "489f07e0553d34c6058d9adc890513b36512a06950373d22041e7b128f611e22",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4337221,
+                "offset": 576,
+                "output_bytes": 25847,
+                "outputs_sha256": "4f0b068c098a040d0efafbd7c60c0133082a047531d5f21e6a4a022795069bd8",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 4312293,
+                "offset": 640,
+                "output_bytes": 25097,
+                "outputs_sha256": "683c30e6b5206aefb5fa7f143e00ed9a38818d50118173b84d3165be8b8a88d5",
+                "rows": 64,
+                "work_units": 1406592
+              },
+              {
+                "cpu_ns": 5761457,
+                "offset": 704,
+                "output_bytes": 25371,
+                "outputs_sha256": "6f60452a93ac48fc58b8068ef6be0ec3c34514e23b97d0498b0950f2af1aad93",
+                "rows": 64,
+                "work_units": 1406592
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 62646208,
+            "prepare_cpu_ns": 51040,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        }
+      ],
+      "reference_cpu_ns": 173939.703125,
+      "selected": {
+        "lr": 0.01,
+        "path": "TI"
+      },
+      "units": 11658601814
+    },
+    "S": {
+      "build_cpu": 5.043679068000003,
+      "means": {
+        "consistency": 0.9800986906186183,
+        "cpu_net_utility": 0.9615524788990988,
+        "greedy_joint_success": 0.9891493055555555,
+        "joint_success": 0.9718833517782232,
+        "pixel_mse": 0.0006506004871021028,
+        "task_utility": 0.9733566311950818
+      },
+      "per_seed": [
+        {
+          "decoder_corruption_drop": 0.9686425100928916,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 866860,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 866860,
+            "prepare_cpu_ns": 51112,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9807179188321727,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.9712785670792338,
+            "pixel_mse": 0.0006666585050789366,
+            "task_utility": 0.9728250609902069
+          },
+          "reload_exact": true,
+          "seed": 11,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 8010094,
+                "offset": 0,
+                "output_bytes": 25731,
+                "outputs_sha256": "1b303669681a91cdb1f46c8b2afab1d58f29183ee34770b0b71cde7b973cee54",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5657792,
+                "offset": 64,
+                "output_bytes": 25554,
+                "outputs_sha256": "4f9cdc03e91bf5f1d6b96cf7969c9f14ac390e29ebc6c7d20565219f680b9fef",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6599608,
+                "offset": 128,
+                "output_bytes": 25432,
+                "outputs_sha256": "685e7c90d3b31b037021da9c513d2cad20592db2a9a9b88920fec3fe10b2035a",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6137388,
+                "offset": 192,
+                "output_bytes": 25052,
+                "outputs_sha256": "68c6a9aab9bea251a667efe72e61a5ac215a1786e572ff5fa6cb7d49dc1b0692",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4739717,
+                "offset": 256,
+                "output_bytes": 25797,
+                "outputs_sha256": "dd894bbe222ba6679881413e04baf278e31fde7cab20aaa11752510eb8f191d0",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4231451,
+                "offset": 320,
+                "output_bytes": 25722,
+                "outputs_sha256": "839901a29625675cec5ff58e123ce5a0177e874e88390938836c9587aca3d0ce",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 3782002,
+                "offset": 384,
+                "output_bytes": 25575,
+                "outputs_sha256": "f4c6a16410fe15c835becb1428c196bed2ccdf1fec0728b5df270dfaabac97dd",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5506550,
+                "offset": 448,
+                "output_bytes": 25094,
+                "outputs_sha256": "6e6703bb0bc6dfbe29a89917ef5a0b390fb55a27c106180115ebc94c7c1f21de",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5264193,
+                "offset": 512,
+                "output_bytes": 25853,
+                "outputs_sha256": "7d9a97c695e0812a3ae555273a5406731857b3b7d72ee1ebdab8fd6332208c31",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4184255,
+                "offset": 576,
+                "output_bytes": 25683,
+                "outputs_sha256": "42185a80d848a149edeb58a9b16f813d94fa61837afdc275549bfed8f0a19c48",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4688512,
+                "offset": 640,
+                "output_bytes": 25086,
+                "outputs_sha256": "a91b4dc4449ccab95508cb54f82a64792072055257ec9b78dbbc6cc9854c8e39",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5448570,
+                "offset": 704,
+                "output_bytes": 25156,
+                "outputs_sha256": "12e478b1a2fdd6708900cebb82285fc637e69fb32353b5c7276e15c2595dfb8d",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 64250132,
+            "prepare_cpu_ns": 240445,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9673230528355538,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 832253,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 832253,
+            "prepare_cpu_ns": 97830,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9781243260212347,
+            "greedy_joint_success": 0.98828125,
+            "joint_success": 0.9698731129079058,
+            "pixel_mse": 0.000661849353950517,
+            "task_utility": 0.9714331530158313
+          },
+          "reload_exact": true,
+          "seed": 23,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 4240240,
+                "offset": 0,
+                "output_bytes": 25708,
+                "outputs_sha256": "07b07248c31fd9f7b16b0079c57bcb1c9dae54a9840aa83344fec25a4bb75ae7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4431960,
+                "offset": 64,
+                "output_bytes": 25594,
+                "outputs_sha256": "609c70e067c6df5c721db0e3f41447477978a0c7b9687e6da774e197b82318fa",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5006655,
+                "offset": 128,
+                "output_bytes": 25398,
+                "outputs_sha256": "b65053bf25bc9c9cac87caac28e9dea91263472b9dbc6442d2b8fb738d23202c",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4989973,
+                "offset": 192,
+                "output_bytes": 25288,
+                "outputs_sha256": "23eed7e00985fccefd86d7fea4aac866520712881925e976a0895d765ae98b9e",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5441538,
+                "offset": 256,
+                "output_bytes": 25555,
+                "outputs_sha256": "9136f003b32415f261b64d5ade2dbe4c4b3c60f76cdf2211d79aa8963d3c2775",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5437460,
+                "offset": 320,
+                "output_bytes": 25708,
+                "outputs_sha256": "a221d01894b01c741033608a3d6ee2249f406097fa138d356533a31aa80fff66",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4864214,
+                "offset": 384,
+                "output_bytes": 25294,
+                "outputs_sha256": "ff96c7e47a2240779214050c40d9805d52cddb40559e944382841a56377125b9",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5655936,
+                "offset": 448,
+                "output_bytes": 24882,
+                "outputs_sha256": "4a43293866724c0a02af6be6ebcef54cfbe9abcf829623c268d3e5372d45f066",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4539014,
+                "offset": 512,
+                "output_bytes": 25708,
+                "outputs_sha256": "9d2458116b9df41aad29069a77efcac1489ed5ecdea6b03876042f6221c314b7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4095117,
+                "offset": 576,
+                "output_bytes": 25804,
+                "outputs_sha256": "13999e3948fb686b87b95cb83710d694c32c5a86cb518b3da11098c73bf07ffe",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4282631,
+                "offset": 640,
+                "output_bytes": 24803,
+                "outputs_sha256": "7bf30b493e519ead346a283a4d07e430c76b2dd4e6da41a8c7791fab97fb5db5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5977004,
+                "offset": 704,
+                "output_bytes": 25110,
+                "outputs_sha256": "151362269b09b9c973e380d50bb917e8eaedd1c212bf2c69aab10c1bcc431a6f",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 58961742,
+            "prepare_cpu_ns": 55328,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        },
+        {
+          "decoder_corruption_drop": 0.9707337090643016,
+          "external_service": {
+            "batches": [
+              {
+                "cpu_ns": 393862,
+                "offset": 0,
+                "output_bytes": 407,
+                "outputs_sha256": "db1bb1ad412d45642ec140109fa4e1f5c4186fbe856d2a76386327e960cb4b58",
+                "rows": 1,
+                "work_units": 19236
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 393862,
+            "prepare_cpu_ns": 48585,
+            "reference_work_units": 19236,
+            "rows": 1
+          },
+          "means": {
+            "consistency": 0.9814538270024477,
+            "greedy_joint_success": 0.9908854166666666,
+            "joint_success": 0.9744983753475301,
+            "pixel_mse": 0.0006232936022768546,
+            "task_utility": 0.975811679579207
+          },
+          "reload_exact": true,
+          "seed": 47,
+          "service": {
+            "batches": [
+              {
+                "cpu_ns": 9969775,
+                "offset": 0,
+                "output_bytes": 25842,
+                "outputs_sha256": "7ef7afb4ff5eeab07e437423e8e6c98e60e452a035ba53f916e3f830a871bb49",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6407649,
+                "offset": 64,
+                "output_bytes": 25746,
+                "outputs_sha256": "06385028aeae12afa93874a9bc4819b12a03dd674b823283dd9c3160134ca98b",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5349067,
+                "offset": 128,
+                "output_bytes": 25479,
+                "outputs_sha256": "8d7f22348b81a86be00350707a29a0758f92f4c665244b2ac201907e1afb4c2f",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6068363,
+                "offset": 192,
+                "output_bytes": 25415,
+                "outputs_sha256": "bcad62dd7cc8aeb6a4a030220ac090befbba1d5007fcdad49f81c2e51f15930d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5930457,
+                "offset": 256,
+                "output_bytes": 25772,
+                "outputs_sha256": "bc3493f52c0074b228fac6987c64de8311ec75471c534ae87a5f14274c3250ac",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 7271188,
+                "offset": 320,
+                "output_bytes": 25733,
+                "outputs_sha256": "dbdfec4afdc1fc9e7bac780dfe398611bec50f29091ca3399634e857f9de71b7",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6369062,
+                "offset": 384,
+                "output_bytes": 25364,
+                "outputs_sha256": "db5c5770c867aa1d9e05ec6e0336fd56656ae8888e22b6355aae9efebf1da480",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5248519,
+                "offset": 448,
+                "output_bytes": 25002,
+                "outputs_sha256": "313dde2607d031f80ddd93f6dced8daab56152f61d98fef291f9a65b55033f01",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5431947,
+                "offset": 512,
+                "output_bytes": 25872,
+                "outputs_sha256": "671ca766a22b51ae231af1fb372f42f7d3d01ca584092bba4cab644acbad580d",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 5338539,
+                "offset": 576,
+                "output_bytes": 25847,
+                "outputs_sha256": "4f0b068c098a040d0efafbd7c60c0133082a047531d5f21e6a4a022795069bd8",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 6603420,
+                "offset": 640,
+                "output_bytes": 25097,
+                "outputs_sha256": "683c30e6b5206aefb5fa7f143e00ed9a38818d50118173b84d3165be8b8a88d5",
+                "rows": 64,
+                "work_units": 1231104
+              },
+              {
+                "cpu_ns": 4590510,
+                "offset": 704,
+                "output_bytes": 25371,
+                "outputs_sha256": "f0d455b5b2fe7622c60694f11631f6d1f1b34e732c3809c57d7ad6c0eb37b71b",
+                "rows": 64,
+                "work_units": 1231104
+              }
+            ],
+            "cap_violations": 0,
+            "cpu_ns": 74578496,
+            "prepare_cpu_ns": 231922,
+            "reference_work_units": 19236,
+            "rows": 768
+          }
+        }
+      ],
+      "reference_cpu_ns": 173939.703125,
+      "selected": {
+        "lr": 0.01,
+        "path": "full"
+      },
+      "units": 11664350313
+    }
+  },
+  "comparisons": {
+    "A-H": {
+      "greedy_joint_success": {
+        "ci95": [
+          -0.003472222222222222,
+          0.00390625
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": 0.0,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "joint_success": {
+        "ci95": [
+          0.0010527061139321066,
+          0.0043142098312231435
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": 0.002740352482012021,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "task_utility": {
+        "ci95": [
+          0.001072289903981017,
+          0.00412074260894173
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": 0.0026413299831235526,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      }
+    },
+    "A_R-A": {
+      "greedy_joint_success": {
+        "ci95": [
+          -0.009114583333333334,
+          0.002170138888888889
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.003472222222222222,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "joint_success": {
+        "ci95": [
+          -0.012584676333652083,
+          -0.0034532652303371123
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.007823661087753238,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "task_utility": {
+        "ci95": [
+          -0.011805796188462734,
+          -0.003258257411712588
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.00737952084001987,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      }
+    },
+    "A_R-H_R": {
+      "greedy_joint_success": {
+        "ci95": [
+          0.0,
+          0.0026041666666666665
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": 0.00043402777777777775,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "joint_success": {
+        "ci95": [
+          -0.002061046804870749,
+          0.00031114941104715534
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.0008404265833093514,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "task_utility": {
+        "ci95": [
+          -0.0019696005975968984,
+          0.0002539900917541284
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.000821999702810222,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      }
+    },
+    "A_R-S": {
+      "greedy_joint_success": {
+        "ci95": [
+          -0.009125434027777778,
+          0.0013020833333333333
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.003472222222222222,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "joint_success": {
+        "ci95": [
+          -0.009394990688108961,
+          -0.0009759872439890878
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.005082906834268264,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      },
+      "task_utility": {
+        "ci95": [
+          -0.00874212508148564,
+          -0.0009185293404338903
+        ],
+        "cluster_kind": "physical_source",
+        "clusters": 48,
+        "mean": -0.004737795315792042,
+        "physical_source_groups": 48,
+        "replicates": 2000,
+        "seeds": [
+          11,
+          23,
+          47
+        ]
+      }
+    }
+  },
+  "gate_cost_scope": "additional R&D, outside qualified static builds; no complete conditional-system claim",
+  "gate_ledger": {
+    "arm": "initial-gate-development",
+    "consumed_units": 0,
+    "hardware_flops_or_latency": false,
+    "kernels": {},
+    "prices": {
+      "compare_ops": 1,
+      "div_ops": 4,
+      "exp_ops": 8,
+      "log_ops": 8,
+      "macs": 2,
+      "pow_ops": 8,
+      "scalar_ops": 1,
+      "sort_items": 1,
+      "sqrt_ops": 4,
+      "tanh_ops": 8
+    },
+    "remaining_units": 12000000000,
+    "schema": "hepta.independent-work-ledger.v1",
+    "shared_sources": [],
+    "stages": {},
+    "total_cap": 12000000000,
+    "totals": {
+      "consumed_units": 0
+    },
+    "unit_profile": "declared-priced-operator-work-v1"
+  },
+  "scope": "selected TRAIN inner-validation only; descriptive intervals, no confirmation"
+}

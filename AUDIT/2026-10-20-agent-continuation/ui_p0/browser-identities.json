@@ -1,0 +1,54 @@
+{
+  "checkedAtUtc": "2026-10-20T02:23:50.729699+00:00",
+  "scope": "Local diagnosis browser executables; not a reconstructed original CI binary hash",
+  "browsers": [
+    {
+      "mode": "baseline",
+      "diagnosticOnly": true,
+      "recordedRuntimeIdentity": {
+        "protocolVersion": "1.3",
+        "product": "Chrome/153.0.8010.12",
+        "revision": "@971a7443b0c9b0a9b2860529b33331b76077ec62",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/153.0.0.0 Safari/537.36",
+        "jsVersion": "15.3.76.4"
+      },
+      "executableRelativePath": "browser-153/chrome-linux64/chrome",
+      "executableBytes": 293285184,
+      "executableSha256": "8c599d43aec53f2460a31ae2f4af6bd863f8258b34ff519564bc5d4726bfaa1e",
+      "archiveUrl": "https://storage.googleapis.com/chrome-for-testing-public/153.0.8010.12/linux64/chrome-linux64.zip",
+      "archiveBytes": 195836009,
+      "archiveSha256": "8aac35011c18f6e2d10696154af89a5728ac2ddd6dc6fad24ffdf243c3fcfd5a",
+      "cacheDeletionAuthorizedByParent": true,
+      "liveCacheHandlesBeforeDeletion": 0
+    },
+    {
+      "mode": "upstream-fixed-diagnostic",
+      "diagnosticOnly": true,
+      "recordedRuntimeIdentity": {
+        "protocolVersion": "1.3",
+        "product": "HeadlessChrome/157.0.8099.0",
+        "revision": "@94bcda4759263b9a241f5008a68e753c2ebe3081",
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.8099.0 Safari/537.36",
+        "jsVersion": "15.7.108"
+      },
+      "executableRelativePath": "browser-157/chrome-headless-shell-linux64/chrome-headless-shell",
+      "executableBytes": 208555344,
+      "executableSha256": "37164bfc553db9c17e11bc19c291738a1179c5b13529ec6f20a39bd665e91be0",
+      "archiveUrl": "https://storage.googleapis.com/chrome-for-testing-public/157.0.8099.0/linux64/chrome-headless-shell-linux64.zip",
+      "archiveBytes": 126501006,
+      "archiveSha256": "9541eafbc02f85e3ec0c24b05f8bbffe88094389949860681bf6055aef668d7b",
+      "cacheDeletionAuthorizedByParent": true,
+      "liveCacheHandlesBeforeDeletion": 0
+    }
+  ],
+  "cacheDeletion": "Own two extracted browser caches removed after digest and live-handle verification; original CI artifacts and diagnostic evidence retained",
+  "cleanupRecheck": {
+    "atUtc": "2026-10-20T02:43:07.609233+00:00",
+    "reason": "Both cache directories were observed present again after the earlier successful deletion call; no downloads were performed by this agent in between",
+    "binaryDigestsReverified": true,
+    "liveHandles": [],
+    "directoriesAbsentImmediatelyAfterRemoval": true,
+    "availableBytesBefore": 491573248,
+    "availableBytesAfter": 1190481920
+  }
+}

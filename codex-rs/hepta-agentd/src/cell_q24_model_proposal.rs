@@ -39,6 +39,10 @@ use crate::CellQ24TrainingOwnerV1;
 #[path = "cell_q24_model_proposal_admission.rs"]
 mod admission;
 use admission::Admission;
+
+#[cfg(target_os = "linux")]
+#[path = "cell_q24_model_current_owner.rs"]
+mod current;
 #[cfg(target_os = "linux")]
 pub(crate) use admission::RootQ24ModelProjectionDataV1;
 #[cfg(target_os = "linux")]

@@ -1,0 +1,55 @@
+{
+  "schema": "hepta.cell-execution-benchmark.v1",
+  "status": "qualification_plan",
+  "authority": "qualification_only",
+  "arms": [
+    "no_change",
+    "fixed_routing",
+    "learned_routing",
+    "single_head",
+    "shared_encoder",
+    "duplicated_encoder"
+  ],
+  "sizes": [1, 8, 64, 256, 1024, 4096],
+  "required_fixtures": [
+    "zero_delta_parity",
+    "shared_encoder_vs_duplicated_encoder",
+    "state_migration",
+    "deterministic_routing",
+    "bounded_queue",
+    "fair_scheduling",
+    "cache_generation_invalidation",
+    "future_window_evaluation",
+    "negative_transfer",
+    "lesion_ablation",
+    "crash_reopen",
+    "stale_generation_rejection",
+    "rollback",
+    "resource_cost"
+  ],
+  "metrics": [
+    "task_utility",
+    "future_window_utility",
+    "negative_transfer_rate",
+    "p50_ms",
+    "p95_ms",
+    "p99_ms",
+    "throughput_per_host",
+    "queue_age_ms",
+    "starvation_count",
+    "gpu_peak_bytes",
+    "rss_bytes",
+    "immutable_buffer_reuse_rate",
+    "cache_invalidation_count",
+    "migration_recovery_ms",
+    "rollback_recovery_ms"
+  ],
+  "admission_rules": [
+    "no_change_is_present_in_every_candidate_set",
+    "candidate_evaluation_is_independent_of_candidate_generation",
+    "old_writer_is_fenced_before_route_cutover",
+    "unknown_effects_are_reconcile_only",
+    "production_admission_requires_signed_successor_snapshot",
+    "meta_network_claims_require_effect_size_and_resource_confidence_intervals"
+  ]
+}

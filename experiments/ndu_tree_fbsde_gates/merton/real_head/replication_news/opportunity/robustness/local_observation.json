@@ -1,0 +1,255 @@
+{
+  "cold_admission": {
+    "0": {
+      "admit": true,
+      "best_possible_net": "1",
+      "fallback_floor": "0",
+      "reason": "upper_bound_only"
+    },
+    "1": {
+      "admit": false,
+      "best_possible_net": "0",
+      "fallback_floor": "0",
+      "reason": "no_possible_repayment"
+    },
+    "1/2": {
+      "admit": true,
+      "best_possible_net": "1/2",
+      "fallback_floor": "0",
+      "reason": "upper_bound_only"
+    },
+    "3/2": {
+      "admit": false,
+      "best_possible_net": "-1/2",
+      "fallback_floor": "0",
+      "reason": "no_possible_repayment"
+    }
+  },
+  "neural_training": false,
+  "new_independent_source_groups": 0,
+  "posture": "RESEARCH_ONLY_DENY_ALL",
+  "production_accepted": false,
+  "real_task_superiority_established": false,
+  "registered_sensitivity": [
+    {
+      "adversarial_probabilities": [
+        "7/10",
+        "3/10"
+      ],
+      "alpha": "0",
+      "decision": "continue",
+      "epsilon": "0",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "0",
+      "risk_weight": "0",
+      "robust_continuation": "4/5",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "7/10",
+        "3/10"
+      ],
+      "alpha": "1/4",
+      "decision": "stop",
+      "epsilon": "0",
+      "nominal_continuation": "57/80",
+      "production_permission": false,
+      "radius": "0",
+      "risk_weight": "1/4",
+      "robust_continuation": "57/80",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "13/20",
+        "7/20"
+      ],
+      "alpha": "0",
+      "decision": "continue",
+      "epsilon": "1/20",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "1/20",
+      "risk_weight": "0",
+      "robust_continuation": "31/40",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "13/20",
+        "7/20"
+      ],
+      "alpha": "1/4",
+      "decision": "stop",
+      "epsilon": "1/20",
+      "nominal_continuation": "57/80",
+      "production_permission": false,
+      "radius": "1/20",
+      "risk_weight": "1/4",
+      "robust_continuation": "111/160",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "3/5",
+        "2/5"
+      ],
+      "alpha": "0",
+      "decision": "stop",
+      "epsilon": "1/10",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "1/10",
+      "risk_weight": "0",
+      "robust_continuation": "3/4",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "3/5",
+        "2/5"
+      ],
+      "alpha": "1/4",
+      "decision": "stop",
+      "epsilon": "1/10",
+      "nominal_continuation": "57/80",
+      "production_permission": false,
+      "radius": "1/10",
+      "risk_weight": "1/4",
+      "robust_continuation": "27/40",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "11/20",
+        "9/20"
+      ],
+      "alpha": "0",
+      "decision": "stop",
+      "epsilon": "3/20",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "3/20",
+      "risk_weight": "0",
+      "robust_continuation": "29/40",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "11/20",
+        "9/20"
+      ],
+      "alpha": "1/4",
+      "decision": "stop",
+      "epsilon": "3/20",
+      "nominal_continuation": "57/80",
+      "production_permission": false,
+      "radius": "3/20",
+      "risk_weight": "1/4",
+      "robust_continuation": "21/32",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "1/2",
+        "1/2"
+      ],
+      "alpha": "0",
+      "decision": "stop",
+      "epsilon": "1/5",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "1/5",
+      "risk_weight": "0",
+      "robust_continuation": "7/10",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    {
+      "adversarial_probabilities": [
+        "1/2",
+        "1/2"
+      ],
+      "alpha": "1/4",
+      "decision": "stop",
+      "epsilon": "1/5",
+      "nominal_continuation": "57/80",
+      "production_permission": false,
+      "radius": "1/5",
+      "risk_weight": "1/4",
+      "robust_continuation": "51/80",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    }
+  ],
+  "retrospective_nested": {
+    "empirical_source_family_independence": false,
+    "fixed8_correct": 49,
+    "forecast_bias": -0.07233796296296295,
+    "forecast_mae": 0.09982638888888887,
+    "ndu_correct": 49,
+    "neutral_correct": 49,
+    "qualifies_transfer": false,
+    "radius_calibrated_from_future_groups": false,
+    "source_sha256": "66b9dd26cbd7c84b9a0673cf7bfc27b0ae0a00987b397b8c1e35467b5b096461",
+    "unique_historical_records": 64
+  },
+  "schema": "hepta.ndu-merton-ambiguity.v1",
+  "toy_shift": {
+    "bad_world_continue_net": "9/20",
+    "common_stop_net": "3/4",
+    "good_world_continue_net": "19/20",
+    "interpretation": "no history-measurable policy simultaneously chooses both world-optimal actions",
+    "nominal": {
+      "adversarial_probabilities": [
+        "7/10",
+        "3/10"
+      ],
+      "decision": "continue",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "0",
+      "risk_weight": "0",
+      "robust_continuation": "4/5",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    },
+    "observed_history": "identical pre-decision history in both worlds",
+    "robust": {
+      "adversarial_probabilities": [
+        "11/20",
+        "9/20"
+      ],
+      "decision": "stop",
+      "nominal_continuation": "4/5",
+      "production_permission": false,
+      "radius": "3/20",
+      "risk_weight": "0",
+      "robust_continuation": "29/40",
+      "source_new_model_calls": 0,
+      "stop": "3/4",
+      "unsupported_source": true
+    }
+  }
+}

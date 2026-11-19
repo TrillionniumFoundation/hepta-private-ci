@@ -1,0 +1,163 @@
+{
+  "actual_part_assembly_and_reassembled_verification_passed": true,
+  "all_research_blockers_closed": false,
+  "archive_bytes": 18821020,
+  "archive_path": "research_evidence/hepta_stable_flow_20261029/releases/hepta_recovery_evidence_20261030.tar.gz",
+  "archive_sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423",
+  "artifact_integrity_passed": true,
+  "command_results": [
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-S",
+        "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_archive.py",
+        "verify",
+        "--archive",
+        "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/releases/hepta_recovery_evidence_20261030.tar.gz"
+      ],
+      "cwd": "/workspace/scratch/45b3735e7225/hepta-cfb",
+      "label": "original_archive_verified_before_extract",
+      "parsed_result": {
+        "all_research_blockers_closed": false,
+        "archive_bytes": 18821020,
+        "archive_sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423",
+        "file_count": 1170,
+        "manifest_sha256": "8e250c4198be05bd7b8310778b9517d436c5455f3a1318cf51d29a4fa05f3047",
+        "original_archive_recovered": false,
+        "schema": "hepta-recovery-archive-verification-v1",
+        "status": "archive_verified",
+        "total_file_bytes": 35438067
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"all_research_blockers_closed\": false,\n  \"archive_bytes\": 18821020,\n  \"archive_sha256\": \"604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423\",\n  \"file_count\": 1170,\n  \"manifest_sha256\": \"8e250c4198be05bd7b8310778b9517d436c5455f3a1318cf51d29a4fa05f3047\",\n  \"original_archive_recovered\": false,\n  \"schema\": \"hepta-recovery-archive-verification-v1\",\n  \"status\": \"archive_verified\",\n  \"total_file_bytes\": 35438067\n}\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-S",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted/research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_archive.py",
+        "verify-tree",
+        "--root",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted"
+      ],
+      "cwd": "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted",
+      "label": "fresh_extracted_package_own_verifier",
+      "parsed_result": {
+        "all_research_blockers_closed": false,
+        "file_count": 1170,
+        "original_archive_recovered": false,
+        "status": "tree_verified"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"all_research_blockers_closed\": false,\n  \"file_count\": 1170,\n  \"original_archive_recovered\": false,\n  \"status\": \"tree_verified\"\n}\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-S",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted/experiments/call_put_stable_flow_analysis/release_parts.py",
+        "verify",
+        "--manifest",
+        "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/releases/recovery_parts_20261030/PARTS.json"
+      ],
+      "cwd": "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted",
+      "label": "parts_verified_with_packaged_tool",
+      "parsed_result": {
+        "bytes": 18821020,
+        "manifest_sha256": "03ddb98dbfd836ea140ddd599777f54d735ec6f5bf4c484bd1781c4a775a24e0",
+        "parts": 9,
+        "sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423",
+        "status": "all_parts_and_combined_archive_verified"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"bytes\": 18821020, \"manifest_sha256\": \"03ddb98dbfd836ea140ddd599777f54d735ec6f5bf4c484bd1781c4a775a24e0\", \"parts\": 9, \"sha256\": \"604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423\", \"status\": \"all_parts_and_combined_archive_verified\"}\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-S",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted/experiments/call_put_stable_flow_analysis/release_parts.py",
+        "assemble",
+        "--manifest",
+        "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/releases/recovery_parts_20261030/PARTS.json",
+        "--output",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/independently_assembled.tar.gz"
+      ],
+      "cwd": "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted",
+      "label": "actual_fresh_archive_assembly",
+      "parsed_result": {
+        "bytes": 18821020,
+        "next_check": "release.py verify --archive OUTPUT",
+        "output": "/tmp/hepta-independent-recovery-release-vzw2xr1y/independently_assembled.tar.gz",
+        "sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423",
+        "status": "archive_reconstructed_exactly"
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\"bytes\": 18821020, \"next_check\": \"release.py verify --archive OUTPUT\", \"output\": \"/tmp/hepta-independent-recovery-release-vzw2xr1y/independently_assembled.tar.gz\", \"sha256\": \"604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423\", \"status\": \"archive_reconstructed_exactly\"}\n"
+    },
+    {
+      "command": [
+        "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+        "-I",
+        "-S",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted/research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_archive.py",
+        "verify",
+        "--archive",
+        "/tmp/hepta-independent-recovery-release-vzw2xr1y/independently_assembled.tar.gz"
+      ],
+      "cwd": "/tmp/hepta-independent-recovery-release-vzw2xr1y/extracted",
+      "label": "reassembled_archive_verified_with_packaged_tool",
+      "parsed_result": {
+        "all_research_blockers_closed": false,
+        "archive_bytes": 18821020,
+        "archive_sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423",
+        "file_count": 1170,
+        "manifest_sha256": "8e250c4198be05bd7b8310778b9517d436c5455f3a1318cf51d29a4fa05f3047",
+        "original_archive_recovered": false,
+        "schema": "hepta-recovery-archive-verification-v1",
+        "status": "archive_verified",
+        "total_file_bytes": 35438067
+      },
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"all_research_blockers_closed\": false,\n  \"archive_bytes\": 18821020,\n  \"archive_sha256\": \"604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423\",\n  \"file_count\": 1170,\n  \"manifest_sha256\": \"8e250c4198be05bd7b8310778b9517d436c5455f3a1318cf51d29a4fa05f3047\",\n  \"original_archive_recovered\": false,\n  \"schema\": \"hepta-recovery-archive-verification-v1\",\n  \"status\": \"archive_verified\",\n  \"total_file_bytes\": 35438067\n}\n"
+    }
+  ],
+  "exact_roundtrip": {
+    "bytes": 18821020,
+    "equals_original_archive": true,
+    "sha256": "604c2e402a1bba5c15121e9a1165a59e58e4a4322da87f73086500d7a5256423"
+  },
+  "file_count": 1170,
+  "finished_utc": "2026-10-30T01:22:18.362131+00:00",
+  "fresh_extraction_and_packaged_verify_tree_passed": true,
+  "isolated_packaged_parts_tool_sha256": "524de674a518a5d367f18aabaf2af4a4711edbbf323bcb6d0cf8d8c2d6d8513d",
+  "isolated_packaged_verifier_sha256": "6af2cf7e7e802f6e3aec1733d6ff2e79c4c8758b9cdc9ffcfb2e22187373df94",
+  "isolated_python_flags": [
+    "-I",
+    "-S"
+  ],
+  "manifest_sha256": "8e250c4198be05bd7b8310778b9517d436c5455f3a1318cf51d29a4fa05f3047",
+  "original_archive_and_parts_preserved": true,
+  "original_lost_complete_archive_recovered": false,
+  "parts_count": 9,
+  "parts_manifest_path": "research_evidence/hepta_stable_flow_20261029/releases/recovery_parts_20261030/PARTS.json",
+  "parts_manifest_sha256": "03ddb98dbfd836ea140ddd599777f54d735ec6f5bf4c484bd1781c4a775a24e0",
+  "remote_readback_performed": false,
+  "schema": "hepta-independent-recovery-archive-audit-v1",
+  "scientific_experiments_rerun": false,
+  "standard_library_only": true,
+  "started_utc": "2026-10-30T01:22:15.174094+00:00",
+  "status": "complete",
+  "temporary_extraction_and_assembled_copy_removed": true,
+  "total_file_bytes": 35438067,
+  "wall_seconds": 3.1880316430001585
+}

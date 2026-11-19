@@ -75,12 +75,7 @@ impl ProductionDurableWriter {
         claim: &MemoryCellSourceClaimV1,
     ) -> Result<MemoryCellAdmissionV1, MemoryCellSourceError> {
         self.verify_current_authority().await?;
-        let mut tx = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut tx = self.store.begin_write_transaction().await?;
         let binding = self
             .memory_cell_source_tx(&mut tx, access, query, claim, now_unix_ms()?)
             .await?;
@@ -172,12 +167,7 @@ impl ProductionDurableWriter {
             return Err(MemoryCellSourceError::Invalid("empty execution receipt"));
         }
         self.verify_current_authority().await?;
-        let mut tx = self
-            .store
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(unavailable)?;
+        let mut tx = self.store.begin_write_transaction().await?;
         self.memory_cell_pending_tx(&mut tx, admission).await?;
         let current = self
             .memory_cell_source_tx(

@@ -1,0 +1,162 @@
+{
+  "bin_boundary": "lower inclusive, upper exclusive except final upper inclusive",
+  "contrasts_per_seed": [
+    "S E-C",
+    "A E-C",
+    "N E-C",
+    "C N-S",
+    "C N-A",
+    "E N-S",
+    "E N-A"
+  ],
+  "decomposition": "two-feature symmetric Shapley identity for fixed R(p,m); no fitted parameters",
+  "initial_plan_sha256": "5d5c9ec71ab2f2fc0a25caf78bd5f13defa208d02bcd4c90c22607c993b50a98",
+  "input_report_bindings": [
+    {
+      "cell": [
+        41011,
+        "C",
+        "S"
+      ],
+      "sha256": "3d8d8027731a5c8a96644ba4b53b831187c601c94677056a40001a96aa4dac57"
+    },
+    {
+      "cell": [
+        41011,
+        "C",
+        "A"
+      ],
+      "sha256": "394300d2a8833aa706829da851e938b728f3522214e34331226d584b467bcd29"
+    },
+    {
+      "cell": [
+        41011,
+        "C",
+        "N"
+      ],
+      "sha256": "f073af78cbfbcfa7b6c686abbc379ce97a67125c1aad04c355e10d6afb497960"
+    },
+    {
+      "cell": [
+        41011,
+        "E",
+        "S"
+      ],
+      "sha256": "e45d317df7dd50b15b4b43f39ebd5b1e77a3bc641e83acf4f4a49ccbd4a53966"
+    },
+    {
+      "cell": [
+        41011,
+        "E",
+        "A"
+      ],
+      "sha256": "b0632ed8fc9634fbf317b92fa79baae4b6629a500230ceda5989e60e914824cb"
+    },
+    {
+      "cell": [
+        41011,
+        "E",
+        "N"
+      ],
+      "sha256": "0de7fac6a4170c01dd2323b521facbe37af94454edfd56097b6a32844b9b5c0f"
+    },
+    {
+      "cell": [
+        41023,
+        "C",
+        "S"
+      ],
+      "sha256": "d07a999341e86674ff8e02dcd8b251c328b4948b698ddf734d6a8ddc6f2d65b4"
+    },
+    {
+      "cell": [
+        41023,
+        "C",
+        "A"
+      ],
+      "sha256": "c6cab32bd202e6f07e1537e13395fb4c60c4e72175751132302180bbe3a896c6"
+    },
+    {
+      "cell": [
+        41023,
+        "C",
+        "N"
+      ],
+      "sha256": "9b6bcf0aae50c513412c20c0a681382610c20c31db7e2a1518cedf57dd7f69f2"
+    },
+    {
+      "cell": [
+        41023,
+        "E",
+        "S"
+      ],
+      "sha256": "a66d18407f0d865b223a47caf7b14f21daba59472c47401d8d21865fda1101dc"
+    },
+    {
+      "cell": [
+        41023,
+        "E",
+        "A"
+      ],
+      "sha256": "3047d2aca187fbddbb992d54f0c17195aea35b1770904bc5d53956eab2b615ed"
+    },
+    {
+      "cell": [
+        41023,
+        "E",
+        "N"
+      ],
+      "sha256": "4b72b6834966cee4b81145d3c7c6769f8051e29dbf393167e0185e4b28f05510"
+    }
+  ],
+  "limits": {
+    "AS_bytes": 536870912,
+    "CPU_seconds": 15,
+    "affinity": [
+      0
+    ],
+    "same_shared_lock": true,
+    "wall_seconds": 90
+  },
+  "noise_strata": [
+    "all",
+    "sigma-1/16",
+    "sigma-3/16"
+  ],
+  "official_TEST_read": false,
+  "original_budget_failure_preserved": true,
+  "original_terminal_sha256": "3920f3613bb55053c418458841003b51d68067de3ec4f6b80ce16acc74a4db24",
+  "private_path_manifest_sha256": "be17f883b714d0c341097115cbc33386b6f538a2a9611bf6d32c919c96e24fab",
+  "question": "Decompose every predeclared paired risk difference into actual correct-class mass and decoded-image MSE channels; locate fixed reference-confidence strata. This is metric bookkeeping, not a feasible hybrid policy or causal training effect.",
+  "read_inputs": "12 pre-existing saved report JSONs; paths omitted; no dataset or model payload",
+  "reconstruction_absolute_tolerance": 1e-12,
+  "reference_probability_bins": [
+    [
+      0,
+      0.5
+    ],
+    [
+      0.5,
+      0.9
+    ],
+    [
+      0.9,
+      0.99
+    ],
+    [
+      0.99,
+      1
+    ]
+  ],
+  "reference_probability_is": "paired right arm: C for E-C, S for N-S, A for N-A",
+  "request_then_aggregate": true,
+  "reused_DEV": "developmental reuse; no p-values, no independent confirmation",
+  "schema": "saved-served-risk-decomposition-plan-v1",
+  "scope": "posthoc descriptive analysis of already saved full reports; not new model evaluation or protocol rescue",
+  "scope_clarification_before_first_execution": true,
+  "seeds": [
+    41011,
+    41023
+  ],
+  "selection_or_new_thresholds": false
+}

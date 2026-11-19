@@ -62,7 +62,7 @@ impl ProductionDurableWriter {
             .ok_or_else(|| {
                 ProductionWriterError::Invalid("Notes observation has no original operation".into())
             })?;
-        if retained.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&retained.topic) {
             return Err(ProductionWriterError::Invalid(
                 "not a Notes operation".into(),
             ));
@@ -82,9 +82,25 @@ impl ProductionDurableWriter {
         .fetch_optional(self.store.observation_pool())
         .await
         .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-        let (kind, receipt, digest) = row.ok_or_else(|| {
-            ProductionWriterError::Invalid("original terminal event disappeared".into())
-        })?;
+        let Some((kind, receipt, digest)) = row else {
+            let fenced: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM cognitive_local_events
+                 WHERE lease_id = ? AND occurrence_key = ?
+                   AND event_kind = 'notes_fence_excluded'",
+            )
+            .bind(self.lease_id())
+            .bind(operation_id)
+            .fetch_one(self.store.observation_pool())
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+            if retained.state == LocalOutcomeState::Rejected && fenced == 1 {
+                self.verify_authority().await?;
+                return Ok(None);
+            }
+            return Err(ProductionWriterError::Invalid(
+                "original terminal event disappeared".into(),
+            ));
+        };
         if Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != digest {
             return Err(ProductionWriterError::Invalid(
                 "terminal event digest mismatch".into(),
@@ -115,7 +131,7 @@ impl ProductionDurableWriter {
         expected: LocalReconcileOutcome,
     ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
         self.verify_authority().await?;
-        if request.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&request.topic) {
             return Err(ProductionWriterError::Invalid(
                 "Notes evidence targets another topic".to_string(),
             ));
@@ -134,6 +150,87 @@ impl ProductionDurableWriter {
             .into())
     }
 
+    /// Settle one indeterminate original Notes replacement only after this
+    /// original writer has a committed, exactly bound fence operation in its
+    /// own append-only journal.  The persisted source event is a typed causal
+    /// exclusion record, never a fabricated `NotApplied` application receipt.
+    pub async fn settle_notes_original_from_fence(
+        &self,
+        original_operation_id: &str,
+        cancellation_operation_id: &str,
+    ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        if original_operation_id == cancellation_operation_id {
+            return Err(ProductionWriterError::Invalid(
+                "Notes fence must be a distinct operation".to_string(),
+            ));
+        }
+        let original = self
+            .retained_operation(original_operation_id)
+            .await?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid(
+                    "Notes fence has no retained original operation".to_string(),
+                )
+            })?;
+        let cancellation = self
+            .retained_operation(cancellation_operation_id)
+            .await?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid(
+                    "Notes fence has no retained cancellation operation".to_string(),
+                )
+            })?;
+        if original.topic != crate::NOTES_REPLACE_TOPIC_V1
+            || original.state != LocalOutcomeState::Indeterminate
+            || cancellation.topic != crate::NOTES_FENCE_TOPIC_V1
+            || cancellation.state != LocalOutcomeState::Committed
+        {
+            return Err(ProductionWriterError::Invalid(
+                "Notes fence source states do not permit original settlement".to_string(),
+            ));
+        }
+        let (event_id, receipt, receipt_digest, event_digest): (String, String, String, String) =
+            sqlx::query_as(
+                "SELECT event_id, payload_json, payload_sha256, event_sha256
+             FROM cognitive_local_events
+             WHERE lease_id = ? AND occurrence_key = ?
+               AND event_kind = 'reconcile_committed'
+             LIMIT 1",
+            )
+            .bind(self.lease_id())
+            .bind(cancellation_operation_id)
+            .fetch_optional(self.store.observation_pool())
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
+            .ok_or_else(|| {
+                ProductionWriterError::Invalid("committed Notes fence event is absent".to_string())
+            })?;
+        if Sha256Digest::for_bytes(receipt.as_bytes()).as_str() != receipt_digest {
+            return Err(ProductionWriterError::Invalid(
+                "committed Notes fence event digest mismatch".to_string(),
+            ));
+        }
+        let event_digest =
+            Sha256Digest::parse(&event_digest).map_err(ProductionWriterError::Invalid)?;
+        let proof = crate::production_notes::NotesFenceProof::from_committed_event(
+            original_operation_id,
+            &original.payload_json,
+            cancellation_operation_id,
+            &cancellation.payload_json,
+            &event_id,
+            &event_digest,
+            &receipt,
+        )
+        .map_err(ProductionWriterError::Invalid)?;
+        self.verify_authority().await?;
+        Ok(self
+            .lease
+            .reconcile_notes_fenced_original(&proof)
+            .await?
+            .into())
+    }
+
     /// Retry only receipt retirement, never application dispatch. Failure does
     /// not undo a durable source result; the application keeps its pending
     /// receipt until it accepts this exact ACK. A lost ACK is safely repeatable.
@@ -147,7 +244,7 @@ impl ProductionDurableWriter {
         let request = self
             .reconciliation_request(operation_id, target.destination_id())
             .await?;
-        if request.topic != crate::NOTES_REPLACE_TOPIC_V1 {
+        if !crate::production_notes::is_notes_topic(&request.topic) {
             return Err(ProductionWriterError::Invalid(
                 "Notes retirement targets another topic".to_string(),
             ));
@@ -191,7 +288,7 @@ impl ProductionDurableWriter {
             .retained_application_retirement_ack_transaction(
                 &mut transaction,
                 operation_id,
-                crate::NOTES_REPLACE_TOPIC_V1,
+                &request.topic,
             )
             .await?
             .is_some();
@@ -228,10 +325,10 @@ impl ProductionDurableWriter {
             "SELECT e.occurrence_key FROM cognitive_local_events e
              JOIN cognitive_operation_ledger o ON o.lease_id = e.lease_id AND o.operation_id = e.occurrence_key
              JOIN cognitive_local_outbox b ON b.lease_id = e.lease_id AND b.occurrence_key = e.occurrence_key
-             WHERE e.lease_id = ? AND o.destination_id = ? AND b.topic = ?
+             WHERE e.lease_id = ? AND o.destination_id = ? AND b.topic IN (?, ?)
                AND e.event_kind = 'reconcile_committed'
              ORDER BY e.event_sequence DESC LIMIT 1",
-        ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1)
+        ).bind(self.lease_id()).bind(target.destination_id()).bind(crate::NOTES_REPLACE_TOPIC_V1).bind(crate::NOTES_FENCE_TOPIC_V1)
             .fetch_optional(self.store.observation_pool()).await
             .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
         if let Some(operation_id) = latest {

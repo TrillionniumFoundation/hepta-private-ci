@@ -95,18 +95,12 @@ impl LedgerFixture {
                     .open(directory.path().join(name)),
             )
         };
-        let ledger_file = file("ledger");
-        let witness_file = file("witness");
-        let observers = [
-            checked(ledger_file.try_clone()),
-            checked(witness_file.try_clone()),
-        ];
         let ledger = checked(DurableLedger::create(
-            ledger_file,
+            file("ledger"),
             d(domain),
             /*max_records*/ 32,
         ));
-        let witness = checked(LedgerWitnessStore::create(witness_file, d(domain)));
+        let witness = checked(LedgerWitnessStore::create(file("witness"), d(domain)));
         let key = SigningKey::from_bytes(&[99; 32]);
         let root = LearningTrustRootV1 {
             root_id: id("root"),

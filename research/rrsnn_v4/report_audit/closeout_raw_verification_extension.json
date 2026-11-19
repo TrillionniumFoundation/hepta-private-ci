@@ -1,0 +1,8 @@
+{
+  "schema": "rrsnn-v4-closeout-raw-verification-extension-1",
+  "source_before_sha256": "2baf1eb19e3405c28a2876438022be0d1b03710de6408358cf807664ee9be4cb",
+  "source_after_sha256": "04e0efb56786db8fb687acbf47eb2bda975e5dcf4a321a6d413fc5b643a6a488",
+  "reason": "The restored-evidence entrypoint previously checked main and resource raw bytes but trusted numerical/calibration status and selection metadata. It now rechecks the selected80 weights,80 training receipts, original60 numeric raw, repair60 raw, five calibration raw and original-status linkage.",
+  "model_or_protocol_changed": false,
+  "report_execution_performed": false
+}

@@ -141,69 +141,83 @@ async fn original_evaluation_operation_changed_tail_preserves_effect_and_fences_
     Ok(())
 }
 
+async fn original_evaluation_staged_material_scenario(fault: &'static str) -> anyhow::Result<()> {
+    let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
+    let signature = fixture.original.config.training_evidence.clone();
+    let signatures = if fault == "changed-tail" {
+        let renewed = fixture
+            .original
+            .evaluation
+            .renewed_qualification_training()?;
+        assert_ne!(signature, renewed);
+        vec![signature.clone(), signature.clone(), signature, renewed]
+    } else {
+        vec![signature]
+    };
+    let trainer = install(&mut fixture, signatures)?;
+    let (client, peer) = fixture.commands(
+        /*readback_only*/ false, /*expected*/ None, "original",
+    )?;
+    let evaluation = client.execute_evaluation().await?;
+    assert_eq!(finish(client, peer)?, 1);
+    let completed = fixture.original_files()?;
+    let (material, peer) = fixture
+        .host
+        .as_ref()
+        .unwrap()
+        .fixture_model_material_commands(Some(evaluation), "original", /*pause*/ None)?;
+    let operation = material.fixture_begin_model_read_at(fixture.at).await?;
+    let pages = operation.material().fixture_original_material_pages() as u64;
+    if fault == "drop" {
+        drop(operation);
+    } else {
+        if fault == "withdraw" {
+            fixture.retention_b.withdraw_target()?;
+        }
+        assert!(operation.fixture_finish_at(fixture.at).await.is_err());
+    }
+    assert!(matches!(
+        material.read_current().await,
+        Err(CommandError::Unavailable)
+    ));
+    drop(material);
+    let served = peer.join().expect("original staged material peer");
+    assert!(pages > 0);
+    assert!(
+        served.is_err(),
+        "unfinished/failed transfer keeps the original owner fenced"
+    );
+    let (probe, peer) = fixture.commands(
+        /*readback_only*/ true, /*expected*/ None, "original",
+    )?;
+    assert!(matches!(
+        probe.readback().await,
+        Err(CommandError::CommitUncertain)
+    ));
+    assert_eq!(finish(probe, peer)?, 1);
+    assert_eq!(fixture.original_files()?, completed);
+    assert_eq!(fixture.finish().await?, [2, 2]);
+    assert_eq!(
+        trainer.join().expect("original staged Trainer")?,
+        if fault == "changed-tail" { 4 } else { 3 }
+    );
+    Ok(())
+}
+
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel()
 -> anyhow::Result<()> {
-    for fault in ["drop", "withdraw", "changed-tail"] {
-        let mut fixture = HostFixture::new(/*pending_claim*/ false).await?;
-        let signature = fixture.original.config.training_evidence.clone();
-        let signatures = if fault == "changed-tail" {
-            let renewed = fixture
-                .original
-                .evaluation
-                .renewed_qualification_training()?;
-            assert_ne!(signature, renewed);
-            vec![signature.clone(), signature.clone(), signature, renewed]
-        } else {
-            vec![signature]
-        };
-        let trainer = install(&mut fixture, signatures)?;
-        let (client, peer) = fixture.commands(
-            /*readback_only*/ false, /*expected*/ None, "original",
-        )?;
-        let evaluation = client.execute_evaluation().await?;
-        assert_eq!(finish(client, peer)?, 1);
-        let completed = fixture.original_files()?;
-        let (material, peer) = fixture
-            .host
-            .as_ref()
-            .unwrap()
-            .fixture_model_material_commands(Some(evaluation), "original", /*pause*/ None)?;
-        let operation = material.fixture_begin_model_read_at(fixture.at).await?;
-        let pages = operation.material().fixture_original_material_pages() as u64;
-        if fault == "drop" {
-            drop(operation);
-        } else {
-            if fault == "withdraw" {
-                fixture.retention_b.withdraw_target()?;
-            }
-            assert!(operation.fixture_finish_at(fixture.at).await.is_err());
-        }
-        assert!(matches!(
-            material.read_current().await,
-            Err(CommandError::Unavailable)
-        ));
-        drop(material);
-        let served = peer.join().expect("original staged material peer");
-        assert!(pages > 0);
-        assert!(
-            served.is_err(),
-            "unfinished/failed transfer keeps the original owner fenced"
-        );
-        let (probe, peer) = fixture.commands(
-            /*readback_only*/ true, /*expected*/ None, "original",
-        )?;
-        assert!(matches!(
-            probe.readback().await,
-            Err(CommandError::CommitUncertain)
-        ));
-        assert_eq!(finish(probe, peer)?, 1);
-        assert_eq!(fixture.original_files()?, completed);
-        assert_eq!(fixture.finish().await?, [2, 2]);
-        assert_eq!(
-            trainer.join().expect("original staged Trainer")?,
-            if fault == "changed-tail" { 4 } else { 3 }
-        );
-    }
-    Ok(())
+    original_evaluation_staged_material_scenario("drop").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel_withdraw()
+-> anyhow::Result<()> {
+    original_evaluation_staged_material_scenario("withdraw").await
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn original_evaluation_staged_material_drop_and_withdrawal_never_restore_channel_changed_tail()
+-> anyhow::Result<()> {
+    original_evaluation_staged_material_scenario("changed-tail").await
 }

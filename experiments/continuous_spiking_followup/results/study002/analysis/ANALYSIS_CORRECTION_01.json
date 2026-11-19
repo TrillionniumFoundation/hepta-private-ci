@@ -1,0 +1,52 @@
+{
+  "authorization": "Root explicitly approved a versioned JSON canonicalization correction after a field-by-field diagnostic; no scientific or original analysis source mutation.",
+  "changes": [
+    "JSON-normalize only rebuilt manifest at its existing equality check; preserve every source/tensor/hash/statistical check.",
+    "Add v2 version/correction/source metadata and separate default output filename."
+  ],
+  "created_unix": 1793194402.4364176,
+  "diagnostic": {
+    "explanation": "All and only 97 real-modality jobs have speaker_splits represented as tuples in memory and lists in persisted JSON. Every key, value, order and canonical hash agrees; the v1 equality rejected Python container types.",
+    "path": "execution/training_audit_01/MANIFEST_DIAGNOSTIC.json",
+    "rejected_jobs": 97,
+    "sha256": "8074de8ac3486f2e7d5e37804fc66236abcdeee91a4e2ad20d837354f73cbe0a"
+  },
+  "minimal_diff": {
+    "path": "execution/correction_01/MINIMAL_DIFF.patch",
+    "sha256": "551e2eb846f3a442029c52d750f91a8e0bffb1f49dba79813a97cc7de3eb83b9"
+  },
+  "new_source": {
+    "lines": 462,
+    "path": "audit_training_v2.py",
+    "sha256": "1776bc39d6f5308a18c9ce24c3c89833d3c7ff56c4dac78dd938ae3deffee7d9"
+  },
+  "original_analysis_seal": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "original_analysis_seal_file_sha256": "cab641233391766fde2855d0ee48ac5d024d79d37113a1ace4981627126a9bec",
+  "original_failed_audit": {
+    "execution": "execution/training_audit_01/EXECUTION.json",
+    "execution_sha256": "4d54027c55410de73dbc59ee17e5dbc16d96d2be6753c4ca8c107bfe49ceba04",
+    "path": "../TRAINING_AUDIT_V1_FAILED.json",
+    "sha256": "876e25918138c077786960fef5fd206583b16d4f8941127bebbd4cbce525cf76"
+  },
+  "original_source": {
+    "path": "audit_training.py",
+    "sha256": "14580248b48efc25aed097e9f8c2ec1300d712253b115676209386cc06945822"
+  },
+  "regression": {
+    "ast_reverts_exactly_to_v1": true,
+    "cases": 5,
+    "passed": 5,
+    "path": "execution/correction_01/REGRESSION.json",
+    "sha256": "0709953de098ad8450ff4a10f24ef0ca7b9e0275732ae18cd26ca8f62600f2b4"
+  },
+  "retained_original_files_exact": 20,
+  "schema": "hcsn-analysis-correction-v1",
+  "scientific_source_seal": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673",
+  "unchanged_scope": [
+    "training data and results",
+    "model checkpoints",
+    "scientific source/protocol",
+    "all original20 analysis Python files",
+    "original ANALYSIS_SEAL.json"
+  ]
+}

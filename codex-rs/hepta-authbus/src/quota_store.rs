@@ -59,9 +59,9 @@ impl AuthBusAuthorityStore {
         .bind(spec.period_id.as_str())
         .bind(u64_bytes(spec.limit).as_slice())
         .bind(u64_bytes(spec.limit).as_slice())
-        .bind(u64_bytes(0).as_slice())
-        .bind(u64_bytes(0).as_slice())
-        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(/*value*/ 0).as_slice())
+        .bind(u64_bytes(/*value*/ 0).as_slice())
+        .bind(u64_bytes(/*value*/ 1).as_slice())
         .execute(&mut *tx)
         .await;
         if let Err(error) = result {
@@ -73,7 +73,7 @@ impl AuthBusAuthorityStore {
             }
             return Err(storage(error));
         }
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(QuotaSnapshot {
             quota_key: spec.quota_key,
             principal: spec.principal,
@@ -141,7 +141,7 @@ impl AuthBusAuthorityStore {
         .execute(&mut *tx)
         .await
         .map_err(storage)?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(quota)
     }
 
@@ -168,7 +168,7 @@ impl AuthBusAuthorityStore {
             load_reservation_by_operation(&mut tx, &request.operation_id).await?
         {
             if reservation_matches(&existing, decision, &request) {
-                tx.commit().await.map_err(storage)?;
+                crate::authority_store::commit_with_time(tx, &time).await?;
                 return Ok(existing);
             }
             return Err(AuthBusAuthorityError::IdempotencyConflict);
@@ -258,7 +258,7 @@ impl AuthBusAuthorityStore {
         .bind(decision.policy_id().as_str())
         .bind(u64_bytes(decision.policy_revision()).as_slice())
         .bind(decision.decision_digest().as_array().as_slice())
-        .bind(u64_bytes(1).as_slice())
+        .bind(u64_bytes(/*value*/ 1).as_slice())
         .bind(u64_bytes(request.expires_at_ms).as_slice())
         .bind(u64_bytes(time.wall_time_ms).as_slice())
         .bind(u64_bytes(time.wall_time_ms).as_slice())
@@ -266,7 +266,7 @@ impl AuthBusAuthorityStore {
         .await
         .map_err(storage)?;
         let reservation = load_reservation(&mut tx, &reservation_id).await?;
-        tx.commit().await.map_err(storage)?;
+        crate::authority_store::commit_with_time(tx, &time).await?;
         Ok(reservation)
     }
 

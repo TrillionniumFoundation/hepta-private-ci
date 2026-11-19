@@ -1,0 +1,13 @@
+--- a/.github/workflows/hepta-hcsn-research.yml
++++ b/.github/workflows/hepta-hcsn-research.yml
+@@ -52,7 +52,9 @@
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+           name: hcsn-research-${{ github.sha }}
+-          path: ${{ runner.temp }}/hcsn-*.json
++          path: |
++            ${{ runner.temp }}/hcsn-*.json
++            ${{ runner.temp }}/hcsn-training-smoke.runs/
+           if-no-files-found: warn
+       - name: Check the source stayed unchanged
+         if: always()

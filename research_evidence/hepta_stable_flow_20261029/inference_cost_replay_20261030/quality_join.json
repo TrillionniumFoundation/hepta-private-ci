@@ -1,0 +1,945 @@
+{
+  "comparisons": [
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.1240234375,
+        "test_cross_entropy": 0.058879077434539795
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.2138671875,
+          "cross_entropy": 2.0314944088459015,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.2080078125,
+          "cross_entropy": 2.0351421236991882,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "matched_c1",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.337890625,
+          "cross_entropy": 1.9726153314113617,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0078125
+        },
+        "validation": {
+          "accuracy": 0.3291015625,
+          "cross_entropy": 1.9746403694152832,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.00390625
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.6513671875,
+        "test_cross_entropy": 0.2700640857219696
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.2138671875,
+          "cross_entropy": 2.0314944088459015,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.2080078125,
+          "cross_entropy": 2.0351421236991882,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "sigmoid",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.865234375,
+          "cross_entropy": 1.7614303231239319,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.556640625
+        },
+        "validation": {
+          "accuracy": 0.875,
+          "cross_entropy": 1.7590950429439545,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.58984375
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.7861328125,
+        "test_cross_entropy": 0.38665157556533813
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.2138671875,
+          "cross_entropy": 2.0314944088459015,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.2080078125,
+          "cross_entropy": 2.0351421236991882,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "ordinary",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 1.6448428332805634,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 1.6404293477535248,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.7861328125,
+        "test_cross_entropy": 0.8615169078111649
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.2138671875,
+          "cross_entropy": 2.0314944088459015,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.2080078125,
+          "cross_entropy": 2.0351421236991882,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "frozen_flow",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 1.1699775010347366,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 1.1616176068782806,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.00020884652622044086
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029903539456427097,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029708247631788254,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "matched_c1",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.030112385982647538,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.0299191283993423,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_010_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 1.272633704201247,
+          "analytic_to_comparator_wall_median_ratio": 1.3777112957072855,
+          "comparator_case": "physical_014_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_010_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 0.9626116933498984,
+          "analytic_to_comparator_wall_median_ratio": 0.9625590547766676,
+          "comparator_case": "physical_014_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.00019242078997194767
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029903539456427097,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029708247631788254,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "sigmoid",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02971111866645515,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029535727109760046,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_010_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 1.7272907749972648,
+          "analytic_to_comparator_wall_median_ratio": 1.8697648074308981,
+          "comparator_case": "physical_018_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_010_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 2.4489096849024112,
+          "analytic_to_comparator_wall_median_ratio": 2.4488372899785906,
+          "comparator_case": "physical_018_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.0001692452933639288
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029903539456427097,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029708247631788254,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "ordinary",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02973429416306317,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029459666926413774,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_010_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 2.4271217534514546,
+          "analytic_to_comparator_wall_median_ratio": 2.627596520922586,
+          "comparator_case": "physical_017_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_010_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 2.1575565753348758,
+          "analytic_to_comparator_wall_median_ratio": 2.157520379058749,
+          "comparator_case": "physical_017_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.00461358018219471
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029903539456427097,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.029708247631788254,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "frozen_flow",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.03451711963862181,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.034285915084183216,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_010_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 0.8038260833644382,
+          "analytic_to_comparator_wall_median_ratio": 0.8700809898430395,
+          "comparator_case": "physical_012_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_010_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 0.8965241958750763,
+          "analytic_to_comparator_wall_median_ratio": 0.8964874203430048,
+          "comparator_case": "physical_012_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "selective_copy"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.072265625,
+        "test_cross_entropy": 0.04973849654197693
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.11279296875,
+          "cross_entropy": 2.095592349767685,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.12109375,
+          "cross_entropy": 2.0967156291007996,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "matched_c1",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.18505859375,
+          "cross_entropy": 2.045853853225708,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.001953125
+        },
+        "validation": {
+          "accuracy": 0.19140625,
+          "cross_entropy": 2.0472195744514465,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.67529296875,
+        "test_cross_entropy": 0.2676619589328766
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.11279296875,
+          "cross_entropy": 2.095592349767685,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.12109375,
+          "cross_entropy": 2.0967156291007996,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "sigmoid",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.7880859375,
+          "cross_entropy": 1.8279303908348083,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.375
+        },
+        "validation": {
+          "accuracy": 0.79296875,
+          "cross_entropy": 1.8284182846546173,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.3671875
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.796875,
+        "test_cross_entropy": 0.39297501742839813
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.11279296875,
+          "cross_entropy": 2.095592349767685,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.12109375,
+          "cross_entropy": 2.0967156291007996,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "ordinary",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.90966796875,
+          "cross_entropy": 1.7026173323392868,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.681640625
+        },
+        "validation": {
+          "accuracy": 0.900390625,
+          "cross_entropy": 1.7017270922660828,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.6484375
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.6630859375,
+        "test_cross_entropy": 0.2531774044036865
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 0.11279296875,
+          "cross_entropy": 2.095592349767685,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.0
+        },
+        "validation": {
+          "accuracy": 0.12109375,
+          "cross_entropy": 2.0967156291007996,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.0
+        }
+      },
+      "checks": {
+        "both_test_floor": false,
+        "both_validation_floor": false,
+        "test_accuracy_band": false,
+        "test_cross_entropy_band": false
+      },
+      "comparator": "frozen_flow",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 0.77587890625,
+          "cross_entropy": 1.8424149453639984,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 0.341796875
+        },
+        "validation": {
+          "accuracy": 0.7802734375,
+          "cross_entropy": 1.8426492512226105,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 0.34375
+        }
+      },
+      "empirical_quality_band_eligible": false,
+      "matched_band_cost_ratios": {},
+      "not_a_statistical_equivalence_test": true,
+      "regime": "cpu30",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.00013413350097835064
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02401385665871203,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023906012531369925,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "matched_c1",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02414799015969038,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.024041229858994484,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_001_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 1.392258744724991,
+          "analytic_to_comparator_wall_median_ratio": 1.3919347069254246,
+          "comparator_case": "physical_004_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_001_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 1.357732711114157,
+          "analytic_to_comparator_wall_median_ratio": 1.357704778432763,
+          "comparator_case": "physical_004_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.00016058492474257946
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02401385665871203,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023906012531369925,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "sigmoid",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02385327173396945,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023745283018797636,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_001_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 3.4862582855695776,
+          "analytic_to_comparator_wall_median_ratio": 3.4714214931825125,
+          "comparator_case": "physical_008_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_001_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 2.8274413322018455,
+          "analytic_to_comparator_wall_median_ratio": 2.8270423868960273,
+          "comparator_case": "physical_008_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.0005387587007135153
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02401385665871203,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023906012531369925,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "ordinary",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023475097957998514,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.0233671716414392,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_001_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 2.6630584588428983,
+          "analytic_to_comparator_wall_median_ratio": 2.6529996364617863,
+          "comparator_case": "physical_007_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_001_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 1.905196826813612,
+          "analytic_to_comparator_wall_median_ratio": 1.9041152626036555,
+          "comparator_case": "physical_007_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "mqar"
+    },
+    {
+      "absolute_score_gaps": {
+        "test_accuracy": 0.0,
+        "test_cross_entropy": 0.0043463248293846846
+      },
+      "all_individual_timings_remain_in_runtime_summary": true,
+      "analytic_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02401385665871203,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.023906012531369925,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "checks": {
+        "both_test_floor": true,
+        "both_validation_floor": true,
+        "test_accuracy_band": true,
+        "test_cross_entropy_band": true
+      },
+      "comparator": "frozen_flow",
+      "comparator_scores": {
+        "test": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.028360181488096714,
+          "examples": 512,
+          "queries": 2048,
+          "sequence_accuracy": 1.0
+        },
+        "validation": {
+          "accuracy": 1.0,
+          "cross_entropy": 0.02819892903789878,
+          "examples": 256,
+          "queries": 1024,
+          "sequence_accuracy": 1.0
+        }
+      },
+      "empirical_quality_band_eligible": true,
+      "matched_band_cost_ratios": {
+        "1": {
+          "analytic_case": "physical_001_batch_1",
+          "analytic_to_comparator_cpu_median_ratio": 1.002779199571103,
+          "analytic_to_comparator_wall_median_ratio": 1.0027827926122042,
+          "comparator_case": "physical_002_batch_1"
+        },
+        "32": {
+          "analytic_case": "physical_001_batch_32",
+          "analytic_to_comparator_cpu_median_ratio": 0.4451565070530231,
+          "analytic_to_comparator_wall_median_ratio": 0.4451502581360512,
+          "comparator_case": "physical_002_batch_32"
+        }
+      },
+      "not_a_statistical_equivalence_test": true,
+      "regime": "updates384",
+      "seed": 81301,
+      "task": "mqar"
+    }
+  ],
+  "not_a_statistical_equivalence_test": true,
+  "primary_results_sha256": "062c049ab04abe6ca1a12f1cf2f67b88056c74dcde60cc212fa38bc6c22de992",
+  "registered_protocol_sha256": "b605b13d59a34701f1aaf8dfb2987c490fc72b12d003539dec3d84ce26505f5c",
+  "runtime_summary_sha256": "433f84ea538ce1ba5a602b7b25d4c960d12ae7d1f5b2c42c7554b9decb6dcc12",
+  "timed_cases_reselected": false
+}

@@ -163,7 +163,11 @@ pub(crate) fn frontier_service(root: &Path, initial: FinalUseFrontier) -> TestRe
                     PqTrustOutcomeV2::CompareAndSetApplied { value: *next }
                 }
                 PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Conflict,
-                PqTrustOperationV2::ClockNow => PqTrustOutcomeV2::Unavailable,
+                PqTrustOperationV2::ClockNow
+                | PqTrustOperationV2::LearningFrontierLoad { .. }
+                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                    PqTrustOutcomeV2::Unavailable
+                }
             };
             signed(request, outcome, key)
         },

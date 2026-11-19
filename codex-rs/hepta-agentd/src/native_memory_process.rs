@@ -33,8 +33,16 @@ pub(super) async fn execute(
     config: &NativeMemoryModelConfigV1,
     input: Vec<u8>,
     cancellation: &tokio_util::sync::CancellationToken,
+    before_spawn: impl FnOnce() -> Result<(), String>,
 ) -> Result<Vec<u8>, String> {
-    execute_with_environment(config, input, cancellation, std::env::vars_os()).await
+    execute_with_environment(
+        config,
+        input,
+        cancellation,
+        std::env::vars_os(),
+        before_spawn,
+    )
+    .await
 }
 
 // The explicit iterator lets process tests inject synthetic ambient secrets
@@ -44,6 +52,7 @@ async fn execute_with_environment(
     input: Vec<u8>,
     cancellation: &tokio_util::sync::CancellationToken,
     environment: impl IntoIterator<Item = (OsString, OsString)>,
+    before_spawn: impl FnOnce() -> Result<(), String>,
 ) -> Result<Vec<u8>, String> {
     if !cfg!(unix) {
         return Err(
@@ -120,6 +129,15 @@ async fn execute_with_environment(
     // is cleanup, not an OS sandbox or a claim about descendants that escape it.
     #[cfg(unix)]
     command.process_group(0);
+    if cancellation.is_cancelled() {
+        return Err("native owner is closed".to_string());
+    }
+    // Revalidate the actual current owner after pinned-file hashing and request
+    // persistence. This observes current authority; it grants no future lease.
+    before_spawn()?;
+    if cancellation.is_cancelled() {
+        return Err("native owner is closed".to_string());
+    }
     let mut child = command.spawn().map_err(|e| e.to_string())?;
     let pid = child.id().ok_or("worker pid absent")?;
     let mut group = ProcessGroupGuard::new(pid);

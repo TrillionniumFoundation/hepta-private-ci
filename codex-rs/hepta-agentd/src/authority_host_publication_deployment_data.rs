@@ -376,7 +376,7 @@ impl SelectionData {
             expires_at: original.expires_at,
             signature: original.signature.to_vec(),
         };
-        if data.original_selection()? != *original {
+        if SelectionData::original_selection(&data)? != *original {
             return Err(io::Error::other(
                 "original selection data changed during encoding",
             ));

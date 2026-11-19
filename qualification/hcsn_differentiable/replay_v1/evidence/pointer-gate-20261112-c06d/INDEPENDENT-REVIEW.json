@@ -1,0 +1,137 @@
+{
+  "executions": [
+    {
+      "case": "valid_frozen",
+      "optimized": false,
+      "result": {
+        "accepted": true,
+        "optimize": 0,
+        "reason": null,
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "real_missing",
+      "optimized": false,
+      "result": {
+        "accepted": false,
+        "optimize": 0,
+        "reason": "HOLD: immutable archive publication is not yet observed; zero model calls",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_status",
+      "optimized": false,
+      "result": {
+        "accepted": false,
+        "optimize": 0,
+        "reason": "duplicate JSON key",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "wrong_archive",
+      "optimized": false,
+      "result": {
+        "accepted": false,
+        "optimize": 0,
+        "reason": "original archive commitment differs",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "nan_archive",
+      "optimized": false,
+      "result": {
+        "accepted": false,
+        "optimize": 0,
+        "reason": "nonfinite JSON constant: NaN",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "valid_frozen",
+      "optimized": true,
+      "result": {
+        "accepted": true,
+        "optimize": 1,
+        "reason": null,
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "real_missing",
+      "optimized": true,
+      "result": {
+        "accepted": false,
+        "optimize": 1,
+        "reason": "HOLD: immutable archive publication is not yet observed; zero model calls",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "duplicate_status",
+      "optimized": true,
+      "result": {
+        "accepted": false,
+        "optimize": 1,
+        "reason": "duplicate JSON key",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "wrong_archive",
+      "optimized": true,
+      "result": {
+        "accepted": false,
+        "optimize": 1,
+        "reason": "original archive commitment differs",
+        "torch_imported": false
+      },
+      "returncode": 0
+    },
+    {
+      "case": "nan_archive",
+      "optimized": true,
+      "result": {
+        "accepted": false,
+        "optimize": 1,
+        "reason": "nonfinite JSON constant: NaN",
+        "torch_imported": false
+      },
+      "returncode": 0
+    }
+  ],
+  "inputs": {
+    "/workspace/scratch/c06d659c1e72/c2-pointer/.github/workflows/hcsn-real-checkpoint-cpu.yml": {
+      "bytes": 4002,
+      "sha256": "5b31b343ade2127ebead3b991b02608f0164f91704e61d2f8bf86231a937be84"
+    },
+    "/workspace/scratch/c06d659c1e72/c2-pointer/qualification/hcsn_differentiable/replay_v1/artifact_pointer.py": {
+      "bytes": 2379,
+      "sha256": "bff5848f3faf796f0a8104b744f36d8fe8141cc0ffa6080d61a73f0a7c127a83"
+    },
+    "/workspace/scratch/c06d659c1e72/c2-pointer/qualification/hcsn_differentiable/replay_v1/checkpoint_replay.py": {
+      "bytes": 10448,
+      "sha256": "9fc8d5cc1541643ea46c3c9ef159a56e70ce1f2be20329ed2fd31185c86b7d9a"
+    },
+    "/workspace/scratch/c06d659c1e72/c2-pointer/qualification/hcsn_differentiable/replay_v1/cpu_migration.py": {
+      "bytes": 10810,
+      "sha256": "d5d0e3aa47a9851fce1a7f5ba4ebc0585f3a9b44e11a46e0e073d225f6552db8"
+    }
+  },
+  "main_sequence_review": "workflow invokes artifact_pointer.py before original-artifact checkout, CPU runtime install or ci_replay; validated full SHA only reaches GITHUB_OUTPUT",
+  "model_calls": 0,
+  "optimizer_calls": 0,
+  "schema": "hcsn-independent-strict-pointer-review-v1",
+  "source_unchanged": true
+}

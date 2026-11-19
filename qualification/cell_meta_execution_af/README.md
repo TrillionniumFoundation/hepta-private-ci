@@ -1,0 +1,205 @@
+# A–F Cell / Meta Network / Execution evidence gate (shadow only)
+
+This is **one read-only conformance checker**, not another Neuron, NDU, Selector,
+Cell Split execution owner, inference driver, model loader, or Codex fork.
+It compares declared evidence for the six requested experiments without changing
+any runtime, deployment, authority, selected model, routing, or Git branch.
+It does **not** produce independently authenticated scientific evidence.
+
+## Exact coverage
+
+| Gate | Registered arms | Mandatory structural checks |
+| --- | --- | --- |
+| A / local learning | `no_change`, `frozen_head`, `learning_head` | Two prospective independent task sets; frozen cutoff; complete paired arms; real invocation counters; Brier/ECE/OOD/retention/negative transfer |
+| B / split efficacy | `unsplit`, `shared_head`, `child_heads` | Both future windows versus *both* no-split baselines; resource-aware **net** NDU utility; do not confuse cell accuracy with physical cutover permission |
+| C / Meta Network | `fixed_graph`, `learned_router`, `adaptive_depth` | Equal registered budget, fixed candidate set/objective, comparable task sets, separately measured learned policies |
+| D / meta-learning | `no_adaptation`, `fixed_rule`, `learned_rule` | Unseen task families, prospective adaptation, distinguish learned update rules from separately tuned fixed optimizers |
+| E / placement | `in_process`, `shared_worker`, `per_cell_process` | All 64/256/1024/4096 Cell scales × fixed/varying active concurrency; identical attempted-request trace and host; genuine backend/cpu/RSS/GPU/queue/p95/p99/lock/CAS/signature/CNS/WAL/recovery counters; failure accounting |
+| F / Codex boundary | `full_codex_agent`, `app_server_provider`, `direct_effect` | Same task suite on same host as E, each with permitted/denied effects; real terminal observation and separate original effect-owner receipt; direct effect cannot hide model calls |
+
+Separate Cell Split **safety** gate requires one fenced coordinator ledger,
+original CAS/migration/bootstrap/CNS/Supervisor owner signed receipts and current
+readbacks, independent Final-use/Selector flags, and three crash-recovery cases.
+A complete split *safety* envelope is not a demonstration of learning benefit.
+A proposed learning improvement also requires two prospective windows and the
+canonical independent Evaluator/Selector. Neither gate grants runtime authority.
+
+The `source_sha` / `source_tree` refer to the exact *experiment candidate*;
+`objective_sha256`, frozen `no_change_sha256`, `budget_sha256`, and
+`source_dataset_sha256` are common immutability anchors. The `future_1` and
+`future_2` source-task set digests must be distinct. All arms in a comparison
+must use the same `task_set_sha256` within each window. Each observation row
+supplies independent episode count/ESS, pre-label prediction commitment,
+outcome receipt, model bundle, actual training/inference bytes and real model
+invocation count. A–D also require at least three distinct frozen independent
+snapshot digests and exact protected-slice names on every arm/window.
+Experiment C additionally fixes one underlying Circuit graph identity across arms
+while requiring distinct route/depth policies and observed route traces.
+Experiment D requires explicit held-out task-family inventories disjoint from the
+frozen training family inventory and across both future windows. These are
+identity/conformance checks, not independent proof of task-family provenance.
+Each A–D arm now binds a **single unchanged model bundle** across both future windows
+and reports `model_bundle_frozen_at` not later than the globally registered
+`frozen_at`. This prevents comparing a model retrospectively replaced after
+`future_1` as though it were the original frozen candidate. For D this bundle
+identifies the *outer initialization/adaptation rule*; task-local within-episode
+adapted state must be separately recorded and never silently overwrite that
+identity. Timestamps and hashes are still declarative until independently
+observed; no test JSON can certify freezing by itself.
+E and F also bind the same host **and device profile**, including a device
+digest for every individual measurement row, not just the panel header.
+F rejects a failed/indeterminate turn with an unauthorized but observed external
+effect, an orphan original-owner receipt without an observed effect, or a
+truthy non-boolean authorization/observation flag. An authorized tool effect is
+not inferred from an App Server turn status.
+For physical placement, E now emits `paired_placement_diagnostics` for the
+16 shared-worker/per-cell-process comparisons against the in-process reference,
+per exact Cell scale and load profile: throughput ratio, p99/RSS/network deltas
+and completion-rate delta. F emits `per_route_cost_diagnostics`, separated by
+allowed/denied cases, for quality, elapsed time, CPU, money, model calls and
+tokens. Finite derived values and bounded count sums are mandatory. These are
+**arithmetic summaries of supplied rows**, not new independent observations,
+causal effects, proof of hardware identity, a winning placement, permission to
+extract a Codex fork, or permission to modify a Cell.
+The reported interval allocation must be no more than Bonferroni
+0.05/(two future windows × registered comparisons); one protected
+slice degrading by more than 2% vetoes a provisional improvement even
+when aggregate scores rise. `net_utility_lcb/ucb` **must already include** the declared
+training, inference, migration, communication and risk costs under the fixed
+NDU profile; this reader does not recompute an unauthenticated utility function.
+An interval reported in JSON is not proof that the estimator or observer is
+independent, preregistered or statistically sound.
+
+Source bindings this checker **does not replace**:
+
+- Neuron/Head inference and real shared features: `codex-rs/hepta-infer-core`, `codex-rs/hepta-infer-worker-host`, draft #1498.
+- Independent causal evaluation and learning artifacts: existing `learning.eval`, `learning.ledger`, `learning.artifacts`, `utility.ndu` owners.
+- Safe Cell Split original effects and recovery: `hepta-operator-acceptance`, the one Cell Split execution owner, signed custody/Selector; drafts #1764/#1776.
+- Codex execution: `hepta-codex-adapter` + existing App Server and **separately authorized** effect owner; the current native inference caller is model-only and must not be counted as tool execution.
+- Related experimental branches: A/B/C shadow #1779, Encoder study #1772, Stem E1–E6 screening #1783 and resource #1761. Do not overwrite or implicitly combine their unreviewed source.
+
+## Run
+
+Run the adversarial fixture suite (requires Python 3.10+; no external packages):
+
+```sh
+python3 -m unittest discover -v -s qualification/cell_meta_execution_af -p 'test_*.py'
+```
+
+Inspect an **externally assembled** JSON envelope (no fabricated evidence):
+
+```sh
+python3 qualification/cell_meta_execution_af/gate.py /path/to/actual-af-observations.json --out /tmp/af-shadow-report.json
+```
+
+The envelope has `schema: "hepta.cell-meta-execution.af.v1"` and fields
+`candidate`, `studies` (A–D), `resources` (E), `codex` (F), `split_safety`.
+The synthetic `synth()` fixture in `test_gate.py` documents exact row fields;
+its hashes, run counters and successes are invented **test values**, not results.
+Do not export those values as evidence or use `synth()` to fill missing rows.
+
+Exit status `2` means blocked or incomplete; exit status `0` means only
+`shadow_structural_review_only`. Even status `0` always prints
+`authority_posture=DENY_ALL`, `physical_split_permitted=false`,
+`production_selection_permitted=false` and `model_promotion_permitted=false`.
+All successful self-tests, valid-looking digests, positive utility intervals and
+`real_worker_executed=true` fields remain self-assertions until original-owner
+signed readback, trusted source provenance, separate observer and target-host
+measurement are actually verified outside this checker. Code does not run a model,
+load an artifact, contact an issuer, authenticate signatures, or measure hardware.
+
+## Required next real gates
+
+1. First obtain exact-SHA source/merge CI for the existing owner PRs. Fail closed on missing, failed or cancelled checks; synthetic cases cannot replace those checks.
+2. Prove **actual** immutable model/Encoder invocation, frozen no-change predictions before labels, independent outcomes and two nonoverlapping future windows. Independently validate ESS >= 400 and negative-transfer/retention/profile-specific calibration/abstention floors.
+3. Prove one real CAS → child migration/bootstrap → CNS route cutover → Supervisor generation fence, with original signed effect receipts, independent trusted anti-rollback custody, power-loss/restart reconciliation and zero duplicate effects.
+4. On **one named target host**, run all E placements, both load profiles and four scales, with exact shared attempted input traces and original telemetry. Do not treat 4,096 registered Cells as 4,096 simultaneous model invocations.
+5. Compare Codex Agent, Codex model-only App Server followed by independently authorized effect, and direct effect under the same task inputs, policy and host. Observe both allowed and denied actions, including original effect-owner readback; turn completion alone cannot prove the effect happened.
+6. The existing independent NDU Evaluator / Selector decides on **real** future-window net utility, not this checker. Production activation/release always belongs to the pre-existing owners and gates.
+
+No automatic merge, production cutover, Cell/Encoder promotion, package extraction,
+new global authority or autonomous self-iteration is proposed by this harness.
+
+### Post-convergence conformance hardening
+
+- The CLI accepts at most 4 MiB of regular-file UTF-8 JSON and fails closed on
+  duplicate object keys, non-finite literals, parser-depth errors and oversized
+  inventories. Those limits are input safety, **not** proof of outcome validity.
+- Study C records whether a learned route actually differs from the fixed route;
+  adaptive-depth gain further requires an observed change in sequential Cell
+  depth. A policy-name or digest change alone cannot claim a causal benefit.
+- A Codex **indeterminate** terminal state blocks comparison pending original-owner
+  reconciliation. A failed allowed action with no observed external effect needs
+  a separately observed, signed negative original-owner readback reference; a
+  missing receipt or mere App Server status does not prove that no effect happened.
+  The validator still checks only supplied reference format, not signatures or
+  counterparty custody, so it never authorizes actual effects.
+
+### Cross-arm future-label embargo and original-owner split chain
+
+All arms in a paired future task set must now commit their predictions before
+the **first** arm's outcome is finalized. An individual arm's own prelabel
+timestamp is insufficient: a later candidate could otherwise see control labels
+and still appear prospective. This is structural screening, not proof of an
+independently witnessed per-example prediction.
+
+The split-safety envelope now binds one split_operation_id, scope_id,
+split_plan_sha256, source_generation and target_generation across the five
+ordered original-owner phases. Each phase includes a coordinator ledger_step_index
+and predecessor signed_receipt_sha256 link, starting at null. Reordered phases,
+stale generations, mixed scopes, duplicate receipts, and broken ancestry block
+structural review. These are **declarative** checks, not cryptographic signature
+verification, independent monotonic custody or authorization.
+
+The CLI uses a single nonblocking, no-follow file descriptor, checks the opened
+regular file and rejects metadata drift during the read. This avoids the
+path-stat/path-open race where a regular input could be replaced by a FIFO or
+symlink. A valid file remains untrusted evidence.
+
+### Combined-family inference and physical execution floor
+
+The four learning studies A–D are evaluated in a single simultaneously
+reported selection family of eight preregistered candidate/control contrasts.
+Two future windows are compared, so the shadow-only one-sided interval-alpha
+ceiling is \`0.05 / (8 × 2) = 0.003125\` for **each** reported comparison.
+A locally valid study-level confidence interval cannot support a multi-study
+gain claim without this conservative familywise adjustment. This checker reads
+reported interval bounds; it does **not** recompute their statistical coverage or
+certify causal validity, cross-fitting, observation independence or signed NDU.
+
+Every one of E's 24 \`deployment × Cell scale × active load\` rows now requires
+nonzero completed model requests and nonzero actual backend calls in addition
+to exact attempted/completed/failed/rejected accounting. An all-failed run is
+not a meaningful throughput or batch-performance measurement. One successful
+request is only a structural lower bound, **not** a sufficient production
+p95/p99 sample. Existing signed host authenticity, common trace and exact
+resource/cutover acceptance requirements remain unchanged. No placement or
+Codex extraction is authorized.
+
+### Physically observed concurrency and shared Effect Gateway routing
+
+For E, every workload now reports `observed_peak_active_requests` and
+`observed_peak_inflight_backend_calls` separately from the configured
+`active_concurrency`, completed requests, backend calls and logical Cell count.
+A trial that merely registered 4,096 Cells, but never physically reached its
+declared active request concurrency, is not a completed comparable load test.
+Backend calls may be microbatched; their peak in-flight concurrency is NOT
+assumed equal to request concurrency. All values remain untrusted
+self-declarations until target-host telemetry is independently observed.
+
+For F, `execution_path_sha256` must be stable within each route and distinct
+across the Full Codex Agent, model-only App Server Provider and direct Effect
+Gateway controls. All arms must bind one `effect_gateway_binary_sha256` and the
+same `original_effect_owner_id` for each paired task. The typed counters
+`agent_planner_invocations`, `provider_direct_effect_attempts`,
+`effect_gateway_attempts` and `original_owner_readbacks` must reconcile with
+`tool_attempts`. Full Agent requires planner/model calls, model-only Provider
+must not run an Agent planner, and direct effect must not run a model. No
+provider-local external effects are allowed: they must pass the **same
+independent Effect Gateway**. Even denied actions require a referenced
+original-owner *negative* readback, not just a failed app-server turn.
+
+These are read-only **evidence-shape** checks. No attested executable
+measurement, independent signer key, physical concurrent backend proof,
+true Codex tool isolation, production execution permission, or extracted Codex
+module is established by hashes, typed counters or a green shadow test.

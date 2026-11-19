@@ -32,6 +32,7 @@ use crate::CellQ24DatasetReaderV1;
 use crate::CellQ24DatasetRuleV1;
 use crate::CircuitTaskSourceReadbackV1;
 use crate::LoadedCellQ24ModelV1;
+use crate::OriginalCellQ24DatasetErrorV1 as CellQ24DatasetErrorV1;
 use crate::OriginalCellQ24DatasetV1;
 #[cfg(target_os = "linux")]
 use crate::OriginalCircuitOnPolicyPanelPolicyV2;

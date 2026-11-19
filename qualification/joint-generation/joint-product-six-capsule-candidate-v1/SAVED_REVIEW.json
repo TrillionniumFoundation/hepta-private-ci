@@ -1,0 +1,198 @@
+{
+  "status": "PASS_SAVED_SCOPED_SIX_SEPARATE_CAPSULE_PACKAGING_ONLY",
+  "source_freeze_sha256": "8a4fd9f0e9745d465bb8acc0f8bb8a17c556f8e2281eeae33e66a4f41807af1a",
+  "source_review_sha256": "61187ccc207fcf92952dc790d188af1196e322fae553e35a5c43561069034363",
+  "evidence": {
+    "FREEZE.json": {
+      "bytes": 47075,
+      "sha256": "8a4fd9f0e9745d465bb8acc0f8bb8a17c556f8e2281eeae33e66a4f41807af1a"
+    },
+    "SOURCE_REVIEW.json": {
+      "bytes": 10901,
+      "sha256": "61187ccc207fcf92952dc790d188af1196e322fae553e35a5c43561069034363"
+    },
+    "CAPACITY.json": {
+      "bytes": 23473,
+      "sha256": "3147ef2615429a6ccf0662cbdac1310716c6b8a01a35b37ac2b047e32fbd84ed"
+    },
+    "capsule-manifest.json": {
+      "bytes": 117116,
+      "sha256": "8cca2fd77a3825af017bbe46e957ed0f9fb3b8d437b41a3063c33080a461a15b"
+    },
+    "COST_COVERAGE.json": {
+      "bytes": 845,
+      "sha256": "155acab45da29743807d66010be5b6df7d1e67bb20a3ee0f48e3f034efcc03e0"
+    },
+    "SAVED_FINDINGS.md": {
+      "bytes": 1270,
+      "sha256": "40cc9cd19f8defcf4782b1a3e07348e1fc8123d4c59921f2e03d88d4a1a8e5ac"
+    },
+    "PREPARATION_COST.json": {
+      "bytes": 1184,
+      "sha256": "da87b248d55f29c7ad7a3ecfe2c761934c96f25961d29d9a2ba32f37d5364363"
+    },
+    "FINALIZATION_COST.json": {
+      "bytes": 549,
+      "sha256": "81017e1faca83540b3c87f1b9660f67266b0dc811d3dc04ea591b66a965b20cc"
+    },
+    "RUN_ONCE/OUTER_WAIT4_RECEIPT.json": {
+      "bytes": 143400,
+      "sha256": "6afb58f59d8ebb6d91e20c8607d845a0ff7914e663fa8714520a96b37bbeef1a"
+    },
+    "RUN_ONCE/TEST_REPORT.json": {
+      "bytes": 9233,
+      "sha256": "fc1d51752672102aa9a03776cddfa06ff575a7dc33595d98293eea82393c5975"
+    },
+    "RUN_ONCE/tests.log": {
+      "bytes": 144,
+      "sha256": "78eddead02f72ea85793ebb32cbfdca76225e718a7e3896e86bb63f6194e40aa"
+    }
+  },
+  "method": "Independent saved-only stdlib read/stat/SHA256 verification and arithmetic. Read all 652 retained qualification files, compare the exact outer inventory, inspect final positive/negative trees, independently check each positive materialized source/input byte against its original local path and pinned manifest, and reconstruct NPZ from already saved raw record objects. No import or execution of materialize.py, test_materialize.py, capsule_spec.py, any candidate runner or model; no rerun, new fixture, remote write or source edit. Only this requested saved review is written.",
+  "verified": {
+    "all_335_original_frozen_package_bindings_unchanged": true,
+    "outer_source_and_review_bindings_match_exact_admission": true,
+    "qualification_child_exit_code": 0,
+    "complete_wait4": true,
+    "timed_out": false,
+    "terminal_budget_pass": true,
+    "all_651_outer_inventory_entries_exact": true,
+    "outer_receipt_excluded_from_own_inventory_then_counted_once": true,
+    "retained_files_including_outer_receipt": 652,
+    "retained_bytes_including_outer_receipt": 18400016,
+    "retained_file_cap": 652,
+    "retained_byte_cap": 18607687,
+    "retained_directories_observed": 104,
+    "no_saved_symlinks_or_nonregular_files": true,
+    "tests_log_and_report_and_outer_receipt_each_below_own_frozen_cap": true,
+    "fixed_retained_files_before_log_report_receipt": 649,
+    "fixed_retained_bytes_before_log_report_receipt": 18247239,
+    "positive_count": 7,
+    "negative_count": 46,
+    "negative_names_order_and_expected_error_classes_messages_match_frozen_schedule": true,
+    "all_six_distinct_target_versions_preserved": true,
+    "all_six_own_RUN_ONCE_directories_absent": true,
+    "all_seven_positive_completion_receipts_match_independently_rebuilt_canonical_bytes": true,
+    "all_positive_materialized_data_files_checked": 285,
+    "all_positive_materialized_data_bytes_checked": 13278065,
+    "six_primary_materialized_data_files": 251,
+    "six_primary_materialized_data_bytes": 11472850,
+    "all_materialized_original_source_and_INPUTS_bytes_exact_against_original_local_paths": true,
+    "seven_materialized_content_NPZ_copies_exact": true,
+    "whole_NPZ_reconstruction": {
+      "records": 79,
+      "bytes": 1560407,
+      "sha256": "64806d1b67b3b071e8b35246a77412e3da76ccf1cd283306f49290296a634150",
+      "terminal_record_bytes": 4960,
+      "method": "Read and concatenate saved frozen object bytes in pinned record order; compare original whole bytes/hash. No NumPy import or NPY interpretation."
+    },
+    "restored_fixture_package_files": 321,
+    "restored_fixture_package_bytes": 3107302,
+    "restored_fixture_every_file_exact_against_frozen_package": true,
+    "retained_validated_byte_cache_case_original_bytes_preserved": true,
+    "no_original_scientific_identity_migration": true
+  },
+  "failure_inventory_review": {
+    "only_retained_negative_directories": [
+      "existing_empty_output",
+      "injected_write_failure",
+      "partial_prior_directory",
+      "written_output_drift"
+    ],
+    "existing_empty_output": "Remains an empty directory, with no completion receipt.",
+    "partial_prior_directory": "Contains only exact four-byte SENTINEL value keep, unchanged.",
+    "injected_write_failure": "Contains exactly the first planned file, joint-policy-delivery-candidate-v2/FREEZE.json, 2427 original bytes; no other data or receipt.",
+    "written_output_drift": "Contains all 34 selected delivery-v2 source/input paths. Exactly first byte of first FREEZE file is XOR1 as injected; every remaining byte/path matches original. No completion receipt.",
+    "all_other_42_negative_output_paths_absent": true,
+    "link_fixture_directory_empty": true,
+    "no_failed_output_has_completion_or_pending_receipt": true,
+    "interpretation": "The observed failures are the frozen packaging negatives. They are not model failures, fresh scientific trials or authority grants; incomplete output remains unusable."
+  },
+  "resources_and_cost": {
+    "full_child_user_CPU_seconds": 0.7564649999999999,
+    "full_child_system_CPU_seconds": 0.15506,
+    "full_child_CPU_seconds": 0.9115249999999999,
+    "full_child_wait4_rusage": [
+      0.7564649999999999,
+      0.15506,
+      19576,
+      0,
+      0,
+      0,
+      13833,
+      0,
+      0,
+      0,
+      57624,
+      0,
+      0,
+      0,
+      6,
+      74
+    ],
+    "child_maxRSS_KiB": 19576,
+    "outer_measured_CPU_prefix_seconds": 0.023019621999999997,
+    "qualification_known_CPU_lower_bound_seconds": 0.9345446219999999,
+    "outer_wall_prefix_seconds": 0.9321541180252098,
+    "outer_tail": "unknown_not_zero",
+    "preparation_measured_CPU_prefix_seconds": 0.345452945,
+    "selected_qualification_plus_preparation_subtotal_seconds": 1.279997567,
+    "limits_verified_against_frozen_runner_and_saved_receipt": {
+      "AS_bytes": 268435456,
+      "FSIZE_per_file_bytes": 8388608,
+      "child_CPU_soft_hard_seconds": [
+        3,
+        3
+      ],
+      "child_wall_seconds": 15,
+      "outer_CPU_soft_hard_seconds": [
+        4,
+        4
+      ],
+      "retained_output_bytes": 18607687,
+      "retained_output_files": 652
+    },
+    "child_CPU_and_RSS_and_observed_wall_within_frozen_limits": true,
+    "I_O_and_hash_counters": {
+      "consumer_hash_CPU_seconds": 0.06001995399999997,
+      "consumer_hash_bytes": 65329274,
+      "consumer_hash_calls": 6672,
+      "consumer_read_bytes": 49820444,
+      "consumer_read_calls": 4019,
+      "consumer_write_bytes": 15139933,
+      "consumer_write_calls": 327,
+      "fixture_write_bytes_cumulative": 12123798,
+      "fixture_write_calls": 394
+    },
+    "counter_scope": "read counters cover successful materializer read_regular calls; hash counters cover materializer H; writes cover successful materializer _write_file and explicit fixture writes. Independent test reads, metadata, copy-source reads, failure partial writes, report/log and outer runner work are not included, not zero.",
+    "non_double_counting": "Test CPU and hash CPU are samples inside the complete child wait4 total and are not added again. Selected subtotal is not lifetime cost. Initial interpreter startup, finalization/authoring/review work, prior static finalizer failure and outer tails remain additional or partly unmeasured, not zero. Historical scientific costs are preserved and are not new runs or refunds.",
+    "COST_COVERAGE_and_SAVED_FINDINGS_numerics_and_scope_match": true,
+    "preparation_history_remains_separate": "The prior static finalizer failure was inspected during source review and is not reclassified by this successful packaging qualification."
+  },
+  "execution_scope_evidence": {
+    "test_reports_models_executed": false,
+    "test_reports_candidate_runners_executed": false,
+    "test_reports_shared_lock_created": false,
+    "outer_retry": false,
+    "outer_automatic_next_run_authorized": false,
+    "static_support": "The exact source-reviewed child imports only stdlib and materialize, whose only local import is literal capsule_spec. The child tests the forbidden scientific-module set before its report. The frozen runner launches one isolated -I -B child and no descendant command is present in the test or consumer.",
+    "scope_limit": "Saved report plus frozen control flow supports the packaging-only conclusion; it is not an independent operating-system forensic trace or general host attestation.",
+    "existing_shared_lock_path": "/workspace/shared/rgb-class-preservation-20261030/benchmark.lock",
+    "current_shared_lock_readonly_stat": {
+      "device": 27,
+      "inode": 536619,
+      "bytes": 0
+    },
+    "lock_identity_limit": "Pre/post reviewer stat matches caller-confirmed device27/inode536619. The runtime receipt records the existing lock path and no lock creation, not a cryptographic inode/owner-authentication attestation."
+  },
+  "publication_boundary": [
+    "Saved packaging result is accepted for this exact freeze only, subject to separate repository policy and remote-byte verification. This reviewer performed no Git or remote mutation.",
+    "Publish only the frozen storage package and explicitly selected bounded small review/report/receipt evidence. Do not publish the entire RUN_ONCE tree, whose expanded NPZ files exceed 511999 bytes. Those omitted expanded trees remain locally retained and hash-referenced by the complete outer receipt.",
+    "Existing individual scientific PASS records remain scoped to six different implementations. This result establishes no assembled-runtime PASS, scientific improvement, new model run permission, production owner authority, all-API support, raw scientific evidence re-audit or strict256 admission.",
+    "The package retains its explicit copied-provenance versus omitted-raw catalog. The successful storage test does not convert omitted original raw evidence into copied or newly verified evidence.",
+    "Historical oversized repository blobs, scientific data403, denied App Server reads and production/security restrictions remain unchanged. Any failed later policy or publication gate must be reported honestly, not bypassed or hidden by this packaging PASS."
+  ],
+  "blocking_saved_result_findings": [],
+  "automatic_rerun_authorized": false,
+  "verdict": "The one admitted saved packaging qualification passes its frozen scoped source/input identity, integrity, failure, count and terminal budget checks. No consumer/test/model rerun was performed by this independent review."
+}

@@ -48,9 +48,14 @@ async fn native_memory_timeout_includes_blocked_stdin_and_keeps_failure() -> any
         .join(Digest32::of_bytes(&input).to_string());
     let started = Instant::now();
     assert!(
-        execute(&c, input, &tokio_util::sync::CancellationToken::new())
-            .await
-            .is_err()
+        execute(
+            &c,
+            input,
+            &tokio_util::sync::CancellationToken::new(),
+            || Ok(())
+        )
+        .await
+        .is_err()
     );
     assert!(started.elapsed() < Duration::from_secs(3));
     let report: serde_json::Value =
@@ -78,7 +83,7 @@ async fn native_memory_daemon_lifetime_cancels_child_and_keeps_failure() -> anyh
     let directory = c
         .receipt_directory
         .join(Digest32::of_bytes(&input).to_string());
-    assert!(execute(&c, input, &cancellation).await.is_err());
+    assert!(execute(&c, input, &cancellation, || Ok(())).await.is_err());
     cancel.join().unwrap();
     assert!(started.elapsed() < Duration::from_secs(3));
     let report: serde_json::Value =
@@ -127,6 +132,7 @@ async fn native_memory_real_launcher_delivers_eof_and_returns_successful_worker_
         &c,
         input.clone(),
         &tokio_util::sync::CancellationToken::new(),
+        || Ok(()),
     )
     .await
     .unwrap();
@@ -170,6 +176,7 @@ print(json.dumps({'environment': dict(os.environ)}), flush=True)
             input,
             &tokio_util::sync::CancellationToken::new(),
             environment,
+            || Ok(()),
         )
         .await
         .is_err()
@@ -245,9 +252,14 @@ time.sleep(30)
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
     assert!(
-        execute(&c, input, &tokio_util::sync::CancellationToken::new())
-            .await
-            .is_err()
+        execute(
+            &c,
+            input,
+            &tokio_util::sync::CancellationToken::new(),
+            || Ok(())
+        )
+        .await
+        .is_err()
     );
     assert!(started.elapsed() < Duration::from_secs(3));
     let pid = std::fs::read_to_string(directory.join("stdout.json"))
@@ -278,9 +290,14 @@ print(child.pid, flush=True)
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
     assert!(
-        execute(&c, input, &tokio_util::sync::CancellationToken::new())
-            .await
-            .is_err()
+        execute(
+            &c,
+            input,
+            &tokio_util::sync::CancellationToken::new(),
+            || Ok(())
+        )
+        .await
+        .is_err()
     );
     assert!(started.elapsed() < Duration::from_secs(3));
     let pid = std::fs::read_to_string(directory.join("stdout.json"))
@@ -307,9 +324,14 @@ print(child.pid, flush=True)
     let input = b"completed child cleanup".to_vec();
     let directory = receipt_directory(&c, &input);
     assert!(
-        execute(&c, input, &tokio_util::sync::CancellationToken::new())
-            .await
-            .is_err()
+        execute(
+            &c,
+            input,
+            &tokio_util::sync::CancellationToken::new(),
+            || Ok(())
+        )
+        .await
+        .is_err()
     );
     let pid = std::fs::read_to_string(directory.join("stdout.json"))
         .unwrap()
@@ -338,9 +360,14 @@ async fn native_memory_output_flood_stops_at_bound_without_waiting_for_timeout()
     let directory = receipt_directory(&c, &input);
     let started = Instant::now();
     assert!(
-        execute(&c, input, &tokio_util::sync::CancellationToken::new())
-            .await
-            .is_err()
+        execute(
+            &c,
+            input,
+            &tokio_util::sync::CancellationToken::new(),
+            || Ok(())
+        )
+        .await
+        .is_err()
     );
     assert!(started.elapsed() < Duration::from_secs(3));
     assert_eq!(
@@ -359,4 +386,58 @@ async fn native_memory_output_flood_stops_at_bound_without_waiting_for_timeout()
             .contains("exceeds bound")
     );
     Ok(())
+}
+
+#[tokio::test]
+async fn native_memory_current_guard_runs_after_setup_and_refuses_child_spawn() {
+    let temp = tempfile::tempdir().unwrap();
+    let c = prepared_worker(&temp).expect("prepare process-only worker");
+    let input = b"pre-spawn guard fixture".to_vec();
+    let directory = c
+        .receipt_directory
+        .join(Digest32::of_bytes(&input).to_string());
+    let expected = input.clone();
+    let entered = std::cell::Cell::new(false);
+    let result = execute(
+        &c,
+        input,
+        &tokio_util::sync::CancellationToken::new(),
+        || {
+            assert_eq!(
+                std::fs::read(directory.join("request.json")).unwrap(),
+                expected
+            );
+            entered.set(true);
+            Err("fixture current owner changed before spawn".to_string())
+        },
+    )
+    .await;
+    assert_eq!(
+        result,
+        Err("fixture current owner changed before spawn".to_string())
+    );
+    assert!(entered.get());
+    assert!(!directory.join("process.json").exists());
+}
+
+#[tokio::test]
+async fn native_memory_cancellation_during_final_guard_refuses_child_spawn() {
+    let temp = tempfile::tempdir().unwrap();
+    let c = prepared_worker(&temp).expect("prepare process-only worker");
+    let input = b"cancel inside final guard fixture".to_vec();
+    let directory = c
+        .receipt_directory
+        .join(Digest32::of_bytes(&input).to_string());
+    let cancellation = tokio_util::sync::CancellationToken::new();
+    let entered = std::cell::Cell::new(false);
+    let result = execute(&c, input, &cancellation, || {
+        assert!(directory.join("request.json").is_file());
+        entered.set(true);
+        cancellation.cancel();
+        Ok(())
+    })
+    .await;
+    assert!(entered.get());
+    assert_eq!(result, Err("native owner is closed".to_string()));
+    assert!(!directory.join("process.json").exists());
 }

@@ -6857,6 +6857,7 @@ pub(crate) async fn make_session_and_context() -> (Session, TurnContext) {
         thread_id,
         installation_id: "11111111-1111-4111-8111-111111111111".to_string(),
         tx_event,
+        terminal_publications: Default::default(),
         agent_status: agent_status_tx,
         state: Mutex::new(state),
         managed_network_proxy_refresh_lock: Semaphore::new(/*permits*/ 1),
@@ -7894,6 +7895,8 @@ async fn submit_with_trace_captures_current_span_trace_context() {
     let (tx_sub, rx_sub) = async_channel::bounded(1);
     let (_tx_event, rx_event) = async_channel::unbounded();
     let io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub,
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8641,6 +8644,8 @@ async fn shutdown_and_wait_allows_multiple_waiters() {
         tokio::time::sleep(StdDuration::from_millis(50)).await;
     });
     let io = Arc::new(SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub,
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8677,6 +8682,8 @@ async fn shutdown_and_wait_waits_when_shutdown_is_already_in_progress() {
         let _ = shutdown_complete_rx.await;
     });
     let io = Arc::new(SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub,
         rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8713,6 +8720,8 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
         submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;
     });
     let parent_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: parent_tx_sub,
         rx_event: parent_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8735,6 +8744,8 @@ async fn shutdown_and_wait_shuts_down_cached_guardian_subagent() {
     });
     let child_session = Arc::new(child_session);
     let child_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: child_tx_sub,
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8767,6 +8778,8 @@ async fn cached_guardian_subagent_exposes_its_rollout_path() {
     let child_session_loop_handle = tokio::spawn(async {});
     let child_session = Arc::new(child_session);
     let child_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: child_tx_sub,
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8798,6 +8811,8 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
         submission_loop(parent_session_for_loop, parent_config, parent_rx_sub).await;
     });
     let parent_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: parent_tx_sub,
         rx_event: parent_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -8820,6 +8835,8 @@ async fn shutdown_and_wait_shuts_down_tracked_ephemeral_guardian_review() {
     });
     let child_session = Arc::new(child_session);
     let child_io = SessionIo {
+        terminal_publications: Default::default(),
+        event_delivery: Default::default(),
         tx_sub: child_tx_sub,
         rx_event: child_rx_event,
         agent_status: watch::channel(AgentStatus::PendingInit).1,
@@ -9080,6 +9097,7 @@ where
         thread_id,
         installation_id: "11111111-1111-4111-8111-111111111111".to_string(),
         tx_event,
+        terminal_publications: Default::default(),
         agent_status: agent_status_tx,
         state: Mutex::new(state),
         managed_network_proxy_refresh_lock: Semaphore::new(/*permits*/ 1),

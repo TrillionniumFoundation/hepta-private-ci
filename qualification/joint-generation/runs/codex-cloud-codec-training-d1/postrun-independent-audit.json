@@ -1,0 +1,168 @@
+{
+  "schema": "hepta.codec-train-postrun-independent-audit.v1",
+  "experiment_id": "codec-train-d1",
+  "auditor": "/root/audit_acceptance",
+  "audit_date_utc": "2026-10-23",
+  "qualification_eligible": false,
+  "scope": "Read-only review of already saved artifacts after the sole registered execution. This audit records a hard failure and does not qualify a completed build, codec comparison, or scientific benefit.",
+  "execution_environment": {
+    "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+    "environment_id": "ccarenv_b64_Y2NhcmVudl8wOGNhYzlkMjdjYjg4MTkxOWJkMDY0MGIyMDBhYTA5OA"
+  },
+  "bindings": {
+    "source_commit": "525fa87a3e0f7220553fbcc9782df3f2e4b073e8",
+    "execution_commit": "2e7b08c86b2694727d7c989113a59ccfc8779a72",
+    "freeze_file": "training_diagnostics/codec-d1/frozen-d1.json",
+    "freeze_sha256": "97f83d0e26251546cbaeecbc3b613ee8abe9ed44285352827a555e98ca0246dc",
+    "plan_sha256": "c06cbde37feaa320f98196cd6b0bb6f5240e2a581957f3f2ddc522de12719293",
+    "protocol_sha256": "624a6941bc16086d12414c199a563f5e6218ba99cfb7da574c2c6b2d3444273c",
+    "driver_sha256": "7f65b052c548789e15098bfad21dfdc1e05025dca866efc1f88fd2040e9c475a",
+    "analysis_sha256": "fe6b9f6c3834ecaa03c74dc8d35d53e2e7bdd724f31cb72541cd52469bbabe1c",
+    "committed_source_plan_protocol_script_entries_checked": 71,
+    "committed_binding_mismatches": [],
+    "current_source_inventory_matched_freeze_at_audit": true,
+    "shared_build_source_inventory_matched_freeze": true,
+    "start_slot_shared_failure_terminal_identities_matched": true,
+    "slot_master_start_sha256_matched": true,
+    "two_partial_terminal_copies_byte_equal": true,
+    "two_slot_execution_receipt_copies_byte_equal": true
+  },
+  "one_shot_state": {
+    "master_exit_code": 1,
+    "slot_0_exit_code": 1,
+    "attempted_slots": [0],
+    "attempted_without_returned_receipt": [],
+    "unexecuted_slots": [1, 2, 3],
+    "existing_slot_markers": ["SLOT-0.json"],
+    "later_slot_markers_and_directories_absent": true,
+    "start_and_slot_0_remain_consumed": true,
+    "retry_or_resume_authorized": false,
+    "failure_type": "BudgetExceeded",
+    "failure_phase": "ndu:selected_validation_complete",
+    "original_failure_message": "ndu:selected_validation_complete actual CPU 10.022472113s exceeds frozen cap 10.000000000s",
+    "master_failure_message": "slot 0 hard failure; exit 1",
+    "original_failure_traceback_retained": true,
+    "master_own_cpu_ns_since_entry": 288254303,
+    "all_child_cpu_ns_since_entry": 29403486000,
+    "slot_child_cpu_ns": 28528182000
+  },
+  "protected_previous_evidence": {
+    "method": "Hash bytes against START.protected_sha256; do not parse formal inputs, labels, metrics, results, or reports.",
+    "entries_checked": 79,
+    "mismatches": [],
+    "core_opening_marker_sha256": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+    "core_opening_marker_unchanged": true,
+    "r2_opening_marker_absent": true,
+    "d1_formal_opening_markers_absent": true
+  },
+  "slot_0_partial_artifacts": {
+    "path": "runs/codex-cloud-codec-training-d1/slot-0-rowwise-png-v1",
+    "codec_variant": "rowwise-png-v1",
+    "file_count_at_audit": 120,
+    "retained_bytes_at_audit": 27558364,
+    "per_build_bound_bytes": 33554432,
+    "retained_bytes_within_bound": true,
+    "master_recorded_payload_bytes_before_terminal": 12292,
+    "master_recorded_reserved_terminal_bytes": 29034,
+    "master_bound_bytes": 2097152,
+    "completed_search_candidates": 36,
+    "candidates_per_arm": 9,
+    "candidate_update_count_min": 330,
+    "candidate_update_count_max": 521,
+    "selected_rows_in_partial_build": 12,
+    "candidate_and_selected_model_file_references_hashed": 48,
+    "candidate_or_selected_model_file_hash_mismatches": [],
+    "all_36_candidates_have_actual_step_1_and_32_receipts": true,
+    "prefix_artifact_hash_row_checkpoint_and_terminal_update_mismatches": [],
+    "cross_build_prefix_equivalence_measured": false,
+    "selected_service_zip_files_present": 10,
+    "selected_service_seeds_present": {
+      "supervised": [11, 23],
+      "anchor": [11, 23],
+      "additive": [11, 23, 47],
+      "ndu": [11, 23, 47]
+    },
+    "selected_service_zip_audit_scope": "Existence and filenames counted. No complete twelve-measure selected-service receipt or final selection exists; no cross-codec output comparison was possible.",
+    "absent_final_artifacts": [
+      "slot-0-rowwise-png-v1/selection.json",
+      "reference.json",
+      "comparison.json",
+      "risk-observer.json",
+      "COMPLETED.json"
+    ]
+  },
+  "saved_data_provenance": {
+    "actual_constructor_calls": ["train"],
+    "official_held_out_constructed_in_saved_receipt": false,
+    "artifact_hash_or_byte_count_mismatches": [],
+    "pool": {"rows": 3072, "physical_sources": 192, "sources_per_class": 16},
+    "fit": {"rows": 2304, "physical_sources": 144, "sources_per_class": 12},
+    "monitor": {"rows": 768, "physical_sources": 48, "sources_per_class": 4},
+    "all_roles_record_parent_train_provenance": true,
+    "fit_monitor_physical_source_intersection_count": 0,
+    "fit_monitor_input_hash_intersection_count": 0,
+    "fit_monitor_source_union_equals_pool": true,
+    "exact_registered_salted_source_partition_verified_from_saved_metadata": true,
+    "partition_salt": "hepta-codec-d1-train-source-partition-v1"
+  },
+  "saved_calibration": {
+    "seeds": [11, 23, 47],
+    "repeats_per_seed": 3,
+    "requests_per_repeat": 72,
+    "completed_repeats": 9,
+    "retained_png_members": 648,
+    "all_repeats_observe_false": true,
+    "all_nine_zip_hashes_match_saved_receipts": true,
+    "zip_member_counts_checked": true,
+    "cross_codec_png_json_rng_equivalence_measured": false,
+    "master_registered_reference_receipt_created": false
+  },
+  "saved_build_costs": {
+    "per_arm_cpu_cap_seconds": 10.0,
+    "per_arm_operator_cap": 12000000000,
+    "common_cpu_seconds": 3.866379884,
+    "native_compile": {
+      "exit_code": 0,
+      "cached_compilation_used": false,
+      "cpu_seconds": 0.594525875,
+      "source_sha256": "0d2be36cc6d9dbf3f22efeb7ff973f5ae7b049a74fb60a676db9c0b68d6ccc62",
+      "library_sha256": "ca84652442d6258ab67f2d553fb55742e0cc4c08222cb5e0fad02504c7ad32a0",
+      "saved_library_hash_matched": true
+    },
+    "arms": {
+      "supervised": {"cpu_seconds": 9.831431243000004, "operator_units": 10317476279},
+      "anchor": {"cpu_seconds": 9.873757716000021, "operator_units": 10566549709},
+      "additive": {"cpu_seconds": 9.963969438000017, "operator_units": 10226607423},
+      "ndu": {"cpu_seconds": 10.022472112999996, "operator_units": 10112794371}
+    },
+    "all_saved_operator_totals_within_cap": true,
+    "all_saved_cpu_totals_within_cap": false,
+    "scope": "Partial-build snapshots at the actual hard stop; not final valid build costs or a completed equal-budget comparison. The NDU CPU excess is retained without rounding it into a pass."
+  },
+  "permitted_report": [
+    "One rowwise slot actually ran and failed its unchanged complete CPU cap.",
+    "Saved TRAIN-only construction, actual candidate updates, prefix witnesses, calibration, partial selected outputs, costs and original nonzero failure may be reported descriptively.",
+    "The frozen identities, one-shot stop, artifact retention and previous-evidence hashes were preserved."
+  ],
+  "unmeasured_or_unestablished": [
+    "Cached slots 1 and 2, final rowwise slot 3, and both ABBA contrasts.",
+    "Codec CPU, operator, storage or update-allocation benefit across builds.",
+    "Cross-codec actual output, sampling RNG, base or content-prefix equivalence.",
+    "A complete twelve-model selected-service summary or final build readiness.",
+    "The registered postbuild risk observation.",
+    "Any new content-control, NDU, dynamic-routing or formal scientific qualification."
+  ],
+  "audit_execution_limits": {
+    "files_modified_by_audit": ["runs/codex-cloud-codec-training-d1/postrun-independent-audit.json"],
+    "new_dataset_construction": false,
+    "model_or_npz_tensor_loading": false,
+    "model_inference_training_scoring_or_benchmark_execution": false,
+    "formal_evaluator_execution": false,
+    "formal_semantic_inputs_labels_metrics_or_results_read": false,
+    "formal_artifact_bytes_hashed_only_for_protection": true,
+    "source_or_prior_artifact_edits": false,
+    "audit_cpu_was_not_independently_bracketed": true,
+    "audit_cost_policy": "Read-only administrative/development audit; never credited to any capped model build or presented as matched cumulative research cost."
+  },
+  "remaining_blocker": "The sole D1 control hard-failed its CPU cap. Its consumed one-shot registration does not permit retrying or executing the remaining slots. Any independent future development task requires its own authorized prospective scope; prior formal failures and seals remain unchanged."
+}

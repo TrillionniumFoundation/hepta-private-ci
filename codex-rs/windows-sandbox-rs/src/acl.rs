@@ -623,6 +623,16 @@ pub unsafe fn add_deny_write_ace(path: &Path, psid: *mut c_void) -> Result<bool>
     add_deny_ace(path, psid, DenyAceKind::Write)
 }
 
+/// Ensure the complete filesystem mutation deny on this existing object.
+/// The mask excludes read-control and synchronization rights.
+///
+/// # Safety
+/// The SID must remain valid for the call. The caller must own authorization
+/// to update the selected path's DACL.
+pub unsafe fn ensure_filesystem_mutation_deny(path: &Path, psid: *mut c_void) -> Result<bool> {
+    add_deny_ace(path, psid, DenyAceKind::Write)
+}
+
 #[derive(Clone, Copy)]
 enum DenyAceKind {
     Read,

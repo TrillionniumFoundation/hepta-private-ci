@@ -1,0 +1,92 @@
+name: Hepta E12 exact Cell boundary handoff research (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e12_cell_boundary*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e12_cell_boundary*.py'
+      - 'qualification/shared-stem-system2-architecture/E12_CELL_BOUNDARY_HANDOFF_20261016.md'
+      - '.github/workflows/hepta-e12-cell-boundary.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-and-synthetic-merge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      ROOT: qualification/shared-stem-system2-architecture
+      OUTPUT: /tmp/hepta-e12-cell-boundary
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Bind actual source and complete test code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD | tee "$OUTPUT/tested-sha.txt"
+          if [[ "${{ matrix.source_profile }}" == "source_head" && "${{ github.event_name }}" == "pull_request" ]]; then
+            test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha }}"
+          fi
+          python --version | tee "$OUTPUT/python.txt"
+          sha256sum "$ROOT"/e12_*.py "$ROOT"/test_e12_*.py \
+            | tee "$OUTPUT/source-hashes.txt"
+      - name: E12 inherited and Cell-local full regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/tests-normal.log" 2>&1 || { cat "$OUTPUT/tests-normal.log"; exit 1; }
+          tail -12 "$OUTPUT/tests-normal.log"
+      - name: No skipped security assertions under optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v \
+            > "$OUTPUT/tests-optimized.log" 2>&1 || { cat "$OUTPUT/tests-optimized.log"; exit 1; }
+          tail -12 "$OUTPUT/tests-optimized.log"
+      - name: Physically execute six original finite nonlinear laws
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e12_study.py" execute --output "$OUTPUT/original-create-only.json" \
+            | tee "$OUTPUT/original-producer.log"
+          sha256sum "$OUTPUT/original-create-only.json" | tee "$OUTPUT/original.sha256"
+      - name: Produce frozen Cell boundary transport in a distinct process
+        shell: bash
+        run: |
+          set -euo pipefail
+          ORIGINAL_SHA="$(cut -d ' ' -f1 "$OUTPUT/original.sha256")"
+          python "$ROOT/e12_cell_boundary_study.py" produce \
+            --source "$OUTPUT/original-create-only.json" --source-sha256 "$ORIGINAL_SHA" \
+            --output "$OUTPUT/cell-create-only.json" | tee "$OUTPUT/cell-producer.log"
+          sha256sum "$OUTPUT/cell-create-only.json" | tee "$OUTPUT/cell.sha256"
+      - name: Independently reopen and check every X Y Z edge and exact global bound
+        shell: bash
+        run: |
+          set -euo pipefail
+          ORIGINAL_SHA="$(cut -d ' ' -f1 "$OUTPUT/original.sha256")"
+          CELL_SHA="$(cut -d ' ' -f1 "$OUTPUT/cell.sha256")"
+          python "$ROOT/e12_cell_boundary_study.py" review \
+            --source "$OUTPUT/original-create-only.json" --source-sha256 "$ORIGINAL_SHA" \
+            --candidate "$OUTPUT/cell-create-only.json" --candidate-sha256 "$CELL_SHA" \
+            --output "$OUTPUT/independent-review.json" | tee "$OUTPUT/independent-review.log"
+          sha256sum "$OUTPUT/independent-review.json" | tee "$OUTPUT/review.sha256"
+      - name: Preserve failures, exact code and create-only mathematical receipts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e12-cell-boundary-${{ matrix.source_profile }}
+          path: /tmp/hepta-e12-cell-boundary/
+          retention-days: 14
+          if-no-files-found: warn

@@ -1,0 +1,86 @@
+{
+  "schema": "hcsn-full-b-cuda-audit-protocol-v1",
+  "scope": "exploratory validation-selected full-budget B joint-grid replay; no retraining, selection or convergence threshold",
+  "candidate_canonical_source_map_sha256": "1c49f03c3525adde66be08a6be0779dccb2ed803c497bf74daba66ad6e5c2087",
+  "candidate_benchmark_source_sha256": "abff34d45fe5829f59c28fc324e6a5c25dc5c04e533ae52b8d2048740ac1e72a",
+  "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "tasks": [
+    "delayed_recall",
+    "adding"
+  ],
+  "models": [
+    "population_flux",
+    "population_flux_no_recovery"
+  ],
+  "seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "requested_b_runs": 20,
+  "original_matrix_denominator": 170,
+  "joint_factors": [
+    1,
+    2,
+    4
+  ],
+  "diagnostic_batch_size_by_factor": {
+    "1": 64,
+    "2": 8,
+    "4": 8
+  },
+  "mse_accumulation_block_size": 64,
+  "test_count": 1024,
+  "sequence_length": 64,
+  "hidden_size": 64,
+  "trained_bins": 32,
+  "trained_dt": 0.1,
+  "effective_refractory": 0.3,
+  "device": "cuda:0",
+  "cuda_memory_fraction": 0.5,
+  "dtype": "float32",
+  "required_environment": {
+    "CUBLAS_WORKSPACE_CONFIG": ":4096:8"
+  },
+  "required_runtime_profile_schema": "hcsn-runtime-profile-v1",
+  "required_runtime_flags": {
+    "deterministic_algorithms": true,
+    "deterministic_warn_only": true,
+    "float32_matmul_precision": "highest",
+    "cuda_matmul_allow_tf32": false,
+    "cudnn_allow_tf32": false,
+    "cudnn_benchmark": false,
+    "cudnn_deterministic": true,
+    "default_dtype": "torch.float32",
+    "cpu_threads": 2,
+    "cublas_workspace_config": ":4096:8"
+  },
+  "preimported_torch_admission": "requires current-process launch profile and entry-file hash; pre-import environment provenance is the manifest-pinned wrapper's recorded assertion",
+  "cpu_rms_accumulation_dtype": "float64",
+  "cpu_trace_bytes_per_stored_grid": 16777216,
+  "maximum_persistent_full_cpu_traces": 2,
+  "convergence_pass_threshold": null,
+  "counts_toward_170_runs": false,
+  "launch_gates": {
+    "common": [
+      "reviewed frozen integration and strict CPU suite passed",
+      "immutable full 170-identity matrix receipt and selected execution config available"
+    ],
+    "policy_0": [
+      "original full-shape B CUDA probe completed under declared resource profile"
+    ],
+    "policy_1": [
+      "original full-shape B OOM under declared resource profile",
+      "fixed 16-case CPU and CUDA parity passed",
+      "candidate full-shape CUDA probe passed"
+    ]
+  },
+  "package_remat_config_sha256": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+  "allowed_execution_config_canonical_sha256_by_policy": {
+    "0": "db23407e7767762d8fda2fb69c8f42b80655360753df843d69906e3ba469de93",
+    "1": "3756a7370591ebe207ba09c69cc6a1dd6d5f6b79bec5e8eb9d8c73f845a8036d"
+  },
+  "prediction_layout": "readout(sampled_hidden_trace[:, -1]) as in the benchmark; raw helper prediction layout difference recorded separately"
+}

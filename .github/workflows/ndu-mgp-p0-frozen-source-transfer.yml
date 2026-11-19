@@ -1,0 +1,55 @@
+name: NDU-MGP frozen P0 source transfer to local test machine
+
+on:
+  push:
+    branches: [research/ndu-mgp-frozen-p0-local-transfer-20261023]
+    paths: [.github/workflows/ndu-mgp-p0-frozen-source-transfer.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  immutable-research-source:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact, published P0 source (not this wrapper branch)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 75107ba81170add170607fc0dba712ff0cc24a83
+          fetch-depth: 1
+          persist-credentials: false
+          filter: blob:none
+          sparse-checkout: experiments/ndu_latent_riccati
+      - name: Verify every originally frozen file and protocol digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 75107ba81170add170607fc0dba712ff0cc24a83
+          python3 - <<'PY'
+          import hashlib,json,pathlib
+          root=pathlib.Path('experiments/ndu_latent_riccati')
+          freeze=json.loads((root/'SOURCE_FREEZE.json').read_text())
+          request=json.loads((root/'CLOUD_RUN_REQUEST.json').read_text())
+          assert freeze['implementation_commit'] == request['implementation_commit']
+          for filename,digest in freeze['files'].items():
+              p=root/filename
+              assert p.is_file(), filename
+              assert hashlib.sha256(p.read_bytes()).hexdigest() == digest, filename
+          assert request['protocol_sha256']==hashlib.sha256((root/'protocol.json').read_bytes()).hexdigest()
+          print('Frozen original P0 source and 15 SHA256 entries verified')
+          PY
+      - name: Prepare source transfer provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          printf 'exact_source_sha=75107ba81170add170607fc0dba712ff0cc24a83\nexecution_scope=source_transfer_only\nno_model_run=true\n' > experiments/ndu_latent_riccati/SOURCE_TRANSFER_RECEIPT.txt
+      - name: Upload only public frozen P0 research source and protocol
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-mgp-p0-frozen-source-${{ github.run_id }}
+          path: experiments/ndu_latent_riccati/
+          retention-days: 3
+          if-no-files-found: error

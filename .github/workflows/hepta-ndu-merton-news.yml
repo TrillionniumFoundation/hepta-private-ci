@@ -1,0 +1,215 @@
+name: Hepta Merton separate news replication (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/**'
+      - '.github/workflows/hepta-ndu-merton-news.yml'
+      - '.github/scripts/hepta_artifact_fetch.py'
+      - '.github/scripts/test_hepta_artifact_fetch.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  archival-replication:
+    strategy:
+      fail-fast: false
+      matrix:
+        candidate: [source, merge]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.candidate == 'source' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install numeric dependency and record exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --disable-pip-version-check numpy==2.3.5
+          mkdir -p "$RUNNER_TEMP/news-evidence"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/news-evidence/source.txt"
+          python --version >> "$RUNNER_TEMP/news-evidence/source.txt"
+          python -m pip freeze >> "$RUNNER_TEMP/news-evidence/source.txt"
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news
+          echo "5578624257ef38a25c12a1dffa24d861a92de5cdd8fef193029c689f20e67a2c  $D/protocol.json" | sha256sum -c -
+      - name: Authenticate to GitHub once, then fetch SHA-pinned signed blob without token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s .github/scripts -p test_hepta_artifact_fetch.py -v
+          python .github/scripts/hepta_artifact_fetch.py --output "$RUNNER_TEMP/news-original.zip"
+      - name: Original-source tests, physical training and independent scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          python "$D/material_news.py" --archive "$NEWS_ARCHIVE" --output "$RUNNER_TEMP/news-material"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_news.py -v 2>&1 | tee "$E/tests-$mode.log"
+            grep -F 'Ran 41 tests' "$E/tests-$mode.log"
+            python "${FLAGS[@]}" "$D/trial_news.py" --material "$RUNNER_TEMP/news-material" --output "$E/run-$mode"
+            python "${FLAGS[@]}" "$D/audit_news.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --run "$E/run-$mode" --output "$E/audit-$mode.json"
+          done
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          records=[json.loads((root/f'run-{mode}/sealed.json').read_text()) for mode in ('normal','optimized')]
+          keys=('repeat','arm','selected_steps','actual_steps','weights','checkpoints','losses','calibration_blocks','preference_trace','selection_values','holdout_ids','probabilities')
+          def semantic(r):
+              if len(r['rows'])!=27:raise ValueError('incomplete experiment')
+              return [{k:row[k] for k in keys} for row in r['rows']]
+          if semantic(records[0])!=semantic(records[1]):raise ValueError('interpreter semantic drift')
+          PY
+          git diff --exit-code
+      - name: Pre-execution admission, actual early stopping and original scalar replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/sequential
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          echo "f312ed72af7cf29224b98846b17d6ac089248f2dcb8d43cb502aab54648fd105  $D/protocol.json" | sha256sum -c -
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_online.py -v 2>&1 | tee "$E/sequential-tests-$mode.log"
+            grep -F 'Ran 35 tests' "$E/sequential-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/online.py" --material "$RUNNER_TEMP/news-material" --output "$E/sequential-$mode"
+            python "${FLAGS[@]}" "$D/audit_online.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --run "$E/sequential-$mode" --output "$E/sequential-audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          seals=[json.loads((e/f'sequential-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def semantic(seal):
+              if len(seal['rows'])!=96:raise ValueError('incomplete sequential cohort')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns')} for r in seal['rows']]
+          if semantic(seals[0])!=semantic(seals[1]):raise ValueError('sequential mode drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'sequential-audit-{m}.json').read_text())
+              if a['verified_lifecycles']!=96 or a['actual_optimizer_updates']!=2280:
+                  raise ValueError('missing actual work or replay')
+          PYCODE
+          git diff --exit-code
+      - name: Train-only opportunity prior, pre-pilot choice and rational lookahead replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          echo "b62e3ab6cf681667ee9f4d920d5ca0293fc03a4460decc602a6e152f09413e3d  $D/protocol.json" | sha256sum -c -
+          python "$D/study.py" train-input --material "$RUNNER_TEMP/news-material" --output "$E/opportunity-train.npz"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_opportunity.py -v 2>&1 | tee "$E/opportunity-tests-$mode.log"
+            grep -F 'Ran 34 tests' "$E/opportunity-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/study.py" fit-prior --training "$E/opportunity-train.npz" --output "$E/opportunity-prior-$mode.json"
+            python "${FLAGS[@]}" "$D/study.py" run --material "$RUNNER_TEMP/news-material" --prior "$E/opportunity-prior-$mode.json" --output "$E/opportunity-$mode"
+            python "${FLAGS[@]}" "$D/review.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --training "$E/opportunity-train.npz" --prior "$E/opportunity-prior-$mode.json" --run "$E/opportunity-$mode" --output "$E/opportunity-audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          seals=[json.loads((e/f'opportunity-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def semantic(seal):
+              if len(seal['rows'])!=84:raise ValueError('incomplete opportunity cohort')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns')} for r in seal['rows']]
+          if semantic(seals[0])!=semantic(seals[1]):raise ValueError('opportunity interpreter drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'opportunity-audit-{m}.json').read_text())
+              if a['verified_lifecycles']!=84 or a['prior_updates']!=512:
+                  raise ValueError('missing trained prior or completed lifecycle')
+          PYCODE
+          git diff --exit-code
+      - name: Compile one shared decision asset and verify physical control parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/compiled
+          E="$RUNNER_TEMP/news-evidence"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_compiled.py -v 2>&1 | tee "$E/compiled-tests-$mode.log"
+            grep -F 'Ran 36 tests' "$E/compiled-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/benchmark.py" --material "$RUNNER_TEMP/news-material" --output "$E/compiled-$mode"
+            python "${FLAGS[@]}" "$D/audit_compiled.py" --archive "$NEWS_ARCHIVE" --material "$RUNNER_TEMP/news-material" --run "$E/compiled-$mode" --output "$E/compiled-audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence'
+          seals=[json.loads((e/f'compiled-{m}/sealed.json').read_text()) for m in ('normal','optimized')]
+          def semantic(s):
+              if len(s['rows'])!=84:raise ValueError('incomplete shared-policy run')
+              return [{k:v for k,v in r.items() if k not in ('phases','cpu_ns','wall_ns')} for r in s['rows']]
+          if semantic(seals[0])!=semantic(seals[1]):raise ValueError('shared policy changed model behavior')
+          tables=[json.loads((e/f'compiled-{m}/policy.json').read_text()) for m in ('normal','optimized')]
+          if tables[0]['tables']!=tables[1]['tables']:raise ValueError('compiled decision drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'compiled-audit-{m}.json').read_text())
+              if a['verified_lifecycles']!=84 or a['paired_shared_vs_solve']!=24 or a['rational_policy_nodes']!=66:
+                  raise ValueError('missing physical or exact-math comparison')
+          PYCODE
+          git diff --exit-code
+      - name: Nested source exclusion and independent learning-curve forecast audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head/replication_news/opportunity/transfer
+          E="$RUNNER_TEMP/news-evidence/nested"
+          export NEWS_ARCHIVE="$RUNNER_TEMP/news-original.zip"
+          mkdir -p "$E"
+          python "$D/nested.py" prepare --archive "$NEWS_ARCHIVE" --output "$E/material"
+          for mode in normal optimized; do
+            FLAGS=(); if test "$mode" = optimized; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D" -p test_nested.py -v 2>&1 | tee "$E/tests-$mode.log"
+            grep -F 'Ran 32 tests' "$E/tests-$mode.log"
+            for fold in 0 1 2 3; do
+              WORKER_SHA=$(python -c 'import json,sys; print(json.load(open(sys.argv[1]))["folds"][int(sys.argv[2])]["worker_sha256"])' "$E/material/manifest.json" "$fold")
+              python "${FLAGS[@]}" "$D/nested.py" run --worker "$E/material/fold-$fold/worker.npz" --worker-sha "$WORKER_SHA" --output "$E/run-$mode/fold-$fold"
+            done
+            python "${FLAGS[@]}" "$D/audit_nested.py" --archive "$NEWS_ARCHIVE" --material "$E/material" --runs "$E/run-$mode" --output "$E/audit-$mode.json"
+          done
+          python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          e=Path(os.environ['RUNNER_TEMP'])/'news-evidence/nested'
+          for f in range(4):
+              a,b=[json.loads((e/f'run-{m}/fold-{f}/sealed.json').read_text()) for m in ('normal','optimized')]
+              def semantic(s):
+                  if len(s['rows'])!=5: raise ValueError('incomplete nested study')
+                  return [{k:v for k,v in r.items() if k not in ('cpu_ns','wall_ns')} for r in s['rows']]
+              if semantic(a)!=semantic(b): raise ValueError('nested interpreter drift')
+          for m in ('normal','optimized'):
+              a=json.loads((e/f'audit-{m}.json').read_text())
+              if a['verified_folds']!=4 or a['policy_lifecycles']!=20 or a['prior_updates']!=1536:
+                  raise ValueError('missing exclusion or physical replay')
+              if not a['outer_label_exclusion_verified'] or a['transfer_qualified'] or a['original_holdout_used']:
+                  raise ValueError('false transfer claim')
+          PYCODE
+          git diff --exit-code
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: merton-news-${{ matrix.candidate }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/news-evidence/
+          retention-days: 14
+          if-no-files-found: error

@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-m",
+    "experiments.hcsn_distributional_v2.sealing_smoke",
+    "--output",
+    "/workspace/scratch/58af017d4789/hepta-csn/experiments/hcsn_distributional_v2/results/sealing_smoke001"
+  ],
+  "cpu_seconds_including_children": 0.548682,
+  "log_sha256": "877f88654611a555ee454c2de3dd509a36583f1f2931a679e71d1024a1484a05",
+  "peak_rss_kib_linux": 29184,
+  "returncode": 0,
+  "schema": "hcsn-sealing-smoke-outer-execution.v1",
+  "scope": "Complete isolated smoke process tree, including generic wrapper and all archive subprocesses; nested fixture/wrapper/seal receipts must not be added again",
+  "source_sha256": {
+    "seal_bundle.py": "432ec83121406b9c0e1012d76cf85777c66335f9b5a45ad731fa46436953a8fa",
+    "sealing_smoke.py": "7c8df83e0671d54868f33c82dbb8edab6032ad61dcdd4ef5ef5a154dcb018340"
+  },
+  "supervisor_self_cpu_seconds_through_receipt": 0.054127003,
+  "wait4_system_cpu_seconds": 0.121948,
+  "wait4_user_cpu_seconds": 0.426734,
+  "wall_seconds": 0.6439518689994657
+}

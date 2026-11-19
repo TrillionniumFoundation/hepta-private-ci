@@ -318,3 +318,46 @@ fn unused_legal_action_mask_cannot_exceed_graph_resource_bound() {
         Err(SngrGraphShadowError::GraphSize)
     );
 }
+
+#[test]
+fn memoized_shared_descendants_preserve_graph_depth_limit() {
+    for maximum_depth in [64_usize, 65] {
+        for reverse in [false, true] {
+            let mut nodes = BTreeMap::new();
+            for index in 0..maximum_depth {
+                let node = if index == 0 {
+                    terminal(1.0)
+                } else {
+                    SngrGraphNodeShadowV1::Chance {
+                        outcomes: vec![chance(
+                            &format!("node-{:03}", index - 1),
+                            /*probability*/ 1.0,
+                        )],
+                    }
+                };
+                nodes.insert(format!("node-{index:03}"), node);
+            }
+            let mut outcomes: Vec<_> = (0..maximum_depth)
+                .map(|index| chance(&format!("node-{index:03}"), 1.0 / maximum_depth as f64))
+                .collect();
+            if reverse {
+                outcomes.reverse();
+            }
+            nodes.insert(
+                "root".to_owned(),
+                SngrGraphNodeShadowV1::Chance { outcomes },
+            );
+            let graph = SngrGraphShadowV1 {
+                root: "root".to_owned(),
+                nodes,
+                legal_actions: BTreeSet::new(),
+            };
+            let result = evaluate_sngr_graph_shadow(&graph);
+            if maximum_depth == 64 {
+                assert!(result.is_ok(), "maximum allowed depth, reverse={reverse}");
+            } else {
+                assert_eq!(result, Err(SngrGraphShadowError::Depth));
+            }
+        }
+    }
+}

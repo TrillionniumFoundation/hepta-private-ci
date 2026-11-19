@@ -1,0 +1,65 @@
+{
+  "selective_copy": {
+    "path": "selective_copy.npz",
+    "sha256": "01e0b3fd4bbc4df05cddae7723d3433bc5c58d3e5263905c12d64b5b888db2f7",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512,
+      "ood": 512
+    },
+    "output_dim": 8
+  },
+  "mqar": {
+    "path": "mqar.npz",
+    "sha256": "e6ce3616602bdbc544a687b524dea426f58e72e13c674aee8f6dadbe8a199653",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512,
+      "ood": 512
+    },
+    "output_dim": 8
+  },
+  "irregular": {
+    "path": "irregular.npz",
+    "sha256": "3850c5d956e30fdd2a7215378aa8c6054dbee5f622cb8991f2120d3cb7e062f3",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512,
+      "ood": 512
+    },
+    "output_dim": 2
+  },
+  "mnist": {
+    "path": "mnist.npz",
+    "sha256": "43967ccabb05540a3b6c831f3737ece02d2ddea16c79e139b46dcb14fd2a4895",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512
+    },
+    "output_dim": 10
+  },
+  "fsdd": {
+    "path": "fsdd.npz",
+    "sha256": "f61d0215e5224c56a2b52f1ad2ac8acb86f85a622219da8c6b9890169c5c8843",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512
+    },
+    "output_dim": 10
+  },
+  "multimodal_select": {
+    "path": "multimodal_select.npz",
+    "sha256": "88a70438b843596f2500de6345c534212597cbfd11201ed38519917a9fa56e53",
+    "sizes": {
+      "train": 1024,
+      "val": 256,
+      "test": 512
+    },
+    "output_dim": 10
+  }
+}

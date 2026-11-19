@@ -1,0 +1,15 @@
+{
+  "schema": "hepta-historical-commit-availability-v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "requested_commit": "b1806a2e2c811e7ef5b15848ba262664aa34363f",
+  "observed_at_utc": "2026-10-29 13:51 UTC",
+  "operation": "GitHub authenticated connector fetch_commit, read-only",
+  "http_status": 422,
+  "error": {
+    "message": "No commit found for SHA: b1806a2e2c811e7ef5b15848ba262664aa34363f",
+    "documentation_url": "https://docs.github.com/rest/commits/commits#get-a-commit",
+    "status": "422"
+  },
+  "conclusion": "The exact historical commit is not retrievable from this repository through the authenticated commit API. This check does not establish that an original bundle exists nowhere else.",
+  "permission_status": "User explicitly authorized publishing the current source, checkpoints, raw data and complete evidence to the stated public branch; no publication-permission blocker remains."
+}

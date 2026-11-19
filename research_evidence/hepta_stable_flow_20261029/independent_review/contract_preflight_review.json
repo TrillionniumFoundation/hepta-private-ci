@@ -1,0 +1,223 @@
+{
+  "version": "hepta-independent-contract-preflight-20261029-v1",
+  "created_unix": 1793275381.340802,
+  "scope": "New scientific execution, not reconstruction of missing historical b1806a2e2c811e7ef5b15848ba262664aa34363f raw evidence",
+  "status": "Reviewed current numerical/controller/data/statistical contracts; formal freeze and train-only budget qualification remain separate execution stages",
+  "reviewed_source_sha256": {
+    "audit.py": "88765e918f60909f476d40e7b1bef618862768f247a1836020ee55df4f204d7e",
+    "numerics.py": "db2bd55fca0ab29be56d004a1b93352b0230f82ebb25e901eb424c8054ea1748",
+    "flow.py": "0c2cff8aba381a6498bd7d666da1500c561f52ea8d2b9ec1a3f81332fb7dd3a9",
+    "memory.py": "2820ee2d9a67f60f415ee4aad6f101f21fb3119ca542e8a7c8a77ab1b4b9a5dc",
+    "models.py": "23057770711a050e86b9bf6e184f1c413c8dcb82127ecf8e6e638aea1096743e",
+    "data.py": "6360553bb21adef417e2b9663c865c82a9740111561608a45a4d255765afa623",
+    "study.py": "4f43810a8124a9e88fc0241c4366a8e3ce5f5af98c2e17cd767135a431583dec"
+  },
+  "numerical_receipt_sha256": {
+    "independent_run001": "18e54de9b00ab7314501d46edce6257492b509baa55d96fb2c473754dee1abdf",
+    "independent_run002": "8bdb7b9f9f111be3c0738570caf6a0714a0182b3b47cd7f95733f5d288aabe7c",
+    "independent_run003_prepared": "7a2e7f9b1706d27a4ae41ef9908b9671030c35f7f9d1cf94ccc5449b15f6bdcc"
+  },
+  "numerical_decision": {
+    "selected_max_step": 0.0625,
+    "initial_candidates_failed": [
+      0.25,
+      0.125
+    ],
+    "original_failure_preserved": true,
+    "thresholds_not_relaxed": true,
+    "selected_path": "prepare_sequence/step_prepared",
+    "selected_max_scaled_state_error": 0.00030783829324354105,
+    "selected_max_directional_gradient_relative_error": 0.001173742783190546,
+    "prepared_vs_per_tick_state_error": 0.0,
+    "prepared_vs_per_tick_max_directional_gradient_relative_error": 7.998987029849288e-16,
+    "zero_dt_and_batch_composition_checks": "zero observed discrepancy in all three modes",
+    "scope_limit": "Four parameter directions and fixed trajectories do not certify the full gradient or every learned parameter trajectory",
+    "stress_limit": "Stiff interior parameters with invariant-rectangle edge states have scaled state error 0.01294 analytic and 0.02365 matched; finite/bounded is not an accuracy certificate"
+  },
+  "mechanism_review": {
+    "feedback": "With x=v-q-log(beta), positive Call feedback into q restores x; positive Put feedback into q regenerates default excursion; negative z feedback into q restores x slowly",
+    "initialization": "q_star=-x_star-log(beta), z_star=g_recovery*put(x_star), all parameter dependencies retain autograd",
+    "memory": "Exact frozen-key/value/rate propagation for arbitrary key norm; exactness does not extend to the jointly evolving controller-memory system",
+    "messages": "This prototype tests a boundary controller attached to matrix memory; it does not implement a validated general multilayer multimodal system"
+  },
+  "causality_review": {
+    "targets_are_model_inputs": false,
+    "query_tokens_expose_value_identity": false,
+    "qk_addresses_use_future_or_value_fields": false,
+    "final_memory_replayed_for_early_queries": false,
+    "content_readout_path": "Current memory times current query, followed by affine readout",
+    "shared_task_priors": [
+      "Explicit observed-role write/query masks",
+      "Causal copy slot counters",
+      "Causal pending-key binder"
+    ],
+    "scope_limit": "Does not test discovery of arbitrary key/value grammar or remove the explicit addressing prior"
+  },
+  "comparison_review": {
+    "primary": "analytic versus matched_c1 isolates operator shape under the same matrix/parser/parameter layout",
+    "ordinary": "A broader controller comparison because rate heads read different state features",
+    "sigmoid": "a+p=1 makes q feedback depend on g_call-g_put, so tensor-count equality is not functional-identifiability equality",
+    "frozen_flow": "Controller parameters frozen, states still evolve; diagnostic with fewer trainable parameters",
+    "accounting": [
+      {
+        "arm": "analytic",
+        "model_config": {
+          "heads": 1,
+          "key_dim": 16,
+          "value_dim": 8,
+          "max_step": 0.0625,
+          "initial_leak": 0.001953125,
+          "initial_write": 1.0
+        },
+        "parameters_total": 726,
+        "parameters_trainable": 726,
+        "group_trainable": {
+          "content": 648,
+          "boundary_input": 66,
+          "boundary_dynamics": 8,
+          "rate_head": 4
+        },
+        "persistent_float_state_per_episode": 147,
+        "persistent_integer_state_per_episode": 3,
+        "state_components": {
+          "matrix": 128,
+          "flow": 3,
+          "pending_key": 16,
+          "write_counter_read_counter_cue_flag": 3
+        },
+        "interpretation": "shared scalar margin drives both operator channels"
+      },
+      {
+        "arm": "matched_c1",
+        "model_config": {
+          "heads": 1,
+          "key_dim": 16,
+          "value_dim": 8,
+          "max_step": 0.0625,
+          "initial_leak": 0.001953125,
+          "initial_write": 1.0
+        },
+        "parameters_total": 726,
+        "parameters_trainable": 726,
+        "group_trainable": {
+          "content": 648,
+          "boundary_input": 66,
+          "boundary_dynamics": 8,
+          "rate_head": 4
+        },
+        "persistent_float_state_per_episode": 147,
+        "persistent_integer_state_per_episode": 3,
+        "state_components": {
+          "matrix": 128,
+          "flow": 3,
+          "pending_key": 16,
+          "write_counter_read_counter_cue_flag": 3
+        },
+        "interpretation": "shared scalar margin drives both operator channels"
+      },
+      {
+        "arm": "sigmoid",
+        "model_config": {
+          "heads": 1,
+          "key_dim": 16,
+          "value_dim": 8,
+          "max_step": 0.0625,
+          "initial_leak": 0.001953125,
+          "initial_write": 1.0
+        },
+        "parameters_total": 726,
+        "parameters_trainable": 726,
+        "group_trainable": {
+          "content": 648,
+          "boundary_input": 66,
+          "boundary_dynamics": 8,
+          "rate_head": 4
+        },
+        "persistent_float_state_per_episode": 147,
+        "persistent_integer_state_per_episode": 3,
+        "state_components": {
+          "matrix": 128,
+          "flow": 3,
+          "pending_key": 16,
+          "write_counter_read_counter_cue_flag": 3
+        },
+        "interpretation": "shared scalar margin drives both operator channels"
+      },
+      {
+        "arm": "ordinary",
+        "model_config": {
+          "heads": 1,
+          "key_dim": 16,
+          "value_dim": 8,
+          "max_step": 0.0625,
+          "initial_leak": 0.001953125,
+          "initial_write": 1.0
+        },
+        "parameters_total": 726,
+        "parameters_trainable": 726,
+        "group_trainable": {
+          "content": 648,
+          "boundary_input": 66,
+          "boundary_dynamics": 8,
+          "rate_head": 4
+        },
+        "persistent_float_state_per_episode": 147,
+        "persistent_integer_state_per_episode": 3,
+        "state_components": {
+          "matrix": 128,
+          "flow": 3,
+          "pending_key": 16,
+          "write_counter_read_counter_cue_flag": 3
+        },
+        "interpretation": "ordinary changes controller features"
+      },
+      {
+        "arm": "frozen_flow",
+        "model_config": {
+          "heads": 1,
+          "key_dim": 16,
+          "value_dim": 8,
+          "max_step": 0.0625,
+          "initial_leak": 0.001953125,
+          "initial_write": 1.0
+        },
+        "parameters_total": 726,
+        "parameters_trainable": 652,
+        "group_trainable": {
+          "content": 648,
+          "boundary_input": 0,
+          "boundary_dynamics": 0,
+          "rate_head": 4
+        },
+        "persistent_float_state_per_episode": 147,
+        "persistent_integer_state_per_episode": 3,
+        "state_components": {
+          "matrix": 128,
+          "flow": 3,
+          "pending_key": 16,
+          "write_counter_read_counter_cue_flag": 3
+        },
+        "interpretation": "frozen controller parameters; evolving states; fewer trainable parameters"
+      }
+    ]
+  },
+  "protocol_review": {
+    "data_sha_checks": "Verified train, validation and test loaders check manifest file hashes before loading",
+    "first_validation_access": "All-candidates-complete receipt seal is written before validation data are loaded",
+    "test_selection": "Validation selection and checkpoint hashes sealed before test scoring",
+    "quality_floor": "All seeds in both compared groups require validation accuracy >=.9; analytic also requires test accuracy >=.9 in every seed",
+    "statistical_family": "Four primary comparisons per metric, eight secondary comparisons per metric; accuracy and CE are separate prespecified families, with no across-metric FWER or choose-the-winner general-advantage claim",
+    "intervals": "Paired seed t with df=2 and within-family Bonferroni; three seeds cannot establish normality and intervals remain exploratory",
+    "post_training_solver_sensitivity": "Registered h versus h/2 on first 64 test episodes for every selected checkpoint, diagnostic only, no model selection or replacement of primary scores",
+    "remaining_before_formal_run": [
+      "Finish train-only budget/throughput qualification",
+      "Freeze exact final source and protocol before creating formal splits"
+    ]
+  },
+  "prohibited_inferences": [
+    "Historical missing checkpoints or raw arrays recovered",
+    "Universal floating-point domain accuracy or gradient contraction",
+    "Full multimodal/Transformer/Mamba/SNN superiority",
+    "Energy or scaling benefit without matched measurements"
+  ]
+}

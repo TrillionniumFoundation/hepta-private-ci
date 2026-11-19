@@ -1,0 +1,51 @@
+test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) ... 
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, -0.12, 0.35, 0.3)) ... FAIL
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.0, 0.35, 0.3)) ... FAIL
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.12, 0.35, 0.3)) ... FAIL
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(1.0, 0.0001, 0.2, 0.1, 0.3)) ... FAIL
+  test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.0001, 0.01, 0.2, 0.1, 0.3)) ... FAIL
+
+======================================================================
+FAIL: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, -0.12, 0.35, 0.3))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 51, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    self.assertLess(scaled, 2e-7, (name, data, actual, exact, scaled))
+AssertionError: 0.27327422156731845 not less than 2e-07 : ('sigma-sigma', (0.15, 0.1, -0.12, 0.35, 0.3), tensor(-33.3455, dtype=torch.float64), mpf('-45.884609091410079934948180619097911602146734637792942830913049557762783838689748656'), 0.27327422156731845)
+
+======================================================================
+FAIL: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.0, 0.35, 0.3))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 51, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    self.assertLess(scaled, 2e-7, (name, data, actual, exact, scaled))
+AssertionError: 0.2388339712984373 not less than 2e-07 : ('sigma-sigma', (0.15, 0.1, 0.0, 0.35, 0.3), tensor(-40.2088, dtype=torch.float64), mpf('-52.825239987236042318101841849182753279985011285220026618230845463456454997649987281'), 0.2388339712984373)
+
+======================================================================
+FAIL: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.15, 0.1, 0.12, 0.35, 0.3))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 51, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    self.assertLess(scaled, 2e-7, (name, data, actual, exact, scaled))
+AssertionError: 0.20801873999001097 not less than 2e-07 : ('sigma-sigma', (0.15, 0.1, 0.12, 0.35, 0.3), tensor(-47.7395, dtype=torch.float64), mpf('-60.278611590368849702617332074928035930880596927074136612394833517587219315326263432'), 0.20801873999001097)
+
+======================================================================
+FAIL: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(1.0, 0.0001, 0.2, 0.1, 0.3))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 51, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    self.assertLess(scaled, 2e-7, (name, data, actual, exact, scaled))
+AssertionError: 0.33331955586636314 not less than 2e-07 : ('sigma-sigma', (1.0, 0.0001, 0.2, 0.1, 0.3), tensor(-2.0001e+08, dtype=torch.float64), mpf('-300012100.12019990400888517222302850766172016712217089846772219261740034435029709491'), 0.33331955586636314)
+
+======================================================================
+FAIL: test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes (qualification.hcsn_differentiable.tests.test_logrisk_hessian.SecondOrderLogRiskTests.test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes) (data=(0.0001, 0.01, 0.2, 0.1, 0.3))
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/qian-qi/hcsn-p0p5-doubleback-r10-20261111/qualification/hcsn_differentiable/tests/test_logrisk_hessian.py", line 51, in test_sigma_curvature_and_mu_sigma_cross_across_drift_regimes
+    self.assertLess(scaled, 2e-7, (name, data, actual, exact, scaled))
+AssertionError: 0.008248353673254282 not less than 2e-07 : ('sigma-sigma', (0.0001, 0.01, 0.2, 0.1, 0.3), tensor(-3.0328, dtype=torch.float64), mpf('-3.0079438156168539520143622049573578855203558415114698009229241836051287474283787394'), 0.008248353673254282)
+
+----------------------------------------------------------------------
+Ran 1 test in 0.212s
+
+FAILED (failures=5)

@@ -595,6 +595,202 @@ pub(crate) mod tests {
             Err(RoleSplitAdmissionErrorV1::FutureWindowMismatch)
         );
     }
+
+    fn generic_bindings(
+        profile: &CellRoleMetricProfileV1,
+        metrics: &CellRoleMetricReceiptV1,
+    ) -> crate::RoleSplitMetricBindingSetV1 {
+        crate::RoleSplitMetricBindingSetV1 {
+            role: metrics.role,
+            profile_digest: profile.content_digest().expect("profile"),
+            metric_receipt_digest: metrics.content_digest(profile).expect("metrics"),
+            observations: metrics
+                .metrics
+                .iter()
+                .map(|metric| crate::RoleSplitMetricObservationBindingV1 {
+                    kind: metric.kind,
+                    observation_digest: metric.observation_digest,
+                })
+                .collect(),
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+
+    // Public receipt fields and the public hash scheme are not authentication.
+    // Rehash a reconstructed record to exercise the actual cross-record checks.
+    fn rehash_generic_admission(receipt: &crate::RoleSplitMetricAdmissionReceiptV1) -> Digest32 {
+        let mut bytes = b"hepta.cell-role.role-split-metric-admission.v1".to_vec();
+        bytes.push(receipt.role.tag());
+        bytes.extend_from_slice(receipt.parent_cell_id.as_str().as_bytes());
+        bytes.extend_from_slice(&receipt.successor_generation.get().to_be_bytes());
+        bytes.extend_from_slice(receipt.split_subject_digest.as_array());
+        bytes.extend_from_slice(receipt.binding_digest.as_array());
+        bytes.extend_from_slice(receipt.proposer_id.as_str().as_bytes());
+        bytes.extend_from_slice(receipt.evaluator_id.as_str().as_bytes());
+        Digest32::of_bytes(&bytes)
+    }
+
+    fn remove_evaluation_receipt(split: &mut CellSplitV1, index: usize) {
+        match index {
+            0 => split.evaluation.evaluation_receipt_digest = Digest32::ZERO,
+            1 => split.evaluation.retention_receipt_digest = Digest32::ZERO,
+            2 => split.evaluation.negative_transfer_receipt_digest = Digest32::ZERO,
+            3 => split.evaluation.cost_receipt_digest = Digest32::ZERO,
+            _ => panic!("invalid fixture index"),
+        }
+    }
+
+    #[test]
+    fn replay_rejects_rehashed_outer_role_mismatch() {
+        let split = split();
+        let profile = profile();
+        let metrics = metrics(&split, &profile);
+        let evidence = evidence(&split, &profile, &metrics);
+        let mut receipt =
+            RoleSplitAdmissionV1::admit(&split, evidence, &profile, &metrics).expect("admission");
+        RoleSplitAdmissionV1::verify(&split, &receipt, &profile, &metrics).expect("replay");
+        receipt.role = CellRoleV1::Router;
+        receipt.admission_digest = digest_receipt(&receipt);
+        assert_eq!(
+            RoleSplitAdmissionV1::verify(&split, &receipt, &profile, &metrics),
+            Err(RoleSplitAdmissionErrorV1::RoleMismatch)
+        );
+    }
+
+    #[test]
+    fn replay_requires_all_post_evaluation_receipts() {
+        let split = split();
+        let profile = profile();
+        let metrics = metrics(&split, &profile);
+        let evidence = evidence(&split, &profile, &metrics);
+        let receipt = RoleSplitAdmissionV1::admit(&split, evidence.clone(), &profile, &metrics)
+            .expect("admission");
+        RoleSplitAdmissionV1::verify(&split, &receipt, &profile, &metrics).expect("replay");
+        for (index, label) in [
+            "evaluation receipt",
+            "retention receipt",
+            "negative transfer receipt",
+            "cost receipt",
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let mut incomplete = split.clone();
+            remove_evaluation_receipt(&mut incomplete, index);
+            assert_eq!(
+                incomplete.evaluation_subject_digest(),
+                Ok(receipt.split_subject_digest)
+            );
+            let expected = Err(RoleSplitAdmissionErrorV1::Split(
+                codex_hepta_types::CellSplitContractErrorV1::EmptyDigest(label),
+            ));
+            assert_eq!(
+                RoleSplitAdmissionV1::admit(&incomplete, evidence.clone(), &profile, &metrics),
+                expected
+            );
+            assert_eq!(
+                RoleSplitAdmissionV1::verify(&incomplete, &receipt, &profile, &metrics),
+                Err(RoleSplitAdmissionErrorV1::Split(
+                    codex_hepta_types::CellSplitContractErrorV1::EmptyDigest(label)
+                ))
+            );
+        }
+    }
+
+    #[test]
+    fn metric_replay_rejects_rehashed_cross_split_metrics() {
+        let split = split();
+        let profile = profile();
+        let metrics = metrics(&split, &profile);
+        let bindings = generic_bindings(&profile, &metrics);
+        let baseline =
+            crate::RoleSplitMetricAdmissionV1::admit(&split, &profile, &metrics, bindings.clone())
+                .expect("admission");
+        baseline
+            .verify(&split, &profile, &metrics, &bindings)
+            .expect("replay");
+        assert_eq!(
+            baseline.admission_digest,
+            rehash_generic_admission(&baseline)
+        );
+        for field in 0..4 {
+            let mut other = metrics.clone();
+            match field {
+                0 => other.cell_id = id("cell.other"),
+                1 => other.generation = Generation::new(9).expect("generation"),
+                2 => other.proposer_id = id("other.proposer"),
+                3 => other.evaluator_id = id("other.evaluator"),
+                _ => unreachable!(),
+            }
+            let other_bindings = generic_bindings(&profile, &other);
+            other_bindings
+                .validate_against(&profile, &other)
+                .expect("internally consistent metrics");
+            let mut reconstructed = baseline.clone();
+            reconstructed.binding_digest = other_bindings.content_digest().expect("bindings");
+            reconstructed.admission_digest = rehash_generic_admission(&reconstructed);
+            assert_eq!(
+                crate::RoleSplitMetricAdmissionV1::admit(
+                    &split,
+                    &profile,
+                    &other,
+                    other_bindings.clone()
+                ),
+                Err(crate::RoleSplitMetricBindingErrorV1::ReceiptMismatch)
+            );
+            assert_eq!(
+                reconstructed.verify(&split, &profile, &other, &other_bindings),
+                Err(crate::RoleSplitMetricBindingErrorV1::ReceiptMismatch)
+            );
+        }
+    }
+
+    #[test]
+    fn metric_replay_requires_all_post_evaluation_receipts() {
+        let split = split();
+        let profile = profile();
+        let metrics = metrics(&split, &profile);
+        let bindings = generic_bindings(&profile, &metrics);
+        let receipt =
+            crate::RoleSplitMetricAdmissionV1::admit(&split, &profile, &metrics, bindings.clone())
+                .expect("admission");
+        receipt
+            .verify(&split, &profile, &metrics, &bindings)
+            .expect("replay");
+        for (index, label) in [
+            "evaluation receipt",
+            "retention receipt",
+            "negative transfer receipt",
+            "cost receipt",
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let mut incomplete = split.clone();
+            remove_evaluation_receipt(&mut incomplete, index);
+            assert_eq!(
+                incomplete.evaluation_subject_digest(),
+                Ok(receipt.split_subject_digest)
+            );
+            assert_eq!(
+                crate::RoleSplitMetricAdmissionV1::admit(
+                    &incomplete,
+                    &profile,
+                    &metrics,
+                    bindings.clone()
+                ),
+                Err(crate::RoleSplitMetricBindingErrorV1::Split(
+                    codex_hepta_types::CellSplitContractErrorV1::EmptyDigest(label)
+                ))
+            );
+            assert_eq!(
+                receipt.verify(&incomplete, &profile, &metrics, &bindings),
+                Err(crate::RoleSplitMetricBindingErrorV1::Split(
+                    codex_hepta_types::CellSplitContractErrorV1::EmptyDigest(label)
+                ))
+            );
+        }
+    }
 }
 
 #[cfg(test)]

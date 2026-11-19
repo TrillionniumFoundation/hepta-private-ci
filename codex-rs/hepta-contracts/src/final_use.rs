@@ -549,6 +549,17 @@ impl FinalUseAuthority {
         Ok(state.head.clone())
     }
 
+    /// Digest the currently trusted durable head with the same complete-head
+    /// encoding used by claimed tokens. This read-only snapshot grants no
+    /// authority and does not replace a fresh feed or the CAS frontier.
+    pub fn revocation_head_sha256(&self) -> Result<[u8; 32], FinalUseError> {
+        let head = self.revocation_head()?;
+        let head_bytes = serde_json::to_vec(&head).map_err(|_| FinalUseError::InvalidTrust)?;
+        let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
+        head_witness.extend_from_slice(&head_bytes);
+        Ok(Sha256::digest(&head_witness).into())
+    }
+
     /// Called only by the trusted host, not from a provider response or grant.
     /// Revocations are monotonic within an epoch and are never silently dropped.
     pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), FinalUseError> {
@@ -1095,3 +1106,7 @@ impl std::error::Error for FinalUseError {}
 #[cfg(all(test, unix))]
 #[path = "final_use_tests.rs"]
 mod tests;
+
+#[cfg(windows)]
+#[path = "final_use_windows.rs"]
+mod windows;

@@ -1,0 +1,100 @@
+name: hepta-hdcf-type-prior-v8
+
+on:
+  push:
+    branches:
+      - research/hdcf-type-prior-negative-v8-20261017
+    paths:
+      - 'qualification/hdcf-research/type_prior_negative_v8.py'
+      - 'qualification/hdcf-research/test_type_prior_negative_v8.py'
+      - 'qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md'
+      - '.github/workflows/hepta-hdcf-type-prior-v8.yml'
+  pull_request:
+    paths:
+      - 'qualification/hdcf-research/type_prior_negative_v8.py'
+      - 'qualification/hdcf-research/test_type_prior_negative_v8.py'
+      - 'qualification/hdcf-research/HEPTA_V8_TYPE_PRIOR_NEGATIVE.md'
+      - '.github/workflows/hepta-hdcf-type-prior-v8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hdcf-v8-${{ github.workflow }}-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  exact-original-negative-control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source-only adversarial checks
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile type_prior_negative_v8.py test_type_prior_negative_v8.py
+          python3 -m unittest -v test_type_prior_negative_v8.SourceOnlySecurityTests
+          python3 -O -m unittest -v test_type_prior_negative_v8.SourceOnlySecurityTests
+      - name: Fetch only immutable, previously completed ORIGINAL artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hdcf-v8-original"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/12083071509/zip" > "$RUNNER_TEMP/hdcf-v8-original/features.zip"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/12083091720/zip" > "$RUNNER_TEMP/hdcf-v8-original/trial.zip"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/12080419743/zip" > "$RUNNER_TEMP/hdcf-v8-original/targets.zip"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/artifacts/12080649303/zip" > "$RUNNER_TEMP/hdcf-v8-original/public.zip"
+          cd "$RUNNER_TEMP/hdcf-v8-original"
+          printf '%s  %s\n' \
+            '3d8d6b7bed80f1f5efb1a17fd1df94208bef4239e5bbbbcd29e63262fb6e025d' features.zip \
+            '8bd2d2ba3b2de9f2fe1b99042b471c016d78f90c8305d7d82c91bf1a23138bed' trial.zip \
+            '140191b7915923b51a447c9cabc43d6dbba96060ae4dee90716f1fd2539821fb' targets.zip \
+            '51e258a7a721a03f402e6606cffb57f52e5ee35a458f5f75218eaafabd9fe698' public.zip \
+            | sha256sum --check
+      - name: Real archived features, original physical Head weights and independent lesions
+        working-directory: qualification/hdcf-research
+        env:
+          HDCF_V8_FEATURES_ZIP: ${{ runner.temp }}/hdcf-v8-original/features.zip
+          HDCF_V8_TRIAL_ZIP: ${{ runner.temp }}/hdcf-v8-original/trial.zip
+          HDCF_V8_TARGETS_ZIP: ${{ runner.temp }}/hdcf-v8-original/targets.zip
+          HDCF_V8_PUBLIC_ZIP: ${{ runner.temp }}/hdcf-v8-original/public.zip
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v test_type_prior_negative_v8
+          python3 -O -m unittest -v test_type_prior_negative_v8
+          python3 type_prior_negative_v8.py \
+            --features-zip "$HDCF_V8_FEATURES_ZIP" --trial-zip "$HDCF_V8_TRIAL_ZIP" \
+            --targets-zip "$HDCF_V8_TARGETS_ZIP" --public-zip "$HDCF_V8_PUBLIC_ZIP" \
+            --out "$RUNNER_TEMP/hdcf-v8-negative.json"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          r=json.loads((Path(os.environ['RUNNER_TEMP'])/'hdcf-v8-negative.json').read_text())
+          assert r['original_five_arm_predictions_independently_replayed'] == 160
+          assert r['type_only_vs_split_decision_agreements'] == 32
+          assert r['zero_feature_vs_original_split_decision_agreements'] == 32
+          assert r['type_only_correct'] == r['split_correct'] == 20
+          assert r['type_only_brier'] < r['split_brier']
+          assert r['type_only_logloss'] < r['split_logloss']
+          assert r['type_only_head_sgd_steps'] == 0
+          assert r['disposition'] == 'HOLD_NO_GO'
+          assert r['production_authorized'] is False
+          assert r['native_effect_authorized'] is False
+          PY
+      - name: Retain bounded negative review ONLY (no raw data or weights)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hdcf-v8-independent-original-type-prior-negative
+          retention-days: 30
+          if-no-files-found: ignore
+          path: ${{ runner.temp }}/hdcf-v8-negative.json

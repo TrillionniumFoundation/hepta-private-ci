@@ -1,0 +1,14 @@
+{
+  "command": [
+    "python",
+    "training_diagnostics/dynamic-h2/analyze.py",
+    "--run",
+    "runs/codex-cloud-dynamic-train-headroom-h4",
+    "--out",
+    "runs/codex-cloud-dynamic-train-headroom-h4/headroom-analysis.json"
+  ],
+  "exit_code": 0,
+  "tool_wall_seconds": 0.30189359,
+  "cpu_directly_metered": false,
+  "scope": "Saved-array/report arithmetic only; no model/data constructor, fitting, new measurement or formal test. Additional R&D, never credited as model budget savings."
+}

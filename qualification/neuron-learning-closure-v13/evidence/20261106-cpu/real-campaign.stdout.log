@@ -1,0 +1,370 @@
+{"case": "original", "expected": "VERIFIED", "observed": "VERIFIED", "control_satisfied": true, "cost": {"wall_seconds": 2.4718010559990944, "parent_cpu_seconds": 0.02280517000000004, "child_user_seconds": 1.2665549999999999, "child_system_seconds": 1.155598, "total_cpu_seconds": 2.4449581699999996, "child_peak_rss_bytes": 215437312, "child_block_inputs": 172336, "child_block_outputs": 179280, "child_voluntary_context_switches": 385, "child_involuntary_context_switches": 2164, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 1, "admitted_source_copy_bytes": 91582945, "encoder_batches_attempted": 4, "encoder_batches_completed": 4, "encoder_calls_attempted": 1, "encoder_loads_attempted": 1, "executor_calls_attempted": 120, "staging_copy_bytes": 91582945}}
+{"case": "source-body-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 0.12295068700041156, "parent_cpu_seconds": 0.0017913680000000154, "child_user_seconds": 0.090055, "child_system_seconds": 0.023677, "total_cpu_seconds": 0.11552336800000002, "child_peak_rss_bytes": 29597696, "child_block_inputs": 0, "child_block_outputs": 992, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 0, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 478924, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 478924}}
+{"case": "raw-text-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 1.8802715050005645, "parent_cpu_seconds": 0.033971733000000004, "child_user_seconds": 1.318986, "child_system_seconds": 0.5789639999999999, "total_cpu_seconds": 1.9319217329999998, "child_peak_rss_bytes": 214994944, "child_block_inputs": 0, "child_block_outputs": 179096, "child_voluntary_context_switches": 399, "child_involuntary_context_switches": 1023, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582959, "encoder_batches_attempted": 4, "encoder_batches_completed": 4, "encoder_calls_attempted": 1, "encoder_loads_attempted": 1, "executor_calls_attempted": 0, "staging_copy_bytes": 91582959}}
+{"case": "raw-row-order-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 1.56190665000031, "parent_cpu_seconds": 0.014491898000000059, "child_user_seconds": 1.198554, "child_system_seconds": 0.369282, "total_cpu_seconds": 1.582327898, "child_peak_rss_bytes": 215773184, "child_block_inputs": 0, "child_block_outputs": 179000, "child_voluntary_context_switches": 356, "child_involuntary_context_switches": 1015, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582945, "encoder_batches_attempted": 4, "encoder_batches_completed": 4, "encoder_calls_attempted": 1, "encoder_loads_attempted": 1, "executor_calls_attempted": 0, "staging_copy_bytes": 91582945}}
+{"case": "aggregate-feature-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 0.3565834389992233, "parent_cpu_seconds": 0.0035951559999999327, "child_user_seconds": 0.30297399999999997, "child_system_seconds": 0.051995, "total_cpu_seconds": 0.3585641559999999, "child_peak_rss_bytes": 31748096, "child_block_inputs": 0, "child_block_outputs": 178976, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 1, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582945, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 91582945}}
+{"case": "source-feature-archive-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 1.364980521000689, "parent_cpu_seconds": 0.014063264999999991, "child_user_seconds": 1.189003, "child_system_seconds": 0.178645, "total_cpu_seconds": 1.3817112649999999, "child_peak_rss_bytes": 215273472, "child_block_inputs": 0, "child_block_outputs": 178984, "child_voluntary_context_switches": 386, "child_involuntary_context_switches": 1264, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582945, "encoder_batches_attempted": 4, "encoder_batches_completed": 4, "encoder_calls_attempted": 1, "encoder_loads_attempted": 1, "executor_calls_attempted": 0, "staging_copy_bytes": 91582945}}
+{"case": "tokenizer-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 0.3229151269988506, "parent_cpu_seconds": 0.07873257299999992, "child_user_seconds": 0.15573599999999999, "child_system_seconds": 0.087879, "total_cpu_seconds": 0.3223475729999999, "child_peak_rss_bytes": 31367168, "child_block_inputs": 0, "child_block_outputs": 178040, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 1, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91115032, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 91115032}}
+{"case": "mask-profile-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 0.6547083400000702, "parent_cpu_seconds": 0.016485416999999947, "child_user_seconds": 0.308619, "child_system_seconds": 0.334893, "total_cpu_seconds": 0.6599974169999999, "child_peak_rss_bytes": 32137216, "child_block_inputs": 0, "child_block_outputs": 178992, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 1, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582945, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 91582945}}
+{"case": "checkpoint-state-drift", "expected": "REJECTED", "observed": "REJECTED", "control_satisfied": true, "cost": {"wall_seconds": 0.4179303210003127, "parent_cpu_seconds": 0.004391510999999904, "child_user_seconds": 0.298307, "child_system_seconds": 0.113699, "total_cpu_seconds": 0.4163975109999999, "child_peak_rss_bytes": 33464320, "child_block_inputs": 0, "child_block_outputs": 178984, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 0, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 91582944, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 91582944}}
+{"case": "missing-real-encoder", "expected": "HOLD", "observed": "HOLD", "control_satisfied": true, "cost": {"wall_seconds": 0.14473675299814204, "parent_cpu_seconds": 0.0025056269999998992, "child_user_seconds": 0.12484999999999999, "child_system_seconds": 0.014943, "total_cpu_seconds": 0.1422986269999999, "child_peak_rss_bytes": 31338496, "child_block_inputs": 0, "child_block_outputs": 1440, "child_voluntary_context_switches": 1, "child_involuntary_context_switches": 2, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": {"adapter_calls_attempted": 0, "admitted_source_copy_bytes": 709818, "encoder_batches_attempted": 0, "encoder_batches_completed": 0, "encoder_calls_attempted": 0, "encoder_loads_attempted": 0, "executor_calls_attempted": 0, "staging_copy_bytes": 709818}}
+{"case": "original-one-second-cpu-bound", "expected": "HOLD", "observed": "HOLD", "control_satisfied": true, "cost": {"wall_seconds": 1.0496288579997781, "parent_cpu_seconds": 0.03136069200000002, "child_user_seconds": 0.72948, "child_system_seconds": 0.318036, "total_cpu_seconds": 1.0788766920000001, "child_peak_rss_bytes": 215736320, "child_block_inputs": 0, "child_block_outputs": 178968, "child_voluntary_context_switches": 94, "child_involuntary_context_switches": 535, "energy_joules": null, "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."}, "worker_termination": "completed", "progress": null}
+{
+  "schema": "hepta.v13.real-material-campaign.v1",
+  "base_commit": "dd1adf3defc5f1b1bcf3358419e23490e24b9a6a",
+  "material_source_commit": "aeedeee98a5f7472f11b88ef7b869fc5a6d3d8e1",
+  "authority": "DENY_ALL",
+  "observations": [
+    {
+      "case": "original",
+      "expected": "VERIFIED",
+      "observed": "VERIFIED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 2.4718010559990944,
+        "parent_cpu_seconds": 0.02280517000000004,
+        "child_user_seconds": 1.2665549999999999,
+        "child_system_seconds": 1.155598,
+        "total_cpu_seconds": 2.4449581699999996,
+        "child_peak_rss_bytes": 215437312,
+        "child_block_inputs": 172336,
+        "child_block_outputs": 179280,
+        "child_voluntary_context_switches": 385,
+        "child_involuntary_context_switches": 2164,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 1,
+        "admitted_source_copy_bytes": 91582945,
+        "encoder_batches_attempted": 4,
+        "encoder_batches_completed": 4,
+        "encoder_calls_attempted": 1,
+        "encoder_loads_attempted": 1,
+        "executor_calls_attempted": 120,
+        "staging_copy_bytes": 91582945
+      }
+    },
+    {
+      "case": "source-body-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.12295068700041156,
+        "parent_cpu_seconds": 0.0017913680000000154,
+        "child_user_seconds": 0.090055,
+        "child_system_seconds": 0.023677,
+        "total_cpu_seconds": 0.11552336800000002,
+        "child_peak_rss_bytes": 29597696,
+        "child_block_inputs": 0,
+        "child_block_outputs": 992,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 0,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 478924,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 478924
+      }
+    },
+    {
+      "case": "raw-text-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 1.8802715050005645,
+        "parent_cpu_seconds": 0.033971733000000004,
+        "child_user_seconds": 1.318986,
+        "child_system_seconds": 0.5789639999999999,
+        "total_cpu_seconds": 1.9319217329999998,
+        "child_peak_rss_bytes": 214994944,
+        "child_block_inputs": 0,
+        "child_block_outputs": 179096,
+        "child_voluntary_context_switches": 399,
+        "child_involuntary_context_switches": 1023,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582959,
+        "encoder_batches_attempted": 4,
+        "encoder_batches_completed": 4,
+        "encoder_calls_attempted": 1,
+        "encoder_loads_attempted": 1,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582959
+      }
+    },
+    {
+      "case": "raw-row-order-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 1.56190665000031,
+        "parent_cpu_seconds": 0.014491898000000059,
+        "child_user_seconds": 1.198554,
+        "child_system_seconds": 0.369282,
+        "total_cpu_seconds": 1.582327898,
+        "child_peak_rss_bytes": 215773184,
+        "child_block_inputs": 0,
+        "child_block_outputs": 179000,
+        "child_voluntary_context_switches": 356,
+        "child_involuntary_context_switches": 1015,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582945,
+        "encoder_batches_attempted": 4,
+        "encoder_batches_completed": 4,
+        "encoder_calls_attempted": 1,
+        "encoder_loads_attempted": 1,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582945
+      }
+    },
+    {
+      "case": "aggregate-feature-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.3565834389992233,
+        "parent_cpu_seconds": 0.0035951559999999327,
+        "child_user_seconds": 0.30297399999999997,
+        "child_system_seconds": 0.051995,
+        "total_cpu_seconds": 0.3585641559999999,
+        "child_peak_rss_bytes": 31748096,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178976,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 1,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582945,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582945
+      }
+    },
+    {
+      "case": "source-feature-archive-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 1.364980521000689,
+        "parent_cpu_seconds": 0.014063264999999991,
+        "child_user_seconds": 1.189003,
+        "child_system_seconds": 0.178645,
+        "total_cpu_seconds": 1.3817112649999999,
+        "child_peak_rss_bytes": 215273472,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178984,
+        "child_voluntary_context_switches": 386,
+        "child_involuntary_context_switches": 1264,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582945,
+        "encoder_batches_attempted": 4,
+        "encoder_batches_completed": 4,
+        "encoder_calls_attempted": 1,
+        "encoder_loads_attempted": 1,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582945
+      }
+    },
+    {
+      "case": "tokenizer-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.3229151269988506,
+        "parent_cpu_seconds": 0.07873257299999992,
+        "child_user_seconds": 0.15573599999999999,
+        "child_system_seconds": 0.087879,
+        "total_cpu_seconds": 0.3223475729999999,
+        "child_peak_rss_bytes": 31367168,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178040,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 1,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91115032,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91115032
+      }
+    },
+    {
+      "case": "mask-profile-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.6547083400000702,
+        "parent_cpu_seconds": 0.016485416999999947,
+        "child_user_seconds": 0.308619,
+        "child_system_seconds": 0.334893,
+        "total_cpu_seconds": 0.6599974169999999,
+        "child_peak_rss_bytes": 32137216,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178992,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 1,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582945,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582945
+      }
+    },
+    {
+      "case": "checkpoint-state-drift",
+      "expected": "REJECTED",
+      "observed": "REJECTED",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.4179303210003127,
+        "parent_cpu_seconds": 0.004391510999999904,
+        "child_user_seconds": 0.298307,
+        "child_system_seconds": 0.113699,
+        "total_cpu_seconds": 0.4163975109999999,
+        "child_peak_rss_bytes": 33464320,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178984,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 0,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 91582944,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 91582944
+      }
+    },
+    {
+      "case": "missing-real-encoder",
+      "expected": "HOLD",
+      "observed": "HOLD",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 0.14473675299814204,
+        "parent_cpu_seconds": 0.0025056269999998992,
+        "child_user_seconds": 0.12484999999999999,
+        "child_system_seconds": 0.014943,
+        "total_cpu_seconds": 0.1422986269999999,
+        "child_peak_rss_bytes": 31338496,
+        "child_block_inputs": 0,
+        "child_block_outputs": 1440,
+        "child_voluntary_context_switches": 1,
+        "child_involuntary_context_switches": 2,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": {
+        "adapter_calls_attempted": 0,
+        "admitted_source_copy_bytes": 709818,
+        "encoder_batches_attempted": 0,
+        "encoder_batches_completed": 0,
+        "encoder_calls_attempted": 0,
+        "encoder_loads_attempted": 0,
+        "executor_calls_attempted": 0,
+        "staging_copy_bytes": 709818
+      }
+    },
+    {
+      "case": "original-one-second-cpu-bound",
+      "expected": "HOLD",
+      "observed": "HOLD",
+      "control_satisfied": true,
+      "cost": {
+        "wall_seconds": 1.0496288579997781,
+        "parent_cpu_seconds": 0.03136069200000002,
+        "child_user_seconds": 0.72948,
+        "child_system_seconds": 0.318036,
+        "total_cpu_seconds": 1.0788766920000001,
+        "child_peak_rss_bytes": 215736320,
+        "child_block_inputs": 0,
+        "child_block_outputs": 178968,
+        "child_voluntary_context_switches": 94,
+        "child_involuntary_context_switches": 535,
+        "energy_joules": null,
+        "scope": "Parent invocation and this exact child via wait4; model acquisition and caller receipt persistence are separate. Admitted-source-copy counters exclude subsequent staged/NPZ/ONNX reads."
+      },
+      "worker_termination": "completed",
+      "progress": null
+    }
+  ],
+  "all_attempts": 11,
+  "controls_satisfied": 11,
+  "cold_readback": {
+    "exit": 0,
+    "control_satisfied": true,
+    "audit_counts": {
+      "compute_import_attempts": 0,
+      "external_operation_attempts": 0,
+      "model_read_attempts": 0,
+      "write_attempts": 0
+    },
+    "receipt_sha256": "4e4cfa7baa9ae3de5e75fe63c0057c5d1117f9740f0ebc45cc71ba3ee25492df"
+  },
+  "source_unchanged": true,
+  "total_all_attempt_wall_seconds": 10.348413256997446,
+  "total_all_attempt_cpu_seconds": 10.434924409999999,
+  "ordinary_cell_runtime_qualified": false,
+  "independent_quality_qualified": false,
+  "next_task_adoption_qualified": false
+}

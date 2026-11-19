@@ -1,0 +1,78 @@
+{
+  "execution_authorized": false,
+  "finding": {
+    "cause": "_fault at lines 163-168 marks the namespace blocked and persists control-fault with unknown disposition, but leaves command_seen unset. Public replay_control validates the command then directly calls _cancel, bypassing terminal and blocked admission. Its first-command branch can persist a cancellation chain and change the original live attempt to cancelled after EOF.",
+    "classification": "NEW_PUBLIC_ENTRYPOINT_CONTRACT_GAP_STATICALLY_CONFIRMED_NOT_EXECUTED",
+    "historical_coverage_boundary": "The active-channel EOF worker proves unknown disposition and restored publish refusal, not same-live replay_control refusal. The live-control worker proves successful duplicate ACK and readonly-view refusal, not first replay or post-fault live replay. The older persisted-cancel rollback regression is distinct and already has saved coverage.",
+    "not_a_claim": "No old affected runtime or bug path was executed during this review.",
+    "path": "live_delivery.py:52-53 -> live_core.py:205-209 -> live_core.py:169-183 in the pinned output-budget predecessor"
+  },
+  "method": "Read predecessor source and historical qualification source/saved review boundaries; no candidate imports, protocol execution, model execution, tests, old-bug reproduction, restricted owner source or restricted V3 subtree reads.",
+  "predecessor_evidence": {
+    "joint-policy-active-channel-fault-candidate-v1/worker.py": "d4b5077df0b104f51106b796f2cd4795cf4503553e013f0e80ac494d0d4255af",
+    "joint-policy-live-control-candidate-v1/worker.py": "56ee995a7f0f3aaa923bb53a401637548bd0297cb65f82775496c34c5fe66e8c",
+    "joint-policy-output-budget-outcome-candidate-v2/FREEZE.json": "399073abcb2aabe008eaedf69dc09d183f1364cf33b17f82f583994795ed5791",
+    "joint-policy-output-budget-outcome-candidate-v2/live_core.py": "e052e9373c129934c0deace91d1177b685687b4919184a7c5d8fd5f76b6c7475",
+    "joint-policy-output-budget-outcome-candidate-v2/live_delivery.py": "1240ae67426e1d4a06486295311b4726c895d87b6d9eaba9f2eadc3f79b31d93"
+  },
+  "publication_admitted": false,
+  "qualification_admitted": false,
+  "qualification_design": {
+    "counts_status": "Planning targets only. This review neither derives nor certifies the unfinished implementation counts. Final source freeze and independent review must reconcile the exact cases, process graph, retained capacity and work accounting before any run.",
+    "minimum_negative_dimensions": [
+      "valid replay before first cancellation",
+      "same-live valid replay after actual EOF",
+      "readonly restored attempt",
+      "conflicting command",
+      "stale or wrong record",
+      "mismatched current identity or complete state",
+      "caller-visible final-reference alias mutation",
+      "persisted receipt binding integrity"
+    ],
+    "mock_case": "One explicitly labelled SavedWireBackend control scenario uses the public normal cancellation boundary, not a direct private _cancel call, to create a successful ACK. Verify normal duplicate receipt and binding negative controls with no additional model work. Saved wire/route/artifact/request rebinding must be explicit and internally valid; mock results are not a second real model execution.",
+    "proposed_workload_from_parent": {
+      "allocation_restores": 2,
+      "checks": 27,
+      "optimizer_steps": 0,
+      "real_serving_calls": 1,
+      "refusals": 8,
+      "saved_wire_mock_calls": 1
+    },
+    "real_case": "One real serving result, two acknowledged fragments, then actual control-channel EOF. On that same live adapter and original attempt, a valid-command replay must refuse. Preserve full namespace inventory hashes, fixed-time attempt snapshots, receipt/command state and work counters before/after; retain the original fault bytes, generated phase, two charged tickets and known prefix. No cancel-intent, cancelled, control-ack or next-piece effect may be added.",
+    "resource_gate": "Before execution, freeze exact code/inputs, case inventory, process graph, hard inherited resource limits, aggregate terminal capacity and cost accounting. Retain existing approved ceilings; no budget increase, hidden retry, old-bug execution or additional model/control run is admitted by this design review.",
+    "run_gate": "A separate independent SOURCE_REVIEW bound to the final FREEZE and explicit parent admission are required. This design file alone is not a runner permission."
+  },
+  "required_design": [
+    {
+      "id": "D1",
+      "requirement": "Public replay_control is a receipt lookup only. Preserve readonly-view refusal and existing clock.validate behavior; require both command_seen and a successfully saved control_ack. Match the command exactly. Never call _cancel, _save, _put_control, a.cancel, backend work, or any transition/write path from replay. First cancellation remains through the existing guarded _boundary path."
+    },
+    {
+      "id": "D2",
+      "requirement": "Validate all four fixed receipt references in the current namespace: control-observed.json, cancel-intent.json, cancelled.json and control-ack.json. Verify bounded reference schemas, exact slot names, bytes and SHA-256; strictly parse contents and validate journal envelope checksums. Bind observed command, identity, clock manifest pin and ACK command hash. Bind intent/final identities and their complete state relationship, not only phases or prefix lengths."
+    },
+    {
+      "id": "D3",
+      "requirement": "The persisted control-ack must match the in-memory ACK, and its final_record must equal the packet final_record and caller record. Verify the current a identity and complete snapshot against the persisted cancelled final payload at its saved observed_ns, including session/spec/charges/prefixes/cancel flag, wire, route, cursor, reservation and pending chunk. Comparing record to mutable in-memory final references alone is insufficient: predecessor _cancel returns the same final dict embedded in the ACK. No mutated alias may retarget a successful receipt."
+    },
+    {
+      "id": "D4",
+      "requirement": "Retain the existing successful same-live user_cancel duplicate call (a, final, clock.command()) with the same receipt content and no persisted or attempt-state mutation. Do not prepend the ordinary terminal guard, which deliberately refuses normal cancelled markers. Existing clock observation may advance; no new deadline-replay support is claimed because clock.validate currently accepts the user_cancel command only."
+    },
+    {
+      "id": "D5",
+      "requirement": "No-ACK replay, post-EOF replay, incomplete ACK disposition, readonly restored view, conflicting command, stale or mismatched record, and mismatched current attempt must refuse without writes, new output or generator work. A control fault remains unknown and is not cleared, adopted, converted to confirmed cancellation or given an ACK by replay."
+    }
+  ],
+  "review_scope": "Receipt-only public replay_control design. Static review of the identified predecessor and historical saved-test source only; no review or approval of the unfinished new implementation.",
+  "reviewed_at_utc": "2026-11-04T01:15:15Z",
+  "schema": "independent-scoped-design-review-v1",
+  "scope_limits": [
+    "Trusted cooperative local Linux writer/clock/pipe profile only; not production owner authentication, distributed once, hostile-code or hostile-filesystem protection.",
+    "Audit-only restored views remain audit-only. No successful live continuation, fault adoption, cancellation-outcome recovery after ACK loss, power-loss durability or arbitrary crash-window qualification is added.",
+    "Keep each historical result scoped to its own frozen runtime; do not retroactively upgrade earlier PASS claims or claim an aggregate PASS.",
+    "No remote publication, installation, permission change, source alteration or candidate execution was performed for this design review."
+  ],
+  "source_freeze_sha256": null,
+  "status": "DESIGN_ACCEPTED_PENDING_FROZEN_SOURCE_REVIEW"
+}

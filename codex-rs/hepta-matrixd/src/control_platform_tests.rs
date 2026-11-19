@@ -1,17 +1,45 @@
-use std::io::ErrorKind;
-use std::sync::Arc;
-
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
-use tokio_util::sync::CancellationToken;
 
-use super::MatrixdControlError;
-use super::MatrixdControlServer;
 use super::tests::FakeTransport;
+use super::tests::agent_id;
 use super::tests::state;
+use super::*;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+#[tokio::test]
+async fn health_tracks_real_task_state_without_socket_capabilities() -> TestResult {
+    let temp = TempDir::new()?;
+    let fake = Arc::new(FakeTransport::default());
+    let (state, connections) = state(&temp, fake).await?;
+    let request = MatrixdRequest {
+        schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
+        request_id: 41,
+        agent_id: agent_id()?,
+        fence: None,
+        method: MatrixdMethod::Health,
+    };
+    let response = state.response(request).await;
+    assert_eq!(response.release_id, "release-1");
+    assert!(matches!(
+        response.payload,
+        MatrixdPayload::Health(MatrixdHealth {
+            lifecycle: MatrixdLifecycle::Degraded,
+            agentd_connected: false,
+            matrix_sync_connected: false,
+            ..
+        })
+    ));
+    connections.set_agentd_connected(true);
+    connections.set_matrix_sync_connected(true);
+    assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Ready);
+    connections.set_fenced();
+    assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
+    Ok(())
+}
+
+#[cfg(not(unix))]
 #[tokio::test]
 async fn owner_control_refuses_without_changing_missing_or_existing_paths() -> TestResult {
     let temp = TempDir::new()?;
@@ -40,6 +68,7 @@ async fn owner_control_refuses_without_changing_missing_or_existing_paths() -> T
     Ok(())
 }
 
+#[cfg(not(unix))]
 fn socket_directory_image(
     path: &std::path::Path,
 ) -> std::io::Result<Vec<(std::ffi::OsString, bool, Vec<u8>)>> {

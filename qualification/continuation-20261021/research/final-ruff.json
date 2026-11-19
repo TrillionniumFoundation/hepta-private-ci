@@ -1,0 +1,36 @@
+[
+  {
+    "command": [
+      "/tmp/hepta-wave2-tools/bin/ruff",
+      "--version"
+    ],
+    "exit_code": 0,
+    "stdout": "ruff 0.15.13\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/tmp/hepta-wave2-tools/bin/ruff",
+      "check",
+      "--select",
+      "E,F,I",
+      "qualification/neuron-shared-encoder/neuron_shared_encoder/reader_runtime_receipt.py",
+      "qualification/neuron-shared-encoder/tests/test_reader_receipt_context_bindings.py"
+    ],
+    "exit_code": 0,
+    "stdout": "All checks passed!\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/tmp/hepta-wave2-tools/bin/ruff",
+      "format",
+      "--check",
+      "qualification/neuron-shared-encoder/neuron_shared_encoder/reader_runtime_receipt.py",
+      "qualification/neuron-shared-encoder/tests/test_reader_receipt_context_bindings.py"
+    ],
+    "exit_code": 0,
+    "stdout": "2 files already formatted\n",
+    "stderr": ""
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "capacity_scope": "Pinned content AFTER~1.56MiB and Actor~12KiB below2MiB file cap. Output parts cap50000B plus bounded route and two finite journals; terminal100files/16MiB includes receipt. No exemption if actual generated representation/cap differs. Conditional success budget not certified in advance.",
+  "finding_resolution": {
+    "additional_frozen_files": [
+      "PRIOR_FREEZE_b46a8ed5.json",
+      "PRIOR_SOURCE_REVIEW_b46a8ed5.json"
+    ],
+    "changed_only": [
+      "run_once.py",
+      "PLAN.md"
+    ],
+    "limits": "CPU5/AS256MiB/FSIZE2MiB unchanged outer and child; no hard-limit elevation. Hard CPU kill/failed spawn/cleanup-disk failure receipt limitations explicit. Cleanup path static only, not newly fault-tested.",
+    "source_reviewed": "Child default alarm45 vs outer handled75; caught exception after successful Popen kills only owned unreaped child then wait4 under15s cleanup alarm. Receipt retains runner_error, exact wait4 usage where available. Failed spawn records cumulative-child usage delta with complete_wait=false and no invented PID. Normal PASS requires reaped,error None,exit0 plus caps."
+  },
+  "hash_validation": {
+    "RUN_ONCE_exists": false,
+    "all_match": true,
+    "frozen_files": 21,
+    "inputs": 7,
+    "references": 4,
+    "source_mappings": 11
+  },
+  "method": "Static AST/source/hash only. No candidate import, model, data parsing or protocol run.",
+  "nonblocking_source_findings": [
+    "Paired content/full-actor same completed export and full array+optimizer identity are correctly pinned. Conversion float32 then float64 singleton common to selective and public reference; serving uses only prefix J plus one chosen final action, not j_candidates.",
+    "Three modified legacy modules are converter profile, route-bound Attempt schema, and core serve_bound/attach; lease wrapper and model math byteexact. Local import closure present.",
+    "Reservation saved before serving work; route and wire same generated snapshot, unknown reserved restore blocks replay; cancel-intent protects old frontier. validate_route checks request/artifact/wire/argmax but does not recompute feature or pixel digest from raw request: trusted caller file hash and execution provenance remain essential, not arbitrary re-signed-file authenticity.",
+    "Expected 23 checks and five refusals count correctly. Two selective plus two public reference calls, four Actor predictions, eight encoded rows, two allocation restores, zero fresh/Adam. Conditional wire parity still empirical, no quality or CPU-speed claim.",
+    "Finite terminal caps16MiB/100files and perfile2MiB; content AFTER input size1560407B below perfile. Not live aggregate disk/CPU quota. Existing model/unknown failure suites not rerun by this qualification."
+  ],
+  "prior_finding": {
+    "id": "outer_alarm_can_preempt_fullwait",
+    "location": "run_once.py outer signal.alarm(75), child limits alarm(75), unguarded os.wait4",
+    "reason": "Outer alarm begins before launching child; both alarms have same 75s duration. A stalled child can outlive the earlier outer SIGALRM. Default outer termination interrupts wait4 without a finally that kills/reaps its own child and persists a receipt. Child may remain briefly active and no complete terminal failure receipt is guaranteed. This conflicts with claimed retained triggered-limit failure and complete method accounting.",
+    "required_resolution": "Handle outer timeout with own-unreaped-child cleanup and wait4/receipt persistence, and give parent cleanup headroom relative to child wall alarm. Keep uncertain/failed spawn and unavoidable hard-kill receipt limitations explicit. Do not claim global hard-budget proof."
+  },
+  "qualification_counts": {
+    "Actor_predictions_total": 4,
+    "Adam": 0,
+    "checks": 23,
+    "encoded_row_outputs_total": 8,
+    "fresh_models": 0,
+    "input_rows": [
+      0,
+      5
+    ],
+    "public_j_candidates_reference_calls": 2,
+    "refusals": 5,
+    "restored_allocations": 2,
+    "selective_calls": 2
+  },
+  "scope": "Source-scoped readiness for separately parent-approved single run; no execution or model import by reviewer. Not all existing guard faults requalified; scientific/data/production/strict256 holds unchanged.",
+  "source_freeze_sha256": "2079245f9e83c8204b13c7e8b583f491c2a9179222859931fd2d1ebd3d336b41",
+  "status": "PASS_SOURCE_SCOPED_JOINT_POLICY_DELIVERY"
+}

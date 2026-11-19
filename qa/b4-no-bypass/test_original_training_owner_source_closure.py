@@ -7,6 +7,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location("original_training_owner_proof", ROOT / "scripts/verify_hepta_callers.py")
@@ -16,13 +18,13 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 OWNER = "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs"
 STAGE = "codex-rs/hepta-agentd/src/cell_q24_training_stage.rs"
-MODEL_LANE = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 SNAPSHOT = "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs"
 INPUTS = "codex-rs/hepta-agentd/src/cell_q24_learning_owner_inputs.rs"
 MODEL_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs"
 STAGE_OWNERS = "codex-rs/hepta-agentd/src/cell_q24_learning_stage_owners.rs"
 MODEL_DISPATCH = "codex-rs/hepta-agentd/src/cell_q24_learning_model_dispatch.rs"
 TRAINING_MATERIAL = "codex-rs/hepta-agentd/src/cell_q24_training_material.rs"
+MODEL_LANE = "codex-rs/hepta-agentd/src/cell_q24_training_model_lane.rs"
 BOUND = "codex-rs/hepta-agentd/src/cell_q24_source_bound_stage.rs"
 BOOTSTRAP = "codex-rs/hepta-agentd/src/cell_q24_training_bootstrap_build.rs"
 
@@ -40,14 +42,14 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         start = source.index(function)
         end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, after = source_marker_span(source, marker, start, end + 1)
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + replacement + source[offset + len(marker):])
+            target.write_text(source[:offset] + replacement + source[after:])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
@@ -60,7 +62,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
         for suffix in ("create", "recover", "attest", "readback"):
             row = rows["learning_original_training_receipt_" + suffix]
             self.assertIn(row.identifier, self.manifest["privileged_inventory"]["required_boundary_ids"])
-            self.assertEqual(row.product_callers, ((STAGE,) if suffix == "attest" else ()) if suffix in ("attest", "readback") else (INPUTS, BOOTSTRAP))
+            self.assertEqual(row.product_callers, () if suffix in ("attest", "readback") else (INPUTS, BOOTSTRAP))
             PROOF._verify_boundary(ROOT, row, sources, ())
             if row.product_callers:
                 with self.assertRaises(PROOF.VerificationFailure):
@@ -82,7 +84,7 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
             for path in (OWNER, STAGE, native, SNAPSHOT, MODEL_MATERIAL, STAGE_OWNERS, MODEL_DISPATCH, TRAINING_MATERIAL, MODEL_LANE, BOUND, BOOTSTRAP)
         }
         for name, expected in (
-            ("cell_q24_original_training_execute", (STAGE,)),
+            ("cell_q24_original_training_execute", ()),
             ("q24_training_fit_source_read", (STAGE,)),
             ("cell_q24_original_training_pair_binding", (STAGE, MODEL_MATERIAL, MODEL_LANE)),
         ):
@@ -124,22 +126,28 @@ class OriginalTrainingOwnerSourceClosureTests(unittest.TestCase):
 
     def test_pair_requires_exact_missing_enrollment_and_retained_blocking_lane(self):
         for function, markers in (
-            ("fn execute_training(", ("self.require_dataset(dataset)?", "owners.receipts.journal.read(&owners.receipts.saved)",
-                "Ok(_) => owners", "ProductEvaluationExecutionStoreErrorV1::Missing",
-                "let retained_outcome = match CellQ24TrainingOwnerV1::readback(training)", "Ok(outcome) => Some(outcome)",
-                "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
-                "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
-                "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
-                "Some(outcome) => outcome", "None => training.fit_or_readback(&cancellation)?", "receipts.attest_original_completion(training)?")),
-            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", ".require_original_dataset_scope(")),
-            ("fn receipt_attestation(", ("OriginalCellQ24TrainingStageV1::readback(self, dataset).await?", "if &completed.receipt != expected")),
-            ("fn execute_original_training_with_source(", ("self.receipts.journal.read(&self.receipts.saved)",
+            ("fn execute_training(", ("self.require_dataset(dataset)?", ".in_lane(move |owners, _source|",
+                "owners.execute_original_training_with_source_at(&cancellation, &OriginalQ24OwnerReadV1, operation_started_at)",
+                "if let Some(started_at) = new_work_started_at",
+                "fresh_now < started_at || fresh_now >= dataset.request.envelope.expiry_unix_seconds",
+                "return Err(Error::CommitUncertain)")),
+            ("fn execute_original_training_with_source(", (
+                "self.execute_original_training_with_source_at(cancellation, source, operation_started_at)",
+                "if let Some(started_at) = new_work_started_at",
+                "fresh_now < started_at",
+                "fresh_now >= self.receipts.config.dataset.request.envelope.expiry_unix_seconds",
+                "return Err(Error::CommitUncertain)")),
+            ("fn execute_original_training_with_source_at(", ("self.receipts.journal.read(&self.receipts.saved)",
                 "Ok(_) => self.read_original_completion_with_source(source)", "ProductEvaluationExecutionStoreErrorV1::Missing",
                 "match CellQ24TrainingOwnerV1::readback_with_source(training, source)", "Ok(outcome) => Some(outcome)",
                 "Err(CellQ24TrainingOwnerErrorV1::Store(", ")) => None", "Err(error) => return Err(error.into())",
                 "super::now()", ".require_signer_binding(", "LearningEvidenceRoleV1::Generator",
                 "if now >= receipts.config.dataset.request.envelope.expiry_unix_seconds", "return Err(Error::DeadlineExceeded)",
-                "Some(outcome) => outcome", "None => training.fit_or_readback_with_source(cancellation, source)?", "receipts.attest_completion_with_source(training, source)?")),
+                "Some(outcome) => outcome", "None => training.fit_or_readback_with_source(cancellation, source)?", "receipts.attest_completion_with_source(training, source)?",
+                "now < operation_started_at", "fresh_now < now",
+                "fresh_now >= receipts.config.dataset.request.envelope.expiry_unix_seconds")),
+            ("fn in_lane<", (".try_acquire_owned()", "let _permit = permit;", "owners.try_lock()", ".require_original_dataset_scope(")),
+            ("fn receipt_attestation(", ("self.readback(dataset).await?", "if &completed.receipt != expected")),
             ("fn read_original_completion_with_source(", ("OriginalCellQ24TrainingReceiptOwnerV1::readback_with_source(", "CellQ24TrainingOwnerV1::readback_with_source(training, source)?")),
         ):
             for marker in markers:

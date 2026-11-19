@@ -90,12 +90,12 @@ pub(super) enum StoreTrust {
 }
 
 pub(super) struct Store {
-    root: File,
+    root: io::Directory,
     signer_id: String,
     trust: StoreTrust,
     #[cfg(unix)]
     claims: Mutex<Option<ClaimJournal>>,
-    _lock: File,
+    _lock: Option<File>,
 }
 
 #[cfg(unix)]
@@ -127,14 +127,11 @@ impl ClaimJournal {
 }
 
 impl Store {
-    /// Permanently fence a replaced or resized live journal.
-    #[cfg(unix)]
+    /// Explicit held owners revalidate their original marker and namespace.
+    /// Existing ordinary-path owners keep their established I/O validation.
+    #[cfg(windows)]
     pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
-        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
-        let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
-        journal.revalidate(&self.root)?;
-        *claims = Some(journal);
-        Ok(())
+        self.root.revalidate_held_owner()
     }
 
     pub(super) fn open_pq_key_ring_exact(
@@ -151,6 +148,17 @@ impl Store {
             /*allow_startup_head_advance*/ false,
         )
     }
+
+    /// Permanently fence a replaced or resized live journal.
+    #[cfg(unix)]
+    pub(super) fn revalidate_owner(&self) -> Result<(), FinalUseError> {
+        let mut claims = self.claims.lock().map_err(|_| FinalUseError::Unavailable)?;
+        let journal = claims.take().ok_or(FinalUseError::Unavailable)?;
+        journal.revalidate(&self.root)?;
+        *claims = Some(journal);
+        Ok(())
+    }
+
     pub(super) fn open(
         root: &Path,
         signer_id: &str,
@@ -162,7 +170,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            /*allow_startup_head_advance*/ true,
+            true,
         )
     }
 
@@ -177,7 +185,7 @@ impl Store {
             signer_id,
             StoreTrust::SingleKey(verifying_key),
             initial,
-            /*allow_startup_head_advance*/ false,
+            false,
         )
     }
 
@@ -192,7 +200,7 @@ impl Store {
             signer_id,
             StoreTrust::IssuerKeyRing(issuer_trust_sha256),
             initial,
-            /*allow_startup_head_advance*/ false,
+            false,
         )
     }
 
@@ -204,6 +212,47 @@ impl Store {
         allow_startup_head_advance: bool,
     ) -> Result<(Self, State), FinalUseError> {
         let opened = io::lock_directory(root)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            allow_startup_head_advance,
+            #[cfg(windows)]
+            /*frontier_store*/
+            None,
+        )
+    }
+
+    #[cfg(windows)]
+    pub(super) fn open_windows(
+        directory: crate::windows_private_owner::PrivateStoreDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        frontier_store: &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+    ) -> Result<(Self, State), FinalUseError> {
+        let opened = io::LockedDirectory::from_windows(directory)?;
+        Self::open_locked(
+            opened,
+            signer_id,
+            trust,
+            initial,
+            /*allow_startup_head_advance*/ false,
+            Some(frontier_store),
+        )
+    }
+
+    fn open_locked(
+        opened: io::LockedDirectory,
+        signer_id: &str,
+        trust: StoreTrust,
+        initial: FinalUseRevocations,
+        allow_startup_head_advance: bool,
+        #[cfg(windows)] frontier_store: Option<
+            &dyn crate::AuthorityFrontierStore<super::FinalUseFrontier>,
+        >,
+    ) -> Result<(Self, State), FinalUseError> {
         let initialized = opened.initialized;
         let store = Self {
             root: opened.root,
@@ -286,6 +335,14 @@ impl Store {
                 return Err(FinalUseError::InvalidTrust);
             }
             state.failed = false;
+            #[cfg(windows)]
+            io::validate_windows_prewrite(
+                &store.root,
+                &state,
+                &initial,
+                signer_id,
+                frontier_store,
+            )?;
             if header.schema != STATE_SCHEMA_V3 && header.schema != STATE_SCHEMA_PQ_V4 {
                 // Publish a complete legacy nonce set before its journal-based
                 // snapshot. Retrying an interrupted migration is idempotent.
@@ -307,6 +364,14 @@ impl Store {
                 used_nonces: Default::default(),
                 failed: false,
             };
+            #[cfg(windows)]
+            io::validate_windows_prewrite(
+                &store.root,
+                &state,
+                &initial,
+                signer_id,
+                frontier_store,
+            )?;
             store.replace_claims(initial.authority_epoch, &state.used_nonces)?;
             store.persist_snapshot(&initial)?;
             state
@@ -414,7 +479,7 @@ impl Store {
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
-        replace_state(&self.root)?;
+        replace_state(&self.root, &file)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
@@ -480,7 +545,7 @@ impl Store {
                 .map_err(|_| FinalUseError::Unavailable)?;
         }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        replace_claims(&self.root)?;
+        replace_claims(&self.root, &file)?;
         self.root
             .sync_all()
             .map_err(|_| FinalUseError::Unavailable)?;
@@ -531,6 +596,10 @@ use io::open_private;
 use io::read_bounded;
 use io::replace_claims;
 use io::replace_state;
+
+#[cfg(windows)]
+#[path = "final_use_store_windows_io.rs"]
+mod windows_io;
 
 #[cfg(all(test, unix))]
 #[path = "final_use_store_tests.rs"]

@@ -202,6 +202,69 @@ class CorpusValidityTests(unittest.TestCase):
                     {"tasks": [{"source": src, "withheld_control": src}]}, root
                 )
 
+    def test_registered_current_checkout_preserves_historical_manifest(self):
+        root = CASES.parent.parent
+        original = copy.deepcopy(self.corpus)
+        observed = verify_checkout(self.corpus, root)
+        path = "docs/learning/NEURAL_BIOMIMICRY_SPEC.md"
+        self.assertEqual(observed[path], "fe90f9a19ad5508715a1eecc3a86ffea17d0a132")
+        self.assertEqual(observed[path], git_blob_sha1((root / path).read_bytes()))
+        self.assertEqual(self.corpus, original)
+        self.assertEqual(self.corpus["manifest_sha256"], FROZEN_CASE_SHA256)
+        for task in self.corpus["tasks"]:
+            source = task["source"]
+            if source["path"] == path:
+                self.assertEqual(
+                    source["blob_sha"], "edd13a6bfe240b93fb2a7836c7f98de68a34660d"
+                )
+            else:
+                self.assertEqual(observed[source["path"]], source["blob_sha"])
+
+    def test_current_document_bridge_rejects_unknown_bytes_and_provenance(self):
+        root = CASES.parent.parent
+        path = "docs/learning/NEURAL_BIOMIMICRY_SPEC.md"
+        with tempfile.TemporaryDirectory() as directory:
+            checkout = Path(directory)
+            for relative in {task["source"]["path"] for task in self.corpus["tasks"]}:
+                target = checkout / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((root / relative).read_bytes())
+            self.assertEqual(
+                verify_checkout(self.corpus, checkout)[path],
+                "fe90f9a19ad5508715a1eecc3a86ffea17d0a132",
+            )
+            target = checkout / path
+            current = target.read_bytes()
+            target.write_bytes(current + b"\n")
+            with self.assertRaisesRegex(ReaderBenchError, "Git blob mismatch"):
+                verify_checkout(self.corpus, checkout)
+            target.write_bytes(current)
+            unregistered = copy.deepcopy(self.corpus)
+            unregistered["manifest_sha256"] = "0" * 64
+            with self.assertRaisesRegex(ReaderBenchError, "Git blob mismatch"):
+                verify_checkout(unregistered, checkout)
+            unknown = copy.deepcopy(self.corpus)
+            for task in unknown["tasks"]:
+                if task["source"]["path"] == path:
+                    task["source"]["blob_sha"] = "0" * 40
+                    task["withheld_control"]["blob_sha"] = "0" * 40
+            with self.assertRaisesRegex(ReaderBenchError, "Git blob mismatch"):
+                verify_checkout(unknown, checkout)
+            for mutation in ("quote", "line"):
+                changed = copy.deepcopy(self.corpus)
+                source = next(
+                    task["source"]
+                    for task in changed["tasks"]
+                    if task["source"]["path"] == path
+                )
+                if mutation == "quote":
+                    source["quote"] = "unregistered replacement source assertion"
+                else:
+                    source["line"] += 1
+                with self.subTest(mutation=mutation):
+                    with self.assertRaisesRegex(ReaderBenchError, "line mismatch"):
+                        verify_checkout(changed, checkout)
+
 
 class ChoiceParsingTests(unittest.TestCase):
     @staticmethod

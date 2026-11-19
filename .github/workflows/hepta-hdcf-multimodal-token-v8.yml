@@ -1,0 +1,51 @@
+name: hepta-hdcf-multimodal-token-v8
+
+on:
+  push:
+    branches:
+      - research/hdcf-multimodal-token-v8-20261016
+    paths:
+      - 'qualification/hdcf-research/multimodal_token_bridge_v8.py'
+      - 'qualification/hdcf-research/test_multimodal_token_bridge_v8.py'
+      - 'qualification/hdcf-research/MULTIMODAL_TOKEN_V8.md'
+      - 'qualification/hdcf-research/modality_necessity_v9.py'
+      - 'qualification/hdcf-research/test_modality_necessity_v9.py'
+      - '.github/workflows/hepta-hdcf-multimodal-token-v8.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hdcf-multimodal-v8-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bounded-synthetic-contract-and-existing-head-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Verify exact checkout HEAD and parent original CellBank
+        run: |
+          set -euo pipefail
+          git status --short
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -f qualification/hdcf-research/physical_bank.py
+          test -f qualification/hdcf-research/physical_cli.py
+          test -f qualification/hdcf-research/held_target_source_revalidation.py
+      - name: Standard-library contract and real CPU Head fitting regressions
+        working-directory: qualification/hdcf-research
+        run: |
+          set -euo pipefail
+          python3 -m py_compile multimodal_token_bridge_v8.py test_multimodal_token_bridge_v8.py modality_necessity_v9.py test_modality_necessity_v9.py
+          python3 -m unittest -v test_multimodal_token_bridge_v8 test_modality_necessity_v9
+          python3 -O -m unittest -v test_multimodal_token_bridge_v8 test_modality_necessity_v9
+      - name: Explicit nonqualification
+        run: |
+          echo 'RESEARCH_ONLY SHADOW_ONLY DENY_ALL NO_MODEL_SELECTION NO_PRETRAINED_ENCODER_FORWARDS NO_FINALUSE'

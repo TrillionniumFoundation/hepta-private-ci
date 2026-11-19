@@ -77,7 +77,7 @@ impl OriginalPairedFinalHoldoutConsumptionV1<'_> {
     }
 }
 
-pub(super) fn release_original_paired_holdout<
+pub(super) fn release_original_frozen_paired_holdout<
     S: FinalHoldoutCasStoreV1,
     P: PairedFinalHoldoutProviderV1,
 >(

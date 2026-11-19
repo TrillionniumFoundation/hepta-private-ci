@@ -7,13 +7,14 @@ authority, not a native HNMF or independent-trainer attestation.
 """
 
 from dataclasses import asdict
+import hashlib
 import json
 from pathlib import Path
 import shutil
 import sqlite3
 import sys
 
-from evolution_common import digest, file_digest, read_json, require, retain
+from evolution_common import digest, file_digest, require, retain
 
 
 class ActualOwners:
@@ -53,7 +54,12 @@ class ActualOwners:
             file_digest(source / "lineage.json") == candidate["manifest_sha256"],
             "candidate manifest digest",
         )
-        lineage = read_json(source / "lineage.json")
+        lineage_bytes = (source / "lineage.json").read_bytes()
+        require(
+            hashlib.sha256(lineage_bytes).hexdigest() == candidate["manifest_sha256"],
+            "candidate manifest digest",
+        )
+        lineage = json.loads(lineage_bytes)
         require(
             set(candidate["support_roots"])
             <= set(lineage["roots"])

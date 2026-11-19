@@ -580,6 +580,52 @@ async fn q24_next_use_command_preserves_original_expiry_and_external_custody() -
 #[path = "circuit_completion_readiness_owner_tests.rs"]
 mod readiness;
 
+#[tokio::test]
+async fn q24_next_use_command_healthy_evidence_readback_then_publication_withdrawal()
+-> anyhow::Result<()> {
+    let mut f = CompletionFixture::ready(None).await?;
+    f.complete_c().await?;
+    let context = f.context()?;
+    let service = ObserverService::start(&f, f.f.original.create_owner()?)?;
+    let (client, channel) = next::client(context.clone(), false, None)?;
+    let server = next::serve(Arc::clone(&service.owner), channel);
+    let completed = client.attest_completed_task().await?;
+    let bytes = f.f.original.bytes()?;
+    let (evidence, channel) = next::evidence_client(&context)?;
+    let evidence_server = next::serve_evidence(Arc::clone(&service.owner), channel);
+    assert_eq!(
+        evidence
+            .readback(completed.snapshot(), completed.receipt())
+            .await?,
+        *completed.attestation(),
+    );
+    f.f.original.version.withdraw()?;
+    assert!(
+        evidence
+            .readback(completed.snapshot(), completed.receipt())
+            .await
+            .is_err()
+    );
+    drop(evidence);
+    assert!(
+        evidence_server
+            .join()
+            .map_err(|_| anyhow::anyhow!("withdrawn Observer"))?
+            .is_err()
+    );
+    assert!(matches!(
+        client.readback().await,
+        Err(OriginalCircuitNextUseCommandErrorV1::CommitUncertain)
+    ));
+    assert_eq!(f.f.original.bytes()?, bytes);
+    assert_eq!(finish_observer(client, server)?, 2);
+    // The actual C publication rejects before another predecessor read.
+    // The Selector channel is left unmodified, never replaced or retried.
+    assert!(service.finish(true, false)? > 0);
+    f.finish(false).await?;
+    Ok(())
+}
+
 // Temporary timing diagnostic for the FDE bounded evidence failure. It uses
 // the unchanged original 30 s command and 500 ms evidence transports. Every
 // read reaches the same live original owners; no timeout or cache is changed.
@@ -625,12 +671,14 @@ async fn original_next_use_evidence_timing_diagnostic() -> anyhow::Result<()> {
         evidence_terminal,
     );
     assert_eq!(f.f.original.bytes()?, before);
-    let command_terminal = finish_observer(client, server);
+    let command_terminal =
+        tokio::task::spawn_blocking(move || finish_observer(client, server)).await?;
     eprintln!(
         "LEARN_FDE_C_TIMING command_peer_terminal={:?}",
         command_terminal,
     );
-    let service_terminal = service.finish(false, false);
+    let service_terminal =
+        tokio::task::spawn_blocking(move || service.finish(false, false)).await?;
     eprintln!(
         "LEARN_FDE_C_TIMING underlying_peer_terminal={:?}",
         service_terminal,

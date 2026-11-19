@@ -197,12 +197,13 @@ impl AgentdNotesThreadToolRuntime {
 
     async fn observe_document(&self) -> Result<NotesDocumentState, AgentdError> {
         self.adapter.check_available()?;
+        let end = Instant::now() + self.adapter.deadline;
         let permit = Arc::clone(&self.adapter.blocking)
             .try_acquire_owned()
             .map_err(|_| invalid("previous original Notes observation is still running"))?;
         let observer = self.adapter.observer.clone();
         let state = tokio::time::timeout(
-            self.adapter.deadline,
+            end.saturating_duration_since(Instant::now()),
             tokio::task::spawn_blocking(move || {
                 let _permit = permit;
                 observer.observe_document()
@@ -211,6 +212,14 @@ impl AgentdNotesThreadToolRuntime {
         .await
         .map_err(|_| invalid("original Notes observation timed out"))?
         .map_err(|_| invalid("original Notes observation worker failed"))??;
+        self.adapter.check_available()?;
+        tokio::time::timeout(
+            end.saturating_duration_since(Instant::now()),
+            self.adapter.writer.validate_notes_document_read(&state),
+        )
+        .await
+        .map_err(|_| invalid("original Notes read floor check timed out"))?
+        .map_err(|error| invalid(&error.to_string()))?;
         self.adapter.check_available()?;
         Ok(state)
     }

@@ -1,0 +1,12 @@
+bazel mod deps --lockfile_mode=update
+INFO: Invocation ID: 89abd18a-15bc-4564-8d43-4710b97add37
+ no actions running
+WARNING: Download from https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz failed: class com.google.devtools.build.lib.bazel.repository.downloader.UnrecoverableHttpException TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+INFO: Repo v8+ defined by rule http_archive in @@bazel_tools//tools/build_defs/repo:http.bzl
+ERROR: /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/bazel_tools/tools/build_defs/repo/http.bzl:203:45: An error occurred during the fetch of repository 'v8+':
+   Traceback (most recent call last):
+	File "/workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/bazel_tools/tools/build_defs/repo/http.bzl", line 203, column 45, in _http_archive_impl
+		download_info = ctx.download_and_extract(
+Error in download_and_extract: java.io.IOException: Error downloading [https://github.com/v8/v8/archive/refs/tags/15.0.245.2.tar.gz] to /workspace/scratch/337c309bc660/hepta-ci-fix/tls-patch/bazel-output/1267fca677de4c7df8ffc8a563b1bcbd/external/v8+/temp6046525875711457399/15.0.245.2.tar.gz: TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+ERROR: Error accessing registry https://bcr.bazel.build/: Failed to fetch registry file https://bcr.bazel.build/modules/bazel_skylib/1.9.0/MODULE.bazel: TLS error: (certificate_unknown) PKIX path building failed: sun.security.provider.certpath.SunCertPathBuilderException: unable to find valid certification path to requested target
+error: recipe `bazel-lock-update` failed on line 150 with exit code 37

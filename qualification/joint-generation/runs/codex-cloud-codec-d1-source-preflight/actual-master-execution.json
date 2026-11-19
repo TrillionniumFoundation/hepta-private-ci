@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "training_diagnostics/codec-d1/run_once.py",
+    "--freeze",
+    "training_diagnostics/codec-d1/frozen-d1.json",
+    "--out",
+    "runs/codex-cloud-codec-training-d1"
+  ],
+  "completed_utc": "2026-10-23T15:48:40.304546+00:00",
+  "exit_code": 1,
+  "full_master_and_children_cpu_ns": 29827360000,
+  "schema": "hepta.codec-d1-outer-execution.v1",
+  "scope": "Sole registered TRAIN-only ABBA invocation; no retries or formal evaluation.",
+  "started_utc": "2026-10-23T15:48:10.452378+00:00",
+  "wall_ns": 29852166011
+}

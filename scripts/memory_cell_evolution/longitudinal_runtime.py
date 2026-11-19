@@ -66,16 +66,18 @@ def pin_start(repo, model, output, protocol, campaign_sha):
         dict(python=sys.version, executable=sys.executable, distributions=environment),
     )
     retain(output / "protocol.json", protocol)
-    for name in source["local_files"]:
+    for name, sha in source["local_files"].items():
         target = output / "source-snapshot" / "driver" / name
         target.parent.mkdir(parents=True, exist_ok=True)
         with target.open("xb") as stream:
             stream.write((Path(__file__).parent / name).read_bytes())
-    for name in source["repository_files"]:
+        require(file_digest(target) == sha, "source capture race")
+    for name, sha in source["repository_files"].items():
         target = output / "source-snapshot" / "baseline" / name
         target.parent.mkdir(parents=True, exist_ok=True)
         with target.open("xb") as stream:
             stream.write((repo / name).read_bytes())
+        require(file_digest(target) == sha, "source capture race")
     retain(
         output / "start.json",
         dict(

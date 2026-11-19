@@ -122,6 +122,23 @@ pub struct NeuralCircuitCandidateV1 {
     pub circuit_digest: Sha256Digest,
 }
 
+/// Caller-owned fields used to construct a neural-circuit candidate. Keeping
+/// them together makes the constructor hard to misuse when a new digest or
+/// graph field is added.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuralCircuitCandidateInputV1 {
+    pub circuit_id: String,
+    pub version: u32,
+    pub predecessor_digest: Option<Sha256Digest>,
+    pub entry_node: String,
+    pub nodes: Vec<CircuitNodeV1>,
+    pub edges: Vec<CircuitEdgeV1>,
+    pub capability_set: Vec<String>,
+    pub route_policy_digest: Sha256Digest,
+    pub parameter_bundle_digest: Sha256Digest,
+    pub resource_profile_digest: Sha256Digest,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct CircuitCompilationReceiptV1 {
     pub circuit_id: String,
@@ -133,6 +150,37 @@ pub struct CircuitCompilationReceiptV1 {
 }
 
 impl NeuralCircuitCandidateV1 {
+    /// Construct a candidate from the complete caller-owned input bundle.
+    /// The existing constructor remains the single validation and digest path.
+    pub fn from_input(input: NeuralCircuitCandidateInputV1) -> Result<Self, TaskFlowError> {
+        let NeuralCircuitCandidateInputV1 {
+            circuit_id,
+            version,
+            predecessor_digest,
+            entry_node,
+            nodes,
+            edges,
+            capability_set,
+            route_policy_digest,
+            parameter_bundle_digest,
+            resource_profile_digest,
+        } = input;
+        Self::new(
+            circuit_id,
+            version,
+            predecessor_digest,
+            CircuitProgramV1 {
+                entry_node,
+                nodes,
+                edges,
+                capability_set,
+            },
+            route_policy_digest,
+            parameter_bundle_digest,
+            resource_profile_digest,
+        )
+    }
+
     pub fn new(
         circuit_id: impl Into<String>,
         version: u32,
@@ -445,29 +493,27 @@ mod tests {
     }
 
     fn v1() -> NeuralCircuitCandidateV1 {
-        NeuralCircuitCandidateV1::new(
-            "retrieval-control",
-            /*version*/ 1,
-            /*predecessor_digest*/ None,
-            CircuitProgramV1 {
-                entry_node: "observe".to_string(),
-                nodes: vec![
-                    CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
-                    CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
-                    CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
-                    CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
-                ],
-                edges: vec![
-                    CircuitEdgeV1::new("observe", "decide"),
-                    CircuitEdgeV1::new("decide", "success"),
-                    CircuitEdgeV1::new("decide", "failure"),
-                ],
-                capability_set: vec![],
-            },
-            digest("route-v1"),
-            digest("parameters-v1"),
-            digest("resources-v1"),
-        )
+        NeuralCircuitCandidateV1::from_input(NeuralCircuitCandidateInputV1 {
+            circuit_id: "retrieval-control".to_string(),
+            version: 1,
+            predecessor_digest: None,
+            entry_node: "observe".to_string(),
+            nodes: vec![
+                CircuitNodeV1::new("observe", CircuitNodeRoleV1::Observe),
+                CircuitNodeV1::new("decide", CircuitNodeRoleV1::Decide),
+                CircuitNodeV1::new("success", CircuitNodeRoleV1::ExitSuccess),
+                CircuitNodeV1::new("failure", CircuitNodeRoleV1::ExitFailure),
+            ],
+            edges: vec![
+                CircuitEdgeV1::new("observe", "decide"),
+                CircuitEdgeV1::new("decide", "success"),
+                CircuitEdgeV1::new("decide", "failure"),
+            ],
+            capability_set: vec![],
+            route_policy_digest: digest("route-v1"),
+            parameter_bundle_digest: digest("parameters-v1"),
+            resource_profile_digest: digest("resources-v1"),
+        })
         .expect("v1 circuit")
     }
 

@@ -424,3 +424,64 @@ fn original_registry_finish_requires_original_signature_withdrawal_and_fresh_tim
         assert!(service.recovery_required().is_some());
     }
 }
+
+#[test]
+fn original_registry_preparation_preserves_failed_withdrawal_install_fence() {
+    let directory = fixture::TestDir::new();
+    let mut service = LearningArtifactOwnerService::open(configuration(&directory)).fixture("open");
+    let context = context(&service);
+    let before = files(&directory.0);
+    let frontier = fs::read(directory.0.join("withdrawal.CURRENT")).fixture("original frontier");
+    let pending = directory.0.join("withdrawal.pending");
+    fs::write(&pending, b"conflicting original intent").fixture("make install fail");
+    assert!(
+        service
+            .install_withdrawal_frontier(service.withdrawal_registry().clone())
+            .is_err()
+    );
+    fs::remove_file(pending).fixture("remove only the test's conflicting marker");
+    assert!(matches!(
+        service.prepare_original_registry_with_clock(context, b"payload", &|| Ok(20)),
+        Err(OriginalArtifactPreparationErrorV1::Owner(
+            ArtifactOwnerHostError::Indeterminate
+        ))
+    ));
+    assert!(service.recovery_required().is_none());
+    assert_eq!(files(&directory.0), before);
+    assert_eq!(
+        fs::read(directory.0.join("withdrawal.CURRENT")).fixture("frontier after refusal"),
+        frontier
+    );
+}
+
+#[test]
+fn original_registry_read_and_finish_refuse_pending_physical_withdrawal() {
+    let directory = fixture::TestDir::new();
+    let mut service = LearningArtifactOwnerService::open(configuration(&directory)).fixture("open");
+    let context = context(&service);
+    let prepared = service
+        .prepare_original_registry_with_clock(context.clone(), b"payload", &|| Ok(20))
+        .fixture("prepare before withdrawal becomes uncertain");
+    let head = signed(prepared.registry_durable());
+    let before = files(&directory.0);
+    let pending = directory.0.join("withdrawal.pending");
+    fs::write(&pending, b"unresolved original withdrawal").fixture("pending original frontier");
+    assert!(matches!(
+        service.read_original_registry_durable_with_clock(&context, &|| Ok(21)),
+        Err(OriginalArtifactPreparationErrorV1::Owner(
+            ArtifactOwnerHostError::Indeterminate
+        ))
+    ));
+    assert!(matches!(
+        service.finish_original_registry_with_clock(prepared, head, &|| Ok(21)),
+        Err(OriginalArtifactPreparationErrorV1::Owner(
+            ArtifactOwnerHostError::Indeterminate
+        ))
+    ));
+    assert_eq!(service.recovery_required(), Some(&context.operation_id));
+    assert_eq!(files(&directory.0), before);
+    assert_eq!(
+        fs::read(pending).fixture("pending marker is not repaired by read or finish"),
+        b"unresolved original withdrawal"
+    );
+}

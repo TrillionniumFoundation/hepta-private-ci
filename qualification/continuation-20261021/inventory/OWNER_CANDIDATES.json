@@ -1,0 +1,446 @@
+{
+  "scope": "Title/body metadata candidate search, not source-level equivalence or successful current CI",
+  "original_pr_census_count": 2967,
+  "advisory_candidates": [
+    {
+      "number": 2961,
+      "title": "fix(ci, runtime): retain native CI policy and repair protocol/runtime regressions",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2961",
+      "author": "Franksudoman",
+      "head": "c210d26350ac57e527b4ff59663e5c8d518ff95a",
+      "branch": "agents/20261020/ci-runtime-regressions",
+      "base": "integration/v8-main-convergence-20261020",
+      "draft": false,
+      "hits": [
+        "basic-toml"
+      ],
+      "snippet": "sed with exact locked dependency versions. Original cargo-deny 0.19.0 failed on basic-toml; the candidate passes the same all-features audit with unchanged policy. |\n| Downstream secrets | Local compilation was resource-interrupted before tests. The actual consumer is a cloud gate. |\n| Final tooling | Original just fmt"
+    },
+    {
+      "number": 2917,
+      "title": "[DRAFT][P0] Remove zbus RustSec family via sync keyring backend",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2917",
+      "author": "ProfHepta",
+      "head": "9a9e3b2e9dabd6957594861208b49f275f273e84",
+      "branch": "fix/rustsec-zbus-sync-keyring-20261019",
+      "base": "automation/2717-rustsec-no-ignore-guard-20261019-1247",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "2026-0370",
+        "2026-0372",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "19.0`.\n- Its actual report contains exactly three active failures:\n  - `RUSTSEC-2026-0371`: `zbus_names 3.0.0`\n  - `RUSTSEC-2026-0370`: `zvariant 4.2.0`\n  - `RUSTSEC-2026-0372`: `zvariant_derive 4.2.0`\n- The report's path is `zbus 4.4.0 -> keyring 3.6.3 -> codex-keyring-store`; the initial `keyring-store`-only switch l"
+    },
+    {
+      "number": 2910,
+      "title": "[DRAFT] Reject all 13 tracked RustSec suppressions; restore failing zbus gate",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2910",
+      "author": "ProfHepta",
+      "head": "0e7bee945f56872ea79afeb351995edee46d222e",
+      "branch": "automation/2717-rustsec-no-ignore-guard-20261019-1247",
+      "base": "fix/security-zip-20261017-v4",
+      "draft": true,
+      "hits": [
+        "2026-0370"
+      ],
+      "snippet": "y correction (non-authorizing)\n- Remove the three currently suppressed `RUSTSEC-2026-0370/0371/0372` advisories from `codex-rs/deny.toml` instead of misreporting an all-green cargo-deny result.\n- Add a standard-library TOML guard covering both `codex-rs/deny.toml` and `codex-rs/.cargo/audit.toml`; fail closed on any ig"
+    },
+    {
+      "number": 2838,
+      "title": "[DRAFT][DENY_ALL] Integrate actual P0 CI fixes with strong 64-case Cell matrix",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2838",
+      "author": "ProfHepta",
+      "head": "fcb129645ba9660e394dc57b4baa1089dce6dc4a",
+      "branch": "integration/hepta-p0-known-blockers-20261018",
+      "base": "shared-encoder-blocker-closure-rerun-20261018",
+      "draft": true,
+      "hits": [
+        "zvariant"
+      ],
+      "snippet": "mply because component patches were reviewed individually. Remaining Zip/Matrix/Zvariant/unmaintained advisories, Windows test failures outside the V8 feature mismatch, real pretrained Encoder/CAS/Final-use, future-window NDU/negative-transfer and target-host measured 64/256/1024/4096 Cell experiments all remain open. "
+    },
+    {
+      "number": 2831,
+      "title": "security: bring reviewed rustls 0.23.46 RustSec fix onto shared Encoder",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2831",
+      "author": "ProfHepta",
+      "head": "3283953a4e9f9b26c161482124b6f09e583112e4",
+      "branch": "fix/security-rustls-02346-shared-encoder-20261018",
+      "base": "shared-encoder-blocker-closure-rerun-20261018",
+      "draft": true,
+      "hits": [
+        "zvariant"
+      ],
+      "snippet": "andidate; **this is not a complete cargo-deny pass**. Zip, Matrix SDK, anymap2, zvariant and other advisories remain. Global CI cargo-deny, Bazel crate resolution, `cargo metadata --locked`, tests, cross-platform release builds, V8 and Architecture must produce terminal success **for this exact SHA**, not for #2605 or "
+    },
+    {
+      "number": 2829,
+      "title": "security integration (draft): ZIP Cargo.lock plus vendored sync keyrings",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2829",
+      "author": "ProfHepta",
+      "head": "3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03",
+      "branch": "fix/security-zip-vendored-sync-integration-20261018",
+      "base": "fix/security-zip-lock-reconcile-20261018",
+      "draft": true,
+      "hits": [
+        "2026-0370",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": " manifest level (full CI pending).\n- cargo-deny on #2793/#2810 reports `RUSTSEC-2026-0370/0371/0372` from `keyring → secret-service → zbus 4.4.0 → zbus_names/zvariant`. Remaining `rmcp-client` Linux async persistent feature retains this graph.\n\n## Atomic integration experiment\nBase #2820 exact commit `c197d2925d99eb78d"
+    },
+    {
+      "number": 2826,
+      "title": "security (draft): remove async zbus4 keyring dependency in MCP OAuth",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2826",
+      "author": "ProfHepta",
+      "head": "21eeda36754b523461464a423acfc0c5f6388a01",
+      "branch": "fix/security-rmcp-keyring-sync-vendored-20261018",
+      "base": "fix/security-keyring-vendored-dbus-exact-20261018",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "2026-0370",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "includes `zbus_names 3.0.0`, `zvariant 4.2.0`, `zvariant_derive 4.2.0` (RUSTSEC-2026-0371/0370/0372), reached via `keyring 3.6.3` → `secret-service 4.0.0` → `zbus 4.4.0`. Inspection finds `rmcp-client` still uses `linux-native-async-persistent` even after #2784 switched `keyring-store` to sync.\n\n## Experimental change\n"
+    },
+    {
+      "number": 2790,
+      "title": "[DRAFT][security] Qualify sync Linux keyring backend without zbus 4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2790",
+      "author": "ProfHepta",
+      "head": "b8d94f455998078a70f1d6174d21f915dc5f8c52",
+      "branch": "fix/security-keyring-sync-no-zbus-20261018",
+      "base": "integration/security-windows-baseline-20261017",
+      "draft": true,
+      "hits": [
+        "2026-0370",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": " and existing `crypto-rust` selection. It is a proposed remediation for RUSTSEC-2026-0370/0371/0372; it does **not** ignore advisories.\n\n## Mandatory qualification\n1. Regenerate Cargo.lock with real Rust 1.95.0 Cargo resolver and verify that zbus 4 / zbus_names / zvariant 4 / zvariant_derive 4 are absent from the entir"
+    },
+    {
+      "number": 2784,
+      "title": "fix(security): replace Linux async keyring backend carrying unmaintained zbus v4",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2784",
+      "author": "ProfHepta",
+      "head": "6fe608300f0eb27d2a1e3f6a713997b54ee9de1d",
+      "branch": "fix/security-keyring-secret-service-sync-20261018",
+      "base": "fix/security-prost-toolchain-fmt-20261018",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "2026-0370",
+        "2026-0372",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "ilure\nPR #2756 `cargo-deny` job 117590983052 in run 39096764003 reports RUSTSEC-2026-0371 (`zbus_names 3.0.0`), RUSTSEC-2026-0370 (`zvariant 4.2.0`) and RUSTSEC-2026-0372 (`zvariant_derive 4.2.0`). The cargo-deny dependency trail reaches the keyring `secret-service`/zbus backend.\n\n## Minimal change\nOne Linux-only `code"
+    },
+    {
+      "number": 2751,
+      "title": "ci(hepta): repair scoped disk/Clippy and Windows fixture blockers",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2751",
+      "author": "ProfHepta",
+      "head": "5fd8ee8b6a333b6385733b9ff8ebe1d076177766",
+      "branch": "codex/ci-clippy-authority-ledger-20261017",
+      "base": "main",
+      "draft": true,
+      "hits": [
+        "zvariant"
+      ],
+      "snippet": " Matrix SDK crypto/anymap2, unsafe-libyaml, rustls 0.23.45, zip extraction, and zvariant/zbus families. This PR **does not** claim those are fixed or waive them.\n- Current exact-head blocking-ci, architecture and v8 must reach terminal success; running/queued/pending/cancelled are not a pass.\n- Windows durable prompt r"
+    },
+    {
+      "number": 2747,
+      "title": "[DRAFT] integrate real Windows portability fixes on security P0",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2747",
+      "author": "ProfHepta",
+      "head": "a634e2d2bac429debdb2b2c09f4edce6589b221d",
+      "branch": "integration/security-windows-baseline-20261017",
+      "base": "fix/security-zip-20261017-v4",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "2026-0370",
+        "2026-0372",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "libbz2-rs-sys 0.2.5` under SPDX `bzip2-1.0.6`, alongside **still-open** RUSTSEC-2026-0371 (`zbus_names`) and RUSTSEC-2026-0372 (`zvariant_derive`), both via `keyring 3.6.3 → zbus 4.4`. License acceptance is not advisory acceptance.\n\nChanges on this branch:\n- `6e4e7ab`: repaired exactly that resolved `rama-macros` Cargo"
+    },
+    {
+      "number": 2734,
+      "title": "feat: close shared encoder and Cell blocker boundaries (rerun)",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2734",
+      "author": "ProfHepta",
+      "head": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "branch": "shared-encoder-blocker-closure-rerun-20261018",
+      "base": "main",
+      "draft": true,
+      "hits": [
+        "2026-0370",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "ustsec.org/advisories/RUSTSEC-2026-0368) on zip 2.4.2 and unmaintained [RUSTSEC-2026-0370](https://rustsec.org/advisories/RUSTSEC-2026-0370) on zvariant (also zbus_names/zvariant_derive). This candidate does **not** close them. Upstream security/protocol upgrade work is tracked separately in [#2717](https://github.com/"
+    },
+    {
+      "number": 2719,
+      "title": "fix(security): strip privileged ZIP file modes during curated plugin bootstrap",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2719",
+      "author": "ProfHepta",
+      "head": "bd1faf69c2c901a2a7135274c1d76e795a9ee8b3",
+      "branch": "fix/hepta-zip-mode-security-20261017",
+      "base": "ci/hepta-chain322-current-main-20261017",
+      "draft": true,
+      "hits": [
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": " migration and full package tests, rather than globally ignoring advisories.\n- `zbus_names 3.0.0`, `zvariant 4.2.0`, `zvariant_derive 4.2.0` remain unmaintained; Windows Bazel wrapper/ACL/owner test failures remain as reported in current #2559 `blocking-ci`.\n- This is a code-level *defense-in-depth* fix against archive"
+    },
+    {
+      "number": 2688,
+      "title": "feat(cognitive-types): add shadow-only Memory Cell contracts",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2688",
+      "author": "ProfHepta",
+      "head": "55088dd78b4950407f77a43f054efed0816409cb",
+      "branch": "codex/memory-cell-contracts-20261017",
+      "base": "main",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "2026-0370",
+        "2026-0372",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "RUSTSEC-2026-0319), `unsafe-libyaml` (RUSTSEC-2024-0449), `zbus_names` (RUSTSEC-2026-0371), `zvariant` (RUSTSEC-2026-0370), `zvariant_derive` (RUSTSEC-2026-0372).\n\nDo not disable `cargo-deny`, weaken `blocking-ci`, or add blanket security advisory ignores. Require supported upgrades or auditable, narrow risk dispositio"
+    },
+    {
+      "number": 2684,
+      "title": "[P0][DENY_ALL] Canonical CellSplit: fence signed post-effect ACK on current NDU selection",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2684",
+      "author": "ProfHepta",
+      "head": "b5d32004467c1d9fc7fe27ff9dbf9fbf0a13f6d7",
+      "branch": "fix/hepta-cell-split-canonical-post-effect-ndu-20261017",
+      "base": "integration/hepta-cell-split-p0-orphan-inspector-draft-20261017",
+      "draft": true,
+      "hits": [
+        "2026-0371",
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": ".11` (RUSTSEC-2024-0449), `zbus_names 3.0.0`/`zvariant 4.2.0` families (RUSTSEC-2026-0371/0370/0372) and `zip 2.4.2` (RUSTSEC-2026-0367/0368/0369). These require independently reviewed dependency migrations + locked Cargo security retests. No advisory ignore or bypass is permissible.\n- [Bazel Linux job 117450086217](ht"
+    },
+    {
+      "number": 2644,
+      "title": "[DRAFT][P0] Join orphan original Control Begin with signed CNS live readback (read-only)",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2644",
+      "author": "ProfHepta",
+      "head": "2a1c7b115e4bfa3e0722c32b14f8e5f49c73ba17",
+      "branch": "codex/cell-split-p0-orphan-cns-signed-join-20261017",
+      "base": "integration/hepta-cell-split-p0-orphan-audit-frozen-3d3deddd-20261017",
+      "draft": true,
+      "hits": [
+        "zbus_names",
+        "zvariant"
+      ],
+      "snippet": "7/0368/0369), affected `anymap2`/Matrix SDK, `unsafe-libyaml` and unmaintained `zbus_names`/`zvariant` dependencies. Original Bazel lock check fails due stale `MODULE.bazel.lock` module-extension state; Mac Bazel strict Clippy reports 16 original `expect()` fixture violations; Windows Bazel native suites report origina"
+    },
+    {
+      "number": 2621,
+      "title": "P0: Fail-closed Cell Split with frozen NDU baseline and native CI evidence gates",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2621",
+      "author": "ProfHepta",
+      "head": "eb23b78bb7e83fb321b46ea16d4f6af81330ed2c",
+      "branch": "feat/cell-split-receipt-owner-20261017",
+      "base": "main",
+      "draft": true,
+      "hits": [
+        "zvariant"
+      ],
+      "snippet": "vulnerability/unmaintained advisories. The identical affected `zip`, `rustls`, `zvariant` versions are already pinned in `main` and its prior cargo-deny failed; this is an **outstanding repository-wide security gate**, not a reason to suppress audit errors or claim they are fixed.\n- Windows Bazel full-shard results inc"
+    }
+  ],
+  "migration_fixture_candidates": [
+    {
+      "number": 2924,
+      "title": "fix: converge native fixtures and fallible test binary lookup",
+      "author": "Franksudoman",
+      "head": "0ce5de149e7be6d9541ca6efab77d180973fb2ff",
+      "ref": "agents/20261020/p0-native-convergence",
+      "base": "fix/rustsec-zbus-sync-keyring-20261019",
+      "matches": [
+        " executed |\n| `just test --locked --offline -p codex-hepta-memory --lib -E 'test(compiled_migrations_match_schema_oracle) \\| test(v2_fixture_migrates_forward)'` | 2 passed, 277 not selected |\n| Migration-only source: `just test --locked -p codex-hepta-automation --lib migration_convergence_tests` | 7 passed, 18 not selected, on isolated tree `34225b6f8b9e"
+      ]
+    },
+    {
+      "number": 2743,
+      "title": "test(memory): require V15 migration and ordered history in Windows replay",
+      "author": "ProfHepta",
+      "head": "4290ec6480944af84646e8846dfe5e3dc5e73f81",
+      "ref": "maintenance/windows-memory-v15-fixture-20261017",
+      "base": "main",
+      "matches": [
+        "d history in Windows replay\nExact-main one-file maintenance PR for a real Windows Bazel shard-2 failure. Log `39073430865` shows `cognitive_store_tests.rs:1094`: actual migration versions `1..15`, old expected `1..14`. This test-only patch asserts the full current V15 chain, using an ordered subquery for SQLite `group_concat`; keeps all migration da",
+        "al Windows Bazel shard-2 failure. Log `39073430865` shows `cognitive_store_tests.rs:1094`: actual migration versions `1..15`, old expected `1..14`. This test-only patch asserts the full current V15 chain, using an ordered subquery for SQLite `group_concat`; keeps all migration data-preservation, citation, and legacy KG projection revocation as"
+      ]
+    },
+    {
+      "number": 2444,
+      "title": "fix(v12): resume original Granite nine-fit from immutable V10 tokens after artifact nesting failure (DENY_ALL)",
+      "author": "ProfHepta",
+      "head": "283eea365bbe8625494ab20df64a161cd3e5fbcd",
+      "ref": "research/v12-granite-sealed-recovery-20261016",
+      "base": "research/v11-independent-postseal-reviewer-20261016",
+      "matches": [
+        "RAIN and real Encoder artifacts from run #38820394598, downloading the real-feature archive to its **parent** directory. Original expected Encoder job is #116821437006.\n\n### Hard source and chronology fences\n- Full original public, source-seal, training-label, `tokens.pt`, token metadata and original physical Encoder receipt **byte SHA256 pins**, plus original"
+      ]
+    },
+    {
+      "number": 1985,
+      "title": "fix(evidence): P2b atomic full ExecutionIntent persistence and key-only cold recovery",
+      "author": "ProfHepta",
+      "head": "d91783b5626313beb22c3e4a7361c0918dda7c67",
+      "ref": "research/hepta-execution-complete-restore-p2b-20261014",
+      "base": "research/hepta-execution-durable-prepare-p2a-20261014",
+      "matches": [
+        "sal, trigger update/delete rejection, foreign-key check, and PRAGMA quick_check. This is **not** native Rust, the full repository migrator, target-host power loss, an actual Codex process, or independent operator acceptance.\n- The authoring environment has no Rust toolchain. Exact-source and P2a-base synthetic-merge GitHub Actions Rustf"
+      ]
+    },
+    {
+      "number": 1562,
+      "title": "[DRAFT][P0] Combine signed Stem research with audited Matrix security fixes",
+      "author": "ProfHepta",
+      "head": "e4222b383aca292b5b0a97d80618bdd036fac0a8",
+      "ref": "integration/stem-matrix-security-20261012",
+      "base": "main",
+      "matches": [
+        "n the V15 migration regression.\n- The original `a0bb71865...` Stem head showed real Rust formatting failures in `hepta-memory/src/cognitive_store_tests.rs`; the generated Rust 1.95 diff is applied on *both* branches, without changing migration semantics.\n- New combined [Matrix security CI](https://github.com/TrillionniumFoundation/hepta-private-ci/a",
+        "source-identical safe blobs** plus one reconciled `hepta-memory/src/production_writer.rs` final-use test module. One overlapping `cognitive_store_tests.rs` blob was already identical; kept the more constrained existing `cognitive_schema_tests.rs` source because it already uses `codex_state::SqliteConfig` and private durable fixture. The Result-based"
+      ]
+    },
+    {
+      "number": 1495,
+      "title": "test(hepta): preregister and exercise three shadow Stem/Cell research experiments",
+      "author": "ProfHepta",
+      "head": "0b6d8ce513d2a37c285a72d536af85c90424c986",
+      "ref": "research/stem-cell-three-experiments-20261011",
+      "base": "main",
+      "matches": [
+        "e 1,054-file vendor/migration upgrade in this research PR.\n- Corrected a real global Rust formatting failure in `hepta-memory/src/cognitive_store_tests.rs` on both branches; exact new SHA CI is mandatory.\n- The integrated branch has no production grant, signed Final-use acceptance, real pretrained Encoder run, target-host 4096 Cell benchmark or inde"
+      ]
+    },
+    {
+      "number": 1465,
+      "title": "WIP: bounded inference production gates",
+      "author": "ProfHepta",
+      "head": "ec1dcf104781d3296f90446eb61ca4490f00b41c",
+      "ref": "codex/hepta-bounded-inference-scale-20261009",
+      "base": "audit/cell-role-production-integrity-20261009",
+      "matches": [
+        "ression to assert ordered versions 1–15 and an **empty** v15 shared-experience-use grants table. This fixes the observed outdated expected 1–14 test assertion without weakening revocation semantics.\n- New source tests inject an NDU cutover during synchronous model execution, forbid automatic same-process replay of an effect with no checkpoin"
+      ]
+    },
+    {
+      "number": 1386,
+      "title": "fix(operations): preserve owner SQLite and dependency contracts",
+      "author": "Franksudoman",
+      "head": "fced13572de01ae9bc10924e3c7552af6ae0bd4a",
+      "ref": "fix/eval-owner-sqlite-contracts-20261004",
+      "base": "fix/eval-signing-preflight-bounds-20261004",
+      "matches": [
+        "ol T e84d50089ae036cbe5c8541809c624db1577fc40/tree28f894d3fbf4eed6b6446f946c81fdf451180d87 changes only the existing map verifier/migrator, its tests and the existing Lane-B delegation/tests. Current-source anchors still require real ancestry and complete tracked witnesses. Explicit typed historical declarations preserve exact old maps "
+      ]
+    },
+    {
+      "number": 1375,
+      "title": "组合修复待统一验证: module runtime and owner boundaries",
+      "author": "ProfHepta",
+      "head": "64ccb6176191949860354d35be729859283f1a1c",
+      "ref": "codex/fix-supervisor-owner-test-closure-20261004",
+      "base": "codex/product-integration-20261001",
+      "matches": [
+        "red connections both prove an empty main-database filename and the exact15 compiled migration checksums. The original independent MIGRATOR, schema inventory, owner verification and weakened-trigger rejection remain. No dependency, production store, lint suppression or filesystem-backed oracle was substituted.\n\nFresh Rust1.96.0/dev-small"
+      ]
+    },
+    {
+      "number": 1288,
+      "title": "fix(cognitive): preserve recoverable admission and qualify product writer boundaries",
+      "author": "Tomasrgbsf",
+      "head": "e8777384c4b481f3ba5e0fd3bd56f37236eecd7f",
+      "ref": "audit/cognitive-store-20261001",
+      "base": "main",
+      "matches": [
+        "scriptor-bound recovery 加强；先固定 UTF-8 header、精确 compiled 历史 schema、预算及 owner 准入，再在需要初始化/升级时验证 FK、稳定 ledger、FTS 和 quick-check，之后才执行 MIGRATOR。历史损坏矩阵验证完整旧 schema/SQLx/owner/ledger/旧 KG 与 cold bytes 不变；不宣称覆盖任意旧 KG 语义腐坏。 |\n| 实时时钟及效果入口 | `BEGIN IMMEDIATE` 前取样的时间在锁等待后已过 TTL，却仍可 renewal/Entered；nonce 持久化或外部 retained verifier 的延迟可能使授权检查过早 | live ",
+        "ent migration prefix、精确 schema、预算、全部 owner 检查和有效 matching singleton 才返回 private `AlreadyCurrentOwned`。open rollback 初始 fence，省去无用 MIGRATOR/meta insert/initialization commit，随后正常 fresh-cut `verify_store`；历史或 empty-meta 路径仍在 MIGRATOR 前校验，未复用跨 cut 证明。\n6. ordinary dev/test 仅将 `libsqlite3-sys` 设为 optimization level 3，影响这两个 profile 的所有消费者；Rus",
+        "ntOwned`。open rollback 初始 fence，省去无用 MIGRATOR/meta insert/initialization commit，随后正常 fresh-cut `verify_store`；历史或 empty-meta 路径仍在 MIGRATOR 前校验，未复用跨 cut 证明。\n6. ordinary dev/test 仅将 `libsqlite3-sys` 设为 optimization level 3，影响这两个 profile 的所有消费者；Rust owner 仍为 0、release 仍为 3，checks/caps/payload/deadline 不变。真实容量 fixtures 保留既有max-threads=1 gro"
+      ]
+    },
+    {
+      "number": 1083,
+      "title": "memory.federation: converge qualification, runtime, and authenticated wire boundary",
+      "author": "Tomasrgbsf",
+      "head": "5e36ad2d4952992571b60cd02068ad06c2765ddd",
+      "ref": "feat/memory-federation-full-closure-20260927",
+      "base": "main",
+      "matches": [
+        "-only change\n- fixes the qualification matrix to use the read-only implementation-map verifier instead of the provenance-mutating migrator\n\n### In-process product runtime\n- bounded streaming owner discovery and bounded concurrent owner/capability revalidation\n- host-governed limits that can narrow but not widen architecture ceilings\n- t"
+      ]
+    }
+  ],
+  "current_head_confirmations": [
+    {
+      "number": 2961,
+      "collected_at_utc": "2026-10-21T01:12:31Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2961",
+      "head": {
+        "ref": "agents/20261020/ci-runtime-regressions",
+        "sha": "c210d26350ac57e527b4ff59663e5c8d518ff95a"
+      },
+      "base": {
+        "ref": "integration/v8-main-convergence-20261020",
+        "sha": "ddf193c6bb46c2d1e4c6255639686b345ead10aa"
+      },
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "merged_at": null,
+      "closed_at": null,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merge_commit_sha": "2ffe3a413654e94b2d46ba12a2c8f6e9743ea31d",
+      "updated_at": "2026-10-20T19:44:20Z"
+    },
+    {
+      "number": 2917,
+      "collected_at_utc": "2026-10-21T01:17:47.227Z",
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/2917",
+      "head": {
+        "ref": "fix/rustsec-zbus-sync-keyring-20261019",
+        "sha": "9a9e3b2e9dabd6957594861208b49f275f273e84"
+      },
+      "base": {
+        "ref": "automation/2717-rustsec-no-ignore-guard-20261019-1247",
+        "sha": "0e7bee945f56872ea79afeb351995edee46d222e"
+      },
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "merged_at": null,
+      "closed_at": null,
+      "mergeable": true,
+      "mergeable_state": "unstable",
+      "merge_commit_sha": "e3f9bfa15c768108a376f3819d6eadd963b91bda",
+      "updated_at": "2026-10-20T05:12:44Z"
+    }
+  ]
+}

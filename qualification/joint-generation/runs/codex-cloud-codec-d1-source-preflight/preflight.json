@@ -1,0 +1,96 @@
+{
+  "actual_d1_started": false,
+  "core_marker_sha256": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "formal_evaluation_run": false,
+  "head_before_staged_sources": "0aca16714390ca045a53cece9644992b7990fc9c",
+  "initial_fixture_failures_retained": true,
+  "logs": [
+    {
+      "bytes": 5483,
+      "file": "hepta-codec-analyze-tests-final.log",
+      "sha256": "a5ecbdb383425fadb48328220f7dda14e3209afb9260a598f2d0388617968eac"
+    },
+    {
+      "bytes": 862,
+      "file": "hepta-codec-analyze-tests-passed.log",
+      "sha256": "e155ed2a67b6eb4aa9c8d591c42ee69a3fcdc034fa02e695cf598a2b7f3c4cac"
+    },
+    {
+      "bytes": 542,
+      "file": "hepta-codec-analyze-tests.log",
+      "sha256": "7e0bae928a69d543e0a6e93bfdbe670e1a8e146b1baac2a23be082c32077e719"
+    },
+    {
+      "bytes": 73,
+      "file": "hepta-codec-d1-fmt-final.log",
+      "sha256": "b6a6d5ad920f48c9b49a3ca8c2308227b7849b9e0a498dc452f3a7bd2f7fb752"
+    },
+    {
+      "bytes": 42828,
+      "file": "hepta-codec-d1-independent-final.log",
+      "sha256": "37a4361f1ff36afaa37930688b4f5be023aacc70399c6f3a5de19724d854cbd1"
+    },
+    {
+      "bytes": 1768,
+      "file": "hepta-codec-d1-nested-final.log",
+      "sha256": "e8554cd65a699718a4cd7972b8e50678167100413e890608cd0e4ea43b01fa2e"
+    },
+    {
+      "bytes": 660,
+      "file": "hepta-codec-engine-hand-first.log",
+      "sha256": "ffef20f9c36183659c809a847886ee968f22261da747c9be36bfb3b1e14da532"
+    },
+    {
+      "bytes": 12083,
+      "file": "hepta-codec-engine-legacy-first.log",
+      "sha256": "1e04bcfcd3758182136565fe0cb2d57d29dd8d6c0289b9c7eacf339611c08630"
+    },
+    {
+      "bytes": 1004,
+      "file": "hepta-codec-master-hand-first.log",
+      "sha256": "90ceba13a09d1187b3399b4f0abe24e60860604c36e722ad3b814a9355f8af3a"
+    },
+    {
+      "bytes": 4154,
+      "file": "hepta-codec-refinement-forecast-first-20261023.log",
+      "sha256": "d97ee1a99ee584c9b1b9475e839a26f24aa31017e914beb249b66b5f15d0b44f"
+    },
+    {
+      "bytes": 4154,
+      "file": "hepta-codec-refinement-monitor-final-20261023.log",
+      "sha256": "2a17f8da3d0133c2fa2a84a77ff2e8a37ccda46839e85d044b0da2b615276382"
+    },
+    {
+      "bytes": 1018,
+      "file": "hepta-codec-slot-guard-hand-first.log",
+      "sha256": "08161d02456ad8491a477f7eb594a69058fd14be11420bf7aef06dd46b4f9e39"
+    },
+    {
+      "bytes": 1648,
+      "file": "hepta-training-diagnostic-handmade-final-20261023.log",
+      "sha256": "d032043a83c36bf64f23635a7af7f23318d7772feb851d5639e123181853fce6"
+    },
+    {
+      "bytes": 4862,
+      "file": "hepta-training-diagnostic-handmade-first-20261023.log",
+      "sha256": "03142d60e92bd7fcfa6ef99aa60180690930816b381bbf0c5eb17b51ec78420b"
+    }
+  ],
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "r2_marker_exists": false,
+  "schema": "hepta.codec-d1-source-preflight.v1",
+  "tests": {
+    "independent_final": {
+      "count": 249,
+      "exit_code": 0,
+      "log": "hepta-codec-d1-independent-final.log"
+    },
+    "nested_final": {
+      "count": 8,
+      "exit_code": 0,
+      "log": "hepta-codec-d1-nested-final.log"
+    }
+  },
+  "utc": "2026-10-23T15:47:17.822753+00:00"
+}

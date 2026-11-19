@@ -212,7 +212,7 @@ pub(crate) fn write_private_new(path: &Path, bytes: &[u8]) -> Result<(), Accepta
         {
             return Err(invalid("sidecar parent changed during durable write"));
         }
-        File::open(parent)?.sync_all()?;
+        sync_directory(parent)?;
     }
     #[cfg(windows)]
     parent_pin.sync()?;
@@ -279,10 +279,25 @@ pub(crate) fn write_private_atomic_replace(
         return Err(invalid("atomic sidecar artifact differs after persistence"));
     }
     #[cfg(not(windows))]
-    File::open(parent)?.sync_all()?;
+    sync_directory(parent)?;
     #[cfg(windows)]
     parent_pin.sync()?;
     Ok(())
+}
+
+// Windows writes keep their original parent pin through publication. The
+// standalone synchronization entry point uses that same retained native owner.
+#[cfg(any(not(windows), test))]
+fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    #[cfg(windows)]
+    {
+        windows::ParentPin::open(path)?.sync()
+    }
+    #[cfg(not(windows))]
+    {
+        File::open(path)?.sync_all()?;
+        Ok(())
+    }
 }
 
 pub(crate) struct SidecarLock {
@@ -474,3 +489,7 @@ fn sort_value(value: &mut Value) {
 fn invalid(message: impl Into<String>) -> AcceptanceError {
     AcceptanceError::Invalid(message.into())
 }
+
+#[cfg(test)]
+#[path = "durable_sync_tests.rs"]
+mod tests;

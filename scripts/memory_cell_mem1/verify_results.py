@@ -1,4 +1,4 @@
-"""Check MEM-1 reference evidence, supplied binary bytes and partial accounting."""
+"""Check MEM-1 frozen task truth, binary bytes and partial reference accounting."""
 
 import argparse
 from collections import Counter, defaultdict
@@ -70,7 +70,7 @@ def verify(root, *, native):
             if event["event"] == "update":
                 updates[event["kind"]] += 1
             if event["event"] == "probe":
-                # Recompute truth from answers; do not trust the recorded correct flag.
+                # audit_run has already bound this outcome to frozen owner facts.
                 correct = event["output"] == event["expected"]
                 if correct != event["correct"]:
                     raise ValueError(
@@ -106,7 +106,9 @@ def verify(root, *, native):
                 "accuracy": sum(row["correct"] for row in rows) / len(rows),
                 "coverage": sum(row["output"] is not None for row in rows) / len(rows),
                 "wrong_assertions": sum(
-                    row["output"] is not None and row["output"] != row["expected"]
+                    # Invalid-source labels are distinct from unauthorized use.
+                    # audit_truth independently verifies both error flags.
+                    row["wrong_assertion"]
                     for row in rows
                 ),
                 "stale_assertions": sum(row["stale_assertion"] for row in rows),
@@ -148,6 +150,14 @@ def verify(root, *, native):
         "verified_runs": len(results),
         "raw_events": dict(counts),
         "native_binary": binary,
+        "truth_audit": {
+            "status": "VERIFIED_REFERENCE_TRUTH",
+            "queries": sum(audit["truth_queries"] for audit in audits),
+            "scope": (
+                "frozen initial facts and MEM-1 v1 owner protocol; "
+                "not execution attestation or independent real-task evaluation"
+            ),
+        },
         "cost_audit": {
             "status": "PARTIAL",
             "complete_cost_verified": False,
