@@ -13,7 +13,7 @@ from pathlib import Path
 from example_validation_source_vm import Program, encode
 
 PROGRAM_FILE = Path(__file__).resolve().parents[1] / "example_validation_continuation.hepta"
-EXPECTED_GIT_BLOB = "6a3911ed23138010506891bfdb827c0baa98a42a"
+EXPECTED_GIT_BLOB = "1edde1f9bae629f8419d2aeb27677883cbea0da8"
 MASK = (1 << 64) - 1
 INVALID = 0xffffffff
 SHORT = 0xfffffffe
