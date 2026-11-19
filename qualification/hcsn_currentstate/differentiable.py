@@ -106,6 +106,8 @@ class Work:
     max_exponentials: int = 2048
     exponentials: int = 0
     largest_dimension: int = 0
+    small_norm_exponentials: int = 0
+    native_exponentials: int = 0
 
     def check_packets(self, state):
         if any(type(value) is not int or value < 1 for value in
@@ -119,7 +121,19 @@ class Work:
             raise RuntimeError("declared matrix-exponential work budget exhausted")
         self.exponentials += 1
         self.largest_dimension = max(self.largest_dimension, matrix.shape[0])
-        result = torch.matrix_exp(matrix)
+        if matrix.dtype == torch.float64 and bool(
+                torch.linalg.matrix_norm(matrix.detach(), ord=1) <= .1):
+            # For ||A||_1 <= .1 the degree-12 remainder is at most
+            # exp(.1)*.1**13/13! < 1.78e-23, excluding FP64 roundoff.
+            # Horner stays in the tensor graph, including second derivatives.
+            self.small_norm_exponentials += 1
+            identity = torch.eye(matrix.shape[0], dtype=matrix.dtype, device=matrix.device)
+            result = identity
+            for degree in range(12, 0, -1):
+                result = identity + (matrix @ result) / degree
+        else:
+            self.native_exponentials += 1
+            result = torch.matrix_exp(matrix)
         if not bool(torch.isfinite(result).all()):
             raise FloatingPointError("unresolved matrix exponential")
         return result
