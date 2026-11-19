@@ -1,4 +1,4 @@
-hia-asm.v1 hepta.hia.program.v9 codex_example_validation_continuation_candidate
+hia-asm.v1 hepta.hia.program.v9 example_validation_continuation
 fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
 block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
   e00_source_size:usize = buffer.len(source)

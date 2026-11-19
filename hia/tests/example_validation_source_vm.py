@@ -34,7 +34,7 @@ class Program:
     def __init__(self, source):
         lines = source.splitlines()
         if len(lines) < 5 or lines[0] != ('hia-asm.v1 hepta.hia.program.v9 '
-                                             'codex_example_validation_continuation_candidate'):
+                                             'example_validation_continuation'):
             raise ValueError('unexpected HIA format/version')
         if lines[1] != ('fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) '
                         'effects(read,write,trap) entry(entry)'):
