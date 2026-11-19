@@ -68,6 +68,24 @@ class CurrentCallerMigrationTests(unittest.TestCase):
                 ROOT, replace(boundary, product_callers=()), sources, ()
             )
 
+    def test_control_connection_cannot_restart_its_read_deadline(self):
+        self.rejects(
+            AGENT + "control.rs",
+            "ControlConnection::<P>::serve_connection(stream, state, request_end).await",
+            "ControlConnection::<P>::serve_connection("
+            "stream, state, Instant::now() + IO_TIMEOUT).await",
+        )
+        self.rejects(
+            AGENT + "control.rs",
+            "frames::read_frame(reader, request_end).await?",
+            "frames::read_frame(reader, Instant::now() + IO_TIMEOUT).await?",
+        )
+        self.rejects(
+            AGENT + "control_frames.rs",
+            "timeout_at(end, reader.read_until",
+            "timeout(IO_TIMEOUT, reader.read_until",
+        )
+
     def test_dispatch_unregistered_caller_is_rejected(self):
         boundary = self.boundaries["final_use_dispatch_raw"]
         code = PROOF._strip_cfg_test_items(
