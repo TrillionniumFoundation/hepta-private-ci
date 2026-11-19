@@ -121,10 +121,11 @@ class Work:
             raise RuntimeError("declared matrix-exponential work budget exhausted")
         self.exponentials += 1
         self.largest_dimension = max(self.largest_dimension, matrix.shape[0])
-        if matrix.dtype == torch.float64 and bool(
-                torch.linalg.matrix_norm(matrix.detach(), ord=1) <= .1):
-            # For ||A||_1 <= .1 the degree-12 remainder is at most
-            # exp(.1)*.1**13/13! < 1.78e-23, excluding FP64 roundoff.
+        limit = .6 if matrix.dtype == torch.float32 else .1
+        if matrix.dtype in (torch.float32, torch.float64) and bool(
+                torch.linalg.matrix_norm(matrix.detach(), ord=1) <= limit):
+            # The degree-12 remainder is at most exp(limit)*limit**13/13!:
+            # <3.83e-13 for FP32 and <1.78e-23 for FP64, excluding roundoff.
             # Horner stays in the tensor graph, including second derivatives.
             self.small_norm_exponentials += 1
             identity = torch.eye(matrix.shape[0], dtype=matrix.dtype, device=matrix.device)

@@ -51,8 +51,27 @@ class SmallNormExponentialTests(unittest.TestCase):
                 self.assertEqual(work.exponentials, 1)
                 self.assertEqual(work.small_norm_exponentials, int(float(matrix.detach().abs().sum(0).max()) <= .1))
 
-    def test_fp32_retains_native_path(self):
-        matrix = torch.tensor([[-.017, .017], [0., 0.]], dtype=torch.float32)
+    def test_fp32_t8_counterexample_and_boundary_derivatives(self):
+        for value in (.5, .5999, .6, .6001):
+            with self.subTest(value=value):
+                theta = torch.tensor(value, dtype=torch.float32, requires_grad=True)
+                matrix = torch.diag(torch.stack((-theta, -theta/2)))
+                work = Work()
+                actual = work.exponential(matrix)
+                expected = torch.diag(torch.stack((torch.exp(-theta), torch.exp(-theta/2))))
+                if value == .5:
+                    self.assertGreater(float((torch.matrix_exp(matrix)-expected).detach().abs().max()), 1e-5)
+                torch.testing.assert_close(actual, expected, atol=1.3e-7, rtol=0)
+                observed_g, = torch.autograd.grad(actual.sum(), (theta,), create_graph=True)
+                expected_g, = torch.autograd.grad(expected.sum(), (theta,), create_graph=True)
+                observed_h, = torch.autograd.grad(observed_g, (theta,))
+                expected_h, = torch.autograd.grad(expected_g, (theta,))
+                torch.testing.assert_close(observed_g, expected_g, atol=3e-7, rtol=0)
+                torch.testing.assert_close(observed_h, expected_h, atol=5e-7, rtol=0)
+                self.assertEqual(work.small_norm_exponentials, int(value <= .6))
+
+    def test_fp32_large_norm_retains_native_path(self):
+        matrix = torch.tensor([[-.7, .7], [0., 0.]], dtype=torch.float32)
         work = Work()
         torch.testing.assert_close(work.exponential(matrix), torch.matrix_exp(matrix), atol=0, rtol=0)
         self.assertEqual((work.small_norm_exponentials, work.native_exponentials), (0, 1))
