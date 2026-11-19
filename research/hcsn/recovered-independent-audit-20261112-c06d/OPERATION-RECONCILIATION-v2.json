@@ -1,0 +1,168 @@
+{
+  "schema": "hcsn-original-operation-reconciliation-v2",
+  "previous_record": {
+    "schema": "hcsn-closure-original-operation-reconciliation-v1",
+    "audit": {
+      "request": {
+        "host": "desktop",
+        "executable": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "args": [
+          "-B",
+          "/home/qian-qi/hcsn-real-recovery-20261112-4092/audit_replay.py",
+          "--run",
+          "/home/qian-qi/hcsn-real-recovery-20261112-4092/attempt001",
+          "--selection",
+          "/home/qian-qi/hcsn-real-recovery-20261112-4092/source/qualification/hcsn_differentiable/replay_v1/SELECTION.json",
+          "--selection-sha256",
+          "6271b8dd1859b8a124f5ecd06ba307c0f9ebcdc5e6f86a9d164c4ac374cdbd55",
+          "--output",
+          "/home/qian-qi/hcsn-real-recovery-20261112-4092/AUDIT.json"
+        ],
+        "cwd": "/home/qian-qi/hcsn-real-recovery-20261112-4092",
+        "env": {
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "MKL_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONHASHSEED": "0",
+          "CUDA_VISIBLE_DEVICES": ""
+        },
+        "cpu_quota_percent": 100,
+        "memory_max_bytes": 4294967296,
+        "nice": 10,
+        "timeout_seconds": 180,
+        "idempotency_key": "hcsn-independent-real-recovery-audit-4092-attempt001"
+      },
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "document_sha256": "342ce2498e6e95c9233564aa7210058fc0abb98115059f5a6b86d156bb96af70",
+      "document_observed": true
+    },
+    "archive": {
+      "request": {
+        "host": "desktop",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-B",
+          "-"
+        ],
+        "stdin": "import hashlib,json,os,pathlib,shutil,tarfile,time\nroot=pathlib.Path('/home/qian-qi/hcsn-real-recovery-20261112-4092')\naudit=json.loads((root/'AUDIT.json').read_bytes())\nassert audit['passed'] is True and audit['actual_optimizer_calls']==26\nassert audit['new_optimizer_calls_in_this_audit']==0\nassert audit['audit_source']['sha256']=='1174ad3615ebfaa27c21f308f7f2cce16fad6ddada8e0c416c8653bc04e9a48e'\npaths=[root/'SOURCE.json',root/'audit_replay.py',root/'AUDIT.json']\npaths+=list((root/'source').rglob('*'))+list((root/'attempt001').rglob('*'))\npaths=sorted(set(p for p in paths if p.is_file()))\nrecords=[]\nfor p in paths:\n    assert not p.is_symlink()\n    for parent in p.parents:\n        assert not parent.is_symlink()\n        if parent==root: break\n    b=p.read_bytes()\n    records.append({'path':str(p.relative_to(root)),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()})\nmanifest={'schema':'hcsn-real-recovery-originals-v1','source_commit':'5cb83d9c76beedf4c1c917e4bf561f5f26261ce7','audit_commit':'d8bcfac912c3cc24faeadf3bb234d1df5107f088','source_root':str(root),'native_training_job':'1a1ce749808-2564-1688','files':records,'file_count':len(records),'uncompressed_bytes':sum(r['bytes'] for r in records),'new_independent_complete_training_replays':0,'scientific_admission':'HOLD_NO_GO','scope':'all task source, frozen six checkpoints, all original diagnostic outputs including crash temporary, and independent audit; source corpus data are bound by hash and remain at original paths'}\nmanifest_path=root/'ORIGINALS-MANIFEST.json'\nwith manifest_path.open('x') as f: json.dump(manifest,f,sort_keys=True,indent=2);f.write('\\n')\narchive=root/'originals.tar.xz'\nwith tarfile.open(archive,'x:xz',preset=6) as t:\n    for p in paths+[manifest_path]: t.add(p,arcname=str(p.relative_to(root)),recursive=False)\nfor p,r in zip(paths,records):\n    b=p.read_bytes();assert len(b)==r['bytes'] and hashlib.sha256(b).hexdigest()==r['sha256']\nb=archive.read_bytes()\nreceipt={'schema':'hcsn-real-recovery-archive-receipt-v1','path':str(archive),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest(),'git_blob_sha1':hashlib.sha1(b'blob '+str(len(b)).encode()+b'\\0'+b).hexdigest(),'manifest_sha256':hashlib.sha256(manifest_path.read_bytes()).hexdigest(),'original_files':len(records),'uncompressed_bytes':manifest['uncompressed_bytes'],'github_cli':shutil.which('gh'),'closed_source_and_outputs_rechecked':True,'new_optimizer_calls':0}\nwith (root/'ARCHIVE.json').open('x') as f: json.dump(receipt,f,sort_keys=True,indent=2);f.write('\\n')\nprint(json.dumps(receipt,sort_keys=True))\n",
+        "cwd": "/home/qian-qi/hcsn-real-recovery-20261112-4092",
+        "idempotency_key": "hcsn-recovery-4092-originals-archive-v1",
+        "timeout_seconds": 180
+      },
+      "launch": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794469423146,\n    \"cwd\": \"/home/qian-qi/hcsn-real-recovery-20261112-4092\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1ceb6682a-2564-17f9\",\n    \"idempotency_key\": \"hcsn-recovery-4092-originals-archive-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1ceb6682a-2564-17f9\",\n    \"request_digest\": \"7403a10a29d7e91530fa8beb168d90c3dc1198f305ec835ce5aaa1e3821e52d7\",\n    \"request_fingerprint\": 8359702398353533205,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1ceb6682a-2564-17f9\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1ceb6682a-2564-17f9\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      },
+      "status": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.process_status`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "receipt": {
+        "bytes": 7070892,
+        "closed_source_and_outputs_rechecked": true,
+        "git_blob_sha1": "44262f5f9e8a94abe8d70125d874392d2a927089",
+        "github_cli": "/usr/bin/gh",
+        "manifest_sha256": "2de3cda19999b5b41d36cdfcea190b0417e4091049f5815e7af2e48885825ebc",
+        "new_optimizer_calls": 0,
+        "original_files": 118,
+        "path": "/home/qian-qi/hcsn-real-recovery-20261112-4092/originals.tar.xz",
+        "schema": "hcsn-real-recovery-archive-receipt-v1",
+        "sha256": "f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7",
+        "uncompressed_bytes": 12796221
+      },
+      "terminal_observation": "UNKNOWN"
+    },
+    "input_publication": {
+      "intent_commit": "3851ed8bb5b196a45c23879e1a84d756571ccb3e",
+      "request": {
+        "host": "desktop",
+        "executable": "/usr/bin/python3",
+        "args": [
+          "-B",
+          "-"
+        ],
+        "stdin": "\"\"\"Prepared native gh publisher: run only after noninteractive authorization is observed.\"\"\"\nimport base64\nimport hashlib\nimport json\nfrom pathlib import Path\nimport subprocess\nimport tempfile\n\nREPO = \"TrillionniumFoundation/hepta-private-ci\"\nPARENT = \"a832b028abdf1a1c9ab66534332457c6d76a91ca\"\nMODEL_SOURCE = \"5cb83d9c76beedf4c1c917e4bf561f5f26261ce7\"\nBRANCH = \"artifact/hcsn-c2-export-20261112-c06d-v1\"\nBASE_BRANCH = \"research/hcsn-real-checkpoint-replay-20261112-c06d\"\nPREFIX = \"qualification/hcsn_differentiable/replay_v1/artifact/\"\nFILE = Path(\"/home/qian-qi/hcsn-real-replay-c06d-export-v1.zip\")\nEXPECTED_BYTES = 11397159\nEXPECTED_SHA = \"37d387507ec150abfdad4065c23612e18fca6643d489f3555874c8e57a514b75\"\nSTATE = Path(\"/home/qian-qi/hcsn-c2-native-gh-export-c06d-v1\")\n\n\ndef api(path, payload=None):\n    command = [\"gh\", \"api\", path]\n    with tempfile.TemporaryDirectory(prefix=\"c2-gh-request-\") as directory:\n        if payload is not None:\n            body = Path(directory)/\"request.json\"\n            body.write_text(json.dumps(payload))\n            command += [\"--method\", \"POST\", \"--input\", str(body)]\n        result = subprocess.run(command, capture_output=True, text=True, timeout=180, check=False)\n    if result.returncode:\n        raise RuntimeError(\"gh API failed without exposing credential details: \" + path)\n    return json.loads(result.stdout)\n\n\ndef record(name, value):\n    path = STATE/(name + \".json\")\n    with path.open(\"x\") as output:\n        json.dump(value, output, sort_keys=True, indent=2)\n        output.write(\"\\n\")\n\n\ndef main():\n    STATE.mkdir(exist_ok=False)\n    user = api(\"user\")\n    repo = api(\"repos/\" + REPO)\n    if not user.get(\"login\") or repo.get(\"permissions\", {}).get(\"push\") is not True:\n        raise RuntimeError(\"normal noninteractive push authorization not established\")\n    record(\"authorization\", {\"login\": user[\"login\"], \"repo\": repo[\"full_name\"],\n                             \"push\": repo[\"permissions\"][\"push\"]})\n    current = api(\"repos/\"+REPO+\"/pulls/6130\")\n    if current[\"head\"][\"sha\"] != PARENT:\n        raise RuntimeError(\"base changed; inspect before publishing\")\n    before = FILE.stat()\n    identity = (before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns)\n    content = FILE.read_bytes()\n    if len(content) != EXPECTED_BYTES or hashlib.sha256(content).hexdigest() != EXPECTED_SHA:\n        raise RuntimeError(\"original export bytes changed\")\n    expected_blob = hashlib.sha1(b\"blob \" + str(len(content)).encode() + b\"\\0\" + content).hexdigest()\n    record(\"input\", {\"path\": str(FILE), \"bytes\": len(content), \"sha256\": EXPECTED_SHA,\n                     \"expected_git_blob\": expected_blob, \"base\": PARENT, \"source\": MODEL_SOURCE})\n    blob = api(\"repos/\"+REPO+\"/git/blobs\", {\"encoding\": \"base64\", \"content\": base64.b64encode(content).decode()})\n    after = FILE.stat()\n    after_identity = (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns)\n    if blob[\"sha\"] != expected_blob or after_identity != identity:\n        raise RuntimeError(\"blob or input version mismatch\")\n    record(\"blob\", blob)\n    parent = api(\"repos/\"+REPO+\"/git/commits/\"+PARENT)\n    export = {\"schema\": \"hcsn-real-replay-export-parts-v1\", \"source_parent\": MODEL_SOURCE,\n              \"receipt_parent\": PARENT, \"archive\": {\"bytes\": EXPECTED_BYTES, \"sha256\": EXPECTED_SHA},\n              \"parts\": [{\"path\": \"part-000.zip\", \"bytes\": EXPECTED_BYTES, \"sha256\": EXPECTED_SHA}]}\n    tree = api(\"repos/\"+REPO+\"/git/trees\", {\"base_tree\": parent[\"tree\"][\"sha\"], \"tree\": [\n        {\"path\": PREFIX+\"part-000.zip\", \"mode\": \"100644\", \"type\": \"blob\", \"sha\": expected_blob},\n        {\"path\": PREFIX+\"EXPORT.json\", \"mode\": \"100644\", \"type\": \"blob\", \"content\": json.dumps(export, sort_keys=True, indent=2)+\"\\n\"}]})\n    record(\"tree\", tree)\n    commit = api(\"repos/\"+REPO+\"/git/commits\", {\"message\": \"artifact(hcsn): preserve original six-checkpoint replay export (zero model execution)\",\n                    \"tree\": tree[\"sha\"], \"parents\": [PARENT]})\n    record(\"commit\", commit)\n    ref = api(\"repos/\"+REPO+\"/git/refs\", {\"ref\": \"refs/heads/\"+BRANCH, \"sha\": commit[\"sha\"]})\n    record(\"ref\", ref)\n    pull = api(\"repos/\"+REPO+\"/pulls\", {\"base\": BASE_BRANCH, \"head\": BRANCH, \"draft\": True,\n        \"title\": \"artifact(hcsn): publish original bound six-checkpoint replay ZIP (HOLD)\",\n        \"body\": \"Zero-model artifact publication only. Preserves the original 11397159-byte export, SHA256 \" + EXPECTED_SHA +\n                \". Parent includes the native failure receipts; model source remains \" + MODEL_SOURCE +\n                \". No original worktree/source refs changed, no training or replay run. Artifact manifest uses ordered relative part paths for CPU profile checkout. HOLD_NO_GO.\"})\n    record(\"pull\", pull)\n    check = api(\"repos/\"+REPO+\"/git/ref/heads/\"+BRANCH)\n    if check[\"object\"][\"sha\"] != commit[\"sha\"]:\n        raise RuntimeError(\"new artifact branch readback mismatch\")\n    print(json.dumps({\"commit\": commit[\"sha\"], \"tree\": tree[\"sha\"], \"blob\": expected_blob,\n                      \"pull\": pull[\"html_url\"], \"branch\": BRANCH, \"manifest\": PREFIX+\"EXPORT.json\"}, sort_keys=True))\n\n\nif __name__ == \"__main__\":\n    main()\n",
+        "cwd": "/home/qian-qi",
+        "cpu_quota_percent": 100,
+        "memory_max_bytes": 1073741824,
+        "nice": 10,
+        "timeout_seconds": 900,
+        "idempotency_key": "hcsn-c2-original-export-normal-gh-publication-c06d-v1"
+      },
+      "launch": {
+        "content": [
+          {
+            "type": "text",
+            "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+          }
+        ],
+        "isError": true
+      },
+      "state": "UNKNOWN_ACK_TIMEOUT_NO_RETRY"
+    }
+  },
+  "additional_input_publication_reconciliation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-\"\n    ],\n    \"created_unix_ms\": 1794470404411,\n    \"cwd\": \"/home/qian-qi\",\n    \"env_keys\": [],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1cec5613b-2564-182b\",\n    \"idempotency_key\": \"hcsn-c2-original-export-normal-gh-publication-c06d-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1cec5613b-2564-182b\",\n    \"request_digest\": \"9e9ef2ea58d625522f953844998d5c5b77a134897602aed29eb9e76620858cab\",\n    \"request_fingerprint\": 11429839992639595858,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1cec5613b-2564-182b\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1cec5613b-2564-182b\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "additional_publication_output": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job_id\": \"1a1cec5613b-2564-182b\",\n  \"stderr\": {\n    \"bytes_hex\": \"\",\n    \"eof\": true,\n    \"next_offset\": 0,\n    \"offset\": 0,\n    \"size\": 0,\n    \"text\": \"\"\n  },\n  \"stdout\": {\n    \"bytes_hex\": \"7b22626c6f62223a202232616663346538313066316337356131666635623966623835343634663664646136633433323435222c20226272616e6368223a202261727469666163742f6863736e2d63322d6578706f72742d32303236313131322d633036642d7631222c2022636f6d6d6974223a202239313765343838363635386165396630633334326562316661306635343564373963333965326338222c20226d616e6966657374223a20227175616c696669636174696f6e2f6863736e5f646966666572656e746961626c652f7265706c61795f76312f61727469666163742f4558504f52542e6a736f6e222c202270756c6c223a202268747470733a2f2f6769746875622e636f6d2f5472696c6c696f6e6e69756d466f756e646174696f6e2f68657074612d707269766174652d63692f70756c6c2f36323134222c202274726565223a202234393438633633653931356635386464386462303736666264383431643563313930366532393836227d0a\",\n    \"eof\": true,\n    \"next_offset\": 373,\n    \"offset\": 0,\n    \"size\": 373,\n    \"text\": \"{\\\"blob\\\": \\\"2afc4e810f1c75a1ff5b9fb85464f6dda6c43245\\\", \\\"branch\\\": \\\"artifact/hcsn-c2-export-20261112-c06d-v1\\\", \\\"commit\\\": \\\"917e4886658ae9f0c342eb1fa0f545d79c39e2c8\\\", \\\"manifest\\\": \\\"qualification/hcsn_differentiable/replay_v1/artifact/EXPORT.json\\\", \\\"pull\\\": \\\"https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6214\\\", \\\"tree\\\": \\\"4948c63e915f58dd8db076fbd841d5c1906e2986\\\"}\\n\"\n  }\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "additional_authorization_file_info": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/hcsn-c2-native-gh-export-c06d-v1/authorization.json\",\"sha256\":\"ef7b34ade0f99ab69e03f328f045dc8b9bacca5f6e180f55579306e4829e0fb2\",\"size\":96,\"version\":\"2050:55250046:96:1794470410945398744:1794470410945398744\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "independent_diagnostic_archive_file_info": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"metadata\":{\"acl_sha256\":\"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\"gid\":1000,\"link_count\":1,\"metadata_platform\":\"linux\",\"mode\":384,\"uid\":1000,\"xattr_names\":[],\"xattr_sha256\":{}},\"mode\":384,\"path\":\"/home/qian-qi/hcsn-real-recovery-20261112-4092/originals.tar.xz\",\"sha256\":\"f3f6992f31d7ab85a10eaa727dfc894fdb72ef5dafbba6bc43fc36d23a899dc7\",\"size\":7070892,\"version\":\"2050:10030058:7070892:1794469433299025822:1794469433299025822\"}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "canonical_artifact_commit": "917e4886658ae9f0c342eb1fa0f545d79c39e2c8",
+  "canonical_artifact_blob": "2afc4e810f1c75a1ff5b9fb85464f6dda6c43245",
+  "canonical_artifact_pr": 6214,
+  "scope": "Only zero-model evidence reconciliation and artifact publication; no new optimizer/model task. Earlier timeout observations remain in previous_record, and complete C2 full replay remains0/6."
+}
