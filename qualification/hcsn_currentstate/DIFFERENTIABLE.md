@@ -9,6 +9,19 @@ does not reconstruct history from event totals or replace refractory ages by
 uniform deposits. It is a finite spatial model; upper escape is permanently
 active and nonreturning, with an explicit reward.
 
+The finite-horizon terminal condition in the implemented `state.value` is
+**zero**. This field accumulates discounted active/escape running rewards and
+event rewards paid at the hit, up to the current time. Waiting refractory
+mass earns no running reward in this model; returning from refractory does not
+pay the event reward again. No pending future reward or terminal payoff is
+implicitly added. If a task declares a differentiable nonzero continuation
+payoff `Phi` on the complete state, the finite-horizon objective must explicitly
+add `state.discount_factor * Phi(state)` once. Such a task-specific terminal
+functional is caller-defined and is not an additional payoff implemented or
+validated by the present identification experiment. A perpetual value requires
+its own continuation model; it is not obtained by repeatedly summing finite-step
+terminal rewards.
+
 Between calls, generator rates, rewards, discount and reset targets may change.
 Each pending law retains the generator and reset target that created it; new
 inputs change current active dynamics and new events. This gives a complete
