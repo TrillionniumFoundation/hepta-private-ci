@@ -156,7 +156,10 @@ def refractory(state, work=None):
         start = max(state.time, p.start)
         if start >= p.end:
             continue
-        alpha = p.alpha @ work.exponential(p.generator * float(start - p.start))
+        # Exact logical zero age is the identity with zero generator derivative.
+        # Keep alpha in the graph; avoid an unnecessary exponential and adjoint.
+        alpha = p.alpha if start == p.start else p.alpha @ work.exponential(
+            p.generator * float(start - p.start))
         _, integral = _integrals(p.generator, p.output[:, None], float(p.end - start), work)
         total = total + (alpha @ integral).squeeze(1)
     if not bool(torch.isfinite(total).all()):
@@ -240,7 +243,8 @@ def advance(state, physics, target, work=None):
         alpha = [torch.cat((state.active, state.upper[:, None]), 1)]
         if sources:
             for p in sources:
-                alpha.append(p.alpha @ work.exponential(p.generator * float(state.time - p.start)))
+                alpha.append(p.alpha if state.time == p.start else p.alpha @ work.exponential(
+                    p.generator * float(state.time - p.start)))
             driving = torch.cat([p.output[:, None] * torch.cat((p.reset, q.new_zeros(1)))[None, :]
                                  for p in sources], 0)
             generator = torch.cat((torch.cat((base, q.new_zeros(n + 1, dimension - n - 1)), 1),
