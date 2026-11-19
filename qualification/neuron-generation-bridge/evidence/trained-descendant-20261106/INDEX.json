@@ -1,0 +1,72 @@
+{
+  "accepted_execution": "replay-r3",
+  "cost_scope": "All three recorded replay runs and both recorded builds are retained, including development runs. The initial exploratory compiler invocation and earlier inspections were not instrumented; this is not a complete task cost total. Recovery cost in asset-provenance/RECOVERY.json belongs to the prior independent recovery stage, not this qualification.",
+  "older_cost_record_correction": "replay-r1/replay-r2 child_peak_rss_bytes is a cumulative RUSAGE_CHILDREN high-water across harness children, including git; it is not isolated helper RSS. r3 uses harness_children_peak_rss_bytes and explicitly lists per-helper peak RSS as unmeasured.",
+  "raw_archive": {
+    "bytes": 103852,
+    "entries": 579,
+    "file_index_sha256": "cb60757bde2758f5c3b16de5062a87fae369d201f293fae217608dc8be538207",
+    "path": "raw-executions.tar.xz",
+    "sha256": "4ec17fd3ba6a66c8a883d24340fe1d5c885ef563f9dc11c07035a632ff4f0601"
+  },
+  "recorded_runs": [
+    {
+      "child_cpu_seconds": 5.631442,
+      "harness_cpu_seconds": 0.006550376000000004,
+      "role": "development",
+      "run": "build-r2",
+      "wall_seconds": 2.3281639870001527
+    },
+    {
+      "child_cpu_seconds": 6.120445,
+      "harness_cpu_seconds": 0.018926626000000002,
+      "role": "final",
+      "run": "build-r3",
+      "wall_seconds": 2.443582151998271
+    },
+    {
+      "child_cpu_seconds": 5.154512,
+      "harness_cpu_seconds": 1.337542867,
+      "ipc_bytes": 233992288,
+      "role": "development",
+      "run": "replay-r1",
+      "wall_seconds": 6.362476964997768
+    },
+    {
+      "child_cpu_seconds": 4.862169999999998,
+      "harness_cpu_seconds": 1.9268564129999999,
+      "ipc_bytes": 233992288,
+      "role": "development",
+      "run": "replay-r2",
+      "setup_cost": {
+        "child_cpu_seconds": 0.02142700000000053,
+        "harness_cpu_seconds": 0.013675035000000002,
+        "wall_seconds": 0.038368251000065356
+      },
+      "wall_seconds": 6.658846309001092
+    },
+    {
+      "child_cpu_seconds": 6.638178999999999,
+      "harness_cpu_seconds": 2.1991502709999997,
+      "ipc_bytes": 233992288,
+      "role": "final",
+      "run": "replay-r3",
+      "setup_cost": {
+        "child_cpu_seconds": 0.026778999999999997,
+        "harness_cpu_seconds": 0.017851643,
+        "wall_seconds": 0.04415447399878758
+      },
+      "wall_seconds": 8.814469289001863
+    }
+  ],
+  "schema": "hepta.trained-joint-qualification-evidence-index.v1",
+  "unmeasured": [
+    "initial_exploratory_build",
+    "earlier_inspection_cost",
+    "energy_joules",
+    "physical_disk_bytes",
+    "per_helper_peak_rss_bytes",
+    "historical_training_cost",
+    "Agentd_and_durable_control_cost"
+  ]
+}
