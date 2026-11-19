@@ -52,6 +52,8 @@ impl fmt::Display for ParseTimestampError {
 impl std::error::Error for ParseTimestampError {}
 
 impl Timestamp {
+    pub const UNIX_EPOCH: Self = Self { seconds: 0, nanoseconds: 0 };
+
     pub fn now() -> Self {
         Self::from_datetime(OffsetDateTime::now_utc())
             .expect("system clock is within the supported timestamp range")
