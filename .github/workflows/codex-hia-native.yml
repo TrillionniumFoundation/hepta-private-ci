@@ -76,7 +76,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tranche: [early, late]
+        tranche: [early, middle, late]
     timeout-minutes: 60
     env:
       PYTHONDONTWRITEBYTECODE: "1"
@@ -631,7 +631,7 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Test all four production crates with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -651,7 +651,7 @@ jobs:
           python3 -c 'import json,sys; v=json.load(open(sys.argv[1])); assert v["consumer_artifacts"] and all(x["policy_mode"]==0 and x["cargo_fresh"] for x in v["consumer_artifacts"])' "$RUNNER_TEMP/unified-all-targets-cached-admission.json"
 
       - name: Test environment display public oracles with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -659,7 +659,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-native.log"
 
       - name: Test environment display public oracles with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -667,7 +667,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-default.log"
 
       - name: Test citation and proposed plan public oracles with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -675,7 +675,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-native.log"
 
       - name: Test citation and proposed plan public oracles with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -683,7 +683,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default.log"
 
       - name: Lint citation and proposed plan owner with native and default features
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -694,7 +694,7 @@ jobs:
             -p codex-utils-stream-parser -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-default-clippy.log"
       - name: Test fuzzy match public and decoder oracles with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -702,7 +702,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-native.log"
 
       - name: Test fuzzy match original public oracles with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -710,7 +710,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default.log"
 
       - name: Lint fuzzy match owner with native and default features
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -722,7 +722,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-default-clippy.log"
 
       - name: Test existing fuzzy ranking and highlight callers with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -734,7 +734,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-native.log"
 
       - name: Test existing fuzzy ranking and highlight callers with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -746,7 +746,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-callers-default.log"
 
       - name: Compare actual native and original ASCII JSON callers
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_ascii_json_caller.py \
@@ -756,7 +756,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-caller.log"
 
       - name: Verify ASCII JSON window and error contracts
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_ascii_json_abi.py \
@@ -765,7 +765,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-ascii-json-abi.log"
 
       - name: Compare native truncation APIs with the original Rust source
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_native_truncate_caller.py \
@@ -775,7 +775,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-caller.log"
 
       - name: Verify truncation UTF-8, budgets and buffer contracts
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_truncate_abi.py \
@@ -784,7 +784,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-abi.log"
 
       - name: Test consumers of native truncation and token budgets
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -793,7 +793,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-truncate-consumers.log"
 
       - name: Test existing Core output-item callers with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -804,7 +804,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-native.log"
 
       - name: Test existing Core output-item callers with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -815,7 +815,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-core-default.log"
 
       - name: Test existing Core citation and proposed plan consumers with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -832,7 +832,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-native.log"
 
       - name: Test existing Core citation and proposed plan consumers with default Rust
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -848,7 +848,7 @@ jobs:
             -E "$citation_callers" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-core-default.log"
       - name: Verify native scalar token arithmetic and invalid-mode traps
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         run: |
           set -euo pipefail
           python3 -B codex/hia/tests/test_token_budget_abi.py \
@@ -857,7 +857,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-token-budget-abi.log"
 
       - name: Verify installed HIA apply_patch executable
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -893,7 +893,7 @@ jobs:
           bwrap --unshare-user --unshare-net --ro-bind / / --dev /dev --proc /proc -- /bin/true
 
       - name: Test full Codex owners with HIA enabled
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -901,7 +901,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-codex-owners.log"
 
       - name: Test native template owner and all direct consumers
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -914,7 +914,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-native.log"
 
       - name: Test default template owner and all direct consumers
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -924,7 +924,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-template-consumers-default.log"
 
       - name: Verify installed full Codex executable
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' && steps.unified_policy_config.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
@@ -940,7 +940,7 @@ jobs:
             2>&1 | tee "$RUNNER_TEMP/hia-installed-codex.log"
 
       - name: Verify default callers and truncation consumers require no HIA artifacts
-        if: ${{ always() && matrix.tranche == 'early' && steps.build.outcome == 'success' }}
+        if: ${{ always() && matrix.tranche == 'middle' && steps.build.outcome == 'success' }}
         working-directory: codex/codex-rs
         run: |
           set -euo pipefail
