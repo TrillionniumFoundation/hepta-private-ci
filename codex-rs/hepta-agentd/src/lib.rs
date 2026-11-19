@@ -1414,6 +1414,8 @@ pub(crate) use final_use_issuer::OriginalRootRetainedVersionIssuerV1;
 #[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Device;
 #[cfg(target_os = "linux")]
+pub use hos2_device::AgentdHos2HistoryDevice;
+#[cfg(target_os = "linux")]
 pub use hos2_device::AgentdHos2Usage;
 pub use intelligence_ingress::AgentdIntelligenceInvocationProviderV1;
 pub use intelligence_ingress::AgentdIntelligenceInvocationV1;
