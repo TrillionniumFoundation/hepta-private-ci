@@ -1,0 +1,32 @@
+[
+  {
+    "label": "regression",
+    "command": [
+      "/workspace/scratch/d741f7769aeb/hcsn-venv/bin/python",
+      "-m",
+      "qualification.hcsn_currentstate.small_norm_exponential_20261119.verify_fp32",
+      "/workspace/scratch/2f21518ff984/smallnorm-exponential-fix/qualification/hcsn_currentstate/small_norm_exponential_20261119/verification002/regression"
+    ],
+    "exit_code": 0,
+    "whole_child_wall_seconds": 12.718117305004853,
+    "child_user_seconds": 10.189043,
+    "child_system_seconds": 2.475918,
+    "child_peak_rss_kib": 295076,
+    "deadline_kill_sent": false
+  },
+  {
+    "label": "timevarying",
+    "command": [
+      "/workspace/scratch/d741f7769aeb/hcsn-venv/bin/python",
+      "-m",
+      "qualification.hcsn_currentstate.study_timevarying",
+      "/workspace/scratch/2f21518ff984/smallnorm-exponential-fix/qualification/hcsn_currentstate/small_norm_exponential_20261119/verification002/timevarying"
+    ],
+    "exit_code": 0,
+    "whole_child_wall_seconds": 9.873107449995587,
+    "child_user_seconds": 8.505276,
+    "child_system_seconds": 1.239459,
+    "child_peak_rss_kib": 258104,
+    "deadline_kill_sent": false
+  }
+]
