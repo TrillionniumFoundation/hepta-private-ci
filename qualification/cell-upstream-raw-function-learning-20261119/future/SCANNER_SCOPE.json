@@ -1,0 +1,16 @@
+{
+  "schema": "hepta.future-history-scanner-scope.v1",
+  "selection_appendix_commit": "807695d60d83ebc8593fe1b069d072da2de89ed1",
+  "selection_appendix_sha256": "5a5b42e36436722ff203a6cf08777f367dc6c4765ecfac1c265466fc7b4410dd",
+  "old_panel_inventory_sha256": "aa522307a3d06aba4ac355846cba05417c0a9dc06a88b834d618b414247c1d9a",
+  "scanner_sha256": "b8edd528f1e4401a007430fca9364d53a75398742e6af0f46e95bb019c4a178a",
+  "future_content_read_at_publication": false,
+  "weights_frozen_before_any_future_content_read": true,
+  "new_A_outputs_read": false,
+  "scope": "This scanner retains original frozen HEAD, complete latest-50 non-merge order, original commit metadata, source blobs and every static rejection. REQUIRES_QUALIFICATION is not panel admission.",
+  "within_commit_tie_break": "sorted source path, then the unique changed existing top-level function; license, original tests, no truncation, exact AFTER transport and actual isolated before/after qualification must all pass in commit order before selecting a task",
+  "after_static_scan": "Qualify potential commits in the original saved order. Stop after the first qualifying task in this repository; process repositories in the appendix order and stop at four qualified tasks.",
+  "no_new_model_or_native_tests_in_scanner": true,
+  "no_override_of_original_admission": true,
+  "failed_readonly_inventory_attempts_retained": true
+}
