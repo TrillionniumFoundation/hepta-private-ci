@@ -21,10 +21,20 @@ enum OperationError<E> {
 }
 
 impl OriginalDatasetLedgerV1 {
+    #[track_caller]
     pub(crate) fn with_original_ledger_operation<T, E>(
         &self,
         action: impl for<'read> FnOnce(&OriginalDatasetOperationV1<'read>) -> Result<T, E>,
     ) -> Result<Result<T, E>, Error> {
+        let caller = std::panic::Location::caller();
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "daemon_stage=historical.trace.dataset caller={}:{}\n",
+                caller.file(),
+                caller.line(),
+            ),
+        );
         match self {
             Self::Live(_) => Ok(action(&OriginalDatasetOperationV1 {
                 kind: DatasetOperationKind::Live,

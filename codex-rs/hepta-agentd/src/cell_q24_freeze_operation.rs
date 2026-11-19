@@ -17,10 +17,20 @@ enum FreezeOperationError<E> {
 }
 
 impl CellQ24DatasetFreezePreparationV1 {
+    #[track_caller]
     pub(super) fn with_original_freeze_operation<T, E>(
         &self,
         action: impl for<'read> FnOnce(&OriginalFreezePreparationReadV1<'read>) -> Result<T, E>,
     ) -> Result<Result<T, E>, Error> {
+        let caller = std::panic::Location::caller();
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "daemon_stage=historical.trace.freeze caller={}:{}\n",
+                caller.file(),
+                caller.line(),
+            ),
+        );
         let result =
             OriginalDatasetLedgerV1::with_original_ledger_operation(&self.ledger, |operation| {
                 let read = OriginalFreezePreparationReadV1 {

@@ -13,6 +13,21 @@ impl OriginalCellQ24LearningStageOwnersV1 {
         work: OriginalHistoricalWorkV1,
     ) -> Result<OriginalHistoricalResultV1, Error> {
         context.require_original_aggregate(self)?;
+        let _ = match &work {
+            OriginalHistoricalWorkV1::Restore(_) => std::io::Write::write_all(
+                &mut std::io::stderr(),
+                b"daemon_stage=historical.trace.stage work=restore\n",
+            ),
+            OriginalHistoricalWorkV1::ConfirmRecovery(_) => std::io::Write::write_all(
+                &mut std::io::stderr(),
+                b"daemon_stage=historical.trace.stage work=confirm_recovery\n",
+            ),
+            OriginalHistoricalWorkV1::Stage { stage, .. } => std::io::Write::write_fmt(
+                &mut std::io::stderr(),
+                format_args!("daemon_stage=historical.trace.stage work={stage:?}\n"),
+            ),
+        };
+
         if self.inner.cancelled.load(Ordering::Acquire) {
             return Err(Error::CommitUncertain);
         }
