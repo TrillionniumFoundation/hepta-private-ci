@@ -1,0 +1,401 @@
+{
+  "schema": "hcsn-campaign-sealed-fit-metadata-readback-v1",
+  "observed_utc": "2026-11-19T11:35:45.441250+00:00",
+  "status": "PASS_SEALED_30_FIT_METADATA",
+  "checks": {
+    "30_completed_rows": true,
+    "complete_seal_roster": true,
+    "complete_cost_roster": true,
+    "source_identity": true,
+    "protocol_identity": true,
+    "no_declared_preseal_test": true,
+    "frozen_sources_unchanged": true
+  },
+  "fits": [
+    {
+      "fit": "flow_no_return-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_no_return-s101/COST.json": true,
+        "fits/flow_no_return-s101/RESULT.json": true,
+        "fits/flow_no_return-s101/selected.pt": true,
+        "fits/flow_no_return-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "transformer-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/transformer-s307/COST.json": true,
+        "fits/transformer-s307/RESULT.json": true,
+        "fits/transformer-s307/selected.pt": true,
+        "fits/transformer-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "snn-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/snn-s307/COST.json": true,
+        "fits/snn-s307/RESULT.json": true,
+        "fits/snn-s307/selected.pt": true,
+        "fits/snn-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gru-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gru-s307/COST.json": true,
+        "fits/gru-s307/RESULT.json": true,
+        "fits/gru-s307/selected.pt": true,
+        "fits/gru-s307/validation-002.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gate-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gate-s101/COST.json": true,
+        "fits/gate-s101/RESULT.json": true,
+        "fits/gate-s101/selected.pt": true,
+        "fits/gate-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "cfc-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/cfc-s211/COST.json": true,
+        "fits/cfc-s211/RESULT.json": true,
+        "fits/cfc-s211/selected.pt": true,
+        "fits/cfc-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_no_return-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_no_return-s307/COST.json": true,
+        "fits/flow_no_return-s307/RESULT.json": true,
+        "fits/flow_no_return-s307/selected.pt": true,
+        "fits/flow_no_return-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "cfc-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/cfc-s101/COST.json": true,
+        "fits/cfc-s101/RESULT.json": true,
+        "fits/cfc-s101/selected.pt": true,
+        "fits/cfc-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_no_return-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_no_return-s211/COST.json": true,
+        "fits/flow_no_return-s211/RESULT.json": true,
+        "fits/flow_no_return-s211/selected.pt": true,
+        "fits/flow_no_return-s211/validation-004.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_erlang4-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_erlang4-s101/COST.json": true,
+        "fits/flow_erlang4-s101/RESULT.json": true,
+        "fits/flow_erlang4-s101/selected.pt": true,
+        "fits/flow_erlang4-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_mass-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_mass-s101/COST.json": true,
+        "fits/flow_mass-s101/RESULT.json": true,
+        "fits/flow_mass-s101/selected.pt": true,
+        "fits/flow_mass-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_mass-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_mass-s211/COST.json": true,
+        "fits/flow_mass-s211/RESULT.json": true,
+        "fits/flow_mass-s211/selected.pt": true,
+        "fits/flow_mass-s211/validation-002.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow-s211/COST.json": true,
+        "fits/flow-s211/RESULT.json": true,
+        "fits/flow-s211/selected.pt": true,
+        "fits/flow-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_fixed-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_fixed-s307/COST.json": true,
+        "fits/flow_fixed-s307/RESULT.json": true,
+        "fits/flow_fixed-s307/selected.pt": true,
+        "fits/flow_fixed-s307/validation-004.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "transformer-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/transformer-s101/COST.json": true,
+        "fits/transformer-s101/RESULT.json": true,
+        "fits/transformer-s101/selected.pt": true,
+        "fits/transformer-s101/validation-004.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow-s307/COST.json": true,
+        "fits/flow-s307/RESULT.json": true,
+        "fits/flow-s307/selected.pt": true,
+        "fits/flow-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_fixed-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_fixed-s101/COST.json": true,
+        "fits/flow_fixed-s101/RESULT.json": true,
+        "fits/flow_fixed-s101/selected.pt": true,
+        "fits/flow_fixed-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_fixed-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_fixed-s211/COST.json": true,
+        "fits/flow_fixed-s211/RESULT.json": true,
+        "fits/flow_fixed-s211/selected.pt": true,
+        "fits/flow_fixed-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_erlang4-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_erlang4-s211/COST.json": true,
+        "fits/flow_erlang4-s211/RESULT.json": true,
+        "fits/flow_erlang4-s211/selected.pt": true,
+        "fits/flow_erlang4-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "snn-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/snn-s211/COST.json": true,
+        "fits/snn-s211/RESULT.json": true,
+        "fits/snn-s211/selected.pt": true,
+        "fits/snn-s211/validation-004.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "snn-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/snn-s101/COST.json": true,
+        "fits/snn-s101/RESULT.json": true,
+        "fits/snn-s101/selected.pt": true,
+        "fits/snn-s101/validation-003.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow-s101/COST.json": true,
+        "fits/flow-s101/RESULT.json": true,
+        "fits/flow-s101/selected.pt": true,
+        "fits/flow-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gru-s101",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gru-s101/COST.json": true,
+        "fits/gru-s101/RESULT.json": true,
+        "fits/gru-s101/selected.pt": true,
+        "fits/gru-s101/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "transformer-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/transformer-s211/COST.json": true,
+        "fits/transformer-s211/RESULT.json": true,
+        "fits/transformer-s211/selected.pt": true,
+        "fits/transformer-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_erlang4-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_erlang4-s307/COST.json": true,
+        "fits/flow_erlang4-s307/RESULT.json": true,
+        "fits/flow_erlang4-s307/selected.pt": true,
+        "fits/flow_erlang4-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "cfc-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/cfc-s307/COST.json": true,
+        "fits/cfc-s307/RESULT.json": true,
+        "fits/cfc-s307/selected.pt": true,
+        "fits/cfc-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gru-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gru-s211/COST.json": true,
+        "fits/gru-s211/RESULT.json": true,
+        "fits/gru-s211/selected.pt": true,
+        "fits/gru-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "flow_mass-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/flow_mass-s307/COST.json": true,
+        "fits/flow_mass-s307/RESULT.json": true,
+        "fits/flow_mass-s307/selected.pt": true,
+        "fits/flow_mass-s307/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gate-s211",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gate-s211/COST.json": true,
+        "fits/gate-s211/RESULT.json": true,
+        "fits/gate-s211/selected.pt": true,
+        "fits/gate-s211/validation-005.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    },
+    {
+      "fit": "gate-s307",
+      "sealed_hashes_match": true,
+      "bindings": {
+        "fit-processes/gate-s307/COST.json": true,
+        "fits/gate-s307/RESULT.json": true,
+        "fits/gate-s307/selected.pt": true,
+        "fits/gate-s307/validation-004.npz": true
+      },
+      "terminal_and_selection_metadata_valid": true,
+      "initial_originals_unchanged": true
+    }
+  ],
+  "initial_snapshot_sha256": "990e25118430008f4635ca252f5f109e44e00b708661784c737d0dcabaa9607c",
+  "selection_seal_sha256": "a467e3ddf9e21a933448fb365735ce108f2c917fbfcbfb37b57c17128a58beac",
+  "fit_costs_sha256": "ab22b45aef02536ba7d816304651e45c300a4b757c3596149075c90633497880",
+  "wrapper_review": {
+    "sha256": "1d5ab1ce8ec9a351d7ad23c1d86644464826de0d2033e34b98b1f4a3e2fdd78e",
+    "expected_sha256": "1d5ab1ce8ec9a351d7ad23c1d86644464826de0d2033e34b98b1f4a3e2fdd78e",
+    "source_lines": 251,
+    "repository_parent_index_correct": true,
+    "blocking_findings_for_this_campaign": [],
+    "status": "STATIC_REVIEW_ONLY_NOT_EXECUTED_BY_REVIEWER",
+    "scope": "Successor invocation constraints only; original frozen campaign/evaluator/reviewer sources untouched"
+  },
+  "whole_fit_children_cpu_seconds": 1874.61168,
+  "sum_fit_child_wall_seconds_not_campaign_elapsed": 1995.2123364450163,
+  "fit_with_atomic_late_update_count": 30,
+  "all_selected_snapshots_completed_within_60_seconds": true,
+  "all_late_updates_excluded_from_selected_snapshot": true,
+  "datasets_loaded": 0,
+  "evaluation_or_test_files_opened": false,
+  "new_model_calls": 0,
+  "new_optimizer_calls": 0,
+  "new_matrix_actions": 0,
+  "snapshot_durability": "Selection includes in-memory deepcopy. selected.pt serialization occurs after training window; no within-deadline durable-file claim.",
+  "resource_scope": "Two pinned logical CPUs, nonexclusive; no ancestor-cgroup quota, frequency or per-update CPU timeline in frozen records.",
+  "performance_interpretation": "Fixed 60-second selection-window observation in the actual shared environment; not equal CPU compute, steady-state kernel speed, or independent seed-only variability."
+}
