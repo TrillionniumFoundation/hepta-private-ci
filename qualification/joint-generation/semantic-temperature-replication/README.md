@@ -21,7 +21,7 @@ The explicit calibratedprofile preserves actual returnedCDF support/argmax or
 refuses; marginalprobabilities andjoint quality may change. BothA andN are evaluated
 with andwithout their own FITcalibrator,using ORIGINALreward. Eachnewnoise stratum
 is reported separately,not selected. Generalcalibration andfairNDU incrementclaims
-are separately gated,andthe overallgoal requires both. Poolednoise results remain
+are separately gated,and the overallgoal requires both. Poolednoise results remain
 descriptive andcannot rescue a failed predeclared per-noise gate.
 
 The fixed plan is `PLAN.md`. The previously qualified calibration implementation
@@ -33,7 +33,7 @@ PYTHONPATH=.. python -B -m unittest -v test_noise_api
 ```
 
 Only portable source,APItests,plan andaggregates are public,not modelweights,private
-runtime paths,rawpolicies orper-request modeloutputs. This finite RGB task doesnot
+runtime paths,rawpolicies orper-request modeloutputs. This finite RGB task does not
 establish natural-image performance or restore the originaldigit-study payloads.
 
 ## Replication result: calibration passed, fair NDU threshold did not
@@ -60,7 +60,7 @@ but it cannotreplace thefaircalibrated comparison. Poolednoise NDU gains0.004703
 retained inSUMMARY,includingcontrols andpooleddescriptive results.
 
 This reproduces a general probability-calibration benefit across newinitializations
-andnewcorruptions ofthe same validationgroups. It doesnot establish NDU-specific
+andnewcorruptions of the same validationgroups. It does not establish NDU-specific
 increment at thepredeclared size, freshgroup-level generalization,or improvedgreedy
 classification. The priorresults andallthresholds remain intact.
 

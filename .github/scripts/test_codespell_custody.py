@@ -239,6 +239,26 @@ class CodespellCustodyTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "exact repository path"):
                     codespell_custody.parse_manifest(json.dumps(document))
 
+    def test_each_frozen_registration_rejects_rebinding_and_neighbor_paths(self):
+        for path, expected in codespell_custody.QUALIFICATION_SOURCE_SHA256.items():
+            with self.subTest(path=path):
+                document = {
+                    "schema": codespell_custody.SCHEMA,
+                    "files": {path: expected},
+                }
+                self.assertEqual(
+                    codespell_custody.parse_manifest(json.dumps(document)),
+                    {path: expected},
+                )
+                replacement = ("1" if expected[0] == "0" else "0") + expected[1:]
+                document["files"] = {path: replacement}
+                with self.assertRaisesRegex(ValueError, "registered SHA-256"):
+                    codespell_custody.parse_manifest(json.dumps(document))
+                for adjacent in (path + ".new", path + "*", path + "/../README.md"):
+                    document["files"] = {adjacent: expected}
+                    with self.assertRaisesRegex(ValueError, "exact repository path"):
+                        codespell_custody.parse_manifest(json.dumps(document))
+
 
 if __name__ == "__main__":
     unittest.main()

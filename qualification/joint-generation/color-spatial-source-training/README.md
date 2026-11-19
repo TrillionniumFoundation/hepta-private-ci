@@ -50,7 +50,7 @@ partialcommands. SUMMARY preserves everymodel/base/service/full-low-macro/noise/
 metric reduction androwcounts separately inmechanism_strata, without adding fields
 to oldresults schema. No subgroup wasselected forreporting orused torescuegate.
 Same-rawpolicy transportalgebra predictsCS/full equalitywheneitherspatialaxisisset;
-trainingchangesrawpolicy, so it doesNOT predict empiricaleffectsonlycolor-only.
+trainingchangesrawpolicy, so it does NOT predict empiricaleffectsonlycolor-only.
 ForCS−fullfactor, descriptivecolor-only CE ispositive3/8 andnegative5/8;
 otherpartial ispositive2/8 andnegative6/8. Neither pattern supports a spatial-
 preservationcausal rescue.
