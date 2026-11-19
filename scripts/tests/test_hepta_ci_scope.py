@@ -338,14 +338,19 @@ class CliCrateRootRegressionTests(unittest.TestCase):
         manifest = tomllib.loads((cli_root / "Cargo.toml").read_text())
         self.assertIs(manifest["package"]["autobins"], False)
         binaries = {entry["name"]: entry["path"] for entry in manifest["bin"]}
+        # Cargo selects main.rs explicitly for the codex binary.
+        # Both binaries must own their recursion limit before including the
+        # shared implementation, which must never become a separate binary.
         self.assertEqual(binaries["codex"], "src/main.rs")
         self.assertEqual(binaries["hepta"], "src/hepta.rs")
         self.assertNotIn("src/main_impl.rs", binaries.values())
+        implementation = (cli_root / "src/main_impl.rs").read_text()
+        self.assertNotRegex(implementation, r"(?m)^#!\[recursion_limit\b")
         for name in ("codex", "hepta"):
             with self.subTest(binary=name):
                 source = (cli_root / binaries[name]).read_text()
-                self.assertIn('#![recursion_limit = "256"]', source)
-                self.assertIn('include!("main_impl.rs");', source)
+                self.assertTrue(source.startswith('#![recursion_limit = "256"]\n'))
+                self.assertRegex(source, r'(?m)^include!\("main_impl\.rs"\);$')
 
 
 if __name__ == "__main__":

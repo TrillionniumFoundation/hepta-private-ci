@@ -1,0 +1,34 @@
+{
+  "remote_sha": "60e508e44f3419985e275e1131c87a812981c711",
+  "remote_parent": [
+    "ceb13e41b9d0f6505e98b155a4fd72b09c127901"
+  ],
+  "remote_manifest_blob": "9cb428e03dfac3cfb84eea9d960ce87070284236",
+  "manifest_patch_applied_and_blob_verified": true,
+  "only_manifest_semantic_change": "codex bin path src/codex.rs -> src/main.rs",
+  "wrapper_bytes_equal": true,
+  "wrapper_bytes": 55,
+  "wrapper_blob": "0831917cf5a2c3f4a3b587da0f85920bd184f6b3",
+  "wrapper_sha256": "925d351fb919bb3f09f6611f31cdc46bf67fcc6efbc5df9996e4d3709773db97",
+  "bazel_contract": {
+    "defs_blob": "91ac1357b86537a7232f17e97fe65d02fa9e88c0",
+    "binaries": "DEP_DATA.get(native.package_name())[\"binaries\"]",
+    "crate_root": "for binary, main in binaries.items(): rust_binary(name=binary, crate_name=binary.replace(\"-\",\"_\"), crate_root=main)",
+    "generation": "MODULE.bazel crate.from_cargo uses workspace Cargo.toml and Cargo.lock",
+    "no_fixed_codex_rs_root": true,
+    "binary_name_and_CARGO_BIN_NAME_unchanged": true
+  },
+  "retained": [
+    "autobins=false",
+    "codex default-run",
+    "explicit hepta and logs_client binaries",
+    "same-directory shared main_impl.rs",
+    "crate-level recursion_limit=256 before include",
+    "strict shared implementation exclusion from binaries",
+    "both exact-head concurrency groups and cancel-in-progress=true"
+  ],
+  "not_claimed": [
+    "native Cargo/Bazel compilation",
+    "Bazel lock regeneration on remote Cargo manifest change"
+  ]
+}
