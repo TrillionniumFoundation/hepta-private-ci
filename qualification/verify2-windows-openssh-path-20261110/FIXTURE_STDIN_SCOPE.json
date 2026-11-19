@@ -1,0 +1,19 @@
+{
+  "schema": "hepta.openssh-fixture-stdin-scope.v1",
+  "source_sha": "06a2bbe4b4b2a07e475777c7b0a50d0b1e6c7ca4",
+  "generation_observation": "Both exact fixture constructors explicitly configure Stdio::inherit before Command::output.",
+  "fingerprint_scope": "The fingerprint Command::output calls have no explicit stdin override; do not generalize generation's inherited setting to them.",
+  "diagnostic_scope": "The Python diagnostic uses DEVNULL for generation/sign/fingerprint and a file for verification; it does not reproduce the fixture's explicitly inherited generation stdin.",
+  "files": [
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/g5_trust_tests.rs",
+      "git_blob_sha": "cbd8798fc96c61c08682954ad23756bdc0b2f3c9",
+      "generation_excerpt": "impl TrustFixture {\n    fn new(revoked: bool) -> Self {\n        let temporary = private_tempdir(\"G5 trust fixture\");\n        let root = temporary.path().canonicalize().expect(\"canonical root\");\n        let key = root.join(\"operator-key\");\n        let status = Command::new(openssh_keygen())\n            .args([\"-q\", \"-t\", \"ed25519\", \"-N\", \"\", \"-f\"])\n            .arg(&key)\n            .stdin(std::process::Stdio::inherit())\n            .output()\n            .expect(\"start test key generation\");\n        assert!(\n            status.status.success(),\n            \"generate test-only Ed25519 key at {}: status={:?}, stderr={}\","
+    },
+    {
+      "path": "codex-rs/hepta-operator-acceptance/src/trust_tests.rs",
+      "git_blob_sha": "689798bfe5f1bd6808df08cc43ec18aada324e2c",
+      "generation_excerpt": "        let temporary = private_tempdir(\"temporary trust directory\");\n        let root = temporary\n            .path()\n            .canonicalize()\n            .expect(\"canonical trust root\");\n        let key = root.join(\"operator-key\");\n        let generated = Command::new(openssh_keygen())\n            .args([\"-q\", \"-t\", \"ed25519\", \"-N\", \"\", \"-f\"])\n            .arg(&key)\n            .stdin(std::process::Stdio::inherit())\n            .output()\n            .expect(\"start ssh-keygen\");\n        assert!(\n            generated.status.success(),\n            \"generate test-only Ed25519 key at {}: status={:?}, stderr={}\","
+    }
+  ]
+}
