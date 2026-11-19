@@ -1,4 +1,5 @@
 use crate::agent::AgentStatus;
+use crate::agent::control::TurnStartCapacity;
 use crate::config::ConstraintResult;
 use crate::context::ContextualUserFragment;
 use crate::elicitation::ElicitationRegistration;
@@ -52,6 +53,7 @@ use codex_protocol::protocol::TokenUsageInfo;
 use codex_protocol::protocol::TurnEnvironmentSelection;
 use codex_protocol::protocol::TurnEnvironmentSelections;
 use codex_protocol::protocol::W3cTraceContext;
+use codex_protocol::turn_input::NotSubmittedReason;
 use codex_protocol::turn_input::RecoverTurnRequest;
 use codex_protocol::turn_input::StartIfIdleSubmission;
 use codex_protocol::turn_input::SteerSubmission;
@@ -437,24 +439,31 @@ impl CodexThread {
                 ));
             }
         };
-        if matches!(&mode, TurnInputMode::StartIfIdle) {
-            if let Some(reason) = self
+        let capacity = match &mode {
+            TurnInputMode::StartIfIdle => self
                 .session
                 .services
                 .agent_control
                 .check_execution_capacity_for_turn_start(self)
                 .await
-                .map_err(UserMessageAdmissionError::Admission)?
-            {
-                return Ok((TurnInputSubmission::NotSubmitted { reason }, None));
+                .map_err(UserMessageAdmissionError::Admission)?,
+            TurnInputMode::StartOrSteer | TurnInputMode::Steer { .. } => {
+                self.session
+                    .services
+                    .agent_control
+                    .ensure_execution_capacity_for_turn_start(self)
+                    .await
+                    .map_err(UserMessageAdmissionError::Admission)?;
+                TurnStartCapacity::Available
             }
-        } else {
-            self.session
-                .services
-                .agent_control
-                .ensure_execution_capacity_for_turn_start(self)
-                .await
-                .map_err(UserMessageAdmissionError::Admission)?;
+        };
+        if capacity == TurnStartCapacity::Terminalizing {
+            return Ok((
+                TurnInputSubmission::NotSubmitted {
+                    reason: NotSubmittedReason::NotIdle,
+                },
+                None,
+            ));
         }
 
         let submission_id = crate::session::new_submission_id();
@@ -817,17 +826,13 @@ impl CodexThread {
         request: TurnInputRequest,
         mode: TurnInputMode,
     ) -> CodexResult<TurnInputSubmission> {
-        match &mode {
+        let capacity = match &mode {
             TurnInputMode::StartIfIdle => {
-                if let Some(reason) = self
-                    .session
+                self.session
                     .services
                     .agent_control
                     .check_execution_capacity_for_turn_start(self)
                     .await?
-                {
-                    return Ok(TurnInputSubmission::NotSubmitted { reason });
-                }
             }
             TurnInputMode::StartOrSteer => {
                 self.session
@@ -835,8 +840,14 @@ impl CodexThread {
                     .agent_control
                     .ensure_execution_capacity_for_turn_start(self)
                     .await?;
+                TurnStartCapacity::Available
             }
-            TurnInputMode::Steer { .. } => {}
+            TurnInputMode::Steer { .. } => TurnStartCapacity::Available,
+        };
+        if capacity == TurnStartCapacity::Terminalizing {
+            return Ok(TurnInputSubmission::NotSubmitted {
+                reason: NotSubmittedReason::NotIdle,
+            });
         }
         self.io.submit_turn_input(request, mode).await
     }

@@ -1,0 +1,105 @@
+{
+  "schema": "hepta.ca77.owner-native-tests.v1",
+  "base": "89e66450318ea1a7ac5376fdaf82e4f0f1da1409",
+  "source_overlay_sha256": "d991373c50b28ef20f2b9dc3b28bf353465c2f1d5c3a4181a3f47ed49c0f5eb5",
+  "native_base_manifest_sha256": "cbfb5b347776bcbe533858cf65ca48ce1d81404808296dd2313c685a07f2a191",
+  "platform": "Linux x86_64",
+  "toolchain": "rustc 1.96.0 (ac68faa20 2026-05-25)",
+  "raw_receipt_sha256": "67cf3229d41e49fb6db1b49997a2d643acb86abd82524702b4b22cd33700f600",
+  "steps": [
+    {
+      "name": "attempt04-owner-goal-live-regressions",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-goal-extension",
+        "--test",
+        "idle_continuation",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 5.335195779800415,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "30086786179b7af222ef9ccde6bc5a1080c45d9589c5fd2810ea98a916eafcf2",
+      "stdout_bytes": 0,
+      "stderr_bytes": 27394
+    },
+    {
+      "name": "attempt04-owner-goal-original-tests",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-goal-extension",
+        "--test",
+        "accounting",
+        "--test",
+        "goal_extension_backend",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 5.411640882492065,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "849949f77b72f806c1566719cfbdf175fe06066e282a865bc1aad08be2237acc",
+      "stdout_bytes": 0,
+      "stderr_bytes": 30087
+    },
+    {
+      "name": "attempt04-owner-queue-original-and-dedup-tests",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-queue-extension",
+        "--test",
+        "queue_service",
+        "--offline"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 59.356303215026855,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "a1f844e16fd5ac3b2e26f056260c1a579f92a6694834213995f6e7189d46b81e",
+      "stdout_bytes": 0,
+      "stderr_bytes": 32107
+    },
+    {
+      "name": "attempt04-owner-core-original-tests",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-core",
+        "--lib",
+        "--offline",
+        "-E",
+        "test(agent::control::tests) | test(tasks::cleanup::tests) | test(tasks::idle_work::tests)"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 194.8244230747223,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "d2df0866a515e61c929006d97a40a24fed1960faaf36f3d145b6c6f2b4391552",
+      "stdout_bytes": 0,
+      "stderr_bytes": 41975
+    }
+  ],
+  "counts": {
+    "new_goal": 3,
+    "original_goal": 24,
+    "queue": 38,
+    "core_control_cleanup_idle": 65,
+    "passed": 130,
+    "failed": 0,
+    "skipped": 0,
+    "other_core_tests_filtered_out": 2420
+  },
+  "retained_failures": [
+    "Initial supplier nucleo matcher/LICENSE relative symlink copy rejected. Internal ../LICENSE resolution and target SHA verified before copying to the private cache; supplier unchanged.",
+    "Attempt02: three new Goal held-gate fixtures timed out because current public terminal delivery waits for cleanup owner.",
+    "Attempt03: two Goal tests passed and the loaded-Arc fixture correctly hit the current live-writer guard; fixture used the public shutdown lifecycle before retry."
+  ],
+  "limits": [
+    "Native source uses an explicit frozen89 shallow qualification boundary; no claim of full native historical checkout.",
+    "No whole workspace, Windows, physical model inference or whole-ca77 qualification is asserted. Full exact raw native receipts and failed logs remain in the private audit workspace."
+  ]
+}

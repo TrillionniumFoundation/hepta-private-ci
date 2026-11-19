@@ -5,11 +5,17 @@ use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result as CodexResult;
 use codex_protocol::protocol::MultiAgentVersion;
 use codex_protocol::protocol::SessionSource;
-use codex_protocol::turn_input::NotSubmittedReason;
 use std::sync::Arc;
 use std::sync::OnceLock;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
+
+/// A capacity preflight result; ordered routing still owns turn admission.
+#[derive(Debug, PartialEq, Eq)]
+pub(crate) enum TurnStartCapacity {
+    Available,
+    Terminalizing,
+}
 
 #[derive(Default)]
 pub(super) struct AgentExecutionLimiter {
@@ -32,35 +38,31 @@ impl AgentControl {
         &self,
         thread: &CodexThread,
     ) -> CodexResult<()> {
-        if self
-            .check_execution_capacity_for_turn_start(thread)
-            .await?
-            .is_some()
-        {
-            return Err(CodexErr::InvalidRequest(
+        match self.check_execution_capacity_for_turn_start(thread).await? {
+            TurnStartCapacity::Available => Ok(()),
+            TurnStartCapacity::Terminalizing => Err(CodexErr::InvalidRequest(
                 "turn start is fenced while the session is terminalizing".to_string(),
-            ));
+            )),
         }
-        Ok(())
     }
 
     /// Reports a terminalization refusal before the request can be registered
-    /// or routed. Persisted StartIfIdle can return this normal NotSubmitted
-    /// result without confusing it with a possibly admitted Core failure.
+    /// or routed. Persisted StartIfIdle maps this preflight result to normal
+    /// NotSubmitted rather than a possibly admitted Core failure.
     pub(crate) async fn check_execution_capacity_for_turn_start(
         &self,
         thread: &CodexThread,
-    ) -> CodexResult<Option<NotSubmittedReason>> {
+    ) -> CodexResult<TurnStartCapacity> {
         {
             let active = thread.session.active_turn.lock().await;
             if active.is_some() {
-                return Ok(None);
+                return Ok(TurnStartCapacity::Available);
             }
             if thread.session.shutdown_started() {
                 return Err(CodexErr::InternalAgentDied);
             }
             if thread.session.has_pending_task_terminalization() {
-                return Ok(Some(NotSubmittedReason::NotIdle));
+                return Ok(TurnStartCapacity::Terminalizing);
             }
         }
         let config = thread.session.get_config().await;
@@ -68,7 +70,7 @@ impl AgentControl {
             .multi_agent_version()
             .unwrap_or_else(|| config.multi_agent_version_from_features());
         self.ensure_execution_capacity(multi_agent_version, &thread.session_source)?;
-        Ok(None)
+        Ok(TurnStartCapacity::Available)
     }
 
     pub(crate) fn ensure_execution_capacity(
