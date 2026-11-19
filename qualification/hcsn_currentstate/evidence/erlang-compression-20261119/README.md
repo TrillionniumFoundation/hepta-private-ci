@@ -146,3 +146,17 @@ rare-phase pruning, or precision threshold was introduced.
 dynamic state and observed costs are useful engineering evidence, while the
 first-release bias and dense physical matrix cost constrain where this
 approximation can replace a deterministic-delay representation.
+
+## Archived state-cost and precision figure
+
+![Persistent tensor cost and delay-law error at all measured horizons](state-cost-error-comparison.png)
+
+The [vector figure](state-cost-error-comparison.svg) and
+[all 25 points with source/receipt hashes](state-cost-error-comparison-data.json)
+retain the deterministic observations and all four Erlang stage counts.
+Both costs include Physics tensors; the plotted error uses the same saved
+Gamma reference. Lines only connect measured points, and the two experiment
+batches remain distinct. Regenerate with `python
+qualification/hcsn_currentstate/evidence/erlang-compression-20261119/plot_state_cost_error.py`.
+This reporting script imports no model and performs no new reference or
+training calculation.
