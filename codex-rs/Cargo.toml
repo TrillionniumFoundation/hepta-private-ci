@@ -180,6 +180,7 @@ members = [
     "utils/fuzzy-match",
     "utils/stream-parser",
     "utils/template",
+    "utils/stable-hash",
     "utils/time",
     "utils/windows-private-state",
     "codex-client",
@@ -193,7 +194,6 @@ members = [
     "codex-experimental-api-macros",
     "plugin",
     "model-provider",
-    "third_party/i18n-config-0.4.8",
 ]
 exclude = [
     "third_party/oauth2-5.0.0-time",
@@ -367,6 +367,7 @@ codex-utils-stream-parser = { path = "utils/stream-parser" }
 codex-utils-string = { path = "utils/string" }
 codex-utils-yaml = { path = "utils/yaml" }
 codex-utils-template = { path = "utils/template" }
+codex-utils-stable-hash = { path = "utils/stable-hash" }
 codex-utils-time = { path = "utils/time" }
 codex-v8-poc = { path = "v8-poc" }
 codex-workload-identity = { path = "workload-identity" }
@@ -375,7 +376,7 @@ core_test_support = { path = "core/tests/common" }
 mcp_test_support = { path = "mcp-server/tests/common" }
 
 # External
-age = "0.11.1"
+age = "0.11.5"
 ansi-to-tui = "8.0.1"
 anyhow = "1"
 arboard = { version = "3", features = ["wayland-data-control"] }
@@ -739,6 +740,17 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
+# Preserve Matrix IndexedDB listener behavior while removing archived derive macros.
+wasm_evt_listener = { path = "third_party/wasm_evt_listener-0.1.0-maintained" }
+# Owned compatibility adapter delegates all macro expansion to maintained pastey.
+paste = { path = "third_party/paste-compat" }
+# Preserve serialization, stable hashes and diagnostics while retiring archived dependencies.
+pagable = { path = "third_party/pagable-0.4.2-postcard-std" }
+starlark_syntax = { path = "third_party/starlark_syntax-0.14.2-maintained" }
+starlark_map = { path = "third_party/starlark_map-0.14.2-stable-hash" }
+bm25 = { path = "third_party/bm25-2.3.2-stable-hash" }
+# Backport age upstream i18n maintenance without introducing its newer crypto stack.
+age = { path = "third_party/age-0.11.5-i18n" }
 # Replace OAuth2 calendar arithmetic with maintained time, preserving NumericDate wire values.
 oauth2 = { path = "third_party/oauth2-5.0.0-time" }
 # Replace RMCP clocks with maintained time while retaining timestamp and timeout spellings.
