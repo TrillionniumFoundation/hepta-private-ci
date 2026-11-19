@@ -4,7 +4,6 @@ use crate::cache::ModelsCacheEntry;
 use crate::collaboration_mode_presets::builtin_collaboration_mode_presets;
 use crate::config::ModelsManagerConfig;
 use crate::model_info;
-use chrono::Utc;
 use codex_http_client::HttpClientFactory;
 use codex_login::AuthManager;
 use codex_protocol::auth::AuthMode;
@@ -422,7 +421,7 @@ impl OpenAiModelsManager {
         *self.etag.write().await = etag.clone();
         if let Some(cache) = self.cache.as_ref() {
             let entry = ModelsCacheEntry {
-                fetched_at: Utc::now(),
+                fetched_at: codex_utils_time::Timestamp::now(),
                 etag,
                 client_version: Some(client_version),
                 models,

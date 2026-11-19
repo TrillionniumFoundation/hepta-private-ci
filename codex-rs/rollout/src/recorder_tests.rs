@@ -6,7 +6,6 @@ use crate::RolloutItem;
 use crate::RolloutLine;
 use crate::config::RolloutConfig;
 use crate::test_support::private_home;
-use chrono::TimeZone;
 use codex_protocol::SessionId;
 use codex_protocol::ThreadId;
 use codex_protocol::models::ResponseItem;
@@ -1176,10 +1175,11 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 13, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 3, /*hour*/ 13, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         stale_path,
@@ -1199,10 +1199,11 @@ async fn list_threads_db_enabled_preserves_metadata_for_missing_rollout_paths()
     let valid_uuid = Uuid::from_u128(9011);
     let valid_thread_id = ThreadId::from_string(&valid_uuid.to_string()).expect("valid thread id");
     let valid_path = write_session_file(home.path(), "2025-01-02T13-00-00", valid_uuid)?;
-    let valid_created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 2, 13, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let valid_created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 2, /*hour*/ 13, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut valid_builder = codex_state::ThreadMetadataBuilder::new(
         valid_thread_id,
         valid_path.clone(),
@@ -1368,10 +1369,11 @@ async fn list_threads_default_filter_returns_filesystem_scan_results() -> std::i
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 13, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 3, /*hour*/ 13, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         real_path,
@@ -1458,10 +1460,11 @@ async fn list_threads_metadata_filter_overlays_state_db_list_metadata() -> std::
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 16, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 3, /*hour*/ 16, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
@@ -1614,10 +1617,11 @@ async fn list_threads_search_repairs_stale_state_db_hits_before_returning() -> s
         .mark_backfill_complete(/*last_watermark*/ None)
         .await
         .expect("backfill should be complete");
-    let created_at = chrono::Utc
-        .with_ymd_and_hms(2025, 1, 3, 15, 0, 0)
-        .single()
-        .expect("valid datetime");
+    let created_at = codex_utils_time::Timestamp::from_ymd_hms(
+        /*year*/ 2025, /*month*/ 1, /*day*/ 3, /*hour*/ 15, /*minute*/ 0,
+        /*second*/ 0,
+    )
+    .expect("valid datetime");
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         real_path,

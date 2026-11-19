@@ -117,20 +117,24 @@ async fn get_account_rate_limits_returns_snapshot(
     let server_url = server.uri();
     write_chatgpt_base_url(codex_home.path(), &server_url)?;
 
-    let primary_reset_timestamp = chrono::DateTime::parse_from_rfc3339("2025-01-01T00:02:00Z")
-        .expect("parse primary reset timestamp")
-        .timestamp();
-    let secondary_reset_timestamp = chrono::DateTime::parse_from_rfc3339("2025-01-01T01:00:00Z")
-        .expect("parse secondary reset timestamp")
-        .timestamp();
-    let reset_credit_granted_at = chrono::DateTime::parse_from_rfc3339("2026-06-17T00:00:00Z")
-        .expect("parse reset credit grant timestamp")
-        .timestamp();
-    let reset_credit_expires_at = chrono::DateTime::parse_from_rfc3339("2026-07-17T00:00:00Z")
-        .expect("parse reset credit expiry timestamp")
-        .timestamp();
+    let primary_reset_timestamp =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-01T00:02:00Z")
+            .expect("parse primary reset timestamp")
+            .timestamp();
+    let secondary_reset_timestamp =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-01T01:00:00Z")
+            .expect("parse secondary reset timestamp")
+            .timestamp();
+    let reset_credit_granted_at =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2026-06-17T00:00:00Z")
+            .expect("parse reset credit grant timestamp")
+            .timestamp();
+    let reset_credit_expires_at =
+        codex_utils_time::Timestamp::parse_from_rfc3339("2026-07-17T00:00:00Z")
+            .expect("parse reset credit expiry timestamp")
+            .timestamp();
     let second_reset_credit_granted_at =
-        chrono::DateTime::parse_from_rfc3339("2026-06-18T00:00:00Z")
+        codex_utils_time::Timestamp::parse_from_rfc3339("2026-06-18T00:00:00Z")
             .expect("parse second reset credit grant timestamp")
             .timestamp();
     let response_body = json!({

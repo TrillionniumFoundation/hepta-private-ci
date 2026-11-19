@@ -5,14 +5,13 @@ use std::time::Duration;
 
 use anyhow::Result;
 use anyhow::anyhow;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_features::CurrentTimeSource;
 use codex_protocol::ThreadId;
 
 use crate::config::CurrentTimeReminderConfig;
 
-pub type TimeFuture<'a> = Pin<Box<dyn Future<Output = Result<DateTime<Utc>>> + Send + 'a>>;
+pub type TimeFuture<'a> =
+    Pin<Box<dyn Future<Output = Result<codex_utils_time::Timestamp>> + Send + 'a>>;
 pub type SleepFuture<'a> = Pin<Box<dyn Future<Output = Result<()>> + Send + 'a>>;
 
 /// Host integration boundary for reading and waiting on the current time.
@@ -29,7 +28,7 @@ pub(crate) struct SystemTimeProvider;
 
 impl TimeProvider for SystemTimeProvider {
     fn current_time(&self, _thread_id: ThreadId) -> TimeFuture<'_> {
-        Box::pin(async { Ok(Utc::now()) })
+        Box::pin(async { Ok(codex_utils_time::Timestamp::now()) })
     }
 
     fn sleep(&self, _thread_id: ThreadId, duration: Duration) -> SleepFuture<'_> {

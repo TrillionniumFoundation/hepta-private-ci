@@ -1,0 +1,48 @@
+{
+  "checkpoint": "d997f1817d3f4fd1d1d1a0b3bcb0a6288a85fead",
+  "parents": [
+    "tree 27567942613ea9467ac469e95ee28e5dc43e1a0e",
+    "parent 9a326653d012dfa54b49318a144f474cb7e06a00",
+    "parent 1e681e550a5c5d4584b5882529e531599459dc31",
+    "author Codex <codex@openai.com> 1795092972 -0500",
+    "committer Codex <codex@openai.com> 1795092972 -0500"
+  ],
+  "application": "Root normal-merge original time head 9a326653d012dfa54b49318a144f474cb7e06a00 into completed real Windows merge, then use these conflict-resolution postimages. This synthetic preview merge is validation provenance, not required as a publication parent.",
+  "files": [
+    {
+      "path": "codex-rs/Cargo.toml",
+      "sha256": "202f526f1581bb311c5bd27c515409de7085cdbf05150b742d35ecb2489053ba",
+      "postimage": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/resolution-postimages/codex-rs/Cargo.toml"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "sha256": "ccb490fbb6126d7eba398c43e4bf1a4a463fac200f8000430f9e196d42cbc359",
+      "postimage": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/resolution-postimages/codex-rs/Cargo.lock"
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "sha256": "10199c22a8aa6fa32f87c110cf48d9460358beb810fb607837de0594b10f16f1",
+      "postimage": "/workspace/scratch/2f490fb85225/joint-time-integration-evidence/resolution-postimages/MODULE.bazel.lock"
+    }
+  ],
+  "canonical_cargo_metadata_exit": 0,
+  "canonical_bazel_update_exit": 0,
+  "module_bazel_lock_unchanged_from_preview": true,
+  "cargo_deny_exit": 1,
+  "cargo_deny_log_sha256": "9234753b5cfbdbce844e5a33af0e2c81f2eb5dc5670d632dde3b0c0e1d880b28",
+  "advisory_errors": [
+    "RUSTSEC-2023-0089 atomic-polyfill",
+    "RUSTSEC-2025-0141 bincode",
+    "RUSTSEC-2024-0388 derivative",
+    "RUSTSEC-2025-0057 fxhash",
+    "RUSTSEC-2024-0436 paste",
+    "RUSTSEC-2026-0173 proc-macro-error2",
+    "RUSTSEC-2024-0320 yaml-rust"
+  ],
+  "advisory_policy": "incoming ignore=[] unchanged",
+  "added_packages": [
+    "codex-utils-time0.0.0"
+  ],
+  "existing_package_checksum_changes": [],
+  "targeted_native_validation": "not yet run on joint checkpoint"
+}

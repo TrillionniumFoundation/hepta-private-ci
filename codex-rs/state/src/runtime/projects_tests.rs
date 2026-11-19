@@ -21,7 +21,7 @@ async fn project_lifecycle_preserves_order_and_clears_assignments() -> anyhow::R
     let metadata = ThreadMetadataBuilder::new(
         thread_id,
         home.join("thread.jsonl"),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");
@@ -68,14 +68,14 @@ async fn project_lifecycle_preserves_order_and_clears_assignments() -> anyhow::R
         .mark_archived(
             thread_id,
             home.join("archived.jsonl").as_path(),
-            chrono::Utc::now(),
+            codex_utils_time::Timestamp::now(),
         )
         .await?;
     let active_thread_id = ThreadId::default();
     let active_metadata = ThreadMetadataBuilder::new(
         active_thread_id,
         home.join("active.jsonl"),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");
@@ -428,7 +428,7 @@ async fn initial_project_assignment_is_inserted_with_thread_row() -> anyhow::Res
     let mut metadata = ThreadMetadataBuilder::new(
         thread_id,
         home.join("thread.jsonl"),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");
@@ -443,7 +443,7 @@ async fn initial_project_assignment_is_inserted_with_thread_row() -> anyhow::Res
     let mut missing_project_metadata = ThreadMetadataBuilder::new(
         missing_thread_id,
         home.join("missing-project.jsonl"),
-        chrono::Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     )
     .build("test-provider");

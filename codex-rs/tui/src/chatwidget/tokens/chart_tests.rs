@@ -7,7 +7,7 @@ use pretty_assertions::assert_eq;
 #[test]
 fn duplicate_dates_sum_and_negative_values_clamp() {
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        Date::from_calendar_date(/*year*/ 2026, time::Month::May, /*day*/ 29).expect("valid date");
     let buckets = vec![
         AccountTokenUsageDailyBucket {
             start_date: "2026-05-29".to_string(),
@@ -57,7 +57,7 @@ fn token_activity_view_aliases_parse() {
 #[test]
 fn daily_graph_snapshot_uses_distinct_empty_and_active_cells() {
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        Date::from_calendar_date(/*year*/ 2026, time::Month::May, /*day*/ 29).expect("valid date");
     let buckets = vec![
         AccountTokenUsageDailyBucket {
             start_date: "2026-05-25".to_string(),
@@ -96,7 +96,7 @@ fn daily_graph_snapshot_stays_left_aligned_in_wide_terminal() {
     assert_eq!(graph_width(/*width*/ u16::MAX), u16::MAX);
 
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        Date::from_calendar_date(/*year*/ 2026, time::Month::May, /*day*/ 29).expect("valid date");
     let lines = chart_lines(TokenActivityView::Daily, &[], today, /*width*/ 160);
     let rendered = [&lines[0], &lines[1], lines.last().expect("legend line")]
         .into_iter()
@@ -114,7 +114,7 @@ fn daily_graph_snapshot_stays_left_aligned_in_wide_terminal() {
 #[test]
 fn weekly_graph_snapshot_renders_bar_chart_and_caption() {
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        Date::from_calendar_date(/*year*/ 2026, time::Month::May, /*day*/ 29).expect("valid date");
     let buckets = vec![
         AccountTokenUsageDailyBucket {
             start_date: "2026-05-11".to_string(),
@@ -159,7 +159,7 @@ fn weekly_graph_snapshot_renders_bar_chart_and_caption() {
 #[test]
 fn cumulative_graph_snapshot_renders_running_total_bar_chart_and_caption() {
     let today =
-        NaiveDate::from_ymd_opt(/*year*/ 2026, /*month*/ 5, /*day*/ 29).expect("valid date");
+        Date::from_calendar_date(/*year*/ 2026, time::Month::May, /*day*/ 29).expect("valid date");
     let buckets = vec![
         AccountTokenUsageDailyBucket {
             start_date: "2026-05-11".to_string(),
