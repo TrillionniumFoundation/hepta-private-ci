@@ -161,7 +161,7 @@ SELECT EXISTS(
         token_budget: Option<i64>,
     ) -> anyhow::Result<crate::ThreadGoal> {
         let goal_id = Uuid::new_v4().to_string();
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let status = status_after_budget_limit(status, /*tokens_used*/ 0, token_budget);
         let row = sqlx::query(
             r#"
@@ -218,7 +218,7 @@ RETURNING
         token_budget: Option<i64>,
     ) -> anyhow::Result<Option<crate::ThreadGoal>> {
         let goal_id = Uuid::new_v4().to_string();
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let status = status_after_budget_limit(status, /*tokens_used*/ 0, token_budget);
         let row = sqlx::query(
             r#"
@@ -281,7 +281,7 @@ RETURNING
         } = update;
         let objective = objective.as_deref();
         let expected_goal_id = expected_goal_id.as_deref();
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let result = match (status, token_budget) {
             (Some(status), Some(token_budget)) => {
                 sqlx::query(
@@ -438,7 +438,7 @@ WHERE thread_id = ?
         thread_id: ThreadId,
         status: crate::ThreadGoalStatus,
     ) -> anyhow::Result<Option<crate::ThreadGoal>> {
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let result = sqlx::query(
             r#"
 UPDATE thread_goals
@@ -512,7 +512,7 @@ RETURNING
             ));
         }
 
-        let now_ms = datetime_to_epoch_millis(Utc::now());
+        let now_ms = datetime_to_epoch_millis(codex_utils_time::Timestamp::now());
         let active_or_stopped_status_filter =
             "status IN ('active', 'paused', 'blocked', 'usage_limited', 'budget_limited')";
         let status_filter = match mode {

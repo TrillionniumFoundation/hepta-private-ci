@@ -2,7 +2,6 @@ use std::fs;
 use std::time::Duration;
 
 use crate::local::test_support::private_home;
-use chrono::Utc;
 use codex_app_server_protocol::CodexErrorInfo;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::EventMsg;
@@ -918,7 +917,7 @@ async fn store_with_mode(history_mode: ThreadHistoryMode) -> (TempDir, LocalThre
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         rollout_path,
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     );
     builder.history_mode = history_mode;

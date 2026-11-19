@@ -2020,7 +2020,7 @@ mod tests {
         ];
         std::fs::write(&rollout_path, lines.join("\n") + "\n")?;
         let updated_at =
-            chrono::DateTime::parse_from_rfc3339(meta_rfc3339)?.with_timezone(&chrono::Utc);
+            codex_utils_time::Timestamp::parse_from_rfc3339(meta_rfc3339)?;
         let times = std::fs::FileTimes::new().set_modified(updated_at.into());
         std::fs::OpenOptions::new()
             .append(true)

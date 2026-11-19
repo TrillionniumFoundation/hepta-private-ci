@@ -1,7 +1,5 @@
 #[cfg(test)]
-use chrono::DateTime;
 #[cfg(test)]
-use chrono::Utc;
 #[cfg(test)]
 use codex_protocol::ThreadId;
 #[cfg(test)]
@@ -55,7 +53,7 @@ pub(super) fn test_thread_metadata(
     thread_id: ThreadId,
     cwd: PathBuf,
 ) -> ThreadMetadata {
-    let now = DateTime::<Utc>::from_timestamp(1_700_000_000, 0).expect("timestamp");
+    let now = codex_utils_time::Timestamp::from_timestamp(1_700_000_000, 0).expect("timestamp");
     ThreadMetadata {
         id: thread_id,
         rollout_path: codex_home.join(format!("rollout-{thread_id}.jsonl")),

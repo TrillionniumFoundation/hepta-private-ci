@@ -47,7 +47,7 @@ fn model_from_preset(preset: &ModelPreset) -> Model {
             retirement_at: upgrade
                 .retirement_at
                 .as_ref()
-                .map(chrono::DateTime::timestamp),
+                .map(codex_utils_time::Timestamp::timestamp),
         }),
         availability_nux: preset.availability_nux.clone().map(Into::into),
         display_name: preset.display_name.clone(),
@@ -235,7 +235,7 @@ openai_base_url = "{server_uri}/v1"
         AuthCredentialsStoreMode::File,
     )?;
 
-    let models_refresh_started_at = chrono::Utc::now();
+    let models_refresh_started_at = codex_utils_time::Timestamp::now();
     let mut mcp = TestAppServer::builder()
         .with_codex_home(codex_home.path())
         .without_auto_env()
@@ -257,7 +257,7 @@ openai_base_url = "{server_uri}/v1"
                         && cache.client_version.as_deref() == Some(client_version.as_str())
                         && cache.models == expected_cache_models
                         && cache.fetched_at >= models_refresh_started_at
-                        && cache.fetched_at <= chrono::Utc::now()
+                        && cache.fetched_at <= codex_utils_time::Timestamp::now()
                     {
                         break;
                     }

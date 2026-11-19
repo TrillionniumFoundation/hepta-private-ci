@@ -145,7 +145,6 @@ pub(super) async fn unarchive_thread(
 #[cfg(test)]
 mod tests {
     use crate::local::test_support::private_home;
-    use chrono::Utc;
     use codex_protocol::ThreadId;
     use codex_protocol::protocol::SessionSource;
     use codex_utils_absolute_path::test_support::PathExt;
@@ -247,7 +246,7 @@ mod tests {
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             selected_archived_path,
-            Utc::now(),
+            codex_utils_time::Timestamp::now(),
             SessionSource::Cli,
         );
         builder.model_provider = Some(config.default_model_provider_id.clone());

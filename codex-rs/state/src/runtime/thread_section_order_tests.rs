@@ -2,8 +2,6 @@ use super::StateRuntime;
 use crate::runtime::test_support::test_thread_metadata;
 use crate::runtime::test_support::unique_temp_dir;
 use anyhow::Result;
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
@@ -497,7 +495,7 @@ async fn section_moves_preserve_entry_order_and_renumber_exhausted_ranks() {
     runtime
         .touch_thread_recency_at(
             first,
-            DateTime::<Utc>::from_timestamp(1_800_000_000, 0).unwrap(),
+            codex_utils_time::Timestamp::from_timestamp(1_800_000_000, 0).unwrap(),
         )
         .await
         .unwrap();

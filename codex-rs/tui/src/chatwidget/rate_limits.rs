@@ -298,7 +298,7 @@ impl ChatWidget {
             }
 
             let mut display =
-                rate_limit_snapshot_display_for_limit(&snapshot, limit_label, Local::now());
+                rate_limit_snapshot_display_for_limit(&snapshot, limit_label, codex_utils_time::Timestamp::now());
             if display.individual_limit.is_none() {
                 display.individual_limit = preserved_individual_limit;
             }
