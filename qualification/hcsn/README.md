@@ -326,6 +326,25 @@ Every model receives the same split arrays and hashes, minibatch draws per seed,
 
 The JSON also records configuration, command, seeds, source hash, package versions, hardware, parameter counts and population discretization. Subsequent research needs completed tensor CI, full multi-seed experiments, population convergence/escape audits at trained settings, and matched-capacity/tuning studies before stronger conclusions. Finite transient tests are separate from a phase-transition/bifurcation analysis. A financial boundary's local optimality does not imply an optimal network task objective or global NDU optimum.
 
+## Additional parameter-matched HX feature study
+
+`configs/hx-ablation-small.json` reuses the existing delayed-recall and adding
+tasks with five models, three seeds, width 8, length 16 and 160 Adam updates.
+`matched_gate` preserves the HX memory/recovery maps and parameter allocation,
+replacing the two analytic features with trainable quadratic sigmoid gates.
+HX physical parameters remain trainable. The original smoke/full campaigns,
+localization campaign and Cell E07 definitions are unchanged.
+
+Run `python -m qualification.hcsn.ablation --config
+qualification/hcsn/configs/hx-ablation-small.json --output /tmp/hx-ablation`.
+Each fit gets a fresh process, a 240-second wall cap and the existing immutable
+attempt/checkpoint records. The campaign has an 1800-second wall cap. Results
+include parameter gradients/updates, memory and recovery tensor bytes, optimizer
+tensor bytes, process high-water RSS, and validation quality at declared wall
+budgets and quality targets. Test data are evaluated once after validation
+selection. Fixed update counts describe a small-task comparison, not convergence
+or E07 qualification; unavailable and interrupted fits remain in the matrix.
+
 ## Primary sources
 
 - He, Z. and Xiong, W. (2012), *Rollover Risk and Credit Risk*, Journal of Finance 67(2), equations (8), (9), (12), (A5), (A7): [author-hosted published paper](https://zhiguohe.net/wp-content/uploads/2023/12/The-Journal-of-Finance-2012-HE-Rollover-Risk-and-Credit-Risk.pdf), [DOI](https://doi.org/10.1111/j.1540-6261.2012.01721.x).

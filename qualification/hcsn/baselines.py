@@ -225,6 +225,9 @@ def make_encoder(name, input_size, hidden_size, device="cpu", dt=0.1, *, populat
                 "no_recovery": {"recovery": False}}
     if name in variants:
         return ValueKernelCell(input_size, hidden_size, **variants[name])
+    if name == "matched_gate":
+        from .matched_gate import MatchedGateCell
+        return MatchedGateCell(input_size, hidden_size)
     if name == "hx_attention":
         return TransformerEncoder(input_size, hidden_size,
                                   preceding=ValueKernelCell(input_size, hidden_size))

@@ -23,6 +23,7 @@ import tempfile
 import numpy as np
 
 from . import attempts
+from .cost_metrics import persistent_state, process_peak_rss, tensor_bytes
 from .execution import (canonical_gpu_uuid, close_energy_interval, configure_cuda, execution_policy,
                         implementation_record, training_memory_peak)
 
@@ -196,6 +197,9 @@ def validate_config(config):
     for key in ("models", "tasks"):
         if len(set(config[key])) != len(config[key]):
             raise ValueError(f"{key} must contain distinct entries")
+    if "validation_interval" in config and (type(config["validation_interval"]) is not int
+                                             or config["validation_interval"] <= 0):
+        raise ValueError("validation_interval must be a positive integer")
     if any(not isinstance(config.get(key), (int, float)) or not math.isfinite(config[key]) or
            config[key] <= 0 for key in ("dt", "learning_rate")):
         raise ValueError("dt and learning_rate must be finite and positive")
@@ -264,10 +268,16 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             def forward(self, x):
                 return self.readout(self.encoder(x, dt=config["dt"])[:, -1])
         model = Regressor().to(device)
+        initial_parameters = {n: p.detach().clone() for n, p in model.named_parameters()}
         record["parameters"] = sum(p.numel() for p in model.parameters())
         record["trainable_parameters"] = sum(p.numel() for p in model.parameters() if p.requires_grad)
         optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
         train_x, train_y, val_x, val_y, test_x, test_y = [torch.from_numpy(v).to(device) for v in datasets]
+        record["persistent_state"] = persistent_state(encoder, train_x[:config["batch_size"]], torch)
+        record["parameter_tensor_bytes"] = tensor_bytes(dict(model.named_parameters()))
+        record["validation_constant_mse"] = float((val_y-train_y.mean()).square().mean())
+        record["validation_curve"] = []
+        record["gradient_l2_max_by_parameter"] = {}
         def sync():
             if device.type == "cuda":
                 torch.cuda.synchronize(device)
@@ -284,7 +294,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         model.train()
         batch_rng = np.random.default_rng(seed+1729)
         losses, best_val, best_state = [], math.inf, None
-        val_interval = max(1, config["train_steps"]//4)
+        val_interval = config.get("validation_interval", max(1, config["train_steps"]//4))
         sync()
         meter = EnergyCounter(str(device))
         meter.start()
@@ -307,6 +317,10 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
                 raise FloatingPointError(f"missing trainable gradients at optimizer step {step}: {missing}")
             if any(p.grad is not None and not bool(torch.isfinite(p.grad).all()) for p in model.parameters()):
                 raise FloatingPointError(f"nonfinite gradient at optimizer step {step}")
+            for parameter_name, parameter in model.named_parameters():
+                if parameter.grad is not None:
+                    norms = record["gradient_l2_max_by_parameter"]
+                    norms[parameter_name] = max(norms.get(parameter_name, 0), float(parameter.grad.norm()))
             norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
             if not bool(torch.isfinite(norm)):
                 raise FloatingPointError(f"nonfinite gradient norm at optimizer step {step}")
@@ -323,6 +337,10 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
                 if validation < best_val:
                     best_val = validation
                     best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+                sync()
+                record["validation_curve"].append(dict(
+                    step=step+1, training_tokens=record["training_tokens_seen"],
+                    wall_seconds=time.perf_counter()-start, mse=validation, best_mse=best_val))
                 model.train()
         sync()
         elapsed = time.perf_counter()-start
@@ -339,6 +357,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         record["training_examples_seen"] = config["train_steps"]*config["batch_size"]
         record["training_tokens_seen"] = record["training_examples_seen"]*config["length"]
         record["training_examples_per_second"] = record["training_examples_seen"]/elapsed
+        record["optimizer_tensor_bytes"] = tensor_bytes(optimizer.state_dict())
         if checkpoint_path is not None:
             checkpoint_path = Path(checkpoint_path)
             temporary = checkpoint_path.with_suffix(".tmp")
@@ -349,6 +368,8 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             record["best_checkpoint"] = str(checkpoint_path)
             record["best_checkpoint_sha256"] = hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()
         model.load_state_dict(best_state)
+        record["selected_parameter_delta_l2"] = {
+            n: float((p.detach()-initial_parameters[n]).norm()) for n, p in model.named_parameters()}
         model.eval()
         with torch.no_grad():
             record["test_mse"] = evaluate_mse(test_x, test_y)
@@ -376,6 +397,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         if record["training_status"] == "running":
             record["training_status"] = "failed"
     finally:
+        record["process_peak_rss"] = process_peak_rss()
         if meter is not None:
             record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
             record["terminal_cuda_synchronized"] = record["energy"]["terminal_cuda_synchronized"]
