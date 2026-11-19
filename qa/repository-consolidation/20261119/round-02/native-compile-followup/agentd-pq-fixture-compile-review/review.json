@@ -1,0 +1,65 @@
+{
+  "schema": "hepta.agentd-pq-test-fixture-compile-repair.v1",
+  "reviewed_root_head": "533a84b0691e38b8d3fdf3430ff3beb0e85cde8e",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_hcsn_pq_fixture.rs",
+      "before_sha256": "8c13ee4ab4bcde8656c99722975e1008414010905cc790617afc21bdaf8de4d7",
+      "after_sha256": "9824605d1eff08930623c54ab453c595b03f0b6d464a17af5e55fe1b9c2d1dc5",
+      "before_blob": "93b0a110d6a019760393f4283a82f4ec15853471",
+      "after_blob": "06c65c8d2207f9677f0a9cca1815c420aeafbc2e",
+      "assertions_preserved": 0,
+      "exact_canonical_source_after_inverse": true,
+      "transform": "Explicitly refuse both new learning-frontier operations with Unavailable; existing clock/final-use behavior unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_hcsn_pq_real_support.rs",
+      "before_sha256": "4ed58a5f098af6d7f0b7b2131bb557ac8668194edfd90276d579547cd44b1ae5",
+      "after_sha256": "62fc9609121910418f1aa0116484cd1ff043dce9bece5dedfa65454022ca6efd",
+      "before_blob": "9e8c8b7a56ede59a737a2726c2954e33a0a986ec",
+      "after_blob": "eeabb754b758417264a8c0e89cbbf219c330e0c7",
+      "assertions_preserved": 0,
+      "exact_canonical_source_after_inverse": true,
+      "transform": "Explicitly refuse both new learning-frontier operations with Unavailable; existing clock/final-use behavior unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_hcsn_pq_test_support.rs",
+      "before_sha256": "f38979f9a3d716cf8e9289175c611391933a593aba4e432091105e52d8139d27",
+      "after_sha256": "e93658714299483ee3c214058624cb78e048e44eea9100d7cff88bced65b5f76",
+      "before_blob": "b55f04f6246af3c2545da1b01b4a0f0fabbaf96c",
+      "after_blob": "4eee8fe781fa995b84819ffcd884f243e96be767",
+      "assertions_preserved": 0,
+      "exact_canonical_source_after_inverse": true,
+      "transform": "Explicitly refuse both new learning-frontier operations with Unavailable; existing clock/final-use behavior unchanged."
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_original_evaluation_panel_tests.rs",
+      "before_sha256": "d76802cd4bccac84d6dd8219495f025b23991e195deb4e0a39674f1e0d148de4",
+      "after_sha256": "8e9b71e4dcda2333ae31c80355b297dc96925854d55b28ab24e00759087d1c33",
+      "before_blob": "dc3d205a9ee4ab4358104dd62a16dd37558ac9ec",
+      "after_blob": "0240c93025b57b7de3a62dddb595843fd2b24814",
+      "assertions_preserved": 27,
+      "exact_canonical_source_after_inverse": true,
+      "transform": "Keep the preregistered positive fixture boxed through the prepared tuple; all heap allocations, pinned futures, calls, and lifecycle operations unchanged."
+    }
+  ],
+  "original_assertion_count_preserved": 27,
+  "protected_file_rows": [],
+  "boundary_rows_affected": [],
+  "caller_manifest_modified": false,
+  "unsupported_operations": [
+    "LearningFrontierLoad",
+    "LearningFrontierCompareAndSet"
+  ],
+  "unsupported_result": "Unavailable",
+  "new_wildcard_arms": 0,
+  "production_source_changed": false,
+  "validation": {
+    "original_native_compile_errors": "ci-evidence/musl-rog-native-enum-raw.stderr.log",
+    "scoped_rustfmt_parse": "PASS",
+    "canonical_inverse_source_equivalence": "PASS all four files",
+    "current_root_bytes_stable": true,
+    "native_compile_and_tests": "Pending CI agent applying these postimages with its separate three-file test repair.",
+    "repository_just_fmt": "Parent will run on integrated tree."
+  }
+}

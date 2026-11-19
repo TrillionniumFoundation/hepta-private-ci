@@ -106,7 +106,7 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
         config.clone(),
         SigningKey::from_bytes(&[78; 32]),
     ));
-    let empty = checked(crate::test_support::read_file_bytes(&signer_observer));
+    let empty = checked(signer.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024));
     let mut executions = checked(LockedFileProductEvaluationExecutionStoreV1::create(
         file(&path.join("executions")),
         digest("execution-file"),
@@ -129,7 +129,7 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
         .principal(),
         &config.signer.principal,
     );
-    let bytes = checked(crate::test_support::read_file_bytes(&signer_observer));
+    let bytes = checked(signer.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024));
     assert_ne!(bytes, empty);
     let original_calls = (fixture.provider.calls, fixture.provider.releases);
     let execution_anchor = executions.anchor();
@@ -162,7 +162,7 @@ fn original_evaluator_signs_actual_execution_once_and_reopens_exact_bytes() {
         original_calls
     );
     assert_eq!(
-        checked(crate::test_support::read_file_bytes(&signer_observer)),
+        checked(signer.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)),
         bytes
     );
     drop(signer);
@@ -251,7 +251,8 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
                 let original = checked(reopened.readback());
                 assert_eq!(checked(reopened.readback()), original);
             }
-            let before = checked(crate::test_support::read_file_bytes(&signer_observer));
+            let before =
+                checked(reopened.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024));
             let calls = (fixture.provider.calls, fixture.provider.releases);
             assert!(matches!(
                 execute(&mut fixture, &plan, &config, &mut executions, &mut reopened),
@@ -260,7 +261,7 @@ fn original_evaluator_uncertain_claim_never_resigns_and_complete_ack_reads_origi
                 )),
             ));
             assert_eq!(
-                checked(crate::test_support::read_file_bytes(&signer_observer)),
+                checked(reopened.qualification_file_bytes(/*maximum_bytes*/ 8 * 1024 * 1024)),
                 before
             );
             assert_eq!((fixture.provider.calls, fixture.provider.releases), calls);

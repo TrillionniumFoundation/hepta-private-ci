@@ -83,7 +83,7 @@ impl PanelFixture {
 
     fn complete_registered(
         prepared: Box<(
-            PositiveFixture,
+            Box<PositiveFixture>,
             BFixture,
             BFixture,
             crate::OriginalCellEvaluationPanelRegistrationV1,

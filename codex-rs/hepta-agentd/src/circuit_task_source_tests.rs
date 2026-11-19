@@ -438,7 +438,7 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let original = record("A");
     let request = owner.build(&identity, &original)?;
     let dispatch = dispatch(&store, &fence, &request).await?;
-    let before = crate::test_support::read_file_bytes(&source_observer)?;
+    let before = source_bytes(&owner)?;
     assert_eq!(
         owner.resolve(
             &request,
@@ -449,17 +449,14 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         Err(Error::ReconciliationRequired)
     );
     assert!(owner.read_publication(&identity, &original).is_err());
-    assert_eq!(
-        crate::test_support::read_file_bytes(&source_observer)?,
-        before
-    );
+    assert_eq!(source_bytes(&owner)?, before);
     let input = owner.resolve(
         &request,
         &dispatch,
         &BTreeMap::new(),
         CircuitTaskInputModeV1::Prepare,
     )?;
-    let retained = crate::test_support::read_file_bytes(&source_observer)?;
+    let retained = source_bytes(&owner)?;
     let alterations: [fn(&mut RunStartRecordV1); 5] = [
         |r: &mut RunStartRecordV1| r.authentication.signature[0] ^= 1,
         |r: &mut RunStartRecordV1| r.admission.admitted_source_digest = cell::d("replacement"),
@@ -492,10 +489,7 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         )?,
         input
     );
-    assert_eq!(
-        crate::test_support::read_file_bytes(&source_observer)?,
-        retained
-    );
+    assert_eq!(source_bytes(&owner)?, retained);
     drop(owner);
     let mut substituted = sources.clone();
     substituted[0].candidates[0].allowed = false;
@@ -729,10 +723,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             &registry()?,
             sources.clone(),
         )?;
-        assert_eq!(
-            crate::test_support::read_file_bytes(&source_observer)?,
-            unchanged
-        );
+        assert_eq!(source_bytes(&reopened)?, unchanged);
         let model = cell::Model::new(/*latency*/ 20, /*lose_response*/ false);
         let recovered_calls = Arc::clone(&model.calls);
         let mut driver = CircuitTaskDriverV1 {
@@ -783,10 +774,7 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
             usize::from(fail_sequence == 5)
         );
         if fail_sequence != 5 {
-            assert_eq!(
-                crate::test_support::read_file_bytes(&source_observer)?,
-                unchanged
-            );
+            assert_eq!(source_bytes(&reopened)?, unchanged);
         }
         drop(driver);
         drop(reopened);
