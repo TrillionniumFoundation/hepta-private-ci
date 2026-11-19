@@ -1,0 +1,22 @@
+{
+  "archive_sha256": "05b10e450be5e234db9d89512c243e8267764d7ff19b777d1e479d0300154050",
+  "cpu_seconds": 7.1793796819999995,
+  "model_forward_calls": 0,
+  "optimizer_calls": 0,
+  "peak_rss_bytes": 21045248,
+  "records": {
+    "MANIFEST.json": {
+      "bytes": 281746,
+      "copy": "ARCHIVE_MANIFEST.json",
+      "sha256": "9f3a782ac638c46dd006499f56ac765622310a4c05dc7a8003fadcedb87e8698"
+    },
+    "run/TERMINAL.json": {
+      "bytes": 4787,
+      "copy": "CONTROLLER_TERMINAL.json",
+      "sha256": "5adc54d03c40ec640f24e362b8f1a3ef43287f8d5ae85b795735475f19f4aff6"
+    }
+  },
+  "schema": "hcsn-c2-readable-archive-records-v1",
+  "scope": "Copy only manifest and controller terminal from exact tar into reviewable UTF-8 files; original bytes unchanged, entire archive retained.",
+  "wall_seconds": 7.262876208002126
+}
