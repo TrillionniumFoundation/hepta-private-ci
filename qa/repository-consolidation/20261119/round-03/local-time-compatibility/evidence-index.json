@@ -2033,5 +2033,58 @@
       "bytes": 6897,
       "sha256": "2ec798f573dd943a2bfd0e0a226fbf4d269c3463f5370a931fb9608e5e280b4b"
     }
-  ]
+  ],
+  "storage": "ordered-exact-byte-chunks-v1",
+  "archive_provenance": {
+    "commit": "797a0356670cdc5bc887b09839e534dfdfe06d2d",
+    "path": "qa/repository-consolidation/20261119/round-03/local-time-compatibility/evidence.tar.gz",
+    "git_blob": "3bdff98bb333671dff48406f1844d3d5aeeb9916"
+  },
+  "chunks": [
+    {
+      "path": "evidence.tar.gz.part-000",
+      "offset": 0,
+      "bytes": 400000,
+      "sha256": "3fa5f4bab8bbb81f5f39bf89109d1ac89c808a5b4a34642650cacdf56372b578"
+    },
+    {
+      "path": "evidence.tar.gz.part-001",
+      "offset": 400000,
+      "bytes": 400000,
+      "sha256": "84c771075dc220affd16c3c1599e266547507368b984aafcf697fe7d332308a9"
+    },
+    {
+      "path": "evidence.tar.gz.part-002",
+      "offset": 800000,
+      "bytes": 400000,
+      "sha256": "44c491b8c00e1230bd372bde1192202f00511eaebf6717846cb15d6198a6b118"
+    },
+    {
+      "path": "evidence.tar.gz.part-003",
+      "offset": 1200000,
+      "bytes": 400000,
+      "sha256": "dc098a5fd10126e7e1591a14c465cabf62c912bc8b83ae69678847a21e7c35b6"
+    },
+    {
+      "path": "evidence.tar.gz.part-004",
+      "offset": 1600000,
+      "bytes": 316937,
+      "sha256": "9b302f284d0ae30f213dd51253393d2adb18a090730cd69c758d1d3befceeb3e"
+    }
+  ],
+  "chunk_size_limit_bytes": 400000,
+  "original_blob_policy_check": {
+    "path": "blob-size-before-chunking.log.gz",
+    "exit_code": 1,
+    "changed_paths": 32,
+    "violations": [
+      {
+        "path": "evidence.tar.gz",
+        "bytes": 1916937
+      }
+    ],
+    "max_bytes": 512000,
+    "compressed_sha256": "b3c2561e68e517c8d5c55e6d15481fe191f05a335c11dae8a49c1b4604a5422c",
+    "uncompressed_sha256": "cc17232f6fff28fe8c2a93feb10aae56849623aa4a12616c24bbd11e5cdb8656"
+  }
 }

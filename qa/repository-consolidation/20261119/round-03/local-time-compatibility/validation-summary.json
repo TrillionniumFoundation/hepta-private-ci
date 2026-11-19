@@ -159,5 +159,13 @@
     "formatting_equivalence": "review/dependency-format-equivalence.json",
     "tests_repeated_by_reviewer": false
   },
-  "evidence_archive_sha256": "a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81"
+  "evidence_archive_sha256": "a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81",
+  "evidence_storage": {
+    "format": "ordered-exact-byte-chunks-v1",
+    "chunks": 5,
+    "max_chunk_bytes": 400000,
+    "manifest": "evidence-index.json",
+    "original_archive_bytes": 1916937,
+    "original_archive_sha256": "a5a8f1df733f402a1a415f14b0f0ea2a15fa5fde5208cde814ae2694609feb81"
+  }
 }
