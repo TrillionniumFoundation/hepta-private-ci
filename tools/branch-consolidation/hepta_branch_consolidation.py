@@ -118,6 +118,8 @@ def protected_branches(
     protected = {}
     for name, sha in heads.items():
         reasons = []
+        if re.search(r"(?:^|[/._-])hia(?:$|[/._-])", name, re.IGNORECASE):
+            reasons.append("hia_branch_name")
         if name in manifest["protectedHeads"]:
             reasons.append("explicit_protected_branch")
         if name in manifest["protectedBaseHeads"]:

@@ -235,6 +235,29 @@ class RetirementTests(unittest.TestCase):
         self.assertTrue(receipt["singleRustMainRefVerified"])
         self.assertFalse(receipt["singleMainRefVerified"])
 
+    def test_new_hia_name_is_retained_without_a_manifest_entry(self):
+        name = "feature/New_HIA-rewrite"
+        tool.git(self.root, "branch", name)
+        tool.git(self.root, "push", "origin", name)
+        before = tool.remote_heads(self.root)
+        plan, _ = self.prepare()
+        row = next(row for row in plan["branches"] if row["branch"] == name)
+        self.assertTrue(row["ancestorOfMain"])
+        self.assertEqual(row["disposition"], "keep_protected")
+        self.assertEqual(row["protectionReasons"], ["hia_branch_name"])
+
+        # A stale disposition cannot override the live name protection at apply.
+        row["disposition"] = "eligible_merged"
+        (self.out / "plan.json").write_text(json.dumps(plan))
+        receipt = tool.apply_retirement(
+            self.root, self.out, tool.sha256(self.out / "plan.json")
+        )
+        self.assertEqual(receipt["branchesDeleted"], ["merged"])
+        self.assertEqual(
+            tool.remote_heads(self.root),
+            {key: sha for key, sha in before.items() if key != "merged"},
+        )
+
     def test_hidden_hia_descendant_is_retained_even_after_merge_to_main(self):
         self.protection["hiaRootCommits"] = [tool.remote_heads(self.root)["unmerged"]]
         name = "codex/sdk-resolver-fixture"
