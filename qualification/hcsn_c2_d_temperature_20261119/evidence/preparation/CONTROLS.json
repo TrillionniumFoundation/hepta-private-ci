@@ -1,0 +1,91 @@
+{
+  "E_payload_or_labels_accessed": false,
+  "body_cpu_seconds": 0.007734664999999974,
+  "body_wall_seconds": 0.007736449995718431,
+  "cases": [
+    {
+      "case": "exact_per_row_flat_exception",
+      "passed": true
+    },
+    {
+      "case": "upper_KKT_boundary",
+      "passed": true
+    },
+    {
+      "case": "lower_KKT_boundary",
+      "passed": true
+    },
+    {
+      "case": "interior_known_analytic_optimum",
+      "passed": true
+    },
+    {
+      "case": "stable_per_row_shift_invariance",
+      "passed": true
+    },
+    {
+      "case": "nonfinite_logits",
+      "error": "finite logits",
+      "rejected": true
+    },
+    {
+      "case": "empty_rows",
+      "error": "nonempty float64 N-by-11 logits",
+      "rejected": true
+    },
+    {
+      "case": "floating_labels",
+      "error": "integer class labels",
+      "rejected": true
+    },
+    {
+      "case": "boolean_labels",
+      "error": "integer class labels",
+      "rejected": true
+    },
+    {
+      "case": "out_of_range_labels",
+      "error": "integer class labels",
+      "rejected": true
+    },
+    {
+      "case": "wrong_class_count",
+      "error": "nonempty float64 N-by-11 logits",
+      "rejected": true
+    },
+    {
+      "case": "modified_final_beta",
+      "error": "final bracket and midpoint",
+      "rejected": true
+    },
+    {
+      "case": "modified_bisection_move",
+      "error": "derivative-sign bisection move",
+      "rejected": true
+    },
+    {
+      "case": "modified_recorded_NLL",
+      "error": "independent final nll",
+      "rejected": true
+    }
+  ],
+  "cost_scope": "Synthetic control main body; imports and outer Python lifetime are not included.",
+  "neural_model_forward_backward_calls": 0,
+  "neural_optimizer_operations": 0,
+  "passed": 14,
+  "production_D_logits_read": false,
+  "schema": "D-temperature-synthetic-controls-v1",
+  "source_sha256": {
+    "controls.py": "652c4fd1f3bd6779b579175e84fb8667f61d36e3a82008d983b937f1a83da8fe",
+    "reference.py": "a9843558a68596172b868ae94b545f9a8bfb2de0b771f4860f32b3acdbf595c4",
+    "solver.py": "d8814f43961f40ed66a8770a442beeaef937d4c1912f752b922ce73533045563"
+  },
+  "synthetic_work_counts": {
+    "bisection_update": 90,
+    "calibration_evaluation_completed": 107,
+    "calibration_evaluation_started": 107,
+    "reference_evaluation_completed": 33,
+    "reference_evaluation_started": 33,
+    "scalar_parameter_optimization_started": 11
+  }
+}

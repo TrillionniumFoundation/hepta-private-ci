@@ -1,0 +1,100 @@
+{
+  "E_access_authorized": false,
+  "E_payload_or_labels_read": false,
+  "authority_interpretation": {
+    "candidate_rule": "21 D temperatures frozen before any E read; complete D-calibration manifest is listed before the separate E decision",
+    "default_action_preserve_E_unchanged": true,
+    "formal_rule": "D only after model selection; no test access during tuning/debugging/calibration design/early stopping",
+    "original_execution_authorized_false_unchanged": true,
+    "root_authorization": "Execute the separately frozen D-only stage and independent arithmetic; no further permission wait; no original formal/E gates or budgets changed."
+  },
+  "automatic_trigger": false,
+  "budget": {
+    "address_space_bytes": 8589934592,
+    "automatic_retries": 0,
+    "excludes_unmeasured": "Native service startup and orchestration/publication outside the stage; local synthetic preparation is separate.",
+    "includes": "dispatch setup after entry timestamp, child startup/imports, runtime/input checks, all21 scalar calibrations, independent arithmetic, receipts and supervisor archive/transport preparation",
+    "native_cpu_quota_percent": 100,
+    "native_memory_max_bytes": 2147483648,
+    "native_timeout_seconds": 600,
+    "numerical_threads": 1,
+    "reserve_seconds": 30,
+    "rss_bytes": 2147483648,
+    "source": "Separate D-only allocation under the current remaining-blockers user request and root explicit authorization; original proposed E7200 allocation and original C2 budgets are unchanged.",
+    "whole_seconds": 600,
+    "workers": 1
+  },
+  "expected_runtime": {
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "numpy": "2.3.5",
+    "python": "3.12.3",
+    "resolved_executable_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+    "torch": "2.8.0+cpu",
+    "torch_git": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
+  },
+  "failure_policy": "Preserve every attempted event/receipt/cost; stop fixed-roster campaign on first failure or cap; no retries, altered bounds, new seed/model or post-E recalibration.",
+  "independent_arithmetic": {
+    "all_intermediate_gradients_recomputed": false,
+    "comparison_tolerance": "1e-10*max(1,abs(reference)); KKT/bracket sign and raw-vs-calibrated NLL slack1e-10",
+    "method": "Separate blockwise longdouble reference with different centering/reduction; NLL/gradient/Hessian at raw/lower/upper/final and final bracket, trajectory structure and argmax checks",
+    "origin": "New implementation consistency criteria declared before D calibration; original 1e-12 relative bracket stopping rule is unchanged.",
+    "rigorous_enclosure": false,
+    "strict_signs_reported_separately": true
+  },
+  "independent_original_full_training_replays": "0/6",
+  "input_identities": {
+    "INPUT_LEDGER.json": {
+      "bytes": 55579,
+      "sha256": "5e3e64f332d9a03389c8ac0e4f3de478e9f7c612124e9bec2b4d82c21d3f263b",
+      "source_repository_path": "qualification/hcsn_c2_d_selection_20261119/evidence/LEDGER.json"
+    },
+    "ORIGINAL_E_PLAN.json": {
+      "bytes": 19917,
+      "sha256": "be778e57d203779e7765ff2e2bc84e977d61a992894d747dd1b89b091a486ddf",
+      "source_repository_path": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PLAN.json"
+    },
+    "ORIGINAL_FORMAL_PROTOCOL.json": {
+      "bytes": 5721,
+      "sha256": "c9a7e3c4f98a131e9fb639832b413e18c00e25ba6f608a0d97c83d728c0a0465",
+      "source_repository_path": "proposals/localization-v2/formal_protocol.json"
+    }
+  },
+  "ledger_sha256": "5e3e64f332d9a03389c8ac0e4f3de478e9f7c612124e9bec2b4d82c21d3f263b",
+  "native_idempotency_key": "hcsn-c2-D-temperature-20261119-d741-001",
+  "operation_accounting": {
+    "count_scalar_optimization_and_all_evaluation_attempts": true,
+    "neural_model_construction_forward_backward_calls": 0,
+    "neural_optimizer_construct_restore_step_operations": 0,
+    "per_fit_bisection_updates_max": 100,
+    "production_scalar_parameter_optimization_calls_max": 21,
+    "synthetic_controls_separate": true
+  },
+  "original_candidate_temperature_rule": {
+    "bounds": [
+      0.01,
+      100.0
+    ],
+    "endpoints": "If derivative at lower endpoint >=0 choose lower; otherwise if derivative at upper endpoint <=0 choose upper; record boundary optimum.",
+    "failure_policy": "HOLD before E; no bounds expansion, restarts or post-E recalibration",
+    "flat_exception": "If every event has exactly equal logits across all 11 classes, beta=1.",
+    "gradient": "mean_i(sum_c softmax(beta*z_i)[c]*z_i[c] - z_i[y_i])",
+    "hessian": "mean softmax-weighted logit variance; nonnegative",
+    "interior_solver": "Bisection on derivative sign; at most 100 iterations; stop when bracket width <=1e-12*max(1,abs(midpoint)) or no representable strict interior point; choose final bracket midpoint.",
+    "new_algorithm_choices_not_in_old_protocol": true,
+    "objective": "unweighted mean multiclass D NLL; stable logsumexp with per-event max-logit centering",
+    "parameter": "inverse temperature beta; T=1/beta",
+    "receipt": "raw input hashes, finite checks, endpoint gradients, final bracket/beta/NLL and exact argmax agreement",
+    "scope": "each already-selected model; independently verified D logits only; freeze 21 temperature results before any E read"
+  },
+  "original_controller_terminal": "UNKNOWN",
+  "output_root": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741",
+  "runtime_identity_source": {
+    "path": "qualification/hcsn_c2_partial_resume_20261119/evidence/terminal/RESULT.json",
+    "scope": "Pre-fit pin from actual prior runtime, plus actual named package/native bytes frozen before first D scalar fit and checked afterward.",
+    "sha256": "55e22dde3ef0060c7f84290024a79ceb87ebee2d433531ab925fb535b66a46fd"
+  },
+  "schema": "independent-D-only-temperature-stage-v1",
+  "scientific_admission": "HOLD",
+  "source_parent_commit": "2c170f64ec1788f45b1b5fe5d6caadbd2bdf507e",
+  "source_parent_pr": 6757
+}

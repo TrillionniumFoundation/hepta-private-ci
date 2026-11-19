@@ -1,0 +1,262 @@
+{
+  "accel_devices": [],
+  "bios": "5.11",
+  "board": "X99",
+  "cpu_model": "Intel(R) Xeon(R) CPU E5-2673 v3 @ 2.40GHz",
+  "gpus": [
+    {
+      "busy_percent": null,
+      "card": "card0",
+      "device": "0x2882",
+      "gtt_total": null,
+      "gtt_used": null,
+      "mclk": null,
+      "sclk": null,
+      "vendor": "0x10de",
+      "vram_total": null,
+      "vram_used": null
+    }
+  ],
+  "hostname": "qian-qi",
+  "hwmon": [
+    {
+      "name": "coretemp",
+      "path": "/sys/class/hwmon/hwmon0",
+      "values": {
+        "temp10_input": "32000",
+        "temp11_input": "31000",
+        "temp12_input": "32000",
+        "temp13_input": "29000",
+        "temp14_input": "31000",
+        "temp15_input": "31000",
+        "temp1_input": "39000",
+        "temp2_input": "28000",
+        "temp3_input": "30000",
+        "temp4_input": "32000",
+        "temp5_input": "34000",
+        "temp6_input": "30000",
+        "temp7_input": "26000"
+      }
+    },
+    {
+      "name": "coretemp",
+      "path": "/sys/class/hwmon/hwmon1",
+      "values": {
+        "temp10_input": "30000",
+        "temp11_input": "29000",
+        "temp12_input": "30000",
+        "temp13_input": "24000",
+        "temp14_input": "29000",
+        "temp15_input": "30000",
+        "temp1_input": "36000",
+        "temp2_input": "29000",
+        "temp3_input": "36000",
+        "temp4_input": "30000",
+        "temp5_input": "33000",
+        "temp6_input": "30000",
+        "temp7_input": "32000"
+      }
+    }
+  ],
+  "kernel": "7.0.0-43-generic",
+  "machine": "x86_64",
+  "memory": {
+    "MemAvailable": "54063480 kB",
+    "MemTotal": "131760784 kB",
+    "SwapFree": "20 kB",
+    "SwapTotal": "8388604 kB"
+  },
+  "platform": "linux",
+  "platform_profile": null,
+  "power_limit_semantics": "Driver-reported requests/cached values; not measured sustained power.",
+  "power_limits": {},
+  "power_supplies": [],
+  "product": "X99",
+  "sampled_at_unix_ms": 1795088679189,
+  "schema": "hepta-hardware-v1",
+  "sensors": [
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp10_input",
+      "unit": "C",
+      "value": 32
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp11_input",
+      "unit": "C",
+      "value": 31
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp12_input",
+      "unit": "C",
+      "value": 32
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp13_input",
+      "unit": "C",
+      "value": 29
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp14_input",
+      "unit": "C",
+      "value": 31
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp15_input",
+      "unit": "C",
+      "value": 31
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp1_input",
+      "unit": "C",
+      "value": 39
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp2_input",
+      "unit": "C",
+      "value": 28
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp3_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp4_input",
+      "unit": "C",
+      "value": 32
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp5_input",
+      "unit": "C",
+      "value": 34
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp6_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon0/temp7_input",
+      "unit": "C",
+      "value": 26
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp10_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp11_input",
+      "unit": "C",
+      "value": 29
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp12_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp13_input",
+      "unit": "C",
+      "value": 24
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp14_input",
+      "unit": "C",
+      "value": 29
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp15_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp1_input",
+      "unit": "C",
+      "value": 36
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp2_input",
+      "unit": "C",
+      "value": 29
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp3_input",
+      "unit": "C",
+      "value": 36
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp4_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp5_input",
+      "unit": "C",
+      "value": 33
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp6_input",
+      "unit": "C",
+      "value": 30
+    },
+    {
+      "available": true,
+      "sensor": "coretemp",
+      "source": "/sys/class/hwmon/hwmon1/temp7_input",
+      "unit": "C",
+      "value": 32
+    }
+  ],
+  "thunderbolt": []
+}
