@@ -1,0 +1,99 @@
+{
+  "external_inputs": {
+    "evolution-ledger.json": {
+      "bytes": 3765520,
+      "decode_gzip": true,
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/prediction_ledger.json.gz",
+      "ref": "4b3081c25af86f707a5c0d50c688c959a04af446",
+      "sha256": "f92dced0699e7869a06010119e3a52ca1f803f880df0c223e38598ae30bda927",
+      "stored_sha256": "fa4aced018c45fd214d426bd5eec91a271f39151cf92e2083519fa0aaab933a3"
+    },
+    "evolution-ledger.json.gz": {
+      "bytes": 974144,
+      "decode_gzip": false,
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/prediction_ledger.json.gz",
+      "ref": "4b3081c25af86f707a5c0d50c688c959a04af446",
+      "sha256": "fa4aced018c45fd214d426bd5eec91a271f39151cf92e2083519fa0aaab933a3",
+      "stored_sha256": "fa4aced018c45fd214d426bd5eec91a271f39151cf92e2083519fa0aaab933a3"
+    },
+    "evolution-report.json": {
+      "bytes": 502435,
+      "decode_gzip": true,
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/report.json.gz",
+      "ref": "4b3081c25af86f707a5c0d50c688c959a04af446",
+      "sha256": "261a6cdf38f7dca84d8c9d561f67cf3d6d656da6ebeceb23560fa26c89a862f6",
+      "stored_sha256": "029483d74596c53722e5f348f3707de2446ef084e8fe54319ca01b28744ccb11"
+    },
+    "evolution-report.json.gz": {
+      "bytes": 255113,
+      "decode_gzip": false,
+      "path": "qa/stem-bakeoff/evidence/20261022-real-cell-evolution/report.json.gz",
+      "ref": "4b3081c25af86f707a5c0d50c688c959a04af446",
+      "sha256": "029483d74596c53722e5f348f3707de2446ef084e8fe54319ca01b28744ccb11",
+      "stored_sha256": "029483d74596c53722e5f348f3707de2446ef084e8fe54319ca01b28744ccb11"
+    }
+  },
+  "files": {
+    "AUDIT_MANIFEST.original.json": {
+      "bytes": 2651,
+      "sha256": "471eb5005783f0693277f50603d558046b6ba793be7610017d8dee065aff13fb"
+    },
+    "EVIDENCE_INPUTS.json": {
+      "bytes": 1590,
+      "sha256": "1cd353b019ffd3fd5abd43b9f27aaf2c80a44f6c7d6f3e8d3e434f8ce40caa6a"
+    },
+    "REPRODUCTION.md": {
+      "bytes": 1303,
+      "sha256": "dbb13833e79eb275a0a6fc50c443c23a24a8f78f03fb79662b5aea8022ab738f"
+    },
+    "SCIENCE_GATE_AUDIT.md": {
+      "bytes": 27090,
+      "sha256": "92699c36f27f166ccef1bae210010e63d893c7f860fc0eb75cc53b198adc7724"
+    },
+    "evolution-inventory.json": {
+      "bytes": 50057,
+      "sha256": "55883610c693991ba68951a0380e8c19dcdfe70d048527c8fa34ac9c386a7a8a"
+    },
+    "evolution-plan.json": {
+      "bytes": 89373,
+      "sha256": "f359665aef501167df45b9b2fdff9179f3899fd41df92bd75a52f407c3a60367"
+    },
+    "evolution-v2v3-parity.json": {
+      "bytes": 10672,
+      "sha256": "f669322ceec7c8994865498ae7aeeb63e53e8c4813447cbca2e9eb624939e8b3"
+    },
+    "ndu-status-snapshot.json": {
+      "bytes": 1464,
+      "sha256": "ae896d05a1f285937e41a4f0096efde10f810e486a78a819b4e62d22b4f56cbd"
+    },
+    "offline-diagnostic.json": {
+      "bytes": 25919,
+      "sha256": "debbdd2ce78a124d45cbd90dadc094d63071037586b0fe08495da96f978d25eb"
+    },
+    "pft-math-audit.json": {
+      "bytes": 234633,
+      "sha256": "20295d90367c05996ed84b847dcc3084282806f7945f312985b66e458b21596b"
+    },
+    "reanalyze_published_evidence.py": {
+      "bytes": 13485,
+      "sha256": "120f0cb0a3d94c7a1199e7cf0a4f49a04c93bb3e7d9311c06be3c18abf056b9b"
+    },
+    "source-cell_evolution_snapshot.py": {
+      "bytes": 21696,
+      "sha256": "5723614018bf8c4719cbcb87ceea51777ceadc13af3dcbe70da4076c5e114b2d"
+    },
+    "source-cell_evolution_training.py": {
+      "bytes": 23965,
+      "sha256": "b7720888b1218b3b37a3d9efec0a99f826df43c886a1c9a3202486ad96e1692e"
+    },
+    "source-real_evolution_probe.py": {
+      "bytes": 28387,
+      "sha256": "b458dc3f4ba9d7640a11f3676787435d51d64808d08de0402190c80759c60deb"
+    }
+  },
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "root_recomputed_values_equal_original_except_script_digest": true,
+  "schema": "hepta.science-gate-audit-publication.v2",
+  "scope": "Posthoc reconstruction; no new training or acceptance"
+}
