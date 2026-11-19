@@ -1,0 +1,43 @@
+{
+  "schema": "hepta.e6-cold-next-task.source-qa.v1",
+  "base": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "source_files": {
+    "codex-rs/hepta-agentd/src/lib.rs": "48cc33b3c4a09819d60ee012f76c57f5159e2cf1b2655f25142eede55e47e5ff",
+    "codex-rs/hepta-agentd/src/cold_next_task_data_tests.rs": "893c2438d680bfafe9e88224bc0732d51c7a4cf019e2ea79ae9509750aa9c361",
+    "codex-rs/hepta-agentd/src/cold_next_task_data.rs": "c2cd36565d59e87d4385f46c4c232eff4df5b326ec97a46696b9c99701b52def",
+    "codex-rs/hepta-agentd/src/cold_next_task_protocol.rs": "9db7ac3579edc09a6bb22eef9c44c1cc8b3d297a1888a6aedb6a81f59041b533"
+  },
+  "test_exit": 0,
+  "authority_issuances": 0,
+  "models": 0,
+  "stages": [
+    {
+      "name": "add-exact-original-include-materials",
+      "argv": [
+        "git",
+        "sparse-checkout",
+        "add",
+        "/qualification/neuron-v13-generation/proposal_worker.py"
+      ],
+      "exit": 0,
+      "wall_seconds": 0.031525133876129985
+    },
+    {
+      "name": "just-test-cold-next-data",
+      "argv": [
+        "just",
+        "test",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "-E",
+        "test(cold_next_task)"
+      ],
+      "exit": 0,
+      "wall_seconds": 68.19291098392569
+    }
+  ],
+  "original_include_materials": {
+    "qualification/neuron-v13-generation/proposal_worker.py": "edd91e3ada420024afe3f2e4d4180de0ba8708e12f642b57d2aef882b6539501"
+  }
+}
