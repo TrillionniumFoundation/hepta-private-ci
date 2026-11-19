@@ -43,6 +43,7 @@
         "frontier",
         "capacity",
         "revocation_head",
+        "revocation_head_sha256",
         "authentication_profile",
         "shares_owner",
         "check_unclaimed_grant"
@@ -232,7 +233,6 @@
       ],
       "allowedCallers": [
         "codex-rs/hepta-memory/src/production_writer.rs",
-        "codex-rs/hepta-ndu/src/owner.rs",
         "codex-rs/hepta-prompt-registry/src/admission.rs",
         "codex-rs/hepta-prompt-registry/src/durable.rs",
         "codex-rs/hepta-runtime/src/organs.rs"
@@ -537,7 +537,8 @@
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-ndu/src/owner.rs"
       ]
     },
     {
