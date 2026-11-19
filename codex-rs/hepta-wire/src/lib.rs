@@ -11,8 +11,12 @@
 mod envelope;
 mod envelope_v2;
 mod frame;
+mod platform_manifest_json;
+mod platform_topology_v2_json;
+mod platform_types_json;
 mod schema;
 mod stream;
+mod strict_json;
 mod version;
 
 pub use envelope::MAX_WIRE_PAYLOAD_BYTES;
@@ -24,6 +28,23 @@ pub use envelope_v2::WireV2Error;
 pub use frame::DecodeFrameError;
 pub use frame::DecodedEnvelope;
 pub use frame::decode_frame;
+pub use platform_manifest_json::MAX_CANONICAL_I64_DECIMAL_BYTES_V1;
+pub use platform_manifest_json::PlatformManifestWireError;
+pub use platform_manifest_json::decode_external_system_manifest_v1_json;
+pub use platform_manifest_json::decode_random_stream_manifest_v1_json;
+pub use platform_manifest_json::decode_sensor_calibration_manifest_v1_json;
+pub use platform_manifest_json::encode_external_system_manifest_v1_json;
+pub use platform_manifest_json::encode_random_stream_manifest_v1_json;
+pub use platform_manifest_json::encode_sensor_calibration_manifest_v1_json;
+pub use platform_types_json::MAX_CANONICAL_U64_DECIMAL_BYTES_V1;
+pub use platform_types_json::MAX_PLATFORM_TYPES_JSON_BYTES_V1;
+pub use platform_types_json::MAX_PLATFORM_TYPES_JSON_DEPTH_V1;
+pub use platform_types_json::PlatformTypesWireError;
+pub use platform_types_json::ValidatedRuntimeTopologyCandidateV1;
+pub use platform_types_json::decode_prompt_delivery_v2_json;
+pub use platform_types_json::decode_runtime_topology_candidate_v1_json;
+pub use platform_types_json::encode_prompt_delivery_v2_json;
+pub use platform_types_json::encode_runtime_topology_candidate_v1_json;
 pub use schema::PayloadCodec;
 pub use schema::SchemaAdmissionError;
 pub use schema::SchemaCodecError;
@@ -49,3 +70,8 @@ pub use version::negotiate;
 #[cfg(test)]
 #[path = "property_tests.rs"]
 mod property_tests;
+
+pub use platform_topology_v2_json::PlatformTopologyV2WireError;
+pub use platform_topology_v2_json::ValidatedRuntimeTopologyCandidateV2;
+pub use platform_topology_v2_json::decode_runtime_topology_candidate_v2_json;
+pub use platform_topology_v2_json::encode_runtime_topology_candidate_v2_json;

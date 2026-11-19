@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+    "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -294,8 +294,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+    "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -316,11 +316,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e"
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "ed9f5bcd8b01a4cf3280ad749f6999c83ee24944"
+      "object": "d28f86e4f2b5d2bba731acc39e6bea65789f06e8"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -361,6 +361,32 @@
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
       "object": "9fa795685e26a6074e893d4d8ae6f514c554d2e3"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "observedAtHead": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "12f665e6e014ebad012c108dcf4948e7ebd4ce3b",
+        "tree": "1ded61fa3c8590cbf363fc563ed959e33a242ff1"
+      },
+      "observedAtHead": {
+        "commit": "12f665e6e014ebad012c108dcf4948e7ebd4ce3b",
+        "tree": "1ded61fa3c8590cbf363fc563ed959e33a242ff1"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

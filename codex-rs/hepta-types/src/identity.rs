@@ -199,9 +199,6 @@ impl IdNamespaceV1 {
     }
 
     pub fn qualify(&self, local: &str) -> Result<StableId, IdentityError> {
-        if local.contains(':') {
-            return Err(IdentityError::NonCanonical);
-        }
         let combined_len = self
             .as_str()
             .len()
@@ -213,6 +210,9 @@ impl IdNamespaceV1 {
                 actual: combined_len,
                 maximum: MAX_STABLE_ID_BYTES,
             }));
+        }
+        if local.contains(':') {
+            return Err(IdentityError::NonCanonical);
         }
         let qualified = format!("{}:{local}", self.as_str());
         validate_id(&qualified, IdProfileV1::Namespaced)

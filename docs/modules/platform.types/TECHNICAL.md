@@ -1,5 +1,7 @@
 # platform.types technical development guide
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `platform.types`
@@ -14,7 +16,39 @@
 
 **Bootstrap work package:** `PLATFORM-0-TYPE-BOUNDARY`
 
-This stable document is the implementation guide for `platform.types`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This supporting guide retains implementation architecture and work-package history. Start with [`SPEC_V2.md`](./SPEC_V2.md) for the normative contract, [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md) for current source and qualification posture, and [`MIGRATION_V1_TO_V2.md`](./MIGRATION_V1_TO_V2.md) for consumer migration. Native Rust contracts and the compiled typed catalog implement protocol semantics; central JSON registries govern architectural inventory and ownership. Historical records are provenance only. A conflict between the current specification, source and generated evidence remains unresolved and fails closed. Documentation readiness is not source qualification, activation, operator acceptance, promotion or release.
+
+<!-- BEGIN GENERATED PLATFORM.TYPES V2 TRUTH -->
+
+## Current versioned protocol truth
+
+The normative field/version/identity source is
+`codex-rs/hepta-types/src/protocol_catalog_v2.rs`. Exact-candidate JSON and Markdown projections are compiled
+from that Rust catalog; this guide is explanatory and cannot override it.
+
+Registered catalog surface: `PromptDeliveryObservationV1` V1, `PromptDeliveryObservationV2` V2, `RuntimeTopologyCandidateV1` V1, `RuntimeTopologyCandidateV2` V2, `RandomStreamManifestV1` V1, `ExternalSystemManifestV1` V1, `SensorCalibrationManifestV1` V1, `RegisteredNumericConversionReceiptV2` V2.
+
+`PromptDeliveryObservationV1` remains frozen under its historical custom
+length-framed SHA-256 commitment and is never relabeled as HPTC.
+`PromptDeliveryObservationV2` is a distinct HPTC schema-2 identity with an
+explicit exact-V1-digest migration witness. Generation-sensitive numeric
+admission uses private-field V2 receipts that bind registry generation/digest,
+profile-definition digests, normalization-definition digest and the base
+conversion receipt, and are fully recomputed by the verifier.
+
+Strict Prompt V2 and separate historical Topology V1/current V2 JSON transport belongs to `platform.wire`,
+which preserves V1 historical verification without effect admission, and rejects
+raw oversize/depth, duplicate or unknown fields and non-canonical
+integers before native revalidation. NDU owns random-stream manifest admission;
+Runtime Supervisor owns external-system and sensor-calibration admission. All
+owner receipts remain deny-only and grant no activation authority.
+
+The exact top-level `pub use` inventory is a narrow ownership projection. Full
+candidate API and semver evidence comes from normalized rustdoc JSON, while Git
+provenance binds exact source, schema, owner, consumer, document, verifier and
+workflow blobs to the candidate tree.
+
+<!-- END GENERATED PLATFORM.TYPES V2 TRUTH -->
 
 ## 1. Identity, mission and ownership
 
@@ -46,7 +80,7 @@ None.
 
 ### Native source and scope
 
-The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, `rescale_signal`, and `rescale_signal_registered`; the canonical encoding and cross-language vectors are frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. This is source navigation evidence, not proof of product execution or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md).
+The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, pure and registry-admitted numeric conversion, prompt-delivery and topology contracts, and the three owned manifest contracts. The public ownership projection is intentionally narrower than the complete rustdoc API. The canonical encoding and cross-language vectors remain frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. Source callsites exist in Codex/Agentd, Learning Ledger, Runtime Supervisor and the authenticated NDU owner; they are source-composition evidence, not target-host qualification or external acceptance. The [source-composition dossier](../../../qualification/module-execution-dossiers/detail/platform.types.md#3-product-wire-and-owner-composition) and [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) provide source navigation and evidence provenance. They do not override the three current authoritative entry points or establish current qualification.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,10 +110,14 @@ The native components are:
 - sealed non-authorizing posture and one-byte raw authority rejection;
 - checked FixedQ32/ProbabilityQ32 with explicit arithmetic semantics;
 - immutable schema/normalization and numeric-profile definitions/registry;
-- checked numeric-signal conversion;
+- checked numeric-signal conversion with distinct registry-admission receipts;
+- versioned prompt-delivery observation and runtime-topology contracts;
+- random-stream, external-system and sensor-calibration manifest contracts;
 - canonical conformance vectors and deterministic generated bindings.
 
-All components are pure or caller-owned immutable values. There is no local transaction, queue, filesystem, network, process-global mutable state or external terminal outcome. Changes to frozen HPTC framing, profile semantics or generated-binding source require a new version rather than reinterpretation in place.
+All library components are pure or caller-owned immutable values. There is no local transaction, queue, filesystem, network, process-global mutable state or external terminal outcome. Diagnostic/code-generation executables do not become library runtime owners. Changes to frozen HPTC framing, profile semantics or generated-binding source require a new version rather than reinterpretation in place.
+
+The buffered and digest-only canonical APIs now share one encoder and validation path. The digest sink incrementally hashes exactly the same bytes without allocating the complete preimage. Sorting scratch remains; a failed encoding discards its partial hash. Immutable registry indexes and cached content digests remain unchanged. V2 numeric conversion avoids redundant static lookups and an unused V1 admission hash while retaining complete conversion and owner-pinned verification.
 
 ## 5. Contracts, ports and compatibility
 
@@ -105,13 +143,15 @@ Consumed contracts:
 
 None.
 
-Critical protocol schemas:
+Critical native protocols include `PromptDeliveryObservationV1`, `PromptDeliveryObservationV2`, `RuntimeTopologyCandidateV1`, `RuntimeTopologyCandidateV2`, `RandomStreamManifestV1`, `ExternalSystemManifestV1`, `SensorCalibrationManifestV1` and `RegisteredNumericConversionReceiptV2`. The compiled Rust catalog specifies their exact versioned identity and transport availability.
 
-None.
-
-Current executable compatibility is narrower than the registry inventory. Rust owns the semantic primitives; HPTC V1 owns structured canonical commitment bytes; `PLATFORM_TYPES_BINDINGS_V1.json` owns the generated Python/JavaScript/TypeScript foundational binding surface. No claim is made that arbitrary Rust structs and arbitrary JSON are identical external schemas.
+Prompt V1 retains its historical custom domain-separated, length-framed SHA-256 commitment; it is not HPTC. Prompt V2 uses HPTC V1 with semantic schema 2. Historical Topology V1 retains legacy V3 framing for read/audit only. Topology V2 uses its distinct HPTC schema-2 identity; the three manifests retain their HPTC V1 type identities. `PLATFORM_TYPES_BINDINGS_V1.json` owns the intentionally smaller generated Python/JavaScript/TypeScript foundational binding surface. Arbitrary Rust structs and arbitrary JSON are not identical external schemas, and the manifests do not implement collection or device drivers.
 
 HPTC V1 field/map order, type tags, integer widths, lengths, bounds and no-Unicode-normalization rule are frozen. Unknown/invalid tags, invalid bool bytes, noncanonical ordering, duplicate keys/fields, truncation and trailing bytes reject in `canonical_validate_v1`. Contract/profile meanings cannot change in place.
+
+Prompt V2 now rejects more than 4096 positions because it commits them as one frozen HPTC array. The former 4097..=8192 acceptance interval could not produce a native digest. Prompt V1 still supports 8192 positions; migration above the V2 bound fails without truncating or changing V1. Previously computable V2 digests remain unchanged. The schema, compiled catalog, oracles and native wire test share this capacity correction.
+
+`PromptDeliveryObservationV2::from_v1` computes the matching historical V1 digest. A `legacy_v1_digest` supplied directly to `new` or JSON decoding is only a committed reference: validation checks that it is nonzero, not that it identifies the same V1 fields. A migration owner must compare that reference with its independently retained V1 observation before treating it as verified lineage.
 
 ## 6. Data authority, persistence and migrations
 
@@ -125,15 +165,25 @@ None.
 
 This module owns no authoritative mutable domain and therefore has no writer, store, migration, projection, retention or restore protocol. `ContractRegistryV1` is an immutable caller-owned value; authenticating/provisioning a registry generation belongs to the product owner.
 
-The three canonically owned target protocols `RandomStreamManifestV1`, `ExternalSystemManifestV1` and `SensorCalibrationManifestV1` remain source-pending and are not implied by the existing primitive library.
+The three canonically owned protocols `RandomStreamManifestV1`, `ExternalSystemManifestV1` and `SensorCalibrationManifestV1` have native bounded source, validation and semantic-digest tests. They remain stateless values: random-stream execution, host inventory collection and sensor operation belong to their existing runtime owners.
+
+V2 numeric receipt integrity is not current-generation evidence by itself. `verify_for_snapshot` additionally compares the exact independently pinned generation/digest. Authentication, publication and advancement of that pin remain owner responsibilities. NDU owners opened with `open_with_numeric_registry_snapshot` consume V2 registered admission through the ordinary `evaluate` entrypoint and reject V1 admission. Owners opened with `open_with_numeric_registry` retain explicit V1 compatibility. This source composition does not prove daemon provisioning, external snapshot authentication or target-host qualification.
+
+Both registered NDU numeric owner modes require utility dimensions in strictly increasing `StableId` order. Each positional signal value belongs to the dimension at the same index. Their policy normalization and signed-Q32 profile are checked before the owner opens its projection store; this is consumer-owned preflight, not persistence authority in the type library. Registry-less legacy-owner behavior and the V1 utility-profile digest algorithm remain unchanged. See `MIGRATION_V1_TO_V2.md` for label-preserving dimension/value reordering and receipt reissuance.
 
 ## 7. Runtime, concurrency and transaction model
 
-The current native implementation is stateless. There are no locks, owner transactions, retry loops or background workers. Every operation completes synchronously over supplied values and bounded allocations. Product owners may cache immutable registry generations, but that cache is outside `platform.types` and must bind the exact generation/digest it serves.
+The native library is stateless. There are no locks, owner transactions, retry loops or background workers. Every operation completes synchronously over supplied values and bounded allocations. Product owners may cache immutable registry generations, but that cache is outside `platform.types` and must bind the exact generation/digest it serves. No current authorization, freshness or final-use decision is cached by these optimizations.
 
 ## 8. Failure semantics, recovery and rollback
 
 Failure is input rejection: invalid bounds/IDs, malformed canonical bytes, arithmetic overflow, unresolved definition/profile or attempted authority widening. There is no partial durable commit and no recovery/reconciler. Rollback restores code plus the compatible frozen contract version; V1 bytes/profile identities must never be silently reinterpreted.
+
+Rejected-input checks prioritize bounded work. HPTC text whose tag, length and payload exceed the remaining encoded-byte budget returns `TooLarge` before scanning for NUL. Field/map labels are checked against their 128-byte grammar bound before sorting, so an invalid label rejects before duplicate/order checks. These priorities affect only inputs violating multiple conditions; accepted canonical bytes and digests remain frozen.
+
+Namespace qualification checks the total 128-byte identity budget before scanning local text for `:`; a local value violating both conditions returns `TooLarge`. Manifest enum tokens check their 64-byte bound before grammar scanning. Multiple-invalid-input error priority need not be identical across languages unless explicitly specified; admission decisions and admitted semantic digests must agree. Raw content hashes retain caller-selected resource limits rather than acquiring semantic value-length limits.
+
+The Prompt admission correction is explicitly behavior-narrowing for previously uncommittable V2 inputs. It does not destroy larger V1 observations. A larger HPTC-backed representation needs a new version, not an increase to the frozen global HPTC limit.
 
 ## 9. Security, privacy and threat controls
 
@@ -143,17 +193,21 @@ None.
 
 The posture is zero authority, bounded input and deterministic commitments. Generic bounded values are not secret containers. Raw authority V1 input is untrusted; exactly one zero byte admits deny-all and every nonzero grant bit rejects before a trusted posture exists.
 
-Negative tests cover profile substitution, malformed IDs, oversize/depth exhaustion, duplicate/noncanonical HPTC collections, invalid bool/tag bytes, arithmetic overflow, missing registry definitions/profiles and raw authority widening. Any future persistence/network/effect surface is outside this module and requires a separate owner boundary.
+Negative tests cover profile substitution, inherited JavaScript property names, malformed IDs, oversize/depth exhaustion, duplicate/noncanonical HPTC collections, invalid bool/tag bytes, arithmetic overflow, missing registry definitions/profiles, invalid manifest enums/digests/counter windows/timestamps/ranges and raw authority widening. Any persistence, collection, network, device or effect surface is outside this module and requires a separate owner boundary.
+
+Manifest admission checks identity/policy bindings, not actual current-time validity or consumption. Trusted-clock calibration validity, observation freshness, current witness authorization and random counter reuse must be checked by the existing final-use owners. The type library does not mint these decisions.
 
 ## 10. Performance, capacity and hot-path policy
 
-Current source-enforced ceilings are: StableId 128 encoded bytes; HPTC V1 256 KiB; canonical container 4096 items and depth 16; registry 256 total ordinary/profile definitions; ordinary definition 4096 UTF-8 bytes and 256 KiB aggregate ordinary-definition bytes; numeric signals 4096 elements. Checked arithmetic rejects overflow rather than saturating.
+Source-enforced ceilings include StableId 128 encoded bytes; HPTC V1 256 KiB, 4096 container items and depth 16; registry 256 total ordinary/profile definitions; ordinary definition 4096 UTF-8 bytes and 256 KiB aggregate bytes; numeric signals 4096 elements; Prompt V1 8192 positions and Prompt V2 4096 positions. Manifest text is bounded per field and sensor confidence is `1..=1_000_000` ppm. Counter/time windows must be strictly ordered; uncertainty and operating ranges permit equal endpoints. Checked arithmetic rejects overflow rather than saturating.
 
-These are semantic capacity limits, not target-host latency claims. Named product composition must measure host-level latency/allocation separately.
+Owned bounded String/Vec inputs normalize retained capacity only when it exceeds the declared maximum; within-bound allocations are reused. Immutable registries likewise cap retained caller entry and numeric-profile vector capacity at 256 entries while reusing within-bound allocations. Borrowed constructors validate before copying. The legacy owned constructor cannot prevent prior caller/Into allocation, and logical capacity is not physical RSS. Canonical encoding preflights the full text framing budget before content scanning and bounds field/map labels before sorting; a short collection cannot force comparison of arbitrarily long caller labels.
+
+`platform-types-semantic-bench` measures real canonical, registry and numeric APIs with 17 samples of 64 operations per case. Paired buffered/streaming hashing alternates order. Allocation/reallocation call counts and requested bytes are measured by a standalone diagnostic allocator, never a production-library hook. Mandatory gates require per-sample allocation-byte reduction without call-count regression and allocation-free immutable lookups. Sample-average timing distributions remain diagnostic unless an explicit same-environment, same-harness baseline comparison is requested. Neither mode supplies target-host acceptance. Current metric definitions are implemented in `codex-rs/hepta-types/src/bin/platform-types-semantic-bench.rs`; `OPTIMIZATION_CLOSURE_20260929.md` retains historical reproduction context.
 
 ## 11. Observability and operations
 
-Pure value library; no daemon, database, migration, log sink or shutdown sequence. Consumers pin exact ID/numeric profiles and an immutable registry generation. Invalid conversion or unresolved profile is rejection, never fallback to a looser arithmetic path.
+Pure value library; no daemon, database, migration, log sink or shutdown sequence. Consumers pin exact ID/numeric profiles and immutable registry inputs. Invalid conversion or unresolved profile is rejection, never fallback to a looser arithmetic path.
 
 Current format references:
 
@@ -163,19 +217,23 @@ Current format references:
 
 ## 12. Verification and qualification
 
-Current focused evidence sources (references, not pass receipts):
+Focused evidence sources are references, not pass receipts:
 
-- `bounded_tests.rs`: byte/allocation bounds;
-- `identity_tests.rs`: exhaustive/profiled IDs, monotonic overflow, raw authority-bit rejection and sealed non-authorizing posture;
-- `canonical_digest_tests.rs`: frozen bytes/digest, ordering, HPTC raw validation, invalid bool/tag, truncation/trailing bytes and NFC/NFD separation;
-- `registry_tests.rs` + `numeric_profile_tests.rs`: registry bounds/namespace invariants and profile identity/version/scale/rounding binding;
-- `numeric_conversion_tests.rs`: rounding/overflow and registry-admitted source/target profile + normalization;
-- `CANONICAL_V1_CONFORMANCE.json`: five accepted + seven rejected vectors with Python/Node oracles;
-- `bindings/generate_bindings.py --check` plus generated Python/JavaScript consumer gates.
+- `bounded_tests.rs` and `tests/bounded_capacity.rs`: byte bounds, retained capacity and pointer reuse;
+- `identity_tests.rs`: exhaustive/profiled IDs, monotonic overflow, raw authority-bit rejection and sealed posture;
+- `canonical_digest_tests.rs` and `tests/canonical_streaming.rs`: frozen bytes/digest, ordering, all value tags, matching failures, size/depth boundaries and NFC/NFD separation;
+- `registry_tests.rs` and `numeric_profile_tests.rs`: registry bounds/namespace invariants and profile identity/version/scale/rounding;
+- `numeric_conversion_tests.rs` and `numeric_registry_v2.rs` tests: checked arithmetic, registry evidence, previous-path receipt parity and pinned-generation rejection;
+- `tests/prompt_v2_hashability.rs` and the real wire `tests/platform_types_hashability.rs`: constructor, migration, digest and cross-language capacity boundary;
+- `prompt_delivery_tests.rs` and `topology.rs` tests: disposition/token and topology candidate binding;
+- `manifests_tests.rs`: all three manifests, closed enums, digests, timestamps and ranges;
+- complete `hepta-ndu` library tests, including numeric admission/owner binding and preference/durability invariants;
+- frozen canonical conformance vectors, updated Prompt boundary oracles and generated-binding drift/consumer checks;
+- semantic-bound, nonempty-test and resource-gate verifier regressions; synthetic verifier fixtures are not native/performance evidence.
 
-Lane A CI executes all of the above plus native tests/strict lint on exact HEAD and deterministic synthetic merge. Workflow artifacts are the candidate receipts.
+The five product JSON fuzz paths assert successful admission implies hashability and semantic-preserving encode/decode. Native tests/strict lint, MSRV, pinned Miri and bounded fuzz remain same-candidate execution obligations. Both exact source-head and deterministic synthetic-merge deep pipelines run the resource gate and retain raw data. Empty successful test selections do not qualify. Failure artifacts never become pass receipts.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain source/merge, failure, compilation and independent-evidence obligations.
 
 ## 13. Implementation sequence and work packages
 
@@ -202,9 +260,9 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, current-truth/evidence maps and closed-world validation. `implementedOperationMappingComplete` covers only operations actually claimed by the candidate. `ownedTargetProtocolSourceComplete` covers every protocol canonically owned by the module and remains false while the three manifest protocols are source-pending. The legacy broad `nativeSourceMappingComplete` must not be used to collapse these meanings.
+Documentation completion requires this guide, current-truth/evidence maps and closed-world validation. `implementedOperationMappingComplete` covers operations declared in the implementation map. `ownedTargetProtocolSourceComplete` and `nativeSourceMappingComplete` describe mapped native source, not successful qualification or complete public rustdoc coverage. A narrow `pub use` inventory must not stand in for the full API.
 
-Composition requires a named authenticated product caller; qualification requires exact-head and synthetic-merge receipts. Acceptance, selection, promotion and release are separate externally governed states. This document grants no runtime/effect/deployment authority.
+Composition is capability-specific and requires a named authenticated product caller; qualification requires exact-head and synthetic-merge receipts. Acceptance, selection, promotion and release are separate externally governed states. This document grants no runtime/effect/deployment authority.
 
 ### Work-package execution envelopes
 
@@ -470,6 +528,8 @@ Composition requires a named authenticated product caller; qualification require
 - `cross_owner_write`
 - `unbounded_resource_or_retry`
 
+The following generated block is retained architectural inventory. Current protocol semantics and version/capacity corrections follow the native source precedence stated above.
+
 <!-- BEGIN GENERATED EXACT REGISTRY PROJECTION -->
 ### Exact closed-world registry projection
 
@@ -542,7 +602,7 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ### Readiness implementation work packages
 
-The following additional work packages are source-planning envelopes introduced by the readiness overlay; they do not imply implementation or activation:
+The following readiness work packages supplied the now-implemented contract source. Their runtime collection/driver and activation work remains outside this module:
 
 - `ASM-0-EXTERNAL-SYSTEM-CONTRACTS`
 - `EMB-0-EMBODIED-CONTRACTS`
@@ -555,26 +615,67 @@ composition, deployment or external effect authority.
 
 | Operation | Native symbol / artifact | Source path | Primary verification |
 |---|---|---|---|
-| bounded values | `BoundedText` / `BoundedBytes` | `codex-rs/hepta-types/src/bounded.rs` | `bounded_tests.rs` |
+| bounded values | `BoundedText` / `BoundedBytes` | `codex-rs/hepta-types/src/bounded.rs` | `bounded_tests.rs`, `tests/bounded_capacity.rs` |
 | profiled identity | `validate_id` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` |
 | raw authority rejection | `AuthorityPosture::try_from_wire_bytes` | `codex-rs/hepta-types/src/identity.rs` | all eight grant bits reject |
-| canonical commitment | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | accepted cross-language vectors |
+| canonical commitment | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | accepted vectors, `tests/canonical_streaming.rs` |
 | canonical raw validation | `canonical_validate_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | invalid bool/tag/order/truncation cases |
 | FixedQ32 compatibility arithmetic | `FixedQ32` | `codex-rs/hepta-types/src/fixed.rs` | explicit toward-zero profile tests |
 | immutable registry | `ContractRegistryV1` | `codex-rs/hepta-types/src/registry.rs` | namespace/profile/capacity tests |
 | numeric profile admission | `NumericProfileDefinitionV1` | `codex-rs/hepta-types/src/numeric_profile.rs` | identity/version/scale/rounding tests |
 | numeric conversion | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | rounding/overflow/digest tests |
-| registry-admitted conversion | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | normalization + both-profile admission |
-| generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript consumer gates |
+| compatibility registry checks | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | preserves pure arithmetic receipt return type |
+| explicit registered receipt | `rescale_signal_registered_receipt_v1` / `RegisteredNumericConversionReceiptV2` | `codex-rs/hepta-types/src/numeric_registry_v2.rs` | registry evidence, optimized-path parity and snapshot tests |
+| frozen prompt delivery | `PromptDeliveryObservationV1` | `codex-rs/hepta-types/src/prompt_delivery.rs` | disposition/token/digest tests plus Codex/Ledger callsites |
+| HPTC prompt delivery | `PromptDeliveryObservationV2` | `codex-rs/hepta-types/src/prompt_delivery_v2.rs` | migration/hashability/wire capacity regressions |
+| current runtime topology | `RuntimeTopologyCandidateV2` | `codex-rs/hepta-types/src/topology_v2.rs` | delta/candidate substitution tests plus Supervisor callsite |
+| owned manifests | `RandomStreamManifestV1` / `ExternalSystemManifestV1` / `SensorCalibrationManifestV1` | `codex-rs/hepta-types/src/manifests.rs` | constructor/validation/digest negative matrix |
+| registered NDU consumer | `NduNumericRegistryV1` / `NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot` / `evaluate` | `codex-rs/hepta-ndu/src/numeric_admission.rs`, `owner.rs`, `owner_numeric_snapshot.rs` | V1 compatibility, V2 snapshot binding and downgrade-rejection tests |
+| generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript own-property consumer gates |
+| resource diagnostics | `platform-types-semantic-bench` | `codex-rs/hepta-types/src/bin/` | same-candidate allocation/timing gate |
 
-- Exact source binding is recorded in `IMPLEMENTATION_MAP.json` using
-  `latest_declared_root_commit_v1`.
-- `implementedOperationMappingComplete=true` means the rows above have native
-  source and verification anchors.
-- `ownedTargetProtocolSourceComplete=false` while
-  `RandomStreamManifestV1`, `ExternalSystemManifestV1` and
-  `SensorCalibrationManifestV1` remain source-pending.
-- `productCallerState=not_composed`; generated bindings and qualification
-  callers are not production callers.
+- Exact source binding is recorded in `IMPLEMENTATION_MAP.json`; current Git
+  blob/tree provenance, not an older observation alone, binds later edits.
+- `implementedOperationMappingComplete` applies only to explicitly mapped rows.
+- The three owned manifests have native source, validation and tests.
+- Capability-specific consumers exist for Prompt V1, topology and configured NDU
+  V1/V2 numeric admission; product execution and target-host qualification remain false.
 - Production implementation, independent acceptance, activation and release
   remain false until their separate evidence gates pass.
+
+### Independent consumer execution diagnostics
+
+The exact-source and synthetic-merge jobs run the platform.types consumer matrix
+as a separate required step, even when another Lane A native package fails.
+`run_platform_types_consumer_qualification.sh` attempts every independent check,
+retains each exit status and log digest, and emits `execution.json` bound to the
+checked-out commit/tree and clean-worktree observation. A failed or empty test
+selection keeps the aggregate failed. All 24 checks are required. Diagnostics
+are uploaded on failure and do not become successful qualification receipts.
+
+The ordinary source consumer remains distinct from configured product bootstrap:
+NDU's registry-aware owner API exists, but an owner helper alone does not prove
+daemon startup supplies an authenticated registry or that all product paths
+consume registered numeric admission. Those claims need their actual callers.
+
+### Registered numeric consumption in the existing owner evaluation
+
+`NduAuthenticatedOwnerV1::evaluate` consumes its immutable configured registry
+on the ordinary owner entrypoint, not only through a separately called helper.
+Each bounded utility-axis vector is admitted in its existing signed-Q32
+representation, with exact axis identity and normalization. This is representation
+admission, not a reinterpretation of FixedQ32 multiplication or division rounding.
+Registered numeric profiles have one canonical positional axis mapping:
+strictly increasing `StableId` dimensions, with values matched to those labels
+before projection into a raw vector. A matching profile digest or numeric receipt
+cannot authorize a different interpretation of the vector's positions.
+A canonical support envelope binds the original support and the configured
+registered admission before the existing V2 evaluator runs. Snapshot-configured
+owners use the V2 envelope and receipt with the pinned generation/digest; V1
+registry-configured owners use the frozen V1 envelope and receipt. The evaluator
+version is not the numeric receipt version. Missing normalization, missing profile,
+wrong axes and absent original support reject. Registry-less legacy owners remain
+explicit advisory compatibility; their receipts are not registered admission.
+Daemon provisioning, external authentication and migration of every product
+bootstrap remain separate obligations, not facts established by the type-library
+verifier.

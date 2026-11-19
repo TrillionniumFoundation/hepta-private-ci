@@ -1,0 +1,281 @@
+name: platform.types deep qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.*"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-ndu/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/lane-a-foundation/platform.types/**"
+      - "docs/modules/platform.types/**"
+      - "qualification/module-execution-dossiers/detail/platform.types.md"
+      - "scripts/lane_a_foundation_*.py"
+      - "scripts/*platform_types*.py"
+      - "scripts/run_platform_types_*.sh"
+      - ".github/actions/hepta-synthetic-merge/action.yml"
+      - ".github/workflows/*platform-types*.yml"
+      - ".github/workflows/lane-a-foundation.yml"
+  push:
+    branches: [main]
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-types-deep-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PLATFORM_TYPES_MSRV: "1.96.0"
+  RUSTUP_TOOLCHAIN: "1.96.0"
+  PLATFORM_TYPES_MIRI: "nightly-2026-09-20"
+  PLATFORM_TYPES_RUSTDOC_TOOLCHAIN: "nightly-2026-09-20"
+  PLATFORM_TYPES_FUZZ_TOOLCHAIN: "nightly-2026-09-20"
+  PLATFORM_TYPES_CARGO_FUZZ_VERSION: "0.12.0"
+
+jobs:
+  resolve:
+    name: Freeze platform.types source and base identities
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    outputs:
+      source_sha: ${{ steps.bind.outputs.source_sha }}
+      source_tree: ${{ steps.bind.outputs.source_tree }}
+      base_sha: ${{ steps.bind.outputs.base_sha }}
+      base_tree: ${{ steps.bind.outputs.base_tree }}
+    steps:
+      # Every run selects executable bytes from the immutable pull-request or push event.
+      # No manually supplied ref can influence checkout.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Regression-test candidate, workflow and evidence binding
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_binding.py' -v
+          python3 -m unittest discover -s scripts -p 'test_platform_types_candidate_support.py' -v
+          python3 scripts/test_platform_types_workflow_security.py
+          python3 scripts/test_platform_types_ci_gate.py -v
+      - id: bind
+        shell: bash
+        env:
+          REQUESTED_SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+          REQUESTED_BASE_REF: ${{ github.event.pull_request.base.sha || github.event.before || 'origin/main' }}
+          REQUESTED_PR_NUMBER: ${{ github.event.pull_request.number }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == pull_request ]]; then
+            [[ "$REQUESTED_PR_NUMBER" =~ ^[1-9][0-9]*$ ]]
+          fi
+          python3 scripts/platform_types_candidate_binding.py resolve \
+            --source-ref "$REQUESTED_SOURCE_REF" --base-ref "$REQUESTED_BASE_REF" \
+            --output "$RUNNER_TEMP/platform-types-binding/candidate-binding.json" \
+            --github-output "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-candidate-binding
+          path: ${{ runner.temp }}/platform-types-binding/candidate-binding.json
+          if-no-files-found: error
+          retention-days: 90
+
+  source:
+    name: Qualify exact platform.types source head
+    needs: resolve
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen checkout and install the qualification toolchain
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/platform-types-context/source-head"
+          python3 scripts/platform_types_candidate_binding.py verify \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            > "$RUNNER_TEMP/platform-types-context/source-head/candidate-binding.json"
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component clippy --component rustfmt
+          {
+            printf 'source_sha=%s\nbase_sha=%s\nworkflow_ref=%s\nworkflow_sha=%s\nrun_id=%s\nrun_attempt=%s\n' \
+              "$SOURCE_SHA" "$BASE_SHA" "$GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+            printf 'runner_os=%s\nrunner_arch=%s\nimage_os=%s\nimage_version=%s\n' \
+              "$RUNNER_OS" "$RUNNER_ARCH" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            rustc --version --verbose
+            cargo --version --verbose
+            python3 --version
+            node --version
+            uname -a
+          } > "$RUNNER_TEMP/platform-types-context/source-head/environment.txt"
+      - id: schema
+        name: Record schema qualification outcome
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name schema \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            -- bash scripts/run_platform_types_schema_qualification.sh \
+              "$RUNNER_TEMP/platform-types-schema/source-head"
+      - id: qualify
+        name: Record deep qualification outcome
+        shell: bash
+        env:
+          PLATFORM_TYPES_API_BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name deep-qualification \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            -- bash scripts/run_platform_types_deep_qualification.sh \
+              source-head "$SOURCE_SHA" "$SOURCE_SHA"
+      - name: Materialize source-head qualification summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python3 scripts/platform_types_ci_gate.py summary \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/source-head" \
+            --candidate-kind source-head \
+            --required schema \
+            --required deep-qualification
+      - id: artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-deep-source-${{ needs.resolve.outputs.source_sha }}
+          path: |
+            .hepta-evidence/platform-types-deep/source-head/
+            ${{ runner.temp }}/platform-types-schema/source-head/
+            ${{ runner.temp }}/platform-types-context/source-head/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce source-head summary after evidence upload
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          test "${{ steps.artifacts.outcome }}" = success
+          python3 scripts/platform_types_ci_gate.py assert \
+            --summary "$RUNNER_TEMP/platform-types-context/source-head/qualification-summary.json"
+
+  merge:
+    name: Qualify deterministic platform.types merge candidate
+    needs: resolve
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify frozen checkout and install the qualification toolchain
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/platform-types-context/synthetic-merge"
+          python3 scripts/platform_types_candidate_binding.py verify \
+            --source-sha "$SOURCE_SHA" --base-sha "$BASE_SHA" \
+            > "$RUNNER_TEMP/platform-types-context/synthetic-merge/candidate-binding.json"
+          rustup toolchain install "$RUSTUP_TOOLCHAIN" --profile minimal --component clippy --component rustfmt
+          {
+            printf 'source_sha=%s\nbase_sha=%s\nworkflow_ref=%s\nworkflow_sha=%s\nrun_id=%s\nrun_attempt=%s\n' \
+              "$SOURCE_SHA" "$BASE_SHA" "$GITHUB_WORKFLOW_REF" "$GITHUB_WORKFLOW_SHA" "$GITHUB_RUN_ID" "$GITHUB_RUN_ATTEMPT"
+            printf 'runner_os=%s\nrunner_arch=%s\nimage_os=%s\nimage_version=%s\n' \
+              "$RUNNER_OS" "$RUNNER_ARCH" "${ImageOS:-unknown}" "${ImageVersion:-unknown}"
+            rustc --version --verbose
+            cargo --version --verbose
+            python3 --version
+            node --version
+            uname -a
+          } > "$RUNNER_TEMP/platform-types-context/synthetic-merge/environment.txt"
+      - id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ needs.resolve.outputs.base_sha }}
+          source-sha: ${{ needs.resolve.outputs.source_sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta platform.types CI
+          author-email: hepta-platform-types-ci@users.noreply.github.com
+          message: Synthetic platform.types deep qualification merge
+      - id: schema
+        name: Record merge schema qualification outcome
+        shell: bash
+        env:
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name schema \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            -- bash scripts/run_platform_types_schema_qualification.sh \
+              "$RUNNER_TEMP/platform-types-schema/synthetic-merge"
+      - id: qualify
+        name: Record merge deep qualification outcome
+        shell: bash
+        env:
+          PLATFORM_TYPES_API_BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+          BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python3 scripts/platform_types_ci_gate.py run \
+            --name deep-qualification \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            -- bash scripts/run_platform_types_deep_qualification.sh \
+              synthetic-merge "$MERGE_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PR_NUMBER"
+      - name: Materialize merge qualification summary
+        if: ${{ always() }}
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          python3 scripts/platform_types_ci_gate.py summary \
+            --evidence-root "$RUNNER_TEMP/platform-types-context/synthetic-merge" \
+            --candidate-kind synthetic-merge \
+            --required schema \
+            --required deep-qualification
+      - id: artifacts
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: platform-types-deep-merge-${{ steps.merge.outputs.sha }}
+          path: |
+            .hepta-evidence/platform-types-deep/synthetic-merge/
+            ${{ runner.temp }}/platform-types-schema/synthetic-merge/
+            ${{ runner.temp }}/platform-types-context/synthetic-merge/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 90
+      - name: Enforce merge summary after evidence upload
+        if: ${{ always() }}
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          test "${{ steps.artifacts.outcome }}" = success
+          python3 scripts/platform_types_ci_gate.py assert \
+            --summary "$RUNNER_TEMP/platform-types-context/synthetic-merge/qualification-summary.json"

@@ -13,6 +13,16 @@ use codex_hepta_types::StableId;
 #[path = "durable_clock_tests.rs"]
 mod clock_tests;
 
+#[tokio::test]
+async fn durable_operation_constructor_preserves_all_connection_policies()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let store = DurableOperationStore::open(&directory.path().join("operations.sqlite3")).await?;
+    crate::sqlite::tests::assert_operation_policy(&store.pool).await?;
+    store.close().await;
+    Ok(())
+}
+
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
 }

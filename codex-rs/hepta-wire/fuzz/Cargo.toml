@@ -1,21 +1,22 @@
 [package]
-name = "hepta-wire-fuzz"
+name = "codex-hepta-wire-platform-types-fuzz"
 version = "0.0.0"
 publish = false
-edition = "2024"
+edition = "2021"
 
 [package.metadata]
 cargo-fuzz = true
 
 [dependencies]
-codex-hepta-wire = { path = ".." }
 libfuzzer-sys = "0.4"
+codex-hepta-wire = { path = ".." }
 
 [[bin]]
-name = "decode_frames"
-path = "fuzz_targets/decode_frames.rs"
+name = "platform_types_json"
+path = "fuzz_targets/platform_types_json.rs"
 test = false
 doc = false
 bench = false
 
 [workspace]
+members = ["."]

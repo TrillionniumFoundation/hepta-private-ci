@@ -1,7 +1,7 @@
 //! Multi-domain handoff and transactional topology publication regressions.
 
 use codex_hepta_control_plane::RuntimeModuleStateClassV1;
-use codex_hepta_types::RuntimeTopologyDeltaV1;
+use codex_hepta_types::RuntimeTopologyDeltaV2;
 
 use super::*;
 use crate::DurableWriterHandoffJournalV1;
@@ -198,9 +198,9 @@ fn stateless_abi(
 fn topology_candidate(
     candidate_digest: Digest32,
     selected_topology_digest: Digest32,
-    deltas: Vec<RuntimeTopologyDeltaV1>,
-) -> RuntimeTopologyCandidateV1 {
-    RuntimeTopologyCandidateV1 {
+    deltas: Vec<RuntimeTopologyDeltaV2>,
+) -> RuntimeTopologyCandidateV2 {
+    RuntimeTopologyCandidateV2 {
         proposal_digest: digest("proposal"),
         candidate_id: id("candidate"),
         candidate_digest,
@@ -241,9 +241,9 @@ fn projected_topology_rejects_retiring_a_still_required_dependency() {
     let candidate = topology_candidate(
         digest("retire-foundation"),
         baseline.digest,
-        vec![RuntimeTopologyDeltaV1 {
+        vec![RuntimeTopologyDeltaV2 {
             module_id: id("foundation"),
-            operation: RuntimeTopologyOperationV1::Retire,
+            operation: RuntimeTopologyOperationV2::Retire,
             related_module_ids: Vec::new(),
             predecessor_digest: digest("foundation-v1"),
             candidate_digest: Digest32::ZERO,
@@ -285,9 +285,9 @@ fn projected_topology_rejects_unmaterialized_dependency() {
     let candidate = topology_candidate(
         candidate_digest,
         baseline.digest,
-        vec![RuntimeTopologyDeltaV1 {
+        vec![RuntimeTopologyDeltaV2 {
             module_id: id("extension"),
-            operation: RuntimeTopologyOperationV1::Add,
+            operation: RuntimeTopologyOperationV2::Add,
             related_module_ids: Vec::new(),
             predecessor_digest: Digest32::ZERO,
             candidate_digest: digest("extension-v1"),
@@ -331,17 +331,17 @@ fn projected_topology_rejects_new_dependency_cycles() {
         candidate_digest,
         baseline.digest,
         vec![
-            RuntimeTopologyDeltaV1 {
+            RuntimeTopologyDeltaV2 {
                 module_id: id("alpha"),
-                operation: RuntimeTopologyOperationV1::Replace,
+                operation: RuntimeTopologyOperationV2::Replace,
                 related_module_ids: Vec::new(),
                 predecessor_digest: digest("alpha-v1"),
                 candidate_digest: digest("alpha-v2"),
                 evidence_digest: digest("alpha-evidence"),
             },
-            RuntimeTopologyDeltaV1 {
+            RuntimeTopologyDeltaV2 {
                 module_id: id("beta"),
-                operation: RuntimeTopologyOperationV1::Add,
+                operation: RuntimeTopologyOperationV2::Add,
                 related_module_ids: Vec::new(),
                 predecessor_digest: Digest32::ZERO,
                 candidate_digest: digest("beta-v1"),
@@ -387,9 +387,9 @@ fn topology_candidate_is_not_serving_until_atomic_finalize() {
     let candidate = topology_candidate(
         candidate_digest,
         baseline.digest,
-        vec![RuntimeTopologyDeltaV1 {
+        vec![RuntimeTopologyDeltaV2 {
             module_id: id("extension"),
-            operation: RuntimeTopologyOperationV1::Add,
+            operation: RuntimeTopologyOperationV2::Add,
             related_module_ids: Vec::new(),
             predecessor_digest: Digest32::ZERO,
             candidate_digest: digest("extension-v1"),
@@ -435,9 +435,9 @@ fn pending_extension(supervisor: &mut RuntimeModuleSupervisorV1) -> Digest32 {
         topology_candidate(
             candidate_digest,
             baseline.digest,
-            vec![RuntimeTopologyDeltaV1 {
+            vec![RuntimeTopologyDeltaV2 {
                 module_id: id("extension"),
-                operation: RuntimeTopologyOperationV1::Add,
+                operation: RuntimeTopologyOperationV2::Add,
                 related_module_ids: Vec::new(),
                 predecessor_digest: Digest32::ZERO,
                 candidate_digest: digest("extension-v1"),
@@ -672,9 +672,9 @@ fn retire_only_proposals_have_a_reusable_pending_budget() {
             topology_candidate(
                 proposal,
                 baseline,
-                vec![RuntimeTopologyDeltaV1 {
+                vec![RuntimeTopologyDeltaV2 {
                     module_id: id("retiring"),
-                    operation: RuntimeTopologyOperationV1::Retire,
+                    operation: RuntimeTopologyOperationV2::Retire,
                     related_module_ids: Vec::new(),
                     predecessor_digest: digest("retiring-v1"),
                     candidate_digest: Digest32::ZERO,
@@ -746,9 +746,9 @@ fn topology_retires_dependents_before_providers_regardless_of_delta_order() {
         supervisor
             .record_retirement_ready(&id(module), generation(1), retirement_witness())
             .unwrap();
-        deltas.push(RuntimeTopologyDeltaV1 {
+        deltas.push(RuntimeTopologyDeltaV2 {
             module_id: id(module),
-            operation: RuntimeTopologyOperationV1::Retire,
+            operation: RuntimeTopologyOperationV2::Retire,
             related_module_ids: Vec::new(),
             predecessor_digest: digest(module),
             candidate_digest: Digest32::ZERO,
@@ -807,17 +807,17 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
             candidate_digest,
             before.digest,
             vec![
-                RuntimeTopologyDeltaV1 {
+                RuntimeTopologyDeltaV2 {
                     module_id: id("foundation"),
-                    operation: RuntimeTopologyOperationV1::Retire,
+                    operation: RuntimeTopologyOperationV2::Retire,
                     related_module_ids: Vec::new(),
                     predecessor_digest: digest("foundation"),
                     candidate_digest: Digest32::ZERO,
                     evidence_digest: digest("retire"),
                 },
-                RuntimeTopologyDeltaV1 {
+                RuntimeTopologyDeltaV2 {
                     module_id: id("consumer"),
-                    operation: RuntimeTopologyOperationV1::Rewire,
+                    operation: RuntimeTopologyOperationV2::Rewire,
                     related_module_ids: Vec::new(),
                     predecessor_digest: digest("consumer"),
                     candidate_digest: digest("consumer-v2"),
@@ -840,4 +840,64 @@ fn topology_can_rewire_a_consumer_and_retire_its_old_provider_atomically() {
     assert_eq!(result.active[0].module_id, id("consumer"));
     assert_eq!(result.active[0].generation, generation(2));
     assert!(result.active[0].dependencies.is_empty());
+}
+
+#[test]
+fn legacy_topology_candidate_policy_rejects_valid_and_invalid_v1_without_owner_mutation() {
+    let mut supervisor = RuntimeModuleSupervisorV1::new();
+    supervisor
+        .register_bootstrap(stateless_abi(
+            "foundation",
+            1,
+            "foundation-v1",
+            digest("foundation-v1"),
+            None,
+            &[],
+        ))
+        .expect("bootstrap");
+    let before = format!("{supervisor:?}");
+    let selected = supervisor.topology().digest;
+    let mut historical = codex_hepta_types::RuntimeTopologyCandidateV1 {
+        proposal_digest: digest("proposal"),
+        candidate_id: id("historical"),
+        candidate_digest: digest("placeholder"),
+        baseline_generation: generation(1),
+        candidate_generation: generation(2),
+        selected_topology_digest: selected,
+        evaluation_digest: digest("evaluation"),
+        rollback_predecessor_digest: selected,
+        changed: true,
+        deltas: vec![codex_hepta_types::RuntimeTopologyDeltaV1 {
+            module_id: id("new.module"),
+            operation: codex_hepta_types::RuntimeTopologyOperationV1::Add,
+            related_module_ids: Vec::new(),
+            predecessor_digest: Digest32::ZERO,
+            candidate_digest: digest("implementation"),
+            evidence_digest: digest("evidence"),
+        }],
+    };
+    historical.candidate_digest = historical.content_digest().expect("legacy digest");
+    historical.validate().expect("historically valid candidate");
+    for candidate in [historical.clone(), {
+        historical.candidate_digest = Digest32::ZERO;
+        historical
+    }] {
+        for abis in [
+            Vec::new(),
+            vec![stateless_abi(
+                "new.module",
+                2,
+                "implementation",
+                candidate.candidate_digest,
+                None,
+                &[],
+            )],
+        ] {
+            assert_eq!(
+                supervisor.reject_legacy_topology_candidate(&candidate, &abis),
+                Err(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection),
+            );
+            assert_eq!(format!("{supervisor:?}"), before);
+        }
+    }
 }

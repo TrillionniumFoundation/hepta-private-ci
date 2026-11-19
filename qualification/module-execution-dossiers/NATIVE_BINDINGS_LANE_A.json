@@ -21,7 +21,7 @@
     {
       "module": "platform.types",
       "path": "codex-rs/hepta-types/src/lib.rs",
-      "blobSha": "13f6149e0a3481bd25d01df35fd7fc49071e4ebe",
+      "blobSha": "daddd75e05666c7d9919b76d1f24475ea719dd0d",
       "exports": [
         "validate_id",
         "AuthorityPosture",
@@ -32,7 +32,13 @@
         "NumericProfileDefinitionV1",
         "FIXED_Q32_ARITHMETIC_PROFILE_V1",
         "rescale_signal",
-        "rescale_signal_registered"
+        "rescale_signal_registered",
+        "RegisteredNumericConversionReceiptV1",
+        "PromptDeliveryObservationV1",
+        "RuntimeTopologyCandidateV1",
+        "RandomStreamManifestV1",
+        "ExternalSystemManifestV1",
+        "SensorCalibrationManifestV1"
       ]
     },
     {
@@ -115,6 +121,6 @@
   "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
   "sourceCodeCommitRole": "provenance_only_non_authoritative",
   "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
-  "sourceObservationDigest": "29043ce2adfb1359a5b8a8189127cf1eabc317d0de2f772e93349def3f0996a2",
+  "sourceObservationDigest": "b0b0dc2d0bedc59be8df8d40a44daa87b0d44e50c4e55716918dc4bf4cc91e53",
   "blobShaRole": "historical_observation_only"
 }
