@@ -7,6 +7,7 @@ use std::pin::Pin;
 use std::sync::atomic::AtomicBool;
 use std::task::Poll;
 
+use anyhow::Context;
 use pretty_assertions::assert_eq;
 
 use super::*;
@@ -17,7 +18,7 @@ async fn wait_for_queued_submission(
     >,
     source_checked: &AtomicBool,
     handle: &crate::LearningIterationHandleV1,
-) {
+) -> anyhow::Result<()> {
     tokio::time::timeout(
         Duration::from_secs(5),
         poll_fn(|context| {
@@ -32,11 +33,12 @@ async fn wait_for_queued_submission(
         }),
     )
     .await
-    .expect("original SQLite claim and actor enqueue");
+    .context("original SQLite claim and actor enqueue")?;
     assert!(matches!(
         handle.reserve(),
         Err(LearningIterationRuntimeErrorV1::QueueFull)
     ));
+    Ok(())
 }
 
 #[tokio::test]
@@ -74,7 +76,7 @@ async fn queued_learning_submit_survives_waiter_loss_and_reconciles_once() -> an
             }),
         ),
     );
-    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await;
+    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await?;
     drop(delivery);
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     assert_eq!(claimed.len(), 1);
@@ -162,7 +164,7 @@ async fn explicit_learning_cancel_precedes_an_already_queued_submit() -> anyhow:
             }),
         ),
     );
-    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await;
+    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await?;
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     let (state, cognitive) = admitted_state(&daemon).await;
     let cancellation = CancellationToken::new();
@@ -226,7 +228,7 @@ async fn detached_learning_submit_still_cancels_and_recovers_without_new_work() 
             }),
         ),
     );
-    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await;
+    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await?;
     drop(delivery);
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     let (state, cognitive) = admitted_state(&daemon).await;
@@ -331,7 +333,7 @@ async fn detached_learning_submit_preserves_its_expired_work_deadline() -> anyho
             }),
         ),
     );
-    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await;
+    wait_for_queued_submission(delivery.as_mut(), &source_checked, &handle).await?;
     drop(delivery);
     let claimed = ok(store.pending_circuit_learning(/*limit*/ 1).await);
     let (state, cognitive) = admitted_state(&daemon).await;

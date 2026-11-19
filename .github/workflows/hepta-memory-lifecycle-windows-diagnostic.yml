@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - ".github/workflows/hepta-memory-lifecycle-windows-diagnostic.yml"
+      - ".github/scripts/test_memory_lifecycle_diagnostic.py"
       - "codex-rs/ext/hepta-memory/src/local_lifecycle.rs"
       - "codex-rs/hepta-memory/src/local_lease_outbox.rs"
       - "codex-rs/hepta-cognitive-store/src/**"
@@ -41,6 +42,10 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+
+      - name: Check the original result collector
+        shell: bash
+        run: python -m unittest discover -v -s .github/scripts -p test_memory_lifecycle_diagnostic.py
 
       - name: Record immutable source and native platform
         shell: bash
@@ -216,13 +221,23 @@ jobs:
               report["target_directories"] = [str(path) for path in targets]
               logs = []
               xml_files = []
+              companion_logs = []
+              unexpected_results = []
               for target in targets:
                   for path in sorted(target.rglob("*")):
                       if path.is_file() and path.suffix in (".log", ".xml"):
                           saved = out / "raw" / path.relative_to(root)
                           saved.parent.mkdir(parents=True, exist_ok=True)
                           saved.write_bytes(path.read_bytes())
-                          (logs if path.suffix == ".log" else xml_files).append(saved)
+                          relative = path.relative_to(target).as_posix()
+                          if relative == "test.log":
+                              logs.append(saved)
+                          elif relative == "test.xml":
+                              xml_files.append(saved)
+                          elif relative == "test.xml.log":
+                              companion_logs.append(saved)
+                          else:
+                              unexpected_results.append(str(saved))
               identity = json.loads((out / "identity.json").read_text())
               execution = json.loads((out / "execution-result.json").read_text())
               report["execution"] = execution
@@ -236,8 +251,21 @@ jobs:
               for item in identity["source_files"]:
                   if hashlib.sha256(Path(item["path"]).read_bytes()).hexdigest() != item["sha256"]:
                       errors.append("Source bytes changed: " + item["path"])
-              if len(targets) != 1 or len(logs) != 1 or len(xml_files) != 1:
+              report["unexpected_result_files"] = unexpected_results
+              if len(targets) != 1 or len(logs) != 1 or len(xml_files) != 1 or unexpected_results:
                   errors.append("Expected one target, one test.log and one native test.xml; retries or missing evidence are invalid.")
+              if len(companion_logs) > 1:
+                  errors.append("Expected at most one direct Windows wrapper output copy.")
+              if companion_logs:
+                  wrapper_bytes = companion_logs[0].read_bytes()
+                  matches = len(logs) == 1 and bool(wrapper_bytes) and logs[0].read_bytes().endswith(wrapper_bytes)
+                  report["wrapper_output_copy"] = {
+                      "path": str(companion_logs[0]), "bytes": len(wrapper_bytes),
+                      "sha256": hashlib.sha256(wrapper_bytes).hexdigest(),
+                      "matches_primary_suffix": matches,
+                  }
+                  if not matches:
+                      errors.append("The Windows wrapper output copy differs from the primary test log.")
               if len(logs) == 1:
                   text = logs[0].read_text(errors="replace")
                   text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
@@ -287,6 +315,7 @@ jobs:
         with:
           name: memory-lifecycle-windows-${{ env.SOURCE_SHA }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/memory-lifecycle-diagnostic/
+          include-hidden-files: true
           if-no-files-found: error
           retention-days: 14
 
