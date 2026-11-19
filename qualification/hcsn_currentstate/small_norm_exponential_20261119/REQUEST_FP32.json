@@ -1,0 +1,54 @@
+{
+  "identity": "hcsn-smallnorm-taylor12-fp32-fp64-fix-20261119-2f215-verification002",
+  "owner": "/root/n256_closure",
+  "base_pr": 6761,
+  "base_remote_head": "390b644beec80dc057b2603cc2a0bdf69af7c3de",
+  "base_tree": "77160bce784b424dda48fe18054a37f46ec71912",
+  "test_modules": [
+    "qualification.hcsn_currentstate.test_differentiable",
+    "qualification.hcsn_currentstate.test_reset_snapshot",
+    "qualification.hcsn_currentstate.test_zero_age",
+    "qualification.hcsn_currentstate.test_small_norm_strict",
+    "qualification.hcsn_currentstate.test_small_norm_exponential",
+    "qualification.hcsn_network.test_network",
+    "qualification.hcsn_network.test_task_physics",
+    "qualification.hcsn_network.test_phase_state",
+    "qualification.hcsn_network.test_benchmark_models"
+  ],
+  "expected_test_cases": 35,
+  "source_sha256": {
+    "qualification/hcsn_currentstate/test_differentiable.py": "21a32527846660babb614dc212e4416998aa1bda245e6099a5699acc6dc0314b",
+    "qualification/hcsn_currentstate/test_reset_snapshot.py": "feffecb122b20e9bb198b1e40f641d502d36f27c5041201f8d5ecc7f1a4eaaf3",
+    "qualification/hcsn_currentstate/test_zero_age.py": "1b7f7704bfd1a835e094f0122e66357143af716d6d018a8f09e126745f0fc0ad",
+    "qualification/hcsn_currentstate/test_small_norm_strict.py": "f1713fad460233016f15fbf82d2c9b0015a68e559f1613784f8ceca6531b6001",
+    "qualification/hcsn_currentstate/test_small_norm_exponential.py": "c93ad7c2e682abe9ec566f79dace6e45f322a082ace635f6c1a4b1b467b1791f",
+    "qualification/hcsn_network/test_network.py": "e20559f9e79713c87ef30bf00d440b85fd31fe2cc4c0db98be524f0ca21d9d3a",
+    "qualification/hcsn_network/test_task_physics.py": "a1c5147001cb8c85074d8a44e6989e7a4c9116cb4c028708d2ad39514126c935",
+    "qualification/hcsn_network/test_phase_state.py": "1c62f317a65370e6ad66bc6deb89d4a063bc9e79e81a0f72260475beccaaa72d",
+    "qualification/hcsn_network/test_benchmark_models.py": "a0b85605f138af7324ce919db4536cdd933dbbb78e18154bfb776320e3dabadd",
+    "qualification/hcsn_currentstate/differentiable.py": "e1731b349de811177dc402ee0ee70f08a25289bb844837b679cabef2d63bdfb6",
+    "qualification/hcsn_currentstate/reference_timevarying.py": "d1d88576e8d2047981103744182634685774bbe015f63f83f7c25d4d076a593e",
+    "qualification/hcsn_currentstate/study_timevarying.py": "1330cd3df71bd982b5320d9d9802ae7f097740eda989e2872e482b92a57d219c",
+    "qualification/hcsn_currentstate/small_norm_exponential_20261119/verify_fp32.py": "766bec912cd145cdb9343606bbc8c2d19aa2a9e48e952aa5e397698631f8cfae",
+    "qualification/hcsn_currentstate/small_norm_exponential_20261119/run_fp32.py": "28f6b694bc78ab216a69fcfc839e2ad9fd97294346ae1a10070647082cc1ec02",
+    "qualification/hcsn_currentstate/small_norm_exponential_20261119/diagnostic/attempt001/MATRICES.npz": "a2c77b55618fc0d924ad320ea1d5d33823a333a846869dafbf0f1655d3624221"
+  },
+  "source_freeze_unix_time": 1795093114.930236,
+  "resource_limits_per_child": {
+    "cpu_affinity": [
+      7
+    ],
+    "address_space_bytes": 4294967296,
+    "soft_cpu_seconds": 120,
+    "hard_cpu_seconds": 125,
+    "wall_deadline_seconds": 150
+  },
+  "children": [
+    "regression with original strict61 thresholds and quantified derivative checks",
+    "one source-frozen changing-law independent DDE/gradient/cold-continuation qualification"
+  ],
+  "grid_repeats": 0,
+  "optimizer_calls": 0,
+  "source_change": "FP64 norm1<=.1 and FP32 norm1<=.6 use degree12 Horner, larger norms retain native. CPU validation; GPU/TF32 not qualified.",
+  "prior_fp64_only_source_commit": "c685bfed07e"
+}

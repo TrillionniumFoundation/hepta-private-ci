@@ -78,6 +78,8 @@ jobs:
         run: |
           python -m unittest \
             qualification.hcsn_currentstate.test_zero_age \
+            qualification.hcsn_currentstate.test_small_norm_exponential \
+            qualification.hcsn_currentstate.test_small_norm_strict \
             qualification.hcsn_network.test_network \
             qualification.hcsn_network.test_task_physics \
             qualification.hcsn_network.test_phase_state \

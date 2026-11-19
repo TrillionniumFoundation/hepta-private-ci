@@ -1,0 +1,45 @@
+{
+  "identity": "hcsn-noncommuting-exponential-fp32-review-20261119-2f21-attempt001",
+  "kernel_sha256": "e1731b349de811177dc402ee0ee70f08a25289bb844837b679cabef2d63bdfb6",
+  "review_sha256": "598af70b7b0facae9929779662948dbae3b3852b0c5b2c5024f340e49c300cb2",
+  "runner_sha256": "66e67a4c3ee3b324e812aaf5f88322984d150604a502d67026ddf89faaf938fd",
+  "dtype": "torch.float32",
+  "norm_roster": [
+    0.0512,
+    0.5,
+    0.6,
+    0.600001
+  ],
+  "cpu_affinity": [
+    5
+  ],
+  "address_space_bytes": 4294967296,
+  "cpu_seconds": [
+    80,
+    90
+  ],
+  "wall_seconds": 120,
+  "tolerances": {
+    "value": {
+      "atol": 1.5e-07,
+      "rtol": 3e-07
+    },
+    "gradient": {
+      "atol": 5e-08,
+      "rtol": 1e-06
+    },
+    "hessian": {
+      "atol": 1e-08,
+      "rtol": 2e-06
+    }
+  },
+  "roster_basis": "Prior frozen four-point extension: affected T8 lower edge, native counterexample range, and both sides of new FP32 cutoff.",
+  "input_rounding": "All A/B/C/W are binary32 before conversion to MP80; comparisons promote measured tensors to binary64.",
+  "model_calls": 0,
+  "dataset_rows": 0,
+  "optimizer_calls": 0,
+  "matrix_exponential_calls": {
+    "candidate": 4,
+    "mpmath_dps_80": 28
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "identity": "hcsn-noncommuting-exponential-review-20261119-2f21-attempt001",
+  "kernel_sha256": "29eee2059064ac0994bc2fef8485784a0f1e5ebe369d23c74c2e1da3866cd9a4",
+  "review_sha256": "f8ce3c0c98f0f494dead316e65f5254ffcb5086afcb5d5ae326aba067f861ce7",
+  "norm_roster": [
+    0.034,
+    0.099999,
+    0.1,
+    0.100001
+  ],
+  "cpu_affinity": [
+    5
+  ],
+  "address_space_bytes": 4294967296,
+  "cpu_seconds": [
+    80,
+    90
+  ],
+  "wall_seconds": 120,
+  "tolerances": {
+    "value": {
+      "atol": 3e-15,
+      "rtol": 3e-14
+    },
+    "gradient": {
+      "atol": 3e-14,
+      "rtol": 3e-13
+    },
+    "hessian": {
+      "atol": 3e-13,
+      "rtol": 3e-12
+    }
+  }
+}

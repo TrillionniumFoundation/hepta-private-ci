@@ -1,0 +1,66 @@
+{
+  "schema": "hcsn-timevarying-complete-state-check-v1",
+  "scalar_sweep": {
+    "full_field_max_error": 2.220446049250313e-16,
+    "swept_fraction_gradient_error": 8.326672684688674e-17,
+    "zero_discount_epoch": true,
+    "signed_reward_epochs": true
+  },
+  "changing_laws": {
+    "full_field_max_error": 3.6577511852708966e-13,
+    "oracle_refinement_max_difference": 0.0,
+    "balance_max_error": 7.993605777301127e-14,
+    "oracle_segments": 31,
+    "oracle_rhs_evaluations": 1262,
+    "tighter_rhs_evaluations": 1262,
+    "tensor_exponential_actions": 45,
+    "largest_matrix_order": 29,
+    "complete_state_bytes": 16992,
+    "overlapping_return_window": [
+      0.23,
+      0.36
+    ]
+  },
+  "gradients": {
+    "tensor_ad": [
+      0.012442865413530966,
+      -0.020443981088548592,
+      0.01629314651438407,
+      -0.56301451934288,
+      -0.0016770950903226489,
+      0.008686143745515351,
+      -0.1959227197834166,
+      -0.005494769364141351,
+      -0.04094450974610258,
+      -0.5134271153503895,
+      0.49014884236609546,
+      0.4784221983450843
+    ],
+    "independent_ode_fd": [
+      0.01244286554623275,
+      -0.020443980757190398,
+      0.0162931464504995,
+      -0.5630145193314939,
+      -0.0016770950273256242,
+      0.008686143764905884,
+      -0.1959227197750648,
+      -0.005494769372606699,
+      -0.04094450974552467,
+      -0.5134271153530574,
+      0.49014884226915684,
+      0.4784221984106002
+    ],
+    "maximum_absolute_error": 3.3135819435536895e-10,
+    "epsilon": 1e-06,
+    "delay_schedule_differentiated": false
+  },
+  "cold_continuation": {
+    "maximum_absolute_error": 1.500466417780899e-13,
+    "past_autograd_restored": false,
+    "child_exit_code": 0
+  },
+  "all_declared_checks_pass": true,
+  "model_training_calls": 0,
+  "old_c2_and_n256_gates_changed": false,
+  "body_wall_seconds": 2.8126495749999947
+}
