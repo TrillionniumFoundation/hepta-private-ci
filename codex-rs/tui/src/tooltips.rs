@@ -153,7 +153,6 @@ fn pick_tooltip<R: Rng + ?Sized>(rng: &mut R) -> Option<&'static str> {
 pub(crate) mod announcement {
     use crate::tooltips::ANNOUNCEMENT_TIP_URL;
     use crate::version::CODEX_CLI_VERSION;
-    use time::Date;
     use codex_http_client::ClientRouteClass;
     use codex_http_client::HttpClientFactory;
     use codex_http_client::RouteAwareClientPool;
@@ -162,6 +161,7 @@ pub(crate) mod announcement {
     use serde::Deserialize;
     use std::sync::OnceLock;
     use std::time::Duration;
+    use time::Date;
 
     static ANNOUNCEMENT_TIP: OnceLock<Option<String>> = OnceLock::new();
     const CURRENT_OS: TargetOs = TargetOs::current();

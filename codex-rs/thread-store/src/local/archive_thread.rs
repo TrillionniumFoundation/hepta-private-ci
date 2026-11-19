@@ -127,7 +127,11 @@ async fn archive_thread_with_paths(
 
     if let Some(ctx) = state_db_ctx
         && let Err(err) = ctx
-            .mark_archived(thread_id, archived_path.as_path(), codex_utils_time::Timestamp::now())
+            .mark_archived(
+                thread_id,
+                archived_path.as_path(),
+                codex_utils_time::Timestamp::now(),
+            )
             .await
     {
         if let Err(restore_err) = restore_rollout_moves(&rollout_moves) {

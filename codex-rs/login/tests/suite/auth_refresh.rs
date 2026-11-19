@@ -1,7 +1,6 @@
 use anyhow::Context;
 use anyhow::Result;
 use base64::Engine;
-use time::Duration;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
@@ -28,6 +27,7 @@ use std::process::Command;
 use std::sync::Arc;
 use std::time::Duration as StdDuration;
 use tempfile::TempDir;
+use time::Duration;
 use wiremock::Mock;
 use wiremock::MockServer;
 use wiremock::ResponseTemplate;
@@ -342,7 +342,8 @@ async fn auth_refreshes_when_access_token_is_near_expiry() -> Result<()> {
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
     let initial_last_refresh = codex_utils_time::Timestamp::now();
-    let near_expiry_access_token = access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(4));
+    let near_expiry_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(4));
     let initial_tokens = build_tokens(&near_expiry_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -395,7 +396,8 @@ async fn auth_skips_access_token_outside_refresh_window() -> Result<()> {
     let server = MockServer::start().await;
     let ctx = RefreshTokenTestContext::new(&server).await?;
     let initial_last_refresh = codex_utils_time::Timestamp::now();
-    let fresh_access_token = access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(6));
+    let fresh_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(6));
     let initial_tokens = build_tokens(&fresh_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -583,7 +585,8 @@ async fn returns_fresh_tokens_as_is() -> Result<()> {
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
     let stale_refresh = codex_utils_time::Timestamp::now() - Duration::days(9);
-    let fresh_access_token = access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::hours(1));
+    let fresh_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::hours(1));
     let initial_tokens = build_tokens(&fresh_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -634,7 +637,8 @@ async fn refreshes_token_when_access_token_is_expired() -> Result<()> {
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
     let fresh_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
-    let expired_access_token = access_token_with_expiration(codex_utils_time::Timestamp::now() - Duration::hours(1));
+    let expired_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() - Duration::hours(1));
     let initial_tokens = build_tokens(&expired_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),

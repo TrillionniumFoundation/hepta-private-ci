@@ -1,5 +1,3 @@
-use std::path::PathBuf;
-use std::sync::Arc;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::SessionMeta;
 use codex_protocol::protocol::SessionMetaLine;
@@ -7,6 +5,8 @@ use codex_protocol::protocol::SessionSource;
 use codex_state::ThreadMetadataBuilder;
 use codex_utils_absolute_path::test_support::PathExt;
 use pretty_assertions::assert_eq;
+use std::path::PathBuf;
+use std::sync::Arc;
 use tempfile::TempDir;
 
 use super::DeleteConfirmation;

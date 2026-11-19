@@ -591,9 +591,11 @@ mod thread_processor_behavior_tests {
     #[test]
     fn summary_from_stored_thread_preserves_millisecond_precision() {
         let created_at =
-            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:05.678Z").expect("valid timestamp");
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:05.678Z")
+                .expect("valid timestamp");
         let updated_at =
-            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:06.789Z").expect("valid timestamp");
+            codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-02T03:04:06.789Z")
+                .expect("valid timestamp");
         let thread_id =
             ThreadId::from_string("00000000-0000-0000-0000-000000000123").expect("valid thread");
         let stored_thread = StoredThread {

@@ -155,7 +155,9 @@ pub fn write_chatgpt_auth(
         account_id: fixture.account_id,
     };
 
-    let last_refresh = fixture.last_refresh.unwrap_or_else(|| Some(codex_utils_time::Timestamp::now()));
+    let last_refresh = fixture
+        .last_refresh
+        .unwrap_or_else(|| Some(codex_utils_time::Timestamp::now()));
 
     let auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),

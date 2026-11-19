@@ -34,9 +34,9 @@ impl StateRuntime {
                 let thread_id = ThreadId::try_from(thread_id)?;
                 let section_entered_at = section_entered_at_ms
                     .map(|millis| {
-                        codex_utils_time::Timestamp::from_timestamp_millis(millis).ok_or_else(|| {
-                            anyhow::anyhow!("invalid unix timestamp millis: {millis}")
-                        })
+                        codex_utils_time::Timestamp::from_timestamp_millis(millis).ok_or_else(
+                            || anyhow::anyhow!("invalid unix timestamp millis: {millis}"),
+                        )
                     })
                     .transpose()?;
                 Ok((thread_id, (section_position, section_entered_at)))

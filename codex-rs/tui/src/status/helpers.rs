@@ -178,7 +178,10 @@ pub(crate) fn format_directory_display(directory: &Path, max_width: Option<usize
     formatted
 }
 
-pub(crate) fn format_reset_timestamp(dt: codex_utils_time::Timestamp, captured_at: codex_utils_time::Timestamp) -> String {
+pub(crate) fn format_reset_timestamp(
+    dt: codex_utils_time::Timestamp,
+    captured_at: codex_utils_time::Timestamp,
+) -> String {
     let time = dt.format_local("%H:%M");
     if dt.local_date() == captured_at.local_date() {
         time

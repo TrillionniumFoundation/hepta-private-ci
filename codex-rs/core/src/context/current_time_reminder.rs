@@ -1,4 +1,3 @@
-
 use super::ContextualUserFragment;
 use codex_protocol::models::ContentItemKind;
 

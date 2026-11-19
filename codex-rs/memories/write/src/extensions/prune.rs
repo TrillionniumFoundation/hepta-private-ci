@@ -1,13 +1,16 @@
 use crate::memory_extensions_root;
-use time::Duration;
 use std::path::Path;
+use time::Duration;
 use tracing::warn;
 
 pub async fn prune_old_extension_resources(memory_root: &Path) {
     prune_old_extension_resources_with_now(memory_root, codex_utils_time::Timestamp::now()).await
 }
 
-async fn prune_old_extension_resources_with_now(memory_root: &Path, now: codex_utils_time::Timestamp) {
+async fn prune_old_extension_resources_with_now(
+    memory_root: &Path,
+    now: codex_utils_time::Timestamp,
+) {
     let cutoff = now - Duration::days(crate::extension_resources::RETENTION_DAYS);
     let extensions_root = memory_extensions_root(memory_root);
     let mut extensions = match tokio::fs::read_dir(&extensions_root).await {

@@ -82,8 +82,11 @@ pub fn builder_from_items(
     let file_name = rollout_path.file_name()?.to_str()?;
     let file_name = RolloutFileName::parse(file_name)?;
     let created_ts = file_name.timestamp();
-    let created_at =
-        codex_utils_time::Timestamp::from_timestamp(created_ts.unix_timestamp(), 0)?.with_nanosecond(0)?;
+    let created_at = codex_utils_time::Timestamp::from_timestamp(
+        created_ts.unix_timestamp(),
+        /*nanoseconds*/ 0,
+    )?
+    .with_nanosecond(/*nanoseconds*/ 0)?;
     Some(ThreadMetadataBuilder::new(
         file_name.thread_id(),
         rollout_path.to_path_buf(),
@@ -395,7 +398,7 @@ async fn file_modified_time_utc(path: &Path) -> Option<codex_utils_time::Timesta
 
 fn parse_timestamp_to_utc(ts: &str) -> Option<codex_utils_time::Timestamp> {
     if let Ok(dt) = codex_utils_time::Timestamp::parse_filename_timestamp(ts) {
-        return dt.with_nanosecond(0);
+        return dt.with_nanosecond(/*nanoseconds*/ 0);
     }
     if let Ok(dt) = codex_utils_time::Timestamp::parse_from_rfc3339(ts) {
         return Some(dt);

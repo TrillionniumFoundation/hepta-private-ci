@@ -353,9 +353,9 @@ pub enum AppEvent {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_utils_time::Timestamp;
     use codex_cloud_tasks_client::CloudBackendFuture;
     use codex_cloud_tasks_client::CloudTaskError;
+    use codex_utils_time::Timestamp;
 
     struct FakeBackend {
         // maps env key to titles

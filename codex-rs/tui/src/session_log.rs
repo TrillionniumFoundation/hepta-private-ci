@@ -78,7 +78,8 @@ impl SessionLogger {
 
 fn now_ts() -> String {
     // RFC3339 for readability; consumers can parse as needed.
-    codex_utils_time::Timestamp::now().to_rfc3339_opts(codex_utils_time::SecondsFormat::Millis, true)
+    codex_utils_time::Timestamp::now()
+        .to_rfc3339_opts(codex_utils_time::SecondsFormat::Millis, /*use_z*/ true)
 }
 
 pub(crate) fn maybe_init(config: &Config) {

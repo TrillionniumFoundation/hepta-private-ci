@@ -64,7 +64,10 @@ impl fmt::Display for ParseTimestampError {
 impl std::error::Error for ParseTimestampError {}
 
 impl Timestamp {
-    pub const UNIX_EPOCH: Self = Self { seconds: 0, nanoseconds: 0 };
+    pub const UNIX_EPOCH: Self = Self {
+        seconds: 0,
+        nanoseconds: 0,
+    };
 
     pub fn now() -> Self {
         match Self::from_datetime(OffsetDateTime::now_utc()) {
@@ -85,7 +88,10 @@ impl Timestamp {
         {
             return None;
         }
-        Some(Self { seconds, nanoseconds })
+        Some(Self {
+            seconds,
+            nanoseconds,
+        })
     }
 
     pub fn from_timestamp_millis(milliseconds: i64) -> Option<Self> {
@@ -94,12 +100,23 @@ impl Timestamp {
         Self::from_timestamp(seconds, nanoseconds)
     }
 
-    pub fn from_ymd_hms(year: i32, month: u32, day: u32, hour: u32, minute: u32, second: u32) -> Option<Self> {
+    pub fn from_ymd_hms(
+        year: i32,
+        month: u32,
+        day: u32,
+        hour: u32,
+        minute: u32,
+        second: u32,
+    ) -> Option<Self> {
         let (month, day, hour, minute, second) = (
-            u8::try_from(month).ok()?, u8::try_from(day).ok()?, u8::try_from(hour).ok()?,
-            u8::try_from(minute).ok()?, u8::try_from(second).ok()?,
+            u8::try_from(month).ok()?,
+            u8::try_from(day).ok()?,
+            u8::try_from(hour).ok()?,
+            u8::try_from(minute).ok()?,
+            u8::try_from(second).ok()?,
         );
-        let date = time::Date::from_calendar_date(year, time::Month::try_from(month).ok()?, day).ok()?;
+        let date =
+            time::Date::from_calendar_date(year, time::Month::try_from(month).ok()?, day).ok()?;
         let datetime = date.with_hms(hour, minute, second).ok()?.assume_utc();
         Self::from_datetime(datetime)
     }
@@ -114,7 +131,9 @@ impl Timestamp {
         Self::from_timestamp(seconds, nanoseconds)
     }
 
-    pub fn timestamp(&self) -> i64 { self.seconds }
+    pub fn timestamp(&self) -> i64 {
+        self.seconds
+    }
 
     pub fn timestamp_millis(&self) -> i64 {
         self.seconds * 1_000 + i64::from(self.nanoseconds / 1_000_000)
@@ -124,7 +143,9 @@ impl Timestamp {
         i64::try_from(i128::from(self.seconds) * 1_000_000_000 + i128::from(self.nanoseconds)).ok()
     }
 
-    pub fn timestamp_subsec_nanos(&self) -> u32 { self.nanoseconds }
+    pub fn timestamp_subsec_nanos(&self) -> u32 {
+        self.nanoseconds
+    }
 
     pub fn with_nanosecond(self, nanoseconds: u32) -> Option<Self> {
         Self::from_timestamp(self.seconds, nanoseconds)
@@ -200,7 +221,11 @@ impl Timestamp {
     pub fn format_utc(&self, layout: UtcFormat) -> String {
         let calendar = self.calendar();
         let year = calendar.year();
-        let year = if (0..=9999).contains(&year) { format!("{year:04}") } else { format!("{year:+05}") };
+        let year = if (0..=9999).contains(&year) {
+            format!("{year:04}")
+        } else {
+            format!("{year:+05}")
+        };
         let month = u8::from(calendar.month());
         let day = calendar.day();
         let hour = calendar.hour();
@@ -209,29 +234,47 @@ impl Timestamp {
         match layout {
             UtcFormat::Date => format!("{year}-{month:02}-{day:02}"),
             UtcFormat::Time => format!("{hour:02}:{minute:02}:{second:02}"),
-            UtcFormat::DateTime => format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}"),
-            UtcFormat::DateTimeUtc => format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02} UTC"),
+            UtcFormat::DateTime => {
+                format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}")
+            }
+            UtcFormat::DateTimeUtc => {
+                format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02} UTC")
+            }
             UtcFormat::DatePath => format!("{year}/{month:02}/{day:02}"),
-            UtcFormat::Compact => format!("{year}{month:02}{day:02}T{hour:02}{minute:02}{second:02}Z"),
-            UtcFormat::Filename => format!("{year}-{month:02}-{day:02}T{hour:02}-{minute:02}-{second:02}"),
+            UtcFormat::Compact => {
+                format!("{year}{month:02}{day:02}T{hour:02}{minute:02}{second:02}Z")
+            }
+            UtcFormat::Filename => {
+                format!("{year}-{month:02}-{day:02}T{hour:02}-{minute:02}-{second:02}")
+            }
         }
     }
 
     pub fn to_rfc3339(&self) -> String {
-        self.to_rfc3339_opts(SecondsFormat::AutoSi, false)
+        self.to_rfc3339_opts(SecondsFormat::AutoSi, /*use_z*/ false)
     }
 
     pub fn to_rfc3339_opts(&self, precision: SecondsFormat, use_z: bool) -> String {
-        Rfc3339 { timestamp: *self, precision, use_z }.to_string()
+        Rfc3339 {
+            timestamp: *self,
+            precision,
+            use_z,
+        }
+        .to_string()
     }
 
     pub fn local(&self) -> Option<jiff::Zoned> {
         let nanos = i32::try_from(self.nanoseconds % 1_000_000_000).ok()?;
-        Some(jiff::Timestamp::new(self.seconds, nanos).ok()?.to_zoned(jiff::tz::TimeZone::system()))
+        Some(
+            jiff::Timestamp::new(self.seconds, nanos)
+                .ok()?
+                .to_zoned(jiff::tz::TimeZone::system()),
+        )
     }
 
     pub fn format_local(&self, pattern: &str) -> String {
-        self.local().map(|local| local.strftime(pattern).to_string())
+        self.local()
+            .map(|local| local.strftime(pattern).to_string())
             .unwrap_or_else(|| self.to_rfc3339())
     }
 
@@ -278,7 +321,9 @@ impl Sub<Duration> for Timestamp {
 
 impl Sub<Timestamp> for Timestamp {
     type Output = Duration;
-    fn sub(self, earlier: Self) -> Duration { self.signed_duration_since(earlier) }
+    fn sub(self, earlier: Self) -> Duration {
+        self.signed_duration_since(earlier)
+    }
 }
 
 impl From<SystemTime> for Timestamp {
@@ -299,7 +344,7 @@ impl FromStr for Timestamp {
 
 impl fmt::Display for Timestamp {
     fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let canonical = self.to_rfc3339_opts(SecondsFormat::AutoSi, true);
+        let canonical = self.to_rfc3339_opts(SecondsFormat::AutoSi, /*use_z*/ true);
         let (date, clock) = canonical.split_once('T').ok_or(fmt::Error)?;
         let clock = clock.strip_suffix('Z').ok_or(fmt::Error)?;
         write!(output, "{date} {clock} UTC")
@@ -308,7 +353,14 @@ impl fmt::Display for Timestamp {
 
 impl fmt::Debug for Timestamp {
     fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {
-        fmt::Display::fmt(&Rfc3339 { timestamp: *self, precision: SecondsFormat::AutoSi, use_z: true }, output)
+        fmt::Display::fmt(
+            &Rfc3339 {
+                timestamp: *self,
+                precision: SecondsFormat::AutoSi,
+                use_z: true,
+            },
+            output,
+        )
     }
 }
 
@@ -322,14 +374,20 @@ impl fmt::Display for Rfc3339 {
     fn fmt(&self, output: &mut fmt::Formatter<'_>) -> fmt::Result {
         let datetime = self.timestamp.calendar();
         let year = datetime.year();
-        if (0..=9999).contains(&year) { write!(output, "{year:04}")?; }
-        else { write!(output, "{year:+05}")?; }
+        if (0..=9999).contains(&year) {
+            write!(output, "{year:04}")?;
+        } else {
+            write!(output, "{year:+05}")?;
+        }
         let month = u8::from(datetime.month());
         let day = datetime.day();
         let hour = datetime.hour();
         let minute = datetime.minute();
         let second = u32::from(datetime.second()) + self.timestamp.nanoseconds / 1_000_000_000;
-        write!(output, "-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}")?;
+        write!(
+            output,
+            "-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}"
+        )?;
         let nanos = self.timestamp.nanoseconds % 1_000_000_000;
         let digits = match self.precision {
             SecondsFormat::Secs => 0,
@@ -337,8 +395,8 @@ impl fmt::Display for Rfc3339 {
             SecondsFormat::Micros => 6,
             SecondsFormat::Nanos => 9,
             SecondsFormat::AutoSi if nanos == 0 => 0,
-            SecondsFormat::AutoSi if nanos % 1_000_000 == 0 => 3,
-            SecondsFormat::AutoSi if nanos % 1_000 == 0 => 6,
+            SecondsFormat::AutoSi if nanos.is_multiple_of(1_000_000) => 3,
+            SecondsFormat::AutoSi if nanos.is_multiple_of(1_000) => 6,
             SecondsFormat::AutoSi => 9,
         };
         match digits {

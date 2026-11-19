@@ -7,6 +7,7 @@ use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_config::AbsolutePathBuf;
 use codex_config::CloudConfigBundle;
+use codex_utils_time::Timestamp;
 use hmac::Hmac;
 use hmac::Mac;
 use serde::Deserialize;
@@ -15,9 +16,7 @@ use sha2::Sha256;
 use std::path::Path;
 use std::time::Duration;
 use thiserror::Error;
-use codex_utils_time::Timestamp;
 use tokio::fs;
-
 
 const CLOUD_CONFIG_BUNDLE_CACHE_VERSION: u32 = 1;
 pub(super) const CLOUD_CONFIG_BUNDLE_CACHE_FILENAME: &str = "cloud-config-bundle-cache.json";
@@ -98,9 +97,7 @@ impl CloudConfigBundleCache {
             return Err(CacheLoadStatus::CacheIdentityMismatch);
         }
 
-        if cache_file.signed_payload.expires_at
-            <= Timestamp::now()
-        {
+        if cache_file.signed_payload.expires_at <= Timestamp::now() {
             return Err(CacheLoadStatus::CacheExpired);
         }
 

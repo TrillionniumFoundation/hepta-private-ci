@@ -125,11 +125,13 @@ fn decode_jwt_payload<T: DeserializeOwned>(jwt: &str) -> Result<T, IdTokenInfoEr
     Ok(claims)
 }
 
-pub fn parse_jwt_expiration(jwt: &str) -> Result<Option<codex_utils_time::Timestamp>, IdTokenInfoError> {
+pub fn parse_jwt_expiration(
+    jwt: &str,
+) -> Result<Option<codex_utils_time::Timestamp>, IdTokenInfoError> {
     let claims: StandardJwtClaims = decode_jwt_payload(jwt)?;
     Ok(claims
         .exp
-        .and_then(|exp| codex_utils_time::Timestamp::from_timestamp(exp, 0)))
+        .and_then(|exp| codex_utils_time::Timestamp::from_timestamp(exp, /*nanoseconds*/ 0)))
 }
 
 pub fn parse_chatgpt_jwt_claims(jwt: &str) -> Result<IdTokenInfo, IdTokenInfoError> {

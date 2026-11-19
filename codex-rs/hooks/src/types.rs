@@ -1,10 +1,10 @@
-use std::sync::Arc;
-use codex_utils_time::SecondsFormat;
 use codex_protocol::ThreadId;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use codex_utils_time::SecondsFormat;
 use futures::future::BoxFuture;
 use serde::Serialize;
 use serde::Serializer;
+use std::sync::Arc;
 
 pub type HookFn = Arc<dyn for<'a> Fn(&'a HookPayload) -> BoxFuture<'a, HookResult> + Send + Sync>;
 
@@ -77,11 +77,14 @@ pub struct HookEventAfterAgent {
     pub last_assistant_message: Option<String>,
 }
 
-fn serialize_triggered_at<S>(value: &codex_utils_time::Timestamp, serializer: S) -> Result<S::Ok, S::Error>
+fn serialize_triggered_at<S>(
+    value: &codex_utils_time::Timestamp,
+    serializer: S,
+) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    serializer.serialize_str(&value.to_rfc3339_opts(SecondsFormat::Secs, true))
+    serializer.serialize_str(&value.to_rfc3339_opts(SecondsFormat::Secs, /*use_z*/ true))
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -114,8 +117,11 @@ mod tests {
             session_id,
             cwd: cwd.clone(),
             client: None,
-            triggered_at: codex_utils_time::Timestamp::from_ymd_hms(2025, 1, 1, 0, 0, 0)
-                .expect("valid timestamp"),
+            triggered_at: codex_utils_time::Timestamp::from_ymd_hms(
+                /*year*/ 2025, /*month*/ 1, /*day*/ 1, /*hour*/ 0,
+                /*minute*/ 0, /*second*/ 0,
+            )
+            .expect("valid timestamp"),
             hook_event: HookEvent::AfterAgent {
                 event: HookEventAfterAgent {
                     thread_id,

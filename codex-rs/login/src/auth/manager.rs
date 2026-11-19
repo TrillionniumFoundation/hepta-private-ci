@@ -2937,7 +2937,8 @@ impl AuthManager {
             Some(last_refresh) => last_refresh,
             None => return false,
         };
-        last_refresh < codex_utils_time::Timestamp::now() - time::Duration::days(TOKEN_REFRESH_INTERVAL)
+        last_refresh
+            < codex_utils_time::Timestamp::now() - time::Duration::days(TOKEN_REFRESH_INTERVAL)
     }
 
     async fn refresh_external_auth(

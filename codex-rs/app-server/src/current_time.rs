@@ -133,7 +133,7 @@ async fn request_current_time(
     let response: CurrentTimeReadResponse =
         serde_json::from_value(result).context("invalid current-time response")?;
 
-    codex_utils_time::Timestamp::from_timestamp(response.current_time_at, 0)
+    codex_utils_time::Timestamp::from_timestamp(response.current_time_at, /*nanoseconds*/ 0)
         .ok_or_else(|| anyhow!("current-time response is outside the supported range"))
 }
 

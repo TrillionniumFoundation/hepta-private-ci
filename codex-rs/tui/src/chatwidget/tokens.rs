@@ -18,10 +18,10 @@ mod chart;
 use std::sync::Arc;
 use std::sync::RwLock;
 
-use time::Date;
 use codex_app_server_protocol::GetAccountTokenUsageResponse;
 use ratatui::style::Stylize;
 use ratatui::text::Line;
+use time::Date;
 
 use super::ChatWidget;
 use crate::app_event::AppEvent;
@@ -74,11 +74,7 @@ impl TokenActivityHandle {
         self.finish_with_today(result, codex_utils_time::Timestamp::now().calendar().date());
     }
 
-    fn finish_with_today(
-        &self,
-        result: Result<GetAccountTokenUsageResponse, String>,
-        today: Date,
-    ) {
+    fn finish_with_today(&self, result: Result<GetAccountTokenUsageResponse, String>, today: Date) {
         let state = match result {
             Ok(response) => TokenActivityState::Loaded { response, today },
             Err(_) => TokenActivityState::Error,

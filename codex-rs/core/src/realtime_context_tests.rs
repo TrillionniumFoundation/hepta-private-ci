@@ -37,12 +37,21 @@ fn stored_thread(cwd: &str, title: &str, first_user_message: &str) -> StoredThre
         model_provider: "test-provider".to_string(),
         model: Some("gpt-5.2".to_string()),
         reasoning_effort: None,
-        created_at: codex_utils_time::Timestamp::from_timestamp(1_709_251_100, 0)
-            .expect("valid timestamp"),
-        updated_at: codex_utils_time::Timestamp::from_timestamp(1_709_251_200, 0)
-            .expect("valid timestamp"),
-        recency_at: codex_utils_time::Timestamp::from_timestamp(1_709_251_200, 0)
-            .expect("valid timestamp"),
+        created_at: codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_709_251_100,
+            /*nanoseconds*/ 0,
+        )
+        .expect("valid timestamp"),
+        updated_at: codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_709_251_200,
+            /*nanoseconds*/ 0,
+        )
+        .expect("valid timestamp"),
+        recency_at: codex_utils_time::Timestamp::from_timestamp(
+            /*seconds*/ 1_709_251_200,
+            /*nanoseconds*/ 0,
+        )
+        .expect("valid timestamp"),
         archived_at: None,
         project_id: None,
         section: None,
