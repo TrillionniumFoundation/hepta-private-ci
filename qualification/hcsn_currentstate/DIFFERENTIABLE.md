@@ -62,3 +62,13 @@ The complete study takes 4.007 seconds (4.006 CPU seconds), including the
 additional gradient test, with peak RSS 313,192 KiB. Both attempts and their
 test logs are retained. The current-state CI also runs the six tests and the
 sixty-update study, retaining its own runtime, source head and raw result.
+
+A separate [longer-horizon cost diagnostic](evidence/longtime-20261119/README.md)
+keeps this kernel unchanged and evaluates five fresh-process cases against
+independent finite Gamma-renewal values and rate derivatives. All five complete,
+with maximum absolute value/gradient errors below 6.04e-14 / 9.06e-14. In this
+one-state example, the complete logical state grows from 192 to 134,256 bytes
+between one and 64 refractory intervals, despite retaining only one pending
+packet: its internal generator grows from order two to 128. The results make
+the long-sequence storage and backward-cost limit explicit; they do not qualify
+a constant-memory cell or change any existing numerical admission gate.
