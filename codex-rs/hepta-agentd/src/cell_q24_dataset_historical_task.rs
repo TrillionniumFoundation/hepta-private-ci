@@ -33,6 +33,23 @@ impl OriginalTask for HistoricalTaskSource {
 }
 
 impl CellQ24DatasetTaskV1 {
+    pub(super) fn capture_historical_in_operation(
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+        client: &Arc<RootHistoricalTaskReadClientV1>,
+        session: &AgentdRootAuthoritySession,
+        operation: &crate::root_historical_task_read_client::OriginalHistoricalOperationV1<'_>,
+    ) -> Result<Self, Error> {
+        let (publication, decision) = operation
+            .read_original_task(&receipt, client, session)
+            .map_err(|_| Error::Binding("complete original historical Task operation required"))?;
+        let source = Arc::new(HistoricalTaskSource { receipt });
+        Ok(Self {
+            source,
+            publication,
+            decision,
+        })
+    }
+
     /// This constructor accepts the opaque original-client receipt, never a
     /// decoded publication, raw Cell decision, digest or caller-authored cut.
     pub(crate) fn capture_historical(

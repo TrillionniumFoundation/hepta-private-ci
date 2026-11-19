@@ -59,15 +59,22 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         config: OriginalCellQ24DatasetFreezeSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let (saved, journal) = CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(
-            preparation,
-            |read| -> Result<_, Error> {
-                OriginalFreezePreparationReadV1::original_signing_payload(read)?;
-                let saved = validate_config(preparation, &config, &key, read)?;
-                let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
-                Ok((saved, journal))
-            },
-        )??;
+        CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(preparation, |read| {
+            Self::create_in_operation(file, witness, preparation, config, key, read)
+        })?
+    }
+
+    pub(super) fn create_in_operation(
+        file: File,
+        witness: W,
+        preparation: &CellQ24DatasetFreezePreparationV1,
+        config: OriginalCellQ24DatasetFreezeSigningConfigV1,
+        key: SigningKey,
+        read: &OriginalFreezePreparationReadV1<'_>,
+    ) -> Result<Self, Error> {
+        OriginalFreezePreparationReadV1::original_signing_payload(read)?;
+        let saved = validate_config(preparation, &config, &key, read)?;
+        let journal = LearningOwnerJournalV1::create(file, witness, saved.binding_digest)?;
         Ok(Self {
             journal,
             config,
@@ -85,14 +92,21 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         config: OriginalCellQ24DatasetFreezeSigningConfigV1,
         key: SigningKey,
     ) -> Result<Self, Error> {
-        let (saved, journal) = CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(
-            preparation,
-            |read| -> Result<_, Error> {
-                let saved = validate_config(preparation, &config, &key, read)?;
-                let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
-                Ok((saved, journal))
-            },
-        )??;
+        CellQ24DatasetFreezePreparationV1::with_original_freeze_operation(preparation, |read| {
+            Self::recover_in_operation(file, witness, preparation, config, key, read)
+        })?
+    }
+
+    pub(super) fn recover_in_operation(
+        file: File,
+        witness: W,
+        preparation: &CellQ24DatasetFreezePreparationV1,
+        config: OriginalCellQ24DatasetFreezeSigningConfigV1,
+        key: SigningKey,
+        read: &OriginalFreezePreparationReadV1<'_>,
+    ) -> Result<Self, Error> {
+        let saved = validate_config(preparation, &config, &key, read)?;
+        let journal = LearningOwnerJournalV1::recover(file, witness, saved.binding_digest)?;
         Ok(Self {
             journal,
             config,
@@ -113,7 +127,7 @@ impl<W: AnchorWitnessStore> OriginalCellQ24DatasetFreezeOwnerV1<W> {
         })?
     }
 
-    fn authorize_in_operation(
+    pub(super) fn authorize_in_operation(
         &mut self,
         preparation: &CellQ24DatasetFreezePreparationV1,
         read: &OriginalFreezePreparationReadV1<'_>,

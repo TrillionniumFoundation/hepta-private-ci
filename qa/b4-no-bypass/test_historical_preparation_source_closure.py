@@ -29,7 +29,8 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
         self.assertIn(HISTORY, rows["q24_original_dataset_operation"]["product_callers"])
         self.assertEqual(rows["q24_original_historical_dataset_batch"]["product_callers"],
                          [AGENT + "cell_q24_prepared_learning.rs"])
-        self.assertEqual(rows["q24_original_historical_preparation"]["product_callers"],
+        self.assertEqual(rows["q24_original_historical_preparation"]["product_callers"], [])
+        self.assertEqual(rows["q24_original_historical_task_preparation"]["product_callers"],
                          [AGENT + "production_post_a_q24.rs"])
 
     def test_capture_uses_original_current_cut_and_deadline(self):
@@ -37,14 +38,21 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
             "HistoricalDatasetLedgerV1::capture_original(receipt, trust, vec![task])?",
             "let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
             "original.with_original_ledger_operation(|operation|",
+            "Self::capture_historical_in_operation(config, ledger, operation)", "})?"))
+        self.check_markers(HISTORY, "fn capture_original_historical_task(", (
+            "OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?",
+            "OriginalHistoricalLearningTrustV1::with_original_operation(&trust, |read|",
+            "HistoricalDatasetLedgerV1::capture_original_task_in_operation(",
+            "OriginalDatasetOperationV1::borrow_original_historical(read)",
+            "Self::capture_historical_in_operation(config, ledger, &operation)", "})?"))
+        self.check_markers(HISTORY, "fn capture_historical_in_operation(", (
             "operation.read_historical(&ledger,", "require_historical_configuration(&config, &ledger)",
             "observed_at >= config.request.envelope.expiry_unix_seconds",
             "RootHistoricalLedgerReadDataV1::read_snapshot(data)?", "data.ledger_cut()?.frontier",
             "ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
-            "preparation.with_historical_cut_in_operation(",
+            "tasks: ledger.tasks().to_vec()", "preparation.with_historical_cut_in_operation(",
             "dataset_freeze_signing_payload_v2(snapshot, &preparation.plan()?)?",
             "Ok(preparation)", "})?"))
-        self.reject_removal(HISTORY, "fn capture_historical(", "})?", 1)
 
     def test_snapshot_and_whole_current_initial_are_rechecked_each_time(self):
         self.check_markers(HISTORY, "fn with_historical_cut_in_operation<T>(", (

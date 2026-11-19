@@ -72,9 +72,9 @@ class HistoricalFreezerSourceTests(unittest.TestCase):
             "Err(FreezeOperationError::Source(error)) => Err(error)"))
         for occurrence in (0, 1):
             self.reject_removal(OPERATION, "fn with_original_freeze_operation<T, E>(",
-                                "read.revalidate_source()", occurrence)
+                                "OriginalFreezePreparationReadV1::revalidate_source(&read)", occurrence)
         self.check_markers(OPERATION, "fn require_original_preparation(", (
-            "!std::ptr::eq(self.preparation, preparation)", "return Err(", "self.revalidate_source()"))
+            "!std::ptr::eq(self.preparation, preparation)", "return Err(", "OriginalFreezePreparationReadV1::revalidate_source(self)"))
 
     def test_all_original_owner_entries_borrow_an_actual_preparation(self):
         for function in ("fn create(", "fn recover(", "fn authorize_or_readback(", "fn readback("):

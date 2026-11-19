@@ -57,6 +57,16 @@ impl OriginalDatasetLedgerV1 {
     }
 }
 
+impl<'read> OriginalDatasetOperationV1<'read> {
+    pub(in super::super) fn borrow_original_historical(
+        read: &'read OriginalHistoricalOperationV1<'read>,
+    ) -> Self {
+        Self {
+            kind: DatasetOperationKind::Historical(read),
+        }
+    }
+}
+
 impl OriginalDatasetOperationV1<'_> {
     pub(crate) fn read_historical<T>(
         &self,

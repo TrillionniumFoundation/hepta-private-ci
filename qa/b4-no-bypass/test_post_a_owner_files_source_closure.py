@@ -20,9 +20,10 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
 
     def test_only_real_file_loader_calls_original_freezer(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        for name in ("cell_q24_original_dataset_freeze_create", "cell_q24_original_dataset_freeze_recover",
-                     "q24_historical_freeze_signing_config"):
-            self.assertIn(FILES, rows[name]["product_callers"])
+        for name in ("cell_q24_original_dataset_freeze_create", "cell_q24_original_dataset_freeze_recover"):
+            self.assertEqual(rows[name]["product_callers"], [AGENT + "cell_q24_task_ledger.rs"])
+        for name in ("q24_original_historical_freeze_construction", "q24_historical_freeze_signing_config"):
+            self.assertEqual(rows[name]["product_callers"], [FILES])
         for name in ("post_a_original_freeze_files", "post_a_original_stage_authorities", "post_a_original_stage_files"):
             self.assertEqual(rows[name]["product_callers"], [AGENT + "production_post_a_q24.rs"])
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
@@ -45,8 +46,14 @@ class PostAOwnerFilesSourceTests(unittest.TestCase):
         self.check_markers(FILES, "fn freeze_original(", (
             "original_historical_freeze_config(self.signature_lifetime_seconds)", "&config.signer",
             "config.verifier.objective_digest()", "journal.open_witness()?",
-            "OriginalCellQ24DatasetFreezeOwnerV1::create(", "OriginalCellQ24DatasetFreezeOwnerV1::recover(",
-            "phase\n            .authorize_and_materialize(&mut owner)", "drop(owner)"))
+            ".materialize_original_historical_owner(journal, witness, config, key, mode.original())"))
+        self.check_markers(AGENT + "cell_q24_freeze_operation.rs",
+                           "fn materialize_original_historical_owner<W: AnchorWitnessStore>(", (
+            "OriginalCellQ24DatasetFreezeOwnerV1::create_in_operation(",
+            "OriginalCellQ24DatasetFreezeOwnerV1::recover_in_operation(",
+            "OriginalCellQ24DatasetFreezeOwnerV1::authorize_in_operation(",
+            "read.validate_original_authorization(&authorization)?", "drop(owner)",
+            "CellQ24PreparedLearningV1::from_historical("))
 
     def test_all_new_stage_files_are_checked_before_witnesses_initialize(self):
         for occurrence in (0, 1):

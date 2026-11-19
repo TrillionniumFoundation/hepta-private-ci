@@ -126,9 +126,9 @@ impl LearningIterationRuntimeBootstrapV1 {
                 OriginalSuccessorSourceV1::Retained(Arc::clone(retained))
             }
             (None, Some(historical)) if historical.request() == &prepared.initial().request => {
-                RegisteredHistoricalLearningSourceV1::require_prepared_historical_source(
-                    historical, prepared,
-                )?;
+                // This local data-only context cannot escape before the
+                // actual Prepared operation below authenticates this exact
+                // historical source and brackets original slot registration.
                 OriginalSuccessorSourceV1::Historical(Arc::clone(historical))
             }
             _ => return Err(successor_refused("one actual original A source required")),
@@ -158,11 +158,18 @@ impl LearningIterationRuntimeBootstrapV1 {
             source,
             session,
         });
-        context.require_current_successor_context().await?;
-        original
-            .register_original_successor(Arc::clone(&context.session), slot)
-            .await
-            .map_err(|error| successor_refused(&error.to_string()))?;
+        if matches!(&context.source, OriginalSuccessorSourceV1::Historical(_)) {
+            original
+                .register_original_historical_successor(Arc::clone(&context), slot)
+                .await
+                .map_err(|error| successor_refused(&error.to_string()))?;
+        } else {
+            context.require_current_successor_context().await?;
+            original
+                .register_original_successor(Arc::clone(&context.session), slot)
+                .await
+                .map_err(|error| successor_refused(&error.to_string()))?;
+        }
         self.successor = Some(Arc::clone(slot));
         Ok(context)
     }

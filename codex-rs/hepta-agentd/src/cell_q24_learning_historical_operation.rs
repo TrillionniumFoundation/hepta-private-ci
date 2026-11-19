@@ -149,7 +149,32 @@ impl OriginalQ24StageOperationV1<'_, '_, '_, '_> {
         work: OriginalHistoricalWorkV1,
     ) -> Result<OriginalHistoricalResultV1, Error> {
         match work {
-            OriginalHistoricalWorkV1::Restore(mode) => self.restore(mode),
+            OriginalHistoricalWorkV1::Restore(mode) => {
+                let submit = matches!(mode, OriginalHistoricalRestoreModeV1::Submit);
+                let mut current = self.restore(mode)?;
+                // Experience and Dataset were already witnessed by the actual
+                // original owner initializer. Restore their authenticated
+                // source receipts and each original Root checkpoint in this
+                // one synchronous prefix operation. Training, B and all C
+                // work still begin in separate fresh operations.
+                if submit && current.generation_prefix.is_none() {
+                    loop {
+                        let next = LearningIterationCoordinatorV1::from_snapshot(
+                            current.snapshot.clone(),
+                        )?
+                        .next_stage();
+                        let Some(
+                            stage @ (LearningIterationStageV1::Experience
+                            | LearningIterationStageV1::Dataset),
+                        ) = next
+                        else {
+                            break;
+                        };
+                        current = self.execute(current.snapshot, stage)?;
+                    }
+                }
+                Ok(current)
+            }
             OriginalHistoricalWorkV1::ConfirmRecovery(expected) => {
                 let actual = self.runtime.block_on(
                     self.original_stage_context()?

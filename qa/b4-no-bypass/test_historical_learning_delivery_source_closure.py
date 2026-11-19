@@ -47,9 +47,12 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
 
     def test_original_root_assembly_and_new_journal_binding_are_mandatory(self):
         self.check_markers(SOURCE, "fn with_original_historical_source(", (
+            "self.require_identity(identity)?", "self.original_q24", ".prepared()",
+            ".with_original_prepared_operation(|read|",
+            "self.with_original_historical_source_in_operation(",
+            ".map_err(refused)?"))
+        self.check_markers(SOURCE, "fn with_original_historical_source_in_operation(", (
             "self.require_identity(identity)?", "original.prepared()",
-            "let (key, journal) = prepared",
-            ".with_original_prepared_operation(|read| -> Result<_, AgentdError>",
             "self.retained_source.is_some()", "self.historical_source.is_some()",
             "self.historical_delivery.is_some()", "!self.enforce_circuit_admission",
             "CircuitLearningSourceV1::OriginalQ24", "self.scope.as_ref() != Some(prepared.scope())",
@@ -58,14 +61,26 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
             "crate::neuron_generation_process_identity_digest_v1(identity)?",
             "prepared.initial().head_digest.as_array()", "prepared.scope().binding().as_array()",
             "LearningOwnerJournalV1::create(", "LearningOwnerJournalV1::recover(",
-            "Ok((key, journal))", ".map_err(refused)??",
-            "self.historical_source = Some(Arc::clone(&source))",
+            "Ok((key, journal))", "self.historical_source = Some(Arc::clone(&source))",
             "self.historical_delivery = Some("))
-        # All three actual source checks remain mandatory inside one borrow;
-        # the enclosing post-read must finish before either owner is installed.
         for occurrence in (0, 1, 2):
-            self.reject_removal(SOURCE, "fn with_original_historical_source(",
-                                ".require_original_stage_operation(identity, read)", occurrence)
+            self.reject_removal(SOURCE, "fn with_original_historical_source_in_operation(",
+                                "source.require_original_stage_operation(identity, read)?", occurrence)
+        for occurrence in (0, 1):
+            self.reject_removal(SOURCE, "fn with_original_historical_source_in_operation(",
+                                "OriginalPreparedReadV1::require_prepared(read, prepared)", occurrence)
+        # The constructed bootstrap remains local until the actual original
+        # operation's physical post-read has returned successfully.
+        self.check_markers(AGENT + "production_post_a_q24.rs",
+                           "fn assemble_original_post_a_q24(", (
+            "self.assemble_q24_learning(config, inputs).await?",
+            "let original_prepared: &CellQ24PreparedLearningV1 = prepared.as_ref()",
+            "original_prepared.with_original_prepared_operation(|read|",
+            "RegisteredHistoricalLearningSourceV1::capture_original_historical_source_in_operation(",
+            "delivery.open_witness()?",
+            "crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source_in_operation(",
+            "Ok::<_, AgentdError>((bootstrap, source))", "}).map_err(refused)??;",
+            "config.with_learning_iteration_bootstrap(bootstrap)?"))
 
     def test_queue_reservation_and_witnessed_claim_precede_actual_async_dispatch(self):
         self.check_markers(SOURCE, "fn run_delivery(", (
@@ -103,7 +118,8 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
             "match (&self.retained_source, &self.historical_source)",
             "(Some(retained), None) if retained.request() == &prepared.initial().request",
             "(None, Some(historical)) if historical.request() == &prepared.initial().request",
-            "RegisteredHistoricalLearningSourceV1::require_prepared_historical_source(\n                    historical, prepared,\n                )?",
+            "if matches!(&context.source, OriginalSuccessorSourceV1::Historical(_))",
+            ".register_original_historical_successor(Arc::clone(&context), slot)",
             "session.identity() != identity", "self.scope.as_ref() != Some(prepared.scope())",
             "self.owners != prepared.initial().owners", "context.require_current_successor_context().await?"))
         self.check_markers(path, "fn require_current_successor_context(", (
@@ -117,10 +133,12 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
     def test_closed_new_inventory_uses_only_actual_post_a_assembly(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         selected = {name: row for name, row in rows.items() if name.startswith("q24_historical_delivery_")}
-        self.assertEqual(len(selected), 7)
+        self.assertEqual(len(selected), 9)
         for name in selected:
             self.assertIn(name, self.manifest["privileged_inventory"]["required_boundary_ids"])
         for name in ("q24_historical_delivery_capture", "q24_historical_delivery_install"):
+            self.assertEqual(rows[name]["product_callers"], [])
+        for name in ("q24_historical_delivery_capture_in_operation", "q24_historical_delivery_install_in_operation"):
             self.assertEqual(rows[name]["product_callers"], [AGENT + "production_post_a_q24.rs"])
         self.assertEqual(rows["q24_historical_delivery_async_claim"]["product_callers"], [SOURCE])
 

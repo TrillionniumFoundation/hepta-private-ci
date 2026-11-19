@@ -11,9 +11,36 @@ use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use super::*;
 use crate::root_historical_ledger_data::RootHistoricalLedgerReadDataV1;
 use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
+use crate::root_historical_task_read_client::OriginalHistoricalOperationV1;
 use crate::root_historical_task_read_client::OriginalHistoricalTaskReadReceiptV1;
 
 impl HistoricalDatasetLedgerV1 {
+    /// Construct the Task here, from the exact opaque receipt in this borrow.
+    /// An arbitrary task, publication or caller-authored ledger is not accepted.
+    pub(in super::super) fn capture_original_task_in_operation(
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+        trust: Arc<OriginalHistoricalLearningTrustV1>,
+        client: &Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>,
+        session: &crate::AgentdRootAuthoritySession,
+        operation: &crate::root_historical_task_read_client::OriginalHistoricalOperationV1<'_>,
+    ) -> Result<Arc<Self>, Error> {
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
+        let task = CellQ24DatasetTaskV1::capture_historical_in_operation(
+            Arc::clone(&receipt),
+            client,
+            session,
+            operation,
+        )?;
+        OriginalHistoricalOperationV1::read_for(operation, &trust, &receipt, |data, _, _, _| {
+            RootHistoricalLedgerReadDataV1::read_snapshot(data).map(|_| ())
+        })?;
+        Ok(Arc::new(Self {
+            receipt,
+            trust,
+            tasks: vec![task],
+        }))
+    }
+
     pub(crate) fn original_unix_seconds(&self) -> io::Result<u64> {
         OriginalHistoricalLearningTrustV1::require_original_receipt(&self.trust, &self.receipt)?;
         OriginalHistoricalLearningTrustV1::original_unix_seconds(&self.trust)

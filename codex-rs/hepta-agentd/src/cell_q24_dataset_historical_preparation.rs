@@ -19,38 +19,69 @@ impl CellQ24DatasetFreezePreparationV1 {
         let ledger = HistoricalDatasetLedgerV1::capture_original(receipt, trust, vec![task])?;
         let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger));
         original.with_original_ledger_operation(|operation| {
-            let operation: &OriginalDatasetOperationV1<'_> = operation;
-            let (snapshot, frontier) =
-                operation.read_historical(&ledger, |data, _, _, observed_at| {
-                    require_historical_configuration(&config, &ledger).map_err(io::Error::other)?;
-                    if observed_at >= config.request.envelope.expiry_unix_seconds {
-                        return Err(io::Error::other("new historical preparation deadline"));
-                    }
-                    Ok((
-                        RootHistoricalLedgerReadDataV1::read_snapshot(data)?,
-                        data.ledger_cut()?.frontier,
-                    ))
-                })?;
-            let preparation = Self {
-                config,
-                tasks: ledger.tasks().to_vec(),
-                ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger)),
-                snapshot,
-                frontier,
-            };
-            // Snapshot/configuration and the pure signing payload belong to
-            // this one preparation. The actual Root post-read still precedes
-            // returning it; no observation is retained for another operation.
-            preparation.with_historical_cut_in_operation(
-                &ledger,
-                operation,
-                |snapshot, _, _, _, _| {
-                    dataset_freeze_signing_payload_v2(snapshot, &preparation.plan()?)?;
-                    Ok(())
-                },
-            )?;
-            Ok(preparation)
+            Self::capture_historical_in_operation(config, ledger, operation)
         })?
+    }
+
+    /// Task capture, ledger binding and immutable preparation are one
+    /// synchronous construction from the original current Root operation.
+    pub(crate) fn capture_original_historical_task(
+        config: CellQ24LearningPreparationConfigV1,
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+        trust: Arc<OriginalHistoricalLearningTrustV1>,
+        client: &Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>,
+        session: &crate::AgentdRootAuthoritySession,
+    ) -> Result<Self, Error> {
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
+        OriginalHistoricalLearningTrustV1::with_original_operation(&trust, |read| {
+            let ledger = HistoricalDatasetLedgerV1::capture_original_task_in_operation(
+                receipt,
+                Arc::clone(&trust),
+                client,
+                session,
+                read,
+            )?;
+            let operation = OriginalDatasetOperationV1::borrow_original_historical(read);
+            Self::capture_historical_in_operation(config, ledger, &operation)
+        })?
+    }
+
+    fn capture_historical_in_operation(
+        config: CellQ24LearningPreparationConfigV1,
+        ledger: Arc<HistoricalDatasetLedgerV1>,
+        operation: &OriginalDatasetOperationV1<'_>,
+    ) -> Result<Self, Error> {
+        let operation: &OriginalDatasetOperationV1<'_> = operation;
+        let (snapshot, frontier) =
+            operation.read_historical(&ledger, |data, _, _, observed_at| {
+                require_historical_configuration(&config, &ledger).map_err(io::Error::other)?;
+                if observed_at >= config.request.envelope.expiry_unix_seconds {
+                    return Err(io::Error::other("new historical preparation deadline"));
+                }
+                Ok((
+                    RootHistoricalLedgerReadDataV1::read_snapshot(data)?,
+                    data.ledger_cut()?.frontier,
+                ))
+            })?;
+        let preparation = Self {
+            config,
+            tasks: ledger.tasks().to_vec(),
+            ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger)),
+            snapshot,
+            frontier,
+        };
+        // Snapshot/configuration and the pure signing payload belong to
+        // this one preparation. The actual Root post-read still precedes
+        // returning it; no observation is retained for another operation.
+        preparation.with_historical_cut_in_operation(
+            &ledger,
+            operation,
+            |snapshot, _, _, _, _| {
+                dataset_freeze_signing_payload_v2(snapshot, &preparation.plan()?)?;
+                Ok(())
+            },
+        )?;
+        Ok(preparation)
     }
 
     pub(super) fn with_historical_cut<T>(

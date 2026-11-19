@@ -84,6 +84,42 @@ impl RegisteredHistoricalLearningSourceV1 {
         Ok(source)
     }
 
+    pub(crate) fn capture_original_historical_source_in_operation(
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+        prepared: Arc<CellQ24PreparedLearningV1>,
+        client: &Arc<RootHistoricalTaskReadClientV1>,
+        session: &crate::AgentdRootAuthoritySession,
+        identity: AgentdIdentity,
+        end: Instant,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<Arc<Self>, AgentdError> {
+        receipt.require_original_client(client, session)?;
+        if receipt.initial_snapshot().request.agent_id.as_str() != identity.agent_id.as_str() {
+            return Err(refused("original recipient agent differs"));
+        }
+        let terminal_acceptance =
+            RootHistoricalTaskReadClientV1::retain_original_completed_acceptance(
+                client, session, &identity,
+            )?;
+        let source: Arc<RegisteredHistoricalLearningSourceV1> = Arc::new(Self {
+            receipt,
+            prepared,
+            identity,
+            end,
+            terminal_acceptance: Mutex::new(Some(terminal_acceptance)),
+        });
+        source
+            .require_original_stage_operation(&source.identity, read)
+            .inspect_err(|_| {
+                let _ = std::io::Write::write_all(
+                    &mut std::io::stderr(),
+                    b"daemon_stage=historical.source.capture_operation\n",
+                );
+            })?;
+        source.receipt.require_original_client(client, session)?;
+        Ok(source)
+    }
+
     pub(crate) fn require_current_historical_source(
         &self,
         identity: &AgentdIdentity,
@@ -124,7 +160,7 @@ pub(crate) struct OriginalHistoricalLearningDeliveryV1 {
 
 impl LearningIterationRuntimeBootstrapV1 {
     pub(crate) fn with_original_historical_source(
-        mut self,
+        self,
         source: Arc<RegisteredHistoricalLearningSourceV1>,
         identity: &AgentdIdentity,
         journal: File,
@@ -132,78 +168,84 @@ impl LearningIterationRuntimeBootstrapV1 {
         mode: OriginalCellQ24LearningOpenV1,
     ) -> Result<Self, AgentdError> {
         self.require_identity(identity)?;
+        let original: Arc<crate::OriginalCellQ24LearningStageOwnersV1> = Arc::clone(
+            self.original_q24
+                .as_ref()
+                .ok_or_else(|| refused("actual assembled Q24 owners absent"))?,
+        );
+        let prepared: &CellQ24PreparedLearningV1 = original.prepared();
+        prepared
+            .with_original_prepared_operation(|read| {
+                self.with_original_historical_source_in_operation(
+                    source, identity, journal, witness, mode, read,
+                )
+            })
+            .map_err(refused)?
+    }
+
+    pub(crate) fn with_original_historical_source_in_operation(
+        mut self,
+        source: Arc<RegisteredHistoricalLearningSourceV1>,
+        identity: &AgentdIdentity,
+        journal: File,
+        witness: FileAnchorWitnessStore,
+        mode: OriginalCellQ24LearningOpenV1,
+        read: &crate::cell_composed_q24::OriginalPreparedReadV1<'_>,
+    ) -> Result<Self, AgentdError> {
+        self.require_identity(identity)?;
         let original: &Arc<crate::OriginalCellQ24LearningStageOwnersV1> = self
             .original_q24
             .as_ref()
             .ok_or_else(|| refused("actual assembled Q24 owners absent"))?;
         let prepared: &CellQ24PreparedLearningV1 = original.prepared();
-        let (key, journal) = prepared
-            .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
-                source
-                    .require_original_stage_operation(identity, read)
-                    .inspect_err(|_| {
-                        let _ = std::io::Write::write_all(
-                            &mut std::io::stderr(),
-                            b"daemon_stage=historical.source.bootstrap_prepared\n",
-                        );
-                    })?;
-                let registry = self
-                    .circuit_delivery_registry
-                    .as_ref()
-                    .ok_or_else(|| refused("original source registry absent"))?;
-                if self.retained_source.is_some()
-                    || self.historical_source.is_some()
-                    || self.historical_delivery.is_some()
-                    || !self.enforce_circuit_admission
-                    || !matches!(
-                        self.circuit_delivery_source,
-                        CircuitLearningSourceV1::OriginalQ24
-                    )
-                    || self.scope.as_ref() != Some(prepared.scope())
-                    || self.owners != prepared.initial().owners
-                    || registry.requests.as_slice() != std::slice::from_ref(source.request())
-                {
-                    return Err(refused(
-                        "historical delivery differs from original Root assembly",
-                    ));
+        crate::cell_composed_q24::OriginalPreparedReadV1::require_prepared(read, prepared)
+            .map_err(refused)?;
+        let (key, journal) = (|| -> Result<_, AgentdError> {
+            source.require_original_stage_operation(identity, read)?;
+            let registry = self
+                .circuit_delivery_registry
+                .as_ref()
+                .ok_or_else(|| refused("original source registry absent"))?;
+            if self.retained_source.is_some()
+                || self.historical_source.is_some()
+                || self.historical_delivery.is_some()
+                || !self.enforce_circuit_admission
+                || !matches!(
+                    self.circuit_delivery_source,
+                    CircuitLearningSourceV1::OriginalQ24
+                )
+                || self.scope.as_ref() != Some(prepared.scope())
+                || self.owners != prepared.initial().owners
+                || registry.requests.as_slice() != std::slice::from_ref(source.request())
+            {
+                return Err(refused(
+                    "historical delivery differs from original Root assembly",
+                ));
+            }
+            source.require_original_stage_operation(identity, read)?;
+            let key = ProductEvaluationExecutionKeyV1 {
+                plan_id: source.request().operation_id.clone(),
+                binding_digest: Digest32::of_parts(&[
+                    b"hepta.agentd.original-historical-learning-delivery.v1\0",
+                    crate::neuron_generation_process_identity_digest_v1(identity)?.as_array(),
+                    prepared.initial().head_digest.as_array(),
+                    prepared.scope().binding().as_array(),
+                ]),
+            };
+            let journal = match mode {
+                OriginalCellQ24LearningOpenV1::Create => {
+                    LearningOwnerJournalV1::create(journal, witness, key.binding_digest)
                 }
-                source
-                    .require_original_stage_operation(identity, read)
-                    .inspect_err(|_| {
-                        let _ = std::io::Write::write_all(
-                            &mut std::io::stderr(),
-                            b"daemon_stage=historical.source.bootstrap_before_journal\n",
-                        );
-                    })?;
-                let key = ProductEvaluationExecutionKeyV1 {
-                    plan_id: source.request().operation_id.clone(),
-                    binding_digest: Digest32::of_parts(&[
-                        b"hepta.agentd.original-historical-learning-delivery.v1\0",
-                        crate::neuron_generation_process_identity_digest_v1(identity)?.as_array(),
-                        prepared.initial().head_digest.as_array(),
-                        prepared.scope().binding().as_array(),
-                    ]),
-                };
-                let journal = match mode {
-                    OriginalCellQ24LearningOpenV1::Create => {
-                        LearningOwnerJournalV1::create(journal, witness, key.binding_digest)
-                    }
-                    OriginalCellQ24LearningOpenV1::Recover => {
-                        LearningOwnerJournalV1::recover(journal, witness, key.binding_digest)
-                    }
+                OriginalCellQ24LearningOpenV1::Recover => {
+                    LearningOwnerJournalV1::recover(journal, witness, key.binding_digest)
                 }
-                .map_err(refused)?;
-                source
-                    .require_original_stage_operation(identity, read)
-                    .inspect_err(|_| {
-                        let _ = std::io::Write::write_all(
-                            &mut std::io::stderr(),
-                            b"daemon_stage=historical.source.bootstrap_after_journal\n",
-                        );
-                    })?;
-                Ok((key, journal))
-            })
-            .map_err(refused)??;
+            }
+            .map_err(refused)?;
+            source.require_original_stage_operation(identity, read)?;
+            Ok((key, journal))
+        })()?;
+        crate::cell_composed_q24::OriginalPreparedReadV1::require_prepared(read, prepared)
+            .map_err(refused)?;
         self.historical_source = Some(Arc::clone(&source));
         self.historical_delivery = Some(OriginalHistoricalLearningDeliveryV1 {
             source,
