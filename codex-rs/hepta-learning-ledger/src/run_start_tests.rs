@@ -9,6 +9,9 @@ use std::sync::atomic::Ordering;
 
 use pretty_assertions::assert_eq;
 
+#[path = "run_start_publication_tests.rs"]
+mod publication;
+
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
