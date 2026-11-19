@@ -1,0 +1,78 @@
+{
+  "identity": "hcsn-zero-logical-age-equivalence-20261119-2f21-attempt001",
+  "model_seed": 101,
+  "input_seed": 417,
+  "optimizer_calls": 0,
+  "dataset_rows_read": 0,
+  "repetitions": 3,
+  "cases": [
+    {
+      "name": "B1-T10",
+      "batch": 1,
+      "steps": 10
+    },
+    {
+      "name": "B1-T40",
+      "batch": 1,
+      "steps": 40
+    },
+    {
+      "name": "B1-T80",
+      "batch": 1,
+      "steps": 80
+    },
+    {
+      "name": "B64-T10",
+      "batch": 64,
+      "steps": 10
+    }
+  ],
+  "cpu_affinity": [
+    2
+  ],
+  "address_space_bytes": 4294967296,
+  "child_timeout_seconds": 120,
+  "support_sources": {
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/differentiable.py": "fdc78bec642c2a58ab6daadd73235c16a04e62ac937f2af5218990e91b28cf73",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_differentiable/__init__.py": "bcde159e1a07a1da1df4b22caccae7f974443d34bbd071a6e845791f3e8b4123",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_differentiable/contract.py": "79e1127dc126fb8ac97ce7542bac2c9d70c71e0fd2d24416f146d4ec82be099e",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_differentiable/neural_control.py": "60bf3cc067f75a05f83f0f29978c7939fa91a7815858b5cc2becf0e62428dc3f",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_differentiable/operator.py": "cb3eed1bcfbd3b10cc331a193a5d4b6a3d4309db899e0d8f821477f97b7dbdc1",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_differentiable/regenerative.py": "3c3df0f5fa28796fd3fd18b468a63ed8e66a7984c0ebc133b76d6ec2cc00f863",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/__init__.py": "f353fb55f89c0ed41d5484e92a2b3e1fb24d34d4199df14dfd96b0b3bc0281f0",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_campaign.py": "b9d434165027b76809ba4d3debda7c641c917df14327cba29134d42604bfa1b6",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_data.py": "f91225b02c211659feebef98a709f9a0243f4ac54280e745cf6bf409de4e118f",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_evaluate.py": "e715e52b4c85333a609eb8803ac24c8f9c143a2b915173f2b6e1587a4a0f70cf",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_models.py": "c3f0a53d5cffc5f8b47055295fb9fc4a026a1bc4aa7a997842174f4301cf94d5",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_review.py": "2f3314ad014adbc96bfc8828b76c66cfb9bf3cffb05d57f282a467c781fafe07",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/benchmark_train.py": "4cd7dc0f309e230629db3a815e82d64f3812fc54fa0fab4b14416b723e03874c",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/checkpoint.py": "1fd6abea024bd0251b3e3bef3e5aa2c7d50b043f8948c1efe955373b46371359",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/network.py": "d5ca37c8b6c028030bf3b9f672f5273bf3516a55c8382f2513cde44c189c2a85",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/phase_approximation.py": "a99bbf413ae76d4f8dcf08d5c75b477b70434656388727f69daa30d26ed46e52",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/profile_dynamics.py": "baa817f049cc1482eb032741a74c5a78baadd28d1ac17de8b73b02116bb0932e",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/review.py": "ac3cfa667d4dd853a758b6de7ac6774bffceb0e31f2b714d564d90ebf50eb804",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/run_study.py": "90e4bc019724cd6fd9553f5bf019c1068a9efbab9bfafafba07b591f12693a4c",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/study.py": "6771ad754365dbb6d09b48fa205319e57f99b76f2bd66790be2f554449ba70ac",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/task_physics.py": "aacb8c50f3eb26d944823041b51866dab9b15749080ab1acf45e66ae37150716",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/test_benchmark_models.py": "a0b85605f138af7324ce919db4536cdd933dbbb78e18154bfb776320e3dabadd",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/test_campaign.py": "afa050eb0a156452a00ee8be4d99f5ad01610a080c0dcd751d7638997cbf16f7",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/test_network.py": "e20559f9e79713c87ef30bf00d440b85fd31fe2cc4c0db98be524f0ca21d9d3a",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/test_phase_state.py": "1c62f317a65370e6ad66bc6deb89d4a063bc9e79e81a0f72260475beccaaa72d",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_network/test_task_physics.py": "a1c5147001cb8c85074d8a44e6989e7a4c9116cb4c028708d2ad39514126c935",
+    "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/benchmark_zero_age.py": "eef99af6b1fa87daf227f4fdcbfee93b5b5f525d23340c81e431818887fc164a"
+  },
+  "kernels": {
+    "baseline": {
+      "path": "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/evidence/zero-age-20261119/reference_kernel.py",
+      "sha256": "6dfcef11fa6ee43163bb72e661a8aec0c33453cfd2d353668049d2b0ad24be5e"
+    },
+    "candidate": {
+      "path": "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/differentiable.py",
+      "sha256": "fdc78bec642c2a58ab6daadd73235c16a04e62ac937f2af5218990e91b28cf73"
+    }
+  },
+  "equivalence_atol": 1e-12,
+  "equivalence_rtol": 1e-11,
+  "speedup_threshold": null,
+  "scientific_claim": "same-law implementation cost only; no task quality or global numerical qualification"
+}

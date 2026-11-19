@@ -1,0 +1,48 @@
+test_future_release_keeps_alpha_gradient_with_one_actual_exponential (qualification.hcsn_currentstate.test_zero_age.ZeroAgeReleaseTests.test_future_release_keeps_alpha_gradient_with_one_actual_exponential) ... ok
+test_multiple_exact_release_edges_match_gamma_values_and_hessian (qualification.hcsn_currentstate.test_zero_age.ZeroAgeReleaseTests.test_multiple_exact_release_edges_match_gamma_values_and_hessian) ... 
+  test_multiple_exact_release_edges_match_gamma_values_and_hessian (qualification.hcsn_currentstate.test_zero_age.ZeroAgeReleaseTests.test_multiple_exact_release_edges_match_gamma_values_and_hessian) (dtype=torch.float64) ... FAIL
+test_positive_release_age_is_still_evolved_and_charged (qualification.hcsn_currentstate.test_zero_age.ZeroAgeReleaseTests.test_positive_release_age_is_still_evolved_and_charged) ... ok
+test_explicit_work_limits_do_not_prune_state (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_explicit_work_limits_do_not_prune_state) ... ok
+test_five_excursions_against_independent_gamma_renewal (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_five_excursions_against_independent_gamma_renewal) ... ok
+test_full_state_gradients_match_finite_differences (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_full_state_gradients_match_finite_differences) ... ok
+test_input_changes_and_signed_content_against_dde (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_input_changes_and_signed_content_against_dde) ... ok
+test_partition_checkpoint_and_boundary_sweep (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_partition_checkpoint_and_boundary_sweep) ... ok
+test_two_layer_flux_and_content_backpropagation (qualification.hcsn_currentstate.test_differentiable.DifferentiableCurrentStateTests.test_two_layer_flux_and_content_backpropagation) ... ok
+test_atom_retains_event_reset_after_parameter_update (qualification.hcsn_currentstate.test_reset_snapshot.ResetSnapshotTests.test_atom_retains_event_reset_after_parameter_update) ... ok
+test_flux_retains_event_reset_after_parameter_update (qualification.hcsn_currentstate.test_reset_snapshot.ResetSnapshotTests.test_flux_retains_event_reset_after_parameter_update) ... ok
+test_actual_network_matches_independent_delayed_ode (qualification.hcsn_network.test_network.CoupledFlowTests.test_actual_network_matches_independent_delayed_ode) ... ok
+test_due_release_atom_receives_the_current_sample_write (qualification.hcsn_network.test_network.CoupledFlowTests.test_due_release_atom_receives_the_current_sample_write) ... ok
+test_full_pending_and_message_buffer_cold_forward_continuation (qualification.hcsn_network.test_network.CoupledFlowTests.test_full_pending_and_message_buffer_cold_forward_continuation) ... ok
+test_future_inputs_cannot_reach_earlier_emissions (qualification.hcsn_network.test_network.CoupledFlowTests.test_future_inputs_cannot_reach_earlier_emissions) ... ok
+test_mass_ablation_and_explicit_resource_stop (qualification.hcsn_network.test_network.CoupledFlowTests.test_mass_ablation_and_explicit_resource_stop) ... ok
+test_shared_law_batch_equals_independent_forward_and_vjp (qualification.hcsn_network.test_network.CoupledFlowTests.test_shared_law_batch_equals_independent_forward_and_vjp) ... ok
+test_weight_input_initial_content_and_physics_gradients (qualification.hcsn_network.test_network.CoupledFlowTests.test_weight_input_initial_content_and_physics_gradients) ... ok
+test_boundary_changes_real_flow_and_all_seven_derivatives (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_boundary_changes_real_flow_and_all_seven_derivatives) ... ok
+test_fixed_boundary_is_a_distinct_projected_policy (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_fixed_boundary_is_a_distinct_projected_policy) ... ok
+test_full_state_value_and_signed_content_conservation (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_full_state_value_and_signed_content_conservation) ... ok
+test_rejects_unsupported_law_or_delay_interface (qualification.hcsn_network.test_task_physics.TaskPhysicsTests.test_rejects_unsupported_law_or_delay_interface) ... ok
+test_all_accumulators_against_independent_ode_and_perpetual_value (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_all_accumulators_against_independent_ode_and_perpetual_value) ... ok
+test_changed_law_or_contract_is_rejected_before_continuation (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_changed_law_or_contract_is_rejected_before_continuation) ... ok
+test_split_whole_gradients_and_fresh_process_complete_record (qualification.hcsn_network.test_phase_state.PhaseStateTests.test_split_whole_gradients_and_fresh_process_complete_record) ... ok
+test_actual_classifier_boundary_gradient (qualification.hcsn_network.test_benchmark_models.ModelTests.test_actual_classifier_boundary_gradient) ... ok
+test_all_models_batch_forward_backward_and_state_accounting (qualification.hcsn_network.test_benchmark_models.ModelTests.test_all_models_batch_forward_backward_and_state_accounting) ... ok
+test_erlang_full_generator_against_independent_ode (qualification.hcsn_network.test_benchmark_models.ModelTests.test_erlang_full_generator_against_independent_ode) ... ok
+
+======================================================================
+FAIL: test_multiple_exact_release_edges_match_gamma_values_and_hessian (qualification.hcsn_currentstate.test_zero_age.ZeroAgeReleaseTests.test_multiple_exact_release_edges_match_gamma_values_and_hessian) (dtype=torch.float64)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/2f21518ff984/cell-evidence-worktree/qualification/hcsn_currentstate/test_zero_age.py", line 75, in test_multiple_exact_release_edges_match_gamma_values_and_hessian
+    torch.testing.assert_close(actual, expected, atol=atol, rtol=rtol)
+  File "/workspace/scratch/d741f7769aeb/hcsn-venv/lib/python3.12/site-packages/torch/testing/_comparison.py", line 1587, in assert_close
+    raise error_metas[0].to_error(msg)
+AssertionError: Tensor-likes are not close!
+
+Mismatched elements: 6 / 9 (66.7%)
+Greatest absolute difference: 6.6880945226444055e-12 at index (0,) (up to 3e-13 allowed)
+Greatest relative difference: 1.6960729922577168e-11 at index (6,) (up to 3e-12 allowed)
+
+----------------------------------------------------------------------
+Ran 28 tests in 9.719s
+
+FAILED (failures=1)

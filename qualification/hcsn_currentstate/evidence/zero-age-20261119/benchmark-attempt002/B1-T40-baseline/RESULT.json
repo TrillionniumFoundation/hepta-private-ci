@@ -1,0 +1,48 @@
+{
+  "engine": "baseline",
+  "case": {
+    "name": "B1-T40",
+    "batch": 1,
+    "steps": 40
+  },
+  "probe": {
+    "wall_seconds": 4.117341113000293,
+    "cpu_seconds": 3.949013631999999,
+    "autograd_saved_payload_bytes_with_repeats": 21145097,
+    "actual_forward_exponentials": 232,
+    "largest_exponential_dimension": 52,
+    "state_bytes": 193984
+  },
+  "repetitions": [
+    {
+      "wall_seconds": 0.37686581600428326,
+      "cpu_seconds": 0.37642749799999997,
+      "autograd_saved_payload_bytes_with_repeats": 20271225,
+      "actual_forward_exponentials": 232,
+      "largest_exponential_dimension": 52,
+      "state_bytes": 193984
+    },
+    {
+      "wall_seconds": 0.565926622999541,
+      "cpu_seconds": 0.5535554650000005,
+      "autograd_saved_payload_bytes_with_repeats": 20271225,
+      "actual_forward_exponentials": 232,
+      "largest_exponential_dimension": 52,
+      "state_bytes": 193984
+    },
+    {
+      "wall_seconds": 0.3543904320031288,
+      "cpu_seconds": 0.3537273469999995,
+      "autograd_saved_payload_bytes_with_repeats": 20271225,
+      "actual_forward_exponentials": 232,
+      "largest_exponential_dimension": 52,
+      "state_bytes": 193984
+    }
+  ],
+  "optimizer_calls": 0,
+  "dataset_rows_read": 0,
+  "process_maxrss_kib": 245200,
+  "torch": "2.8.0+cpu",
+  "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+  "raw_sha256": "23bf42980cbb14767421bdee8c7b410d26e0cbe5b18b221d8e0135ecccd54fdf"
+}
