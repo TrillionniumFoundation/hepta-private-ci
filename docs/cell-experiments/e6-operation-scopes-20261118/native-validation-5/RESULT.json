@@ -1,0 +1,133 @@
+{
+  "status": "completed",
+  "started_at_ns": "1795063490124925516",
+  "native_adoption": false,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "original_executor_mutated": false,
+  "original_executor_target_reused": false,
+  "own_prior_target_reused": true,
+  "independently_copied_cache_used": true,
+  "cargo_target_dir": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1",
+  "cost_scope": "The actual just test interval includes this source's compilation and all test descendants. Owner and command windows overlap and are not additive. Child max RSS is not simultaneous whole-system RSS.",
+  "unknown_costs": [
+    "whole-system concurrent CPU/RSS",
+    "physical energy",
+    "physical network bytes",
+    "physical storage byte-seconds",
+    "provider charges"
+  ],
+  "cache_restoration": {
+    "receipt_sha256": "000abeed9f33e0a9b0fe79b0a7dd4d519e668fcb550d7131a991ff9b50100ddb",
+    "file_index_sha256": "c2d643d8971d2794c119c9b514b5690997bfb864c793ed81658033958c0c111b",
+    "source_head": "40605ba779db8775b4b26024343ccdc81709a068",
+    "source_compiled_qualification_transferred": false
+  },
+  "source": "bc16f808000d797accafca1c29206d4bce5249e0",
+  "tree": "995b4741d017d39b8f6b6148696b72403c817be4",
+  "source_inventory_sha256": "4f291f3f0378f4566b06e95b41b1f94d6ac05d4f83349efd9c1b52db0dc1fc58",
+  "source_files": 15656,
+  "frozen_at_ns": "1795063406476615074",
+  "protocol_sha256": "4e439564fb429a430d7c5c6ac7871fceed3b4dbbaf91b83b884fec7dd641f7d3",
+  "driver_sha256": "bd5cbb6cdea52e6e7ee47f8e484be3b6f89f82fd95fe5f112f8074022464d14c",
+  "deployment": {
+    "publication_commit": "ce97f24ef90af94e016dc4509e53ee20fd17a555",
+    "publication_tree": "14a3047bf3ee44691de62071831aad9f13c1053f",
+    "execution_source": "bc16f808000d797accafca1c29206d4bce5249e0",
+    "execution_tree": "995b4741d017d39b8f6b6148696b72403c817be4",
+    "protocol_sha256": "4e439564fb429a430d7c5c6ac7871fceed3b4dbbaf91b83b884fec7dd641f7d3",
+    "driver_sha256": "bd5cbb6cdea52e6e7ee47f8e484be3b6f89f82fd95fe5f112f8074022464d14c",
+    "blobs": [
+      {
+        "path": "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-5/PROTOCOL.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "4aa1fcc8733619f4fbf57a2950a0c2791e9d8f44"
+      },
+      {
+        "path": "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-5/owner.py",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "3fc592218cfef42e03c196276b5e60d19acbaa97"
+      },
+      {
+        "path": "docs/cell-experiments/e6-operation-scopes-20261118/native-validation-5/SOURCE_FREEZE.json",
+        "mode": "100644",
+        "type": "blob",
+        "sha": "b2b6e493d6f06fb8b59a5660e157adbf734c9463"
+      }
+    ]
+  },
+  "cargo_build_jobs": 2,
+  "source_freeze_result_sha256": "17ef0ae11e8e99c7133dcdf231c27226e7977df139acd3311441db2c8a575831",
+  "compiler_environment": {
+    "LIBCLANG_PATH": "/home/qq/hepta-learn-ff41-tools/lib",
+    "BINDGEN_EXTRA_CLANG_ARGS": "-isystem /usr/lib/gcc/x86_64-linux-gnu/15/include",
+    "RUSTUP_TOOLCHAIN": "1.96.0"
+  },
+  "prior_reports_excluded": [
+    {
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/target/nextest/local/junit.xml",
+      "bytes": 5116,
+      "sha256": "81f3ac7a58f954f29bbf4fa5580296470d27b049c3b7a09750fdb13d33bd9d52",
+      "retained_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-5/excluded-prior-nextest-1.xml"
+    }
+  ],
+  "argv": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_preparation_) | test(source_operation_) | test(training_source_operation_) | test(post_a_owner_open_) | test(post_a_signing_files_)"
+  ],
+  "cwd": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs",
+  "disk_free_bytes_before": 155826266112,
+  "pid": 1442432,
+  "command_exit": 101,
+  "timed_out": false,
+  "command_wall_seconds": 97.36910549085587,
+  "command_child_user_cpu_seconds": 117.204035,
+  "command_child_system_cpu_seconds": 5.3519499999999995,
+  "command_child_input_blocks": 3299360,
+  "command_child_output_blocks": 2328976,
+  "owner_children_max_rss_kib": 6010336,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "d3d00112100a5b281907b7ff3ae8a8f1a215a2d57eac8f287bfc448c3956605f",
+  "junit": [],
+  "test_cases": [],
+  "native_cases": 0,
+  "expected_native_cases": 11,
+  "missing_cases": [
+    "production_launcher::post_a_q24::owners::tests::post_a_owner_open_rejects_missing_wrong_lifecycle_and_prior_reader_alias",
+    "production_launcher::post_a_q24::owners::tests::post_a_signing_files_require_exact_existing_key_before_witness_initialization",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_freezes_actual_batch_before_empty_root_scope_and_recovers",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_changed_freeze_cut_and_current_correction",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_rejects_wrong_task_scope_and_observer_as_freezer",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::q24_preparation_requires_private_capability_and_live_source_on_recovery",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_rechecks_withdrawal_before_return",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::preparation::source_operation::q24_training_source_operation_requires_the_same_actual_dataset_capability",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_rejects_another_actual_prepared_owner",
+    "runtime::tests::circuit_task_ingress::q24_tests::trained::dataset::source_receipts::operation::source_operation_withdrawal_refuses_read_and_outer_completion"
+  ],
+  "unexpected_cases": [],
+  "all_native_passed": false,
+  "source_after_sha256": "4f291f3f0378f4566b06e95b41b1f94d6ac05d4f83349efd9c1b52db0dc1fc58",
+  "source_unchanged": true,
+  "head_unchanged": true,
+  "tree_unchanged": true,
+  "source_clean": true,
+  "compiler_environment_unchanged": true,
+  "disk_free_bytes_after": 155757182976,
+  "finished_at_ns": "1795063589199655616",
+  "owner_wall_seconds": 99.07473757909611,
+  "owner_child_user_cpu_seconds": 117.230434,
+  "owner_child_system_cpu_seconds": 5.434588,
+  "owner_self_user_cpu_seconds": 0.464949,
+  "owner_self_system_cpu_seconds": 0.28448,
+  "successful": false
+}
