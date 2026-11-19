@@ -13,7 +13,7 @@
     "facelessuser/wcmatch",
     "pallets/click",
     "pallets/werkzeug",
-    "jaraco/more-itertools",
+    "more-itertools/more-itertools",
     "python-babel/babel",
     "pallets/jinja"
   ],
@@ -63,5 +63,12 @@
   "global_new_generation_cap": 56,
   "no_old_B_B2_B3_relabeling": true,
   "previous_research_NoUpdate_unchanged": true,
-  "native_adoption": false
+  "native_adoption": false,
+  "repository_name_correction": {
+    "prior_appendix_commit": "500a5e4321fb308702a064aa60b36c6f3509be1a",
+    "old_declared_name": "jaraco/more-itertools",
+    "corrected_declared_name": "more-itertools/more-itertools",
+    "basis": "Parent corrected the canonical candidate name before weights freeze and before any candidate content was read; all order, admission, stopping and exclusion rules are unchanged.",
+    "candidate_content_read": false
+  }
 }
