@@ -4,12 +4,22 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 
-use codex_uds::UnixListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalListener as ControlListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalStream as ControlStream;
+#[cfg(not(windows))]
+use codex_uds::UnixListener as ControlListener;
+#[cfg(not(windows))]
+use codex_uds::UnixStream as ControlStream;
 use codex_uds::UnixStream;
 use tokio::io::AsyncWriteExt;
 use tokio::sync::Semaphore;
 use tokio::task::JoinSet;
+use tokio::time::Instant;
 use tokio::time::timeout;
+#[cfg(windows)]
+use tokio::time::timeout_at;
 use tokio_util::sync::CancellationToken;
 
 use crate::AGENTD_CONTROL_OVERLOAD_FRAME;
@@ -70,7 +80,7 @@ impl ControlProfile for NotesControlProfile {
 }
 
 pub(crate) struct AgentdControlServer {
-    listener: UnixListener,
+    listener: ControlListener,
     owned_socket_path: Option<PathBuf>,
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
@@ -86,7 +96,7 @@ impl AgentdControlServer {
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         prepare_socket(&socket_path).await?;
-        let listener = UnixListener::bind(&socket_path)
+        let listener = ControlListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
         set_owner_only(&socket_path).await?;
@@ -109,7 +119,7 @@ impl AgentdControlServer {
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
         let socket = crate::listen_root_bound_socket(socket, socket_path)?;
-        let listener = UnixListener::from_inherited(socket, socket_path)?;
+        let listener = ControlListener::from_inherited(socket, socket_path)?;
         Ok(Self {
             listener,
             owned_socket_path: None,
@@ -167,6 +177,7 @@ impl AgentdControlServer {
                     break;
                 }
             };
+            let request_end = Instant::now() + IO_TIMEOUT;
             #[cfg(target_os = "linux")]
             if self.owned_socket_path.is_none()
                 && stream.ensure_current_user_or_root_peer().is_err()
@@ -174,8 +185,10 @@ impl AgentdControlServer {
                 continue;
             }
             // The inherited Linux socket retains its supervisor policy above.
-            // A privately bound socket authenticates its actual process owner
-            // before allocating a permit or reading any control frame.
+            // A privately bound Unix socket authenticates its process owner
+            // before allocating a permit. Windows has an owner-only pipe DACL;
+            // its bounded handshake additionally verifies the connected token.
+            #[cfg(not(windows))]
             if self.owned_socket_path.is_some()
                 && let Err(error) = ensure_control_peer(&stream)
             {
@@ -183,8 +196,11 @@ impl AgentdControlServer {
                 continue;
             }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
-                let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
+                    #[cfg(windows)]
+                    let mut stream = stream.authenticate().await?;
+                    #[cfg(not(windows))]
+                    let mut stream = stream;
                     stream.write_all(AGENTD_CONTROL_OVERLOAD_FRAME).await?;
                     stream.shutdown().await
                 })
@@ -194,7 +210,22 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             connections.spawn(async move {
                 let _permit = permit;
-                ControlConnection::<P>::serve_connection(stream, state).await
+                // Windows admits only owner-SID pipe handles at the kernel
+                // boundary. Bound the transport handshake with this same
+                // connection permit before exposing any application bytes.
+                #[cfg(windows)]
+                let stream = match timeout_at(request_end, stream.authenticate()).await {
+                    Ok(Ok(stream)) => stream,
+                    Ok(Err(error)) => {
+                        eprintln!("rejecting unauthenticated Agentd control peer: {error}");
+                        return Ok(());
+                    }
+                    Err(_) => {
+                        eprintln!("rejecting timed-out Agentd control transport handshake");
+                        return Ok(());
+                    }
+                };
+                ControlConnection::<P>::serve_connection(stream, state, request_end).await
             });
         }
         // Stop admission, then join every already accepted request. Dropping a
@@ -214,6 +245,7 @@ impl AgentdControlServer {
     }
 }
 
+#[cfg(not(windows))]
 fn ensure_control_peer(stream: &UnixStream) -> Result<(), AgentdError> {
     stream.ensure_current_user_peer().map_err(AgentdError::Io)
 }
@@ -239,7 +271,10 @@ impl Drop for AgentdControlServer {
         let Some(path) = &self.owned_socket_path else {
             return;
         };
-        if let Err(error) = std::fs::remove_file(path)
+        // A Windows pipe owns a kernel namespace instance, never this path.
+        // Closing its listener releases that claim without unlinking user data.
+        if !cfg!(windows)
+            && let Err(error) = std::fs::remove_file(path)
             && error.kind() != ErrorKind::NotFound
         {
             eprintln!(
@@ -254,11 +289,12 @@ struct ControlConnection<P>(std::marker::PhantomData<P>);
 
 impl<P: ControlProfile> ControlConnection<P> {
     async fn serve_connection(
-        stream: UnixStream,
+        stream: ControlStream,
         state: Arc<AgentdState>,
+        request_end: Instant,
     ) -> Result<(), AgentdError> {
         let (reader, mut writer) = tokio::io::split(stream);
-        let frame = frames::read_frame(reader).await?;
+        let frame = frames::read_frame(reader, request_end).await?;
         let request: AgentdRequest = serde_json::from_slice(&frame)?;
         let circuit_admission = request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
             && state.circuit_task_enabled()

@@ -6,18 +6,35 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWrite;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
+use tokio::time::Instant;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 
 use super::IO_TIMEOUT;
 use crate::AgentdError;
 use crate::MAX_CONTROL_FRAME_BYTES;
 
-pub(super) async fn read_frame(reader: impl AsyncRead + Unpin) -> Result<Vec<u8>, AgentdError> {
+pub(super) async fn read_frame(
+    reader: impl AsyncRead + Unpin,
+    end: Instant,
+) -> Result<Vec<u8>, AgentdError> {
+    // A transport handshake consumes the same original request budget. A ready
+    // buffered frame cannot regain admission after that deadline has elapsed.
+    if Instant::now() >= end {
+        return Err(AgentdError::Protocol(
+            "agentd control request frame timed out".into(),
+        ));
+    }
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+    let count = timeout_at(end, reader.read_until(b'\n', &mut frame))
         .await
         .map_err(|_| AgentdError::Protocol("agentd control request frame timed out".into()))??;
+    if Instant::now() >= end {
+        return Err(AgentdError::Protocol(
+            "agentd control request frame timed out".into(),
+        ));
+    }
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".into(),

@@ -12,7 +12,7 @@ use super::*;
 async fn original_control_frame_rejects_partial_input_with_unchanged_io_budget() {
     let (mut peer, reader) = tokio::io::duplex(/*max_buf_size*/ 16);
     peer.write_all(b"{").await.expect("partial transport frame");
-    let error = read_frame(reader)
+    let error = read_frame(reader, Instant::now() + IO_TIMEOUT)
         .await
         .expect_err("partial frame cannot admit a request");
     assert!(matches!(
@@ -28,7 +28,7 @@ async fn original_control_frame_rejects_oversize_input_before_admission() {
         peer.write_all(&vec![b'x'; MAX_CONTROL_FRAME_BYTES as usize + 1])
             .await
     });
-    let error = read_frame(reader)
+    let error = read_frame(reader, Instant::now() + IO_TIMEOUT)
         .await
         .expect_err("oversize frame cannot admit a request");
     assert!(matches!(
@@ -140,4 +140,32 @@ async fn original_control_frame_preserves_other_shutdown_errors() {
         assert_eq!(writer.written, b"response\n");
         assert_eq!(writer.shutdown_calls, 1);
     }
+}
+
+#[tokio::test]
+async fn expired_transport_budget_rejects_even_a_buffered_complete_frame() -> Result<(), AgentdError>
+{
+    let (mut peer, reader) = tokio::io::duplex(/*max_buf_size*/ 16);
+    peer.write_all(b"{}\n").await?;
+    let error = read_frame(reader, Instant::now())
+        .await
+        .expect_err("elapsed transport budget");
+    assert!(matches!(error, AgentdError::Protocol(message)
+        if message == "agentd control request frame timed out"));
+    Ok(())
+}
+
+#[tokio::test]
+async fn transport_handshake_does_not_restart_the_original_frame_budget() {
+    let (_peer, reader) = tokio::io::duplex(/*max_buf_size*/ 16);
+    let remaining_end = Instant::now() + std::time::Duration::from_millis(20);
+    let error = timeout(
+        std::time::Duration::from_secs(1),
+        read_frame(reader, remaining_end),
+    )
+    .await
+    .expect("read must use the remaining original budget")
+    .expect_err("unreceived frame must expire");
+    assert!(matches!(error, AgentdError::Protocol(message)
+        if message == "agentd control request frame timed out"));
 }

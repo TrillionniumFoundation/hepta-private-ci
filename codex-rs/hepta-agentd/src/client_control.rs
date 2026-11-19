@@ -2,7 +2,10 @@
 //! request write from a malformed, mismatched, overloaded or rejected reply.
 //! It never retries admission or treats transport uncertainty as completion.
 
-use codex_uds::UnixStream;
+#[cfg(windows)]
+use codex_uds::OwnerLocalStream as ControlStream;
+#[cfg(not(windows))]
+use codex_uds::UnixStream as ControlStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -104,7 +107,7 @@ impl AgentdClient {
         let expected_request_id = request.request_id;
         let stream = timeout_at(
             self.original_phase_end(end)?,
-            UnixStream::connect(&self.socket_path),
+            ControlStream::connect(&self.socket_path),
         )
         .await
         .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?

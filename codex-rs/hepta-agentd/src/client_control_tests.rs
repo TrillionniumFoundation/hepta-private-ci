@@ -4,7 +4,10 @@
 use std::path::PathBuf;
 
 use codex_hepta_contracts::AgentId;
-use codex_uds::UnixListener;
+#[cfg(windows)]
+use codex_uds::OwnerLocalListener as ControlListener;
+#[cfg(not(windows))]
+use codex_uds::UnixListener as ControlListener;
 
 use super::*;
 
@@ -18,9 +21,11 @@ async fn observe_reply(bytes: Vec<u8>) -> anyhow::Result<Result<AgentdResponse, 
         .prefix("hctrl-")
         .tempdir_in(temp_root)?;
     let socket = temp.path().join("reply.ctl");
-    let mut listener = UnixListener::bind(&socket).await?;
+    let mut listener = ControlListener::bind(&socket).await?;
     let server = tokio::spawn(async move {
         let stream = listener.accept().await.expect("fixture peer accept");
+        #[cfg(windows)]
+        let stream = stream.authenticate().await.expect("fixture owner identity");
         let (reader, mut writer) = tokio::io::split(stream);
         let mut reader = BufReader::new(reader);
         let mut request = Vec::new();
@@ -120,11 +125,13 @@ async fn original_control_postwrite_deadline_keeps_uncertainty_without_resending
         .prefix("hctrl-")
         .tempdir_in(temp_root)?;
     let socket = temp.path().join("deadline.ctl");
-    let mut listener = UnixListener::bind(&socket).await?;
+    let mut listener = ControlListener::bind(&socket).await?;
     let (sent, received) = tokio::sync::oneshot::channel();
     let (release, released) = tokio::sync::oneshot::channel();
     let server = tokio::spawn(async move {
         let stream = listener.accept().await?;
+        #[cfg(windows)]
+        let stream = stream.authenticate().await?;
         let mut reader = BufReader::new(stream);
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes).await?;

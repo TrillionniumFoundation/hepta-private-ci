@@ -59,9 +59,27 @@ async fn native_memory_control_socket_requires_explicit_owner_and_generation() {
         .unwrap();
     state.mark_app_server_ready().unwrap();
     let cancellation = CancellationToken::new();
-    let server = crate::AgentdControlServer::bind(socket.clone(), state, cancellation.clone())
-        .await
-        .unwrap();
+    let server =
+        crate::AgentdControlServer::bind(socket.clone(), Arc::clone(&state), cancellation.clone())
+            .await
+            .unwrap();
+    #[cfg(windows)]
+    {
+        assert!(
+            !socket.exists(),
+            "the pipe must not create a filesystem rendezvous"
+        );
+        assert!(
+            crate::AgentdControlServer::bind(
+                socket.clone(),
+                Arc::clone(&state),
+                cancellation.clone(),
+            )
+            .await
+            .is_err(),
+            "a second server must not replace the live pipe owner"
+        );
+    }
     let serving = tokio::spawn(server.run());
     let client = crate::AgentdClient::new(socket.clone(), owner.clone(), 1).unwrap();
     let ingress = MemoryCellReadIngress {
@@ -92,8 +110,15 @@ async fn native_memory_control_socket_requires_explicit_owner_and_generation() {
             .iter()
             .any(|c| c.id == "memory.cell.native")
     );
-    let stale = crate::AgentdClient::new(socket, owner, 2).unwrap();
+    let stale = crate::AgentdClient::new(socket.clone(), owner, 2).unwrap();
     assert!(stale.memory_cell_read_start(ingress).await.is_err());
+    #[cfg(windows)]
+    std::fs::write(&socket, b"independent path after pipe admission").unwrap();
     cancellation.cancel();
     serving.await.unwrap().unwrap();
+    #[cfg(windows)]
+    assert_eq!(
+        std::fs::read(&socket).unwrap(),
+        b"independent path after pipe admission"
+    );
 }
