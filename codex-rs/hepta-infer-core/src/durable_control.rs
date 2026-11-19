@@ -803,6 +803,7 @@ impl DurableInferenceControl {
         Ok(result)
     }
 
+    #[cfg(test)]
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
         self.append_with_generation_reserve(encoded, self.generation.reserved_bytes()?)
     }
