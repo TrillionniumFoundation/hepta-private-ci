@@ -1,3 +1,13 @@
+# Joined integration checkpoint
+
+The ordinary Windows union and the independent external live-ref refresh are both retained below, with their original source and qualification scope. Their exact original README bytes are also preserved as `README.original-windows-union.md` and `README.external-live-refresh.md`.
+
+The external integration tip `b51d9ca526fe06447e6bc58227b615b68df09ba0` is merged through its real history; no external work is overwritten. Main remains unchanged. A fresh complete Git ref advertisement now contains 7,646 heads. The protected manifest contains 395 exact names, including the newly observed locked-native HIA descendant. The new ordinary heads still require ancestry classification and integration review.
+
+The original Windows-union sections describe that earlier checkpoint; subsequent source repairs, the full HPCA joint PASS, the independent time migration and six normal ordinary merges have separate immutable receipts in this directory. Native acceptance and final main retirement remain pending.
+
+---
+
 # Ordinary branch consolidation — round 02, 2026-11-19
 
 This is an integration checkpoint. Main remains `732e934ba496d90fbe042b8d41d479ef901643e5`; no remote branch has been deleted. Full ordinary-history consolidation, native platform qualification, and retirement are not complete.
@@ -39,3 +49,15 @@ The blob checker reads Git inventories in batches while preserving exact path en
 ## Publication and completion gates
 
 This checkpoint is suitable for the existing integration PR, not a declaration that main is ready. Required CI and architecture checks must pass on the actual final candidate before the authorized main merge. Retirement must then re-read live heads, preserve all protected HIA refs, prove exact tips reachable from main, create required backups and apply exact SHA leases. Remaining ordinary frontier branches still require normal integration and review.
+
+---
+
+# Rust consolidation — 2026-11-19 live-head refresh
+
+This is an **unqualified, non-atomic branch inventory**, not authority to delete or merge refs. Eight UTF-8 JSON shards preserve the exact 7,643 branch name/SHA entries returned by GitHub REST pages 1–77 (page 78 empty). Each shard is an independently stored Git blob. Duplicate names were not observed. A separate fresh Git graph pass remains mandatory before assigning ordinary/HIA ancestry and merge coverage.
+
+The prior round-01 evidence at `qa/repository-consolidation/20261119/round-01` remains unchanged. Its 7,615-head classification (2,083 ordinary covered, 5,142 outstanding, 389 HIA) **does not describe the new census**. In the later 7,643-head reading, all 393 then-manifest-pinned HIA branch names were still present. The additional HIA descendant `codex/hia-example-validation-transport-20261119-r11` at `1ebf105bb04173315e0d728d2cf91b652d4f83e1` was independently compared against two original HIA roots and pinned in the protection manifest. HIA protection also applies to differently named descendants such as the chrono/OTEL joint branch. No HIA branch was changed.
+
+The current integration-only source fix `21a0697fb3bc47392116f2d85696bdc2a6d084c0` retains authenticated Windows owner-local transport and original Unix transport, request framing, identity binding and original deadline. The protected function-order markers were checked locally; exact native Windows/Linux tests and new required gates are not yet qualified. The prior integration head `8047312` passed Architecture but failed Windows shards 2/4 and 4/4, Linux-musl tests, the caller guard and the 19-group Windows aggregate. The Windows elevated sandbox must remain fail-closed until proven safe; no failure was ignored or downgraded.
+
+**No ordinary branch was merged or deleted in this refresh. Main remains unchanged.** This inventory is for subsequent conservative full-history and Windows regression reviews only.
