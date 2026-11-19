@@ -1,0 +1,132 @@
+hia-asm.v1 hepta.hia.program.v9 codex_example_validation_continuation_candidate
+fn f0(source:readbuf,output:mutbuf,workspace:mutbuf) -> (u32) effects(read,write,trap) entry(entry)
+block entry(source:readbuf,output:mutbuf,workspace:mutbuf)
+  e00_source_size:usize = buffer.len(source)
+  e00_required_size:usize = const() {"value":48}
+  e00_source_ok:bool = compare.eq(e00_source_size,e00_required_size)
+  branch e00_source_ok check_workspace(source,output,workspace) invalid()
+block check_workspace(e01_source:readbuf,e01_output:mutbuf,e01_workspace:mutbuf)
+  e01_workspace_size:usize = buffer.len(e01_workspace)
+  e01_zero:usize = const() {"value":0}
+  e01_workspace_ok:bool = compare.eq(e01_workspace_size,e01_zero)
+  branch e01_workspace_ok check_output(e01_source,e01_output) invalid()
+block check_output(e02_source:readbuf,e02_output:mutbuf)
+  e02_output_size:usize = buffer.len(e02_output)
+  e02_required:usize = const() {"value":32}
+  e02_enough:bool = compare.ge(e02_output_size,e02_required)
+  branch e02_enough load(e02_source,e02_output) short()
+block load(e03_source:readbuf,e03_output:mutbuf)
+  e03_p0:usize = const() {"value":0}
+  e03_p8:usize = const() {"value":8}
+  e03_p16:usize = const() {"value":16}
+  e03_p24:usize = const() {"value":24}
+  e03_p32:usize = const() {"value":32}
+  e03_p40:usize = const() {"value":40}
+  e03_version:u64 = buffer.load.u64.le(e03_source,e03_p0)
+  e03_mode:u64 = buffer.load.u64.le(e03_source,e03_p8)
+  e03_total:u64 = buffer.load.u64.le(e03_source,e03_p16)
+  e03_index:u64 = buffer.load.u64.le(e03_source,e03_p24)
+  e03_misses:u64 = buffer.load.u64.le(e03_source,e03_p32)
+  e03_hit:u64 = buffer.load.u64.le(e03_source,e03_p40)
+  e03_one:u64 = const() {"value":1}
+  e03_version_ok:bool = compare.eq(e03_version,e03_one)
+  e03_mode_ok:bool = compare.le(e03_mode,e03_one)
+  e03_flag_ok:bool = compare.le(e03_hit,e03_one)
+  e03_valid_a:bool = bool.and(e03_version_ok,e03_mode_ok)
+  e03_valid:bool = bool.and(e03_valid_a,e03_flag_ok)
+  branch e03_valid check_total(e03_output,e03_mode,e03_total,e03_index,e03_misses,e03_hit) invalid()
+block check_total(e04_output:mutbuf,e04_mode:u64,e04_total:u64,e04_index:u64,e04_misses:u64,e04_hit:u64)
+  e04_zero:u64 = const() {"value":0}
+  e04_empty:bool = compare.eq(e04_total,e04_zero)
+  branch e04_empty empty(e04_output,e04_index,e04_misses,e04_hit) check_index(e04_output,e04_mode,e04_total,e04_index,e04_misses,e04_hit)
+block empty(e05_output:mutbuf,e05_index:u64,e05_misses:u64,e05_hit:u64)
+  e05_zero:u64 = const() {"value":0}
+  e05_index_ok:bool = compare.eq(e05_index,e05_zero)
+  e05_misses_ok:bool = compare.eq(e05_misses,e05_zero)
+  e05_hit_ok:bool = compare.eq(e05_hit,e05_zero)
+  e05_valid_a:bool = bool.and(e05_index_ok,e05_misses_ok)
+  e05_valid:bool = bool.and(e05_valid_a,e05_hit_ok)
+  branch e05_valid emit_done(e05_output,e05_zero,e05_zero) invalid()
+block check_index(e06_output:mutbuf,e06_mode:u64,e06_total:u64,e06_index:u64,e06_misses:u64,e06_hit:u64)
+  e06_in_range:bool = compare.lt(e06_index,e06_total)
+  e06_misses_valid:bool = compare.le(e06_misses,e06_index)
+  e06_a:bool = bool.and(e06_in_range,e06_misses_valid)
+  branch e06_a check_negative_misses(e06_output,e06_mode,e06_total,e06_index,e06_misses,e06_hit) invalid()
+block check_negative_misses(e07_output:mutbuf,e07_mode:u64,e07_total:u64,e07_index:u64,e07_misses:u64,e07_hit:u64)
+  e07_zero:u64 = const() {"value":0}
+  e07_negative:bool = compare.eq(e07_mode,e07_zero)
+  branch e07_negative negative_guard(e07_output,e07_total,e07_index,e07_misses,e07_hit) positive(e07_output,e07_total,e07_index,e07_misses,e07_hit)
+block negative_guard(e08_output:mutbuf,e08_total:u64,e08_index:u64,e08_misses:u64,e08_hit:u64)
+  e08_zero:u64 = const() {"value":0}
+  e08_valid:bool = compare.eq(e08_misses,e08_zero)
+  branch e08_valid negative(e08_output,e08_total,e08_index,e08_hit) invalid()
+block negative(e09_output:mutbuf,e09_total:u64,e09_index:u64,e09_hit:u64)
+  e09_one:u64 = const() {"value":1}
+  e09_is_hit:bool = compare.eq(e09_hit,e09_one)
+  branch e09_is_hit negative_stop(e09_output,e09_index) negative_miss(e09_output,e09_total,e09_index)
+block negative_stop(e10_output:mutbuf,e10_index:u64)
+  e10_event:u64 = const() {"value":4}
+  e10_zero:u64 = const() {"value":0}
+  jump emit(e10_output,e10_event,e10_index,e10_zero)
+block negative_miss(e11_output:mutbuf,e11_total:u64,e11_index:u64)
+  e11_one:u64 = const() {"value":1}
+  e11_next:u64 = int.add.checked(e11_index,e11_one)
+  e11_last:bool = compare.eq(e11_next,e11_total)
+  branch e11_last negative_done(e11_output,e11_next) negative_next(e11_output,e11_next)
+block negative_done(e12_output:mutbuf,e12_next:u64)
+  e12_zero:u64 = const() {"value":0}
+  jump emit_done(e12_output,e12_next,e12_zero)
+block negative_next(e13_output:mutbuf,e13_next:u64)
+  e13_event:u64 = const() {"value":1}
+  e13_zero:u64 = const() {"value":0}
+  jump emit(e13_output,e13_event,e13_next,e13_zero)
+block positive(e14_output:mutbuf,e14_total:u64,e14_index:u64,e14_misses:u64,e14_hit:u64)
+  e14_one:u64 = const() {"value":1}
+  e14_next:u64 = int.add.checked(e14_index,e14_one)
+  e14_last:bool = compare.eq(e14_next,e14_total)
+  e14_is_hit:bool = compare.eq(e14_hit,e14_one)
+  branch e14_is_hit positive_hit(e14_output,e14_next,e14_last,e14_misses) positive_miss(e14_output,e14_next,e14_last,e14_misses)
+block positive_hit(e15_output:mutbuf,e15_next:u64,e15_last:bool,e15_misses:u64)
+  branch e15_last positive_hit_end(e15_output,e15_next,e15_misses) positive_next(e15_output,e15_next,e15_misses)
+block positive_hit_end(e16_output:mutbuf,e16_next:u64,e16_misses:u64)
+  e16_zero:u64 = const() {"value":0}
+  e16_is_clean:bool = compare.eq(e16_misses,e16_zero)
+  branch e16_is_clean emit_done(e16_output,e16_next,e16_misses) positive_error(e16_output,e16_next,e16_misses)
+block positive_error(e17_output:mutbuf,e17_next:u64,e17_misses:u64)
+  e17_event:u64 = const() {"value":5}
+  jump emit(e17_output,e17_event,e17_next,e17_misses)
+block positive_next(e18_output:mutbuf,e18_next:u64,e18_misses:u64)
+  e18_event:u64 = const() {"value":1}
+  jump emit(e18_output,e18_event,e18_next,e18_misses)
+block positive_miss(e19_output:mutbuf,e19_next:u64,e19_last:bool,e19_misses:u64)
+  e19_one:u64 = const() {"value":1}
+  e19_next_misses:u64 = int.add.checked(e19_misses,e19_one)
+  branch e19_last positive_miss_last(e19_output,e19_next,e19_next_misses) positive_miss_next(e19_output,e19_next,e19_next_misses)
+block positive_miss_last(e20_output:mutbuf,e20_next:u64,e20_misses:u64)
+  e20_event:u64 = const() {"value":3}
+  jump emit(e20_output,e20_event,e20_next,e20_misses)
+block positive_miss_next(e21_output:mutbuf,e21_next:u64,e21_misses:u64)
+  e21_event:u64 = const() {"value":2}
+  jump emit(e21_output,e21_event,e21_next,e21_misses)
+block emit_done(e22_output:mutbuf,e22_next:u64,e22_misses:u64)
+  e22_done:u64 = const() {"value":0}
+  jump emit(e22_output,e22_done,e22_next,e22_misses)
+block emit(e23_output:mutbuf,e23_event:u64,e23_next:u64,e23_misses:u64)
+  e23_zero:usize = const() {"value":0}
+  e23_eight:usize = const() {"value":8}
+  e23_sixteen:usize = const() {"value":16}
+  e23_twentyfour:usize = const() {"value":24}
+  e23_reserved:u64 = const() {"value":0}
+  _ = buffer.store.u64.le(e23_output,e23_zero,e23_event)
+  _ = buffer.store.u64.le(e23_output,e23_eight,e23_next)
+  _ = buffer.store.u64.le(e23_output,e23_sixteen,e23_misses)
+  _ = buffer.store.u64.le(e23_output,e23_twentyfour,e23_reserved)
+  e23_success:u32 = const() {"value":0}
+  ret(e23_success)
+block invalid()
+  e24_invalid:u32 = const() {"value":4294967295}
+  ret(e24_invalid)
+block short()
+  e25_short:u32 = const() {"value":4294967294}
+  ret(e25_short)
+end
