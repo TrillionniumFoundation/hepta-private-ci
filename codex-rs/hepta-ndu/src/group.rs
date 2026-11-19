@@ -57,6 +57,8 @@ pub struct GroupCellObservationV1 {
 pub struct GroupDecisionTraceV1 {
     pub run_id: String,
     pub subject_id: String,
+    /// Canonical full-owner binding; this digest is not an authorization signature.
+    pub subject_binding_digest: Digest32,
     pub input_digest: Digest32,
     pub generation: u64,
     pub route_digest: Digest32,
@@ -91,6 +93,7 @@ pub struct GroupSystem2DecisionV1 {
 pub enum GroupSystem2Error {
     EmptyId(&'static str),
     IdTooLarge(&'static str),
+    InvalidId(&'static str),
     ZeroDigest(&'static str),
     ZeroGeneration,
     TraceBindingMismatch(&'static str),
@@ -141,6 +144,10 @@ pub fn decide_group_continuation_v1(
         .find(|candidate| candidate.abstain)
         .ok_or(GroupSystem2Error::MissingAbstainCandidate)?;
 
+    // Validate the abstain baseline before considering any continuation:
+    // it is an actual legal alternative, not an assumed zero-utility action.
+    let abstain_net = candidate_net_value(abstain)?;
+
     let mut best_non_abstain: Option<(&GroupContinuationCandidateV1, i64)> = None;
     for candidate in candidates
         .iter()
@@ -160,8 +167,8 @@ pub fn decide_group_continuation_v1(
     }
 
     let (selected_candidate, selected_net) = match best_non_abstain {
-        Some((candidate, net)) if net > 0 => (candidate, net),
-        _ => (abstain, candidate_net_value(abstain)?),
+        Some((candidate, net)) if net > 0 && net > abstain_net => (candidate, net),
+        _ => (abstain, abstain_net),
     };
 
     let trace_digest = decision_trace_digest(subject, trace, candidate_digest);
@@ -207,6 +214,11 @@ fn validate_trace(
     }
     if trace.generation != subject.generation {
         return Err(GroupSystem2Error::TraceBindingMismatch("generation"));
+    }
+    if trace.subject_binding_digest != canonical_group_subject_binding_digest_v1(subject) {
+        return Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ));
     }
     for (name, digest) in [
         ("input_digest", trace.input_digest),
@@ -310,8 +322,13 @@ fn validate_id(name: &'static str, value: &str) -> Result<(), GroupSystem2Error>
     if value.len() > MAX_GROUP_ID_BYTES_V1 {
         return Err(GroupSystem2Error::IdTooLarge(name));
     }
-    if value.bytes().any(|byte| byte == 0) {
-        return Err(GroupSystem2Error::EmptyId(name));
+    // Stable identifiers must not carry control text, path separators, or
+    // visually ambiguous non-ASCII characters into receipt and trace fields.
+    if !value
+        .bytes()
+        .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+    {
+        return Err(GroupSystem2Error::InvalidId(name));
     }
     Ok(())
 }
@@ -322,6 +339,20 @@ fn candidate_net_value(candidate: &GroupContinuationCandidateV1) -> Result<i64, 
         - i128::from(candidate.cost_q32)
         - i128::from(candidate.risk_q32);
     i64::try_from(net).map_err(|_| GroupSystem2Error::ArithmeticOverflow)
+}
+
+/// Digest over the complete owner tuple; never an attestation of external authority.
+pub fn canonical_group_subject_binding_digest_v1(subject: &GroupNduSubjectV1) -> Digest32 {
+    let mut bytes = b"hepta.ndu.group-subject-binding.v1\0".to_vec();
+    push_text_unchecked(&mut bytes, &subject.subject_id);
+    bytes.push(subject.subject_class.tag());
+    push_text_unchecked(&mut bytes, &subject.group_id);
+    bytes.extend_from_slice(&subject.generation.to_be_bytes());
+    bytes.extend_from_slice(subject.objective_digest.as_array());
+    bytes.extend_from_slice(subject.encoder_digest.as_array());
+    bytes.extend_from_slice(subject.utility_profile_digest.as_array());
+    bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
+    Digest32::of_bytes(&bytes)
 }
 
 fn group_candidate_set_digest(
@@ -356,6 +387,7 @@ fn decision_trace_digest(
     bytes.extend_from_slice(&subject.resource_ceiling_micros.to_be_bytes());
     push_text_unchecked(&mut bytes, &trace.run_id);
     push_text_unchecked(&mut bytes, &trace.subject_id);
+    bytes.extend_from_slice(trace.subject_binding_digest.as_array());
     bytes.extend_from_slice(trace.input_digest.as_array());
     bytes.extend_from_slice(&trace.generation.to_be_bytes());
     bytes.extend_from_slice(trace.route_digest.as_array());

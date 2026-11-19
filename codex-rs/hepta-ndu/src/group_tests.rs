@@ -56,6 +56,7 @@ fn make_trace(
     GroupDecisionTraceV1 {
         run_id: "run:demo".to_owned(),
         subject_id: subject.subject_id.clone(),
+        subject_binding_digest: canonical_group_subject_binding_digest_v1(subject),
         input_digest: digest("input"),
         generation: subject.generation,
         route_digest: digest("route"),
@@ -100,6 +101,55 @@ fn non_positive_continuation_abstains() {
         &candidates,
     ));
     assert_eq!(result.selected_candidate_id, "abstain");
+}
+
+#[test]
+fn legal_abstain_with_higher_net_prevents_worse_positive_continuation() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    // Continuation has +17, but legal abstention has +40 in this
+    // candidate set. Positive net alone must not override abstention.
+    candidates[1].continuation_value_q32 = 50;
+    let result = must(decide_group_continuation_v1(
+        &subject,
+        &make_trace(&subject, &candidates),
+        &candidates,
+    ));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 40);
+    assert_eq!(result.authority, AuthorityPosture::DENY_ALL);
+}
+
+#[test]
+fn equal_net_preference_fails_closed_to_abstain() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    candidates[1].continuation_value_q32 = 27;
+    let result = must(decide_group_continuation_v1(
+        &subject,
+        &make_trace(&subject, &candidates),
+        &candidates,
+    ));
+    assert_eq!(result.selected_candidate_id, "abstain");
+    assert_eq!(result.net_value_q32, 17);
+}
+
+#[test]
+fn malformed_abstain_net_cannot_hide_behind_positive_continuation() {
+    let subject = subject();
+    let mut candidates = candidate_fixtures();
+    // This i128 net cannot be represented in the Q32 i64 contract.
+    // Old selection did not evaluate abstain when continuation won.
+    candidates[1].current_value_q32 = i64::MIN;
+    candidates[1].continuation_value_q32 = i64::MAX;
+    assert_eq!(
+        decide_group_continuation_v1(
+            &subject,
+            &make_trace(&subject, &candidates),
+            &candidates,
+        ),
+        Err(GroupSystem2Error::ArithmeticOverflow)
+    );
 }
 
 #[test]
@@ -158,6 +208,72 @@ fn duplicate_cell_observations_fail_closed() {
 }
 
 #[test]
+fn same_generation_cross_group_or_encoder_trace_is_rejected() {
+    let original = subject();
+    let candidates = candidate_fixtures();
+    let trace = make_trace(&original, &candidates);
+    let expected = Err(GroupSystem2Error::TraceBindingMismatch("subject_binding_digest"));
+
+    let mut changed = original.clone();
+    changed.group_id = "group:other".to_owned();
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+
+    let mut changed = original.clone();
+    changed.encoder_digest = digest("other-encoder");
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+
+    let mut changed = original.clone();
+    changed.objective_digest = digest("other-objective");
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+
+    let mut changed = original.clone();
+    changed.utility_profile_digest = digest("other-profile");
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+
+    let mut changed = original.clone();
+    changed.subject_class = GroupSubjectClassV1::Agent;
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+
+    let mut changed = original;
+    changed.resource_ceiling_micros += 1;
+    assert_eq!(
+        decide_group_continuation_v1(&changed, &trace, &candidates),
+        expected
+    );
+}
+
+#[test]
+fn valid_owner_trace_is_replayable_but_missing_binding_is_rejected() {
+    let owner = subject();
+    let candidates = candidate_fixtures();
+    let mut trace = make_trace(&owner, &candidates);
+    let first = must(decide_group_continuation_v1(&owner, &trace, &candidates));
+    assert_eq!(first.selected_candidate_id, "continue");
+    trace.subject_binding_digest = Digest32::ZERO;
+    assert_eq!(
+        decide_group_continuation_v1(&owner, &trace, &candidates),
+        Err(GroupSystem2Error::TraceBindingMismatch(
+            "subject_binding_digest",
+        ))
+    );
+}
+
+#[test]
 fn trace_identity_and_generation_mismatch_fail_closed() {
     let subject = subject();
     let candidates = candidate_fixtures();
@@ -175,4 +291,59 @@ fn trace_identity_and_generation_mismatch_fail_closed() {
         decide_group_continuation_v1(&subject, &trace, &candidates),
         Err(GroupSystem2Error::TraceBindingMismatch("generation"))
     );
+}
+
+#[test]
+fn stable_group_ids_reject_control_and_noncanonical_tokens() {
+    for invalid in ["bad\nline", "bad\tfield", "bad/route", "bad id", "bad\u{202e}"] {
+        let candidates = candidate_fixtures();
+
+        let mut invalid_subject = subject();
+        invalid_subject.subject_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &invalid_subject,
+                &make_trace(&invalid_subject, &candidates),
+                &candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("subject_id"))
+        );
+
+        let mut invalid_subject = subject();
+        invalid_subject.group_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &invalid_subject,
+                &make_trace(&invalid_subject, &candidates),
+                &candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("group_id"))
+        );
+
+        let valid_subject = subject();
+        let mut invalid_trace = make_trace(&valid_subject, &candidates);
+        invalid_trace.run_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(&valid_subject, &invalid_trace, &candidates),
+            Err(GroupSystem2Error::InvalidId("run_id"))
+        );
+
+        let mut invalid_trace = make_trace(&valid_subject, &candidates);
+        invalid_trace.cells[0].cell_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(&valid_subject, &invalid_trace, &candidates),
+            Err(GroupSystem2Error::InvalidId("cell_id"))
+        );
+
+        let mut invalid_candidates = candidates.clone();
+        invalid_candidates[0].candidate_id = invalid.to_owned();
+        assert_eq!(
+            decide_group_continuation_v1(
+                &valid_subject,
+                &make_trace(&valid_subject, &candidates),
+                &invalid_candidates,
+            ),
+            Err(GroupSystem2Error::InvalidId("candidate_id"))
+        );
+    }
 }
