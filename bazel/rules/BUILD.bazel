@@ -1,5 +1,6 @@
 package(default_visibility = ["//visibility:public"])
 
 exports_files([
+    "cargo_crate_aliases.bzl",
     "e2e_benchmark.bzl",
 ])
