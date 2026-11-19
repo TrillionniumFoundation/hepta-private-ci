@@ -1,0 +1,95 @@
+{
+  "schema": "hcsn-n256-corrected-t0-hosted-evidence-v1",
+  "identity": "hcsn-n256-corrected-t0-capsule-contract-20261117-c06d-001",
+  "exact_execution_source": {
+    "commit": "4b6fcf153375fb58e5a77c87c21d27569b3689c0",
+    "tree": "0359f5d49f3df5be190d3c28506de25a7b4d6682",
+    "parent": "e757cf553912fd1761fe0d9b7a5128fecfa8652e",
+    "execution_key": "hcsn-n256-corrected-t0-capsule-20261117-c06d-002",
+    "key_consumed": true,
+    "same_key_rerun_allowed": false
+  },
+  "github_actions": {
+    "run_id": 44217872325,
+    "job_id": 134512128390,
+    "conclusion": "success",
+    "artifact_id": 14388709067,
+    "artifact_name": "hcsn-n256-corrected-authentic-t0-44217872325",
+    "artifact_created_at_utc": "2026-11-18T01:42:55Z",
+    "artifact_expires_at_utc": "2026-12-18T01:42:55Z"
+  },
+  "original_zip": {
+    "bytes": 22276,
+    "members": 8,
+    "sha256": "39c63dcd7e46d842d6f911917a07bfe515147179880ed8e96f2ce6c6732ac820"
+  },
+  "original_members_sha256": {
+    "ADMISSION.json": "6e271d6f4add9e057e593ec8c1233abc05a883571c24a01a90324dfc5132bc1a",
+    "BUILD.json": "a2732f9adf7fb7591ea36ece9eea44cd5d267793eaf244b45afc718a047734f9",
+    "EXECUTION_STDERR.txt": "db2575e23d95d2834a76c1947b11c20a03e2123f8225154318b095cd04ec1574",
+    "EXECUTION_STDOUT.txt": "8f45d98f542634f3d926636c67c4bead8b6327ba018c5b1032bccc56ac69b26d",
+    "RECEIPT.json": "6ab13417a4067f57c770f293e57095ce2ad794e287fcd3daa04de0062ca94495",
+    "SHA256SUMS.txt": "255303af2d4f5e2a3dafd5c7d5281fcc0335903db15501dbc5e563f9f061800c",
+    "SOURCE_FREEZE.json": "7d9cda431569b938f82641578483bb30dec9bf551ed24d960dc5dc06a04df0b1",
+    "capsule.bin": "8ccaa901c53151cc455bbce84f9f0c5144bbbcfb785a1c48aa5c6969bf76f637"
+  },
+  "capsule": {
+    "bytes": 24511,
+    "coordinates": {
+      "total": 2656,
+      "state": 2600,
+      "packet": 56,
+      "equal": 2656,
+      "mismatches": 0
+    }
+  },
+  "observed_counts": {
+    "candidate_phase_parser_calls": 8,
+    "oracle_adapter_calls": 1,
+    "canonical_decode_calls": 1,
+    "canonical_encode_invocations": 2,
+    "publish_atomic_calls": 1,
+    "independent_parser_calls": 1,
+    "dynamic_runs": 0,
+    "matrix_exponential_actions": 0,
+    "provider_calls": 0,
+    "torch_calls": 0,
+    "optimizer_steps": 0
+  },
+  "cost": {
+    "wall_seconds": 0.17,
+    "user_cpu_seconds": 0.13,
+    "system_cpu_seconds": 0.02,
+    "max_rss_kib": 22104,
+    "exit_code": 0
+  },
+  "result": {
+    "corrected_t0_capsule_closed": true,
+    "canonical_decode_roundtrip_exact": true,
+    "independent_comparison_exact": true,
+    "cold_load_qualified": false,
+    "largegrid_qualification": false,
+    "production_adoption": false,
+    "all_closed": false
+  },
+  "preserved_failures": {
+    "attempt001": {
+      "execution_key": "hcsn-n256-corrected-t0-capsule-20261117-c06d-001",
+      "status": "REJECT_PRECOMMIT_PROTOCOL_FAILURE",
+      "source_precommitted": false,
+      "qualification": false,
+      "same_key_rerun_allowed": false,
+      "capsule_sha256": "4db9898201cf10c2c5cf588e3f08fa60788580bb119ca6199f3b4d1c870bf8da"
+    },
+    "branch_isolation_incident": {
+      "occurred": true,
+      "force_push_used": false,
+      "exact_execution_source_preserved_on_isolated_branch": true,
+      "parent_draft": 6608,
+      "restored_commit": "d3c84b480ff3f4909b35e982ebd92f15e5075fbd",
+      "restored_tree": "92c18900f50331a6d1472428b827e9b8fb0829b7"
+    }
+  },
+  "historical_negative_and_unknown_preserved": true,
+  "global_status": "HOLD"
+}

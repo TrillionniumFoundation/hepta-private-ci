@@ -1,0 +1,24 @@
+name: hcsn-currentstate-n256-firststep-dense-oracle-source
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_firststep_dense_oracle_source/**"
+      - ".github/workflows/hcsn-currentstate-n256-firststep-dense-oracle-source.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-only:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify frozen dense-oracle source
+        run: python -O -m qualification.hcsn_currentstate_n256_firststep_dense_oracle_source.verify_source
+      - name: Run six small stdlib controls
+        run: python -O -m unittest qualification.hcsn_currentstate_n256_firststep_dense_oracle_source.test_source -v
