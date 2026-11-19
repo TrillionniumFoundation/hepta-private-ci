@@ -151,6 +151,26 @@ fn observation(label: &str) -> RetrievalAssignmentObservationV1 {
     value
 }
 
+/// Open the real durable parent directory on Windows rather than relying
+/// on File::open(directory), which Windows rejects by default. This fixture
+/// still exercises the normal LedgerWriter fsync and witness path.
+fn durable_directory(path: &std::path::Path) -> File {
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(path)
+            .expect("open durable directory handle on Windows")
+    }
+    #[cfg(not(windows))]
+    {
+        File::open(path).expect("open durable directory handle")
+    }
+}
+
 fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
     let temp = tempfile::tempdir().expect("temp");
     let binding = digest("agentd-retrieval-learning");
@@ -170,8 +190,8 @@ fn sink() -> (tempfile::TempDir, CognitiveRetrievalLearningSink) {
         .expect("witness file");
     let ledger = DurableLedger::create(ledger_file, binding, 128).expect("ledger");
     let witness = LedgerWitnessStore::create(witness_file, binding).expect("witness");
-    let ledger_directory = File::open(temp.path()).expect("ledger directory");
-    let witness_directory = File::open(temp.path()).expect("witness directory");
+    let ledger_directory = durable_directory(temp.path());
+    let witness_directory = durable_directory(temp.path());
     let writer = LedgerWriter::from_durable(
         ledger,
         witness,
