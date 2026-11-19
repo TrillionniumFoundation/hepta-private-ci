@@ -1,0 +1,7 @@
+# Exact original parent with admitted native executable
+
+Attempt 3 stopped before any business test: nextest rejected compilation-only flags combined with `--binaries-metadata`. Its 26.554729712894186-second preparation and all original refusal records remain retained. The actual fully capless UID60002 old-descriptor refusal and new-descriptor source-child listing both passed. This proves executable admission only.
+
+A separate corrected list using the original two binary entries and fresh cargo metadata completed with exit 0 and selected exactly the original complete NoUpdate parent. No package, library or parent is added. Attempt 4 reuses those exact SHA-checked immutable copies. Its original test-recorder function changes only the incompatible --locked/--offline compiler tokens; all original Root environment construction, just test, nextest profile, timeout, roster, JUnit collection and business assertions remain unchanged. Fresh cargo metadata is still generated locked and offline; no compilation or network operation is introduced.
+
+The original compiled file inodes, byte hashes, mode 0700 and private directory ancestors remain unchanged. The full original costs remain with the prior attempts. The new driver additionally measures its own CPU alongside reaped child CPU. The same one complete parent, original 64-read limit, original deadlines and actual credential/capability drops determine the result. No successful NoUpdate, adoption, D, FinalUse or full physical-cost qualification is claimed by this prospective commit.
