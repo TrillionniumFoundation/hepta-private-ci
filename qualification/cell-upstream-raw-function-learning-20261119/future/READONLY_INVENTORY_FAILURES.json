@@ -1,0 +1,55 @@
+[
+  {
+    "attempt": "read-only old A/B3 AST inventory 1",
+    "args": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "-c",
+        "import pathlib,json,hashlib,ast,time\nroots=[('A',pathlib.Path('/home/qian-qi/work/hepta-e5-upstream-20261118-2e9b'),'686f1d77e274486034044ead9ec1b5db25c98c87b530264e1128766da785d0fa'),('B3',pathlib.Path('/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material'),'38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a')]\ntargets={'python-attrs/attrs':('src/attr/_make.py','_is_class_var'),'Textualize/rich':('rich/cells.py','split_graphemes'),'tox-dev/platformdirs':('src/platformdirs/unix.py','_get_user_dirs_folder'),'python-humanize/humanize':('src/humanize/time.py','_abs_timedelta')}\nsha=lambda b:hashlib.sha256(b).hexdigest()\nrows=[]\nfor panel,root,expected in roots:\n p=root/'SOURCES.json';raw=p.read_bytes();assert sha(raw)==expected\n for source in json.loads(raw)['sources']:\n  project=source['project_id'];path,name=targets[project] if panel=='A' else (source['permitted_source_path'],source['permitted_function'])\n  matches=list(root.glob('repositories/*/before/'+path))\n  assert len(matches)==1,(project,[str(p) for p in matches])\n  folder=matches[0].parents[len(pathlib.Path(path).parts)]\n  variants={}\n  for variant in ['before','after']:\n   q=folder/variant/path;b=q.read_bytes()\n   binding=next(x for x in source['source_files'] if x['path']==path)[variant]\n   assert sha(b)==binding['sha256']\n   tree=ast.parse(b);nodes=tree.body\n   for part in name.split('.'):\n    found=[n for n in nodes if isinstance(n,(ast.ClassDef,ast.FunctionDef,ast.AsyncFunctionDef)) and n.name==part]\n    assert len(found)==1;(node,)=found;nodes=getattr(node,'body',[])\n   variants[variant]={'path':str(q),'sha256':sha(b),'git_blob_sha1':binding['git_blob_sha1'],'function_ast_sha256':sha(ast.dump(node,include_attributes=False).encode())}\n  test=folder/'after'/source['selected_tests']['path'];b=test.read_bytes()\n  testbinding=next(x for x in source['source_files'] if x['path']==source['selected_tests']['path'])['after'];assert sha(b)==testbinding['sha256']\n  rows.append({'canonical_repository':project,'panel':panel,'source_inventory':str(p),'source_inventory_sha256':expected,'before_commit':source['before_commit'],'after_commit':source['after_commit'],'source_id':source['source_id'],'lineage_id':source['lineage_id'],'allowed_function':name,'source_path':path,'variants':variants,'original_after_tests':{'path':str(test),'sha256':sha(b),'git_blob_sha1':testbinding['git_blob_sha1'],'normalized_test_file_ast_sha256':sha(ast.dump(ast.parse(b),include_attributes=False).encode()),'selected_names':source['selected_tests']['names']}})\nout=pathlib.Path('/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-preparation-old-inventory-1');out.mkdir(exist_ok=False)\nresult={'schema':'hepta.old-A-B3-source-dedup-read.v1','observed_at_ns':str(time.time_ns()),'repositories':rows,'future_repository_content_reads':0,'model_calls':0,'native_children':0}\nraw=(json.dumps(result,sort_keys=True,separators=(',',':'))+'\\n').encode();(out/'A_B3_DEDUP.json').write_bytes(raw)\nprint(json.dumps({'path':str(out/'A_B3_DEDUP.json'),'sha256':sha(raw),'bytes':len(raw),'data':result},sort_keys=True))\n"
+      ],
+      "cwd": "/home/qian-qi/work",
+      "idempotency_key": "e123-old-A-B3-dedup-AST-read-2e9b-001"
+    },
+    "receipt": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-8682f0e9a0a929d2b6a84ad7c6f68d33d313f9767eb773f6b1cf2b71db7aac25/output.log\",\"available_end\":93,\"bytes_hex\":\"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0d0a202046696c6520223c737472696e673e222c206c696e652032312c20696e203c6d6f64756c653e0d0a417373657274696f6e4572726f720d0a\",\"chunk_sha256\":\"a013ba26d8b206c749397d92ab1cab7e2d16139606ef23cce0927ef980b74490\",\"host\":\"desktop\",\"next_offset\":93,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-8682f0e9a0a929d2b6a84ad7c6f68d33d313f9767eb773f6b1cf2b71db7aac25\",\"status\":{\"boot\":\"8c55b477-233a-4771-995a-6f666f6299b3\",\"bytes_seen\":93,\"bytes_stored\":93,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795061138436,\"exit_code\":1,\"output_complete\":true,\"owner_pid\":531886,\"pid\":531887,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"Traceback (most recent call last):\\r\\n  File \\\"<string>\\\", line 21, in <module>\\r\\nAssertionError\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    },
+    "interpretation": "metadata extractor assumed unique declaration; no model or native test ran; original source unchanged"
+  },
+  {
+    "attempt": "read-only old A/B3 AST inventory 2",
+    "args": {
+      "host": "desktop",
+      "executable": "/usr/bin/python3",
+      "args": [
+        "-B",
+        "-c",
+        "import pathlib,json,hashlib,ast,time\nroots=[('A',pathlib.Path('/home/qian-qi/work/hepta-e5-upstream-20261118-2e9b'),'686f1d77e274486034044ead9ec1b5db25c98c87b530264e1128766da785d0fa'),('B3',pathlib.Path('/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/material'),'38575e04211a2e4fc888456f4501de780e9acdb5f92f2f41fca42f66c6af219a')]\ntargets={'python-attrs/attrs':('src/attr/_make.py','_is_class_var'),'Textualize/rich':('rich/cells.py','split_graphemes'),'tox-dev/platformdirs':('src/platformdirs/unix.py','_get_user_dirs_folder'),'python-humanize/humanize':('src/humanize/time.py','_abs_timedelta')}\nsha=lambda b:hashlib.sha256(b).hexdigest()\nrows=[]\nfor panel,root,expected in roots:\n p=root/'SOURCES.json';raw=p.read_bytes();assert sha(raw)==expected\n for source in json.loads(raw)['sources']:\n  project=source['project_id'];path,name=targets[project] if panel=='A' else (source['permitted_source_path'],source['permitted_function'])\n  matches=list(root.glob('repositories/*/before/'+path))\n  assert len(matches)==1,(project,[str(p) for p in matches])\n  folder=matches[0].parents[len(pathlib.Path(path).parts)]\n  variants={}\n  for variant in ['before','after']:\n   q=folder/variant/path;b=q.read_bytes()\n   binding=next(x for x in source['source_files'] if x['path']==path)[variant]\n   assert sha(b)==binding['sha256']\n   tree=ast.parse(b);nodes=tree.body\n   for part in name.split('.'):\n    found=[n for n in nodes if isinstance(n,(ast.ClassDef,ast.FunctionDef,ast.AsyncFunctionDef)) and n.name==part]\n    if not found and '.' not in name: found=[n for n in ast.walk(tree) if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name==part]\n    assert len(found)==1,(project,variant,name,len(found));(node,)=found;nodes=getattr(node,'body',[])\n   variants[variant]={'path':str(q),'sha256':sha(b),'git_blob_sha1':binding['git_blob_sha1'],'function_ast_sha256':sha(ast.dump(node,include_attributes=False).encode())}\n  test=folder/'after'/source['selected_tests']['path'];b=test.read_bytes()\n  testbinding=next(x for x in source['source_files'] if x['path']==source['selected_tests']['path'])['after'];assert sha(b)==testbinding['sha256']\n  rows.append({'canonical_repository':project,'panel':panel,'source_inventory':str(p),'source_inventory_sha256':expected,'before_commit':source['before_commit'],'after_commit':source['after_commit'],'source_id':source['source_id'],'lineage_id':source['lineage_id'],'allowed_function':name,'source_path':path,'variants':variants,'original_after_tests':{'path':str(test),'sha256':sha(b),'git_blob_sha1':testbinding['git_blob_sha1'],'normalized_test_file_ast_sha256':sha(ast.dump(ast.parse(b),include_attributes=False).encode()),'selected_names':source['selected_tests']['names']}})\nout=pathlib.Path('/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-preparation-old-inventory-1');out.mkdir(exist_ok=False)\nresult={'schema':'hepta.old-A-B3-source-dedup-read.v1','observed_at_ns':str(time.time_ns()),'repositories':rows,'future_repository_content_reads':0,'model_calls':0,'native_children':0}\nraw=(json.dumps(result,sort_keys=True,separators=(',',':'))+'\\n').encode();(out/'A_B3_DEDUP.json').write_bytes(raw)\nprint(json.dumps({'path':str(out/'A_B3_DEDUP.json'),'sha256':sha(raw),'bytes':len(raw),'data':result},sort_keys=True))\n"
+      ],
+      "cwd": "/home/qian-qi/work",
+      "idempotency_key": "e123-old-A-B3-dedup-AST-read-corrected-qualified-name-2e9b-001"
+    },
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"archive_path\":\"/home/qian-qi/.local/state/hepta-runtime-mac-worker/terminals/dpty-66180fdb3fdb5ab71947a4a6fe792184333455e46cb8622d562e8714facc0c26/output.log\",\"available_end\":154,\"bytes_hex\":\"54726163656261636b20286d6f737420726563656e742063616c6c206c617374293a0d0a202046696c6520223c737472696e673e222c206c696e652032322c20696e203c6d6f64756c653e0d0a417373657274696f6e4572726f723a202827707974686f6e2d68797065722f683131272c20276265666f7265272c20276e6f726d616c697a655f616e645f76616c6964617465272c2034290d0a\",\"chunk_sha256\":\"ab609a8c20b9dae72f808838eb751b48549bba6ef14bcd27bd42352f61701e4a\",\"host\":\"desktop\",\"next_offset\":154,\"offset\":0,\"output_complete\":true,\"persistent_across_runtime_restart\":true,\"session_id\":\"dpty-66180fdb3fdb5ab71947a4a6fe792184333455e46cb8622d562e8714facc0c26\",\"status\":{\"boot\":\"8c55b477-233a-4771-995a-6f666f6299b3\",\"bytes_seen\":154,\"bytes_stored\":154,\"capture_error\":null,\"closed\":false,\"created_unix_ms\":1795061179323,\"exit_code\":1,\"output_complete\":true,\"owner_pid\":533148,\"pid\":533152,\"state\":\"exited\"},\"storage\":\"target_archive\",\"text\":\"Traceback (most recent call last):\\r\\n  File \\\"<string>\\\", line 22, in <module>\\r\\nAssertionError: ('python-hyper/h11', 'before', 'normalize_and_validate', 4)\\r\\n\",\"text_is_lossy\":false,\"truncated_before_offset\":false,\"utf8_pending\":false}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "interpretation": "h11 has four overload/implementation declarations; all original declarations are preserved in final inventory rather than forcing uniqueness"
+  }
+]

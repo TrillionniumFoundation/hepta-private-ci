@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-native-source-1/materialize_reference.py", line 355, in <module>
+    main()
+  File "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-native-source-1/materialize_reference.py", line 166, in main
+    files += materialize(root, output, commit["commit"], "after-tests", "tests")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-native-source-1/materialize_reference.py", line 88, in materialize
+    archive = git(
+              ^^^^
+  File "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-native-source-1/materialize_reference.py", line 75, in git
+    raise RuntimeError("retained acquisition command failed: " + str(folder))
+RuntimeError: retained acquisition command failed: /home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/future-materials-1/04-davidhalter--parso/native-qualification-01-00-1/commands/3

@@ -1,0 +1,23 @@
+{
+  "new_generation_calls": 0,
+  "new_training_updates": 0,
+  "no_change_to_original_56_generation_cap": true,
+  "order": "fixed repository, original nonmerge commit order, then sorted source path; no model output used",
+  "package": "original sole-parent tree; only permitted target source is overlaid with exact reference AFTER file",
+  "parser": "original closed_python_function_v1 parse_payload sha256 e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+  "prepared_at_ns": "1795063723585247012",
+  "qualified_only_if": "before exit 1 with original failures, no errors/skips/outer timeout, after exit 0 with no failures/errors/skips, identical nonempty original case identities, real sandbox attestations; then separate license, context, exact reference codec and old-source/test dedup gates",
+  "reference_gate": "original native_sandbox.py check_ast sha256 49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c",
+  "sandbox": "same bwrap unshare-all, clearenv, cap-drop ALL, no host home/credentials, read-only dependencies/package/tests; only per-child /out and temporary tmpfs writable",
+  "schema": "hepta.future-original-case-scope.v1",
+  "selection_appendix_sha256": "5a5b42e36436722ff203a6cf08777f367dc6c4765ecfac1c265466fc7b4410dd",
+  "test_scope": "Every whole original test file changed by the repair commit; if none exists, every original test*.py in its tests tree. No individual failing case filtered.",
+  "tests": "unaltered original AFTER tests and their original helpers/fixtures, mounted read-only",
+  "timeouts": {
+    "child_outer_seconds": 120,
+    "cpu_hard_seconds": 65,
+    "cpu_soft_seconds": 60,
+    "test_seconds": 3
+  },
+  "weights_frozen_sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6"
+}

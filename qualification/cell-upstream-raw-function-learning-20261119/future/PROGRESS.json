@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.future-panel-progress.v1",
+  "weights_frozen_sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6",
+  "selection_appendix_commit": "807695d60d83ebc8593fe1b069d072da2de89ed1",
+  "dedup_inventory_sha256": "aa522307a3d06aba4ac355846cba05417c0a9dc06a88b834d618b414247c1d9a",
+  "candidate_content_read_after_real_both_weight_freeze": true,
+  "new_model_generations": 0,
+  "new_native_children": 0,
+  "qualified_tasks": 0,
+  "completed_repositories": [
+    {
+      "completed_at_ns": "1795061756440879632",
+      "decisions": [
+        {
+          "commit": "493f3092898b72334fd009937e70cde9c56818fd",
+          "commit_index": 29,
+          "error_type": "ValueError",
+          "function": "fixup_module_metadata",
+          "license_and_native_test_checks_reached": false,
+          "native_children": 0,
+          "original_gate_sha256": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c",
+          "reason": "nested function definitions are outside the patch interface",
+          "source_path": "src/outcome/_util.py",
+          "status": "REJECT_ORIGINAL_PATCH_CAPABILITY_GATE"
+        }
+      ],
+      "frozen_HEAD": "03ed6218b08001877745bb1a9e180c8c5cf7c903",
+      "model_calls": 0,
+      "native_children": 0,
+      "no_permissions_or_gate_weakening": true,
+      "original_nonmerge_commits_reviewed": 50,
+      "repository": "python-trio/outcome",
+      "source_scan_sha256": "592216fe5c77689d9bc232ba8637ee011ded2ace0e008ca79ad3be0cb1bd696f",
+      "status": "EXHAUSTED_NO_ADMISSIBLE_TASK"
+    }
+  ],
+  "scanner_v2_sha256": "141220952b46ec15670ca09717a3779a8e82fe430dd0c17baafb8dd4e18b8d91",
+  "scanner_correction": "Permitted target uniqueness now matches the original gate, allowing unrelated unchanged overload declarations. Actual four CPU controls passed; original 50 outcome commits/source blobs re-reviewed with zero new downloads, no additional potentials and no gate changes.",
+  "next_repository": "python-trio/sniffio",
+  "same_model_same_task_budget": true,
+  "original_NoUpdate_unchanged": true,
+  "native_adoption": false,
+  "binary_archive_status": "195 original members verified; complete 4129292-byte adapter archive retained remotely and transfer in progress"
+}

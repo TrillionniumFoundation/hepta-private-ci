@@ -95,3 +95,10 @@ sha256:c23f69125da60941fd2b5c8719cc47af77cb2b76bbcec7ca7f5e6e142b8d33c9 qualific
 # Actual 64-step matched training, both frozen adapters, all original receipts and costs.
 # Exact retained 4,080,060-byte research archive; replacement bytes regain the size limit.
 sha256:be146f6ad22f52c0b9c9f949e57a079f40a446635a33f6dc82e1b773ef588109 qualification/cell-upstream-layout-learning-20261118/training/ACTUAL_TRAINING.tar.xz
+
+# Retained original matched raw-function research fits: two real 32-update adapters,
+# all original computation/cost/owner receipts, 195 members verified; execution source 2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82.
+sha256:daa140fae78792cd6b05d60a5a5ee1c5c21bd6e662bef8d267674085445fa9a6 qualification/cell-upstream-raw-function-learning-20261119/training-complete/TRAINING_EVIDENCE.tar.xz
+
+# Complete retained original w3lib test dependency evidence: verified wheels, original sdists, notices, exact module inventory and acquisition failures; 195 verified members.
+sha256:07daa0d9b931bb45d65af981da42f1d4a850a52f5a0c131266713f8b188ec763 qualification/cell-upstream-raw-function-learning-20261119/future/readonly-w3lib-dependencies/READONLY_DEPENDENCY_EVIDENCE.tar.xz
