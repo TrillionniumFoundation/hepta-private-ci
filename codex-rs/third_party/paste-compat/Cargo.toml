@@ -1,0 +1,12 @@
+[package]
+name = "paste"
+version = "1.0.15"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Repository-owned paste API adapter backed by maintained pastey"
+
+[dependencies]
+pastey = "0.2.3"
+
+[lib]
+doctest = false

@@ -18,7 +18,6 @@
 //! Function types, including native functions and `object.member` functions.
 
 use allocative::Allocative;
-use derivative::Derivative;
 use derive_more::Display;
 use dupe::Dupe;
 use starlark_derive::NoSerialize;
@@ -107,13 +106,9 @@ impl NativeFunc {
 /// Starlark representation of native (Rust) functions.
 ///
 /// Almost always created with [`#[starlark_module]`](macro@crate::starlark_module).
-#[derive(
-    Derivative, ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable,
-)]
-#[derivative(Debug)]
+#[derive(ProvidesStaticType, Display, NoSerialize, Allocative, crate::StarlarkPagable)]
 #[display("{}", name)]
 pub(crate) struct NativeFunction {
-    #[derivative(Debug = "ignore")]
     pub(crate) function: NativeFunc,
     pub(crate) name: String,
     /// `.type` attribute and a type when this function is used in type expression.
@@ -123,11 +118,22 @@ pub(crate) struct NativeFunction {
     pub(crate) ty: Ty,
     /// Safe to evaluate speculatively.
     pub(crate) speculative_exec_safe: bool,
-    #[derivative(Debug = "ignore")]
     #[starlark_pagable(pagable)]
     pub(crate) docs: DocItem,
     #[starlark_pagable(pagable)]
     pub(crate) special_builtin_function: Option<SpecialBuiltinFunction>,
+}
+
+impl std::fmt::Debug for NativeFunction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NativeFunction")
+            .field("name", &self.name)
+            .field("as_type", &self.as_type)
+            .field("ty", &self.ty)
+            .field("speculative_exec_safe", &self.speculative_exec_safe)
+            .field("special_builtin_function", &self.special_builtin_function)
+            .finish()
+    }
 }
 
 impl AllocFrozenValue for NativeFunction {
@@ -264,22 +270,27 @@ impl NativeMeth {
     }
 }
 
-#[derive(
-    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
-)]
-#[derivative(Debug)]
+#[derive(Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable)]
 #[display("{}", name)]
 pub(crate) struct NativeMethod {
-    #[derivative(Debug = "ignore")]
     pub(crate) function: NativeMeth,
     pub(crate) name: String,
     #[starlark_pagable(pagable)]
     pub(crate) ty: Ty,
     /// Safe to evaluate speculatively.
     pub(crate) speculative_exec_safe: bool,
-    #[derivative(Debug = "ignore")]
     #[starlark_pagable(pagable)]
     pub(crate) docs: DocItem,
+}
+
+impl std::fmt::Debug for NativeMethod {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("NativeMethod")
+            .field("name", &self.name)
+            .field("ty", &self.ty)
+            .field("speculative_exec_safe", &self.speculative_exec_safe)
+            .finish()
+    }
 }
 
 starlark_simple_value!(NativeMethod);
@@ -297,11 +308,8 @@ impl<'v> StarlarkValue<'v> for NativeMethod {
 
 /// Used by the `#[starlark(attribute)]` tag of [`#[starlark_module]`](macro@starlark_module)
 /// to define a function that pretends to be an attribute.
-#[derive(
-    Derivative, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable,
-)]
+#[derive(Debug, Display, NoSerialize, ProvidesStaticType, Allocative, crate::StarlarkPagable)]
 #[display("Attribute")]
-#[derivative(Debug)]
 pub(crate) struct NativeAttribute {
     /// Safe to evaluate speculatively.
     pub(crate) speculative_exec_safe: bool,
