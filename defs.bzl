@@ -45,6 +45,26 @@ MACOS_WEBRTC_RUSTC_LINK_FLAGS = select({
     "//conditions:default": [],
 })
 
+def hepta_dev_rustc_flags(opt_level):
+    """Mirror a HEPTA Cargo dev package override, including development checks."""
+
+    # rules_rust does not read Cargo profiles. Merely changing opt-level would
+    # also disable rustc's default debug assertions and overflow checks. Keep
+    # both enabled in development, without overriding the existing release
+    # cfg compilation gate or altering Bazel's opt profile.
+    return select({
+        "//:rust_fastbuild": ["-Copt-level=%s" % opt_level],
+        "//:rust_dbg": ["-Copt-level=%s" % opt_level],
+        "//conditions:default": [],
+    }) + select({
+        "//:rust_opt": [],
+        "//:rust_release_cfg_check": [],
+        "//conditions:default": [
+            "-Cdebug-assertions=yes",
+            "-Coverflow-checks=yes",
+        ],
+    })
+
 def _workspace_root_test_impl(ctx):
     is_windows = ctx.target_platform_has_constraint(ctx.attr._windows_constraint[platform_common.ConstraintValueInfo])
     launcher = ctx.actions.declare_file(ctx.label.name + ".bat" if is_windows else ctx.label.name)

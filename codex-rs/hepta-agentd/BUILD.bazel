@@ -1,5 +1,5 @@
 load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
-load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "hepta_dev_rustc_flags", "workspace_root_test")
 load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
 load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 load(":v13_acceptance.bzl", "v13_acceptance_example")
@@ -51,6 +51,7 @@ codex_rust_crate(
     # Cargo unifies the qualification-only dev dependency for integration tests.
     # Keep the complete existing test graph without changing product binaries.
     integration_test_use_unit_test_dependencies = True,
+    rustc_flags_extra = hepta_dev_rustc_flags(1),
     test_data_extra = [
         "//scripts/memory_cell_native:native_tick_contract.py",
         "//scripts/memory_cell_native:native_tick_interop.py",
@@ -67,7 +68,7 @@ codex_rust_crate(
     unit_test_flaky = False,
 )
 
-v13_acceptance_example()
+v13_acceptance_example(rustc_flags = hepta_dev_rustc_flags(1))
 
 # Explicit actual-Root process entry. The harness uses both default-feature
 # product binaries; its ignored native test requires the prepared protected
@@ -117,6 +118,7 @@ rust_library(
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
+    rustc_flags = hepta_dev_rustc_flags(1),
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
 )
@@ -142,7 +144,7 @@ rust_test(
         "//scripts/memory_cell_native:native_tick_interop.py",
         "//scripts/memory_cell_network:model_child.py",
     ],
-    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+    rustc_flags = hepta_dev_rustc_flags(1) + WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
     ],
@@ -183,7 +185,7 @@ rust_binary(
     rustc_env = {
         "CARGO_BIN_NAME": "codex-hepta-agentd",
     },
-    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+    rustc_flags = hepta_dev_rustc_flags(1) + WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
     ],
@@ -204,7 +206,7 @@ rust_test(
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
     edition = "2024",
-    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+    rustc_flags = hepta_dev_rustc_flags(1) + WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
     ],
@@ -250,6 +252,7 @@ rust_library(
     crate_name = "codex_hepta_agentd",
     crate_root = "src/lib.rs",
     edition = "2024",
+    rustc_flags = hepta_dev_rustc_flags(1),
     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
     visibility = ["//visibility:private"],
     deps = rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
@@ -266,7 +269,7 @@ rust_binary(
     rustc_env = {
         "CARGO_BIN_NAME": "codex-hepta-agentd",
     },
-    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+    rustc_flags = hepta_dev_rustc_flags(1) + WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
     ],
@@ -284,7 +287,7 @@ rust_test(
     crate_root = "tests/cognitive_product_e2e.rs",
     data = glob(["tests/support/**"]),
     edition = "2024",
-    rustc_flags = WINDOWS_RUSTC_LINK_FLAGS + [
+    rustc_flags = hepta_dev_rustc_flags(1) + WINDOWS_RUSTC_LINK_FLAGS + [
         "--remap-path-prefix=../codex-rs=",
         "--remap-path-prefix=codex-rs=",
     ],
@@ -343,4 +346,5 @@ qualification_lease_clock_library(
     crate_features = ["production-cognitive-write"],
     crate_name = "codex_hepta_agentd",
     extra_srcs = ["tests/support/terminal_cell_owner.rs"],
+    rustc_flags = hepta_dev_rustc_flags(1),
 )
