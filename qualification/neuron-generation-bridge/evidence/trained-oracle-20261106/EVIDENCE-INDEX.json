@@ -1,0 +1,41 @@
+{
+  "archive": {
+    "bytes": 343692,
+    "entries": 159,
+    "file_index_sha256": "37bebf11d82a6e1b46045255dbbaab819406e21f9ef3fa9176e553e1717980d9",
+    "path": "oracle-evidence.tar.xz",
+    "sha256": "ad423e31493d6fa3f407b92a51b177173ba8d5de57de178db195f8f173b360a8"
+  },
+  "created_utc": "2026-11-06T08:02:48.998970+00:00",
+  "excluded_from_archive": {
+    "run-r1/inspect-joint": {
+      "bytes": 4445320,
+      "sha256": "2b87cc6c128e9f69052124436ca21a6e333dda2f29cdd8814033ce25f4dc4198"
+    },
+    "run-r1/reexport/public.hps": {
+      "bytes": 78188,
+      "sha256": "86c55417fdf2abdd065fc9828c40260aed0ded4a0d607c551e15b2f6b5fd2c00"
+    },
+    "run-r1/reexport/weights.hps": {
+      "bytes": 4778937,
+      "sha256": "41ce6de8a9095e1ef6b8756c3117a160ed40acfad8b297390de95083664d223e"
+    }
+  },
+  "packaging_cost": {
+    "harness_cpu_seconds": 1.082097207,
+    "scope": "Subsequent evidence hash/compression; separate from observed oracle execution envelope.",
+    "unmeasured": [
+      "energy_joules",
+      "physical_disk_bytes"
+    ],
+    "wall_seconds": 1.0832528179998917
+  },
+  "prior_packaging_attempt": {
+    "cpu_seconds": null,
+    "exit_code": 1,
+    "observed_tool_wall_seconds": 0.011163097,
+    "reason": "Accepted build receipt path disappeared from shared checkout during packaging; resolved by reading unchanged build-r3/BUILD.json and verifying the recorded oracle input SHA256.",
+    "status": "failed_before_archive_creation"
+  },
+  "schema": "hepta.trained-joint-original-torch-oracle-evidence.v1"
+}
