@@ -1,0 +1,84 @@
+{
+  "started_at_ns": "1795069199916098768",
+  "purpose": "Retain completed prior run's immutable native ELF, then permit a new compiler output pathname in the owned cache.",
+  "source_mutation": false,
+  "automatic_retry": false,
+  "prior_test_qualification_transferred": false,
+  "source_freeze_result_sha256": "e0749fa978c28228805255eeeb3edc0bf5fed876bd7ed775a37b1fb0cd1d633e",
+  "completed_prior_results": [
+    {
+      "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-6/result.json",
+      "sha256": "10b86cd366bb6077841fafc585a01ab8d4bfc45e101623e3ac3ce5cabd4fbe82"
+    },
+    {
+      "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-6/RESULT.json",
+      "sha256": "37a4a84f25c751c12e51fd95e399233fafd97af71046ce7a65ca8749b547ada5"
+    }
+  ],
+  "before": {
+    "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "device": 66306,
+    "inode": 52494500,
+    "nlink": 1,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o555",
+    "bytes": 1203654104,
+    "mtime_ns": "1795064085090222633",
+    "ctime_ns": "1795064373272482098",
+    "sha256": "570c81ad33592d5fbac76eec27b6f8db172b28a0b41237701f015b42ac5f7175"
+  },
+  "original_pin": {
+    "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1/debug/deps/codex_hepta_agentd-ec11b7f5a2c42017",
+    "bytes": 1203654104,
+    "sha256": "570c81ad33592d5fbac76eec27b6f8db172b28a0b41237701f015b42ac5f7175",
+    "device": 66306,
+    "inode": 52494500,
+    "mtime_ns": "1795064085090222633",
+    "ctime_ns": "1795064373272482098",
+    "mode": "0o555",
+    "old_mode": "0o700",
+    "uid": 1000,
+    "gid": 1000,
+    "ancestors": [
+      {
+        "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1/debug/deps",
+        "mode": "0o700",
+        "uid": 1000
+      },
+      {
+        "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1/debug",
+        "mode": "0o700",
+        "uid": 1000
+      },
+      {
+        "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1",
+        "mode": "0o700",
+        "uid": 1000
+      },
+      {
+        "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
+        "mode": "0o700",
+        "uid": 1000
+      }
+    ]
+  },
+  "retained": {
+    "path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/retired-build-output-native7-1/codex_hepta_agentd-ec11b7f5a2c42017",
+    "device": 66306,
+    "inode": 52494500,
+    "nlink": 1,
+    "uid": 1000,
+    "gid": 1000,
+    "mode": "0o555",
+    "bytes": 1203654104,
+    "mtime_ns": "1795064085090222633",
+    "ctime_ns": "1795069202356405235",
+    "sha256": "570c81ad33592d5fbac76eec27b6f8db172b28a0b41237701f015b42ac5f7175"
+  },
+  "successful": true,
+  "finished_at_ns": "1795069203561331332",
+  "wall_seconds": 3.6452453129459172,
+  "self_user_cpu_seconds": 2.0040400000000003,
+  "self_system_cpu_seconds": 0.253195
+}

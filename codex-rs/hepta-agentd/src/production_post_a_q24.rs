@@ -4,6 +4,7 @@
 use super::initial_q24::files::OriginalFiles;
 use super::*;
 use crate::CellQ24DatasetFreezePreparationV1;
+use crate::CellQ24PreparedLearningV1;
 use crate::learning_iteration::historical_source::RegisteredHistoricalLearningSourceV1;
 use crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute;
 use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;

@@ -1,0 +1,56 @@
+{
+  "status": "completed",
+  "started_at_ns": "1795069351400016503",
+  "native_cases": 0,
+  "complete_NoUpdate": false,
+  "automatic_retry": false,
+  "prior_compile_failure_retained": true,
+  "driver_sha256": "a69db83dc39ae9600d3e9bcb0cd11a36d2cabb6ca51c25d1224c28d9d139f864",
+  "commands": [
+    {
+      "name": "format",
+      "argv": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "wall_seconds": 0.16901099286042154,
+      "child_user_seconds": 0.02555,
+      "child_system_seconds": 0.005678,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "46e6296365b301e2eb16bb5b40f88b1aab521b90ae30c5631fe41d6319ca14c8"
+    },
+    {
+      "name": "check",
+      "argv": [
+        "cargo",
+        "check",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-agentd",
+        "--lib",
+        "--bins"
+      ],
+      "exit": 0,
+      "timed_out": false,
+      "wall_seconds": 23.917731915134937,
+      "child_user_seconds": 18.120608,
+      "child_system_seconds": 1.34321,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "42ec396102f42e8657ecde62a039152836ad459a1d75a64b11555bb4bc60bb9f"
+    }
+  ],
+  "active_command": "check",
+  "pid": 2015928,
+  "after_sha256": {
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source/codex-rs/hepta-agentd/src/production_post_a_q24.rs": "5111fb1d31e07a9ac962be464ea3bfe746ec9ccbd53d0ca9f20030d834c2ef3b"
+  },
+  "successful": true,
+  "source_patch_sha256": "29c02e8706999b7f85f541c7457d1f486c62d7844ae1ed0915bf4455ad961c10",
+  "wall_seconds": 24.112788912840188,
+  "finished_at_ns": "1795069375512811276"
+}
