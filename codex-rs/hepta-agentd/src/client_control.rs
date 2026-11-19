@@ -107,11 +107,13 @@ impl AgentdClient {
         let expected_request_id = request.request_id;
         // Preserve the authenticated owner-local pipe on Windows and the
         // original Unix socket on other platforms, under one read/write deadline.
-        #[cfg(windows)]
-        let connection = ControlStream::connect(&self.socket_path);
-        #[cfg(not(windows))]
-        let connection = UnixStream::connect(&self.socket_path);
-        let stream = timeout_at(self.original_phase_end(end)?, connection)
+        let stream = timeout_at(self.original_phase_end(end)?, {
+            #[cfg(windows)]
+            let connection = ControlStream::connect(&self.socket_path);
+            #[cfg(not(windows))]
+            let connection = UnixStream::connect(&self.socket_path);
+            connection
+        })
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
             .map_err(AgentdError::from)?;
