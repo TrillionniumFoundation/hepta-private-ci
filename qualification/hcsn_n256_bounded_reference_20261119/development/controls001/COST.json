@@ -1,0 +1,27 @@
+[
+  {
+    "mode": "normal",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "/workspace/scratch/2f21518ff984/n256-bounded-reference/qualification/hcsn_n256_bounded_reference_20261119/controls.py"
+    ],
+    "exit_code": 0,
+    "whole_child_wall_upper_seconds": 0.11585436599852983,
+    "child_user_seconds": 0.079312,
+    "child_system_seconds": 0.034085,
+    "child_peak_rss_kib": 10624
+  },
+  {
+    "mode": "optimized",
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "-O",
+      "/workspace/scratch/2f21518ff984/n256-bounded-reference/qualification/hcsn_n256_bounded_reference_20261119/controls.py"
+    ],
+    "exit_code": 0,
+    "whole_child_wall_upper_seconds": 0.15941211999597726,
+    "child_user_seconds": 0.11309,
+    "child_system_seconds": 0.045868,
+    "child_peak_rss_kib": 13644
+  }
+]

@@ -1,0 +1,76 @@
+{
+  "schema": "hcsn-n256-independent-bounded-reference-source-freeze-v1",
+  "identity": "hcsn-n256-bounded-reference-20261119-2f215-attempt001",
+  "created_unix_seconds": 1795091375.4481173,
+  "python_version": "3.12.14",
+  "python_executable_sha256": "fa67443527ed9647f760d807e2a38f26340757123e643c4639cf273ed15d5ea7",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "files": {
+    "qualification/hcsn_n256_bounded_reference_20261119/controls.py": {
+      "bytes": 2758,
+      "sha256": "5a1429a2e42d8ed6fc61310f1427bedc22c970a863eb555c2885447aa355f7f3"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/inputs.py": {
+      "bytes": 10899,
+      "sha256": "7c31289c0c9783281cab7ef5f7913242fa4b15353b6231043b15b1da8ff14789"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/interval.py": {
+      "bytes": 10367,
+      "sha256": "cf2c3ee81a78898d5c1b7f3baf6d5a242b9afffc216f73cdbbf1c50ae1762a97"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/run_controls.py": {
+      "bytes": 1506,
+      "sha256": "0ec32e86e56707bca7dacb186c9b3b7cd0118083aae522cb34526f0fe1fc59bd"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/runner.py": {
+      "bytes": 3736,
+      "sha256": "485d4b7d9c8ea664a5f1a284a6d59e56949a550f6530950ff5e8f64a4c1029c2"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/study.py": {
+      "bytes": 8010,
+      "sha256": "cf8eded622d933da5a0dfc78a6a29c19ea71526b997d441eeea3d1e782713ff9"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/targets.py": {
+      "bytes": 7347,
+      "sha256": "e86b1fb6a1cc3dd22620068b8bbeee12f16c56a5cf9ea496d4efced8aab330f9"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/METHOD.md": {
+      "bytes": 4589,
+      "sha256": "f415c199572192ee6613e82b9783566f1fb3f0e64e360038b925b8788d49ebee"
+    },
+    "qualification/hcsn_n256_bounded_reference_20261119/REQUEST.json": {
+      "bytes": 3030,
+      "sha256": "e6ca98b9f71fae3ce5a643491fc4ddedd2b1ac30b862fdaba1f613f9415b91d6"
+    },
+    "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/evidence/attempt001-20261119/originals/N256_WARM1.bin": {
+      "bytes": 560358,
+      "sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18"
+    },
+    "qualification/hcsn_currentstate_n256_warm1_sparse/evidence/attempt001-20261119/artifact-14501927547.zip": {
+      "bytes": 35819,
+      "sha256": "8f6a75afafeedaa5cfe6ad2b8b80af6b7d2b54f102f75d406ac1d92eb4b36629"
+    },
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.json": {
+      "bytes": 185773,
+      "sha256": "360b4bf446e853209c58cdb3faded74d9114d872cfb9c730b220d14cef670f9c"
+    },
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_PHASE.json": {
+      "bytes": 3459,
+      "sha256": "790fabee8825dbd4361f157f56d78641430fe50b9134cd2cb7b02b51b93fe548"
+    },
+    "qualification/hcsn_n256_new_export/evidence/attempt001/METADATA.json": {
+      "bytes": 20804,
+      "sha256": "88e84dd3aea396d34c7e2dd08d31f2e30bf694c20516dccde57e6dd1b0c2a3c6"
+    },
+    "qualification/hcsn_n256_new_export/evidence/attempt001/N256_STATE.npz.b64": {
+      "bytes": 16897,
+      "sha256": "926191319021c51421dd15d76c66c3b5c6d2efef0f28af3f76c893065a49dbeb"
+    }
+  },
+  "executions_before_freeze": {
+    "authentic_n256_reference_actions": 0,
+    "old_dense_or_sparse_solver_calls": 0,
+    "synthetic_control_actions": 9
+  },
+  "local_base_commit": "4a463b04a241944d245d9a5b895b0a82ba9836c6"
+}
