@@ -1,0 +1,41 @@
+{
+  "source": "bc16f808000d797accafca1c29206d4bce5249e0",
+  "tree": "995b4741d017d39b8f6b6148696b72403c817be4",
+  "parent": "f2c6677c30f437edfd3b875e5c738f1137736d73",
+  "source_clean": true,
+  "successful": true,
+  "scanned_inputs_byte_identical": true,
+  "scanned_inputs_identity_scope": "Every before/after-format input recorded by the successful original source gate is byte-identical in the frozen commit; every tracked current file independently hashes to its actual Git index blob. No authority/caller/physical-check source changed after the successful original CLI.",
+  "all_tracked_git_blobs_verified": 15656,
+  "source_files": 15656,
+  "source_inventory_sha256": "4f291f3f0378f4566b06e95b41b1f94d6ac05d4f83349efd9c1b52db0dc1fc58",
+  "source_qa_sha256": "153a94675b1a172d4ff65695084b9b4561f73adcdfbef498f1549dc331782853",
+  "full_caller_stdout_sha256": "3e2de15376c42034badabca95f1d5c933f32ef8927fa21bf9a2ff0f98439ccc7",
+  "source_tests": 196,
+  "protected_rows": 892,
+  "affected_boundaries": 182,
+  "original_full_boundaries": 1124,
+  "frozen_at_ns": "1795063406476615074",
+  "blob_gate": {
+    "argv": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "0cdb2a4985c91327e0ae3d59ceead35b950b16e9",
+      "--head",
+      "bc16f808000d797accafca1c29206d4bce5249e0",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "exit_code": 0,
+    "wall_seconds": 0.3484390031080693
+  },
+  "native_cases_executed": 0,
+  "complete_NoUpdate": false,
+  "native_adoption": false,
+  "read_budget": 64,
+  "read_budget_changed": false,
+  "wall_seconds": 23.484723918139935
+}

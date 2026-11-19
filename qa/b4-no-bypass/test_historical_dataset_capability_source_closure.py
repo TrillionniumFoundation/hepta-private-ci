@@ -29,7 +29,7 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
     def test_current_trust_and_snapshot_have_only_actual_consumers(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
         self.assertEqual(rows["root_historical_current_trust_read"]["product_callers"], [HISTORY])
-        self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [HISTORY, OPERATION, AGENT + "production_post_a_continuation.rs"])
+        self.assertEqual(rows["root_historical_current_trust_receipt"]["product_callers"], [HISTORY, OPERATION, AGENT + "production_post_a_continuation.rs", AGENT + "cell_q24_dataset_historical_preparation.rs"])
         self.assertEqual(rows["root_historical_ledger_snapshot_data"]["product_callers"],
                          [HISTORY, AGENT + "cell_q24_dataset_historical_preparation.rs"])
         self.assertEqual(rows["q24_dataset_pure_original_projection"]["product_callers"],
@@ -58,8 +58,10 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_private_source_is_attached_only_after_full_materialization(self):
         self.check_markers(HISTORY, "fn from_original_historical_dataset(", (
-            "tasks: ledger.tasks.clone()", "ledger: OriginalDatasetLedgerV1::Historical(ledger)",
-            "source.materialize()?", "batch.source = Some(source)"))
+            "tasks: ledger.tasks.clone()",
+            "ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
+            "source.materialize_historical_in_operation(&ledger, operation)?",
+            "batch.source = Some(source)", "operation.require_original_batch(&batch)?"))
         self.check_markers(MATERIALIZER, "fn materialize(", (
             "match &self.ledger", "OriginalDatasetLedgerV1::Live(ledger) => self.materialize_live(ledger)",
             "OriginalDatasetLedgerV1::Historical(ledger) => self.materialize_historical(ledger)"))
@@ -111,6 +113,8 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
                               AGENT + "cell_q24_source_receipt_construction.rs",
                               AGENT + "cell_q24_source_receipt_operation.rs",
                               AGENT + "cell_q24_source_receipt_owner.rs",
+                              AGENT + "production_post_a_q24_owners.rs",
+                              AGENT + "learning_iteration_historical_source.rs",
                           ])
         self.check_markers(CONSTRUCTION, "fn require_prepared_in_operation(", (
             "self.config.stage != stage", "self.prepared.initial() != prepared.initial()",

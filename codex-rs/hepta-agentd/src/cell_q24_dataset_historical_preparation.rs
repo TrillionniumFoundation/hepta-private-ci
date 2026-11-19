@@ -17,8 +17,43 @@ impl CellQ24DatasetFreezePreparationV1 {
         task: CellQ24DatasetTaskV1,
     ) -> Result<Self, Error> {
         let ledger = HistoricalDatasetLedgerV1::capture_original(receipt, trust, vec![task])?;
+        let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger));
+        original.with_original_ledger_operation(|operation| {
+            Self::capture_historical_in_operation(config, ledger, operation)
+        })?
+    }
+
+    /// Task capture, ledger binding and immutable preparation are one
+    /// synchronous construction from the original current Root operation.
+    pub(crate) fn capture_original_historical_task(
+        config: CellQ24LearningPreparationConfigV1,
+        receipt: Arc<OriginalHistoricalTaskReadReceiptV1>,
+        trust: Arc<OriginalHistoricalLearningTrustV1>,
+        client: &Arc<crate::root_historical_task_read_client::RootHistoricalTaskReadClientV1>,
+        session: &crate::AgentdRootAuthoritySession,
+    ) -> Result<Self, Error> {
+        OriginalHistoricalLearningTrustV1::require_original_receipt(&trust, &receipt)?;
+        OriginalHistoricalLearningTrustV1::with_original_operation(&trust, |read| {
+            let ledger = HistoricalDatasetLedgerV1::capture_original_task_in_operation(
+                receipt,
+                Arc::clone(&trust),
+                client,
+                session,
+                read,
+            )?;
+            let operation = OriginalDatasetOperationV1::borrow_original_historical(read);
+            Self::capture_historical_in_operation(config, ledger, &operation)
+        })?
+    }
+
+    fn capture_historical_in_operation(
+        config: CellQ24LearningPreparationConfigV1,
+        ledger: Arc<HistoricalDatasetLedgerV1>,
+        operation: &OriginalDatasetOperationV1<'_>,
+    ) -> Result<Self, Error> {
+        let operation: &OriginalDatasetOperationV1<'_> = operation;
         let (snapshot, frontier) =
-            HistoricalDatasetLedgerV1::with_current(&ledger, |data, _, _, observed_at| {
+            operation.read_historical(&ledger, |data, _, _, observed_at| {
                 require_historical_configuration(&config, &ledger).map_err(io::Error::other)?;
                 if observed_at >= config.request.envelope.expiry_unix_seconds {
                     return Err(io::Error::other("new historical preparation deadline"));
@@ -31,11 +66,21 @@ impl CellQ24DatasetFreezePreparationV1 {
         let preparation = Self {
             config,
             tasks: ledger.tasks().to_vec(),
-            ledger: OriginalDatasetLedgerV1::Historical(ledger),
+            ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger)),
             snapshot,
             frontier,
         };
-        preparation.signing_payload()?;
+        // Snapshot/configuration and the pure signing payload belong to
+        // this one preparation. The actual Root post-read still precedes
+        // returning it; no observation is retained for another operation.
+        preparation.with_historical_cut_in_operation(
+            &ledger,
+            operation,
+            |snapshot, _, _, _, _| {
+                dataset_freeze_signing_payload_v2(snapshot, &preparation.plan()?)?;
+                Ok(())
+            },
+        )?;
         Ok(preparation)
     }
 
@@ -178,9 +223,24 @@ impl CellQ24DatasetFreezePreparationV1 {
         let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger else {
             return Err(Error::Binding("original historical Dataset required"));
         };
-        let frozen = self.validate_authorization_historical(ledger, &authorization)?;
         let ledger = Arc::clone(ledger);
-        CellQ24PreparedLearningV1::from_historical(self.config, ledger, frozen)
+        let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger));
+        original.with_original_ledger_operation(|operation| {
+            let frozen = self.validate_authorization_historical_in_operation(
+                &ledger,
+                &authorization,
+                operation,
+            )?;
+            // Authorization, projection and immutable prepared facts are one
+            // synchronous construction. Each checks the exact same borrowed
+            // receipt; the enclosing operation performs both physical reads.
+            CellQ24PreparedLearningV1::from_historical(
+                self.config,
+                Arc::clone(&ledger),
+                frozen,
+                operation,
+            )
+        })?
     }
 }
 

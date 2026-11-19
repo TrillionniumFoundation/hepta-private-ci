@@ -1,0 +1,20 @@
+{
+  "schema": "hepta.exact-original-text-parts.v1",
+  "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-startup-source-probe-5/full-caller-proof.stdout",
+  "original_bytes": 546775,
+  "original_sha256": "d60603ff5a68d138eee7a5d364c9acae4e02fff800248fd0cc3176e660f44051",
+  "parts": [
+    {
+      "path": "full-caller-proof.stdout.part01",
+      "bytes": 279991,
+      "sha256": "4179821b41e2eaf769b5000e8e404f3590f910ba24a830d8c4c8e607abe153a6"
+    },
+    {
+      "path": "full-caller-proof.stdout.part02",
+      "bytes": 266784,
+      "sha256": "d90e6811738d64695c10aa68488d6bfae32e609cb4e284452d36709ee7977e33"
+    }
+  ],
+  "reconstruction": "Concatenate the two files in listed order without adding or deleting bytes; verify total length and SHA256. The original CLI receipt is not reserialized.",
+  "original_default_blob_limit": 512000
+}

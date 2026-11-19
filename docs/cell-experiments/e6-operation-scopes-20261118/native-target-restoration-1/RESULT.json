@@ -1,0 +1,28 @@
+{
+  "schema": "hepta.owned-target-readonly-restoration.v1",
+  "source_head": "40605ba779db8775b4b26024343ccdc81709a068",
+  "source": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/native-target",
+  "destination": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1",
+  "source_env": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/env.json",
+  "source_env_sha256": "cbcd9394b8018bf997ef5e601d68ed2c78a275275108f8dd833a15acd3044fc4",
+  "argv": [
+    "cp",
+    "-R",
+    "--reflink=auto",
+    "--preserve=mode,timestamps",
+    "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/native-target",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1"
+  ],
+  "started_unix_ns": 1795059937508505653,
+  "copy_policy": "reflink_or_bytes_no_hardlinks",
+  "qualification_transfer": false,
+  "copy_exit": 0,
+  "copy_seconds": 17.257775255,
+  "regular_files": 23085,
+  "symlinks": 0,
+  "verified_bytes": 14986214549,
+  "all_regular_sha256_equal": true,
+  "all_regular_inodes_distinct": true,
+  "finished_unix_ns": 1795059971235688747,
+  "index_sha256": "c2d643d8971d2794c119c9b514b5690997bfb864c793ed81658033958c0c111b"
+}

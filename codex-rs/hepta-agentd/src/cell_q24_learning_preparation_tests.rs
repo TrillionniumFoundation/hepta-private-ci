@@ -362,3 +362,69 @@ async fn q24_preparation_requires_private_capability_and_live_source_on_recovery
     session.stop().await?;
     Ok(())
 }
+
+#[tokio::test]
+async fn q24_preparation_profile_scope_and_initial_remain_live_after_shared_operation()
+-> anyhow::Result<()> {
+    let root = tempfile::tempdir()?;
+    let (mut session, baseline, bundle, _current) = ordinary(
+        root.path(),
+        "prepare-profile-operation",
+        /*source_envelope*/ None,
+    )
+    .await?;
+    let publication = execute(&session, /*request_id*/ 1).await?;
+    let files = tempfile::tempdir()?;
+    let dataset = Dataset::new(
+        files.path(),
+        &[(&session, &publication, Some(0))],
+        OutcomeTerminalityV1::Terminal,
+    )?;
+    let prepared = prepare(config(&dataset, &publication, baseline, bundle)?, &dataset)?;
+    let identity = &session.runtime.identity;
+    let proof = [7; 32];
+    let profile = prepared.root_profile(identity, proof)?;
+    prepared.require_initial(prepared.initial(), prepared.scope())?;
+    prepared.require_profile(&profile, identity, proof)?;
+
+    let mut different_initial = prepared.initial().clone();
+    different_initial.head_digest = cell::d("different original empty initial");
+    let different_scope = codex_hepta_learning_artifacts::FrozenLearningScopeV2::freeze(
+        &prepared.initial().request,
+        &prepared.initial().owners,
+        codex_hepta_learning_artifacts::LearningUpdateScopeV2::Cell,
+        cell::d("different frozen original rule"),
+    )?;
+    for result in [
+        prepared.require_initial(&different_initial, prepared.scope()),
+        prepared.require_initial(prepared.initial(), &different_scope),
+    ] {
+        assert!(matches!(
+            result,
+            Err(Error::Binding(
+                "original empty initial and frozen row scope"
+            ))
+        ));
+    }
+
+    session
+        .source
+        .withdraw_for_dataset_test(&publication.input().scope.run_id)?;
+    assert!(
+        prepared
+            .require_initial(prepared.initial(), prepared.scope())
+            .is_err()
+    );
+    assert!(prepared.require_profile(&profile, identity, proof).is_err());
+    assert!(prepared.root_profile(identity, proof).is_err());
+    let invalid_and_withdrawn = prepared.require_initial(&different_initial, &different_scope);
+    assert!(invalid_and_withdrawn.is_err());
+    assert!(!matches!(
+        invalid_and_withdrawn,
+        Err(Error::Binding(
+            "original empty initial and frozen row scope"
+        ))
+    ));
+    session.stop().await?;
+    Ok(())
+}

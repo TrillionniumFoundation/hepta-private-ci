@@ -33,6 +33,39 @@ impl OriginalCellQ24LearningStageOwnersV1 {
             .await
     }
 
+    /// Authenticate the actual context and register its waiting slot in one
+    /// original synchronous owner operation. No read or authority result is
+    /// carried over a separate await before registration.
+    pub(crate) async fn register_original_historical_successor(
+        &self,
+        context: Arc<crate::learning_iteration::OriginalQ24SuccessorContext>,
+        slot: &Arc<SuccessorSlot>,
+    ) -> Result<(), Error> {
+        if !std::ptr::eq(self, context.owners().as_ref()) {
+            return Err(Error::WrongScope);
+        }
+        let inner = Arc::clone(&self.inner);
+        let weak = Arc::downgrade(slot);
+        self.inner
+            .in_original_prepared_lane(move |owners, _runtime, read| {
+                context
+                    .require_original_successor_operation(read)
+                    .map_err(unavailable)?;
+                owners
+                    .factory
+                    .require_successor_session(context.session())
+                    .map_err(unavailable)?;
+                if owners.generation.is_some() || inner.successor.set(weak).is_err() {
+                    return Err(Error::WrongScope);
+                }
+                context
+                    .require_original_successor_operation(read)
+                    .map_err(unavailable)?;
+                Ok(())
+            })
+            .await
+    }
+
     pub(crate) async fn with_original_successor_read<T>(
         &self,
         context: Arc<crate::learning_iteration::OriginalQ24SuccessorContext>,

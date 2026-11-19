@@ -1,0 +1,85 @@
+{
+  "parent": "f883f77ff2c74e1b839c6eb915723a53271b4ac3",
+  "rust_files_scanned": 6900,
+  "source_roots": [
+    "codex-rs"
+  ],
+  "original_ignored_fragments": [
+    "/tests/",
+    "/examples/",
+    "_tests.rs"
+  ],
+  "selected_boundaries": [
+    "q24_original_prepared_operation",
+    "q24_original_prepared_operation_owner"
+  ],
+  "authority_granted": false,
+  "native_tests_executed": 0,
+  "positive": [
+    {
+      "id": "q24_original_prepared_operation",
+      "symbol": "CellQ24PreparedLearningV1::with_original_prepared_operation",
+      "callPattern": null,
+      "receiverType": "CellQ24PreparedLearningV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+      ]
+    },
+    {
+      "id": "q24_original_prepared_operation_owner",
+      "symbol": "OriginalPreparedReadV1::require_prepared",
+      "callPattern": null,
+      "receiverType": "OriginalPreparedReadV1",
+      "receiverMethods": [],
+      "productCallers": [
+        "codex-rs/hepta-agentd/src/cell_q24_learning_historical_operation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_prepared_training_material.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_receipt_construction.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_receipt_operation.rs",
+        "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+        "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+      ]
+    }
+  ],
+  "negative": [
+    {
+      "boundary": "q24_original_prepared_operation",
+      "mutation": "remove actual new StageFilesData caller",
+      "rejected": true,
+      "reason": "q24_original_prepared_operation: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs']"
+    },
+    {
+      "boundary": "q24_original_prepared_operation",
+      "mutation": "add an unregistered actual receiver",
+      "rejected": true,
+      "reason": "q24_original_prepared_operation: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/unregistered_e6_scope.rs']"
+    },
+    {
+      "boundary": "q24_original_prepared_operation_owner",
+      "mutation": "remove actual new StageFilesData caller",
+      "rejected": true,
+      "reason": "q24_original_prepared_operation_owner: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs']"
+    },
+    {
+      "boundary": "q24_original_prepared_operation_owner",
+      "mutation": "add an unregistered actual receiver",
+      "rejected": true,
+      "reason": "q24_original_prepared_operation_owner: caller set mismatch; missing=[], unexpected=['codex-rs/hepta-agentd/src/unregistered_e6_scope.rs']"
+    }
+  ],
+  "successful": true,
+  "wall_seconds": 8.981156744994223
+}

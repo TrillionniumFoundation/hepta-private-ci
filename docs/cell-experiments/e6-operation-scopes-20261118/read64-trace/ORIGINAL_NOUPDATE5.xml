@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="nextest-run" tests="1" skipped="0" failures="1" errors="0" uuid="1515d90e-6626-4030-bd4a-ae708ecd4925" timestamp="2026-11-19T12:06:55.852+08:00" time="67.958">
+    <testsuite name="codex-hepta-agentd" tests="1" skipped="0" errors="0" failures="1">
+        <testcase name="neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c" classname="codex-hepta-agentd" timestamp="2026-11-19T12:06:55.859+08:00" time="67.948">
+            <failure message="Error: agentd protocol error: original Q24 publication binding: successor is closed" type="test failure with exit code 101">Error: agentd protocol error: original Q24 publication binding: successor is closed
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-0d7EcS
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1332128, start_ticks: 208703758, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_measure=historical.task_reply bytes=19125 bound=28933
+root_stage=post_a.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: &quot;original publication slot closed&quot; }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-Q8tNYn
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1332129, start_ticks: 208703758, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-NWg3pG
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-hJZ9SO
+Error: original child lifetime is no longer live</failure>
+            <system-out>
+running 1 test
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c has been running for over 60 seconds
+test neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c ... FAILED
+
+failures:
+
+failures:
+    neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 67.94s
+
+</system-out>
+            <system-err>ORDINARY_Q24_OBJECTIVE_ACKNOWLEDGEMENT_LOST=agentd protocol error: agentd control read timed out
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-rWlieO
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-3qNHhh
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-8E0pWR
+ORDINARY_Q24_SOURCE_INPUT_BYTES=73885 DATA_BOUND=1048576 AUTHORITY_BOOTSTRAP_BOUND=65536
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_protected reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-4adb-noupdate-5/bind/ordinary-q24-ccE8Iv
+ORDINARY_Q24_RETAINED_DIRECTORY role=a_runtime reason=scope_exit path=/run/oq-kOkq01
+ORDINARY_Q24_RETAINED_DIRECTORY role=post_a_model_witness reason=scope_exit path=/run/hepta-daemon-learning-root-e6-scopes-4adb-noupdate-5/witness-bind/ordinary-post-a-model-IolsuQ
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1332130, start_ticks: 208703759, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=daemon_stage=historical_client.read_limit request_id=65 maximum=64
+daemon_stage=historical_client.observe_before_action
+daemon_stage=historical.operation.result
+daemon_stage=historical.operation.fence
+hepta-agentd module=circuit-learning-delivery: runtime owner failure retained during shutdown
+Error: agentd protocol error: original Q24 publication binding: successor is closed
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-0d7EcS
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1332128, start_ticks: 208703758, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(256))) stdout= stderr=root_measure=historical.task_reply bytes=19125 bound=28933
+root_stage=post_a.worker
+root_stage=cli.serve
+Error: Custom { kind: Other, error: &quot;original publication slot closed&quot; }
+
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-Q8tNYn
+ORDINARY_Q24_CHILD_CLEANUP lifetime=OriginalProcessLifetime { pid: 1332129, start_ticks: 208703758, boot_id: &quot;b1620269-aaef-43e7-bf47-bc6eb1c1a447&quot; } status=Ok(ExitStatus(unix_wait_status(9))) stdout=
+running 1 test
+ stderr=
+ORDINARY_Q24_ORIGINAL_CHILD_LOGS=/tmp/ordinary-q24-original-process-NWg3pG
+ORDINARY_Q24_RETAINED_DIRECTORY role=independent_b_business reason=scope_exit path=/tmp/ordinary-original-independent-b-hJZ9SO
+Error: original child lifetime is no longer live
+</system-err>
+        </testcase>
+    </testsuite>
+</testsuites>

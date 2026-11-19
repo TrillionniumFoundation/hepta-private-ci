@@ -49,15 +49,34 @@ class PreparationSharedChecksSourceTests(unittest.TestCase):
             "require_configuration(", "frozen.receipt.snapshot.snapshot_id != config.snapshot_id",
             "frozen.receipt.snapshot.objective_digest != config.request.envelope.objective_digest",
             "CellQ24TrainingBatchV1::from_original_dataset(",
-            "Self::finish_original(config, frozen, batch, publication)"))
+            "let original = OriginalDatasetLedgerV1::Live(ledger)",
+            "OriginalDatasetLedgerV1::with_original_ledger_operation(&original, |operation|",
+            "Self::finish_original(config, frozen, batch, publication, operation)", "})?"))
 
     def test_scope_uses_actual_native_batch_provenance_rule_and_postcheck(self):
         self.check_markers(PREPARED, "fn finish_original(", (
-            "batch.require_original_dataset_provenance()?", "batch.rows() > config.request.budget.maximum_dataset_rows",
+            "operation.require_original_batch(&batch)?", "batch.rows() > config.request.budget.maximum_dataset_rows",
             "batch.encoded().len() as u64 > config.request.budget.maximum_dataset_bytes",
             "config.request.budget.maximum_training_steps", "config.rule.digest(&batch)?",
             "FrozenLearningScopeV2::freeze(", "LearningIterationCoordinatorV1::new(",
-            "publication\n            .history_digest()", "publication.publication_digest()", "prepared.revalidate_source()?"))
+            "publication\n            .history_digest()", "publication.publication_digest()", "operation.require_original_batch(&prepared.batch)?"))
+
+    def test_root_profile_and_initial_share_only_the_original_non_escaping_operation(self):
+        prepared = AGENT + "cell_q24_prepared_learning.rs"
+        self.check_markers(prepared, "fn require_initial(", (
+            "self.with_original_prepared_operation(|read|",
+            "self.require_initial_in_operation(initial, scope, read)", "})?"))
+        self.check_markers(prepared, "fn require_initial_in_operation(", (
+            "OriginalPreparedReadV1::require_prepared(read, self)?",
+            "initial != &self.initial || scope != &self.scope",
+            "return Err(Error::Binding(", "Ok(())"))
+        self.check_markers(prepared, "fn root_profile(", (
+            "now()? >= self.initial.request.envelope.expiry_unix_seconds",
+            "self.with_original_prepared_operation(|read|",
+            "OriginalPreparedReadV1::require_prepared(read, self)?",
+            "cell_q24_single_head_update_rule_v1(", "HostAuthorityLearningProfileV1::new_scoped_v2(",
+            "profile.require_binding(", "profile", ".frozen_scope(&initial)?",
+            "self.require_initial_in_operation(&initial, &scope, read)?", "Ok(profile)", "})?"))
 
 
 if __name__ == "__main__":

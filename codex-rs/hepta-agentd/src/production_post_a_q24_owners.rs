@@ -15,6 +15,7 @@ use ed25519_dalek::SigningKey;
 use serde::Deserialize;
 
 use super::*;
+use crate::cell_composed_q24::OriginalPreparedReadV1;
 use crate::root_historical_task_read_client::OriginalHistoricalStageAuthoritiesV1;
 
 #[derive(Clone, Copy, Deserialize)]
@@ -187,22 +188,13 @@ impl SigningFilesData {
             mode,
         )?;
         let (journal, witness) = journal.open_witness()?;
-        let mut owner = match mode {
-            OpenMode::Create => crate::OriginalCellQ24DatasetFreezeOwnerV1::create(
-                journal, witness, &phase, config, key,
-            ),
-            OpenMode::Recover => crate::OriginalCellQ24DatasetFreezeOwnerV1::recover(
-                journal, witness, &phase, config, key,
-            ),
-        }
-        .map_err(refused)?;
-        let prepared = phase
-            .authorize_and_materialize(&mut owner)
-            .map_err(refused)?;
-        // No Arc or duplicate descriptor is retained here. Root still takes
-        // actual independent shared locks, so an external writer cannot pass.
-        drop(owner);
-        Ok(prepared)
+        // All original key/file/lifecycle checks above, including the config
+        // operation's Root postread, still precede witness initialization.
+        // Open/sign/materialize then share one synchronous original owner;
+        // the consumed journal is dropped before Root's independent ACK.
+        phase
+            .materialize_original_historical_owner(journal, witness, config, key, mode.original())
+            .map_err(refused)
     }
 }
 
@@ -226,27 +218,61 @@ impl StageFilesData {
         queue_capacity: usize,
     ) -> Result<crate::OriginalCellQ24LearningInputsV1, AgentdError> {
         Self::require_original_training_capacity(&self)?;
-        prepared.revalidate_source().map_err(refused)?;
-        let objective = authorities.verifier.objective_digest();
-        // Validate every key, file lifecycle and physical alias before any
-        // witness is initialized. Missing resources never select Create.
-        let (experience, experience_key) =
-            self.experience
-                .open_original(files, &authorities.experience, objective, self.mode)?;
-        let (dataset, dataset_key) =
-            self.dataset
-                .open_original(files, &authorities.dataset, objective, self.mode)?;
-        let training = JournalData::open(&self.training, files, objective, self.mode)?;
-        let (receipts, receipt_key) = self.training_receipt.open_original(
-            files,
-            &authorities.trainer,
-            objective,
-            self.mode,
-        )?;
-        let (local, local_key) =
-            self.local
-                .open_original(files, &authorities.selector, objective, self.mode)?;
-        prepared.revalidate_source().map_err(refused)?;
+        // The existing operation brackets only key reads and descriptor checks.
+        // Its physical postread and both Result layers must succeed before any
+        // witness can initialize, sync or acquire its recovery lock.
+        let (
+            experience,
+            experience_key,
+            dataset,
+            dataset_key,
+            training,
+            receipts,
+            receipt_key,
+            local,
+            local_key,
+        ) = prepared
+            .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
+                OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(refused)?;
+                let objective = authorities.verifier.objective_digest();
+                // Missing resources never select Create; all original file,
+                // key, lifecycle and physical-alias checks remain inside.
+                let (experience, experience_key) = self.experience.open_original(
+                    files,
+                    &authorities.experience,
+                    objective,
+                    self.mode,
+                )?;
+                let (dataset, dataset_key) = self.dataset.open_original(
+                    files,
+                    &authorities.dataset,
+                    objective,
+                    self.mode,
+                )?;
+                let training = JournalData::open(&self.training, files, objective, self.mode)?;
+                let (receipts, receipt_key) = self.training_receipt.open_original(
+                    files,
+                    &authorities.trainer,
+                    objective,
+                    self.mode,
+                )?;
+                let (local, local_key) =
+                    self.local
+                        .open_original(files, &authorities.selector, objective, self.mode)?;
+                OriginalPreparedReadV1::require_prepared(read, &prepared).map_err(refused)?;
+                Ok((
+                    experience,
+                    experience_key,
+                    dataset,
+                    dataset_key,
+                    training,
+                    receipts,
+                    receipt_key,
+                    local,
+                    local_key,
+                ))
+            })
+            .map_err(refused)??;
         let (experience, experience_witness) = experience.open_witness()?;
         let (dataset, dataset_witness) = dataset.open_witness()?;
         let (training, training_witness) = training.open_witness()?;

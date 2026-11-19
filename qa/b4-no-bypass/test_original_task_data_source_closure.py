@@ -24,9 +24,10 @@ MATERIALIZER = A + "cell_q24_dataset_materializer.rs"
 CLIENT = route.CLIENT
 ROOT_TASK = A + "authority_host_historical_task.rs"
 DERIVE = A + "authority_host_post_a_derive.rs"
+OPERATION = A + "root_historical_learning_operation.rs"
 CALLERS = {
     "original_task_data_observation": (ROOT_TASK, A + "authority_host_successor_files_read.rs"),
-    "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT, DERIVE),
+    "original_task_data_validate": (ROOT_TASK, route.PROTOCOL, CLIENT, DERIVE, OPERATION),
     "original_task_data_decode": (),
     "original_task_data_decision": (DATA,),
     "root_historical_task_publication_data": (
@@ -35,7 +36,9 @@ CALLERS = {
         A + "authority_host_completed_learning.rs",
     ),
     "root_historical_task_publication_read": (TASK,),
-    "cell_q24_historical_dataset_task_capture": (A + "production_post_a_q24.rs",),
+    "cell_q24_historical_dataset_task_capture": (),
+    "root_historical_original_task_operation_read": (TASK,),
+    "q24_original_historical_task_capture_in_operation": (A + "cell_q24_dataset_historical_ledger.rs",),
     "cell_q24_historical_dataset_task_receipt": (A + "cell_q24_dataset_historical_ledger.rs",),
 }
 
@@ -47,7 +50,7 @@ def require_structure(path, source):
                             r'historical-task-publication-data\.v1";', source)
         if (purpose is None or code[purpose.start():purpose.end()]
                 != PROOF._strip_rust_non_code(purpose.group())
-                or "const DATA_BOUND: usize = 16_384;" not in code):
+                or "pub(crate) const JSON_BOUND: usize = 16_384;" not in code):
             raise PROOF.VerificationFailure("original data purpose and bound must be actual code")
         if not re.search(r"#\[serde\(deny_unknown_fields\)\]\s*pub\(crate\) struct "
                          r"RootHistoricalTaskPublicationDataV1\b", code):
@@ -92,12 +95,13 @@ def require_structure(path, source):
         end = PROOF._rust_item_end(code, start)
         if re.search(r"\bpub\b", code[start:end + 1]):
             raise PROOF.VerificationFailure("historical Task must retain its private actual receipt")
-        body, _ = route.function(source, "fn capture_historical(")
-        signature = body[:body.index("{")]
-        for forbidden in ("RootHistoricalTaskPublicationDataV1", "CellDecisionReceiptV1",
-                          "CircuitTaskSourcePublicationV1", "Digest32", "bool"):
-            if forbidden in signature:
-                raise PROOF.VerificationFailure("caller-authored task data cannot form this capability")
+        for function in ("fn capture_historical(", "fn capture_historical_in_operation("):
+            body, _ = route.function(source, function)
+            signature = body[:body.index("{")]
+            for forbidden in ("RootHistoricalTaskPublicationDataV1", "CellDecisionReceiptV1",
+                              "CircuitTaskSourcePublicationV1", "Digest32", "bool"):
+                if forbidden in signature:
+                    raise PROOF.VerificationFailure("caller-authored task data cannot form this capability")
 
 
 class OriginalTaskDataSourceTests(unittest.TestCase):
@@ -188,7 +192,7 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
 
     def test_request_and_input_canonical_checks_precede_data_construction(self):
         self.check(DATA, "decode_data", (
-            "self.schema != 1", "self.purpose != PURPOSE", "json(self)?.len() > DATA_BOUND",
+            "self.schema != 1", "self.purpose != PURPOSE", "json(self)?.len() > Self::JSON_BOUND",
             "binding.is_zero()", "binding.to_string() != self.source_configuration",
             "bounded(&request_bytes)?", "bounded(&result_bytes)?",
             "STANDARD.encode(&request_bytes) != self.request", "STANDARD.encode(&result_bytes) != self.result",
@@ -260,13 +264,31 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
             "        session: &AgentdRootAuthoritySession,",
             "        session: &AgentdRootAuthoritySession,\n        raw: Digest32,", 1))
 
+    def test_task_capture_inside_operation_uses_current_same_receipt_and_client(self):
+        self.check(TASK, "capture_historical_in_operation", (
+            "receipt: Arc<OriginalHistoricalTaskReadReceiptV1>",
+            "client: &Arc<RootHistoricalTaskReadClientV1>",
+            "session: &AgentdRootAuthoritySession",
+            "operation: &crate::root_historical_task_read_client::OriginalHistoricalOperationV1<'_>",
+            ".read_original_task(&receipt, client, session)",
+            "Arc::new(HistoricalTaskSource { receipt })",
+        ))
+        self.check(OPERATION, "read_original_task", (
+            "let result = self.read_for(self.trust, receipt,",
+            "RootHistoricalTaskPublicationDataV1::validate_against(",
+            "&receipt.data.publication,", "ledger,",
+        ))
+        for occurrence in (0, 1):
+            self.reject(OPERATION, "read_original_task",
+                        ".require_original_client(client, session)", occurrence)
+
     def test_original_task_default_and_same_root_publication_reader_cannot_fall_back(self):
         self.reject(MATERIALIZER, "read_for_historical_receipt", "Err(Error::Binding(")
         self.mutate(MATERIALIZER, lambda source: source.replace(
             '        Err(Error::Binding(\n            "task is not held',
             '        return self.read();\n        Err(Error::Binding(\n            "task is not held', 1))
         self.check(CLIENT, "read_original_publication", (
-            "self.client.observe()?", "observed != self.data",
+            "self.client.observe()", "observed != self.data",
             "observed.publication.validate_against(&observed.ledger)", "self.client.fence()",
         ))
 
@@ -288,8 +310,8 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
             '"runtime.learning.historical-task-publication-data.v1"',
             '"wrong" /* "runtime.learning.historical-task-publication-data.v1" */', 1))
         self.mutate(DATA, lambda source: source.replace(
-            "const DATA_BOUND: usize = 16_384;",
-            "const DATA_BOUND: usize = 32_768; /* DATA_BOUND: usize = 16_384 */", 1))
+            "pub(crate) const JSON_BOUND: usize = 16_384;",
+            "pub(crate) const JSON_BOUND: usize = 32_768; /* JSON_BOUND: usize = 16_384 */", 1))
         self.mutate(DECISION, lambda source: source.replace(
             'b"hepta.circuit.committed-cell-decision.v1\\0"',
             'b"wrong" /* .strip_prefix(b"hepta.circuit.committed-cell-decision.v1\\0") */', 1))

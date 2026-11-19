@@ -1,0 +1,11 @@
+# Original NoUpdate: descriptor execution admission
+
+The second complete parent actually failed (nextest 100, one failed parent, 60.072 s test duration). Its source and tracked bytes stayed at ab12b8bc1e6761efc16ea8c64e839721739cef5f; mount cleanup completed. The owner cost was 1234.9600499919616 s, with 1039.066829 child user CPU seconds and 120.165278 child system CPU seconds. These are nested intervals, and physical energy, network and charges remain unknown.
+
+The actual A children completed their original work. Independent B's fixed-control and preregistered input files exist. No independent source child was admitted. The source keeper opens current_exe and then drops to UID 60002; the actual test executable was mode 0700, UID 1000, 1,203,435,816 bytes. A separate actual UID60002 descriptor exec of `--list --exact` returned errno 13. An already-open descriptor does not make this file executable to that identity. This is execution admission evidence, not an independent B result.
+
+Attempt 3 is prospective. It retains all original source, package selection, parent, 64-read limit, deadlines and credential/capability drops. It re-verifies the original completed helper and immutable product artifacts, copies the exact two original library binaries to new immutable 0555 files, and uses the supported nextest binary-metadata reuse interface. A fresh cargo metadata document and the exact parent listing must pass first. The old test inode, mode and private directory ancestors remain unchanged. The original build costs remain in attempt 2 and are not represented as zero.
+
+Before any business parent, the actual source identity loses supplementary groups and every capability, and executes only the original source-child listing. The old descriptor must still refuse; the new descriptor must actually list that exact child. This preparation does not create a training, evaluation, adoption, FinalUse or settlement receipt. The driver records all new costs and verifies the originals and copied bytes again.
+
+Complete native NoUpdate, native adoption, authenticated independent users, new D after cold recovery and complete physical costs are still unqualified at this prospective commit. A successful component, listing, helper or process exit cannot replace the full parent predicate.

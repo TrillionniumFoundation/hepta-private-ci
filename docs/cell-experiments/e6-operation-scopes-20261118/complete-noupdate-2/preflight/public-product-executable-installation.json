@@ -1,0 +1,35 @@
+{
+  "private_data_modes_changed": false,
+  "global_umask_changed": false,
+  "source_bytes_changed": false,
+  "rows": [
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-2",
+      "kind": "public_executable_directory",
+      "before_mode": "0o755",
+      "after_mode": "0o755"
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-2/bin",
+      "kind": "public_executable_directory",
+      "before_mode": "0o700",
+      "after_mode": "0o755"
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-2/bin/codex-hepta-agentd",
+      "kind": "immutable_public_executable",
+      "before_mode": "0o555",
+      "after_mode": "0o555",
+      "sha256": "ab9dccaa5f19c87b5e86e1428c1de9ddfcd5932e3a550fcb6ffd85cb5a4c420b",
+      "bytes": 1364183408
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-2/bin/hepta-authority-host",
+      "kind": "immutable_public_executable",
+      "before_mode": "0o555",
+      "after_mode": "0o555",
+      "sha256": "ec457fa50e200ab058bf9f021c6aaae45fed6cba2f88b60a59f23b3f4ecfb331",
+      "bytes": 974871648
+    }
+  ]
+}

@@ -87,7 +87,32 @@ sha256:f69fcda55c226e6cbe3c790209e7c41b07cfd0609d7ed9ffa7dddf338d65f87b archive/
 # Original ordinary-owner native records; exceptions pin only these immutable bytes.
 sha256:bf86fbe86e20c835b0f3243497a5311b2903863cbd6d088a34c6412f5e5d9233 qualification/ordinary-owner-assembly-20261111/native-evidence/9bfdef-original-records.tar.xz
 sha256:938af64804abc935ab8db125dd6054d64f6e6f73626f07fcca4d661daaac6618 qualification/ordinary-owner-assembly-20261111/native-evidence/3c8dabe-and-early-maintenance-original-records.tar.xz
-# Exact privileged caller inventory after reviewed ordinary-owner assembly; future edits require a new digest.
-sha256:3721fe847e4a3597ee409909d2b847b65b1ca62134d357aed92b9699213762aa CALLERS.toml
+# Exact privileged caller inventory after reviewed ab12b8bc operation scopes; future edits require a new digest.
+sha256:c71a35ddcbcac214f4c336b0f84ed944520539990de283791a703a404352d248 CALLERS.toml
 sha256:b887df69055e182cae12aa6c588c91313c50c1761fb9c4323ed8621a5472e0e9 qualification/ordinary-owner-assembly-20261111/native-evidence/v5/original-records.tar.xz
 sha256:aaff3176e000652f54ac97308714aec0e94079ce6b731be5ec45f4622441394a qualification/ordinary-owner-assembly-20261111/native-evidence/v6/original-records.tar.xz
+
+# Exact first failed original NoUpdate owner and native child logs; no policy threshold change.
+sha256:877acd0cd6ca3acc25a1f0a28ebeedb7fc35f44397d7ac687261617da02b5a88 docs/cell-experiments/e6-operation-scopes-20261118/complete-noupdate-1/originals.tar.gz
+
+# Exact second failed NoUpdate owner and original children; threshold unchanged.
+sha256:dbf7024cf6d280922607f56e520be365d86760112d2f31ff30891c2d66c28444 docs/cell-experiments/e6-operation-scopes-20261118/complete-noupdate-2/originals.tar.gz
+# Exact preparation 3 and actual 65th-read failure 4, including all original children.
+sha256:1321614792217f7edb9764bb4bbe63e7060c98e7b9674dc600865467e7656208 docs/cell-experiments/e6-operation-scopes-20261118/complete-noupdate-3-4/originals.tar.gz
+
+# Exact retained E6 source/native originals, including all failed attempts in each archive.
+# The 512000-byte general limit and all historical exceptions remain unchanged.
+sha256:b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee docs/cell-experiments/e6-operation-scopes-20261118/read65-source-originals/complete-read65-source-originals.tar.xz
+sha256:40e43216c904e2c80f1b810fbf692ec23d17677dddc806913201c81fc91fc1e8 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part01
+sha256:33e57f2a144d8ee55a2332214c6198eedb1c3ec0eb29173d46ab760060e8f673 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part02
+sha256:45031336643635600c197c0377ae515995b8f0ab2052159b97eddd3a122d240c docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part03
+sha256:d71ee9ffe540b12dfb833254310556e87574e84ad304969d545f80b5cd137966 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part04
+sha256:08f472e43d7c25fb7401c27b219c9523b0526fa1ce38629895a3ef435f2ab128 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part05
+sha256:3b92a1367a1589a75d5d1050620a6a6fb116cecd090c1887ce6c2e36a5c0f7a8 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part06
+sha256:c9ddb584d6ebc1cd24a5b7fa02c277c60548f3d12bf7934cc4a757a93d885383 docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part07
+
+# Exact completed NoUpdate6 and startup-through-native7 originals; general limit unchanged.
+sha256:880f8d5eda408d13e18e368232b2c025990df213b4e62099b22d6f791e7cec2e docs/cell-experiments/e6-operation-scopes-20261118/native6-noupdate6-originals/complete-native6-noupdate6-originals.tar.xz.part01
+sha256:dc1e90c4aa7f7e0ab50e88eb73cf5c41f4dddb65bd0485ad6678662e1a98d026 docs/cell-experiments/e6-operation-scopes-20261118/native6-noupdate6-originals/complete-native6-noupdate6-originals.tar.xz.part02
+sha256:37659fc70d308841e948a0e95574bb0847c6ee0140821fd34538f798acf52711 docs/cell-experiments/e6-operation-scopes-20261118/native6-noupdate6-originals/complete-native6-noupdate6-originals.tar.xz.part03
+sha256:3fd38dce4ab6f0cfa135c3ec84ca4a98a6a53570dd9558aa3161880382e9dc90 docs/cell-experiments/e6-operation-scopes-20261118/read64-startup-originals/complete-read64-startup-through-native7-originals.tar.xz

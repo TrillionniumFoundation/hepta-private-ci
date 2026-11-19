@@ -1,0 +1,57 @@
+{
+  "schema": "hepta.exact-original-archive-parts.v1",
+  "filename": "complete-native6-noupdate6-originals.tar.xz",
+  "bytes": 27418536,
+  "sha256": "61084bf436e276d6e404666e56d0514bfa91e87c2942a50e8173e7592bcc7a71",
+  "parts": [
+    {
+      "part": 1,
+      "path": "complete-native6-noupdate6-originals.tar.xz.part01",
+      "offset": 0,
+      "bytes": 9000000,
+      "sha256": "880f8d5eda408d13e18e368232b2c025990df213b4e62099b22d6f791e7cec2e",
+      "git_blob": "03f62f282eaeb8e1139c3ab7753364def646b3aa"
+    },
+    {
+      "part": 2,
+      "path": "complete-native6-noupdate6-originals.tar.xz.part02",
+      "offset": 9000000,
+      "bytes": 9000000,
+      "sha256": "dc1e90c4aa7f7e0ab50e88eb73cf5c41f4dddb65bd0485ad6678662e1a98d026",
+      "git_blob": "7481900c42fad7887f36f93ceea4813c0e735eb2"
+    },
+    {
+      "part": 3,
+      "path": "complete-native6-noupdate6-originals.tar.xz.part03",
+      "offset": 18000000,
+      "bytes": 9000000,
+      "sha256": "37659fc70d308841e948a0e95574bb0847c6ee0140821fd34538f798acf52711",
+      "git_blob": "15948a030717b8a7574065c34e546a215e18d7cd"
+    },
+    {
+      "part": 4,
+      "path": "complete-native6-noupdate6-originals.tar.xz.part04",
+      "offset": 27000000,
+      "bytes": 418536,
+      "sha256": "2f4d286ca8866c7f5e9efd90ddadd43b8e347d7644b6b214b4d0e02244d728c3",
+      "git_blob": "d3cae0162fda90e209a4c6a74b87d9decd59cd87"
+    }
+  ],
+  "original_regular_files": 421,
+  "original_bytes": 51352775,
+  "index_sha256": "9e7af79678dc723255920eb9a623f8949923536b34ceae01dd373e726d226a59",
+  "root_transfer": {
+    "bytes": 27418536,
+    "sha256": "61084bf436e276d6e404666e56d0514bfa91e87c2942a50e8173e7592bcc7a71",
+    "chunks": 419,
+    "version": "66306:52603365:27418536:1795068572290595782:1795068572645969163",
+    "all_chunks_version_and_sha256_verified": true,
+    "all_bytes_read_by_root": true,
+    "read_error_count": 12,
+    "read_error_code": "INVALID_ARGUMENT",
+    "read_recovery_scope": "Only the same version-pinned original byte range was read again; no application, native, model or archive execution was retried."
+  },
+  "reconstruction": "Run reassemble.py once. Verify each part and the exact full archive hash; extracting is a separate decision.",
+  "full_native_NoUpdate_passed": false,
+  "native_adoption": false
+}

@@ -197,6 +197,13 @@ impl RootHistoricalTaskReadClientV1 {
                 );
             })?;
             let request_id = lane.sequence;
+            let _ = std::io::Write::write_fmt(
+                &mut io::stderr(),
+                format_args!(
+                    "daemon_stage=historical.trace.request request_id={request_id} maximum={MAX_READS} purpose={}\n",
+                    operation.purpose(),
+                ),
+            );
             if !(1..=MAX_READS).contains(&request_id) {
                 return Err(refused()).inspect_err(|_| {
                     let _ = std::io::Write::write_fmt(&mut io::stderr(),
@@ -407,10 +414,20 @@ impl OriginalHistoricalTaskReadReceiptV1 {
 
     /// Pure decoding and current recipient checks use the Root-observed image.
     /// No second consumer file read can escape Root's persistent refusal arms.
+    #[track_caller]
     pub(crate) fn with_current_read<T>(
         &self,
         action: impl FnOnce(&RootHistoricalLedgerReadDataV1) -> io::Result<T>,
     ) -> io::Result<T> {
+        let caller = std::panic::Location::caller();
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "daemon_stage=historical.trace.receipt caller={}:{}\n",
+                caller.file(),
+                caller.line(),
+            ),
+        );
         let mut fence = FenceReadOnDrop {
             client: &self.client,
             armed: true,

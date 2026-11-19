@@ -10,10 +10,20 @@ pub(crate) struct OriginalPreparedReadV1<'read> {
 }
 
 impl CellQ24PreparedLearningV1 {
+    #[track_caller]
     pub(crate) fn with_original_prepared_operation<T, E>(
         &self,
         action: impl for<'read> FnOnce(&OriginalPreparedReadV1<'read>) -> Result<T, E>,
     ) -> Result<Result<T, E>, Error> {
+        let caller = std::panic::Location::caller();
+        let _ = std::io::Write::write_fmt(
+            &mut std::io::stderr(),
+            format_args!(
+                "daemon_stage=historical.trace.prepared caller={}:{}\n",
+                caller.file(),
+                caller.line(),
+            ),
+        );
         Ok(CellQ24TrainingBatchV1::with_original_dataset_operation(
             &self.batch,
             |operation| {

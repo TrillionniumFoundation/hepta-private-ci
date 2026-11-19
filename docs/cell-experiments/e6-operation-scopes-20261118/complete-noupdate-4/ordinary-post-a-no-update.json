@@ -1,0 +1,65 @@
+{
+  "after": {
+    "commit": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+    "dirty": false,
+    "parents": [
+      "f883f77ff2c74e1b839c6eb915723a53271b4ac3"
+    ],
+    "tree": "d0b851b201a8e1559e354b94a8909a146e340542"
+  },
+  "base_sha": "",
+  "before": {
+    "commit": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+    "dirty": false,
+    "parents": [
+      "f883f77ff2c74e1b839c6eb915723a53271b4ac3"
+    ],
+    "tree": "d0b851b201a8e1559e354b94a8909a146e340542"
+  },
+  "command": [
+    "just",
+    "test",
+    "--run-ignored",
+    "only",
+    "--test-threads",
+    "1",
+    "-E",
+    "test(=neuron_generation_current::initial_root_tests::ordinary::post_a_process::ordinary_main_retains_after_completed_independent_b_and_executes_original_c)",
+    "--cargo-metadata",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-4/cargo-metadata.json",
+    "--binaries-metadata",
+    "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-4/native-binaries.json",
+    "--retries",
+    "0",
+    "--success-output",
+    "final",
+    "--failure-output",
+    "final",
+    "--no-tests",
+    "fail"
+  ],
+  "command_exit_code": 100,
+  "elapsed_seconds": 68.30263769789599,
+  "error": "required tests were not observed passing",
+  "exit_code": 100,
+  "finished_at": "2026-11-19T02:16:46.794975+00:00",
+  "job": null,
+  "lane": "source-head",
+  "log_bytes": 5239,
+  "log_file": "ordinary-post-a-no-update.json.1b9d90927081436e97b81ca87a792f56.log",
+  "log_sha256": "9e6dc29a7a7c10d1cd4e830e3cbdb51265837040bbaa72a83348366ebb78b953",
+  "minimum_tests": 1,
+  "observed_failed_tests": 1,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 100,
+  "run_attempt": null,
+  "run_id": null,
+  "schema_version": 1,
+  "source_sha": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "started_at": "2026-11-19T02:15:38.490783+00:00",
+  "status": "failed",
+  "tested_sha": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "timed_out": false,
+  "working_directory": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source"
+}

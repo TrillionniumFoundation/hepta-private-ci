@@ -76,6 +76,34 @@ impl OriginalHistoricalLearningTrustV1 {
 }
 
 impl OriginalHistoricalOperationV1<'_> {
+    /// Decode the actual same-receipt Task only inside this live operation.
+    /// Its enclosing Root reads compare the complete publication and decision,
+    /// and the original current trust/session is checked around this use.
+    pub(crate) fn read_original_task(
+        &self,
+        receipt: &Arc<OriginalHistoricalTaskReadReceiptV1>,
+        client: &Arc<RootHistoricalTaskReadClientV1>,
+        session: &AgentdRootAuthoritySession,
+    ) -> io::Result<(
+        crate::CircuitTaskSourcePublicationV1,
+        codex_hepta_neuron::CellDecisionReceiptV1,
+    )> {
+        receipt
+            .require_original_client(client, session)
+            .map_err(io::Error::other)?;
+        let result = self.read_for(self.trust, receipt, |ledger, _, _, _| {
+            crate::circuit_task::RootHistoricalTaskPublicationDataV1::validate_against(
+                &receipt.data.publication,
+                ledger,
+            )
+            .map_err(io::Error::other)
+        });
+        receipt
+            .require_original_client(client, session)
+            .map_err(io::Error::other)?;
+        result
+    }
+
     /// Only the exact current trust and receipt may use this borrow. The image
     /// is Root-observed data; every use still checks the actual session clock,
     /// current signed distribution and fixed Evaluator before and after.

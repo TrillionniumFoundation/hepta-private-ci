@@ -4,7 +4,7 @@
 use super::initial_q24::files::OriginalFiles;
 use super::*;
 use crate::CellQ24DatasetFreezePreparationV1;
-use crate::CellQ24DatasetTaskV1;
+use crate::CellQ24PreparedLearningV1;
 use crate::learning_iteration::historical_source::RegisteredHistoricalLearningSourceV1;
 use crate::root_generation_publication_inputs::OriginalPreparedPublicationRoute;
 use crate::root_historical_task_read_client::OriginalHistoricalLearningTrustV1;
@@ -103,17 +103,12 @@ impl AgentdProductionLaunch {
             &mut files,
         )?;
         let baseline = Arc::clone(&preparation.baseline);
-        let task = CellQ24DatasetTaskV1::capture_historical(
-            Arc::clone(&receipt),
-            &client,
-            &self.root.session,
-        )
-        .map_err(refused)?;
-        let phase = CellQ24DatasetFreezePreparationV1::capture_historical(
+        let phase = CellQ24DatasetFreezePreparationV1::capture_original_historical_task(
             preparation,
             Arc::clone(&receipt),
             Arc::clone(&trust),
-            task,
+            &client,
+            &self.root.session,
         )
         .map_err(refused)?;
         let prepared = Arc::new(owners::SigningFilesData::freeze_original(
@@ -171,14 +166,6 @@ impl AgentdProductionLaunch {
             &mut files,
             data.queue_capacity,
         )?;
-        let source = RegisteredHistoricalLearningSourceV1::capture_original_historical_source(
-            Arc::clone(&receipt),
-            Arc::clone(&prepared),
-            &client,
-            &self.root.session,
-            identity.clone(),
-            self.session_end,
-        )?;
         let (launch, configured, handle, stage_owners) =
             self.assemble_q24_learning(config, inputs).await?;
         self = launch;
@@ -186,16 +173,19 @@ impl AgentdProductionLaunch {
         let bootstrap = config
             .take_learning_iteration_bootstrap()
             .ok_or_else(|| refused("actual assembled learning bootstrap absent"))?;
-        let (journal, witness) = delivery.open_witness()?;
-        let bootstrap =
-            crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source(
-                bootstrap,
-                Arc::clone(&source),
-                &identity,
-                journal,
-                witness,
-                data.delivery_mode.original(),
+        let original_prepared: &CellQ24PreparedLearningV1 = prepared.as_ref();
+        let (bootstrap, source) = original_prepared.with_original_prepared_operation(|read| {
+            let source = RegisteredHistoricalLearningSourceV1::capture_original_historical_source_in_operation(
+                Arc::clone(&receipt), Arc::clone(&prepared), &client, &self.root.session,
+                identity.clone(), self.session_end, read,
             )?;
+            let (journal, witness) = delivery.open_witness()?;
+            let bootstrap = crate::LearningIterationRuntimeBootstrapV1::with_original_historical_source_in_operation(
+                bootstrap, Arc::clone(&source), &identity, journal, witness,
+                data.delivery_mode.original(), read,
+            )?;
+            Ok::<_, AgentdError>((bootstrap, source))
+        }).map_err(refused)??;
         config = config.with_learning_iteration_bootstrap(bootstrap)?;
         let (launch, mut config, successor) = self
             .prepare_original_q24_successor(config, data.queue_capacity)

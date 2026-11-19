@@ -1,0 +1,35 @@
+{
+  "schema": "e6-original-operation-scope-native-protocol-v1",
+  "parent": "a6f9e8064f83680134af168e0500048b6942ddfd",
+  "purpose": "Validate the two original Prepared operation scopes with the existing native component fixtures and one changed-scope/withdrawal regression. This is not complete native NoUpdate or adoption.",
+  "host": "ai395",
+  "source_root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/source",
+  "cargo_target_dir": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target",
+  "rust_toolchain": "1.96.0",
+  "cargo_build_jobs": 4,
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "--offline",
+    "-p",
+    "codex-hepta-agentd",
+    "--lib",
+    "-E",
+    "test(q24_preparation_) | test(source_operation_) | test(training_source_operation_) | test(post_a_owner_open_) | test(post_a_signing_files_)"
+  ],
+  "automatic_retry": false,
+  "original_maximum_reads": 64,
+  "full_no_update_executed": false,
+  "native_adoption_executed": false,
+  "original_executor_mutated": false,
+  "original_executor_target_reused": false,
+  "source_qa": {
+    "tests": 90,
+    "protected_rows": 892,
+    "successful": true,
+    "result_sha256": "1c45ca2a21aef6abc8c376433f578868157fee98bb6da3fb8179a102bbd46410"
+  },
+  "required": "The whole source and Cargo.lock must match before and after. Preserve compilation failures, empty selections, timeouts and original nextest XML/logs. Zero native cases cannot qualify the candidate.",
+  "cost_scope": "Record original command wall, owner wall, child CPU and maximum RSS separately; build cost remains separate from native test durations. Physical system energy, network, storage and charges are unknown unless actually measured."
+}
