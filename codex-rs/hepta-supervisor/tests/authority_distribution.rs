@@ -1,3 +1,4 @@
+use anyhow::Context;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7ArtifactSigner;
@@ -12,20 +13,20 @@ use codex_hepta_supervisor::H7H89ProductionTransition;
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
 #[test]
-fn signer_rotation_rejects_previous_epoch_and_accepts_current_epoch() {
-    let envelope = h7_envelope();
-    let agent = agent();
+fn signer_rotation_rejects_previous_epoch_and_accepts_current_epoch() -> anyhow::Result<()> {
+    let envelope = h7_envelope()?;
+    let agent = agent()?;
     let previous =
         H7H89ProductionGrantSigner::from_seed("release-policy", 4, [9; 32]).expect("previous");
     let current =
         H7H89ProductionGrantSigner::from_seed("release-policy", 5, [10; 32]).expect("current");
-    let previous_grant = sign(&previous, &agent, &envelope, 3, 100, 200);
-    let current_grant = sign(&current, &agent, &envelope, 3, 100, 200);
+    let previous_grant = sign(&previous, &agent, &envelope, 3, 100, 200)?;
+    let current_grant = sign(&current, &agent, &envelope, 3, 100, 200)?;
     let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
         "release-policy",
         5,
         current.verifying_key(),
-        h7_verifier(),
+        h7_verifier()?,
     )
     .expect("current verifier");
 
@@ -34,27 +35,28 @@ fn signer_rotation_rejects_previous_epoch_and_accepts_current_epoch() {
         "a verifier pinned to the rotated signer epoch accepted an old grant"
     );
     verify(&verifier, &current_grant, &envelope, &agent, 3, 150).expect("current signer grant");
+    Ok(())
 }
 
 #[test]
-fn wrong_signer_and_expired_grant_fail_closed() {
-    let envelope = h7_envelope();
-    let agent = agent();
+fn wrong_signer_and_expired_grant_fail_closed() -> anyhow::Result<()> {
+    let envelope = h7_envelope()?;
+    let agent = agent()?;
     let signer =
         H7H89ProductionGrantSigner::from_seed("release-policy", 7, [11; 32]).expect("signer");
-    let grant = sign(&signer, &agent, &envelope, 8, 100, 200);
+    let grant = sign(&signer, &agent, &envelope, 8, 100, 200)?;
     let wrong_identity = H7H89ProductionGrantVerifier::new_with_h7_verifier(
         "different-policy",
         7,
         signer.verifying_key(),
-        h7_verifier(),
+        h7_verifier()?,
     )
     .expect("wrong identity verifier");
     let correct = H7H89ProductionGrantVerifier::new_with_h7_verifier(
         "release-policy",
         7,
         signer.verifying_key(),
-        h7_verifier(),
+        h7_verifier()?,
     )
     .expect("correct verifier");
 
@@ -66,21 +68,22 @@ fn wrong_signer_and_expired_grant_fail_closed() {
         verify(&correct, &grant, &envelope, &agent, 8, 200).is_err(),
         "an expired grant remained usable at its exclusive expiry boundary"
     );
+    Ok(())
 }
 
 #[test]
-fn authority_epoch_rollover_requires_a_fresh_grant() {
-    let envelope = h7_envelope();
-    let agent = agent();
+fn authority_epoch_rollover_requires_a_fresh_grant() -> anyhow::Result<()> {
+    let envelope = h7_envelope()?;
+    let agent = agent()?;
     let signer =
         H7H89ProductionGrantSigner::from_seed("release-policy", 9, [12; 32]).expect("signer");
-    let stale_epoch_grant = sign(&signer, &agent, &envelope, 12, 100, 200);
-    let fresh_epoch_grant = sign(&signer, &agent, &envelope, 13, 100, 200);
+    let stale_epoch_grant = sign(&signer, &agent, &envelope, 12, 100, 200)?;
+    let fresh_epoch_grant = sign(&signer, &agent, &envelope, 13, 100, 200)?;
     let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
         "release-policy",
         9,
         signer.verifying_key(),
-        h7_verifier(),
+        h7_verifier()?,
     )
     .expect("verifier");
 
@@ -89,10 +92,11 @@ fn authority_epoch_rollover_requires_a_fresh_grant() {
         "a grant survived daemon authority-epoch rollover"
     );
     verify(&verifier, &fresh_epoch_grant, &envelope, &agent, 13, 150).expect("fresh epoch grant");
+    Ok(())
 }
 
-fn agent() -> AgentId {
-    AgentId::parse(AGENT_ID).expect("fixed AgentId")
+fn agent() -> anyhow::Result<AgentId> {
+    AgentId::parse(AGENT_ID).context("fixed AgentId")
 }
 
 fn sign(
@@ -102,7 +106,7 @@ fn sign(
     authority_epoch: u64,
     issued_at: u64,
     expires_at: u64,
-) -> codex_hepta_supervisor::H7H89ProductionGrant {
+) -> anyhow::Result<codex_hepta_supervisor::H7H89ProductionGrant> {
     signer
         .sign(
             agent,
@@ -116,7 +120,7 @@ fn sign(
             issued_at,
             expires_at,
         )
-        .expect("grant")
+        .context("grant")
 }
 
 fn verify(
@@ -140,7 +144,7 @@ fn verify(
     )
 }
 
-fn h7_envelope() -> H7SignedArtifactEnvelope {
+fn h7_envelope() -> anyhow::Result<H7SignedArtifactEnvelope> {
     let mut runtime = H7QualificationRuntime::new();
     let event = codex_hepta_memory::H7TrajectoryEvent::new(
         "production-trajectory",
@@ -153,16 +157,16 @@ fn h7_envelope() -> H7SignedArtifactEnvelope {
         1,
         Sha256Digest::for_bytes(b"fence"),
     )
-    .expect("event");
-    runtime.append_trajectory_event(event).expect("append");
+    .context("event")?;
+    runtime.append_trajectory_event(event).context("append")?;
     runtime
         .evaluate_trajectory("production-trajectory")
-        .expect("evaluate");
+        .context("evaluate")?;
     let artifact = runtime
         .propose_artifact("artifact-production", "production-trajectory", 1)
-        .expect("artifact");
+        .context("artifact")?;
     H7ArtifactSigner::from_seed("h7-signer", 1, [7; 32])
-        .expect("H7 signer")
+        .context("H7 signer")?
         .sign(
             &artifact,
             None,
@@ -172,11 +176,11 @@ fn h7_envelope() -> H7SignedArtifactEnvelope {
             100,
             200,
         )
-        .expect("H7 envelope")
+        .context("H7 envelope")
 }
 
-fn h7_verifier() -> H7ArtifactVerifier {
-    H7ArtifactSigner::from_seed("h7-signer", 1, [7; 32])
-        .expect("H7 signer")
-        .verifier()
+fn h7_verifier() -> anyhow::Result<H7ArtifactVerifier> {
+    Ok(H7ArtifactSigner::from_seed("h7-signer", 1, [7; 32])
+        .context("H7 signer")?
+        .verifier())
 }

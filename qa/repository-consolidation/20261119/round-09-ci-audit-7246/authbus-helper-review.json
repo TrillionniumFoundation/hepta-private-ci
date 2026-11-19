@@ -1,0 +1,53 @@
+{
+  "source_commit": "f8c5a4dd99564525a6ce139560f82139501508aa",
+  "repairs": [
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+      "mode": "100644",
+      "preimage_git_blob": "65f3a7bf65dd118d1ba069ddebdd1d4b5a4866b2",
+      "preimage_sha256": "3e964bab6c85aaaff0bc2e89472e876eed96be98e14e0384a2cae3a09e0e140a",
+      "postimage_git_blob": "2787d354f2aadc3ff13c44d4d1499c160230617e",
+      "postimage_sha256": "9d6e4b1b4a4530532811545bedf5259327302e0839b42b5d207ad19c493be63f",
+      "postimage_size": 19995,
+      "helper": "last_trusted_time",
+      "method_body_unchanged": true
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/recovery.rs",
+      "mode": "100644",
+      "preimage_git_blob": "37ad6f558e7a25a31129b9a4200f52dd673b2547",
+      "preimage_sha256": "a96d8c6a8a8e216f0183a1e2d3612c7df498850c7ec4c37dca30672ec0524c60",
+      "postimage_git_blob": "661078794209d18f45217283a62bd6bec90d4b56",
+      "postimage_sha256": "d2ec1992fb1b1dd3d23484d0962f0b8a22359f0b2bc9320dbe0ef0c1f7b5858f",
+      "postimage_size": 15701,
+      "helper": "recovery_required",
+      "method_body_unchanged": true
+    }
+  ],
+  "private_owner_evidence": [
+    "codex-rs/hepta-authbus/src/lib.rs:19 mod authority_store",
+    "codex-rs/hepta-authbus/src/lib.rs:38 pub(crate) use authority_store::AuthBusAuthorityStore"
+  ],
+  "callers": {
+    "last_trusted_time": [
+      "authority_store_tests.rs:138",
+      "authority_store_tests.rs:155",
+      "time_freshness_tests.rs:70",
+      "trust_store_tests.rs:130"
+    ],
+    "recovery_required": [
+      "recovery_tests.rs:185",
+      "recovery_tests.rs:204"
+    ]
+  },
+  "preserved_production_guard": "quota_store.rs::ensure_recovery_complete independently SELECTs authbus_recovery_state.recovery_required and returns AuthBusAuthorityError::RecoveryRequired when nonzero; untouched",
+  "original_test_bytes_changed": false,
+  "first_fix_fmt_record": "first-fix-fmt-result.json",
+  "first_formatter_only_change": "infer replay_file arguments wrapped differently; all token/argument bytes and test assertions retained",
+  "validation_pending": [
+    "original authbus package suite",
+    "original authbus qualification suite",
+    "scoped four-package fix",
+    "final fmt"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "schema": "hepta.native-repair-terminal-custody.v1",
+  "status": "PASS",
+  "archive": "/home/qian-qi/hepta-supervisor-expect-7246-ci-audit/native-repair-evidence.tar.gz",
+  "archive_bytes": 48535,
+  "archive_sha256": "5601e02ba637e95ae71a881389c707c6cc1d1b1a95c4fe874d6bb3a46c815eca",
+  "member_count": 95,
+  "source_diff_check_exit": 0,
+  "source_postimages": [
+    {
+      "path": "codex-rs/hepta-authbus-p1-3-qualification/src/lib.rs",
+      "bytes": 9652,
+      "sha256": "e4d09ab0e2ba7128c41eac99d4fb6531a4a45418a847f9ee0f88176cbce65c61",
+      "git_blob": "f0b8e6a9eb321ff5af84c6ff138c0be3239b5d9f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/durable_control_tests.rs",
+      "bytes": 18776,
+      "sha256": "dced38954d8041cc8028e2e670b0064d44ee7c410786fcaceb778bb7201a59ba",
+      "git_blob": "334f00a3c84a7040a61d9c46d50671a489c493b9"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/authority_distribution.rs",
+      "bytes": 5807,
+      "sha256": "609c3b63707cc2bdd1f6fe3f28be1b1b69dd5e8c3e8229c6498e77c9aaf635d7",
+      "git_blob": "d2be76100ff841ae73f1abd15a1d35fd5f705ad0"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/authority_store.rs",
+      "bytes": 19995,
+      "sha256": "9d6e4b1b4a4530532811545bedf5259327302e0839b42b5d207ad19c493be63f",
+      "git_blob": "2787d354f2aadc3ff13c44d4d1499c160230617e"
+    },
+    {
+      "path": "codex-rs/hepta-authbus/src/recovery.rs",
+      "bytes": 15701,
+      "sha256": "d2ec1992fb1b1dd3d23484d0962f0b8a22359f0b2bc9320dbe0ef0c1f7b5858f",
+      "git_blob": "661078794209d18f45217283a62bd6bec90d4b56"
+    }
+  ],
+  "cleanup": {
+    "status": "COMPLETE",
+    "removed_only": "/home/qian-qi/hepta-supervisor-expect-7246-ci-audit/cargo-target",
+    "source_and_tools_retained": true,
+    "free_before": 25862144,
+    "free_after": 3423764480,
+    "bytes_reclaimed": 3397902336
+  },
+  "finished_at": 1795114130.2759655
+}

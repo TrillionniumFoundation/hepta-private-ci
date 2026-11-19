@@ -92,13 +92,13 @@ pub fn qualify() -> Result<QualificationReceipt, Error> {
         expires_at_ms: 10_000,
     };
     let message = SignedMessage {
-        signature: signing_key.sign(&claims.signing_bytes()).to_bytes(),
+        signature: signing_key.sign(&claims.signing_bytes()).to_bytes().into(),
         claims,
     };
     let active = IssuerRegistration {
         issuer_id: issuer_id.clone(),
         key_epoch,
-        verifying_key: signing_key.verifying_key(),
+        verifying_key: signing_key.verifying_key().into(),
         revoked: false,
     };
 
@@ -131,7 +131,7 @@ pub fn qualify() -> Result<QualificationReceipt, Error> {
     let revoked = IssuerRegistration {
         issuer_id: issuer_id.clone(),
         key_epoch,
-        verifying_key: signing_key.verifying_key(),
+        verifying_key: signing_key.verifying_key().into(),
         revoked: true,
     };
     cases.push(execute_authenticate_case(
