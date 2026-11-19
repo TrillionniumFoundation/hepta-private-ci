@@ -3,6 +3,7 @@
 import importlib.util
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -15,6 +16,7 @@ SPEC = importlib.util.spec_from_file_location(
 FMT = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = FMT
 SPEC.loader.exec_module(FMT)
+SOURCE_ROOT = FMT.REPO_ROOT
 
 
 class FormatterScopeTests(unittest.TestCase):
@@ -28,6 +30,11 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.name", "Scope Test")
         self.git("config", "user.email", "scope@localhost")
+        # Reproduce the immutable test-input inventory in this real Git fixture.
+        for relative in FMT.VERBATIM_FIXTURES:
+            destination = self.root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(SOURCE_ROOT / relative, destination)
         self.write("scripts/first.py", "value = 1\n")
         self.write("scripts/delete.py", "value = 1\n")
         self.git("add", ".")
@@ -52,6 +59,92 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(
             FMT.changed_paths(),
             ["scripts/first.py", "scripts/new file.py", "scripts/staged.py"],
+        )
+
+    def test_verbatim_inputs_are_unchanged_and_unregistered_sources_still_run(self):
+        relative = f"{FMT.VERBATIM_FIXTURE_PREFIX}/issue28.rs"
+        fixture = self.root / relative
+        original = fixture.read_bytes()
+        neighbor = self.write(
+            f"{FMT.VERBATIM_FIXTURE_PREFIX}/new.rs", "fn original(){}\n"
+        )
+        vendor = str(Path(FMT.VERBATIM_FIXTURE_PREFIX).parent)
+        implementation = self.write(f"{vendor}/src/lib.rs", "fn original(){}\n")
+        test = self.write(f"{vendor}/tests/contract.rs", "fn original(){}\n")
+        paths = [
+            relative,
+            *[
+                str(path.relative_to(self.root))
+                for path in (neighbor, implementation, test)
+            ],
+        ]
+        groups = FMT.scoped_formatter_groups(paths, check=False)
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        selected = {Path(command.args[-1]) for command in groups[0].commands}
+        self.assertEqual(selected, {neighbor, implementation, test})
+        formatter = self.write(
+            "format_probe.py",
+            "from pathlib import Path\nimport sys\np=Path(sys.argv[-1])\np.write_text(p.read_text()+'// formatted\\n')\n",
+        )
+        probe = FMT.FormatterGroup(
+            "observable formatter",
+            tuple(
+                FMT.Command((sys.executable, str(formatter), str(path)), self.root)
+                for path in selected
+            ),
+        )
+        self.assertEqual(FMT.run_formatter_group(probe).returncode, 0)
+        self.assertEqual(fixture.read_bytes(), original)
+        for path in selected:
+            self.assertTrue(path.read_text().endswith("// formatted\n"))
+
+    def test_verbatim_single_byte_mutation_fails_before_full_or_scoped_format(self):
+        relative = f"{FMT.VERBATIM_FIXTURE_PREFIX}/issue28.rs"
+        fixture = self.root / relative
+        original = fixture.read_bytes()
+        fixture.write_bytes(bytes([original[0] ^ 1]) + original[1:])
+        with self.assertRaisesRegex(ValueError, "bytes changed"):
+            FMT.scoped_formatter_groups([relative], check=False)
+        with self.assertRaisesRegex(ValueError, "bytes changed"):
+            FMT.formatter_groups(check=True)
+
+    def test_missing_verbatim_input_is_an_error_even_without_local_source_edits(self):
+        relative = next(iter(FMT.VERBATIM_FIXTURES))
+        (self.root / relative).unlink()
+        with self.assertRaisesRegex(ValueError, "cannot verify"):
+            FMT.scoped_formatter_groups([], check=True)
+
+    def test_verbatim_inventory_cannot_register_a_source_outside_its_fixed_prefix(self):
+        digest = next(iter(FMT.VERBATIM_FIXTURES.values()))
+        for relative in (
+            "scripts/first.py",
+            f"{FMT.VERBATIM_FIXTURE_PREFIX}/../src/lib.rs",
+        ):
+            with patch.object(FMT, "VERBATIM_FIXTURES", {relative: digest}):
+                with self.assertRaisesRegex(ValueError, "fixed prefix"):
+                    FMT.verified_verbatim_fixture_paths()
+
+    @unittest.skipIf(os.name == "nt", "POSIX symlink creation")
+    def test_verbatim_symlink_escape_is_rejected_even_with_identical_bytes(self):
+        relative = f"{FMT.VERBATIM_FIXTURE_PREFIX}/issue28.rs"
+        fixture = self.root / relative
+        original = fixture.read_bytes()
+        with tempfile.TemporaryDirectory() as outside:
+            target = Path(outside) / "same.rs"
+            target.write_bytes(original)
+            fixture.unlink()
+            fixture.symlink_to(target)
+            with self.assertRaisesRegex(ValueError, "escapes"):
+                FMT.verified_verbatim_fixture_paths()
+
+    def test_rust_configuration_expansion_keeps_only_unregistered_source_inputs(self):
+        self.write(f"{FMT.VERBATIM_FIXTURE_PREFIX}/rustfmt.toml", "max_width=88\n")
+        neighbor = f"{FMT.VERBATIM_FIXTURE_PREFIX}/new.rs"
+        self.write(neighbor, "fn original(){}\n")
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands],
+            [str(self.root / neighbor)],
         )
 
     def test_exact_base_includes_committed_work_and_rejects_unknown_base(self):
