@@ -45,6 +45,17 @@ mod qualification_file_observation;
 mod self_evolution_selection;
 mod sequential;
 mod signed_evaluation;
+mod structural_comparison;
+pub use structural_comparison::FrozenStructuralComparisonV1;
+pub use structural_comparison::SignedStructuralComparisonDecisionV1;
+pub use structural_comparison::SignedStructuralComparisonV1;
+pub use structural_comparison::StructuralComparisonDispositionV1;
+pub use structural_comparison::StructuralComparisonErrorV1;
+pub use structural_comparison::StructuralComparisonObservationV1;
+pub use structural_comparison::StructuralMutationKindV1;
+pub use structural_comparison::assess_signed_structural_comparison_v1;
+pub use structural_comparison::structural_comparison_plan_digest_v1;
+pub use structural_comparison::structural_comparison_signing_payload_v1;
 mod temporal_evaluation;
 mod temporal_fold;
 
@@ -456,6 +467,33 @@ pub use paired_runner::paired_evaluation_signing_payload_v1;
 pub use paired_runner::paired_observation_signing_payload_v1;
 pub use paired_runner::paired_plan_signing_payload_v1;
 
+mod citation_audit;
 #[cfg(test)]
 #[path = "paired_owner_tests.rs"]
 mod paired_owner_tests;
+pub use citation_audit::CitationAuditCountsV1;
+pub use citation_audit::CitationAuditError;
+pub use citation_audit::CitationAuditJudgementV1;
+pub use citation_audit::CitationAuditRequestV1;
+pub use citation_audit::CitationClaimKindV1;
+pub use citation_audit::CitationClaimV1;
+pub use citation_audit::CitationJudgementV1;
+pub use citation_audit::CitationSourceV1;
+pub use citation_audit::CitationVerdictV1;
+pub use citation_audit::VerifiedCitationAuditV1;
+pub use citation_audit::citation_judgement_payload_v1;
+pub use citation_audit::citation_request_payload_v1;
+pub use citation_audit::validate_citation_judgement_v1;
+pub use citation_audit::verify_signed_citation_audit_v1;
+
+mod memory_citation_gate;
+pub use memory_citation_gate::MemoryCitationCensusV1;
+pub use memory_citation_gate::MemoryCitationGateCountsV1;
+pub use memory_citation_gate::MemorySnapshotCensusV1;
+pub use memory_citation_gate::VerifiedMemoryCitationGateV1;
+pub use memory_citation_gate::memory_citation_census_payload_v1;
+pub use memory_citation_gate::verify_memory_citation_census_v1;
+
+mod cell_role_qualification_replay;
+pub use cell_role_qualification_replay::CELL_ROLE_QUALIFICATION_REPLAY_SCHEMA_V1;
+pub use cell_role_qualification_replay::CellRoleQualificationReplayV1;

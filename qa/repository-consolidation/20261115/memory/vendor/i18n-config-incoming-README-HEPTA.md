@@ -1,19 +1,20 @@
-# Hepta security vendor: i18n-config 0.4.8
+# Hepta i18n-config integration provenance
 
-Derived from MIT-licensed `kellpossible/cargo-i18n` i18n-config at commit
-`10e345470d97c9cffb3bc611182f595ad93251bf`. The Rust source,
-README.md and LICENSE.txt are unchanged copies from reviewed Hepta PR #2976.
-Only its standalone Cargo.toml was adapted to the frozen Cell branch's
-pre-existing `toml 1.1.4+spec-1.1.0` and `thiserror 2.0.18` versions.
+The memory-cell branch at
+`1657238edcc0793bc353c931f9ca445ef992315c` recorded an upstream-derived
+candidate from MIT-licensed `kellpossible/cargo-i18n` commit
+`10e345470d97c9cffb3bc611182f595ad93251bf` and Hepta PR #2976.
+That exact candidate remains in Git history.
 
-Archived `basic-toml 0.1.10` was pulled via
-`age -> i18n-embed-fl -> i18n-config` (RUSTSEC-2026-0374). The compatible
-local i18n-config 0.4.8 uses maintained `toml`, preserving encrypted secret
-handling and strict RustSec policy. Cargo.lock drops only the unmaintained
-package and rebinds i18n-config to existing resolved versions; no registry
-checksum was fabricated.
+The integrated source retains the existing 0.4.8 compatibility backport from
+`83e1c6fc47bfc7277100534cd0994a547028cb11`, including its public
+`CannotPaseI18nToml` variant and three parser regression tests. Its manifest
+uses maintained `toml 1.1.8` instead of archived `basic-toml`.
+It is not an unchanged copy of the other branch's Rust, README or manifest.
+The existing package provenance files and license remain alongside it.
 
-**Draft candidate; no production acceptance:** exact-head `cargo metadata
---locked`, Cargo check/test/Clippy, `cargo deny check`, Bazel lock and
-Linux/macOS/Windows qualification plus upstream localization/API parity
-must pass. Any resolver drift requires native Cargo reconciliation.
+Both branches' maintained-parser objective is retained without a public enum
+rename, deletion of parser tests, or downgrade of workspace dependencies.
+No Cargo.lock or Bazel lock has been copied from the historical branch.
+The combined source still requires ordinary dependency resolution and its
+own parser/build/Clippy/qualification checks; this note is not a test receipt.

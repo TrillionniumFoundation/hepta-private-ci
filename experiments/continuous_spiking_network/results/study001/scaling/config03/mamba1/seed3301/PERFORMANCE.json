@@ -1,0 +1,588 @@
+{
+  "buffer_bytes": 0,
+  "checkpoint_manifest_sha256": "246a8450c4e4cc59300d7ac0d859ec915e005207e6e49220a99b557f40ee822c",
+  "config": {
+    "architecture": "mamba1",
+    "classes": 4,
+    "depth": 2,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 3301,
+    "width": 128
+  },
+  "data_manifest_sha256": "8d99add03f8767fa5ac3db7a43c242a8b0c22ec21cde47fc6fa055dacbbe1d10",
+  "data_work": {
+    "cpu_seconds": 0.5918796980000138,
+    "wall_seconds": 0.5918647290018271
+  },
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "execution_policy": "CPU; invoke serially after training completes; no concurrency/isolation guarantee inferred from clocks",
+  "fixed_batch": {
+    "batch_size": 16,
+    "feature_width": 64,
+    "requested_batch_size": 16,
+    "sample_ids": [
+      "long_memory:7123:test:0",
+      "long_memory:7123:test:1",
+      "long_memory:7123:test:2",
+      "long_memory:7123:test:3",
+      "long_memory:7123:test:4",
+      "long_memory:7123:test:5",
+      "long_memory:7123:test:6",
+      "long_memory:7123:test:7",
+      "long_memory:7123:test:8",
+      "long_memory:7123:test:9",
+      "long_memory:7123:test:10",
+      "long_memory:7123:test:11",
+      "long_memory:7123:test:12",
+      "long_memory:7123:test:13",
+      "long_memory:7123:test:14",
+      "long_memory:7123:test:15"
+    ],
+    "selection": "first held-out test examples in saved dataset order",
+    "sequence_length": 32,
+    "sha256": "f148b813bbaabc3cb60c6853c5121faad74ad7695e95f5f3692ca2228a262dc5"
+  },
+  "logits_sha256": "64d5e83df2abb456f2e304002c7fe40d606e96aaecd929e58d100654e7648465",
+  "measurement": {
+    "examples": 112,
+    "examples_per_second": {
+      "max": 1101.3614618216188,
+      "median": 989.0359185734269,
+      "min": 599.5753133140778,
+      "p05": 627.1551900017554,
+      "p95": 1091.610113867327,
+      "sum": 6247.679144784319
+    },
+    "forward_calls": 7,
+    "process_cpu_seconds": [
+      0.01618165100001079,
+      0.014531374000000596,
+      0.015943013999986988,
+      0.014973359000009623,
+      0.020141989999984844,
+      0.02668917299999407,
+      0.023141786999985925
+    ],
+    "process_cpu_seconds_stats": {
+      "max": 0.02668917299999407,
+      "median": 0.01618165100001079,
+      "min": 0.014531374000000596,
+      "p05": 0.014663969500003305,
+      "p95": 0.025624957199991624,
+      "sum": 0.13160234799997284
+    },
+    "quantile_scope": "descriptive repeat quantiles, not confidence intervals; throughput p05 is the slow tail",
+    "sequence_positions": 3584,
+    "sequence_positions_per_second": {
+      "max": 35243.5667782918,
+      "median": 31649.14939434966,
+      "min": 19186.41002605049,
+      "p05": 20068.966080056172,
+      "p95": 34931.523643754466,
+      "sum": 199925.7326330982
+    },
+    "timing_scope": "full no-grad model forward including auxiliary tensor creation; excludes output release/validation, reload, data, warmup and profiler",
+    "wall_latency_seconds": {
+      "max": 0.02668555499985814,
+      "median": 0.016177370001969393,
+      "min": 0.014527473998896312,
+      "p05": 0.014660010398074519,
+      "p95": 0.02562123750030878,
+      "sum": 0.131599960004678
+    },
+    "wall_seconds": [
+      0.016177370001969393,
+      0.014527473998896312,
+      0.01593900400621351,
+      0.014969261996157002,
+      0.02016346500022337,
+      0.02668555499985814,
+      0.02313783000136027
+    ]
+  },
+  "operator_audit": {
+    "attention_operators": [],
+    "cpu_seconds": 1.7404177839999875,
+    "flop_scope": "Profiler shape-based formulas for supported operators only; not total model FLOPs",
+    "forward_calls": 1,
+    "memory": {
+      "activation_labelled_created_bytes": 22676486,
+      "classification_limit": "No-grad intermediates may be UNKNOWN; activation-labelled bytes are not all activations",
+      "created_bytes_by_category": {
+        "ACTIVATION": 22676486,
+        "AUTOGRAD_DETAIL": 0,
+        "GRADIENT": 0,
+        "INPUT": 141328,
+        "OPTIMIZER_STATE": 0,
+        "PARAMETER": 0,
+        "TEMPORARY": 3161168,
+        "UNKNOWN": 113819648
+      },
+      "events": 1226,
+      "forward_created_bytes": 139798630,
+      "peak_increment_over_preexisting_bytes": 6526980,
+      "peak_managed_bytes": 7630356,
+      "preexisting_managed_bytes": 1103376,
+      "released_bytes": 139790434,
+      "scope": "PyTorch CPU tensor allocation timeline; not RSS or allocator-reserved memory",
+      "status": "available",
+      "unclassified_created_bytes": 113819648
+    },
+    "observed_formula_flops": 254411264,
+    "status": "available",
+    "supported_operator_formulas": [
+      {
+        "calls": 1,
+        "formula_flops": 8650752,
+        "input_shapes": [
+          [
+            128
+          ],
+          [
+            512,
+            66
+          ],
+          [
+            66,
+            128
+          ],
+          [],
+          []
+        ],
+        "operator": "aten::addmm"
+      },
+      {
+        "calls": 1,
+        "formula_flops": 512,
+        "input_shapes": [
+          [
+            16,
+            32
+          ],
+          [
+            16,
+            32
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 131072,
+        "input_shapes": [
+          [
+            16,
+            32,
+            128
+          ],
+          [
+            16,
+            32,
+            1
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 131072,
+        "input_shapes": [
+          [
+            16,
+            32,
+            128
+          ],
+          [
+            128
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 134217728,
+        "input_shapes": [
+          [
+            512,
+            128
+          ],
+          [
+            128,
+            512
+          ]
+        ],
+        "operator": "aten::mm"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 20971520,
+        "input_shapes": [
+          [
+            512,
+            256
+          ],
+          [
+            256,
+            40
+          ]
+        ],
+        "operator": "aten::mm"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 4194304,
+        "input_shapes": [
+          [
+            512,
+            8
+          ],
+          [
+            8,
+            256
+          ]
+        ],
+        "operator": "aten::mm"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            32,
+            256
+          ],
+          [
+            256
+          ],
+          []
+        ],
+        "operator": "aten::add"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            256,
+            1
+          ],
+          [
+            1,
+            256,
+            16
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            256,
+            1
+          ],
+          [
+            16,
+            1,
+            16
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 4194304,
+        "input_shapes": [
+          [
+            16,
+            256,
+            16
+          ],
+          [
+            16,
+            256,
+            1
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 4194304,
+        "input_shapes": [
+          [
+            16,
+            256,
+            16
+          ],
+          [
+            16,
+            256,
+            16
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 4194304,
+        "input_shapes": [
+          [
+            16,
+            256,
+            16
+          ],
+          [
+            16,
+            256,
+            16
+          ],
+          []
+        ],
+        "operator": "aten::add"
+      },
+      {
+        "calls": 64,
+        "formula_flops": 4194304,
+        "input_shapes": [
+          [
+            16,
+            256,
+            16
+          ],
+          [
+            16,
+            1,
+            16
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            32,
+            256
+          ],
+          [
+            256
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            32,
+            256
+          ],
+          [
+            16,
+            32,
+            256
+          ],
+          []
+        ],
+        "operator": "aten::add"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 262144,
+        "input_shapes": [
+          [
+            16,
+            32,
+            256
+          ],
+          [
+            16,
+            32,
+            256
+          ]
+        ],
+        "operator": "aten::mul"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 67108864,
+        "input_shapes": [
+          [
+            512,
+            256
+          ],
+          [
+            256,
+            128
+          ]
+        ],
+        "operator": "aten::mm"
+      },
+      {
+        "calls": 2,
+        "formula_flops": 131072,
+        "input_shapes": [
+          [
+            16,
+            32,
+            128
+          ],
+          [
+            16,
+            32,
+            128
+          ],
+          []
+        ],
+        "operator": "aten::add"
+      },
+      {
+        "calls": 1,
+        "formula_flops": 524288,
+        "input_shapes": [
+          [
+            4
+          ],
+          [
+            512,
+            128
+          ],
+          [
+            128,
+            4
+          ],
+          [],
+          []
+        ],
+        "operator": "aten::addmm"
+      }
+    ],
+    "unsupported_ops": [
+      "aten::_convolution",
+      "aten::_local_scalar_dense",
+      "aten::_reshape_alias",
+      "aten::_to_copy",
+      "aten::_unsafe_view",
+      "aten::abs",
+      "aten::add_",
+      "aten::all",
+      "aten::any",
+      "aten::as_strided",
+      "aten::as_strided_",
+      "aten::cat",
+      "aten::chunk",
+      "aten::clone",
+      "aten::contiguous",
+      "aten::conv1d",
+      "aten::convolution",
+      "aten::copy_",
+      "aten::cumsum",
+      "aten::div",
+      "aten::div_",
+      "aten::empty",
+      "aten::empty_like",
+      "aten::empty_strided",
+      "aten::eq",
+      "aten::exp",
+      "aten::expand",
+      "aten::fill_",
+      "aten::is_nonzero",
+      "aten::isfinite",
+      "aten::item",
+      "aten::layer_norm",
+      "aten::linear",
+      "aten::lt",
+      "aten::matmul",
+      "aten::mean",
+      "aten::mkldnn_convolution",
+      "aten::narrow",
+      "aten::native_layer_norm",
+      "aten::ne",
+      "aten::neg",
+      "aten::new_empty",
+      "aten::new_zeros",
+      "aten::pow",
+      "aten::reshape",
+      "aten::resize_",
+      "aten::resolve_conj",
+      "aten::result_type",
+      "aten::rms_norm",
+      "aten::rsqrt",
+      "aten::select",
+      "aten::silu",
+      "aten::slice",
+      "aten::softplus",
+      "aten::split",
+      "aten::split_with_sizes",
+      "aten::squeeze",
+      "aten::stack",
+      "aten::sum",
+      "aten::t",
+      "aten::tanh",
+      "aten::to",
+      "aten::transpose",
+      "aten::type_as",
+      "aten::unsqueeze",
+      "aten::view",
+      "aten::zero_"
+    ],
+    "unsupported_scope": "Operators without assigned FLOPs, including special/fused functions and bookkeeping",
+    "wall_seconds": 1.7403568340014317
+  },
+  "parameter_bytes": 970256,
+  "parameter_counts": {
+    "backbone": 233216,
+    "frontend": 8832,
+    "matching": null,
+    "readout": 516,
+    "total": 242564
+  },
+  "reload_work": {
+    "cpu_seconds": 0.01725952299997857,
+    "wall_seconds": 0.017257951003557537
+  },
+  "repeat_output_max_abs_difference": 0.0,
+  "schema": "hcsn-performance-v1",
+  "source_audit": {
+    "record": "RESULT.json",
+    "source_seal": "bb0d2eda33c34785da9563a84a06ed4c5d2391826e52173452ee43924723de02",
+    "status": "verified"
+  },
+  "strict_reload": true,
+  "task": "long_memory",
+  "total_cpu_seconds": 2.720909340999981,
+  "total_wall_seconds": 2.7208721499991952,
+  "trainable_parameter_bytes": 970256,
+  "warmup": {
+    "examples": 32,
+    "forward_calls": 2,
+    "included_in_latency_samples": false,
+    "process_cpu_seconds": [
+      0.022900748000012072,
+      0.015501254000014342
+    ],
+    "sequence_positions": 1024,
+    "wall_seconds": [
+      0.022895355003129225,
+      0.015496982006879989
+    ]
+  }
+}

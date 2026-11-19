@@ -1,0 +1,16 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/337c309bc660/hepta-ci-fix/secondwave/harness/codex-rs/utils/cargo-bin)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.53s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#libc@0.2.191` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#assert_cmd@2.2.2` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID 024e776d-225b-4f77-adca-c8669c1b1f36 with nextest profile: local
+    Starting 2 tests across 1 binary
+        PASS [   0.004s] codex-utils-cargo-bin::manifest_only undeclared_bazel_binary_returns_not_found
+        PASS [   0.004s] codex-utils-cargo-bin::manifest_only unrelated_bazel_binary_does_not_enable_cargo_fallback
+────────────
+     Summary [   0.004s] 2 tests run: 2 passed, 0 skipped

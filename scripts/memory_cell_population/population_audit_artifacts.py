@@ -1,9 +1,13 @@
 """Independent artifact hashing, byte inventories and immutable tensor states."""
 
+from contextvars import ContextVar
+from functools import wraps
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
+import stat
 import struct
 
 
@@ -36,15 +40,66 @@ def _digest(value):
     return _hash(_bytes(value))
 
 
+_READ_DIGESTS = ContextVar("population_audit_read_digests", default=None)
+
+
+def _consistent_reads(function):
+    """Bind repeated helper reads for one audit, including nested trial audits."""
+
+    @wraps(function)
+    def wrapped(*args, **kwargs):
+        if _READ_DIGESTS.get() is not None:
+            return function(*args, **kwargs)
+        token = _READ_DIGESTS.set({})
+        try:
+            return function(*args, **kwargs)
+        finally:
+            _READ_DIGESTS.reset(token)
+
+    return wrapped
+
+
 def _read(path):
     path = Path(path)
-    _require(
-        path.is_file()
-        and not path.is_symlink()
-        and path.stat().st_size <= 64 * 1024 * 1024,
-        f"missing, linked or oversized evidence: {path.name}",
-    )
-    return path.read_bytes()
+    message = f"missing, linked, changed or oversized evidence: {path.name}"
+
+    def identity(info):
+        return (
+            info.st_dev,
+            info.st_ino,
+            info.st_mode,
+            info.st_size,
+            info.st_mtime_ns,
+            info.st_ctime_ns,
+        )
+
+    try:
+        before = path.lstat()
+        _require(
+            stat.S_ISREG(before.st_mode) and before.st_size <= 64 * 1024 * 1024,
+            message,
+        )
+        flags = (
+            os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
+        )
+        with os.fdopen(os.open(path, flags), "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            _require(identity(opened) == identity(before), message)
+            raw = stream.read(opened.st_size + 1)
+            _require(
+                len(raw) == opened.st_size
+                and identity(os.fstat(stream.fileno())) == identity(opened),
+                message,
+            )
+    except OSError as error:
+        raise ValueError(message) from error
+    bindings = _READ_DIGESTS.get()
+    if bindings is not None:
+        key = os.path.abspath(path)
+        actual = _hash(raw)
+        previous = bindings.setdefault(key, actual)
+        _require(previous == actual, f"evidence changed during audit: {path.name}")
+    return raw
 
 
 def _json(path):

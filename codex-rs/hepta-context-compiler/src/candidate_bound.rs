@@ -9,6 +9,7 @@
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
+use super::push_id;
 use crate::CompilationRequest;
 use crate::CompilationRequirementsV1;
 use crate::ContextCompilationReceipt;
@@ -17,7 +18,6 @@ use crate::ContextRole;
 use crate::Error;
 use crate::compile;
 use crate::compile_with_requirements;
-use crate::push_id;
 
 /// An owner-local, crate-native, caller-relative candidate-set binding.
 ///

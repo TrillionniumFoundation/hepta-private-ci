@@ -1,5 +1,6 @@
 use serde::Serialize;
 
+use super::ContextCompilerV2Error;
 use super::ContextDeliveryDispositionV2;
 use super::ContextDeliveryReceiptV2;
 
@@ -37,7 +38,7 @@ impl ContextDeliveryReceiptV2 {
     /// Canonical, raw-prompt-free durable representation of this construction-
     /// closed receipt. Encoding does not grant authority and does not expose a
     /// decoder that could manufacture a new `ContextDeliveryReceiptV2`.
-    pub fn canonical_evidence_bytes(&self) -> serde_json::Result<Vec<u8>> {
+    pub fn canonical_evidence_bytes(&self) -> Result<Vec<u8>, ContextCompilerV2Error> {
         serde_json::to_vec(&CanonicalDeliveryEvidenceV2 {
             schema: DELIVERY_EVIDENCE_SCHEMA,
             delivery_id: self.delivery_id.as_str(),
@@ -66,6 +67,7 @@ impl ContextDeliveryReceiptV2 {
             observed_unix_ms: self.observed_unix_ms,
             receipt_digest: self.receipt_digest.to_string(),
         })
+        .map_err(|_| ContextCompilerV2Error::DeliveryEvidenceEncodingFailed)
     }
 }
 

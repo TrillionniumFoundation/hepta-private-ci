@@ -1,0 +1,45 @@
+{
+  "status": "SCOPED_COLD_RECOVERY_PASS",
+  "reused_fixture_tasks": 4,
+  "new_independent_tasks": 0,
+  "saved_models": 8,
+  "planned_recovery_pairs": 64,
+  "recorded_recovery_cases": 64,
+  "executed_recovery_pairs": 64,
+  "passed_recovery_pairs": 64,
+  "reference_model_task_runs": 32,
+  "original_reference_incomplete": 3,
+  "source_sha256": {
+    "reproduce.py": "9956ba3e81677c2220434476dab8f2b4b03d6f1dceb9ff94da74c8dbf352ab4a",
+    "test_diagnose.py": "923f51de874e88a915d06a5114f862c6c14dccf8a275baafd2c018eac0473477",
+    "diagnose.py": "ea427daece8b211a1b01c4fe23f9273c3bcfdb308a3c139078b1ad954d11cb2a",
+    "test_continuation.py": "d48c01765aa837e42522af4bfd21de4ff8112f52dff7ea3171250ee39425d39d",
+    "continuation.py": "ca5d7bd11890039080aba63a4d7a11e5bd0c7909f17420e33da521dea9a41994",
+    "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4",
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "qualify_continuation.py": "d223a39d067d1ec6c309f624def7b9d5a7390fb644085494c8c290253ec5ae1f"
+  },
+  "source_stable": true,
+  "models_stable": true,
+  "scope": "same-UID controlled SQLite research; SIGKILL before effect and after commit; original saved GRU weights",
+  "product_authority": false,
+  "promotion": false,
+  "full_operations_cost_qualified": false,
+  "holds": [
+    "independent trust domain",
+    "product CellStateOwner/FinalUse integration",
+    "concurrent owner",
+    "host power loss",
+    "cross-family learned benefit",
+    "complete operation cost ledger"
+  ],
+  "archive": {
+    "file": "run1.tar.xz",
+    "sha256": "a002d5015ebb0cc68128340580cdf6446464689658bbd4186c580c081a5ee6dc",
+    "bytes": 65068,
+    "files": 898,
+    "raw_result_sha256": "592ce6f1451ae135273708bde94a87d9ae8a8afb8c190e4b9d07c5086ca344cc"
+  },
+  "worker_processes": 160
+}

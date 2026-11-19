@@ -1,5 +1,5 @@
 {
-  "assembly_parent": "d4dfbd23450db8b24b064125a35dfa17ca87ccd5",
+  "assembly_parent": "06f96e5f2c041cb3f074f67eed3be847718c5329",
   "inputs": {
     "c2": "fd414256c0e2ac36caab565ff6ebae1ffb920757",
     "hpca": "92ab69cc8309a5d94b5c77ec347cf15eb51edbad",
@@ -8,7 +8,7 @@
   },
   "production_qualified": false,
   "schema": "hcsn-hpca-joint-source-gate-v1",
-  "scope": "one concrete source assembly; structural and research mechanism checks, not model efficacy or independent C2 replay",
+  "scope": "one-source assembly with producer stopping arithmetic and best-checkpoint selection; no independent model metric recomputation or full C2 replay",
   "sources": [
     {
       "git_blob": "8db869fa0e743393e8c39f8d08181c2608aa2601",
@@ -46,9 +46,9 @@
       "sha256": "611533442541d3b07d991ff0117f9fa38961610fe6e453590bb1d81907ee9381"
     },
     {
-      "git_blob": "75abb706f8380d713df737fcc9c4f5203ab7d904",
+      "git_blob": "a48b563d0101a53ddd960d0bf1c5335c7c7dc39f",
       "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_controller.py",
-      "sha256": "932739d439d87bdc8aee6ce49555aab118abb7ad0efcfaaf4c96ba612263d01b"
+      "sha256": "21ce8e46ca20924356679789a201113b70f4ad69ab8ca10855351edc0144abc0"
     },
     {
       "git_blob": "9bc26f04b46ea72c11896a17f9ecd5ec687eda5b",
@@ -66,9 +66,9 @@
       "sha256": "895200625f1623df5381f2852e78b3d617f313793f77241237c17b35a6dc328b"
     },
     {
-      "git_blob": "ea4e316053c3d48901c19559642c6db3d2f9b909",
+      "git_blob": "55f0f9642bb1733e9f871824ca456e548c044352",
       "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_event_accounting.py",
-      "sha256": "2441a203001e7c7d15e53284ba162a49dd5203754d19a65b4b561dd28a18de2e"
+      "sha256": "a0d7c0744bfa249f5a5058105213e8fc848cda36bcd1a3505342e4340cf0ea2a"
     },
     {
       "git_blob": "6563ab3b489bb9e44a922ce6d4c35d416978a9a2",
@@ -109,6 +109,16 @@
       "git_blob": "a65244dbbc8990f780b160c3f5f4aebedf8019e9",
       "path": "qualification/hpca-neuroscience-20261110/test_chat_wrapper_probe.py",
       "sha256": "a48f5d78ee61889885435f617be8e0af2e0eac15d18d135eb61b100429177d89"
+    },
+    {
+      "git_blob": "bc857ddda7500360b8884a8fb09e66cc9365992b",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/c2_stopping.py",
+      "sha256": "24c476e2a4b51cab82949ed37de676e2d3b7b2140431c83aebbee66658b20e73"
+    },
+    {
+      "git_blob": "d27dd64b719235529d3318a849d750b758629bf7",
+      "path": "qualification/hcsn_differentiable/c2_successor_v1/test_terminal_stopping.py",
+      "sha256": "bee950dfc8e1d98829fab62cab89e496aa58c2470f2c5d9b2e5d2dbb3057bdc5"
     }
   ]
 }

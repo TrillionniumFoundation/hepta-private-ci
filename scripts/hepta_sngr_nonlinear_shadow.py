@@ -7,8 +7,6 @@ the entire implicit continuation map is contractive. This is an analytic
 finite-dimensional calibration fixture, NOT a learned/nonlinear stochastic solver.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import math

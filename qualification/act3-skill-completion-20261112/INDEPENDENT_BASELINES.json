@@ -1,0 +1,4242 @@
+{
+  "audit_script_sha256": "5df859637d79520996db73bf26d8567616cd92ccec2ec9529de20320d7f823ca",
+  "counts": {
+    "censored_outcomes": 16,
+    "distinct_ordered_supervised_arrays": 8,
+    "distinct_supervised_feature_label_multisets": 6,
+    "folds": 9,
+    "folds_with_observed_outcomes": 7,
+    "fully_censored_folds": 2,
+    "observed_outcomes": 80,
+    "original_ensure_transitions": 96,
+    "original_episodes": 80
+  },
+  "created_at_utc": "2026-11-12T07:12:21.013843+00:00",
+  "expected_baseline_metrics": {
+    "laplace_exact_feature_table": {
+      "accuracy": 0.4,
+      "brier": 0.3335976331360947,
+      "censored": 16,
+      "confusion": {
+        "false_negative": 24,
+        "false_positive": 24,
+        "true_negative": 0,
+        "true_positive": 32
+      },
+      "log_loss": 0.9005540881342267,
+      "observed": 80,
+      "total": 96
+    },
+    "smoothed_constant": {
+      "accuracy": 0.7,
+      "brier": 0.23091546985895878,
+      "censored": 16,
+      "confusion": {
+        "false_negative": 0,
+        "false_positive": 24,
+        "true_negative": 0,
+        "true_positive": 56
+      },
+      "log_loss": 0.6611806706032197,
+      "observed": 80,
+      "total": 96
+    }
+  },
+  "expected_fold_metrics": [
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-1/lost_reply",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.0,
+          "brier": 0.4275147928994083,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 8,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 0
+          },
+          "log_loss": 1.0608719606852628,
+          "observed": 8,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": 1.0,
+          "brier": 0.1141344046749452,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.4122447950935431,
+          "observed": 8,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 72,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-1/normal",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.0,
+          "brier": 0.4275147928994083,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 8,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 0
+          },
+          "log_loss": 1.0608719606852628,
+          "observed": 8,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": 1.0,
+          "brier": 0.1141344046749452,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.4122447950935431,
+          "observed": 8,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 72,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-1/opaque_after_apply",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": null,
+          "brier": null,
+          "censored": 8,
+          "confusion": null,
+          "log_loss": null,
+          "observed": 0,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": null,
+          "brier": null,
+          "censored": 8,
+          "confusion": null,
+          "log_loss": null,
+          "observed": 0,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 80,
+      "training_positive_rows": 56
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-1/prestaged",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.0,
+          "brier": 0.81,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 8,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 0
+          },
+          "log_loss": 2.3025850929940455,
+          "observed": 8,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": 1.0,
+          "brier": 0.1141344046749452,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.4122447950935431,
+          "observed": 8,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 72,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-2/already_partial",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 1.0,
+          "brier": 0.0014792899408284004,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.03922071315328127,
+          "observed": 8,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": 1.0,
+          "brier": 0.1141344046749452,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 0,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.4122447950935431,
+          "observed": 8,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 72,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-2/lost_reply",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.5,
+          "brier": 0.21449704142011836,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.550046336919272,
+          "observed": 16,
+          "total": 16
+        },
+        "smoothed_constant": {
+          "accuracy": 0.5,
+          "brier": 0.3087695133149678,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.8271379209430042,
+          "observed": 16,
+          "total": 16
+        }
+      },
+      "observed_training_rows": 64,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-2/normal",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.5,
+          "brier": 0.21449704142011836,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.550046336919272,
+          "observed": 16,
+          "total": 16
+        },
+        "smoothed_constant": {
+          "accuracy": 0.5,
+          "brier": 0.3087695133149678,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.8271379209430042,
+          "observed": 16,
+          "total": 16
+        }
+      },
+      "observed_training_rows": 64,
+      "training_positive_rows": 48
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-2/opaque_after_apply",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": null,
+          "brier": null,
+          "censored": 8,
+          "confusion": null,
+          "log_loss": null,
+          "observed": 0,
+          "total": 8
+        },
+        "smoothed_constant": {
+          "accuracy": null,
+          "brier": null,
+          "censored": 8,
+          "confusion": null,
+          "log_loss": null,
+          "observed": 0,
+          "total": 8
+        }
+      },
+      "observed_training_rows": 80,
+      "training_positive_rows": 56
+    },
+    {
+      "held_entry_patterns_all_seen_in_training": true,
+      "held_group": "keys-2/prestaged",
+      "metrics": {
+        "laplace_exact_feature_table": {
+          "accuracy": 0.5,
+          "brier": 0.4057396449704142,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 1.1709029030736635,
+          "observed": 16,
+          "total": 16
+        },
+        "smoothed_constant": {
+          "accuracy": 0.5,
+          "brier": 0.3087695133149678,
+          "censored": 0,
+          "confusion": {
+            "false_negative": 0,
+            "false_positive": 8,
+            "true_negative": 0,
+            "true_positive": 8
+          },
+          "log_loss": 0.8271379209430042,
+          "observed": 16,
+          "total": 16
+        }
+      },
+      "observed_training_rows": 64,
+      "training_positive_rows": 48
+    }
+  ],
+  "expected_predictions": [
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.34615384615384615,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-0/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-0/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-0/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-0/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-1/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-1/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-1/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-1/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.1,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-0/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-0/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-a/schema-1/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.6621621621621622
+      },
+      "task_id": "train/train-b/schema-1/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.6538461538461539,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-0/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-0/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-0/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-0/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-1/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-a/schema-1/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-1/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.5,
+        "smoothed_constant": 0.6951219512195121
+      },
+      "task_id": "train/train-b/schema-1/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "probabilities": {
+        "laplace_exact_feature_table": 0.9615384615384616,
+        "smoothed_constant": 0.7424242424242424
+      },
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/1"
+    }
+  ],
+  "formulas": {
+    "aggregation": "One out-of-fold prediction per original transition; pool observed rows, not unweighted fold metrics; two training seeds repeat these same baseline predictions, not new cases.",
+    "brier": "mean((p-y)^2) on observed heldout targets only",
+    "decision_threshold": "p >= 0.5",
+    "grouping": "Hold all exact keys-length/fault family rows together across destination/schema/replicate; nine families.",
+    "laplace_exact_feature_table": "(matching entry-feature training positive count + 1) / (matching entry-feature observed count + 2); fallback constant only if pattern absent",
+    "log_loss": "mean(-y*ln(p)-(1-y)*ln(1-p)) on observed heldout targets only",
+    "mask": "Only original subsequent actor-readback boolean labels in the other families enter training counts; None is never coerced to false.",
+    "smoothed_constant": "(training positive count + 1) / (training observed count + 2)"
+  },
+  "input_audit": "/workspace/scratch/5fe4a47a9363/INDEPENDENT_OLD_TRAIN_SKILL_TRANSITION_AUDIT.json",
+  "input_audit_sha256": "666b03a5932370ea9701d51f2e574108b325e365395dd3f3df688a9a90b47ff1",
+  "limits": {
+    "condition_dependent_censoring": true,
+    "confirmation_data_used": false,
+    "full_exact_feature_overlap": true,
+    "important_denominator_distinction": "The table accuracy40%=32/80 observed old-TRAIN completion forecasts; it is not the fixed-workflow operational completion80%=512/640 confirmation executions. No conversion or efficacy comparison is valid between them.",
+    "loader_or_consumer_imported_by_this_audit": false,
+    "model_fits_executed_by_this_audit": 0,
+    "model_inferences_executed_by_this_audit": 0,
+    "new_independent_tasks": 0,
+    "no_hyperparameter_or_seed_tuning_from_result": true,
+    "operational_comparison": false,
+    "privileged_database_values_used_in_math_inputs": false
+  },
+  "math_inputs": [
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-0/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-0/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-0/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-0/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-0/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-0/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-0/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-0/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-0/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-1/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-1/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-a/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-1/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-a/schema-1/keys-2/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-1/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-1/keys-1/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-1/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-1/keys-1/opaque_after_apply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/normal/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/normal",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/normal/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/prestaged",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/prestaged/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/already_partial/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/already_partial",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/already_partial/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": false,
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 3,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.5,
+        0.0,
+        1
+      ],
+      "group": "keys-2/lost_reply",
+      "label": true,
+      "task_id": "train/train-b/schema-1/keys-2/lost_reply/1"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-1/keys-2/opaque_after_apply/0"
+    },
+    {
+      "decision_index": 1,
+      "entry_features": [
+        1,
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0.0,
+        0.0,
+        1
+      ],
+      "group": "keys-2/opaque_after_apply",
+      "label": null,
+      "task_id": "train/train-b/schema-1/keys-2/opaque_after_apply/1"
+    }
+  ],
+  "math_inputs_sha256": "bbc60d51d59cf3220e9506ab9eb246781d1a680f0028da85e1eeee78d7191647",
+  "original_archive_sha256": {
+    "FROZEN_MANIFEST.json": "041b2b472a9ea366abacce273de43f19a59271c3d784328d4c5623d6f8436da9",
+    "SHA256SUMS.json": "16de01ad186843a08f115562ba6c3ade48ca43fe42b6c437399958d8cafb44df",
+    "destination-databases.zip.xz": "bc28ab9e28efcc1ab96883b73bab221c2ae10d6dfb35b005fd1c230b12410632",
+    "source-postimages.zip": "8b2c18bbddf915e6f143d26871864d0ef27c657738d9f19198b4859f6e46d75c",
+    "training-trajectories.jsonl.gz": "5512824dc9706ef8c5735eb94c6d500ec0a60ad42ea084db448398ab878b6eec"
+  },
+  "original_source_sha256": {
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "sqlite_destination.py": "ca4bfe52b1fe9344cf05fbd18713877af6cd77cc57f4877c9addb5321a2b04c4"
+  },
+  "schema": "hepta.independent-old-train-completion-baseline-expectations.v1",
+  "single_full_model_empirical_bounds": {
+    "maximum_accuracy": 0.7,
+    "minimum_brier": 0.15,
+    "minimum_log_loss": 0.4158883083359671,
+    "reason": "Two ambiguous entry vectors have equal true/false counts; the matched=0.5 vector has32 true outcomes. These are descriptive corpus constraints, not measured model gains.",
+    "scope": "On all80 observed original TRAIN rows, one deterministic predictor using only the exact three entry-feature vectors. These bounds do not constrain differing fold-specific models."
+  },
+  "status": "EXPECTED_BASELINE_ARITHMETIC_FROZEN_BEFORE_QUALIFIED_MODEL_FITS"
+}

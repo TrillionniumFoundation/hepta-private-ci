@@ -1,0 +1,43 @@
+{
+  "schema": "hcsn-uuid-source-publication-v2",
+  "commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "tree": "6111ada9ca6757310ddc5f12d3451287217f9070",
+  "parent": "fe1def4a8a6655a361726f3ca275d9f5688dd394",
+  "branch": "research/hcsn-hx-20261105",
+  "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+  "benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+  "files": [
+    {
+      "path": "qualification/hcsn/execution.py",
+      "bytes": 8683,
+      "sha256": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+      "git_sha": "6fae54cfb3e4b73132a1256200c5f93ad4d149d1"
+    },
+    {
+      "path": "qualification/hcsn/benchmark.py",
+      "bytes": 31701,
+      "sha256": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+      "git_sha": "1d284526bdc680ae7d6077f69e9a875aa4e5b88f"
+    },
+    {
+      "path": "qualification/hcsn/tests/test_execution.py",
+      "bytes": 20027,
+      "sha256": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+      "git_sha": "4a3d9cb73dcf96a47360335cb65bd8c5000ad2d6"
+    }
+  ],
+  "pr": 4873,
+  "draft": true,
+  "branch_ref_verified": true,
+  "pr_head_observed": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+  "cuda_qualified": false,
+  "original_full_config_sha256": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+  "local_available_tests": {
+    "tests_run": 109,
+    "passed": 52,
+    "skipped": 57,
+    "failed": 0,
+    "errors": 0
+  },
+  "strict_torch_tests": "pending target runtime"
+}

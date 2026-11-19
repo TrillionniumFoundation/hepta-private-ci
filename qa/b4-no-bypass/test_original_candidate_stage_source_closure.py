@@ -190,7 +190,7 @@ class OriginalCandidateStageClosureTests(unittest.TestCase):
                 "common.original_training.as_ref() != Some(&self.training)",
                 "common.records.get(..3) != Some(self.records.as_slice())",
                 "auth::require_clock(self.started, fresh)?",
-                'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
+                "auth::verify_prefix(&self.owners.common.material, &self.training_cut, common, fresh)?",
             )),
             ("fn authenticate_prefix(", (
                 "auth::require_clock(self.started, observed)?",

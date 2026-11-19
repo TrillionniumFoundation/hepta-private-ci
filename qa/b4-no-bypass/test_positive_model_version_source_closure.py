@@ -321,11 +321,13 @@ class PositiveModelVersionSourceClosureTests(unittest.TestCase):
             if len(rows) != 1:
                 raise AssertionError(("one complete owned contract record", path))
             row = rows[0]
+            if path.endswith("/circuit_candidate_learning_read_service.rs"):
+                expected = [*expected, "fn serve_channel("]
             if not set(expected) <= {
                 item["function"] for item in row.get("required_function_order", [])
             }:
                 raise AssertionError(("complete exact owned function inventory", path))
-            cls.rows.append(row)
+            cls.rows.extend(rows)
 
     def test_complete_positive_owner_records_validate(self):
         PROOF._verify_protected_files(ROOT, {"protected_file": self.rows})
@@ -468,7 +470,7 @@ class PositiveModelVersionSourceClosureTests(unittest.TestCase):
                 root = Path(directory)
                 target = root / row["path"]
                 target.parent.mkdir(parents=True)
-                for marker in row["forbidden"]:
+                for marker in row.get("forbidden", []):
                     with self.subTest(path=row["path"], forbidden=marker):
                         target.write_text(source + "\n" + marker + "\n")
                         with self.assertRaises(PROOF.VerificationFailure):

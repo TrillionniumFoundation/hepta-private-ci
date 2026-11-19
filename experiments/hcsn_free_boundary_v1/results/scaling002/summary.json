@@ -1,0 +1,146 @@
+{
+  "energy_measured": false,
+  "environment": {
+    "affinity_cpus": 9,
+    "architecture": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "cuda_available": false,
+    "energy_measured": false,
+    "logical_cpus": 9,
+    "measured_device": "cpu",
+    "numpy": "2.3.5",
+    "peak_rss_bytes": 203350016,
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "torch": "2.8.0+cpu",
+    "torch_interop_threads": 1,
+    "torch_threads": 1
+  },
+  "final_environment": {
+    "affinity_cpus": 9,
+    "architecture": "x86_64",
+    "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+    "cuda_available": false,
+    "energy_measured": false,
+    "logical_cpus": 9,
+    "measured_device": "cpu",
+    "numpy": "2.3.5",
+    "peak_rss_bytes": 385699840,
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "torch": "2.8.0+cpu",
+    "torch_interop_threads": 1,
+    "torch_threads": 1
+  },
+  "final_measurement": true,
+  "measurement_stage": "final_regenerative_J_G_values_and_initial_event_atom",
+  "performance_configurations": 48,
+  "previous_nonfinal": "../scaling001",
+  "quality_measured": false,
+  "recovery": {
+    "batch": 3,
+    "child": {
+      "pid": 15,
+      "status": "resumed",
+      "suffix_steps": 143
+    },
+    "depth": 2,
+    "final_state_max_errors": {
+      "elapsed": 0.0,
+      "layer_0.content": 0.0,
+      "layer_0.event": 0.0,
+      "layer_0.refractory": 0.0,
+      "layer_0.voltage": 0.0,
+      "layer_1.content": 0.0,
+      "layer_1.event": 0.0,
+      "layer_1.refractory": 0.0,
+      "layer_1.voltage": 0.0
+    },
+    "length": 256,
+    "max_logit_error": 0.0,
+    "mid_refractory_max": 0.15394651889801025,
+    "numeric_checkpoint_only": true,
+    "parent_pid": 5,
+    "passed": true,
+    "restored_components": [
+      "elapsed",
+      "content",
+      "voltage",
+      "refractory",
+      "event"
+    ],
+    "split_at": 113,
+    "weights_sha256": "d45a83d5ec3af1bf65473f6b99473b9d1cb9922d1d88594da7a5bf69ae331d00",
+    "width": 32
+  },
+  "repeats_per_phase": 3,
+  "rss_scope": "cumulative whole-process high-water mark, not isolated model memory",
+  "source_sha256": {
+    "benchmark_models.py": "171cee706eeba6d3e7baa725998cf88778f53b92571187e0564c96d7255b8606",
+    "model.py": "c86535bf5b37589503aada3b1d979d80b75e54eb19e6be4f3b93482066147625",
+    "oracle_torch.py": "c651bc1c895596d2f1ca847b0bea80eb01efc951d9392a695ff0ccc2a0c61e9a",
+    "scale.py": "e0c233a2d0834d491ca260a0445610ba656c0834661b6502ac8cb871356c8363",
+    "training.py": "1aab526dec037ba19a5b55fc532027d2a688212f4595ed21d5d86f35ebcbe653"
+  },
+  "status": "completed",
+  "streaming": {
+    "batch": 2,
+    "batch_cpu_seconds": 0.5624473939999994,
+    "claim": "only this HCSN step state is measured; baseline caches are unmeasured",
+    "depth": 2,
+    "expected_tensor_elements": 514,
+    "inference_mode": true,
+    "length": 512,
+    "max_batch_vs_step_logit_error": 3.5762786865234375e-07,
+    "passed": true,
+    "samples": [
+      {
+        "length": 32,
+        "retains_autograd_graph": false,
+        "tensor_bytes": 2056,
+        "tensor_elements": 514,
+        "tensors": 9,
+        "unique_storage_bytes": 2056
+      },
+      {
+        "length": 64,
+        "retains_autograd_graph": false,
+        "tensor_bytes": 2056,
+        "tensor_elements": 514,
+        "tensors": 9,
+        "unique_storage_bytes": 2056
+      },
+      {
+        "length": 128,
+        "retains_autograd_graph": false,
+        "tensor_bytes": 2056,
+        "tensor_elements": 514,
+        "tensors": 9,
+        "unique_storage_bytes": 2056
+      },
+      {
+        "length": 256,
+        "retains_autograd_graph": false,
+        "tensor_bytes": 2056,
+        "tensor_elements": 514,
+        "tensors": 9,
+        "unique_storage_bytes": 2056
+      },
+      {
+        "length": 512,
+        "retains_autograd_graph": false,
+        "tensor_bytes": 2056,
+        "tensor_elements": 514,
+        "tensors": 9,
+        "unique_storage_bytes": 2056
+      }
+    ],
+    "streaming_cpu_seconds": 2.096001281000003,
+    "width": 32
+  },
+  "timing_scope": "instrumented CPU sequence forward and full Adam training step",
+  "total_parent_cpu_seconds": 29.315248611999998,
+  "total_wall_seconds": 31.79313903200091,
+  "warmups_per_phase": 1,
+  "width_depth_configurations": 6
+}

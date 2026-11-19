@@ -1,0 +1,115 @@
+{
+  "schema": "hepta.p0.shared-owner-readback.v1",
+  "recorded_at_utc": "2026-11-11T02:18:28.545133+00:00",
+  "source_sha": "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b",
+  "source_tree": "9184583f3842d90a560436f279c753f15792e3ab",
+  "run_id": 42937198345,
+  "run_attempt": 1,
+  "job_id": 130252735026,
+  "artifact_id": 13822025063,
+  "github_run_and_job_conclusion": "success",
+  "native": {
+    "actual_unique_junit_cases": 1184,
+    "failures": 0,
+    "errors": 0,
+    "skipped_in_xml": 0,
+    "nextest_excluded_or_ignored": 71,
+    "summary_line": "     Summary [ 247.071s] 1184 tests run: 1184 passed (1 slow), 71 skipped",
+    "cases_by_binary": {
+      "codex-hepta-agentd": 884,
+      "codex-hepta-automation": 85,
+      "codex-hepta-neuron": 215
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "-p",
+      "codex-hepta-automation",
+      "-p",
+      "codex-hepta-neuron",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib"
+    ],
+    "nextest_runtime_seconds": 247.071,
+    "command_elapsed_seconds": 576.8006633360001,
+    "junit_bytes": 279791,
+    "junit_sha256": "56e256a01f24268e7c116f5ca4b3bc20970b0c46cfd8f94d4efc7d9d723e8187",
+    "execution_record_sha256": "38e031ab15bba5a885cf6b1963c3a7aba97b47b1718c6f48858a8a49efb3b64a"
+  },
+  "python_execution_gate": {
+    "actual_named_passes": 15,
+    "failed": 0,
+    "unittest_runtime_seconds": 2.198,
+    "command_elapsed_seconds": 2.3730649920000104,
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts",
+      "-p",
+      "test_hepta_ci_exec.py",
+      "-v"
+    ]
+  },
+  "source_identity": {
+    "before_and_after_text_byte_equal": true,
+    "text_bytes": 82,
+    "text_sha256": "f4f36ecf6142670491c0faec00733e950992be14638b23358069659fefc7d717",
+    "execution_records_before_and_after_clean": true,
+    "helper_before_and_after_clean": true,
+    "source_status_shell_checks_completed_successfully": true,
+    "full_source_file_inventories_in_this_artifact": false
+  },
+  "helper": {
+    "full_jsonl_preserved": true,
+    "jsonl_parsed_messages": 1303,
+    "jsonl_bytes": 1084888,
+    "build_finished_success": true,
+    "manifest_emitted_executable_match": true,
+    "verify_only_match": true,
+    "recorded_binary_bytes": 1439816,
+    "recorded_binary_sha256": "26c976816b7e748ecfe1056944211d7bd4eee329111476c0fc7c5bde422e8824",
+    "executable_binary_in_original_artifact": false,
+    "executable_independently_downloaded": false
+  },
+  "same_source_daemon_overlap": {
+    "daemon_run_id": 42937198717,
+    "daemon_job_id": 130250073525,
+    "actual_matching_classname_and_name_pairs": 884,
+    "binary": "codex-hepta-agentd",
+    "not_independent_scientific_samples": true
+  },
+  "new_cb_stage_names_in_this_old_junit": [],
+  "decoded_job_log": {
+    "bytes": 344658,
+    "sha256": "1fb1732f7117fcc768e4fc1b13e5c161f3012a6f3da8b23122a41b52aeb55d0b",
+    "gzip_bytes": 66244,
+    "gzip_sha256": "ec8e7ecf89d0ca6511ff8bc17dc88a69775457be6c25ac361581de43b303c700",
+    "full_decoded_utf8_preserved": true
+  },
+  "original_artifact": {
+    "bytes": 174861,
+    "sha256": "a7db93bcd667d7b337768df5f33704fe584c47af0e211d5c28fe19d0d6450fcc",
+    "all_14_members_retained": true
+  },
+  "scope_limits": [
+    "Only the exact 6ec source and this owner library command are qualified by these records.",
+    "No cb0598 qualification, new stage adapter execution, Root ignored lane, core/RMCP, auth refresh, or Matrix case is inferred.",
+    "No fmt/fix/bins completion is claimed for this shared lane.",
+    "The 884 overlapping Agentd cases are repeated engineering execution, not independent scientific samples.",
+    "Helper hash is original CI custody evidence; the executable itself is absent from the original artifact."
+  ],
+  "unmeasured_costs": {
+    "cpu_seconds": null,
+    "peak_rss_bytes": null,
+    "energy_joules": null,
+    "monetary_cost": null
+  },
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0
+}

@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-p2-v2-observed-run-path-disagreement-v1",
+  "category": "reproducibility_integrity_warning",
+  "observation": "During the 12-arm local CPU-budget follow-up, at least three mutable output paths had stdout-reported run SHA/CPU/updates differing from later file-inventory values. Provenance of intervening overwrites is not independently established. Earlier bytes could not be recovered. A separate immutable snapshot of the later files was captured and SHA-sealed; results remain exploratory NO_GO.",
+  "earlier_stdout_observations": [
+    {
+      "path": "mqar4_s3_physical_event_timestamp.json",
+      "sha256": "079566bed5950e9b5708e22fe001c5f92133bc191395235c068fedabc9f790f2",
+      "steps": 2529,
+      "cpu": 25.007722086,
+      "id_accuracy": 0.544921875,
+      "ood_accuracy": 0.580078125
+    },
+    {
+      "path": "mqar4_s4_aggregate_count.json",
+      "sha256": "525b7b904e834953c783dd43e29095544197a87076dd7249df27539350fa0ef3",
+      "steps": 4109,
+      "cpu": 25.001911088,
+      "id_accuracy": 0.564453125,
+      "ood_accuracy": 0.55859375
+    },
+    {
+      "path": "mqar4_s4_physical_event_timestamp.json",
+      "sha256": "63c1d208aeecc20f58339d1f0de008744c17cdb774a2e24d8545c446b8b37deb",
+      "steps": 2600,
+      "cpu": 25.004669711,
+      "id_accuracy": 0.56640625,
+      "ood_accuracy": 0.560546875
+    }
+  ],
+  "later_immutable_snapshot": [
+    {
+      "path": "mqar4_s3_physical_event_timestamp.json",
+      "sha256": "a3f4d426a3e9c4b6480d2bde8a5dc27edda056d6e5977880a768e416a23fe73b",
+      "steps": 2428,
+      "cpu": 25.009304758,
+      "id_accuracy": 0.544921875,
+      "ood_accuracy": 0.580078125
+    },
+    {
+      "path": "mqar4_s4_aggregate_count.json",
+      "sha256": "91facfcc772c3e0780a8ddc73a3b80dcab54f83a924fb6df290e125639d99721",
+      "steps": 4344,
+      "cpu": 25.000941682,
+      "id_accuracy": 0.564453125,
+      "ood_accuracy": 0.552734375
+    },
+    {
+      "path": "mqar4_s4_physical_event_timestamp.json",
+      "sha256": "b940c56e551f8b22a353d4f4b3fc6107c4699ff4084ea0caed455f261701dde2",
+      "steps": 2325,
+      "cpu": 25.005279208,
+      "id_accuracy": 0.5625,
+      "ood_accuracy": 0.564453125
+    }
+  ],
+  "needed_fix": "Future recorder must atomically create-only write each run with unique run ID, fsync, terminal/hash attest and compare immutable content before acceptance. Do not infer which process or tool caused these changes without audit evidence.",
+  "science_admission": false,
+  "production_activation": false,
+  "all_scientific_blockers_closed": false
+}

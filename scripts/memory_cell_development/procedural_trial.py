@@ -34,11 +34,13 @@ def prepare(args):
         root.mkdir(parents=True)
         (root / "original.py").write_text(program)
         _, codes = diagnostic(args.ruff, root, "original.py", root / "diagnostic")
-        assert codes == [code]
+        if not (codes == [code]):
+            raise AssertionError()
         rule = command(
             [str(args.ruff), "rule", code, "--output-format=json"], root, root / "rule"
         )
-        assert rule["returncode"] == 0
+        if not (rule["returncode"] == 0):
+            raise AssertionError()
         entity = code + " " + json.loads((root / "rule/stdout.log").read_text())["name"]
         outcomes = {}
         for index, (operation, flags) in enumerate(OPERATIONS.items()):
@@ -75,7 +77,8 @@ def prepare(args):
                 == 0,
             )
         candidates = [op for op in OPERATIONS if outcomes[op]["success"]]
-        assert candidates
+        if not (candidates):
+            raise AssertionError()
         observation = dict(
             code=code,
             entity=entity,
@@ -97,7 +100,8 @@ def prepare(args):
     _, codes = diagnostic(
         args.ruff, original, TARGET, args.output / "original-diagnostic"
     )
-    assert codes == ["E731", "F401"]
+    if not (codes == ["E731", "F401"]):
+        raise AssertionError()
     entities = {f["entity"].split()[0]: f["entity"] for f in facts}
     combined = "; ".join(entities[code] for code in codes)
     common = [
@@ -105,7 +109,8 @@ def prepare(args):
         for op in OPERATIONS
         if all(observations[code]["outcomes"][op]["success"] for code in codes)
     ]
-    assert common
+    if not (common):
+        raise AssertionError()
     training_spec = dict(
         scope=SCOPE,
         facts=facts,
@@ -166,13 +171,16 @@ def prepare(args):
 
 def trial(args):
     raw = (args.output / "protocol.json").read_bytes()
-    assert sha(raw) == args.protocol_sha256
+    if not (sha(raw) == args.protocol_sha256):
+        raise AssertionError()
     protocol = json.loads(raw)
     for name, digest in protocol["implementation"].items():
-        assert sha((args.repo / name).read_bytes()) == digest
+        if not (sha((args.repo / name).read_bytes()) == digest):
+            raise AssertionError()
     for name, entry in protocol["base_inventory"].items():
         data = (args.model / name).read_bytes()
-        assert len(data) == entry["bytes"] and sha(data) == entry["sha256"]
+        if not (len(data) == entry["bytes"] and sha(data) == entry["sha256"]):
+            raise AssertionError()
     runs = args.output / "runs"
     runs.mkdir()
     worker = Path(__file__).with_name("procedural_worker.py")
@@ -197,10 +205,12 @@ def trial(args):
             json.dumps(request).encode(),
             pythonpath,
         )
-        assert fit["returncode"] == 0, "fit failed; preserve partial work, do not retry"
+        if not (fit["returncode"] == 0):
+            raise AssertionError("fit failed; preserve partial work, do not retry")
         result = json.loads((root / "train/stdout.log").read_text())
         total_updates += result["receipt"]["steps"]
-        assert result["receipt"]["fact_visits"] == [48, 48]
+        if not (result["receipt"]["fact_visits"] == [48, 48]):
+            raise AssertionError()
         for control in (
             ["adapter", "shuffled", "base"]
             if seed == protocol["seeds"][0]
@@ -226,9 +236,8 @@ def trial(args):
                 json.dumps(request).encode(),
                 pythonpath,
             )
-            assert read["returncode"] == 0, (
-                "read failed; preserve outputs, do not retry"
-            )
+            if not (read["returncode"] == 0):
+                raise AssertionError("read failed; preserve outputs, do not retry")
             journal = json.loads((root / control / "stdout.log").read_text())
             total_queries += len(journal["rows"])
             texts = [row["text"] for row in journal["rows"]]

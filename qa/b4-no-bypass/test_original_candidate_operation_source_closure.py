@@ -108,15 +108,14 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
             "auth::verify_prefix(&owners.common.material, &training_cut, common, fresh)?",
         ):
             self.rejects(OP, "fn begin(", marker)
-        self.rejects(OP, "fn begin(", "lane.state_mut()?.failed = true",
-                     "lane.state_mut()?.failed = false")
+        self.rejects(OP, "fn begin(", "lane.state_mut()?.failed = true", "lane.state_mut()?.failed = false")
         for marker in (
             'common\n            .read_prefix(&self.owners.common, &self.training_cut)\n            .await?',
             "common.original_dataset.as_ref() != Some(&self.dataset)",
             "common.original_training.as_ref() != Some(&self.training)",
             "common.records.get(..3) != Some(self.records.as_slice())",
             "auth::require_clock(self.started, fresh)?",
-            'auth::verify_prefix(\n            &self.owners.common.material,\n            &self.training_cut,\n            common,\n            fresh,\n        )?',
+            "auth::verify_prefix(&self.owners.common.material, &self.training_cut, common, fresh)?",
         ):
             self.rejects(OP, "fn close(", marker)
 
@@ -183,7 +182,7 @@ class OriginalCandidateOperationClosureTests(unittest.TestCase):
         for marker in (
             "ResidentOriginalStageOwnersV3::execute_original_stage(",
             "match completed.candidate",
-            'Some(original) => {\n                authentication::candidate_continuation_attestations(',
+            "Some(original) => { authentication::candidate_continuation_attestations(",
             "authentication::original_attestations(",
         ):
             self.rejects(RUNTIME, "fn continue_original(", marker)

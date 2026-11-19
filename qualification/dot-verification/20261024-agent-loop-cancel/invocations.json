@@ -1,0 +1,34 @@
+{
+  "parent": "dade1c7958bae627662e1ad6ff1484fa0d9ef191",
+  "tree": "d7ee0dbd7f3430a010195d338297df1730f773ea",
+  "cwd": "/workspace/scratch/f24caf690188/hepta-native-loop-review/codex-rs",
+  "environment": {
+    "RUSTUP_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/rustup",
+    "CARGO_HOME": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo",
+    "RUSTUP_TOOLCHAIN": "1.95.0",
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_TARGET_DIR": "/workspace/scratch/f24caf690188/hepta-native-loop-evidence/target",
+    "PATH_prefix": "/workspace/scratch/f24caf690188/hepta-native-dot-resume/bin:/workspace/scratch/f24caf690188/hepta-native-dot-resume/cargo/bin"
+  },
+  "commands": {
+    "baseline_initial": "just test --offline --locked -p codex-hepta-agent-loop",
+    "baseline_retry": "just test --locked -p codex-hepta-agent-loop",
+    "before_fix": "just test --offline --locked -p codex-hepta-agent-loop --test cancellation_successor",
+    "after_fix": "just test --offline --locked -p codex-hepta-agent-loop",
+    "clippy_fix": "just fix -p codex-hepta-agent-loop",
+    "format": "just fmt",
+    "strict": "cargo clippy --offline --locked -p codex-hepta-agent-loop --all-targets -- -D warnings",
+    "diff_check": "git diff --check"
+  },
+  "tool_versions": {
+    "rust": "1.95.0",
+    "just": "1.51.0",
+    "cargo-nextest": "0.9.103"
+  },
+  "final_source_sha256": {
+    "codex-rs/hepta-agent-loop/src/runner.rs": "c8e89152bb7ae520314be240e8ddb1940c614443be90c7d5189ac8ce7bca2a96",
+    "codex-rs/hepta-agent-loop/tests/cancellation_successor.rs": "73570a596ffc69fba4490980ba962ff8210a3856ece8c6b7ecd0b1f5ea9bd4a1"
+  }
+}

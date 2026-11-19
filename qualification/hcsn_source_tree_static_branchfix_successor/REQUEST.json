@@ -1,0 +1,44 @@
+{
+  "schema": "hcsn-source-tree-static-branchfix-successor-request-v1",
+  "identity": "hcsn-original-visit897-source-tree-static-branchfix-successor-20261112-c06d",
+  "idempotency_key": "hcsn-original-visit897-source-tree-static-branchfix-successor-clear-20261112-c06d-001",
+  "expected_branch": "research/hcsn-visit897-source-tree-static-branchfix-successor-20261112-c06d",
+  "parent_head": "c53211b70163c217d79bf3c218c7a7dd883ee2af",
+  "original_parent_manifest_files": 27,
+  "parent_successor_manifest_files": 7,
+  "parent_successor_inventory_sha256": "f4d9d9acf15921bdd7da55db89e30ccefb3271861bec987beca229cd4c495807",
+  "purpose": "Correct only the prior reviewer's branch-binding assertion by freezing and comparing the exact expected push branch.",
+  "tool_bootstrap": {
+    "action_path": ".github/actions/setup-ci-tools/action.yml",
+    "action_sha256": "c3cd9dbcbe45215f172f76ecb827ca90db329e76c6caffed7b3c156565d4587d",
+    "installer_action": "taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532",
+    "tool_spec": "just@1.51.0",
+    "required_version_output": "just 1.51.0",
+    "previous_executable_sha256_observed": "4f864ee6df9b9f351c8b5f95bc9fe589c92080237c2a87c048218a635c3604f7",
+    "record_current_executable_sha256": true
+  },
+  "format_argv": [
+    "just",
+    "fmt",
+    "--base",
+    "c53211b70163c217d79bf3c218c7a7dd883ee2af"
+  ],
+  "runtime_closure_files_required": 11,
+  "static_only": true,
+  "numerical_identity": null,
+  "numerical_execution_authorized": false,
+  "maximum_candidate_imports": 0,
+  "maximum_model_forwards": 0,
+  "maximum_adjoints": 0,
+  "maximum_optimizer_updates": 0,
+  "stop_conditions": [
+    "tool provenance or source byte mismatch",
+    "exact workflow push branch mismatch",
+    "format mutation or dirty working tree",
+    "runtime closure mismatch",
+    "any candidate import or numerical operation",
+    "any historical RED or UNKNOWN reclassification"
+  ],
+  "global_status": "HOLD",
+  "all_closed": false
+}

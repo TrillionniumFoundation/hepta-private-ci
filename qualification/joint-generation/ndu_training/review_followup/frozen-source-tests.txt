@@ -1,0 +1,57 @@
+{
+  "argv": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+    "-W",
+    "error",
+    "-m",
+    "unittest",
+    "ndu_training.test_estimators",
+    "independent.test_learning",
+    "independent.test_accounting",
+    "-v"
+  ],
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "git_head": "fc652aa783154b2ce9e3bd5010dba63916a2b63f",
+  "freeze_source_commit": "5c030618599b96bb5ba75a18e4e9837838adda29",
+  "test_sha256": "6977fceed937eb2180cfb5627a5e8e0cf6d58bcc44a6c8dfe837cb2264ce9b88",
+  "all_frozen_sources_match": true,
+  "identity_note": "new execution of exact frozen source; original precommit logs remain unchanged and are not relabelled"
+}
+test_diagnostic_parameter_gradient_matches_applied_gradient_without_adam_work (ndu_training.test_estimators.HandmadeTests.test_diagnostic_parameter_gradient_matches_applied_gradient_without_adam_work) ... ok
+test_exact_stratified_expectation_preserves_original_population (ndu_training.test_estimators.HandmadeTests.test_exact_stratified_expectation_preserves_original_population) ... ok
+test_iid_updates_are_identical_and_weighted_refusal_is_atomic (ndu_training.test_estimators.HandmadeTests.test_iid_updates_are_identical_and_weighted_refusal_is_atomic) ... ok
+test_invalid_weights (ndu_training.test_estimators.HandmadeTests.test_invalid_weights) ... ok
+test_joint_paths_and_requests_cannot_be_replaced_by_marginals (ndu_training.test_estimators.HandmadeTests.test_joint_paths_and_requests_cannot_be_replaced_by_marginals) ... ok
+test_weighted_gradients_are_derivatives_of_per_request_mean (ndu_training.test_estimators.HandmadeTests.test_weighted_gradients_are_derivatives_of_per_request_mean) ... ok
+test_budget_rejection_is_atomic_for_setup_and_whole_update (independent.test_learning.EfficientLearningTests.test_budget_rejection_is_atomic_for_setup_and_whole_update) ... ok
+test_budget_rejection_never_calls_injected_optimizer_or_changes_model (independent.test_learning.EfficientLearningTests.test_budget_rejection_never_calls_injected_optimizer_or_changes_model) ... ok
+test_cached_objective_matches_original_joint_gradients (independent.test_learning.EfficientLearningTests.test_cached_objective_matches_original_joint_gradients) ... ok
+test_cheaper_arm_can_spend_identical_cap_on_more_useful_updates (independent.test_learning.EfficientLearningTests.test_cheaper_arm_can_spend_identical_cap_on_more_useful_updates) ... ok
+test_decoder_binding_and_bad_inputs_reject_before_training (independent.test_learning.EfficientLearningTests.test_decoder_binding_and_bad_inputs_reject_before_training) ... ok
+test_injected_optimizer_receives_unchanged_content_gradients_and_preserves_two_updates (independent.test_learning.EfficientLearningTests.test_injected_optimizer_receives_unchanged_content_gradients_and_preserves_two_updates) ... ok
+test_invalid_optimizer_rejects_before_cache_preparation (independent.test_learning.EfficientLearningTests.test_invalid_optimizer_rejects_before_cache_preparation) ... ok
+test_one_forward_backprop_matches_reference_parameter_update (independent.test_learning.EfficientLearningTests.test_one_forward_backprop_matches_reference_parameter_update) ... ok
+test_public_policy_and_value_interfaces_keep_strict_validation (independent.test_learning.EfficientLearningTests.test_public_policy_and_value_interfaces_keep_strict_validation) ... ok
+test_supervised_arms_never_prepare_or_execute_joint_utility (independent.test_learning.EfficientLearningTests.test_supervised_arms_never_prepare_or_execute_joint_utility) ... ok
+test_content_step_matches_original_and_records_actual_calls (independent.test_accounting.CountedModelTests.test_content_step_matches_original_and_records_actual_calls) ... ok
+test_decoder_updates_match_original_and_are_not_free (independent.test_accounting.CountedModelTests.test_decoder_updates_match_original_and_are_not_free) ... ok
+test_no_unstaged_or_unfunded_inference (independent.test_accounting.CountedModelTests.test_no_unstaged_or_unfunded_inference) ... ok
+test_utility_entry_point_cannot_silently_bypass_its_kernel_bill (independent.test_accounting.CountedModelTests.test_utility_entry_point_cannot_silently_bypass_its_kernel_bill) ... ok
+test_budget_refusal_and_invalid_counts_are_atomic (independent.test_accounting.WorkLedgerTests.test_budget_refusal_and_invalid_counts_are_atomic) ... ok
+test_different_caps_or_prices_cannot_pass (independent.test_accounting.WorkLedgerTests.test_different_caps_or_prices_cannot_pass) ... ok
+test_empty_and_zero_shared_sources_preserve_default_total_and_identity (independent.test_accounting.WorkLedgerTests.test_empty_and_zero_shared_sources_preserve_default_total_and_identity) ... ok
+test_incremental_cache_matches_stage_sum_reference_after_every_public_update (independent.test_accounting.WorkLedgerTests.test_incremental_cache_matches_stage_sum_reference_after_every_public_update) ... ok
+test_kernel_prices_and_snapshots_are_immutable (independent.test_accounting.WorkLedgerTests.test_kernel_prices_and_snapshots_are_immutable) ... ok
+test_late_counter_overflow_rolls_back_cache_and_stage (independent.test_accounting.WorkLedgerTests.test_late_counter_overflow_rolls_back_cache_and_stage) ... ok
+test_omitted_search_or_required_critic_cannot_pass (independent.test_accounting.WorkLedgerTests.test_omitted_search_or_required_critic_cannot_pass) ... ok
+test_same_budget_allows_more_cheap_useful_updates_without_padding (independent.test_accounting.WorkLedgerTests.test_same_budget_allows_more_cheap_useful_updates_without_padding) ... ok
+test_shared_base_is_charged_once_and_cannot_mutate_after_attribution (independent.test_accounting.WorkLedgerTests.test_shared_base_is_charged_once_and_cannot_mutate_after_attribution) ... ok
+test_shared_cost_refusal_does_not_freeze_or_partially_copy_source (independent.test_accounting.WorkLedgerTests.test_shared_cost_refusal_does_not_freeze_or_partially_copy_source) ... ok
+test_shared_global_overflow_and_hash_failure_do_not_commit_or_freeze (independent.test_accounting.WorkLedgerTests.test_shared_global_overflow_and_hash_failure_do_not_commit_or_freeze) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 0.385s
+
+OK
+
+exit_code=0

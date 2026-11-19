@@ -1,0 +1,100 @@
+{
+  "schema": "hepta.ctrl.ci_status.v1",
+  "observed_at_utc": "2026-11-09 12:05:47 UTC",
+  "scope": "Read-only cargo-deny comparison for PR #5472; no complete-CI conclusion",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "pull_request_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/5472",
+  "head": {
+    "sha": "332708b415427fb72b75253111de2ba15afc2d3f",
+    "run_id": 42611612873,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42611612873",
+    "job_id": 129141400220,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42611612873/job/129141400220",
+    "job_name": "cargo-deny / cargo-deny",
+    "status": "completed",
+    "conclusion": "failure",
+    "failing_step": {
+      "number": 7,
+      "name": "Run cargo-deny",
+      "conclusion": "failure"
+    },
+    "tracked_rustsec_no_suppression_policy": "success",
+    "check_worktree": "success",
+    "check_annotations_count": 1,
+    "annotation_messages_read": false
+  },
+  "base_last_observed": {
+    "sha": "f6a7d5307f888d30faa8803d23487c78789b99fe",
+    "run_id": 42587917875,
+    "run_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42587917875",
+    "job_id": 129062304328,
+    "job_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42587917875/job/129062304328",
+    "job_name": "cargo-deny / cargo-deny",
+    "status": "completed",
+    "conclusion": "success",
+    "corresponding_step": {
+      "number": 7,
+      "name": "Run cargo-deny",
+      "conclusion": "success"
+    },
+    "observation_scope": "Latest-attempt first-page jobs of the PR-triggered base run returned by the GitHub connector"
+  },
+  "comparison": {
+    "status": "HEAD_FAILED_BASE_LAST_OBSERVED_PASSED",
+    "same_failure_observed_on_base": false,
+    "root_cause": "UNAVAILABLE",
+    "regression_attribution_established": false,
+    "unrelated_failure_attribution_established": false,
+    "qualification": "The failed head check remains unresolved; it cannot be labelled an inherited base failure from this evidence"
+  },
+  "access_limits": [
+    {
+      "operation": "github.fetch_workflow_job_logs",
+      "target": "head job",
+      "attempts": 3,
+      "result": "Transport closed",
+      "last_attempt_at_utc": "2026-11-09 12:05:47 UTC",
+      "last_attempt_result": "Transport closed"
+    },
+    {
+      "operation": "github.fetch_workflow_job_logs",
+      "target": "base job",
+      "attempts": 1,
+      "result": "Transport closed"
+    },
+    {
+      "operation": "github.fetch",
+      "target": "head job REST details",
+      "result": "HTTP 400: endpoint not on connector allowed list"
+    },
+    {
+      "operation": "github.fetch",
+      "target": "head check-run annotations",
+      "result": "HTTP 400: endpoint not on connector allowed list"
+    },
+    {
+      "operation": "github.fetch",
+      "target": "head job official web URL",
+      "result": "HTTP 400: endpoint not on connector allowed list"
+    }
+  ],
+  "successful_reads": [
+    "github.fetch_workflow_run_jobs: head and base step-level status",
+    "github.fetch_commit_workflow_runs: PR-triggered base runs",
+    "github.fetch: head commit check-runs, including exact head SHA and annotation count"
+  ],
+  "mutations": {
+    "reruns_triggered": 0,
+    "jobs_cancelled": 0,
+    "dependencies_modified": false,
+    "lockfiles_modified": false
+  },
+  "final_authorized_log_retry": {
+    "job_id": 129141400220,
+    "request_count": 1,
+    "observed_at_utc": "2026-11-09 12:05:47 UTC",
+    "result": "Transport closed",
+    "log_contents_retrieved": false,
+    "further_requests_stopped": true
+  }
+}

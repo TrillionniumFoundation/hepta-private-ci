@@ -1,0 +1,87 @@
+{
+  "code_commit": "b0065696ee4642539361d77543fef18837d278b2",
+  "code_tree": "181fca489f3d1348da9462e216084d6bbfbb4783",
+  "local_tree_exact_match": true,
+  "native_seed_pr": 6127,
+  "native_seed_commit": "b02850c04dcd40f2703e95cc670df531468fd0e3",
+  "new_tests": {
+    "actual_async_pipe": 8,
+    "durable_process_crash": 9,
+    "joint_async_controller_recovery": 5,
+    "gru_async_hidden_recovery": 8
+  },
+  "gates": [
+    {
+      "gate": "async_exact_invocation_readback",
+      "status": "PASS_CONTROLLED_FIXTURE",
+      "scope": "same UID spawned worker and read-only original pipe observer; no redispatch"
+    },
+    {
+      "gate": "durable_control_crash_recovery",
+      "status": "PASS_CONTROLLED_LINUX",
+      "scope": "original deadline/pause/spent/retry/unresolved across actual process death"
+    },
+    {
+      "gate": "foreign_original_invocation_rejection",
+      "status": "PASS_CONTROLLED_LINUX",
+      "scope": "actual after-apply process death; self-consistent foreign invocation rejected on restore, observe, audit and apply"
+    },
+    {
+      "gate": "native_seed_executable",
+      "status": "NOT_RUN",
+      "run_id": 43163424939,
+      "reason": "dedicated exact-case workflow queued; architecture prior source filtered this case out"
+    },
+    {
+      "gate": "product_goal_checking_host_registration",
+      "status": "OPEN_SOURCE_INTEGRATION",
+      "source": "9db98207bdb1ec36e2ba9ac0cf0356bf243821ab",
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "reason": "ordinary host rejects ActionSkillInvocationV1 and uses HttpAuthorizedEffectDriver; full registered goal-checking path not qualified"
+    },
+    {
+      "gate": "original_root_authbus_final_use",
+      "status": "UNOBSERVED",
+      "reason": "requires actual sealed Root bootstrap, original pidfd and socket lanes, Session lifetime, original Core thread and AuthBus admitted human delivery; target health tool timed out"
+    },
+    {
+      "gate": "combined_async_and_restart_path",
+      "status": "PASS_CONTROLLED_SINGLE_INVOCATION",
+      "reason": "actual controller death before/after sole release; original stopped worker completes only after controller death; restored controller query-only; no policy hidden state or general taskflow qualification"
+    },
+    {
+      "gate": "recurrent_model_hidden_recovery_in_new_lifecycle",
+      "status": "PASS_CONTROLLED_SINGLE_INVOCATION",
+      "reason": "archived GRU weights, nonzero h1, exact pending invocation and public features share the durable async SQLite; actual controller and post-h2 precommit deaths restore from the committed original checkpoint; UNKNOWN cannot advance hidden. Scope is one deterministic invocation and two public feature states, not a general policy or product owner"
+    },
+    {
+      "gate": "independent_real_application_families",
+      "status": "NOT_RUN",
+      "reason": "current probe families and fault conditions are controlled fixtures"
+    },
+    {
+      "gate": "complete_lifetime_cost",
+      "status": "NOT_MEASURED",
+      "reason": "historical owner requests remain unknown; process-local windows exclude historical model training/deployment"
+    },
+    {
+      "gate": "current_learned_candidate_adoption",
+      "status": "DECIDED_NO_UPDATE",
+      "reason": "existing fixed/head/GRU panel ties, no learning gain qualified"
+    }
+  ],
+  "source_sha256": {
+    "async_owner_wait.py": "eaec392cc53da967fcb719ad3f554e97369345bf7998b2192b4b67fe725d6a6f",
+    "test_async_owner_wait.py": "2f4832cee10a7f1d666a44e28f14c95f36d6a8bf731725d35464d685296b270c",
+    "durable_lifecycle.py": "29f88dbe6a3b933fb84bf362e35323146f32f4c15da6662eb1a1ada1328d4689",
+    "test_durable_lifecycle.py": "dc58c4df4f0c2e8e24466310c4b2f97f05b8679a577346a93d4dd3c2567a7c8f",
+    "durable_async_owner.py": "e12b19e15bc38278de05689e773d037b2272f66eca6b5c715392e329d1ae2703",
+    "test_durable_async_owner.py": "a898bead9483334a9e04557681f4c2e7a3ee81bde065304897b44c8b9fae2251",
+    "gru_async_continuation.py": "dbb14de58a542df79039c588b071b7c3190b7ad0803c00428cd17ff9d2a95913",
+    "test_gru_async_continuation.py": "070d7ee6a1858cd083b7500de7eaecbde58cf6a2e00f0e92d42a7be14dce09b1"
+  },
+  "all_blockers_closed": false,
+  "production_adoption": false,
+  "joint_code_commit": "953cb7b3dcc73182f2acf711807155b96d84475b",
+  "joint_code_tree": "4db3d939d077eb0ee93e2c03dc21388745f50357"
+}

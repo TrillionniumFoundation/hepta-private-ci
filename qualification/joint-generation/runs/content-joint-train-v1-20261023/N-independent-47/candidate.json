@@ -1,0 +1,221 @@
+{
+  "checkpoints": [
+    {
+      "CPU": 0.06086966900000057,
+      "units": 11757180,
+      "update": 1,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.01953125,
+            "code_disagreement": 0.00390625,
+            "image_correct": 0.98046875,
+            "image_only_correct": 0.00390625,
+            "joint_success": 0.9765625,
+            "pixel_mse": 0.0004471374535756801,
+            "semantic_disagreement": 0.00390625,
+            "text_correct": 0.9765625,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01953125
+          },
+          "means": {
+            "both_wrong": 0.034834124026533284,
+            "ce": 0.6904911256209336,
+            "code_disagreement": 0.1856825827954862,
+            "image_correct": 0.8771890889641386,
+            "image_only_correct": 0.08720146109994076,
+            "joint_success": 0.7899876278641978,
+            "pixel_mse": 0.00816195758852346,
+            "raw_reward": 0.7952886524967291,
+            "semantic_disagreement": 0.1856825827954862,
+            "text_correct": 0.877964414873526,
+            "text_only_correct": 0.0879767870093281,
+            "wrong_agreement": 0.024329789340315953,
+            "wrong_disagreement": 0.010504334686217334
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.01953125,
+            "code_disagreement": 0.00390625,
+            "image_correct": 0.98046875,
+            "image_only_correct": 0.00390625,
+            "joint_success": 0.9765625,
+            "pixel_mse": 0.0004471374535756801,
+            "semantic_disagreement": 0.00390625,
+            "text_correct": 0.9765625,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01953125
+          },
+          "means": {
+            "both_wrong": 0.0377750922222492,
+            "ce": 0.9349963642793633,
+            "code_disagreement": 0.009709652712679201,
+            "image_correct": 0.9580495937108697,
+            "image_only_correct": 0.004435934521548771,
+            "joint_success": 0.9536136591893208,
+            "pixel_mse": 0.0017290812583045081,
+            "raw_reward": 0.9567456568941581,
+            "semantic_disagreement": 0.009709652712679201,
+            "text_correct": 0.957788973256202,
+            "text_only_correct": 0.004175314066881154,
+            "wrong_agreement": 0.03667668809799991,
+            "wrong_disagreement": 0.0010984041242492939
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.2653684960000007,
+      "units": 316038920,
+      "update": 128,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.011499560600736994,
+            "ce": 0.9435827238204894,
+            "code_disagreement": 0.028440443114186833,
+            "image_correct": 0.97496085755441,
+            "image_only_correct": 0.014757470675462741,
+            "joint_success": 0.9602033868789472,
+            "pixel_mse": 0.0008440125209522145,
+            "raw_reward": 0.962380403848801,
+            "semantic_disagreement": 0.028440443114186833,
+            "text_correct": 0.9737429687238002,
+            "text_only_correct": 0.013539581844852962,
+            "wrong_agreement": 0.01135617000686585,
+            "wrong_disagreement": 0.0001433905938711433
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.013749529588093105,
+            "ce": 0.9831077005274022,
+            "code_disagreement": 0.001916387819998434,
+            "image_correct": 0.9853358530767442,
+            "image_only_correct": 0.0009906403806282417,
+            "joint_success": 0.984345212696116,
+            "pixel_mse": 0.0003520226685213761,
+            "raw_reward": 0.9856707239368334,
+            "semantic_disagreement": 0.001916387819998434,
+            "text_correct": 0.9852598300312787,
+            "text_only_correct": 0.000914617335162687,
+            "wrong_agreement": 0.01373839948388559,
+            "wrong_disagreement": 1.11301042075123e-05
+          }
+        }
+      }
+    },
+    {
+      "CPU": 0.46112768899999956,
+      "units": 622641704,
+      "update": 256,
+      "values": {
+        "KEEP": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.009338225684561387,
+            "ce": 0.9650892370352623,
+            "code_disagreement": 0.0154760477638082,
+            "image_correct": 0.9832287650745293,
+            "image_only_correct": 0.007944253325233545,
+            "joint_success": 0.9752845117492956,
+            "pixel_mse": 0.000591306139638507,
+            "raw_reward": 0.9767161001710206,
+            "semantic_disagreement": 0.0154760477638082,
+            "text_correct": 0.982717520990205,
+            "text_only_correct": 0.00743300924090946,
+            "wrong_agreement": 0.0092394404868962,
+            "wrong_disagreement": 9.87851976651831e-05
+          }
+        },
+        "log2": {
+          "greedy": {
+            "both_wrong": 0.01171875,
+            "code_disagreement": 0.0,
+            "image_correct": 0.98828125,
+            "image_only_correct": 0.0,
+            "joint_success": 0.98828125,
+            "pixel_mse": 0.0002859563553416895,
+            "semantic_disagreement": 0.0,
+            "text_correct": 0.98828125,
+            "text_only_correct": 0.0,
+            "wrong_agreement": 0.01171875
+          },
+          "means": {
+            "both_wrong": 0.009591487435374147,
+            "ce": 0.9884966984113743,
+            "code_disagreement": 0.001937353935743697,
+            "image_correct": 0.9894785414061851,
+            "image_only_correct": 0.0010047988539903553,
+            "joint_success": 0.9884737425521946,
+            "pixel_mse": 0.0002692480434005548,
+            "raw_reward": 0.9894210262058339,
+            "semantic_disagreement": 0.001937353935743697,
+            "text_correct": 0.9894037137106355,
+            "text_only_correct": 0.0009299711584408351,
+            "wrong_agreement": 0.009588903512061656,
+            "wrong_disagreement": 2.583923312487994e-06
+          }
+        }
+      }
+    }
+  ],
+  "clocks": {
+    "bias": 354,
+    "encoder": 354,
+    "image": 354,
+    "image_bias": 354,
+    "text": 354,
+    "text_bias": 354
+  },
+  "digest": "945689c1119e64808316652b175ddf66cd0a5674e18f372061d0110847ea962d",
+  "family": "N",
+  "initialization_CPU": 0.0025906230000014574,
+  "initialization_ledger_end": 7536098418,
+  "initialization_units": 26284,
+  "ordinal": 19,
+  "per_step_kernel_units": 2307106,
+  "recipe": "independent",
+  "rng_seed": 10047,
+  "seed": 47,
+  "stop": "slot_CPU_preflight",
+  "training_CPU": 0.5748587090000008,
+  "training_units_including_checkpoints": 850168304,
+  "updates": 354
+}

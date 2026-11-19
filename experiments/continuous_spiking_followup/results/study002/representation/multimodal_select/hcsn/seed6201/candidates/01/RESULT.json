@@ -1,0 +1,214 @@
+{
+  "arrays_manifest_sha256": "9a1f9cedb3d7e3390609e46a83aca734a03016b63fd44e9e1de98c700d629711",
+  "budget_exhausted": true,
+  "candidate_index": 1,
+  "checkpoint_manifest_sha256": "676f1d6721f7d8d9bb2842485256c33dc35b89cb5ca2fc57098ebc3cf2f68a70",
+  "checkpoint_reload_max_error": 0.0,
+  "checkpoint_scope": "inference model state; optimizer/RNG continuation not retained",
+  "costs_seconds": {
+    "reload_cpu": 0.03718157499999819,
+    "reload_wall": 0.037182569001743104,
+    "serialization_cpu": 0.016023952000001174,
+    "serialization_wall": 0.016108425996208098,
+    "training_cpu": 12.052731058000003,
+    "training_wall": 12.06754306195944,
+    "validation_cpu": 0.34350072699999856,
+    "validation_wall": 0.34353355299390387
+  },
+  "cpu_budget_overshoot_seconds": 0.05273105800000266,
+  "cpu_budget_seconds": 12.0,
+  "examples_seen": 5472,
+  "gradient_groups": {
+    "backbone.layers.0.channel_gates.bias": {
+      "finite": true,
+      "l1": 0.004781791940331459
+    },
+    "backbone.layers.0.channel_gates.weight": {
+      "finite": true,
+      "l1": 0.19409652054309845
+    },
+    "backbone.layers.0.content_input.bias": {
+      "finite": true,
+      "l1": 0.3144914209842682
+    },
+    "backbone.layers.0.content_input.weight": {
+      "finite": true,
+      "l1": 8.551097869873047
+    },
+    "backbone.layers.0.content_state.weight": {
+      "finite": true,
+      "l1": 3.6087985038757324
+    },
+    "backbone.layers.0.drift_bias": {
+      "finite": true,
+      "l1": 0.051445357501506805
+    },
+    "backbone.layers.0.drift_input.weight": {
+      "finite": true,
+      "l1": 1.319276213645935
+    },
+    "backbone.layers.0.norm.bias": {
+      "finite": true,
+      "l1": 0.19455385208129883
+    },
+    "backbone.layers.0.norm.weight": {
+      "finite": true,
+      "l1": 0.1488589346408844
+    },
+    "backbone.layers.0.output.weight": {
+      "finite": true,
+      "l1": 8.656341552734375
+    },
+    "backbone.layers.0.raw_adaptation": {
+      "finite": true,
+      "l1": 0.006745502352714539
+    },
+    "backbone.layers.0.raw_adaptation_decay": {
+      "finite": true,
+      "l1": 0.006103380583226681
+    },
+    "backbone.layers.0.raw_boundary": {
+      "finite": true,
+      "l1": 0.015841661021113396
+    },
+    "backbone.layers.0.raw_content_rate": {
+      "finite": true,
+      "l1": 0.02232271060347557
+    },
+    "backbone.layers.0.raw_diffusion": {
+      "finite": true,
+      "l1": 0.012572284787893295
+    },
+    "backbone.layers.0.raw_recovery": {
+      "finite": true,
+      "l1": 0.004588507581502199
+    },
+    "backbone.layers.0.raw_regeneration": {
+      "finite": true,
+      "l1": 0.0023621718864887953
+    },
+    "frontend.0.bias": {
+      "finite": true,
+      "l1": 2.5970630645751953
+    },
+    "frontend.0.weight": {
+      "finite": true,
+      "l1": 15.373380661010742
+    },
+    "frontend.1.bias": {
+      "finite": true,
+      "l1": 0.45191916823387146
+    },
+    "frontend.1.weight": {
+      "finite": true,
+      "l1": 0.2738770842552185
+    },
+    "readout.bias": {
+      "finite": true,
+      "l1": 0.5156806111335754
+    },
+    "readout.weight": {
+      "finite": true,
+      "l1": 11.080972671508789
+    }
+  },
+  "history": [
+    {
+      "crossed_milestone_fractions": [
+        0.25
+      ],
+      "examples_seen": 1440,
+      "final": false,
+      "last_gradient_norm": 0.9022142291069031,
+      "last_train_loss": 2.2277965545654297,
+      "training_cpu_seconds": 3.037040464000004,
+      "training_wall_seconds": 3.0375234149832977,
+      "update": 45,
+      "validation": {
+        "accuracy": 0.16015625,
+        "brier": 0.8952251076698303,
+        "cases": 256,
+        "conflict_accuracy": 0.1535087674856186,
+        "cross_entropy": 2.280974864959717,
+        "image_accuracy": 0.19354838132858276,
+        "spoken_accuracy": 0.12878787517547607
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        0.5
+      ],
+      "examples_seen": 2880,
+      "final": false,
+      "last_gradient_norm": 1.5031201839447021,
+      "last_train_loss": 2.202444314956665,
+      "training_cpu_seconds": 6.0675561459999905,
+      "training_wall_seconds": 6.068863897002302,
+      "update": 90,
+      "validation": {
+        "accuracy": 0.16796875,
+        "brier": 0.8700724840164185,
+        "cases": 256,
+        "conflict_accuracy": 0.15789473056793213,
+        "cross_entropy": 2.1957437992095947,
+        "image_accuracy": 0.25806450843811035,
+        "spoken_accuracy": 0.0833333358168602
+      }
+    },
+    {
+      "crossed_milestone_fractions": [
+        1.0
+      ],
+      "examples_seen": 5472,
+      "final": true,
+      "last_gradient_norm": 1.7596654891967773,
+      "last_train_loss": 2.0445547103881836,
+      "training_cpu_seconds": 12.052731058000003,
+      "training_wall_seconds": 12.06754306195944,
+      "update": 171,
+      "validation": {
+        "accuracy": 0.21875,
+        "brier": 0.8559459447860718,
+        "cases": 256,
+        "conflict_accuracy": 0.2017543911933899,
+        "cross_entropy": 2.1516056060791016,
+        "image_accuracy": 0.33870968222618103,
+        "spoken_accuracy": 0.10606060922145844
+      }
+    }
+  ],
+  "initialization_cpu_seconds": 0.0019046540000005052,
+  "last_update_cpu_seconds": 0.07876479900000177,
+  "learning_rate": 0.003,
+  "minibatch_rng_seed": 6978,
+  "model_config": {
+    "architecture": "hcsn",
+    "classes": 10,
+    "depth": 1,
+    "input_dim": 64,
+    "match_cell_budget": false,
+    "seed": 6201,
+    "width": 32
+  },
+  "parameters": {
+    "backbone": 8608,
+    "frontend": 2208,
+    "matching": null,
+    "readout": 330,
+    "total": 11146
+  },
+  "selected_update": 171,
+  "selected_validation_ce": 2.1516056060791016,
+  "sequence_positions": 175104,
+  "termination": "cpu_budget",
+  "total_cpu_seconds": 12.453263958,
+  "total_wall_seconds": 12.467732851997425,
+  "unique_examples_seen": 1902,
+  "update_record_columns": [
+    "loss",
+    "gradient_norm",
+    "cpu_seconds",
+    "wall_seconds"
+  ],
+  "updates_completed": 171
+}

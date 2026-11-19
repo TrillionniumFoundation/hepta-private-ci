@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "compile",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
     },
     {
       "operation": "compile_with_requirements",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_with_requirements",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "33f723317f83feec2b6e8be8c45d058f58288a7e"
     },
     {
       "operation": "compile_candidate_bound",
@@ -61,7 +63,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_candidate_bound",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "52efe73b0da51c5cbb054e8cdcfe3e59e4b08ba6"
     },
     {
       "operation": "verify_admission_snapshot_v2",
@@ -75,7 +78,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "verify_admission_snapshot_successor_v2",
@@ -89,7 +93,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "verify_admission_v2",
@@ -103,7 +108,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "compile_v2",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "record_serialization",
@@ -131,7 +138,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "build_attachment",
@@ -145,7 +153,8 @@
       "sourcePathExists": true,
       "designOperation": "revalidate_attachment",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -159,7 +168,8 @@
       "delegatedCallees": [],
       "operation": "prepare_delivery_v2",
       "nativeSymbol": "prepare_delivery_v2",
-      "designOperation": "revalidate_attachment"
+      "designOperation": "revalidate_attachment",
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -173,7 +183,8 @@
       "delegatedCallees": [],
       "operation": "observe_delivery",
       "nativeSymbol": "observe_delivery",
-      "designOperation": "compile_context"
+      "designOperation": "compile_context",
+      "sourceBlob": "d6be3d4b86ef261157af101c6629bcee8ecf1311"
     },
     {
       "operation": "wire_v2_compatibility_receipt",
@@ -187,7 +198,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "6e0583a81b064eec7ceb0b785bc9a48bd801a2f1"
     }
   ],
   "repositoryControlledGaps": [
@@ -225,7 +237,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
-      "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
+      "object": "84900183ca03f870f61bba1c1ca3b1ccfd1e56ae"
     },
     {
       "path": "codex-rs/hepta-context-compiler",
@@ -275,5 +287,15 @@
       "path": "docs/modules/context.compiler/TECHNICAL.md",
       "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-context-compiler"
   ]
 }

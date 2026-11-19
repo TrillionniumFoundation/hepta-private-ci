@@ -17,7 +17,11 @@ impl OriginalRootBPlanChallengeV1<'_> {
         scope: &FrozenLearningScopeV2,
     ) -> Result<Digest32, Error> {
         original.require_current_training_source()?;
-        self.client.require_initial(original.snapshot(), scope)?;
+        OriginalRootIndependentBEvaluationClientV1::require_initial(
+            self.client,
+            original.snapshot(),
+            scope,
+        )?;
         let candidate = original.original_candidate_material()?;
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)

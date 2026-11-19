@@ -7,6 +7,7 @@
 //! ephemeral runtime coordinator. No effect authority is granted here.
 
 use std::collections::BTreeMap;
+#[cfg(not(unix))]
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::str::FromStr;
@@ -60,6 +61,10 @@ mod learning_outbox;
 
 #[path = "objective_learning_source.rs"]
 mod learning_source;
+
+#[cfg(unix)]
+#[path = "objective_run_start_files.rs"]
+mod run_start_files;
 
 #[path = "objective_submission.rs"]
 mod submission;
@@ -328,25 +333,28 @@ fn open_run_start_journal(
     identity: &AgentdIdentity,
     profile_digest: Digest32,
 ) -> Result<DurableRunStartJournal, AgentdError> {
-    let root = identity.home_root.join(RUN_START_DIRECTORY);
-    prepare_private_directory(&root)?;
-    let path = root.join(RUN_START_FILE);
-    if path.exists() {
-        let metadata = std::fs::symlink_metadata(&path)?;
-        if !metadata.is_file() || metadata.file_type().is_symlink() {
-            return Err(invalid(
-                "objective run-start journal must be a regular file",
-            ));
-        }
-    }
-    let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
     #[cfg(unix)]
-    {
-        use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600);
-    }
-    let file = options.open(path)?;
+    let files = run_start_files::open(&identity.home_root)?;
+    #[cfg(unix)]
+    let file = files.journal;
+    #[cfg(not(unix))]
+    let root = identity.home_root.join(RUN_START_DIRECTORY);
+    #[cfg(not(unix))]
+    let file = {
+        prepare_private_directory(&root)?;
+        let path = root.join(RUN_START_FILE);
+        if path.exists() {
+            let metadata = std::fs::symlink_metadata(&path)?;
+            if !metadata.is_file() || metadata.file_type().is_symlink() {
+                return Err(invalid(
+                    "objective run-start journal must be a regular file",
+                ));
+            }
+        }
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true);
+        options.open(path)?
+    };
     if file.metadata()?.len() == 0 {
         let journal = DurableRunStartJournal::create(
             file,
@@ -354,6 +362,9 @@ fn open_run_start_journal(
             MAX_RUN_START_RECORDS,
         )
         .map_err(store_error)?;
+        #[cfg(unix)]
+        files.directory.sync_all()?;
+        #[cfg(not(unix))]
         sync_run_start_directory(&root)?;
         Ok(journal)
     } else {
@@ -367,12 +378,6 @@ fn open_run_start_journal(
     }
 }
 
-#[cfg(unix)]
-fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::File::open(path)?.sync_all()?;
-    Ok(())
-}
-
 #[cfg(not(unix))]
 fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
     // The selected non-Unix host profile must independently qualify directory-entry
@@ -380,13 +385,9 @@ fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
 
+#[cfg(not(unix))]
 fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
     std::fs::create_dir_all(path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    }
     let metadata = std::fs::symlink_metadata(path)?;
     if !metadata.is_dir() || metadata.file_type().is_symlink() {
         return Err(invalid("objective run-start root must be a real directory"));

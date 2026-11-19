@@ -1,4 +1,5 @@
 """Fail-closed fixture tests for exported C2 native observation binding."""
+
 import hashlib
 import json
 from pathlib import Path
@@ -9,8 +10,14 @@ from c2_durable import append_receipt
 from c2_native_replay import inspect_exported_observations, WAIT4_SCOPE
 
 OWNER = "hcsn-owner-new-start"
-NAMES = ["hcsn-s101-lr0.001", "hcsn-s101-lr0.003", "hcsn-s211-lr0.001",
-         "hcsn-s211-lr0.003", "hcsn-s307-lr0.001", "hcsn-s307-lr0.003"]
+NAMES = [
+    "hcsn-s101-lr0.001",
+    "hcsn-s101-lr0.003",
+    "hcsn-s211-lr0.001",
+    "hcsn-s211-lr0.003",
+    "hcsn-s307-lr0.001",
+    "hcsn-s307-lr0.003",
+]
 
 
 def digest(path):
@@ -29,37 +36,61 @@ class NativeObservationTests(unittest.TestCase):
         directory = self.root / "artifacts" / name
         directory.mkdir(parents=True)
         (directory / "result.json").write_text('{"schema":"synthetic-test-only"}\n')
-        resource = {"schema": "hcsn-c2-resource-v1", "native_job_id": job,
-                    "child_cpu_scope": WAIT4_SCOPE,
-                    "child_cpu_seconds": 3.25, "child_user_cpu_seconds": 3.0,
-                    "child_system_cpu_seconds": 0.25,
-                    "whole_process_wall_seconds": 9.0,
-                    "attempt_wrapper_wall_seconds": 9.1,
-                    "child_peak_rss_bytes": 8192}
+        resource = {
+            "schema": "hcsn-c2-resource-v1",
+            "native_job_id": job,
+            "child_cpu_scope": WAIT4_SCOPE,
+            "child_cpu_seconds": 3.25,
+            "child_user_cpu_seconds": 3.0,
+            "child_system_cpu_seconds": 0.25,
+            "whole_process_wall_seconds": 9.0,
+            "attempt_wrapper_wall_seconds": 9.1,
+            "child_peak_rss_bytes": 8192,
+        }
         (directory / "resource.json").write_text(json.dumps(resource))
-        append_receipt(self.root / "receipts", owner_start_id=OWNER,
-                       attempt_id=name, event_type="terminal", payload={
-                           "status": status, "native_job_id": job,
-                           "result_sha256": digest(directory / "result.json"),
-                           "resource_sha256": digest(directory / "resource.json")})
-        self.native[job] = {"job_id": job, "status_authoritative": True,
-                            "terminal_publication_confirmed": True,
-                            "output_complete": True, "output_durable": True,
-                            "log_truncated": {"stdout": False, "stderr": False},
-                            "state": "succeeded" if status == "completed" else "failed",
-                            "exit_code": 0 if status == "completed" else 1}
+        append_receipt(
+            self.root / "receipts",
+            owner_start_id=OWNER,
+            attempt_id=name,
+            event_type="terminal",
+            payload={
+                "status": status,
+                "native_job_id": job,
+                "result_sha256": digest(directory / "result.json"),
+                "resource_sha256": digest(directory / "resource.json"),
+            },
+        )
+        self.native[job] = {
+            "job_id": job,
+            "status_authoritative": True,
+            "terminal_publication_confirmed": True,
+            "output_complete": True,
+            "output_durable": True,
+            "log_truncated": {"stdout": False, "stderr": False},
+            "state": "succeeded" if status == "completed" else "failed",
+            "exit_code": 0 if status == "completed" else 1,
+        }
 
     def audit(self):
         return inspect_exported_observations(
-            self.root / "receipts", owner_start_id=OWNER,
-            expected_attempts=NAMES, native_observations=self.native,
-            artifacts_root=self.root / "artifacts")
+            self.root / "receipts",
+            owner_start_id=OWNER,
+            expected_attempts=NAMES,
+            native_observations=self.native,
+            artifacts_root=self.root / "artifacts",
+        )
 
     def test_missing_roster_keeps_full_denominator(self):
         self.add(NAMES[0])
         report = self.audit()
-        self.assertEqual((report["expected_count"], report["producer_terminal_count"],
-                          report["structurally_matched_count"]), (6, 1, 1))
+        self.assertEqual(
+            (
+                report["expected_count"],
+                report["producer_terminal_count"],
+                report["structurally_matched_count"],
+            ),
+            (6, 1, 1),
+        )
         self.assertEqual(len(report["missing"]), 5)
         self.assertEqual(report["scientific_admission"], "HOLD_NO_GO")
 
@@ -83,7 +114,7 @@ class NativeObservationTests(unittest.TestCase):
 
     def test_exit_zero_mismatch_rejected(self):
         self.add(NAMES[0])
-        self.native["job-"+NAMES[0]]["exit_code"] = 1
+        self.native["job-" + NAMES[0]]["exit_code"] = 1
         self.assertIn(NAMES[0], self.audit()["rejected"])
 
     def test_resource_hash_change_rejected(self):
@@ -102,7 +133,7 @@ class NativeObservationTests(unittest.TestCase):
 
     def test_undurable_output_rejected(self):
         self.add(NAMES[0])
-        self.native["job-"+NAMES[0]]["output_durable"] = False
+        self.native["job-" + NAMES[0]]["output_durable"] = False
         self.assertIn(NAMES[0], self.audit()["rejected"])
 
     def test_failed_terminal_not_scientific_success(self):
@@ -122,7 +153,6 @@ class NativeObservationTests(unittest.TestCase):
         self.add(NAMES[1], job="one-job")
         self.assertIn(NAMES[1], self.audit()["rejected"])
 
-
     def _rebound_resource(self, suffix: str):
         name = NAMES[0]
         self.add(name)
@@ -132,15 +162,25 @@ class NativeObservationTests(unittest.TestCase):
         assert original.endswith("}")
         resource.write_text(original[:-1] + suffix + "}")
         rebound = self.root / "rebinding-receipts"
-        append_receipt(rebound, owner_start_id=OWNER, attempt_id=name,
-                       event_type="terminal", payload={
-                           "status": "completed", "native_job_id": "job-" + name,
-                           "result_sha256": digest(directory / "result.json"),
-                           "resource_sha256": digest(resource)})
+        append_receipt(
+            rebound,
+            owner_start_id=OWNER,
+            attempt_id=name,
+            event_type="terminal",
+            payload={
+                "status": "completed",
+                "native_job_id": "job-" + name,
+                "result_sha256": digest(directory / "result.json"),
+                "resource_sha256": digest(resource),
+            },
+        )
         return inspect_exported_observations(
-            rebound, owner_start_id=OWNER, expected_attempts=NAMES,
+            rebound,
+            owner_start_id=OWNER,
+            expected_attempts=NAMES,
             native_observations=self.native,
-            artifacts_root=self.root / "artifacts")
+            artifacts_root=self.root / "artifacts",
+        )
 
     def test_rebound_duplicate_resource_json_key_rejected(self):
         # Hash matches the malicious resource bytes: checksum alone is insufficient.
@@ -160,7 +200,6 @@ class NativeObservationTests(unittest.TestCase):
         out = self._rebound_resource(', "padding":"' + "A" * (1 << 20) + '"')
         self.assertIn(NAMES[0], out["rejected"])
 
-
     def _rebound_typed_resource(self, **changes):
         name = NAMES[0]
         self.add(name)
@@ -170,15 +209,25 @@ class NativeObservationTests(unittest.TestCase):
         resource.update(changes)
         path.write_text(json.dumps(resource))
         rebound = self.root / "rebound-typed-receipts"
-        append_receipt(rebound, owner_start_id=OWNER, attempt_id=name,
-                       event_type="terminal", payload={
-                           "status": "completed", "native_job_id": "job-" + name,
-                           "result_sha256": digest(directory / "result.json"),
-                           "resource_sha256": digest(path)})
+        append_receipt(
+            rebound,
+            owner_start_id=OWNER,
+            attempt_id=name,
+            event_type="terminal",
+            payload={
+                "status": "completed",
+                "native_job_id": "job-" + name,
+                "result_sha256": digest(directory / "result.json"),
+                "resource_sha256": digest(path),
+            },
+        )
         return inspect_exported_observations(
-            rebound, owner_start_id=OWNER, expected_attempts=NAMES,
+            rebound,
+            owner_start_id=OWNER,
+            expected_attempts=NAMES,
             native_observations=self.native,
-            artifacts_root=self.root / "artifacts")
+            artifacts_root=self.root / "artifacts",
+        )
 
     def test_fractional_native_rss_rejected_even_with_bound_checksum(self):
         out = self._rebound_typed_resource(child_peak_rss_bytes=8192.5)
@@ -195,12 +244,8 @@ class NativeObservationTests(unittest.TestCase):
 
     def test_native_log_truncation_nested_numeric_flags_rejected(self):
         self.add(NAMES[0])
-        self.native["job-" + NAMES[0]]["log_truncated"] = {
-            "stdout": 0, "stderr": 0}
+        self.native["job-" + NAMES[0]]["log_truncated"] = {"stdout": 0, "stderr": 0}
         self.assertIn(NAMES[0], self.audit()["rejected"])
-
-
-
 
     def _rebound_result_payload(self, raw):
         # The receipt intentionally commits to the malicious producer's exact bytes.
@@ -210,26 +255,89 @@ class NativeObservationTests(unittest.TestCase):
         result_path = directory / "result.json"
         result_path.write_bytes(raw)
         receipts = self.root / "result-rebound-receipts"
-        append_receipt(receipts, owner_start_id=OWNER, attempt_id=name,
-                       event_type="terminal", payload={
-                           "status": "completed", "native_job_id": "job-" + name,
-                           "result_sha256": digest(result_path),
-                           "resource_sha256": digest(directory / "resource.json")})
+        append_receipt(
+            receipts,
+            owner_start_id=OWNER,
+            attempt_id=name,
+            event_type="terminal",
+            payload={
+                "status": "completed",
+                "native_job_id": "job-" + name,
+                "result_sha256": digest(result_path),
+                "resource_sha256": digest(directory / "resource.json"),
+            },
+        )
         return inspect_exported_observations(
-            receipts, owner_start_id=OWNER, expected_attempts=NAMES,
-            native_observations=self.native, artifacts_root=self.root / "artifacts")
+            receipts,
+            owner_start_id=OWNER,
+            expected_attempts=NAMES,
+            native_observations=self.native,
+            artifacts_root=self.root / "artifacts",
+        )
 
     def test_duplicate_result_key_with_matching_receipt_rejected(self):
-        report = self._rebound_result_payload(b'{"schema":"fixture","schema":"spoof"}\\n')
+        report = self._rebound_result_payload(
+            b'{"schema":"fixture","schema":"spoof"}\n'
+        )
         self.assertIn(NAMES[0], report["rejected"])
 
     def test_nonfinite_result_with_matching_receipt_rejected(self):
-        report = self._rebound_result_payload(b'{"schema":"fixture","score":NaN}\\n')
+        report = self._rebound_result_payload(b'{"schema":"fixture","score":NaN}\n')
         self.assertIn(NAMES[0], report["rejected"])
 
     def test_scalar_result_with_matching_receipt_rejected(self):
-        report = self._rebound_result_payload(b'[1,2,3]\\n')
+        report = self._rebound_result_payload(b"[1,2,3]\n")
         self.assertIn(NAMES[0], report["rejected"])
+
+    def _rebound_result(self, raw: bytes):
+        # Producer and receipt agree on the attack bytes; digest equality alone
+        # cannot establish that the result is parseable, unambiguous JSON.
+        name = NAMES[0]
+        self.add(name)
+        path = self.root / "artifacts" / name / "result.json"
+        path.write_bytes(raw)
+        rebound = self.root / "result-rebound"
+        append_receipt(
+            rebound,
+            owner_start_id=OWNER,
+            attempt_id=name,
+            event_type="terminal",
+            payload={
+                "status": "completed",
+                "native_job_id": "job-" + name,
+                "result_sha256": digest(path),
+                "resource_sha256": digest(path.parent / "resource.json"),
+            },
+        )
+        return inspect_exported_observations(
+            rebound,
+            owner_start_id=OWNER,
+            expected_attempts=NAMES,
+            native_observations=self.native,
+            artifacts_root=self.root / "artifacts",
+        )
+
+    def test_rebound_duplicate_result_keys_rejected(self):
+        report = self._rebound_result(b'{"schema":"a","schema":"b"}\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_rebound_nonfinite_result_field_rejected(self):
+        report = self._rebound_result(b'{"schema":"a","debug":NaN}\n')
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_rebound_result_not_json_object_rejected(self):
+        report = self._rebound_result(b"[1,2,3]\n")
+        self.assertIn(NAMES[0], report["rejected"])
+
+    def test_numeric_zero_does_not_mean_untruncated_native_logs(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = 0
+        self.assertIn(NAMES[0], self.audit()["rejected"])
+
+    def test_numeric_zero_nested_native_logs_rejected(self):
+        self.add(NAMES[0])
+        self.native["job-" + NAMES[0]]["log_truncated"] = {"stdout": 0, "stderr": 0}
+        self.assertIn(NAMES[0], self.audit()["rejected"])
 
 
 if __name__ == "__main__":

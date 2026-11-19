@@ -1,0 +1,75 @@
+{
+  "scope": "Initial complete discovery was broader; only relevant pre-existing Git worktrees and broken-link evidence retained. Root transient clone status and unrelated exports excluded.",
+  "worktrees": [
+    {
+      "path": "/workspace/scratch/1b4af78cc8ce/hepta-a701",
+      "head": {
+        "rc": 128,
+        "out": "",
+        "err": "fatal: not a git repository: /workspace/scratch/hepta-private-ci/.git/worktrees/hepta-a701\n"
+      },
+      "branch": {
+        "rc": 128,
+        "out": "",
+        "err": "fatal: not a git repository: /workspace/scratch/hepta-private-ci/.git/worktrees/hepta-a701\n"
+      },
+      "worktrees": {
+        "rc": 128,
+        "out": "",
+        "err": "fatal: not a git repository: /workspace/scratch/hepta-private-ci/.git/worktrees/hepta-a701\n"
+      },
+      "status": {
+        "rc": 128,
+        "out": "",
+        "err": "fatal: not a git repository: /workspace/scratch/hepta-private-ci/.git/worktrees/hepta-a701\n"
+      }
+    },
+    {
+      "path": "/workspace/scratch/e406fbe9a892/hepta-memory-work",
+      "head": {
+        "rc": 0,
+        "out": "6b4189a6d48b53e9fc6b74d903c45ed497c4302e\n",
+        "err": ""
+      },
+      "branch": {
+        "rc": 0,
+        "out": "agents/20261020/memory-assessment-census\n",
+        "err": ""
+      },
+      "worktrees": {
+        "rc": 0,
+        "out": "worktree /workspace/scratch/e406fbe9a892/hepta-work\nHEAD 74bbcc9b0bb330649cd54d9881ae3676d3968bae\nbranch refs/heads/agents/20261020/stem-workflow-format\n\nworktree /workspace/scratch/e406fbe9a892/hepta-memory-work\nHEAD 6b4189a6d48b53e9fc6b74d903c45ed497c4302e\nbranch refs/heads/agents/20261020/memory-assessment-census\n\n",
+        "err": ""
+      },
+      "status": {
+        "rc": 0,
+        "out": "## agents/20261020/memory-assessment-census\n?? codex-rs/keyring-store/tests/secret_service.rs\n?? patches/zstd-sys_windows_msvc_include_dirs.patch\n",
+        "err": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/e406fbe9a892/hepta-work",
+      "head": {
+        "rc": 0,
+        "out": "74bbcc9b0bb330649cd54d9881ae3676d3968bae\n",
+        "err": ""
+      },
+      "branch": {
+        "rc": 0,
+        "out": "agents/20261020/stem-workflow-format\n",
+        "err": ""
+      },
+      "worktrees": {
+        "rc": 0,
+        "out": "worktree /workspace/scratch/e406fbe9a892/hepta-work\nHEAD 74bbcc9b0bb330649cd54d9881ae3676d3968bae\nbranch refs/heads/agents/20261020/stem-workflow-format\n\nworktree /workspace/scratch/e406fbe9a892/hepta-memory-work\nHEAD 6b4189a6d48b53e9fc6b74d903c45ed497c4302e\nbranch refs/heads/agents/20261020/memory-assessment-census\n\n",
+        "err": ""
+      },
+      "status": {
+        "rc": 0,
+        "out": "## agents/20261020/stem-workflow-format\n?? .github/workflows/hepta-neuron-signed-admission.yml\n?? codex-rs/hepta-infer-worker-host/src/bin/hepta-neuron-microbatch-qualification.rs\n?? codex-rs/hepta-infer-worker-host/src/neuron_microbatch.rs\n?? codex-rs/hepta-infer-worker-host/src/neuron_microbatch_tests.rs\n?? codex-rs/hepta-neuron/src/metrics.rs\n?? codex-rs/hepta-neuron/src/metrics_tests.rs\n",
+        "err": ""
+      }
+    }
+  ],
+  "foreign_worktrees_modified": false
+}

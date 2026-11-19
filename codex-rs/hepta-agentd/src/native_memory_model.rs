@@ -184,15 +184,23 @@ impl NativeMemoryModelPort {
         };
         let input = serde_json::to_vec(&wire).map_err(|e| reject(e.to_string()))?;
         let request_digest = Digest32::of_bytes(&input).to_string();
-        // No await, source I/O or user callback may separate this current-owner
-        // check from entering the decoder. It does not claim another nonce.
+        // Reject an already stale context before setup, then retain the spent
+        // attempt even if setup or the mandatory final spawn check fails.
+        // Neither current-owner check claims another nonce.
         current_guard(self.admission.query())?;
         self.attempted = true;
-        self.dispatches.fetch_add(1, Ordering::SeqCst);
         let output = self.handle.block_on(native_memory_process::execute(
             &self.config,
             input,
             &self.cancellation,
+            || {
+                current_guard(self.admission.query())?;
+                if self.cancellation.is_cancelled() {
+                    return Err("native owner is closed".to_string());
+                }
+                self.dispatches.fetch_add(1, Ordering::SeqCst);
+                Ok(())
+            },
         ))?;
         let execution: NativeMemoryExecutionV1 =
             serde_json::from_slice(&output).map_err(|e| reject(e.to_string()))?;

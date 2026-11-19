@@ -374,6 +374,19 @@ impl RoleQualificationReceiptV1 {
         Ok(())
     }
 
+    /// Identity of the five owner records evaluated before the evaluator's
+    /// own receipt is attached. This digest conveys no authentication or authority.
+    #[must_use]
+    pub fn pre_evaluator_evidence_digest(&self) -> Digest32 {
+        qualification_evidence_digest(
+            self.definition_digest,
+            self.artifact_receipt_digest,
+            self.step_receipt_digest,
+            self.metric_receipt_digest,
+            self.fault_receipt_digest,
+        )
+    }
+
     #[must_use]
     pub fn content_digest(&self) -> Digest32 {
         digest_parts(
@@ -518,6 +531,12 @@ impl RoleQualificationHarnessV1 {
         if step.cell_id != self.definition.cell_id
             || step.generation != self.definition.generation
             || step.role != self.definition.role
+            || step.scope_digest != self.definition.scope_digest
+            || step.capability_digest
+                != self
+                    .definition
+                    .capability_digest()
+                    .map_err(RoleQualificationErrorV1::Definition)?
         {
             return Err(RoleQualificationErrorV1::Binding("step receipt"));
         }
@@ -577,6 +596,12 @@ impl RoleQualificationHarnessV1 {
         if step.cell_id != self.definition.cell_id
             || step.generation != self.definition.generation
             || step.role != self.definition.role
+            || step.scope_digest != self.definition.scope_digest
+            || step.capability_digest
+                != self
+                    .definition
+                    .capability_digest()
+                    .map_err(RoleQualificationErrorV1::Definition)?
             || step.input_frontier_digest != input_frontier_digest
         {
             return Err(RoleQualificationErrorV1::Binding("step receipt"));
@@ -594,6 +619,9 @@ impl RoleQualificationHarnessV1 {
             .exercise_fault(fault_kind)
             .map_err(RoleQualificationErrorV1::Owner)?;
         fault.validate_against(&self.definition)?;
+        if fault.kind != fault_kind {
+            return Err(RoleQualificationErrorV1::Binding("fault receipt"));
+        }
         Ok(RoleQualificationComponentsV1 {
             definition_digest: expected_definition_digest,
             artifact,
@@ -616,20 +644,33 @@ struct RoleQualificationComponentsV1 {
 
 impl RoleQualificationComponentsV1 {
     fn evidence_digest(&self) -> Digest32 {
-        digest_parts(
-            b"hepta.cell-role.qualification.evidence-bundle.v1",
-            &[
-                self.definition_digest.as_array(),
-                self.artifact.content_digest().as_array(),
-                self.step
-                    .content_digest()
-                    .unwrap_or(Digest32::ZERO)
-                    .as_array(),
-                self.metric_receipt_digest.as_array(),
-                self.fault.content_digest().as_array(),
-            ],
+        qualification_evidence_digest(
+            self.definition_digest,
+            self.artifact.content_digest(),
+            self.step.content_digest().unwrap_or(Digest32::ZERO),
+            self.metric_receipt_digest,
+            self.fault.content_digest(),
         )
     }
+}
+
+fn qualification_evidence_digest(
+    definition_digest: Digest32,
+    artifact_receipt_digest: Digest32,
+    step_receipt_digest: Digest32,
+    metric_receipt_digest: Digest32,
+    fault_receipt_digest: Digest32,
+) -> Digest32 {
+    digest_parts(
+        b"hepta.cell-role.qualification.evidence-bundle.v1",
+        &[
+            definition_digest.as_array(),
+            artifact_receipt_digest.as_array(),
+            step_receipt_digest.as_array(),
+            metric_receipt_digest.as_array(),
+            fault_receipt_digest.as_array(),
+        ],
+    )
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -988,5 +1029,128 @@ mod tests {
             &evaluator,
         );
         assert_eq!(result, Err(RoleQualificationErrorV1::EvaluatorIsProposer));
+    }
+
+    struct MismatchedOwner {
+        inner: FixtureOwner,
+        field: usize,
+    }
+
+    impl RoleQualificationOwnerV1 for MismatchedOwner {
+        fn definition(&self) -> &CellDefinitionV2 {
+            &self.inner.definition
+        }
+
+        fn reload_artifact(
+            &mut self,
+        ) -> Result<RoleQualificationArtifactReceiptV1, RoleQualificationOwnerErrorV1> {
+            self.inner.reload_artifact()
+        }
+
+        fn step(
+            &mut self,
+            input_frontier_digest: Digest32,
+        ) -> Result<CellStepReceiptV1, RoleQualificationOwnerErrorV1> {
+            let mut step = self.inner.step(input_frontier_digest)?;
+            match self.field {
+                0 => step.scope_digest = digest(61),
+                1 => step.capability_digest = digest(62),
+                _ => {}
+            }
+            Ok(step)
+        }
+
+        fn exercise_fault(
+            &mut self,
+            kind: RoleQualificationFaultKindV1,
+        ) -> Result<RoleQualificationFaultReceiptV1, RoleQualificationOwnerErrorV1> {
+            let mut fault = self.inner.exercise_fault(kind)?;
+            if self.field == 2 {
+                fault.kind = RoleQualificationFaultKindV1::Rollback;
+            }
+            Ok(fault)
+        }
+    }
+
+    #[test]
+    fn harness_rejects_step_scope_and_capability_drift() {
+        let definition = definition();
+        let harness =
+            RoleQualificationHarnessV1::new(definition.clone(), profile()).expect("harness");
+        for field in 0..2 {
+            let mut owner = MismatchedOwner {
+                inner: FixtureOwner {
+                    definition: definition.clone(),
+                },
+                field,
+            };
+            let result = harness.qualify(
+                &mut owner,
+                digest(50),
+                &metric_receipt(&definition),
+                RoleQualificationFaultKindV1::CheckpointRestart,
+                digest(51),
+            );
+            assert_eq!(
+                result,
+                Err(RoleQualificationErrorV1::Binding("step receipt"))
+            );
+        }
+    }
+
+    #[test]
+    fn evidence_bundle_rejects_step_scope_and_capability_drift() {
+        let definition = definition();
+        let harness =
+            RoleQualificationHarnessV1::new(definition.clone(), profile()).expect("harness");
+        let mut owner = FixtureOwner {
+            definition: definition.clone(),
+        };
+        let artifact = owner.reload_artifact().expect("artifact");
+        let step = owner.step(digest(50)).expect("step");
+        let metric = metric_receipt(&definition);
+        let fault = owner
+            .exercise_fault(RoleQualificationFaultKindV1::CheckpointRestart)
+            .expect("fault");
+        harness
+            .evidence_bundle_digest(&artifact, &step, &metric, &fault)
+            .expect("matching records");
+        for field in 0..2 {
+            let mut other = step.clone();
+            if field == 0 {
+                other.scope_digest = digest(61);
+            } else {
+                other.capability_digest = digest(62);
+            }
+            other.validate().expect("valid step shape");
+            assert_eq!(
+                harness.evidence_bundle_digest(&artifact, &other, &metric, &fault),
+                Err(RoleQualificationErrorV1::Binding("step receipt"))
+            );
+        }
+    }
+
+    #[test]
+    fn harness_rejects_a_different_fault_scenario() {
+        let definition = definition();
+        let harness =
+            RoleQualificationHarnessV1::new(definition.clone(), profile()).expect("harness");
+        let mut owner = MismatchedOwner {
+            inner: FixtureOwner {
+                definition: definition.clone(),
+            },
+            field: 2,
+        };
+        let result = harness.qualify(
+            &mut owner,
+            digest(50),
+            &metric_receipt(&definition),
+            RoleQualificationFaultKindV1::CheckpointRestart,
+            digest(51),
+        );
+        assert_eq!(
+            result,
+            Err(RoleQualificationErrorV1::Binding("fault receipt"))
+        );
     }
 }

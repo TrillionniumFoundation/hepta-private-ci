@@ -1,0 +1,67 @@
+{
+  "version": "hepta-independent-runtime-registration-audit-20261029-v1",
+  "created_unix": 1793279732.3110247,
+  "checks": {
+    "runtime_protocol_matches_seal": true,
+    "runtime_sources_and_snapshots_match": true,
+    "core_binding_matches": true,
+    "numeric_binding_unchanged": true,
+    "twenty_aliases_all_arms_fixed_seed": true,
+    "batch1_batch32_and_T32": true,
+    "three_warmups_eleven_trials": true,
+    "thread_counts_one": true,
+    "data_shards_exact": true,
+    "registration_honestly_during_training": true,
+    "no_runtime_execution_or_heldout_score_yet": true
+  },
+  "passed": true,
+  "runtime_protocol_sha256": "b605b13d59a34701f1aaf8dfb2987c490fc72b12d003539dec3d84ce26505f5c",
+  "runtime_registration_seal_sha256": "11e4e8337980b687e780e0cd8776bc8f18864e178771a4a23a692dc3ed85e50d",
+  "runtime_source_sha256": {
+    "RUNTIME_SPEC.json": "244bae375d35df778e3ae982a7d3f64bdce4d6c8e02f442cc8896dcde6864efe",
+    "runtime.py": "17400bff97e2a752c9bb703425641c01e45676985a135f54f3eccc0361e8cb16"
+  },
+  "data_checks": {
+    "mqar": {
+      "sha_match": true,
+      "formal_train_sha_match": true,
+      "exact_first32_arrays": true,
+      "fields": {
+        "inputs": true,
+        "targets": true,
+        "dt": true
+      }
+    },
+    "selective_copy": {
+      "sha_match": true,
+      "formal_train_sha_match": true,
+      "exact_first32_arrays": true,
+      "fields": {
+        "inputs": true,
+        "targets": true,
+        "dt": true
+      }
+    }
+  },
+  "static_execution_review": [
+    "Every physical selected checkpoint is timed at both batch sizes without task-quality filtering",
+    "Fresh-reset full-sequence forward includes production preparation and initialization; model/data I/O and output hashing are outside timing",
+    "Three randomized warmup rounds and eleven randomized timed rounds cover every case; CPU and wall clocks retained individually",
+    "Measured calls run eval/no_grad with one intraop and one interop thread; CPU is synchronous and each output must match warmed finite-output digest",
+    "Timing waits for all training sealed and numerical appendix execution complete, with explicit idle-scheduling assertion",
+    "Held-out quality join is separate and checks timed/checkpoint identity; score-band failure does not remove timing cases"
+  ],
+  "interpretation_limits": [
+    "Only seed81301 and one CPU environment; repeated timings are not independent training seeds",
+    "The empirical quality band is not a statistical equivalence test",
+    "The 605 bytes per FP32 episode recurrent payload is an accounting quantity, not measured RAM, temporary prepared coefficients, allocator overhead or an implemented streaming/KV cache",
+    "No event sparsity, GPU, energy, Transformer/SNN or multimodal claim follows"
+  ],
+  "prospective_state_payload": {
+    "fp32_floats": 147,
+    "float_bytes": 588,
+    "two_int64_counters_bytes": 16,
+    "bool_flag_bytes": 1,
+    "total_counted_payload_bytes_per_episode": 605
+  }
+}

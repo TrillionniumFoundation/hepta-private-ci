@@ -1,0 +1,108 @@
+{
+  "schema": "hcsn-uuid-v2-independent-static-delta-review-v1",
+  "created_utc": "2026-11-05T17:51:49.654058+00:00",
+  "decision": "no_blocking_finding_in_the_reviewed_UUID_and_disk-guard_delta",
+  "scope": "Three candidate research files plus v2 gate metadata/disk deltas only; external audit v2 and final deployment bundle require separate review.",
+  "candidate": {
+    "package_files": 32,
+    "python_files": 26,
+    "changed_paths": [
+      "benchmark.py",
+      "execution.py",
+      "tests/test_execution.py"
+    ],
+    "files": [
+      {
+        "path": "hcsn-execution-candidate-v2/qualification/hcsn/benchmark.py",
+        "sha256": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+        "bytes": 31701
+      },
+      {
+        "path": "hcsn-execution-candidate-v2/qualification/hcsn/execution.py",
+        "sha256": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+        "bytes": 8683
+      },
+      {
+        "path": "hcsn-execution-candidate-v2/qualification/hcsn/tests/test_execution.py",
+        "sha256": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+        "bytes": 20027
+      }
+    ],
+    "source_map_sha256": "415f6a2f2d7a89ad0585f29bea0d91928898a11ec8a672de39ce6e22f04d39e9",
+    "benchmark_source_sha256": "7e89657ae4bd9444d0ed53b27cadaa70de1fa09027205cf2a0b8ca78891774bc",
+    "published_commit": "f355cfe2ae96b2bc9a5409f8eeb857894f1b0c5b",
+    "publication_receipt": {
+      "path": "uuid-fix/source-publication.json",
+      "sha256": "c4fc6ed024f3fc5273ebb83d9e4dcbd3cfc32f246f2a08649ad844bcba5d08ea",
+      "bytes": 1588
+    },
+    "actual_available_test_result": {
+      "tests_run": 109,
+      "passed": 52,
+      "skipped": 57,
+      "failed": 0,
+      "errors": 0,
+      "independent_full_tensor_execution": false
+    }
+  },
+  "controller": {
+    "files": [
+      {
+        "path": "gated-execution-v2/campaign.py",
+        "sha256": "07241e2eac7ab06b41625dcb71b8216408af3d9f5bcb5710a3df51525f881a97",
+        "bytes": 20204
+      },
+      {
+        "path": "gated-execution-v2/runtime_entry.py",
+        "sha256": "ddc68ffa94ee796a1b9a08a4e403754b11eb63c2897cd6465db0447800ee8217",
+        "bytes": 8401
+      },
+      {
+        "path": "gated-execution-v2/contracts.py",
+        "sha256": "1b378e4e1940212cd97740337aed33cb38494ab18a259cd0d7e1f668857a1e28",
+        "bytes": 13104
+      }
+    ],
+    "controls_receipt": {
+      "path": "gated-execution-v2/LOCAL-CONTROLS-v1.json",
+      "sha256": "e1a5db803d93e7d4d3d5d440656358df75f5bfad05ddb75450801bbbae3efcd7",
+      "bytes": 640
+    },
+    "control_groups": 11,
+    "control_failures": 0,
+    "control_errors": 0,
+    "strict_candidate_test_count": 109,
+    "profile_schema": "hcsn-runtime-profile-v2"
+  },
+  "verified_behaviors": [
+    "Canonicalization accepts only complete bare or GPU-prefixed grouped hexadecimal UUIDs; it does not guess ordinals, prefixes, MIG mappings, lists or whitespace.",
+    "CUDA raw UUID and canonical UUID are both retained. nvidia-smi queries the canonical identifier and mismatched readback is refused.",
+    "EnergyCounter binds the canonical CUDA identifier to a same-device NVML UUID readback before creating a physical counter. Mapping verification alone never makes unsupported energy readings available.",
+    "Matrix energy completeness requires the exact canonical counter, finite nonnegative reading, completed interval, mapping_verified true, and both raw/canonical device mappings. Malformed identity/readings return false.",
+    "Original probe UUID is normalized externally for identity comparison without editing the raw receipt, original probe, baseline, configuration, or numerical implementation.",
+    "TMPDIR and the five declared compute/cache directories are task-local on the data volume; data reserve remains 5 GiB and the separate control filesystem guard is 1 GiB. Only free byte counts are recorded for the control filesystem.",
+    "Candidate source-map/aggregate hash and strict count were updated consistently; model definitions, training draws, seeds, splits, budgets and rematerialization implementation did not change."
+  ],
+  "concrete_review_issue_closed": "Truthy malformed identity objects originally raised AttributeError in physical-energy summary; dict guards and a truthy string/list control now return unavailable energy while retaining training counts.",
+  "targeted_independent_regression": {
+    "path": "ci-audit/uuid/bare-uuid-regression-v1.json",
+    "sha256": "3bb7bcb888515c6a63969fd741c8ba3d1511ffb53bfbd80d809f6898662dc725",
+    "bytes": 2665
+  },
+  "actual_readonly_nvml_comparison": {
+    "path": "ci-audit/uuid/nvml-uuid-lookup-v1.json",
+    "sha256": "986b3c43bcf6df58b7d79324477622c27279e0613708ae3eaad8d86d02bea60a",
+    "bytes": 1039
+  },
+  "v1_limitation_addendum": {
+    "path": "ci-audit/uuid/v1-review-correction.json",
+    "sha256": "5efdf8debb0bb8815a03575ecbd032fc8b44368d118f7159dafea1e74bf3b145",
+    "bytes": 6775
+  },
+  "limitations": [
+    "No Torch imported and no CUDA/model computation performed by this independent review.",
+    "Available local checks with 57 skips do not satisfy the required 109 strict tensor checks.",
+    "No physical energy, full 170-run, full-budget B, resolution-independence, task-advantage or CI-success claim follows from this review.",
+    "The new exact-head HCSN CI is queued in the separate timestamped transition receipt."
+  ]
+}

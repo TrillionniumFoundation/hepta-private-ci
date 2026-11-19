@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-campaign-cancellation-evidence-v1",
+  "reason": "PyTorch 2.8.0 _CUuuid.__str__ emits a bare UUID; v1 compared it to the NVML GPU-prefixed form. Cancelled our waiting controller before any numerical stage.",
+  "job_id": "1a1acb0a367-fc05-5667",
+  "status": {
+    "at_unix_ms": 1793900187029,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": true,
+    "exit_code": 2,
+    "job_id": "1a1acb0a367-fc05-5667",
+    "launch_nonce": "d7bbdd35f88c48f5217f4ee1e428eddf",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 85,
+        "stored": 85
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "cancelled",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  },
+  "progress_sha256": "05a3377ab04b787587618c8376d0ef95e96bfe3b6050e298f0b48da69c9c1ab8",
+  "progress": {
+    "schema": "hcsn-gated-cuda-campaign-v1",
+    "status": "interrupted",
+    "started_utc": "2026-11-05T17:10:25.989759+00:00",
+    "pid": 124088,
+    "stages": [],
+    "completed_cuda_runs": 0,
+    "requested_cuda_runs": 170,
+    "global_qualification": "open",
+    "source_branch_ci_not_claimed": true,
+    "no_automatic_training_retries": true,
+    "budget_change_permitted": false,
+    "physical_energy_missing_is_not_zero": true,
+    "updated_utc": "2026-11-05T17:36:26.933004+00:00",
+    "disk_free_bytes": 33619693568,
+    "reason": "InterruptedError: campaign received signal 15",
+    "traceback": "Traceback (most recent call last):\n  File \"/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v1/campaign.py\", line 327, in main\n    return campaign.execute()\n           ^^^^^^^^^^^^^^^^^^\n  File \"/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v1/campaign.py\", line 227, in execute\n    self.wait_for_runtime()\n  File \"/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v1/campaign.py\", line 168, in wait_for_runtime\n    time.sleep(30)\n  File \"/data/hcsn-cuda-170run-20261105-r1/experiments/execution_v1/campaign.py\", line 323, in stop\n    raise InterruptedError(f'campaign received signal {signum}')\nInterruptedError: campaign received signal 15\n",
+    "finished_utc": "2026-11-05T17:36:26.932978+00:00"
+  },
+  "other_jobs_cancelled": false,
+  "training_attempts_executed": 0,
+  "original_sources_modified": false
+}

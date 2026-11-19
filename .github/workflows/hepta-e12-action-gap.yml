@@ -1,0 +1,215 @@
+name: Hepta E12 global action-gap and learned Cell continuation (research DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/shared-stem-system2-architecture/e12_action_gap*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e12_action_gap.py'
+      - 'qualification/shared-stem-system2-architecture/E12_GLOBAL_ACTION_GAP_20261016.md'
+      - '.github/workflows/hepta-e12-action-gap.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: e12-gap-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  source-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Freeze tested original math, source and ref
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/e12-gap-source
+          git rev-parse HEAD | tee /tmp/e12-gap-source/source-head.txt
+          if [[ '${{ matrix.source_profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          for f in e12_nonlinear_cert.py e12_independent_audit.py e12_local_cell_solver.py e12_continuation_field.py e12_continuation_study.py e12_action_gap.py e12_action_gap_study.py test_e12_action_gap.py; do
+            test -s "$ROOT/$f"
+          done
+          sha256sum "$ROOT"/e12_action_gap*.py "$ROOT"/e12_nonlinear_cert.py "$ROOT"/e12_independent_audit.py > /tmp/e12-gap-source/source-hashes.txt
+      - name: Full original E12 and new action-gap Python suites, ordinary and -O
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v > /tmp/e12-gap-source/normal.log 2>&1 || { cat /tmp/e12-gap-source/normal.log; exit 1; }
+          tail -15 /tmp/e12-gap-source/normal.log
+          grep -Eq '^Ran [1-9][0-9]+ tests' /tmp/e12-gap-source/normal.log
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p 'test_e12_*.py' -v > /tmp/e12-gap-source/optimized.log 2>&1 || { cat /tmp/e12-gap-source/optimized.log; exit 1; }
+          tail -15 /tmp/e12-gap-source/optimized.log
+          grep -Eq '^Ran [1-9][0-9]+ tests' /tmp/e12-gap-source/optimized.log
+      - name: Exact original E12 operator cross-check, all six laws
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from fractions import Fraction as Q
+          from e12_action_gap import Law, tree_map
+          from e12_nonlinear_cert import Law as OriginalLaw, operator
+          from e12_independent_audit import reference
+          for depth in (1,2,3):
+              for a in ('0', '1/3'):
+                  for x0 in ('-117/128','-37/128','37/128','117/128'):
+                      y = tuple([Q(1,16)] * ((1 << depth)-1))
+                      original = OriginalLaw(depth=depth,a=a,x0=x0)
+                      actual = tree_map(Law(depth,x0,a),y)
+                      assert actual == operator(original,y)
+                      assert actual == reference(original,y)[2]
+          print('48/48 exact original finite-tree E12 operator pairs')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-gap-source-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-source/
+          retention-days: 14
+          if-no-files-found: warn
+  train-only:
+    needs: source-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Train original E12 neural Head on TRAIN mathematical groups only
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/e12-gap-train
+          git rev-parse HEAD > /tmp/e12-gap-train/source-head.txt
+          python "$ROOT/e12_continuation_study.py" train --output /tmp/e12-gap-train/train.json | tee /tmp/e12-gap-train/train.log
+          cd /tmp/e12-gap-train
+          sha256sum train.json > train.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-gap-train-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-train/
+          retention-days: 14
+          if-no-files-found: warn
+  blind:
+    needs: train-only
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: e12-gap-train-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-train
+      - name: Replay bound source; seal label-blind action decisions before reviewing
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$(cat /tmp/e12-gap-train/source-head.txt)"
+          (cd /tmp/e12-gap-train && sha256sum --check train.sha256)
+          mkdir -p /tmp/e12-gap-blind
+          git rev-parse HEAD > /tmp/e12-gap-blind/source-head.txt
+          TRAIN_SHA="$(cut -d' ' -f1 /tmp/e12-gap-train/train.sha256)"
+          python "$ROOT/e12_action_gap_study.py" propose --training /tmp/e12-gap-train/train.json --training-sha "$TRAIN_SHA" --output /tmp/e12-gap-blind/proposal.json | tee /tmp/e12-gap-blind/blind.log
+          (cd /tmp/e12-gap-blind && sha256sum proposal.json > proposal.sha256)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-gap-blind-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-blind/
+          retention-days: 14
+          if-no-files-found: warn
+  independent-review:
+    needs: blind
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source_profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.source_profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: e12-gap-train-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-train
+      - uses: actions/download-artifact@v4
+        with:
+          name: e12-gap-blind-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-blind
+      - name: Original E12 independent map, Y/Z audit and full-branch action comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$(cat /tmp/e12-gap-train/source-head.txt)"
+          test "$(git rev-parse HEAD)" = "$(cat /tmp/e12-gap-blind/source-head.txt)"
+          (cd /tmp/e12-gap-train && sha256sum --check train.sha256)
+          (cd /tmp/e12-gap-blind && sha256sum --check proposal.sha256)
+          mkdir -p /tmp/e12-gap-review
+          TRAIN_SHA="$(cut -d' ' -f1 /tmp/e12-gap-train/train.sha256)"
+          PROPOSAL_SHA="$(cut -d' ' -f1 /tmp/e12-gap-blind/proposal.sha256)"
+          python "$ROOT/e12_action_gap_study.py" review --training /tmp/e12-gap-train/train.json --training-sha "$TRAIN_SHA" --input /tmp/e12-gap-blind/proposal.json --input-sha "$PROPOSAL_SHA" --output /tmp/e12-gap-review/review.json | tee /tmp/e12-gap-review/review.log
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/e12-gap-review/review.json'))
+          if (p['cases'] != 18 or p['authority'] != 'DENY_ALL' or
+              p['production_accepted'] is not False or
+              p['natural_reasoning_gain_verified'] is not False or
+              p['matches_reference'] != p['certified']):
+              raise RuntimeError('research envelope or independent mathematical gate violated')
+          print('reviewed discrete cases',p['cases'],'certified',p['certified'],'numerical maps',p['map_evals'])
+          PY
+          (cd /tmp/e12-gap-review && sha256sum review.json > review.sha256)
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-gap-review-${{ matrix.source_profile }}
+          path: /tmp/e12-gap-review/
+          retention-days: 14
+          if-no-files-found: warn

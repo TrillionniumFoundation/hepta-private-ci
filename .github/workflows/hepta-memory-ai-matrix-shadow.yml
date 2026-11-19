@@ -7,6 +7,9 @@ on:
       - "qa/stem-bakeoff/test_memory_matrix_contract.py"
       - "docs/learning/MEMORY_A_I_MATRIX_V1.md"
       - ".github/workflows/hepta-memory-ai-matrix-shadow.yml"
+      - qa/stem-bakeoff/memory_ai_acceptance.py
+      - qa/stem-bakeoff/test_memory_ai_acceptance.py
+      - docs/learning/MEMORY_A_I_ACCEPTANCE.md
   workflow_dispatch:
 
 permissions:
@@ -37,6 +40,13 @@ jobs:
           set -euo pipefail
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_matrix_contract.py' -v
           python3 -m py_compile qa/stem-bakeoff/memory_matrix_contract.py qa/stem-bakeoff/test_memory_matrix_contract.py
+      - name: Test strict nine-arm census, provenance, source and cost refusals
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          python3 -m py_compile qa/stem-bakeoff/memory_ai_acceptance.py qa/stem-bakeoff/test_memory_ai_acceptance.py
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_ai_acceptance.py' -v
       - name: Confirm no repository mutation
         if: always()
         run: |

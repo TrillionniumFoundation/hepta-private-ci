@@ -1,0 +1,39 @@
+name: RR-SNN research Node verification
+
+on:
+  push:
+    branches: [dot/rr-snn-v3-verification-20261029]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rr-snn-research-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Checkout exact research candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+          sparse-checkout: research/rr_snn_v3
+      - name: Set up Node
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      - name: Run all research validators
+        env:
+          RR_RESULTS_DIR: ${{ runner.temp }}/rr-snn-results
+        run: node research/rr_snn_v3/verify_node.cjs
+      - name: Retain source identities and actual command output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rr-snn-node-${{ github.sha }}
+          path: ${{ runner.temp }}/rr-snn-results
+          if-no-files-found: error
+          retention-days: 14

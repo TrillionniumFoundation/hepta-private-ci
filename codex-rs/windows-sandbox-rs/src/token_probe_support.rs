@@ -9,8 +9,7 @@ pub(super) use windows_sys::Win32::Security::Authorization::SetNamedSecurityInfo
 pub(super) use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 pub(super) use windows_sys::Win32::Storage::FileSystem::DELETE;
 
-use super::super::RestrictingIdentity;
-use super::super::create_token_with_caps_from;
+use super::super::create_write_restricted_token_for_mic_probe;
 use anyhow::Result;
 use anyhow::anyhow;
 use std::ffi::c_void;
@@ -51,7 +50,5 @@ pub(super) unsafe fn write_restricted_probe_token_from(
     base_token: HANDLE,
     capabilities: &[*mut c_void],
 ) -> Result<HANDLE> {
-    unsafe {
-        create_token_with_caps_from(base_token, capabilities, &[], RestrictingIdentity::Exclude)
-    }
+    unsafe { create_write_restricted_token_for_mic_probe(base_token, capabilities) }
 }

@@ -1,0 +1,201 @@
+{
+  "scope": "Reviewed ordinary Windows union source identities; no native qualification asserted",
+  "source_pin_review": "Independent branch_scope function and guard comparison; all17 original Windows methods and all13 ACL plus7 token original test bodies unchanged",
+  "changed_source_pins": [
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/Cargo.toml",
+      "matches": false,
+      "expected": {
+        "bytes": 24200,
+        "mode": "100644",
+        "oid": "e6747d71be508707a49034f37c414bc87ffc91f9",
+        "sha256": "f3a728c53b49a9758c7940562f8f64834d4b52a5c9d4b0596a7b4a5e855f05fd"
+      },
+      "actual": {
+        "bytes": 25922,
+        "mode": "100644",
+        "oid": "fd1ac9a1a1a98b3f838a11911a2ca207ed03b2ec",
+        "sha256": "e4a06b14ebbcbe6955097d342bedca5327614b3751e1734311fed05efe30ed21"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/Cargo.toml",
+      "matches": false,
+      "expected": {
+        "bytes": 2438,
+        "mode": "100644",
+        "oid": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
+        "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+      },
+      "actual": {
+        "bytes": 2512,
+        "mode": "100644",
+        "oid": "f106f712797f64c4dffd41763f63e45671690d25",
+        "sha256": "4ea6b9e67ef95892e6fdcd30e361bb6acfc85d382a4754692768e50999cecae7"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 27925,
+        "mode": "100644",
+        "oid": "ed9d57cd624a78cfd509fff9ab090b1aa2c48feb",
+        "sha256": "cdb052674f0ffa35b90021b28299484715d64ba3d16b39a1f045174a9e841a6b"
+      },
+      "actual": {
+        "bytes": 28345,
+        "mode": "100644",
+        "oid": "1f9422163a55418e21ba7a52a505c54221f5a21b",
+        "sha256": "25be4323ae38b3b4ac4ab387aa9f0e2594a54a0d1c81fcee2e761234788ac2b4"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/acl_tests.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 25004,
+        "mode": "100644",
+        "oid": "a7bee25e26ffb910fbb166623aa5c3ddb2e6ba5c",
+        "sha256": "4aab332c6e9c6fc0b6aa3144f46955ed8ca948cb8f01a6043bbbda85ec0191fa"
+      },
+      "actual": {
+        "bytes": 28865,
+        "mode": "100644",
+        "oid": "c6a18d12929791c6e2c1b0b010bbb0dcc11424d6",
+        "sha256": "84473bbe64a4134970390633222c230fb389f5b5d5e60e3f90a52ec42be6942c"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 26062,
+        "mode": "100644",
+        "oid": "b8b8e5e7d03bf8f4b5c431b66500a39c2de44d83",
+        "sha256": "43167849dd825c12793938437b90152c4ac0719bdd1301d148875ef0a721c4d6"
+      },
+      "actual": {
+        "bytes": 28015,
+        "mode": "100644",
+        "oid": "25a96e9c10f5e8dc24a476e356c4d775c5fc6d14",
+        "sha256": "946ed7393a2e4135f00095a8017dd85f1ce280fe1164b0c06deeaac9decbe7d0"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 11219,
+        "mode": "100644",
+        "oid": "bed31c224c8eed3963e1674bf68d85238f956a23",
+        "sha256": "86bf7b5b7e6d5f284930b7caa38c66856169bcaa2c272be82eb476edf84c25ed"
+      },
+      "actual": {
+        "bytes": 12342,
+        "mode": "100644",
+        "oid": "2e25639e9c0e04a574a1ab8c321f7f9b5af32c48",
+        "sha256": "6480ef86e03c7aecf89bb36894b556d94d5ad4ea2a05ca7208f7b58a0ce19998"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/lib.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 31677,
+        "mode": "100644",
+        "oid": "68df8baa57633e6d0668eda3e9496c8293e82897",
+        "sha256": "fcecdd7436bba43464ccad1db1ec3acd61269f15b4a3fa503eede67bd062d286"
+      },
+      "actual": {
+        "bytes": 33727,
+        "mode": "100644",
+        "oid": "f54e3c820e710a67c3d26198bed69eec838265a6",
+        "sha256": "9a75d42181007287ae2263028943a31fa6140ba9a4c04b91528f73ccfe98a9e6"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 19180,
+        "mode": "100644",
+        "oid": "2c7e98537df8b8dc87e65dd8a2968ee3098adc46",
+        "sha256": "b6b37f065b81d9556e9e4f351e177b2d725989aa536c177b56485eab89376c66"
+      },
+      "actual": {
+        "bytes": 23728,
+        "mode": "100644",
+        "oid": "64f1cc5fb31a8d42a46e837a2c3fb7d8770d829c",
+        "sha256": "b01afbf7db4e2ac47e09d416efd95b2840de6ea1295f9479d37379153708dc24"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/token_probe_support.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 1999,
+        "mode": "100644",
+        "oid": "31978ababba00333856c0e40275ddbab914ed6c7",
+        "sha256": "8bbea9b387cd5642c843467db9f1d8c9300d5ddc7eabb4e529083cb1030ba4fb"
+      },
+      "actual": {
+        "bytes": 1945,
+        "mode": "100644",
+        "oid": "281d9096917dafe664920751e8a3add4fa14bc72",
+        "sha256": "a67efa64eb0a759790def336d292814d0755c6ea4a8ab0cc6ef5b63afae0994f"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 21699,
+        "mode": "100644",
+        "oid": "611c8071e8fa91fbe1f7b9a0c10462acd76472b6",
+        "sha256": "ef800fd9dc0d608d86de7b5a07ee0f2719f0e432063b84a02e90b2e1c95115d4"
+      },
+      "actual": {
+        "bytes": 38732,
+        "mode": "100644",
+        "oid": "5229b70c149e77ea68e33f57761f34ac2513ef66",
+        "sha256": "ec809c30a582bde4d78e0113a3709700d08ec37bfe36478f42ef6d8ac3d5d7b3"
+      }
+    },
+    {
+      "job": "acl-observe",
+      "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+      "matches": false,
+      "expected": {
+        "bytes": 8749,
+        "mode": "100644",
+        "oid": "b4e77c3f1bb5a92e1363705e5d5a91ed67c75dd5",
+        "sha256": "b51533866b11122040cbc8413d2d2fdcc8bb12cfb46842a3a963af827dbcc3d6"
+      },
+      "actual": {
+        "bytes": 9062,
+        "mode": "100644",
+        "oid": "11824e6499198a7f9fe24ebaca577b595ba7ba4b",
+        "sha256": "73318b67d37763722fc3d44bcc5ec746af0fb21cfec1d7cc6c549fbba74836a8"
+      }
+    }
+  ],
+  "lock": {
+    "old_fingerprint": "b319936b435c210079cce19095e7214de850b0f91a4b275553abaa7a129a700b",
+    "new_fingerprint": "b4a92d76441b72e5713f4370998b1ec90d8b2bd0b1670fc21523ef663c2711f1",
+    "sha256": "3b87221ff5ae147a333b3242296648d2ffecfa8440274bba2d609e5d7e53bde5",
+    "package_count": 1543,
+    "normalization": "Original exact anyhow record and exact Matrix path-utils single edge assertions preserved"
+  },
+  "unchanged": "All source snapshot/index cleanliness checks, exact native test names, mutation assertions, refusal guards, timeouts and qualification predicates"
+}

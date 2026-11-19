@@ -34,9 +34,12 @@ def sha(path):
 def terminal_gate():
     source = Path(__file__).with_name("c2_controller.py")
     tree = ast.parse(source.read_text(encoding="utf-8"), filename=str(source))
-    node = next(item for item in tree.body if isinstance(item, ast.FunctionDef)
-                and item.name == "terminal_result_gate")
-    module = ast.Module(body=[node], type_ignores=[])
+    # Extract both real source functions: the terminal gate now requires the
+    # stricter parent/contract JSON decoder after policy-lineage convergence.
+    nodes = [item for item in tree.body if isinstance(item, ast.FunctionDef)
+             and item.name in ("strict_c2_json_object", "terminal_result_gate")]
+    assert any(item.name == "terminal_result_gate" for item in nodes)
+    module = ast.Module(body=nodes, type_ignores=[])
     ns = dict(Path=Path, json=json, math=math, traceback=traceback,
               identity=identity, sha=sha, require=require, hashlib=hashlib)
     exec(compile(module, str(source), "exec"), ns)
@@ -106,6 +109,54 @@ class TerminalJSONAdmissionTests(unittest.TestCase):
 
     def test_invalid_utf8_is_rejected(self):
         row = self.run_raw(b'\xff')
+        self.assertFalse(row["terminal_evidence_complete"])
+
+
+    def with_digest_bound_parent(self, raw):
+        """Keep producer/parent digests coherent while varying signed parent JSON."""
+        self.parent_result.unlink(missing_ok=True)
+        self.parent_result.write_bytes(raw)
+        self.parent["result_sha256"] = sha(self.parent_result)
+        self.valid["parent_outer"] = dict(self.parent)
+        self.valid["parent_report"] = identity(self.parent_result)
+        return self.run_raw(json.dumps(self.valid).encode())
+
+    def test_digest_bound_parent_duplicate_keys_are_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":1},"model_configuration":{"width":16},'
+            b'"source_before":{"status":"fixed"}}')
+        self.assertFalse(row["terminal_evidence_complete"])
+        self.assertEqual(row["child_cpu_seconds"], 0.5)
+
+    def test_digest_bound_parent_nan_is_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":16},"source_before":{"status":"fixed"},'
+            b'"unrelated":NaN}')
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_digest_bound_parent_float_overflow_is_rejected(self):
+        row = self.with_digest_bound_parent(
+            b'{"model_configuration":{"width":16},"source_before":{"status":"fixed"},'
+            b'"unrelated":1e99999}')
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_parent_report_symlink_is_rejected_even_with_matching_digest(self):
+        target = self.root / "external-parent-result.json"
+        target.write_text(json.dumps({"model_configuration": {"width": 16},
+            "source_before": {"status": "fixed"}}), encoding="utf-8")
+        self.parent_result.unlink()
+        self.parent_result.symlink_to(target)
+        self.parent["result_sha256"] = sha(self.parent_result)
+        self.valid["parent_outer"] = dict(self.parent)
+        self.valid["parent_report"] = identity(self.parent_result)
+        row = self.run_raw(json.dumps(self.valid).encode())
+        self.assertFalse(row["terminal_evidence_complete"])
+
+    def test_digest_bound_parent_oversized_report_is_rejected(self):
+        raw = json.dumps({"model_configuration": {"width": 16},
+            "source_before": {"status": "fixed"},
+            "padding": "x" * (17 * 1024 * 1024)}).encode()
+        row = self.with_digest_bound_parent(raw)
         self.assertFalse(row["terminal_evidence_complete"])
 
 

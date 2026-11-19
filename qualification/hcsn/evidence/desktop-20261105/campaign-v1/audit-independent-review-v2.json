@@ -1,0 +1,61 @@
+{
+  "schema": "hcsn-independent-full-b-audit-review-v2",
+  "reviewed_utc": "2026-11-05T16:52:01.676643+00:00",
+  "mode": "Independent static review plus inspection of owner-produced synthetic control code and receipts; no Torch import, model training, CUDA execution or source edit by reviewer",
+  "files_sha256": {
+    "numeric-audit/cuda-full-b/audit_full_b_cuda.py": "5acbb1fa661a67db81fa5148c3c30293aaffb4827f363985e8e3905f17cd7b05",
+    "numeric-audit/cuda-full-b/PROTOCOL.json": "4983e126099ff69221e477012034058035463bd03f853f51cea1299de60fc1db",
+    "numeric-audit/cuda-full-b/check_non_torch.py": "c71d068df91fc871edc6713275f6dbe5bdd02f838211f4fb5eff25ce78d4c849",
+    "numeric-audit/cuda-full-b/negative-controls-v1/RESULT.json": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587",
+    "gated-execution/runtime_entry.py": "8cb10553073686301fc81e15e088e356ba16e41c3bc8a0a44d1b146c06b74fb4",
+    "gated-execution/campaign.py": "563694479c0dd5e6bfe76caae88583c9cf442f3ced86951f3cf390325114f1ea"
+  },
+  "resolved_findings": [
+    {
+      "id": "preimport-wrapper-conflict",
+      "resolution": "The current-process launch profile binds wrapper entry hash, PID, fresh-import assertions, target script hash/resolved path and exact arguments. Actual ten Torch/runtime flags, distribution snapshot and UUID/CVD are independently compared. The benchmark profile has a separate immutable link."
+    },
+    {
+      "id": "directory-entry-durability",
+      "resolution": "atomic_json fsyncs the final target parent and parents of newly created directories after durable file creation and create-only link or progress replacement."
+    }
+  ],
+  "static_checks": [
+    "All original 170 unique benchmark identities and fixed 20 B identities retained; noncompleted inputs remain unavailable rather than silently dropped.",
+    "Source-map, original and derived configuration, dataset bytes, checkpoint path/hash/identity/budget/state tensors and declared policy remain pinned.",
+    "Policy 0 and 1 use the same 20 B identity set and registered full budget.",
+    "Factor-one trace and original encoder forward are checked exactly, with sampled trace layout reused for readout.",
+    "GPU FP32 MSE reductions and accumulation use original 64-example blocks; refinements process fixed eight-example inference batches then regroup into 64-example blocks.",
+    "Factors 1, 2 and 4 retain physical refractory duration; CPU FP64 RMS is descriptive with no posthoc qualification threshold.",
+    "Initial output claim is exclusive and final/checkpoint receipts are create-only; progress is owner-checked and replaceable.",
+    "CUDA terminal synchronization precedes counter close; reset-specific peak memory and incomplete intervals retain truthful failure state.",
+    "Final audit status is completed only with all 20 B rows audited; source/checkpoint invalidation forces zero accepted audits."
+  ],
+  "owner_control_result": {
+    "sha256": "c6336a8a9014563e2c13214829ac88cfcea1f340951137c0c62340c0fb409587",
+    "passed": 21,
+    "failed": 0,
+    "scope": "Synthetic non-Torch admission and ownership controls; no model training, CUDA or numerical parity",
+    "independently_inspected_cases": [
+      "checkpoint_hash_mismatch",
+      "checkpoint_path_escape",
+      "runtime_link_mismatch",
+      "runtime_flags_drift",
+      "preimport_without_launch_profile",
+      "launch_binding_coverage",
+      "launch_entry_hash_mismatch",
+      "launch_stale_pid",
+      "launch_arguments_mismatch"
+    ],
+    "reviewer_reran_controls": false
+  },
+  "disposition": "No remaining blocking defect found in the reviewed external audit integration. Runtime and scientific claims remain gated on actual CUDA results.",
+  "not_established": [
+    "GPU numerical parity",
+    "actual full-shape CUDA execution",
+    "170-run completion",
+    "full-budget B task advantage or resolution independence",
+    "physical GPU energy availability",
+    "GitHub CI success"
+  ]
+}

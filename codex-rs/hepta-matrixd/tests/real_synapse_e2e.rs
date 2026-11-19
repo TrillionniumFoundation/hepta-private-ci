@@ -1,5 +1,9 @@
 #![cfg(all(unix, feature = "real-synapse-e2e"))]
 
+#[cfg(target_os = "linux")]
+#[path = "fixtures/linux_qualification/mod.rs"]
+mod linux_qualification;
+
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::OpenOptions;
@@ -183,6 +187,9 @@ impl Drop for QualificationMockServer {
 /// in-process App Server is substituted.
 #[test]
 fn real_synapse_dual_agentd_dual_matrixd_restart_and_isolation() -> Result<()> {
+    #[cfg(target_os = "linux")]
+    let environment = linux_qualification::required()?;
+    #[cfg(not(target_os = "linux"))]
     let environment = E2eEnvironment::required()?;
     environment.scrub_qualification_environment_before_spawning_product_processes();
     let fleet = FleetHarness::new(
@@ -315,7 +322,7 @@ async fn run_real_synapse_qualification_inner(
     .context("Agent B encrypted DM setup exceeded its bounded deadline")??;
     let room_a = encrypted_matrix_a.room_id().to_string();
     let room_b = encrypted_matrix_b.room_id().to_string();
-    for (label, mxid, password, device_id, room_id) in [
+    for (label, mxid, _password, _device_id, room_id) in [
         (
             "a",
             AGENT_A_MXID,
@@ -335,16 +342,38 @@ async fn run_real_synapse_qualification_inner(
         // This raw fixture establishes only membership and logs out
         // immediately. Product matrixd must still decrypt and send through a
         // distinct persistent Matrix SDK crypto store below.
-        timeout(
-            MATRIX_MEMBERSHIP_TIMEOUT,
-            join_room_with_password(
-                &environment.homeserver,
-                mxid,
-                password,
-                &format!("{device_id}-JOIN"),
-                room_id,
-            ),
-        )
+        timeout(MATRIX_MEMBERSHIP_TIMEOUT, async {
+            #[cfg(target_os = "linux")]
+            {
+                environment
+                    .registration_sessions
+                    .as_ref()
+                    .context("Linux registration sessions are required")?
+                    .join(
+                        &environment.homeserver,
+                        mxid,
+                        room_id,
+                        &[
+                            &human_a_device_id,
+                            &human_b_device_id,
+                            &agent_a_device_id,
+                            &agent_b_device_id,
+                        ],
+                    )
+                    .await
+            }
+            #[cfg(not(target_os = "linux"))]
+            {
+                join_room_with_password(
+                    &environment.homeserver,
+                    mxid,
+                    _password,
+                    &format!("{_device_id}-JOIN"),
+                    room_id,
+                )
+                .await
+            }
+        })
         .await
         .with_context(|| format!("Agent {label} encrypted room join timed out"))??;
         eprintln!("R4_STAGE agent_{label}_join:done");
@@ -401,24 +430,73 @@ async fn run_real_synapse_qualification_inner(
     let mut pair_a = fleet.wait_ready(&agent_a, agent_a_generation).await?;
     let peer_b = fleet.wait_ready(&agent_b, agent_b_generation).await?;
     eprintln!("R4_STAGE agent_pair_ready:done");
+    let post_ready_started = Instant::now();
+    eprintln!(
+        "R4_STAGE post_ready_record_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     fleet.record_release_copy_identity(&agent_a, "initial_pair_ready", Some(&pair_a))?;
+    eprintln!(
+        "R4_STAGE post_ready_record_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE post_ready_record_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     fleet.record_release_copy_identity(&agent_b, "initial_pair_ready", Some(&peer_b))?;
+    eprintln!(
+        "R4_STAGE post_ready_record_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     // Refresh both human crypto clients only after the two distinct product
     // devices are online, so each outbound Megolm session targets the exact
     // product device rather than relying on encrypted-history replay.
+    eprintln!(
+        "R4_STAGE post_ready_sync_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     encrypted_matrix_a.sync_once(0).await?;
+    eprintln!(
+        "R4_STAGE post_ready_sync_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE post_ready_sync_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     encrypted_matrix_b.sync_once(0).await?;
+    eprintln!(
+        "R4_STAGE post_ready_sync_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     // Synapse may return an empty long-poll without advancing `next_batch`.
     // Surviving multiple idle sync windows proves same-token commits do not
     // fence the product process.
     tokio::time::sleep(Duration::from_millis(2_500)).await;
+    eprintln!(
+        "R4_STAGE idle_ready_a:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     ensure!(
         fleet.wait_ready(&agent_a, agent_a_generation).await? == pair_a,
         "Agent A pair changed during idle sync"
     );
+    eprintln!(
+        "R4_STAGE idle_ready_a:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
+    eprintln!(
+        "R4_STAGE idle_ready_b:start elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
+    );
     ensure!(
         fleet.wait_ready(&agent_b, agent_b_generation).await? == peer_b,
         "Agent B pair changed during idle sync"
+    );
+    eprintln!(
+        "R4_STAGE idle_ready_b:done elapsed_ms={}",
+        post_ready_started.elapsed().as_millis()
     );
 
     let inbound_a_txn = format!("r4-{run_id}-inbound-a-1");
@@ -1152,11 +1230,11 @@ async fn wait_for_inbox_dispatch_completed(
     let store = MatrixDurableStore::open(layout, MatrixDurableConfig::default()).await?;
     let deadline = Instant::now() + MATRIX_REPLY_TIMEOUT;
     loop {
-        if let Some(record) = store.inbox_dispatch_for_turn(thread_id, turn_id).await? {
-            if record.state == InboxDispatchState::Completed {
-                store.close().await;
-                return Ok(());
-            }
+        if let Some(record) = store.inbox_dispatch_for_turn(thread_id, turn_id).await?
+            && record.state == InboxDispatchState::Completed
+        {
+            store.close().await;
+            return Ok(());
         }
         if Instant::now() >= deadline {
             let snapshot = store.snapshot(now_ms()?, 64).await?;
@@ -1471,10 +1549,7 @@ async fn wait_matrix_store_drained(layout: &HeptaAgentLayout) -> Result<()> {
         }
         if Instant::now() >= deadline {
             store.close().await;
-            bail!(
-                "Matrix durable queues did not drain before the fault step: {:?}",
-                snapshot
-            );
+            bail!("Matrix durable queues did not drain before the fault step: {snapshot:?}");
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
     }
@@ -1614,6 +1689,8 @@ struct E2eEnvironment {
     agent_a_password: String,
     agent_b_password: String,
     human_password: String,
+    #[cfg(target_os = "linux")]
+    registration_sessions: Option<linux_qualification::RegistrationSessions>,
     completion: QualificationCompletionAuthority,
 }
 
@@ -1754,6 +1831,8 @@ struct ReleaseCopyObservation {
 enum QualificationMode {
     Exact,
     Diagnostic,
+    #[cfg(target_os = "linux")]
+    LinuxExact,
 }
 
 impl QualificationMode {
@@ -1761,6 +1840,8 @@ impl QualificationMode {
         match self {
             Self::Exact => "exact",
             Self::Diagnostic => "diagnostic",
+            #[cfg(target_os = "linux")]
+            Self::LinuxExact => "linux_exact",
         }
     }
 }
@@ -2858,6 +2939,8 @@ impl E2eEnvironment {
             agent_a_password,
             agent_b_password,
             human_password,
+            #[cfg(target_os = "linux")]
+            registration_sessions: None,
             completion,
         })
     }
@@ -3596,7 +3679,26 @@ fn validate_bytes_sha256(bytes: &[u8], expected: &str, label: &str) -> Result<()
 }
 
 fn validate_file_sha256(path: &Path, expected: &str, label: &str) -> Result<()> {
-    validate_bytes_sha256(&std::fs::read(path)?, expected, label)
+    let diagnostic_started = matches!(
+        label,
+        "installed agentd release copy"
+            | "installed matrixd release copy"
+            | "release executable identity"
+            | "executed agentd release copy"
+            | "executed matrixd release copy"
+    )
+    .then(Instant::now);
+    if diagnostic_started.is_some() {
+        eprintln!("R4_HASH_START label={label:?}");
+    }
+    let bytes = std::fs::read(path)?;
+    let result = validate_bytes_sha256(&bytes, expected, label);
+    if let Some(started) = diagnostic_started {
+        let elapsed_ms = started.elapsed().as_millis();
+        let byte_count = bytes.len();
+        eprintln!("R4_HASH_DONE label={label:?} elapsed_ms={elapsed_ms} bytes={byte_count}");
+    }
+    result
 }
 
 fn capture_executable_file_identity(
@@ -5892,8 +5994,7 @@ impl EncryptedMatrixClient {
             .collect();
         if !fragments.is_empty() {
             eprintln!(
-                "R4_TOKEN_FRAGMENT sender={} final={:?} matches={:?}",
-                sender, final_body, fragments
+                "R4_TOKEN_FRAGMENT sender={sender} final={final_body:?} matches={fragments:?}"
             );
         }
         ensure!(
@@ -5938,6 +6039,7 @@ impl EncryptedMatrixClient {
     }
 }
 
+#[cfg(not(target_os = "linux"))]
 async fn join_room_with_password(
     homeserver: &str,
     mxid: &str,

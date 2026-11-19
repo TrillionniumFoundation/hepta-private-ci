@@ -1,0 +1,27 @@
+{
+  "analysis_seal_file_sha256": "cab641233391766fde2855d0ee48ac5d024d79d37113a1ace4981627126a9bec",
+  "analysis_seal_sha256": "8175d2a986a85c633b5a5af1aab502e0e23359a74980eb8b1e30246b5d9961ad",
+  "command": [
+    "/workspace/scratch/9bbd63a0445f/hcsn-venv/bin/python",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/audit_online.py",
+    "--study",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002",
+    "--base-results",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_network/results/study001",
+    "--cache-dir",
+    "/workspace/scratch/9bbd63a0445f/hcsn-data",
+    "--output",
+    "/workspace/scratch/9bbd63a0445f/hepta-hcsn/experiments/continuous_spiking_followup/results/study002/analysis/ONLINE_AUDIT.json",
+    "--replay-neural"
+  ],
+  "cwd": "/workspace/scratch/9bbd63a0445f/hepta-hcsn",
+  "environment_overrides": {
+    "MKL_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "prerequisite": "Run only after root ONLINE CPU-clear; all60 continuation cases completed.",
+  "schema": "hcsn-online-analysis-command-v1",
+  "scientific_source_seal_sha256": "52ce70744a2659e6f2690fc24e68f651d48f57d4a5064680e71d2694b0a2f673"
+}

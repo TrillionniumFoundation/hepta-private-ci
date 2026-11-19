@@ -1,0 +1,49 @@
+{
+  "baseline_commit": "afa0638cc26792772830f1f9ec87bc154a20a430",
+  "campaigns": {
+    "dynamic": {
+      "elapsed_seconds": 0.34114110200607684,
+      "evidence_tree_before_and_after": {
+        "files": 468,
+        "sha256": "bbf52bf2917a4fd670c5a6c2a51ed77e9b2596f9bffc8afc391bc8f4382b5006"
+      },
+      "truth_audit": {
+        "queries": 10500,
+        "scope": "frozen initial facts and MEM-1 v1 owner protocol; not execution attestation or independent real-task evaluation",
+        "status": "VERIFIED_REFERENCE_TRUTH"
+      },
+      "verified_runs": 35
+    },
+    "stationary": {
+      "elapsed_seconds": 0.2889572090061847,
+      "evidence_tree_before_and_after": {
+        "files": 468,
+        "sha256": "fb842490ef0b4d316af6fccd9d7a8e54eb26cd5b2134dab20c2ca8d62df6f6d8"
+      },
+      "truth_audit": {
+        "queries": 10500,
+        "scope": "frozen initial facts and MEM-1 v1 owner protocol; not execution attestation or independent real-task evaluation",
+        "status": "VERIFIED_REFERENCE_TRUTH"
+      },
+      "verified_runs": 35
+    }
+  },
+  "kernel_executed": false,
+  "native_binary_sha256": "59ea51c0c495a473a6cefc8c2a3649fc3d2263fa9d5c395e3d59982e5c1b0474",
+  "production_adoption": "NoUpdate",
+  "retained_evidence_modified": false,
+  "scientific_qualification": "HOLD",
+  "source_sha256": {
+    "scripts/memory_cell_mem1/audit_evidence.py": "75893c202c214f8bf03d1dc19401e7623055521c76d0cd11d122f4649b3ed345",
+    "scripts/memory_cell_mem1/audit_truth.py": "2f49acd4776fe37ddedadf0be2363a434ce583195508aa6d7f7392290617de58",
+    "scripts/memory_cell_mem1/environment.py": "fddc89c1d3536ed5712d034d8551819658800aff655b0683a4af2301e5136039",
+    "scripts/memory_cell_mem1/native.py": "6b40597a7852c0a77863cc4d99d1eff332c78feb9f60cfd26ee44dc7072b1eee",
+    "scripts/memory_cell_mem1/run.py": "a262813350583507bb01fe8210423d0076e9f0ea5b105058077440cf23a05e13",
+    "scripts/memory_cell_mem1/test_audit_truth.py": "9baad007e4dbe6953c434a648495bafcbd8ebc85bfba6b72b70089b1766a2da0",
+    "scripts/memory_cell_mem1/test_environment.py": "a03b14babce1b5c281e30e50329f4d6ff40c8619a2ba30fb0f0be6e537f31cd9",
+    "scripts/memory_cell_mem1/test_verify_results.py": "38a826fc55489f4bc8a5f71f134e6dfda919160f70c9ea676e9a4d66a8a67984",
+    "scripts/memory_cell_mem1/verify_results.py": "250d7866624f280e27712d5b1b47faf987d22d7b8532dd82fb7b2a78d4ab73d2"
+  },
+  "truth_queries": 21000,
+  "verified_runs": 70
+}

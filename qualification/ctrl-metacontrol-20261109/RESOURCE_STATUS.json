@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.ctrl.compute_resource_assessment.v1",
+  "observed_at_utc": "2026-11-09 11:41:51 UTC",
+  "scope": "CTRL #5450/#5451 lightweight CPU control fits; read-only resource assessment and original trace discovery",
+  "controller": {
+    "main_platform": "macos",
+    "mac_platform": "macos",
+    "rog_platform": "linux",
+    "rog_operator_execute": true,
+    "host_inventory_observed": true
+  },
+  "workload": {
+    "requested_accelerator": "cpu",
+    "reason": "Small control heads and limited fits; GPU benefit not established",
+    "remote_runtime_seconds_requested": 120
+  },
+  "help": {
+    "command": "hepta-compute --help",
+    "job_id": "1a1c0106ad8-5e21-8c1",
+    "idempotency_key": "ctrl5450-compute-help-20261109-v1",
+    "launch_observed": true,
+    "stdout_bytes": 768,
+    "stdout_complete_read": true,
+    "stderr_bytes": 0,
+    "cli_subcommands": [
+      "evaluate",
+      "plan",
+      "execute",
+      "inspect",
+      "collect"
+    ],
+    "terminal_process_status_observed": false,
+    "qualification": "Installed CLI help text was read; authoritative help exit status was not queried"
+  },
+  "evaluation": {
+    "command": "hepta-compute evaluate --accelerator cpu --timeout 120 --json",
+    "idempotency_key": "ctrl5450-compute-evaluate-cpu-20261109-v1",
+    "supervisor_timeout_seconds": 300,
+    "original_call_result": "MCP_REQUEST_TIMED_OUT",
+    "same_key_reconciliation_result": "MCP_REQUEST_TIMED_OUT",
+    "same_key_and_argv_preserved": true,
+    "durable_job_id_observed": false,
+    "provider_account_observations": [],
+    "provider_account_readiness": "UNKNOWN",
+    "cloud_allocation_state": "NOT_REQUESTED_BY_THIS_TASK",
+    "note": "Evaluation may have run despite transport timeout; no readiness or absence of readiness is inferred"
+  },
+  "original_trace_discovery": {
+    "broad_filename_scan": {
+      "job_id": "1a1c0118d51-5e21-8cb",
+      "idempotency_key": "ctrl5450-locate-evidence-20261109-v1",
+      "terminal_state": "timed_out",
+      "exit_code": 124,
+      "output_complete": true,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0,
+      "conclusion": "No paths observed; timeout does not show that raw traces are absent"
+    },
+    "direct_read": {
+      "outcome": "REFUSED_BEFORE_CHILD_SUBMISSION",
+      "reason": "direct SSH admitted capacity exhausted; no child submitted; no automatic retry"
+    },
+    "bounded_root_directory_list": {
+      "idempotency_key": "ctrl5450-evidence-root-list-20261109-v1",
+      "supervisor_timeout_seconds": 30,
+      "original_call_result": "MCP_REQUEST_TIMED_OUT",
+      "same_key_reconciliation_result": "MCP_REQUEST_TIMED_OUT",
+      "same_key_and_argv_preserved": true,
+      "durable_job_id_observed": false,
+      "paths_observed": []
+    },
+    "raw_5450_trace_paths_confirmed": false,
+    "original_material_config_confirmed": false,
+    "torch_interpreter_confirmed": false
+  },
+  "safety_of_followup": {
+    "provider_plan_calls": 0,
+    "provider_execute_calls": 0,
+    "provider_collect_calls": 0,
+    "provider_account_rotation": false,
+    "new_keys_after_unknown_effect": false,
+    "locks_or_private_ledgers_modified": false,
+    "credentials_copied": false
+  },
+  "qualification": "HOLD_REMOTE_EVIDENCE_ACCESS",
+  "implications": [
+    "Do not claim all Colab/Kaggle accounts unavailable: resource readiness was not observed.",
+    "Do not claim cloud training or GPU execution succeeded: no allocation or execution was requested.",
+    "Do not infer a native content root cause from unavailable raw records.",
+    "Further reconciliation must retain the original keys and current Mac controller."
+  ]
+}

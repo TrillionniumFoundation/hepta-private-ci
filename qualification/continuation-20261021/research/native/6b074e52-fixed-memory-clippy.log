@@ -1,0 +1,42 @@
+cargo clippy --tests {args}
+warning: use of deprecated associated function `tokio::io::unix::AsyncFd::<T>::new`: unsound due to lack of I/O safety; use `AsyncFd::register` instead (see https://github.com/tokio-rs/tokio/pull/8587)
+  --> utils/pty/src/unix_io.rs:38:60
+   |
+38 |         let fd = std::panic::catch_unwind(move || AsyncFd::new(File::from(fd)))
+   |                                                            ^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-utils-pty` (lib) generated 1 warning
+    Checking codex-hepta-memory v0.0.0 (/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs/hepta-memory)
+warning: this function has too many arguments (8/7)
+   --> hepta-memory/src/cognitive_intelligence_writer.rs:156:5
+    |
+156 | /     pub(crate) async fn correct_with_kg_tx(
+157 | |         &self,
+158 | |         transaction: &mut Transaction<'_, Sqlite>,
+159 | |         access: &CognitiveAccess,
+...   |
+164 | |         facts: &KgFactSetDraft,
+165 | |     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+    | |___________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (8/7)
+    --> hepta-memory/src/local_lease_outbox.rs:2618:5
+     |
+2618 | /     async fn append_outcome_in_transaction(
+2619 | |         &self,
+2620 | |         transaction: &mut Transaction<'_, Sqlite>,
+2621 | |         occurrence_key: String,
+...    |
+2626 | |         allow_exact_replay: bool,
+2627 | |     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+     | |___________________________________________________________^
+     |
+     = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: `codex-hepta-memory` (lib test) generated 2 warnings
+    Finished `dev` profile [unoptimized] target(s) in 22.49s

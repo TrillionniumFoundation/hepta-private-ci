@@ -36,6 +36,9 @@ thiserror = { workspace = true }
 tokio = { workspace = true, features = ["sync", "time"] }
 uuid = { workspace = true, features = ["serde", "v7"] }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+rustix = { workspace = true, features = ["event", "process"] }
+
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
 codex-hepta-fleet = { workspace = true }

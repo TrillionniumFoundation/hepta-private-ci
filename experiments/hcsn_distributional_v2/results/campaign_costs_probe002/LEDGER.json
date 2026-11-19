@@ -1,0 +1,1296 @@
+{
+  "by_group": {
+    "artifact_engineering": 0.698336961,
+    "artifacts": 70.283727914,
+    "calibration": 0.5431631729999999,
+    "content_aborted": 2227.4087320000003,
+    "content_engineering": 106.33558515000001,
+    "cost_audit": 0.408504903,
+    "distributional_native": 36.83326892,
+    "figures_and_reports": 5.435565561,
+    "lif": 15.736134,
+    "numerical": 42.026106,
+    "reproduction": 1.4297151940000001,
+    "runtime": 101.855430207,
+    "setup": 12.852884249999999,
+    "task": 106.56006766200001
+  },
+  "coverage_cutoff_utc": "2026-10-30T02:26:09.448710+00:00",
+  "excluded_nested_evidence": [],
+  "heldout_predictions_or_scores_read": false,
+  "input_receipts": [
+    {
+      "bytes": 4015,
+      "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+      "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+    },
+    {
+      "bytes": 16021,
+      "path": "experiments/hcsn_distributional_v2/results/NUMERICAL_COSTS.json",
+      "sha256": "d56e853b8c67502671f24d202822a45da24dd8dd2bff88c84b0836245af9bc34"
+    },
+    {
+      "bytes": 980,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_validation001/EXECUTION.json",
+      "sha256": "b69988fdd689cf64279c0d72dcb61f22384772fdf66b93e7114ed0aa923da991"
+    },
+    {
+      "bytes": 990,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_validation002/EXECUTION.json",
+      "sha256": "09cd4bbd32d0c925907fb96a600dc77b69db8bbf235daa332560d4102441e5e0"
+    },
+    {
+      "bytes": 1030,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_candidate003_run001/EXECUTION.json",
+      "sha256": "df7e29ec55fa5669950af431795ebaa07e8e5197d4344cb4d425fe358ed82cb2"
+    },
+    {
+      "bytes": 981,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_validation003/EXECUTION.json",
+      "sha256": "35ba1b275f749a0492720b4702781f7cb8b53d04c8bfd11e2a3d8b6cb748d6dd"
+    },
+    {
+      "bytes": 1113,
+      "path": "experiments/hcsn_distributional_v2/results/grid_control_validation001/EXECUTION.json",
+      "sha256": "eeaaf0277ed1164efc90e5d0351e7e80a11ea75ad5ef11af7380a81c00227022"
+    },
+    {
+      "bytes": 20555,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_development001/RESULTS.json",
+      "sha256": "1534ca79f7d3580f9c59eb705586fec6b7fec42f3d6d1029f354b08a20d16eb3"
+    },
+    {
+      "bytes": 25896,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_fixed_development001/RESULTS.json",
+      "sha256": "111327053ce64491e5bd0583f383fd84d69ff30310b6571bd3abba827b9025e1"
+    },
+    {
+      "bytes": 2559,
+      "path": "experiments/hcsn_distributional_v2/results/kernel_validation001/CAUSALITY_DISCOVERY.json",
+      "sha256": "a45e49c806b9acb5461893cf7eaf985b817447f449094fece30e013ca4ae8190"
+    },
+    {
+      "bytes": 2772,
+      "path": "experiments/hcsn_distributional_v2/results/content_engineering_COSTS.json",
+      "sha256": "438510111db413facb8d26aeca5639f9b16f525d8e9220ca5c376712b180763a"
+    },
+    {
+      "bytes": 1788,
+      "path": "experiments/hcsn_distributional_v2/results/content_preflight002_EXECUTION.json",
+      "sha256": "7d51d0ecb1db07437eabf4b80a8ffa70a9681b2ce87f1a5e7265537fe807168f"
+    },
+    {
+      "bytes": 1751,
+      "path": "experiments/hcsn_distributional_v2/results/content_tests002_EXECUTION.json",
+      "sha256": "9b1f99fb7ef497d8843178985a859f2f1a2bcf4f11b51fb02905386d6afeb262"
+    },
+    {
+      "bytes": 1751,
+      "path": "experiments/hcsn_distributional_v2/results/content_tests003_EXECUTION.json",
+      "sha256": "d59eb99afb4d1000c34202628589b24813d8ee6a8de3d8c02424b1899c5e4505"
+    },
+    {
+      "bytes": 1123,
+      "path": "experiments/hcsn_distributional_v2/results/content_tests004_EXECUTION.json",
+      "sha256": "981e9588f6a2ef07510d2219a6af7be90ec5afaf0724a60ed7ee0859847a4c52"
+    },
+    {
+      "bytes": 482,
+      "path": "experiments/hcsn_distributional_v2/results/content_domain_preflight003_EXECUTION.json",
+      "sha256": "2c15788988259f96f69b6cbfb93ac96ccf6f43c082436da76ebd71d37a2f0b6b"
+    },
+    {
+      "bytes": 28224,
+      "path": "experiments/hcsn_distributional_v2/results/content_preflight001.json",
+      "sha256": "4c5e2203f6f091e3dc4539b83fe4f26f589ad4504dc8489bd6c475413fd8898e"
+    },
+    {
+      "bytes": 784,
+      "path": "experiments/hcsn_distributional_v2/results/content_memory_probe001.json",
+      "sha256": "73ce0c7104dfa74f8c1fe5022853cfc1b0004d066f0863af222d288ace5e59d4"
+    },
+    {
+      "bytes": 797,
+      "path": "experiments/hcsn_distributional_v2/results/content_memory_probe002.json",
+      "sha256": "283b788d6a91115ebf94b71b31eb7b5002c0a8f983361ab9cf3a72fb59b56976"
+    },
+    {
+      "bytes": 687,
+      "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+      "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+    },
+    {
+      "bytes": 2049,
+      "path": "experiments/hcsn_distributional_v2/results/lif_supplement001/ENGINEERING_COSTS.json",
+      "sha256": "4742eab3386a283e2a01b7618abc7ac1da58110bcb9156f5002c06da9c486a42"
+    },
+    {
+      "bytes": 905,
+      "path": "experiments/hcsn_distributional_v2/results/lif_preflight001/EXECUTION.json",
+      "sha256": "2a4873d837852fe130c1f413bac385d53dc0b86eca911be45159b5f943be95ce"
+    },
+    {
+      "bytes": 896,
+      "path": "experiments/hcsn_distributional_v2/results/lif_preflight002/EXECUTION.json",
+      "sha256": "fcd45729afb353fb92b1fe3e9798932bc9190ec779cb2fddc62949fef1bf22e9"
+    },
+    {
+      "bytes": 1030,
+      "path": "experiments/hcsn_distributional_v2/results/lif_registration_failed001.json",
+      "sha256": "81f71ff1d33f768eed06ba84351860746c97f73714ccdcf1d53e2622c5d64f84"
+    },
+    {
+      "bytes": 1163,
+      "path": "experiments/hcsn_distributional_v2/results/lif_supplement001/REGISTRATION_EXECUTION.json",
+      "sha256": "5c9c495f9b37f2f233d8045a16e6b3214822b36860966feaa362efe90806d048"
+    },
+    {
+      "bytes": 373,
+      "path": "experiments/hcsn_distributional_v2/results/policy_gap001/EXECUTION.json",
+      "sha256": "02e65232f0ecdb741ea163b916735ae9ace35940e0852f6aee992bad1881f29d"
+    },
+    {
+      "bytes": 321,
+      "path": "experiments/hcsn_distributional_v2/results/content_integrity_pilot002_EXECUTION.json",
+      "sha256": "ddae5555ec912298f289ebac5c52ffa74a01051a7f3b16df84bc8244175b13be"
+    },
+    {
+      "bytes": 877,
+      "path": "experiments/hcsn_distributional_v2/results/content001/SCHEDULER_EXECUTION.json",
+      "sha256": "9fd11e5335a5a8dcbfed917d82aef9f78e8b9c213477869d496031a93793dbff"
+    },
+    {
+      "bytes": 761,
+      "path": "experiments/hcsn_distributional_v2/results/runtime001/SUITE_EXECUTION.json",
+      "sha256": "d1ab140746825b9c3c4feec5d885bda02d15c1873679e63964ea9b6b32571f78"
+    },
+    {
+      "bytes": 402,
+      "path": "experiments/hcsn_distributional_v2/results/runtime_tests001_EXECUTION.json",
+      "sha256": "213c6cc95a55dbe3cfb5a19f0284e5f29eefa733fdca2b41a410672ec0c4ef8c"
+    },
+    {
+      "bytes": 315,
+      "path": "experiments/hcsn_distributional_v2/results/runtime_review001/EXECUTION.json",
+      "sha256": "7d8340edf43f3425c26025fae4911a8b8aa7ac2c87d57dd8cc4993491741ad84"
+    },
+    {
+      "bytes": 846,
+      "path": "experiments/hcsn_distributional_v2/results/task_value001/CAMPAIGN_EXECUTION.json",
+      "sha256": "c6cdbf547342e64c0817d6f27b674c605c1d30b9c6eb3bced02cb6d12a3e5f7f"
+    },
+    {
+      "bytes": 945,
+      "path": "experiments/hcsn_distributional_v2/results/task_value002/CAMPAIGN_EXECUTION.json",
+      "sha256": "51789e368f4e865993d72495eb4e7cfda5862710791a01db3a28fd7c3550436d"
+    },
+    {
+      "bytes": 228,
+      "path": "experiments/hcsn_distributional_v2/results/task_value002/ANALYSIS_PARENT_EXECUTION.json",
+      "sha256": "a0818289f782bbb61a029a9345144612afbf33d80e70d0c39e1f621618503717"
+    },
+    {
+      "bytes": 353,
+      "path": "experiments/hcsn_distributional_v2/results/task_tabular_cost001/EXECUTION.json",
+      "sha256": "5ec4846d6ed1b99a19a694b4e1364ec4e7154d446c2473e4609bfb643e0acafd"
+    },
+    {
+      "bytes": 475,
+      "path": "experiments/hcsn_distributional_v2/results/independent_execution_review001/EXECUTION.json",
+      "sha256": "1ef0557a3925df8b66fb8643391cd720f7e3314fc3a83f54b86bbce219666a3a"
+    },
+    {
+      "bytes": 285,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/COORDINATOR_EXECUTION.json",
+      "sha256": "a855899a2a673f8f897d2332b289d0b84eb895d371a049597c7451dd48331085"
+    },
+    {
+      "bytes": 576,
+      "path": "experiments/hcsn_distributional_v2/results/task_future_calibration001/EXECUTION.json",
+      "sha256": "42ebaa2affc29551dcb40e78dbf096c70913c40a79085cab4b7e7f85dd7af7b9"
+    },
+    {
+      "bytes": 209,
+      "path": "experiments/hcsn_distributional_v2/results/task_future_calibration001/PARENT_EXECUTION.json",
+      "sha256": "c1df0a1b6e516c3325b593660f1c07fa1f075a1bac6a1ae56696ed0c06958435"
+    },
+    {
+      "bytes": 389,
+      "path": "experiments/hcsn_distributional_v2/reproduction_receipts/list001/EXECUTION.json",
+      "sha256": "81bd5b661ac72101556b89410ddc0eabde02e535511a4ea9cd2930befcc2aa3c"
+    },
+    {
+      "bytes": 283,
+      "path": "experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/EXECUTION.json",
+      "sha256": "182985a31284c7fc860bca7588f2b0e205620b3db7b5fb5143daed19bfe23759"
+    },
+    {
+      "bytes": 802,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/prepare_EXECUTION.json",
+      "sha256": "986903987e016ce07d47eebac806e8801d931ff80fff39dfcf00966ae9fb4ffe"
+    },
+    {
+      "bytes": 802,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/evaluate_EXECUTION.json",
+      "sha256": "ad857705f02f14e0a2ced1ac6bdf178c5fbfb9bd456282f6e17d059a2df5e116"
+    },
+    {
+      "bytes": 834,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_reference_EXECUTION.json",
+      "sha256": "4c9d2c8a5bd945720303f28c2ef41c6bcc7b4caa6042ad6b584657ad6fbd5b86"
+    },
+    {
+      "bytes": 830,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_active_EXECUTION.json",
+      "sha256": "fd821d77509f3dddffd92686e3e3c8f19a31d5fbf6d71b568579b2e7505d62ea"
+    },
+    {
+      "bytes": 846,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/resume_active_EXECUTION.json",
+      "sha256": "7ca4435a35e684636987996701365be90e8faf41504b0f3b3f4248f12391bbeb"
+    },
+    {
+      "bytes": 839,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_quiet_EXECUTION.json",
+      "sha256": "c8c3a91f5587fba4328ccb9b13258d443c08dbc439d50444fa88f862d170e2bf"
+    },
+    {
+      "bytes": 855,
+      "path": "experiments/hcsn_distributional_v2/results/distributional_native001/resume_quiet_EXECUTION.json",
+      "sha256": "0e54a09043e1e24292261637058919001d05e2d7d2bb0c2b41731dac876a565f"
+    },
+    {
+      "bytes": 896,
+      "path": "experiments/hcsn_distributional_v2/results/figures001/MANIFEST.json",
+      "sha256": "afad93573b97ed04fa606aa4b4b826c40eee1bc74567b8d6224b15d5acd00d5e"
+    },
+    {
+      "bytes": 697,
+      "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests001/EXECUTION.json",
+      "sha256": "7aecc9309ed5eb326cd40e95fa57ddee6b537ea93b6194b37cc83400ca912933"
+    },
+    {
+      "bytes": 940,
+      "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests002/EXECUTION.json",
+      "sha256": "d083b9459e3505a90c5e5ef921d3e8a2707683fc9b03eedd6f38775b99942ac6"
+    },
+    {
+      "bytes": 94253,
+      "path": "experiments/hcsn_distributional_v2/artifacts/content_aborted001.json",
+      "sha256": "612f14b5482e85ec3b39ddb870d770e00b32fb772105a2539b6f303f28d2c5dc"
+    },
+    {
+      "bytes": 959,
+      "path": "experiments/hcsn_distributional_v2/artifacts/content_aborted001_EXECUTION.json",
+      "sha256": "e0ce641a3fe754ffd2238020e8b0d73e04c2cf9496d5afdb13184c4cf375495d"
+    },
+    {
+      "bytes": 100209,
+      "path": "experiments/hcsn_distributional_v2/artifacts/execution_v2_001.json",
+      "sha256": "3e761d346e8b72c7b6c3b08bdea9c438ccdec7e7d82f2608c644a767ad8bb294"
+    },
+    {
+      "bytes": 1075,
+      "path": "experiments/hcsn_distributional_v2/artifacts/execution_v2_001_EXECUTION.json",
+      "sha256": "054d10cdcf1f78d15c072e8cb0b07bfb4924101d41b7b88197899b87756d48bd"
+    },
+    {
+      "bytes": 1209729,
+      "path": "experiments/hcsn_distributional_v2/artifacts/task_value_and_control002.json",
+      "sha256": "0a165a8a60dc47d6f20f8ffe067ffc12aaf21ac37cc797f8fcea49418f3a611b"
+    },
+    {
+      "bytes": 1134,
+      "path": "experiments/hcsn_distributional_v2/artifacts/task_value_and_control002_EXECUTION.json",
+      "sha256": "58e98a6ca9830a34b20680b84f1fda2fb9c2b0b5b84710d8cd684df2eda159ec"
+    },
+    {
+      "bytes": 3542,
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_test_scopes002.json",
+      "sha256": "49f37acdb6315f78452bf28da33292df114603d8034d81b18ec1ce4228c6448b"
+    },
+    {
+      "bytes": 818,
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+      "sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688"
+    },
+    {
+      "bytes": 810,
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+      "sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5"
+    },
+    {
+      "bytes": 890,
+      "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+      "sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f"
+    }
+  ],
+  "missing_required_inputs": [
+    "experiments/hcsn_distributional_v2/artifacts/ARCHIVE_COMPLETION.json",
+    "experiments/hcsn_distributional_v2/results/content002/COMPLETE.json",
+    "experiments/hcsn_distributional_v2/results/content002/SCHEDULER_EXECUTION.json",
+    "experiments/hcsn_distributional_v2/results/content_analysis002/EXECUTION.json",
+    "experiments/hcsn_distributional_v2/results/lif_cost_receipts001/RECEIPTS.json",
+    "results/content_checkpoint_archives/instances/*_EXECUTION.json (final watcher self CPU)"
+  ],
+  "new_training_or_inference": false,
+  "observed_cpu_lower_bound_seconds": 2728.4072218950005,
+  "quantity_name": "observed lower bound",
+  "required_receipt_coverage_is_not_complete_research_cost": true,
+  "schema": "hcsn-observed-campaign-costs.v1",
+  "scope_rows": [
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.48128899999999997,
+      "receipt": {
+        "cpu_seconds": 0.48128899999999997,
+        "field": "/records/0/child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "One original-data/v1 archive restoration child; prior historical training is excluded.",
+      "scope_id": "setup_original_data",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 4.091035,
+      "receipt": {
+        "cpu_seconds": 4.091035,
+        "field": "/records/1/child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "One original-data/v1 archive restoration child; prior historical training is excluded.",
+      "scope_id": "setup_auxiliary_evidence",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 7.510866,
+      "receipt": {
+        "cpu_seconds": 7.510866,
+        "field": "/records/2/child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "One original-data/v1 archive restoration child; prior historical training is excluded.",
+      "scope_id": "setup_study001_evidence",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.415431,
+      "receipt": {
+        "cpu_seconds": 0.415431,
+        "field": "/records/3/child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "One original-data/v1 archive restoration child; prior historical training is excluded.",
+      "scope_id": "setup_conditional001_evidence",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.34623,
+      "receipt": {
+        "cpu_seconds": 0.34623,
+        "field": "/records/4/child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "One original-data/v1 archive restoration child; prior historical training is excluded.",
+      "scope_id": "setup_equal_updates_core002_evidence",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "setup",
+      "measurement_kind": "partial_process_body_timer",
+      "observed_cpu_seconds": 0.008033250000000002,
+      "receipt": {
+        "cpu_seconds": 0.008033250000000002,
+        "field": "/coordinator_cpu_through_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/setup001/RESTORE.json",
+        "sha256": "4647488c0992527e7e16777f99e05d04b6d505757663998c1d94ff93e88b80d5"
+      },
+      "scope": "Measured restoration coordinator window; startup/exit remainder is unmeasured.",
+      "scope_id": "setup_coordinator",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [
+        "All kernel/QVI test, MC, probe, and process-to-receipt timers nested in those children"
+      ],
+      "group": "numerical",
+      "measurement_kind": "explicit_disjoint_receipt_aggregate",
+      "observed_cpu_seconds": 40.282132,
+      "receipt": {
+        "cpu_seconds": 40.282132,
+        "field": "/totals/sum_of_disjoint_recorded_cpu_scopes_lower_bound",
+        "path": "experiments/hcsn_distributional_v2/results/NUMERICAL_COSTS.json",
+        "sha256": "d56e853b8c67502671f24d202822a45da24dd8dd2bff88c84b0836245af9bc34"
+      },
+      "scope": "Five complete numerical children, their separately measured wrapper windows, and three separate partial development/discovery intervals.",
+      "scope_id": "numerical_aggregate",
+      "verified_nested_components": [
+        {
+          "cpu_seconds": 4.996561,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation001/EXECUTION.json",
+          "sha256": "b69988fdd689cf64279c0d72dcb61f22384772fdf66b93e7114ed0aa923da991"
+        },
+        {
+          "cpu_seconds": 0.0005493479999999981,
+          "field": "/coordinator_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation001/EXECUTION.json",
+          "sha256": "b69988fdd689cf64279c0d72dcb61f22384772fdf66b93e7114ed0aa923da991"
+        },
+        {
+          "cpu_seconds": 5.216469999999999,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation002/EXECUTION.json",
+          "sha256": "09cd4bbd32d0c925907fb96a600dc77b69db8bbf235daa332560d4102441e5e0"
+        },
+        {
+          "cpu_seconds": 0.0005264040000000011,
+          "field": "/coordinator_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation002/EXECUTION.json",
+          "sha256": "09cd4bbd32d0c925907fb96a600dc77b69db8bbf235daa332560d4102441e5e0"
+        },
+        {
+          "cpu_seconds": 8.920760999999999,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_candidate003_run001/EXECUTION.json",
+          "sha256": "df7e29ec55fa5669950af431795ebaa07e8e5197d4344cb4d425fe358ed82cb2"
+        },
+        {
+          "cpu_seconds": 0.0010581449999999964,
+          "field": "/coordinator_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_candidate003_run001/EXECUTION.json",
+          "sha256": "df7e29ec55fa5669950af431795ebaa07e8e5197d4344cb4d425fe358ed82cb2"
+        },
+        {
+          "cpu_seconds": 8.39987,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation003/EXECUTION.json",
+          "sha256": "35ba1b275f749a0492720b4702781f7cb8b53d04c8bfd11e2a3d8b6cb748d6dd"
+        },
+        {
+          "cpu_seconds": 0.0004580820000000055,
+          "field": "/coordinator_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation003/EXECUTION.json",
+          "sha256": "35ba1b275f749a0492720b4702781f7cb8b53d04c8bfd11e2a3d8b6cb748d6dd"
+        },
+        {
+          "cpu_seconds": 3.898521,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/grid_control_validation001/EXECUTION.json",
+          "sha256": "eeaaf0277ed1164efc90e5d0351e7e80a11ea75ad5ef11af7380a81c00227022"
+        },
+        {
+          "cpu_seconds": 0.0008170440000000029,
+          "field": "/coordinator_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/grid_control_validation001/EXECUTION.json",
+          "sha256": "eeaaf0277ed1164efc90e5d0351e7e80a11ea75ad5ef11af7380a81c00227022"
+        },
+        {
+          "cpu_seconds": 4.256470057,
+          "field": "/process_cpu_to_receipt",
+          "measurement_kind": "process_self_cpu_through_receipt",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_development001/RESULTS.json",
+          "sha256": "1534ca79f7d3580f9c59eb705586fec6b7fec42f3d6d1029f354b08a20d16eb3"
+        },
+        {
+          "cpu_seconds": 4.56206583,
+          "field": "/process_cpu_to_receipt",
+          "measurement_kind": "process_self_cpu_through_receipt",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_fixed_development001/RESULTS.json",
+          "sha256": "111327053ce64491e5bd0583f383fd84d69ff30310b6571bd3abba827b9025e1"
+        },
+        {
+          "cpu_seconds": 0.028004089999999815,
+          "field": "/measured_probe_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/kernel_validation001/CAUSALITY_DISCOVERY.json",
+          "sha256": "a45e49c806b9acb5461893cf7eaf985b817447f449094fece30e013ca4ae8190"
+        }
+      ]
+    },
+    {
+      "excluded_nested_scopes": [
+        "Nested per-step preflight timings; main content001/content002 are separate processes"
+      ],
+      "group": "content_engineering",
+      "measurement_kind": "explicit_disjoint_receipt_aggregate",
+      "observed_cpu_seconds": 101.78753115,
+      "receipt": {
+        "cpu_seconds": 101.78753115,
+        "field": "/recorded_engineering_cpu_lower_bound_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/content_engineering_COSTS.json",
+        "sha256": "438510111db413facb8d26aeca5639f9b16f525d8e9220ca5c376712b180763a"
+      },
+      "scope": "Distinct preflight/test processes plus separately measured early process-body and six optimizer-step windows.",
+      "scope_id": "content_engineering",
+      "verified_nested_components": [
+        {
+          "cpu_seconds": 10.318546000000001,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/content_preflight002_EXECUTION.json",
+          "sha256": "7d51d0ecb1db07437eabf4b80a8ffa70a9681b2ce87f1a5e7265537fe807168f"
+        },
+        {
+          "cpu_seconds": 4.478607,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/content_tests002_EXECUTION.json",
+          "sha256": "9b1f99fb7ef497d8843178985a859f2f1a2bcf4f11b51fb02905386d6afeb262"
+        },
+        {
+          "cpu_seconds": 4.530425,
+          "field": "/complete_child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/content_tests003_EXECUTION.json",
+          "sha256": "d59eb99afb4d1000c34202628589b24813d8ee6a8de3d8c02424b1899c5e4505"
+        },
+        {
+          "cpu_seconds": 5.385713,
+          "field": "/child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/content_tests004_EXECUTION.json",
+          "sha256": "981e9588f6a2ef07510d2219a6af7be90ec5afaf0724a60ed7ee0859847a4c52"
+        },
+        {
+          "cpu_seconds": 54.63629,
+          "field": "/child_cpu_seconds",
+          "measurement_kind": "complete_process_tree_wait4",
+          "path": "experiments/hcsn_distributional_v2/results/content_domain_preflight003_EXECUTION.json",
+          "sha256": "2c15788988259f96f69b6cbfb93ac96ccf6f43c082436da76ebd71d37a2f0b6b"
+        },
+        {
+          "cpu_seconds": 5.821801653,
+          "field": "/process_cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_preflight001.json",
+          "sha256": "4c5e2203f6f091e3dc4539b83fe4f26f589ad4504dc8489bd6c475413fd8898e"
+        },
+        {
+          "cpu_seconds": 5.684260408,
+          "field": "/cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_memory_probe001.json",
+          "sha256": "73ce0c7104dfa74f8c1fe5022853cfc1b0004d066f0863af222d288ace5e59d4"
+        },
+        {
+          "cpu_seconds": 8.049329773,
+          "field": "/cpu_seconds",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_memory_probe002.json",
+          "sha256": "283b788d6a91115ebf94b71b31eb7b5002c0a8f983361ab9cf3a72fb59b56976"
+        },
+        {
+          "cpu_seconds": 0.5269161549999999,
+          "field": "/rows/0/complete_training_step_cpu_seconds/0",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        },
+        {
+          "cpu_seconds": 0.4840973869999998,
+          "field": "/rows/0/complete_training_step_cpu_seconds/1",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        },
+        {
+          "cpu_seconds": 0.38239548,
+          "field": "/rows/0/complete_training_step_cpu_seconds/2",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        },
+        {
+          "cpu_seconds": 0.4739843100000001,
+          "field": "/rows/1/complete_training_step_cpu_seconds/0",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        },
+        {
+          "cpu_seconds": 0.5393151679999999,
+          "field": "/rows/1/complete_training_step_cpu_seconds/1",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        },
+        {
+          "cpu_seconds": 0.4758498160000002,
+          "field": "/rows/1/complete_training_step_cpu_seconds/2",
+          "measurement_kind": "partial_process_body_timer",
+          "path": "experiments/hcsn_distributional_v2/results/content_operator_probe001.json",
+          "sha256": "a1e82a94d05a723821448d9a96920defda24938628ab6e472828f24964b001cc"
+        }
+      ]
+    },
+    {
+      "excluded_nested_scopes": [
+        "Failing dispatch probe children contained in preflights; nominal future training budget"
+      ],
+      "group": "lif",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 15.736134,
+      "receipt": {
+        "cpu_seconds": 15.736134,
+        "field": "/complete_prelaunch_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/lif_supplement001/ENGINEERING_COSTS.json",
+        "sha256": "4742eab3386a283e2a01b7618abc7ac1da58110bcb9156f5002c06da9c486a42"
+      },
+      "scope": "Four independent preflight/registration children, including failed registration.",
+      "scope_id": "lif_engineering",
+      "verified_nested_components": [
+        {
+          "cpu_seconds": 5.026590000000001,
+          "field": "/complete_child_cpu_seconds",
+          "path": "experiments/hcsn_distributional_v2/results/lif_preflight001/EXECUTION.json",
+          "sha256": "2a4873d837852fe130c1f413bac385d53dc0b86eca911be45159b5f943be95ce"
+        },
+        {
+          "cpu_seconds": 5.478468,
+          "field": "/complete_child_cpu_seconds",
+          "path": "experiments/hcsn_distributional_v2/results/lif_preflight002/EXECUTION.json",
+          "sha256": "fcd45729afb353fb92b1fe3e9798932bc9190ec779cb2fddc62949fef1bf22e9"
+        },
+        {
+          "cpu_seconds": 2.58221,
+          "field": "/complete_child_cpu_seconds",
+          "path": "experiments/hcsn_distributional_v2/results/lif_registration_failed001.json",
+          "sha256": "81f71ff1d33f768eed06ba84351860746c97f73714ccdcf1d53e2622c5d64f84"
+        },
+        {
+          "cpu_seconds": 2.648866,
+          "field": "/complete_child_cpu_seconds",
+          "path": "experiments/hcsn_distributional_v2/results/lif_supplement001/REGISTRATION_EXECUTION.json",
+          "sha256": "5c9c495f9b37f2f233d8045a16e6b3214822b36860966feaa362efe90806d048"
+        }
+      ]
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "numerical",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 1.743974,
+      "receipt": {
+        "cpu_seconds": 1.743974,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/policy_gap001/EXECUTION.json",
+        "sha256": "02e65232f0ecdb741ea163b916735ae9ace35940e0852f6aee992bad1881f29d"
+      },
+      "scope": "Independent root policy-gap probe.",
+      "scope_id": "policy_gap",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "content_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 4.5480540000000005,
+      "receipt": {
+        "cpu_seconds": 4.5480540000000005,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/content_integrity_pilot002_EXECUTION.json",
+        "sha256": "ddae5555ec912298f289ebac5c52ffa74a01051a7f3b16df84bc8244175b13be"
+      },
+      "scope": "Separate read-only integrity audit pilot.",
+      "scope_id": "content_integrity_pilot",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "content_aborted",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 2227.4087320000003,
+      "receipt": {
+        "cpu_seconds": 2227.4087320000003,
+        "field": "/wait4_total_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/content001/SCHEDULER_EXECUTION.json",
+        "sha256": "9fd11e5335a5a8dcbfed917d82aef9f78e8b9c213477869d496031a93793dbff"
+      },
+      "scope": "Complete aborted scheduler tree, including all started workers; worker and training timers are nested.",
+      "scope_id": "content001_aborted",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "runtime",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 98.293059,
+      "receipt": {
+        "cpu_seconds": 98.293059,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/runtime001/SUITE_EXECUTION.json",
+        "sha256": "d1ab140746825b9c3c4feec5d885bda02d15c1873679e63964ea9b6b32571f78"
+      },
+      "scope": "Outer runtime suite including all microbenchmark/recovery children and nested resume processes.",
+      "scope_id": "runtime_suite",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "runtime",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 3.3795249999999997,
+      "receipt": {
+        "cpu_seconds": 3.3795249999999997,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/runtime_tests001_EXECUTION.json",
+        "sha256": "213c6cc95a55dbe3cfb5a19f0284e5f29eefa733fdca2b41a410672ec0c4ef8c"
+      },
+      "scope": "Independent runtime contract tests.",
+      "scope_id": "runtime_tests",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "runtime",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.182846207,
+      "receipt": {
+        "cpu_seconds": 0.182846207,
+        "field": "/whole_analysis_self_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/runtime_review001/EXECUTION.json",
+        "sha256": "7d8340edf43f3425c26025fae4911a8b8aa7ac2c87d57dd8cc4993491741ad84"
+      },
+      "scope": "Read-only runtime review through receipt.",
+      "scope_id": "runtime_review",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "task",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 5.395364,
+      "receipt": {
+        "cpu_seconds": 5.395364,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/task_value001/CAMPAIGN_EXECUTION.json",
+        "sha256": "c6cdbf547342e64c0817d6f27b674c605c1d30b9c6eb3bced02cb6d12a3e5f7f"
+      },
+      "scope": "Failed task campaign tree, including prepare/preflight and registration failure.",
+      "scope_id": "task_failed001",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "task",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 97.56292400000001,
+      "receipt": {
+        "cpu_seconds": 97.56292400000001,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/task_value002/CAMPAIGN_EXECUTION.json",
+        "sha256": "51789e368f4e865993d72495eb4e7cfda5862710791a01db3a28fd7c3550436d"
+      },
+      "scope": "Task campaign tree including every phase and waited native descendant.",
+      "scope_id": "task_campaign002",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "task",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 2.473637276,
+      "receipt": {
+        "cpu_seconds": 2.473637276,
+        "field": "/whole_parent_self_cpu_seconds_through_report",
+        "path": "experiments/hcsn_distributional_v2/results/task_value002/ANALYSIS_PARENT_EXECUTION.json",
+        "sha256": "a0818289f782bbb61a029a9345144612afbf33d80e70d0c39e1f621618503717"
+      },
+      "scope": "Supervisor plus complete in-process final audit/report through receipt; REPORT_EXECUTION body is nested.",
+      "scope_id": "task_analysis_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "task",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.057944109,
+      "receipt": {
+        "cpu_seconds": 0.057944109,
+        "field": "/whole_analysis_self_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/task_tabular_cost001/EXECUTION.json",
+        "sha256": "5ec4846d6ed1b99a19a694b4e1364ec4e7154d446c2473e4609bfb643e0acafd"
+      },
+      "scope": "Actual CPU used to calculate deployment sensitivities; hypothetical scenario costs are not charges.",
+      "scope_id": "task_tabular_addendum",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "task",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 1.070198277,
+      "receipt": {
+        "cpu_seconds": 1.070198277,
+        "field": "/analysis_self_cpu_seconds_from_process_start",
+        "path": "experiments/hcsn_distributional_v2/results/independent_execution_review001/EXECUTION.json",
+        "sha256": "1ef0557a3925df8b66fb8643391cd720f7e3314fc3a83f54b86bbce219666a3a"
+      },
+      "scope": "Independent task/native audit through receipt; after-input body timer is nested.",
+      "scope_id": "task_independent_review",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 2.22626592,
+      "receipt": {
+        "cpu_seconds": 2.22626592,
+        "field": "/whole_self_cpu_seconds_through_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/COORDINATOR_EXECUTION.json",
+        "sha256": "a855899a2a673f8f897d2332b289d0b84eb895d371a049597c7451dd48331085"
+      },
+      "scope": "v2 engineering-native coordinator, separate from its seven measured phases.",
+      "scope_id": "native_coordinator",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "calibration",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.40221799999999996,
+      "receipt": {
+        "cpu_seconds": 0.40221799999999996,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/task_future_calibration001/EXECUTION.json",
+        "sha256": "42ebaa2affc29551dcb40e78dbf096c70913c40a79085cab4b7e7f85dd7af7b9"
+      },
+      "scope": "Read-only paired future-reward calibration worker.",
+      "scope_id": "calibration_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "calibration",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.140945173,
+      "receipt": {
+        "cpu_seconds": 0.140945173,
+        "field": "/whole_self_cpu_seconds_through_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/task_future_calibration001/PARENT_EXECUTION.json",
+        "sha256": "c1df0a1b6e516c3325b593660f1c07fa1f075a1bac6a1ae56696ed0c06958435"
+      },
+      "scope": "Calibration coordinator's separate self CPU.",
+      "scope_id": "calibration_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "reproduction",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.149942,
+      "receipt": {
+        "cpu_seconds": 0.149942,
+        "field": "/complete_worker_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/reproduction_receipts/list001/EXECUTION.json",
+        "sha256": "81bd5b661ac72101556b89410ddc0eabde02e535511a4ea9cd2930befcc2aa3c"
+      },
+      "scope": "Artifact catalog worker; WORKER_EXECUTION records this same process.",
+      "scope_id": "reproduction_list_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "reproduction",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.682622001,
+      "receipt": {
+        "cpu_seconds": 0.682622001,
+        "field": "/coordinator_whole_self_cpu_seconds_through_cutoff",
+        "path": "experiments/hcsn_distributional_v2/reproduction_receipts/list001/EXECUTION.json",
+        "sha256": "81bd5b661ac72101556b89410ddc0eabde02e535511a4ea9cd2930befcc2aa3c"
+      },
+      "scope": "Artifact catalog coordinator through receipt.",
+      "scope_id": "reproduction_list_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "reproduction",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.555698,
+      "receipt": {
+        "cpu_seconds": 0.555698,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/EXECUTION.json",
+        "sha256": "182985a31284c7fc860bca7588f2b0e205620b3db7b5fb5143daed19bfe23759"
+      },
+      "scope": "Whole tiny-fixture smoke interpreter and all waited helper children; nested helper snapshots are not additive.",
+      "scope_id": "reproduction_smoke_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "reproduction",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.041453193,
+      "receipt": {
+        "cpu_seconds": 0.041453193,
+        "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+        "path": "experiments/hcsn_distributional_v2/reproduction_receipts/restore_smoke001/EXECUTION.json",
+        "sha256": "182985a31284c7fc860bca7588f2b0e205620b3db7b5fb5143daed19bfe23759"
+      },
+      "scope": "Separate outer smoke supervisor through receipt.",
+      "scope_id": "reproduction_smoke_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 5.723704,
+      "receipt": {
+        "cpu_seconds": 5.723704,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/prepare_EXECUTION.json",
+        "sha256": "986903987e016ce07d47eebac806e8801d931ff80fff39dfcf00966ae9fb4ffe"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_prepare",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 9.467432,
+      "receipt": {
+        "cpu_seconds": 9.467432,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/evaluate_EXECUTION.json",
+        "sha256": "ad857705f02f14e0a2ced1ac6bdf178c5fbfb9bd456282f6e17d059a2df5e116"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_evaluate",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 4.102601,
+      "receipt": {
+        "cpu_seconds": 4.102601,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_reference_EXECUTION.json",
+        "sha256": "4c9d2c8a5bd945720303f28c2ef41c6bcc7b4caa6042ad6b584657ad6fbd5b86"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_recovery_reference",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 3.542109,
+      "receipt": {
+        "cpu_seconds": 3.542109,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_active_EXECUTION.json",
+        "sha256": "fd821d77509f3dddffd92686e3e3c8f19a31d5fbf6d71b568579b2e7505d62ea"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_recovery_active",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 4.142465,
+      "receipt": {
+        "cpu_seconds": 4.142465,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/resume_active_EXECUTION.json",
+        "sha256": "7ca4435a35e684636987996701365be90e8faf41504b0f3b3f4248f12391bbeb"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_resume_active",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 4.0072589999999995,
+      "receipt": {
+        "cpu_seconds": 4.0072589999999995,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/recovery_quiet_EXECUTION.json",
+        "sha256": "c8c3a91f5587fba4328ccb9b13258d443c08dbc439d50444fa88f862d170e2bf"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_recovery_quiet",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "distributional_native",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 3.6214329999999997,
+      "receipt": {
+        "cpu_seconds": 3.6214329999999997,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/distributional_native001/resume_quiet_EXECUTION.json",
+        "sha256": "0e54a09043e1e24292261637058919001d05e2d7d2bb0c2b41731dac876a565f"
+      },
+      "scope": "Independent native phase tree, including imports and waited owner processes; backbone training belongs to content002.",
+      "scope_id": "native_resume_quiet",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "figures_and_reports",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 5.435565561,
+      "receipt": {
+        "cpu_seconds": 5.435565561,
+        "field": "/whole_self_cpu_seconds_through_render",
+        "path": "experiments/hcsn_distributional_v2/results/figures001/MANIFEST.json",
+        "sha256": "afad93573b97ed04fa606aa4b4b826c40eee1bc74567b8d6224b15d5acd00d5e"
+      },
+      "scope": "Independent rendering process through manifest; no experiment rerun.",
+      "scope_id": "figures001",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.108455,
+      "receipt": {
+        "cpu_seconds": 0.108455,
+        "field": "/cpu_seconds_including_children",
+        "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests001/EXECUTION.json",
+        "sha256": "7aecc9309ed5eb326cd40e95fa57ddee6b537ea93b6194b37cc83400ca912933"
+      },
+      "scope": "Independent archive-helper fixture test tree, including nested pack children and any failed attempt.",
+      "scope_id": "content_checkpoint_archives_tests001_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.040404352,
+      "receipt": {
+        "cpu_seconds": 0.040404352,
+        "field": "/supervisor_self_cpu_seconds_through_receipt",
+        "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests001/EXECUTION.json",
+        "sha256": "7aecc9309ed5eb326cd40e95fa57ddee6b537ea93b6194b37cc83400ca912933"
+      },
+      "scope": "Fixture test supervisor's separate self CPU through receipt.",
+      "scope_id": "content_checkpoint_archives_tests001_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifact_engineering",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.503141,
+      "receipt": {
+        "cpu_seconds": 0.503141,
+        "field": "/cpu_seconds_including_children",
+        "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests002/EXECUTION.json",
+        "sha256": "d083b9459e3505a90c5e5ef921d3e8a2707683fc9b03eedd6f38775b99942ac6"
+      },
+      "scope": "Independent archive-helper fixture test tree, including nested pack children and any failed attempt.",
+      "scope_id": "content_checkpoint_archives_tests002_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifact_engineering",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.046336609,
+      "receipt": {
+        "cpu_seconds": 0.046336609,
+        "field": "/supervisor_self_cpu_seconds_through_receipt",
+        "path": "experiments/hcsn_distributional_v2/results/content_checkpoint_archives_tests002/EXECUTION.json",
+        "sha256": "d083b9459e3505a90c5e5ef921d3e8a2707683fc9b03eedd6f38775b99942ac6"
+      },
+      "scope": "Fixture test supervisor's separate self CPU through receipt.",
+      "scope_id": "content_checkpoint_archives_tests002_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifacts",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 35.14639838,
+      "receipt": {
+        "cpu_seconds": 35.14639838,
+        "field": "/whole_process_self_cpu_seconds_through_seal",
+        "path": "experiments/hcsn_distributional_v2/artifacts/content_aborted001_EXECUTION.json",
+        "sha256": "e0ce641a3fe754ffd2238020e8b0d73e04c2cf9496d5afdb13184c4cf375495d"
+      },
+      "scope": "Independent archive process through successful seal; nested pack/restore/body timers excluded and post-seal remainder unknown.",
+      "scope_id": "archive_content_aborted001",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifacts",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 2.843813874,
+      "receipt": {
+        "cpu_seconds": 2.843813874,
+        "field": "/whole_process_self_cpu_seconds_through_seal",
+        "path": "experiments/hcsn_distributional_v2/artifacts/execution_v2_001_EXECUTION.json",
+        "sha256": "054d10cdcf1f78d15c072e8cb0b07bfb4924101d41b7b88197899b87756d48bd"
+      },
+      "scope": "Independent archive process through successful seal; nested pack/restore/body timers excluded and post-seal remainder unknown.",
+      "scope_id": "archive_execution_v2_001",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "artifacts",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 32.29351566,
+      "receipt": {
+        "cpu_seconds": 32.29351566,
+        "field": "/whole_process_self_cpu_seconds_through_seal",
+        "path": "experiments/hcsn_distributional_v2/artifacts/task_value_and_control002_EXECUTION.json",
+        "sha256": "58e98a6ca9830a34b20680b84f1fda2fb9c2b0b5b84710d8cd684df2eda159ec"
+      },
+      "scope": "Independent archive process through successful seal; nested pack/restore/body timers excluded and post-seal remainder unknown.",
+      "scope_id": "archive_task_value_and_control002",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.11664799999999999,
+      "receipt": {
+        "cpu_seconds": 0.11664799999999999,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+        "sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688"
+      },
+      "scope": "Independent new seven-test tiny-fixture verification child; no main model/data inference.",
+      "scope_id": "cost_audit_tests001_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.048211649,
+      "receipt": {
+        "cpu_seconds": 0.048211649,
+        "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests001/EXECUTION.json",
+        "sha256": "19c97bc9d2d0157d8256e94ff784213fcaa2e36ba1b251bb24d8ea060fbcb688"
+      },
+      "scope": "Separate outer test supervisor self CPU; child test tree is charged separately.",
+      "scope_id": "cost_audit_tests001_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.103825,
+      "receipt": {
+        "cpu_seconds": 0.103825,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+        "sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5"
+      },
+      "scope": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "scope_id": "campaign_costs_tests002_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.041085451,
+      "receipt": {
+        "cpu_seconds": 0.041085451,
+        "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_tests002/EXECUTION.json",
+        "sha256": "3544f362d48102cef50675b98870f501d0bab8996c472602e1c0341f0e0f10d5"
+      },
+      "scope": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "scope_id": "campaign_costs_tests002_parent",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "complete_process_tree_wait4",
+      "observed_cpu_seconds": 0.052604,
+      "receipt": {
+        "cpu_seconds": 0.052604,
+        "field": "/complete_child_cpu_seconds",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+        "sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f"
+      },
+      "scope": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "scope_id": "campaign_costs_probe001_child",
+      "verified_nested_components": []
+    },
+    {
+      "excluded_nested_scopes": [],
+      "group": "cost_audit",
+      "measurement_kind": "process_self_cpu_through_receipt",
+      "observed_cpu_seconds": 0.046130803,
+      "receipt": {
+        "cpu_seconds": 0.046130803,
+        "field": "/outer_parent_self_cpu_seconds_to_cutoff",
+        "path": "experiments/hcsn_distributional_v2/results/campaign_costs_probe001/WRAPPER_EXECUTION.json",
+        "sha256": "f5d36402faef72de690d8969341b0b6e6e2689f91487953fdf8516713fdd769f"
+      },
+      "scope": "Independent cost-audit fixture test or failed preview invocation; complete child tree and supervisor self CPU are separate. Inner self/body timers are nested and not added.",
+      "scope_id": "campaign_costs_probe001_parent",
+      "verified_nested_components": []
+    }
+  ],
+  "source_sha256": "4cbc73ed3cf5ba29819a8773c3492bbc3f821005d0ff911d243c5e7781b6ccf9",
+  "status": "incomplete",
+  "unit": "CPU seconds",
+  "unknown_additional_cpu_scopes": [
+    "Remote restoration/download and environment installation CPU were not fully receipted; remote wall time is not converted to CPU.",
+    "Untimed development, source inspection/editing, early numerical smoke, compilation, and partial timer remainders are unknown.",
+    "Supervisor/import/serialization/exit work outside recorded windows or self-CPU cutoffs is unknown.",
+    "Failed task001's early supervisor snapshot is not added without a proven independent process scope; the full failed child tree is charged.",
+    "Publishing, later archive/report updates, this ledger generation and all work after the stated cutoff are outside this lower bound."
+  ],
+  "unknown_additional_cpu_seconds": null
+}

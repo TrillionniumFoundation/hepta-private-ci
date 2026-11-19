@@ -1,0 +1,38 @@
+{
+  "schema": "hcsn-graded-executable-migration-research-v1",
+  "base_source": "36aa7bc7c36a56861a5ce70bc143a7dde16c5e49",
+  "design_status": "post-failure engineering on the already exposed retained population; not independent confirmation",
+  "motivation": "Uniform hat migration places initial mass at the absorbing lower node, and backward continuation accuracy alone does not validate finite-time migration.",
+  "candidate": {
+    "mesh": "x_i=8*expm1(6*i/n)/expm1(6)",
+    "intervals": [256, 512],
+    "initial_law": "integrated nonnegative linear hats; lower-node mass transferred to first interior node; original tail overshoot goes to permanently active upper escape",
+    "phase": "retain original uniform remaining-time supports as exact Fraction packets",
+    "execution": "same JointModel method-of-steps DDE, using explicit mesh nodes for reset and continuation"
+  },
+  "data": {
+    "original_audit_summary_sha256": "12fa561e6b5e6f710d1239d2a00bcf596da9d0060bf4691473ff337b7b5d0822",
+    "arms": 12,
+    "retained_positions": 14336,
+    "laws_per_position": ["prior", "posterior"],
+    "short_gaps": [0.001, 0.003, 0.02, 0.04, 0.08, 0.16],
+    "signed_channels": "actual DDE representative validation uses two arbitrary signed channels from the same law; no new model output is claimed"
+  },
+  "evaluation": {
+    "all_positions": "exact discrete first-excursion spectral M/H/A of the same generator and migration map; all short gaps are below delay so no fresh hit reenters",
+    "references": "independent half-line Brownian first-hit formulas integrated on unchanged original laws, 64 versus 128 quadrature; original retained 80-digit continuation references",
+    "actual_dde": "first original retained posterior of every arm, plus boundary/tail/phase fixtures, evaluated directly by JointModel.solve; no sample expansion based on errors",
+    "engineering_limits": {
+      "original_scaled_continuation_error": 0.01,
+      "M_H_absolute_error": 0.00002,
+      "A_absolute_error": 0.000001,
+      "M_relative_error_where_reference_at_least_1e-12": 0.01,
+      "spectral_vs_DDE_absolute_error": 0.00000002,
+      "migration_mass_absolute_error": 0.0000000000005
+    },
+    "limits_status": "engineering checks set after prior exploratory mesh evidence was observed; no scientific preregistration claim"
+  },
+  "resources": {"threads": 1, "maximum_cpu_workers": 1, "timeout_seconds": 1800},
+  "not_qualified": ["observation filtering", "recursive posterior rollout", "full-network AD", "complete C2 replay", "independent future tasks", "rare-tail relative accuracy below 1e-12", "production or default-cell adoption"],
+  "overall_status": "HOLD_NO_GO"
+}

@@ -56,6 +56,22 @@ The owner epoch is distinct from the native bundle generation. Local restore or
 rollback never refunds spent work or re-executes old requests. Native rollback
 still needs a new lineage-bound bundle generation and the native owner's cutover.
 
+## Seven-lineage populations
+
+[`POPULATION.md`](POPULATION.md) describes the frozen `PopulationPlan` and its
+integration with this same owner. Supply `population=plan` when creating a new
+owner, then create each partition with its specification's exact budgets. The
+plan binds all seven responsibilities to implemented component classes and limits
+local plasticity to two logical Cells by default, with an explicit maximum of
+three. The initial allocation opens MEM private heads and the PRED GRU while
+retaining frozen components for the other responsibilities.
+
+Reopening the database without a plan still enforces its retained policy.
+Subsequent runs load the current admitted logical-Cell version with independent
+state. Candidate adoption checks its frozen local scope and unused committed
+observations as well as the existing host qualification. These are experimental
+composition and recovery contracts; task competence requires separate evaluation.
+
 ## Learning and version adoption
 
 `SharedSemanticPool.train_candidate` trains only the private head. Both factors

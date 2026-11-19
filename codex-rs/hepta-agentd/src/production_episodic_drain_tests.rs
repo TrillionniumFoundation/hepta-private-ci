@@ -303,6 +303,22 @@ stream_max_retries = 0
             assert_eq!(host.writer().recovery_anchor().await?, settled);
         }
     }
+    // Exercise the actual signal/embedded-host shutdown path after the
+    // retained original transaction has finished. Pending is zero in every
+    // case; a panic still leaves an unresolved settlement fence.
+    assert_eq!(state.episodic_import_pending_count(), 0);
+    assert_eq!(state.episodic_import_drain_clear(), case != "panic");
+    // Use the existing production drain and reconciliation deadlines directly.
+    // The original WAIT bounds above are unchanged.
+    let shutdown = crate::runtime::drain_runtime(Arc::clone(&state)).await;
+    if case == "panic" {
+        assert!(
+            shutdown.is_err(),
+            "unknown episodic settlement must deny successful shutdown"
+        );
+    } else {
+        shutdown?;
+    }
     assert_eq!(probes.target.effects.load(Ordering::SeqCst), 0);
     assert_no_issuer_request(peer)?;
     cancellation.cancel();

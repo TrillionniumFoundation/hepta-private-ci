@@ -71,7 +71,7 @@
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "3a097702ef7294467e2a16b5ae8624b716372c41"
     },
     {
       "operation": "revalidate_pinned_candidate",
@@ -84,7 +84,7 @@
       "designOperation": "revalidate_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "3a097702ef7294467e2a16b5ae8624b716372c41"
     },
     {
       "operation": "validate_manifest_v2",
@@ -512,5 +512,15 @@
     "record": "learning.artifacts",
     "previousMapBlob": "ce691a34d5a7b4f2cc3cd3925b09d7576f88ff4d",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-learning-artifacts"
+  ]
 }

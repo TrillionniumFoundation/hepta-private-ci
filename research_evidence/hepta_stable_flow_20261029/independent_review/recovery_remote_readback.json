@@ -1,0 +1,47 @@
+{
+  "version": "hepta-independent-recovery-remote-readback-20261029-v1",
+  "observed_at_utc": "2026-10-29T13:01:35.942Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "commit": "a2037f471e01a3bb8e8126313c38f7c807f52885",
+  "exact_commit_files_verified": true,
+  "target_branch_observed_present": "research/hcsn-callput-rebuild-20261028",
+  "branch_head_note": "Branch existence was independently observed by GitHub branch search; all file readback is pinned to the exact commit. Root separately verified the branch head and full tree by public git fetch.",
+  "report_readback_note": "The contents endpoint omitted >1 MiB report content; the observed Git blob identifiers were then fetched through the Git blob endpoint and full content was hashed.",
+  "records": [
+    {
+      "file": "RECOVERY_STATUS.json",
+      "bytes": 3689,
+      "sha256": "2d74b0db22f7615c4a6e131caf427a183c738d566f15bcc907ca7ec6ef7a1911",
+      "git_blob_sha": "fa5fc9852bb6b0f29ae8a914449c0d2b2c903048",
+      "remote_git_blob_sha": "fa5fc9852bb6b0f29ae8a914449c0d2b2c903048",
+      "remote_content_verification": "Exact base64 content comparison",
+      "remote_bytes": 3689,
+      "remote_sha256": "2d74b0db22f7615c4a6e131caf427a183c738d566f15bcc907ca7ec6ef7a1911",
+      "exact_match": true
+    },
+    {
+      "file": "Hepta_Complete_Research_Report.html",
+      "bytes": 2113111,
+      "sha256": "f497509da8f6242def88a013ab888de13f62a84337ae218df7d07b43d4f5bc04",
+      "git_blob_sha": "64d0a43e8430bb109abf89d8839e2e18a58a6a51",
+      "remote_git_blob_sha": "64d0a43e8430bb109abf89d8839e2e18a58a6a51",
+      "remote_content_verification": "Full Git blob UTF-8 content independently encoded and SHA256 hashed",
+      "remote_bytes": 2113111,
+      "remote_sha256": "f497509da8f6242def88a013ab888de13f62a84337ae218df7d07b43d4f5bc04",
+      "exact_match": true
+    },
+    {
+      "file": "Hepta_Next_Step_Blocker_Report.html",
+      "bytes": 2557763,
+      "sha256": "cd51c1d85cc55f6dfd9addb6f92b56c5b063f7b3e39496c079edd5f1354257d7",
+      "git_blob_sha": "92d7884253a4f3cc7b7d0bf3d52714a4fdb43034",
+      "remote_git_blob_sha": "92d7884253a4f3cc7b7d0bf3d52714a4fdb43034",
+      "remote_content_verification": "Full Git blob UTF-8 content independently encoded and SHA256 hashed",
+      "remote_bytes": 2557763,
+      "remote_sha256": "cd51c1d85cc55f6dfd9addb6f92b56c5b063f7b3e39496c079edd5f1354257d7",
+      "exact_match": true
+    }
+  ],
+  "passed": true,
+  "scope": "Surviving reports and recovery-status disclosure only; does not assert restoration or publication of missing historical raw archives, weights or b180 commit."
+}

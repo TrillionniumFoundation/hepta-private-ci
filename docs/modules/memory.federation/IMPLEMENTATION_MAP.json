@@ -38,7 +38,8 @@
         "codex-rs/hepta-memory/src/cognitive_runtime.rs",
         "codex-rs/hepta-agentd/src/runtime.rs",
         "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
-      ]
+      ],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     },
     {
       "operation": "observe_cancellation",
@@ -52,7 +53,8 @@
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "760d972ef2adec706a2cbeada5727a1c379f2e4d"
     }
   ],
   "repositoryControlledGaps": [
@@ -150,8 +152,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "fd6d8d3fcd9aee36711381adf74b6ba7162cda1b",
-    "tree": "755e3264fb49a7fedf56a4d2a77befca7af8c384"
+    "commit": "58c81ccdd25002ae0f481d434af067a56fa7ddb8",
+    "tree": "57809be09ef01c02389ef37a817f1447d13d167b"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -173,11 +175,11 @@
   "sourceObjects": [
     {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "object": "0745c95248d58672fb6bdc0056daab7edf63b8ac"
+      "object": "74ce45602c3ae063579c4c4ed672e391d4dacb85"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "0e7777b3bbe13eab7aedf74b9d6fe6b84cf82b43"
+      "object": "ca57d28162bd5788ef6ad6a5234e671a930175a9"
     },
     {
       "path": "codex-rs/hepta-memory-federation",
@@ -209,5 +211,6 @@
     "record": "memory.federation",
     "previousMapBlob": "15ac734cf551d8c976cb7e8a00db378554c5d1d0",
     "scope": "source_navigation_only_no_execution_evidence_transferred"
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

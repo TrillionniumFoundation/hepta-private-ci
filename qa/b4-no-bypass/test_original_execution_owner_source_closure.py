@@ -70,7 +70,7 @@ class OriginalExecutionOwnerSourceClosureTests(unittest.TestCase):
     def verify_changed(self, path, change):
         source = (ROOT / path).read_text()
         rows = self.rows(path)
-        self.assertEqual(len(rows), 1)
+        self.assertEqual(len(rows), {SOURCES: 2}.get(path, 1))
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             target = root / path

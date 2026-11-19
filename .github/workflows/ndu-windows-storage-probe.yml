@@ -8,6 +8,8 @@ on:
       - ".github/scripts/test_windows_mic_observation.py"
       - ".github/scripts/windows-appcontainer-probe/probe.py"
       - ".github/scripts/windows-appcontainer-probe/win32_api.py"
+      - ".github/scripts/windows-appcontainer-probe/child_trace.c"
+      - ".github/scripts/windows-appcontainer-probe/child_trace.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -138,10 +140,10 @@ jobs:
                   "sha256": "72a4a810750bafa704541b9814a22a080774ab5efd7c135bb197f421ba217860"
               },
               "codex-rs/Cargo.toml": {
-                  "bytes": 24200,
+                  "bytes": 25922,
                   "mode": "100644",
-                  "oid": "e6747d71be508707a49034f37c414bc87ffc91f9",
-                  "sha256": "f3a728c53b49a9758c7940562f8f64834d4b52a5c9d4b0596a7b4a5e855f05fd"
+                  "oid": "fd1ac9a1a1a98b3f838a11911a2ca207ed03b2ec",
+                  "sha256": "e4a06b14ebbcbe6955097d342bedca5327614b3751e1734311fed05efe30ed21"
               },
               "codex-rs/rust-toolchain.toml": {
                   "bytes": 78,
@@ -150,16 +152,16 @@ jobs:
                   "sha256": "e8b379eaa492bf59d35187de269afd1c4f55d85e0322f6fea32803a3fec1a380"
               },
               "codex-rs/windows-sandbox-rs/Cargo.toml": {
-                  "bytes": 2438,
+                  "bytes": 2512,
                   "mode": "100644",
-                  "oid": "aa41ed5f08608c0275785b2f5e27ec5db08f50dd",
-                  "sha256": "183a3691be018640668dfb766f29651d8fd75ab08f7fd526f3d378ae2a86469d"
+                  "oid": "f106f712797f64c4dffd41763f63e45671690d25",
+                  "sha256": "4ea6b9e67ef95892e6fdcd30e361bb6acfc85d382a4754692768e50999cecae7"
               },
               "codex-rs/windows-sandbox-rs/src/acl.rs": {
-                  "bytes": 27925,
+                  "bytes": 28345,
                   "mode": "100644",
-                  "oid": "ed9d57cd624a78cfd509fff9ab090b1aa2c48feb",
-                  "sha256": "cdb052674f0ffa35b90021b28299484715d64ba3d16b39a1f045174a9e841a6b"
+                  "oid": "1f9422163a55418e21ba7a52a505c54221f5a21b",
+                  "sha256": "25be4323ae38b3b4ac4ab387aa9f0e2594a54a0d1c81fcee2e761234788ac2b4"
               },
               "codex-rs/windows-sandbox-rs/src/acl_deny.rs": {
                   "bytes": 12004,
@@ -168,16 +170,16 @@ jobs:
                   "sha256": "8437f822af3ffb04823d1cf684138642bc173e2a13cf02027e700279403dd0d8"
               },
               "codex-rs/windows-sandbox-rs/src/acl_tests.rs": {
-                  "bytes": 25004,
+                  "bytes": 28865,
                   "mode": "100644",
-                  "oid": "a7bee25e26ffb910fbb166623aa5c3ddb2e6ba5c",
-                  "sha256": "4aab332c6e9c6fc0b6aa3144f46955ed8ca948cb8f01a6043bbbda85ec0191fa"
+                  "oid": "c6a18d12929791c6e2c1b0b010bbb0dcc11424d6",
+                  "sha256": "84473bbe64a4134970390633222c230fb389f5b5d5e60e3f90a52ec42be6942c"
               },
               "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs": {
-                  "bytes": 26062,
+                  "bytes": 28015,
                   "mode": "100644",
-                  "oid": "b8b8e5e7d03bf8f4b5c431b66500a39c2de44d83",
-                  "sha256": "43167849dd825c12793938437b90152c4ac0719bdd1301d148875ef0a721c4d6"
+                  "oid": "25a96e9c10f5e8dc24a476e356c4d775c5fc6d14",
+                  "sha256": "946ed7393a2e4135f00095a8017dd85f1ce280fe1164b0c06deeaac9decbe7d0"
               },
               "codex-rs/windows-sandbox-rs/src/elevated_admission.rs": {
                   "bytes": 1561,
@@ -192,10 +194,10 @@ jobs:
                   "sha256": "524dec81fbeb3c35037167239504b65afb690f57b01fb7a58087c79900d32198"
               },
               "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": {
-                  "bytes": 11219,
+                  "bytes": 12342,
                   "mode": "100644",
-                  "oid": "bed31c224c8eed3963e1674bf68d85238f956a23",
-                  "sha256": "86bf7b5b7e6d5f284930b7caa38c66856169bcaa2c272be82eb476edf84c25ed"
+                  "oid": "2e25639e9c0e04a574a1ab8c321f7f9b5af32c48",
+                  "sha256": "6480ef86e03c7aecf89bb36894b556d94d5ad4ea2a05ca7208f7b58a0ce19998"
               },
               "codex-rs/windows-sandbox-rs/src/legacy_admission.rs": {
                   "bytes": 1417,
@@ -210,16 +212,16 @@ jobs:
                   "sha256": "9d42efd5b7fede4bd5a381fe0f7d2f7c6529b3bb3985939737a1a84940663394"
               },
               "codex-rs/windows-sandbox-rs/src/lib.rs": {
-                  "bytes": 31677,
+                  "bytes": 33727,
                   "mode": "100644",
-                  "oid": "68df8baa57633e6d0668eda3e9496c8293e82897",
-                  "sha256": "fcecdd7436bba43464ccad1db1ec3acd61269f15b4a3fa503eede67bd062d286"
+                  "oid": "f54e3c820e710a67c3d26198bed69eec838265a6",
+                  "sha256": "9a75d42181007287ae2263028943a31fa6140ba9a4c04b91528f73ccfe98a9e6"
               },
               "codex-rs/windows-sandbox-rs/src/token.rs": {
-                  "bytes": 19180,
+                  "bytes": 23728,
                   "mode": "100644",
-                  "oid": "2c7e98537df8b8dc87e65dd8a2968ee3098adc46",
-                  "sha256": "b6b37f065b81d9556e9e4f351e177b2d725989aa536c177b56485eab89376c66"
+                  "oid": "64f1cc5fb31a8d42a46e837a2c3fb7d8770d829c",
+                  "sha256": "b01afbf7db4e2ac47e09d416efd95b2840de6ea1295f9479d37379153708dc24"
               },
               "codex-rs/windows-sandbox-rs/src/token_access_check_diagnostics_tests.rs": {
                   "bytes": 16568,
@@ -258,10 +260,10 @@ jobs:
                   "sha256": "13ed029a784aa0751807dd6953c59708cda6fc2108a10b9cb498e8e8d80d55c6"
               },
               "codex-rs/windows-sandbox-rs/src/token_probe_support.rs": {
-                  "bytes": 1999,
+                  "bytes": 1945,
                   "mode": "100644",
-                  "oid": "31978ababba00333856c0e40275ddbab914ed6c7",
-                  "sha256": "8bbea9b387cd5642c843467db9f1d8c9300d5ddc7eabb4e529083cb1030ba4fb"
+                  "oid": "281d9096917dafe664920751e8a3add4fa14bc72",
+                  "sha256": "a67efa64eb0a759790def336d292814d0755c6ea4a8ab0cc6ef5b63afae0994f"
               },
               "codex-rs/windows-sandbox-rs/src/token_read_authority_tests.rs": {
                   "bytes": 30694,
@@ -270,16 +272,16 @@ jobs:
                   "sha256": "ed9f95d975967813bb67acc0199998c33ae954bb87ec3ed465c96b347f69a695"
               },
               "codex-rs/windows-sandbox-rs/src/token_tests.rs": {
-                  "bytes": 21699,
+                  "bytes": 38732,
                   "mode": "100644",
-                  "oid": "611c8071e8fa91fbe1f7b9a0c10462acd76472b6",
-                  "sha256": "ef800fd9dc0d608d86de7b5a07ee0f2719f0e432063b84a02e90b2e1c95115d4"
+                  "oid": "5229b70c149e77ea68e33f57761f34ac2513ef66",
+                  "sha256": "ec809c30a582bde4d78e0113a3709700d08ec37bfe36478f42ef6d8ac3d5d7b3"
               },
               "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs": {
-                  "bytes": 8749,
+                  "bytes": 9062,
                   "mode": "100644",
-                  "oid": "b4e77c3f1bb5a92e1363705e5d5a91ed67c75dd5",
-                  "sha256": "b51533866b11122040cbc8413d2d2fdcc8bb12cfb46842a3a963af827dbcc3d6"
+                  "oid": "11824e6499198a7f9fe24ebaca577b595ba7ba4b",
+                  "sha256": "73318b67d37763722fc3d44bcc5ec746af0fb21cfec1d7cc6c549fbba74836a8"
               },
               "codex-rs/windows-sandbox-rs/src/unified_exec/mod.rs": {
                   "bytes": 9353,
@@ -346,7 +348,7 @@ jobs:
           ELEVATED_REFUSAL_METHODS = ['elevated_admission_tests::elevated_raw_token_factories_refuse_live_base_and_capabilities', 'elevated_admission_tests::elevated_capture_refuses_before_provisioning_or_child_launch', 'elevated_admission_tests::elevated_sessions_refuse_before_provisioning_or_child_launch']
           MIC_COLLECTOR_METHODS = ['test_negative_hypothesis_and_refusal_regression_remain_distinct', 'test_missing_duplicate_and_extra_cases_are_rejected', 'test_isolation_success_or_qualification_cannot_replace_the_negative', 'test_broken_controls_and_wrong_errors_cannot_count_as_counterexamples', 'test_missing_or_inexact_production_refusal_is_rejected', 'test_truncated_ambiguous_or_mistyped_json_is_rejected', 'test_historical_raw_negative_without_admission_proof_cannot_qualify']
           PROBE_METHODS = ['test_actual_git_rejects_live_and_index_only_source_changes', 'test_complete_transcript_keeps_false_invariant_as_observed_failure', 'test_incomplete_or_duplicated_native_observation_cannot_complete', 'test_dependency_without_existing_checksum_cannot_enter_probe', 'test_actual_git_rejects_unbound_legacy_admission_changes', 'test_refusal_transcript_cannot_certify_permission_observations']
-          OTHER_LOCK_TOML_SHA256 = "b319936b435c210079cce19095e7214de850b0f91a4b275553abaa7a129a700b"
+          OTHER_LOCK_TOML_SHA256 = "b4a92d76441b72e5713f4370998b1ec90d8b2bd0b1670fc21523ef663c2711f1"
           ANYHOW_RECORD = {
               "name": "anyhow",
               "version": "1.0.104",
@@ -456,9 +458,9 @@ jobs:
                       parsed = tomllib.loads(data.decode("utf-8"))
                       anyhow = [p for p in parsed["package"] if p["name"] == "anyhow"]
                       require(anyhow == [ANYHOW_RECORD], "Normal resolver must select exact anyhow 1.0.104")
-                      # The reviewed Matrix union adds one existing workspace dependency.
-                      # Remove only that exact addition before comparing the original
-                      # complete dependency fingerprint; all other records stay bound.
+                      # The reviewed ordinary-history union has a canonical lock.
+                      # Keep the separately asserted Matrix edge and anyhow record;
+                      # the complete remaining dependency graph stays exactly bound.
                       matrix_sdk = [p for p in parsed["package"] if p["name"] == "codex-hepta-matrix-sdk"]
                       require(len(matrix_sdk) == 1, "Normal lock must contain exactly one Matrix SDK record")
                       dependencies = matrix_sdk[0].get("dependencies")
@@ -477,7 +479,7 @@ jobs:
                       canonical = json.dumps(remainder, sort_keys=True, separators=(",", ":"),
                                              ensure_ascii=False).encode("utf-8")
                       require(hashlib.sha256(canonical).hexdigest() == OTHER_LOCK_TOML_SHA256,
-                              "Normal lock differs beyond the reviewed anyhow record and exact Matrix dependency addition")
+                              "Normal lock differs from the reviewed ordinary-union dependency fingerprint")
               # The workflow cannot contain its own digest. Its raw HEAD identity and the
               # normally generated lock identity are recorded and compared before/after.
               # The reviewed outer source manifest binds both at publication.
@@ -872,6 +874,60 @@ jobs:
           raise SystemExit(0 if state["status"] == "PASS" else 1)
           '@ | python -B -
           exit $LASTEXITCODE
+      - name: Trace actual primary-token Win32 errors in separate owned fixtures
+        if: always()
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'hepta-appcontainer-child-trace'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          @'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          expected = os.environ['EXPECTED_HEAD']
+          actual = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
+          if actual != expected:
+              raise RuntimeError('diagnostic checkout differs from original PR head')
+          pins = {
+              '.github/scripts/windows-appcontainer-probe/probe.py': 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192',
+              '.github/scripts/windows-appcontainer-probe/win32_api.py': '9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10',
+              '.github/scripts/windows-appcontainer-probe/child_trace.c': '717521474cef3d5f49cb6170bfb9ab6cc6fd96430cccbf69263bed0f59bc22a8',
+              '.github/scripts/windows-appcontainer-probe/child_trace.py': 'd942c027629a051216a2c9ccc31de8b994ec75aa68682b8ea345132d5065f093',
+          }
+          observed = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in pins}
+          if observed != pins:
+              raise RuntimeError('reviewed native trace source bytes differ')
+          out = Path(os.environ['RUNNER_TEMP']) / 'hepta-appcontainer-child-trace'
+          (out / 'source-before.json').write_text(json.dumps({'head': actual, 'sha256': observed}, indent=2))
+          '@ | python -B -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $install = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $install) { throw 'MSVC x64 installation missing' }
+          $devcmd = Join-Path $install 'Common7/Tools/VsDevCmd.bat'
+          $source = Join-Path $env:GITHUB_WORKSPACE '.github/scripts/windows-appcontainer-probe/child_trace.c'
+          $exe = Join-Path $out 'child-trace.exe'
+          $obj = Join-Path $out 'child-trace.obj'
+          $build = Join-Path $out 'build.cmd'
+          @"
+          @echo off
+          call "$devcmd" -no_logo -arch=x64 -host_arch=x64
+          if errorlevel 1 exit /b %errorlevel%
+          cl.exe /nologo /std:c17 /O2 /Oi /GS- /Zl /W4 /WX /Fo"$obj" /Fe"$exe" "$source" /link /NODEFAULTLIB /ENTRY:entry /SUBSYSTEM:CONSOLE kernel32.lib advapi32.lib
+          exit /b %errorlevel%
+          "@ | Set-Content -Encoding ascii -Path $build
+          & $env:ComSpec /d /c "`"$build`"" 1> (Join-Path $out 'compile.stdout') 2> (Join-Path $out 'compile.stderr')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B .github/scripts/windows-appcontainer-probe/child_trace.py --repo "$env:GITHUB_WORKSPACE" --source-head "$env:EXPECTED_HEAD" --executable "$exe" --output (Join-Path $out 'observation.json') 1> (Join-Path $out 'trace.stdout') 2> (Join-Path $out 'trace.stderr')
+          exit $LASTEXITCODE
+      - name: Preserve independent native child diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-appcontainer-child-trace-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-appcontainer-child-trace
+          if-no-files-found: error
       - name: Preserve native mechanism observations and complete process logs
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f

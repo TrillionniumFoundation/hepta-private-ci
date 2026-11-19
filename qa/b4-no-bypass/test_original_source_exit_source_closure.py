@@ -137,7 +137,7 @@ CASES = [['control.rs',
    'self.check_current(self.publication.target())',
    'Arc::clone(&self.current)']],
  ['runtime.rs',
-  'fn run_with_shutdown(',
+  'fn run_composed_with_shutdown(',
   ['config.take_original_source_capture()?',
    'control.original_source_capture_join()',
    'source_capture::run_until_original_source_drain(&mut tasks, state, shutdown, joined)',
@@ -146,6 +146,13 @@ CASES = [['control.rs',
 
 
 CASES.append(['control.rs', 'fn serve_connection(', ['request.schema_version == AGENTD_CONTROL_SCHEMA_VERSION', 'state.circuit_task_enabled()', 'crate::AgentdMethod::ObjectiveStart', 'P::response(&state, request).await', 'let completed_circuit = circuit_admission', 'matches!(&response.payload, AgentdPayload::ObjectiveRun(receipt)', 'if receipt.disposition', '.eq("circuit_succeeded")', 'match frames::write_frame(&mut writer, &bytes).await', 'Err(AgentdError::Io(error))', 'if completed_circuit', 'ErrorKind::BrokenPipe | ErrorKind::ConnectionReset', 'result => result']])
+
+# The public entry preserves the same source-capture lifetime through the shared
+# composition helper; it cannot omit the delegate or add a memory bootstrap.
+CASES.append(['runtime.rs', 'fn run_with_shutdown(', [
+    'run_composed_with_shutdown(config, arg0_paths, shutdown,',
+    'None).await',
+]])
 
 class OriginalSourceExitClosureTests(unittest.TestCase):
     setUpClass = classmethod(component.InitialArtifactReadviewClosureTests.setUpClass.__func__)
@@ -183,7 +190,7 @@ class OriginalSourceExitClosureTests(unittest.TestCase):
         self.verify_cases([12, 13])
 
     def test_launcher_retains_current_until_actual_capture_finishes(self):
-        self.verify_cases([14, 15, 16, 17])
+        self.verify_cases([14, 15, 16, 17, 19])
 
 
 if __name__ == "__main__":

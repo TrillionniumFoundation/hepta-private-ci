@@ -1,0 +1,65 @@
+{
+  "schema": "hcsn-initial-vjp-codespell-evidence-repair-v1",
+  "base_head": "8945243ae3f0832c01e317498be71483413b8b7b",
+  "draft_pr": 6241,
+  "failed_job": {
+    "run": 43193514195,
+    "job": 131098509242,
+    "decoded_original_log_size": 29953,
+    "decoded_original_log_sha256": "1dc37397dd38d4526e0fe25a72d8025dd920cfca8c367eaa1671810246426130",
+    "decoded_original_log_git_blob": "7f1b54abe74cadfcb87c2dee3e3f7d7b34f1cefd"
+  },
+  "change": "Append two exact immutable evidence paths to the existing Codespell skip list. No general dictionary, regular expression, branch condition or runtime module is exempted.",
+  "frozen_files_unchanged": [
+    {
+      "path": "qualification/hcsn_joint_dde/evidence/all-visits-attempt002/review_visited_l8_raw.py",
+      "git_blob": "2381f6f1029ccb6fa98381feda4946e9a48b2c43",
+      "sha256": "d2397d0b3e2dfaea8f32e7ec12a580650131dc428ac4d6a117110045489d1450",
+      "reason": "Original audited source retained with its recorded identifiers; changing it would replace tested evidence bytes."
+    },
+    {
+      "path": "qualification/hcsn_initial_vjp/evidence/native001/COMMAND.sh",
+      "git_blob": "3ce8577ad5129af6f570fedcc47db5363c7623f5",
+      "sha256": "79d8d7bec29c774aeb094eb2ccceb02a5d6b44ebc1a239b33f26500758260945",
+      "reason": "Exact historical attempted command, including encoded machine payload, belongs to the idempotency/evidence contract."
+    }
+  ],
+  "local_check": {
+    "version": "2.4.3",
+    "old_configuration": {
+      "exit_code": 65,
+      "findings": 8
+    },
+    "exact_path_exclusions": {
+      "exit_code": 0,
+      "findings": 0
+    },
+    "typo_control_outside_exclusions": {
+      "exit_code": 65,
+      "findings": 1
+    },
+    "all_linted_files_unchanged": true,
+    "workflow_yaml_valid": true,
+    "previous_six_skips_retained": true,
+    "just_fmt_exit_code": 0,
+    "no_lint_rerun_after_fmt": true
+  },
+  "originals_archive": {
+    "size": 9848,
+    "sha256": "2e98f91a9929ff730d81502d08c13acf3ca70a26158005d502223cd3f85bbcc2",
+    "members": 18
+  },
+  "native_reconciliation": {
+    "host": "desktop",
+    "request_key": "hcsn-initial-amplitude-native-20261112-c06d-v2",
+    "job": "1a1cefd297d-2564-194e",
+    "source_commit": "372d84ed9a04cab0e1d873f9cdd534a33689b485",
+    "existing_terminal": "succeeded/exit0/complete durable output",
+    "new_launches": 0,
+    "new_candidate_model_calls": 0,
+    "new_torch_calls": 0,
+    "new_optimizer_calls": 0
+  },
+  "scope": "Existing small fixed-physics/support amplitude VJP qualification remains bounded; global HOLD and all remaining OPEN items are unchanged.",
+  "automatic_ci": "Updating the PR head may cause fresh hosted regression from cumulative PR paths. That execution must be accounted separately; it is not a manual native replay or evidence readback."
+}

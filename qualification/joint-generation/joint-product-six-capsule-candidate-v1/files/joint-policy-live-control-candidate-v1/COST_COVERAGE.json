@@ -1,0 +1,23 @@
+{
+  "status": "PASS_SCOPED_INDEPENDENT_SAVED_REVIEW",
+  "whole_reaped_subtree_CPU_seconds": 0.589606,
+  "sum_worker_CPU_seconds": 0.40799499999999994,
+  "complete_supervisor_CPU_seconds": 0.18161100000000002,
+  "outer_prefix_CPU_seconds": 0.035851879,
+  "known_CPU_lower_bound_seconds": 0.6254578789999999,
+  "outer_tail": "unknown_not_zero",
+  "retained_run_bytes": 2241797,
+  "largest_RSS_kib": 33452,
+  "work": {
+    "new_model_restores": 4,
+    "new_selective_serving_calls": 1,
+    "new_Actor_predictions": 1,
+    "new_encoded_rows": 1,
+    "new_optimizer_steps": 0
+  },
+  "prior_reconnect_lower_bound_seconds": 0.631649905,
+  "selected_reconnect_livecontrol_lower_bound_seconds": 1.257107784,
+  "selected_unknown_tails": 2,
+  "scope": "All producer/killed work, recovery, supervisor, pipe controls and clock metadata RNG/IO/hashes/teardown inside full subtree once; worker/supervisor values decompose subtree, not added again. Outer prefix additional; unknown tail. Prior source/reviews/all earlier studies additional, not lifetime or strict global budget.",
+  "independent_saved_review_sha256": "2e65f5eab987b1095200748845339c2946d8fd0f7c5c07cdaf2b1fd3c5c1274f"
+}

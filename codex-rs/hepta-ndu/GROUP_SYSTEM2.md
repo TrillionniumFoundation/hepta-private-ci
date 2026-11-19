@@ -36,8 +36,39 @@ The legal abstain candidate has its own net value under that same equation.
 A strictly positive continuation is selected only if its net value is also
 strictly greater than the abstain alternative; equal values favor abstention.
 The abstain net is validated before any selection so overflow cannot hide
-behind an otherwise positive continuation. These are advisory economics,
-not an allocation of physical microsecond budget or production authority.
+behind an otherwise positive continuation. The Group also abstains if the
+sum of its already-observed Cell execution microseconds exactly exhausts the
+owner's declared resource ceiling. A sum above the ceiling remains an error.
+This conservative check does **not** reserve the future cost of a suggested
+continuation or authorize it: a separate execution owner must charge the next
+physical action before executing it. Utility costs are Q32 and must not be
+silently interpreted as wall-clock microseconds.
+
+An additive `preflight_group_future_cost_v1` now independently recomputes
+`decide_group_continuation_v1` and rejects a forged decision or a different
+trace before admitting any budget quote. Every non-abstain suggestion must
+supply a strictly positive *future physical microsecond* quote no larger than
+`resource_ceiling_micros - sum(observed Cell cost_micros)`. A selected
+abstention requires an exact zero quote. The returned
+`GroupBudgetPreflightV1` binds the full decision digest, prior consumption,
+remaining budget, quote and selected candidate in a domain-separated digest,
+and always carries `AuthorityPosture::DENY_ALL`.
+
+This is an **advisory preflight, not a reservation**. A malicious caller may
+underquote cost; neither the value nor its hash independently authenticates
+physical execution, source witnesses, future compute consumption or a signer.
+The live owner must use atomic reservation and actual measurement under its
+current generation, deadline and independently controlled FinalUse boundaries.
+The old `decide_group_continuation_v1` API stays unchanged and is not silently
+promoted into this new preflight. No new scientific or production claims follow.
+
+The composed preflight validates the complete subject binding before comparing
+the supplied decision or its future-cost quote. Reusing a same-generation trace
+with another Group, Encoder, objective, utility profile, subject class, or ceiling
+therefore fails before quote admission. Deliberately rebinding a draft trace is
+not authorization: it requires a fresh advisory decision, changes the decision
+and preflight digests, and retains `AuthorityPosture::DENY_ALL`. The caller must
+still obtain independent execution authority and physical resource reservation.
 
 The candidate set is digest-bound and the trace digest is deterministic, so a
 future learned critic, Neural Differential Utility solver, or router can be

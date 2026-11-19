@@ -9,6 +9,8 @@
 use codex_hepta_types::Digest32;
 
 use super::FinalHoldoutProviderV1;
+use super::OnPolicyPairingContractV1;
+use super::OnPolicyTemporalComparisonInputsV1;
 use super::ProductEvaluationError;
 use super::ProductProviderErrorV1;
 use super::TemporalComparisonInputsV1;
@@ -82,6 +84,25 @@ impl OriginalFinalHoldoutConsumptionV1<'_> {
             .map_err(|_| ProductProviderErrorV1::Indeterminate)?;
         released
     }
+
+    /// Re-read the original consumed owner around a paired release. Pairing is
+    /// typed input metadata; it grants no evaluator or data-custody authority.
+    pub fn with_current_paired_consumption(
+        self,
+        release: impl FnOnce(
+            Digest32,
+            &CrossFoldPlanReceiptV1,
+            &FinalHoldoutJournalReceiptV1,
+        )
+            -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1>,
+    ) -> Result<OnPolicyTemporalComparisonInputsV1, ProductProviderErrorV1> {
+        require_recorded(self.original, self.namespace, self.plan, self.receipt)
+            .map_err(|_| ProductProviderErrorV1::Indeterminate)?;
+        let released = release(self.namespace, self.plan, self.receipt);
+        require_recorded(self.original, self.namespace, self.plan, self.receipt)
+            .map_err(|_| ProductProviderErrorV1::Indeterminate)?;
+        released
+    }
 }
 
 pub(super) fn release_original_holdout<S: FinalHoldoutCasStoreV1, P: FinalHoldoutProviderV1>(
@@ -106,6 +127,37 @@ pub(super) fn release_original_holdout<S: FinalHoldoutCasStoreV1, P: FinalHoldou
     });
     // Check even a provider that returned without using its borrow. No inputs
     // reach fitting/OPE if the physical owner changed or became uncertain.
+    require_recorded(original, namespace, plan, receipt)?;
+    released.map_err(ProductEvaluationError::Provider)
+}
+
+pub(super) fn release_original_paired_holdout<
+    S: FinalHoldoutCasStoreV1,
+    P: FinalHoldoutProviderV1,
+>(
+    original: &mut FencedFinalHoldoutOwnerV1<S>,
+    plan: &CrossFoldPlanReceiptV1,
+    receipt: &FinalHoldoutJournalReceiptV1,
+    pairing: &OnPolicyPairingContractV1,
+    provider: &mut P,
+) -> Result<OnPolicyTemporalComparisonInputsV1, ProductEvaluationError> {
+    let (namespace, recorded) = FencedFinalHoldoutOwnerV1::read_consumption(original, plan)?;
+    if receipt.disposition != HoldoutUseDispositionV1::Recorded
+        || recorded.as_ref() != Some(receipt)
+    {
+        return Err(ProductEvaluationError::Binding(
+            "original paired holdout consumption",
+        ));
+    }
+    let released = provider.release_paired_after_original_consumption(
+        OriginalFinalHoldoutConsumptionV1 {
+            original,
+            namespace,
+            plan,
+            receipt,
+        },
+        pairing,
+    );
     require_recorded(original, namespace, plan, receipt)?;
     released.map_err(ProductEvaluationError::Provider)
 }

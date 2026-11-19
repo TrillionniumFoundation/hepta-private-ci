@@ -4,6 +4,7 @@ The original NoUpdate profile remains separately closed. These checks audit
 typed production callers and mutation resistance, not deployment custody or
 scientific benefit. Native qualification runs on the final combined candidate.
 """
+from collections import Counter
 import importlib.util
 from pathlib import Path
 import re
@@ -130,7 +131,10 @@ class PositiveCircuitNextUseSourceClosureTests(unittest.TestCase):
             row for row in cls.manifest["protected_file"]
             if row["path"] in PROTECTED
         ]
-        if len(cls.rows) != len(PROTECTED):
+        expected_counts = dict.fromkeys(PROTECTED, 1)
+        expected_counts[AGENT + "circuit_candidate_learning_read_service.rs"] = 2
+        expected_counts[AGENT + "circuit_candidate_learning_completion_readiness_service.rs"] = 2
+        if Counter(row["path"] for row in cls.rows) != expected_counts:
             raise AssertionError("all complete positive protected records are present")
 
     def test_exact_typed_edges_and_unregistered_callers_are_rejected(self):
@@ -201,17 +205,18 @@ class PositiveCircuitNextUseSourceClosureTests(unittest.TestCase):
             ".publish(", "execute_circuit_task_record(", "execute_cell_committed(",
             "with_root_learning_stage_owners(", "LearningEvidenceVerifierV1::new",
         )
-        for row in self.rows:
-            source = (ROOT / row["path"]).read_text()
+        for path in PROTECTED:
+            rows = [row for row in self.rows if row["path"] == path]
+            source = (ROOT / path).read_text()
             with tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
-                target = root / row["path"]
+                target = root / path
                 target.parent.mkdir(parents=True)
                 for marker in forbidden:
-                    with self.subTest(path=row["path"], forbidden=marker):
+                    with self.subTest(path=path, forbidden=marker):
                         target.write_text(source + "\n" + marker + "\n")
                         with self.assertRaises(PROOF.VerificationFailure):
-                            PROOF._verify_protected_files(root, {"protected_file": [row]})
+                            PROOF._verify_protected_files(root, {"protected_file": rows})
 
     def test_positive_purposes_are_real_code_not_comment_evidence(self):
         for path, (declaration, purpose) in PURPOSES.items():

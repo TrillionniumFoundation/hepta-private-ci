@@ -37,55 +37,60 @@ impl HostFixture {
         pending_claim: bool,
     ) -> impl std::future::Future<Output = anyhow::Result<Box<Self>>> {
         Box::pin(async move {
-            let PanelFixture {
-                panel,
-                original,
-                primary_b,
-                retention_b,
-                primary,
-                retention,
-                at,
-            } = *PanelFixture::completed(TrainingPeer::Original).await?;
-            let input = &primary.config;
-            let config = OriginalCellEvaluationReceiptConfigV1 {
-                training: input.training.clone(),
-                scope: input.scope.clone(),
-                plan: input.plan.clone(),
-                signing: OriginalCellEvaluationSigningConfigV1 {
-                    plan: input.plan.product_plan().clone(),
-                    execution_namespace: input.execution_namespace,
-                    signer: original.credentials.evaluator.clone(),
-                    verifier: input.verifier.clone(),
-                    maximum_signature_lifetime_seconds: 600,
-                },
-            };
-            let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
-            let mut fixture = Box::new(Self {
-                host: None,
-                original,
-                primary_b,
-                retention_b,
-                primary,
-                retention,
-                config,
-                at,
-                directory,
-            });
-            let (file, witness) = fixture.files(/*create*/ true)?;
-            let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
-                file,
-                witness,
-                fixture.config.clone(),
-                SigningKey::from_bytes(&[42; 32]),
-            )?;
-            if pending_claim {
-                evaluator.fixture_pending_original_host()?;
-            }
-            let mut host = evaluator.into_original_evaluation_host(panel)?;
-            host.fixture_original_clock(at)?;
-            fixture.host = Some(Arc::new(host));
-            Ok(fixture)
+            let panel = PanelFixture::completed(TrainingPeer::Original).await?;
+            Self::from_panel(panel, pending_claim)
         })
+    }
+
+    fn from_panel(panel: Box<PanelFixture>, pending_claim: bool) -> anyhow::Result<Box<Self>> {
+        let PanelFixture {
+            panel,
+            original,
+            primary_b,
+            retention_b,
+            primary,
+            retention,
+            at,
+        } = *panel;
+        let input = &primary.config;
+        let config = OriginalCellEvaluationReceiptConfigV1 {
+            training: input.training.clone(),
+            scope: input.scope.clone(),
+            plan: input.plan.clone(),
+            signing: OriginalCellEvaluationSigningConfigV1 {
+                plan: input.plan.product_plan().clone(),
+                execution_namespace: input.execution_namespace,
+                signer: original.credentials.evaluator.clone(),
+                verifier: input.verifier.clone(),
+                maximum_signature_lifetime_seconds: 600,
+            },
+        };
+        let directory = tempfile::tempdir_in(std::env::temp_dir().canonicalize()?)?;
+        let mut fixture = Box::new(Self {
+            host: None,
+            original,
+            primary_b,
+            retention_b,
+            primary,
+            retention,
+            config,
+            at,
+            directory,
+        });
+        let (file, witness) = fixture.files(/*create*/ true)?;
+        let mut evaluator = OriginalCellEvaluationReceiptOwnerV1::create(
+            file,
+            witness,
+            fixture.config.clone(),
+            SigningKey::from_bytes(&[42; 32]),
+        )?;
+        if pending_claim {
+            evaluator.fixture_pending_original_host()?;
+        }
+        let mut host = evaluator.into_original_evaluation_host(panel)?;
+        host.fixture_original_clock(at)?;
+        fixture.host = Some(Arc::new(host));
+        Ok(fixture)
     }
 
     fn files(&self, create: bool) -> anyhow::Result<(File, FileAnchorWitnessStore)> {

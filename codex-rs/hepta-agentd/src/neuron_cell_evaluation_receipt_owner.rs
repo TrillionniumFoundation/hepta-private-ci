@@ -54,6 +54,7 @@ use crate::learning_owner_evidence;
 use crate::learning_owner_journal::LearningOriginalOwnerErrorV1 as OwnerError;
 use crate::learning_owner_journal::LearningOwnerJournalV1;
 use crate::neuron_cell_evaluation_qualification_owner::TrainingRead;
+use crate::neuron_cell_evaluation_training_source::OriginalCellEvaluationTrainerReadbackV1;
 use crate::prepare_cell_learning_evaluation_v1;
 
 #[path = "neuron_cell_evaluation_receipt_operation.rs"]
@@ -106,6 +107,43 @@ pub struct OriginalCellEvaluationReceiptOwnerV1<W: AnchorWitnessStore> {
 }
 
 impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
+    // A shared host observation belongs only to its actual external Trainer
+    // connection. OriginalQ24 keeps its independent original-owner readback.
+    async fn original_training_evidence(
+        &self,
+        trainer: OriginalCellEvaluationTrainerReadbackV1<'_>,
+        snapshot: &LearningIterationSnapshotV1,
+        training: TrainingRead<'_>,
+    ) -> Result<SignedLearningEvidenceV1, Error> {
+        match (trainer, training) {
+            (OriginalCellEvaluationTrainerReadbackV1::External(client), training) => {
+                training
+                    .receipt_evidence(
+                        OriginalCellEvaluationTrainerReadbackV1::External(client),
+                        snapshot,
+                        &self.config,
+                    )
+                    .await
+            }
+            (
+                original @ OriginalCellEvaluationTrainerReadbackV1::OriginalQ24(_),
+                TrainingRead::Independent,
+            ) => Ok(OriginalCellEvaluationTrainerReadbackV1::readback(
+                &original,
+                snapshot,
+                self.training()?,
+            )
+            .await?),
+            (
+                OriginalCellEvaluationTrainerReadbackV1::OriginalQ24(_),
+                TrainingRead::Operation(_),
+            ) => Err(OwnerError::Binding(
+                "shared external Trainer observation cannot replace original Q24 readback",
+            )
+            .into()),
+        }
+    }
+
     pub(crate) fn require_original_training(
         &self,
         training: &LearningIterationSnapshotV1,
@@ -209,7 +247,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         &mut self,
         source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.attest_with_training(source, TrainingRead::Independent)
+        self.attest_sources_with_training(source, TrainingRead::Independent)
             .await
     }
 
@@ -225,7 +263,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         &mut self,
         source: ReceiptSources<'_, S, C, F, E>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
-        self.readback_with_training(source, TrainingRead::Independent)
+        self.readback_sources_with_training(source, TrainingRead::Independent)
             .await
     }
 

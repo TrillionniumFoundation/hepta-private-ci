@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.reviewable-source-patch.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "baseline_sha": "b2646b4cbf19817145c9cb680d95333a267d19f4",
+  "baseline_verification": {
+    "manifest": "/workspace/scratch/14afb8ae9d10/control/baseline_manifest.json",
+    "github_blob_matches": 9,
+    "upstream_files_unchanged": true
+  },
+  "targets": [
+    {
+      "repository_path": "scripts/ndu_ctrl1_s1/continuation.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/control/patch/scripts/ndu_ctrl1_s1/continuation.py",
+      "operation": "create_only",
+      "expected_old_sha256": "absent",
+      "sha256": "1bfdb0d9ee825d143de6e27dc8e4357dfd95eb4c62a1bbeae36791bd3b6b5ece",
+      "bytes": 5482,
+      "lines": 139
+    },
+    {
+      "repository_path": "scripts/ndu_ctrl1_s1/test_continuation.py",
+      "local_source": "/workspace/scratch/14afb8ae9d10/control/patch/scripts/ndu_ctrl1_s1/test_continuation.py",
+      "operation": "create_only",
+      "expected_old_sha256": "absent",
+      "sha256": "26ac1cfd1c231bfbc6157b87cf10d544ab549d96ae10fe819be2ac7d53a89ba8",
+      "bytes": 13371,
+      "lines": 297
+    }
+  ],
+  "support_package": {
+    "repository_path": "scripts/ndu_ctrl1_s1/__init__.py",
+    "local_source": "/workspace/scratch/14afb8ae9d10/control/patch/scripts/ndu_ctrl1_s1/__init__.py",
+    "publication": "Root owns the shared package initializer; use the same initializer bytes in both small PRs. The standalone initializer is not in continuation.patch."
+  },
+  "patch_file": "/workspace/scratch/14afb8ae9d10/control/continuation.patch",
+  "validation": {
+    "tests_passed": 9,
+    "test_receipt": "/workspace/scratch/14afb8ae9d10/control/validation/unittest_receipt.json",
+    "test_log": "/workspace/scratch/14afb8ae9d10/control/validation/unittest.log",
+    "test_returncode": 0,
+    "exact_candidate_replays": 24,
+    "maximum_absolute_prediction_error": 0.0,
+    "diagnostic_json": "/workspace/scratch/14afb8ae9d10/control/validation/diagnostic.json",
+    "diagnostic_reproducer": "/workspace/scratch/14afb8ae9d10/control/validation/run_probe.py",
+    "native_just_fmt": "NOT_RUN_IN_THIS_PARTIAL_SCRATCH_COPY; root will run on native full checkout",
+    "local_formatter_availability": {
+      "ruff": false,
+      "just": false
+    }
+  },
+  "scope": {
+    "old_v1_source_modified": false,
+    "old_runs_or_originals_modified": false,
+    "new_training_runs": 0,
+    "new_holdout_experiments": 0,
+    "scientific_promotion": "HOLD",
+    "adoption": "NoUpdate",
+    "native_owner_gate_invoked": false
+  },
+  "integration_notes": [
+    "Adds an opt-in one-slow adapter; v1 train_router and run remain unchanged.",
+    "All-full-horizon candidate comparison or admitted fast fallback; no shallow plan is called exact.",
+    "Invocation price remains tied to the forecast cap, not actual consumed CPU.",
+    "Existing workflow new-package test discovery should cover these tests in normal and optimized modes."
+  ]
+}

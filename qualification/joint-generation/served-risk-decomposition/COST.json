@@ -1,0 +1,44 @@
+{
+  "affinity": [
+    0
+  ],
+  "known_children_CPU_seconds": 1.664808,
+  "model_dataset_TEST_reads": false,
+  "per_child_limits": {
+    "AS_bytes": 536870912,
+    "CPU_seconds": 15,
+    "affinity": [
+      0
+    ],
+    "same_shared_lock": true,
+    "wall_seconds": 90
+  },
+  "receipts": [
+    {
+      "complete_wait": true,
+      "exit_code": 0,
+      "max_rss_kib": 20352,
+      "phase": "tests",
+      "system_CPU_seconds": 0.028551,
+      "user_CPU_seconds": 0.44901399999999997,
+      "wall_seconds": 0.48553154501132667,
+      "whole_child_CPU_seconds": 0.47756499999999996
+    },
+    {
+      "complete_wait": true,
+      "exit_code": 0,
+      "max_rss_kib": 94976,
+      "phase": "saved-arithmetic",
+      "system_CPU_seconds": 0.547214,
+      "user_CPU_seconds": 0.640029,
+      "wall_seconds": 1.1927822710713372,
+      "whole_child_CPU_seconds": 1.187243
+    }
+  ],
+  "same_shared_lock": true,
+  "scope": "literal tests plus saved JSON arithmetic only; no training or new model evaluation",
+  "source_freeze_sha256": "dfa49198ae22ae638b1a52578d3f5177bebb3d0d293cd06cead446c30b8c0da2",
+  "status": "COMPLETE",
+  "supervisor_CPU_observed_lower": 0.010217206,
+  "supervisor_tail": "UNKNOWN_NOT_ZERO"
+}

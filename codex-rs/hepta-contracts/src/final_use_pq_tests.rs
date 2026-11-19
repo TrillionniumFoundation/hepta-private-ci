@@ -473,3 +473,85 @@ fn pq_feed_confirmation_reauthenticates_without_advancing_or_unrevoking() -> PqT
     assert_eq!(fixture.authority.frontier().unwrap(), revoked);
     Ok(())
 }
+
+#[test]
+fn pq_retained_entry_survives_expiry_and_reopen_without_new_authority() -> PqTestResult {
+    let fixture = pq_fixture()?;
+    let token = fixture
+        .authority
+        .claim(&fixture.signed, &fixture.signed.grant.binding)?;
+    let ((), witness) = crate::dispatch_final_use_with_witness(
+        &fixture.authority,
+        token,
+        &fixture.signed.grant.binding,
+        |_| (),
+    )?;
+    let head = fixture.authority.revocation_head()?;
+    let frontier = fixture.authority.current_external_frontier()?;
+    assert_eq!(
+        fixture.authority.verify_retained_use(
+            &fixture.signed,
+            &fixture.signed.grant.binding,
+            &witness,
+        )?,
+        head,
+    );
+    let claims_path = fixture.directory.path().join("authority.claims");
+    let state_path = fixture.directory.path().join("authority.json");
+    let before_claims = std::fs::read(&claims_path)?;
+    let before_state = std::fs::read(&state_path)?;
+    drop(fixture.authority);
+    let reopened = FinalUseAuthority::open_pq_state_dir_with_issuer_keys(
+        fixture.directory.path(),
+        "security-owner".into(),
+        vec![fixture.trust],
+        head.clone(),
+        Arc::new(FixedClock(9_000)),
+        fixture.frontier,
+    )?;
+    assert_eq!(
+        reopened.verify_retained_use(&fixture.signed, &fixture.signed.grant.binding, &witness,)?,
+        head,
+    );
+    assert_eq!(reopened.current_external_frontier()?, frontier);
+    assert_eq!(reopened.capacity()?.used_nonces, 1);
+    assert!(matches!(
+        reopened.claim(&fixture.signed, &fixture.signed.grant.binding),
+        Err(FinalUseError::Expired),
+    ));
+    assert_eq!(std::fs::read(claims_path)?, before_claims);
+    assert_eq!(std::fs::read(state_path)?, before_state);
+    Ok(())
+}
+
+#[test]
+fn pq_named_journal_replacement_fences_original_entry_and_shared_owner() -> PqTestResult {
+    let fixture = pq_fixture()?;
+    let token = fixture
+        .authority
+        .claim(&fixture.signed, &fixture.signed.grant.binding)?;
+    let shared = fixture.authority.clone();
+    let claims_path = fixture.directory.path().join("authority.claims");
+    let original_claims = std::fs::read(&claims_path)?;
+    std::fs::rename(&claims_path, fixture.directory.path().join("saved.claims"))?;
+    std::fs::write(&claims_path, &original_claims)?;
+    std::fs::set_permissions(&claims_path, std::fs::Permissions::from_mode(0o600))?;
+    let entered = std::cell::Cell::new(false);
+    assert!(matches!(
+        crate::dispatch_final_use_with_witness(
+            &fixture.authority,
+            token,
+            &fixture.signed.grant.binding,
+            |_| entered.set(true),
+        ),
+        Err(FinalUseError::Unavailable),
+    ));
+    assert!(!entered.get());
+    assert!(matches!(
+        fixture.authority.capacity(),
+        Err(FinalUseError::Unavailable)
+    ));
+    assert!(matches!(shared.capacity(), Err(FinalUseError::Unavailable)));
+    assert_eq!(std::fs::read(claims_path)?, original_claims);
+    Ok(())
+}

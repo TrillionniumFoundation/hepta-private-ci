@@ -11,6 +11,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "original_published_read_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -57,7 +59,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         rows = [
             row for row in self.manifest["protected_file"] if row["path"] == path
         ]
@@ -67,7 +69,7 @@ class OriginalPublishedReadClosureTests(unittest.TestCase):
             target.parent.mkdir(parents=True)
             target.write_text(source)
             PROOF._verify_protected_files(root, {"protected_file": rows})
-            target.write_text(source[:offset] + replacement + source[offset + len(marker):])
+            target.write_text(source[:offset] + replacement + source[limit:])
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 

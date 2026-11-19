@@ -1,0 +1,178 @@
+{
+  "actual_adam_update_calls": 4,
+  "commands": [
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/runner/work/_temp/physical-torch/continuous",
+        "--steps",
+        "2",
+        "--geometry",
+        "uniform"
+      ],
+      "name": "continuous",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/runner/work/_temp/physical-torch/first",
+        "--steps",
+        "1",
+        "--geometry",
+        "uniform"
+      ],
+      "name": "first",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/runner/work/_temp/physical-torch/resumed",
+        "--steps",
+        "1",
+        "--geometry",
+        "uniform",
+        "--resume",
+        "/home/runner/work/_temp/physical-torch/first/state.pt"
+      ],
+      "name": "resumed",
+      "returncode": 0
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/runner/work/_temp/physical-torch/source-mismatch",
+        "--steps",
+        "1",
+        "--geometry",
+        "uniform",
+        "--resume",
+        "/home/runner/work/_temp/physical-torch/source-mismatch.pt"
+      ],
+      "name": "source-mismatch",
+      "returncode": 1
+    },
+    {
+      "command": [
+        "/opt/hostedtoolcache/Python/3.12.16/x64/bin/python",
+        "-B",
+        "-m",
+        "qualification.hcsn_joint_dde.native_gradient_probe",
+        "train",
+        "--output",
+        "/home/runner/work/_temp/physical-torch/runtime-mismatch",
+        "--steps",
+        "1",
+        "--geometry",
+        "uniform",
+        "--resume",
+        "/home/runner/work/_temp/physical-torch/runtime-mismatch.pt"
+      ],
+      "name": "runtime-mismatch",
+      "returncode": 1
+    }
+  ],
+  "complete_hcsn_training_replay": false,
+  "continuous_vs_fresh_process_full_state_exact": true,
+  "cpu_children_seconds": 11.669616,
+  "cpu_self_seconds": 0.8689017679999997,
+  "geometry": "uniform",
+  "gradcheck": true,
+  "parameter_version_guard": true,
+  "production_qualified": false,
+  "records": [
+    {
+      "gradient": [
+        -0.004153323042389705,
+        0.06881275167983542,
+        -0.12922952140019614,
+        0.0024203417444972216,
+        0.017134042601502357
+      ],
+      "loss": 0.013783099675610302,
+      "parameters": [
+        0.010049999879614758,
+        -0.1200499999927339,
+        0.5000499999961309,
+        1.71595686239144,
+        0.14995000002918166
+      ],
+      "step": 1,
+      "target": [
+        0.396431622575942,
+        0.356007266941699,
+        0.6430321927164488
+      ]
+    },
+    {
+      "gradient": [
+        -0.004190990547103483,
+        0.06962012162691768,
+        -0.13085110415031737,
+        0.002442363580901862,
+        0.016328878999031852
+      ],
+      "loss": 0.0131848834863564,
+      "parameters": [
+        0.010100011016610509,
+        -0.12010001433691427,
+        0.500100015271838,
+        1.7159068513055877,
+        0.14990007722696325
+      ],
+      "step": 2,
+      "target": [
+        0.3947580679551277,
+        0.3590865586290012,
+        0.6335766875501535
+      ]
+    }
+  ],
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.12.16 (main, Oct 26 2026, 02:50:49) [GCC 13.3.0]",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "runtime_mismatch_refused": true,
+  "schema": "hcsn-native-physical-autograd-replay-v1",
+  "scope": "CPU FP64 first-order physical custom VJP with fixed initial probability/content; no network/prior AD",
+  "source_mismatch_refused": true,
+  "source_sha256": {
+    "hcsn_boundary_audit/refractory_transport.py": "0e20e456e2789a824f3cab4d52fd911b8ed446a13abd4a32c9e3e5a8b9adda22",
+    "hcsn_boundary_audit/spatial_generator.py": "a57ad58849dd625630e6712ca9b08d9da689764add93b5e4c47c5036884cd441",
+    "hcsn_graded/model.py": "36a1ca1a75f3b5d0661c8f96f1dfa6093668e4bd2ba8764c597217674d6f1c4c",
+    "hcsn_graded/spatial.py": "ad6b6865374d1f7f6ed493d6485a60be9f39795d1eb232e681f32a020f5b50f0",
+    "hcsn_joint_dde/graded_sensitivities.py": "b5b2fa8fdfd185cfb7dfef045536a06d9f55e17df7abd2c6de13620e6eda6548",
+    "hcsn_joint_dde/model.py": "54d2a29ca32685182f94282ae953b1d866b4fc4486d68bf02d8f959de7b5d0a4",
+    "hcsn_joint_dde/native_gradient_probe.py": "d57919392e4e833a8837e9299e00c235949bb5f0ba7767c300f763c47a649a1e",
+    "hcsn_joint_dde/sensitivities.py": "d2c6c754b04a1e4ed21f317146a70de2aeb3020b01bd48a18e5301fb22c09f1a",
+    "hcsn_joint_dde/torch_physical.py": "c203a7015d538f83e2f9eb4c5452ce0883ff060fa470680a4a516dba7f19d731"
+  },
+  "sources_unchanged": true,
+  "task_efficacy": false,
+  "trainable_initial_state_refused": true,
+  "unsafe_data_mutation_guard": true,
+  "wall_seconds": 13.209626450000002
+}

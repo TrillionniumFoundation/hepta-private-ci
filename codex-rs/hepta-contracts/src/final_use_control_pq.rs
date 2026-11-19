@@ -38,6 +38,18 @@ impl FinalUseApprovalVerifier {
 }
 
 impl FinalUseRevocationFeedVerifier {
+    /// Authenticate a fresh head before creating a durable authority owner.
+    /// This read-only check does not apply the head or establish currentness
+    /// against an external frontier; callers must still perform those checks.
+    pub fn authenticate_fresh_head(
+        &self,
+        signed: &SignedFinalUseRevocationUpdate,
+        now_unix_ms: u64,
+    ) -> Result<FinalUseRevocations, FinalUseControlError> {
+        self.verify_signed(signed, now_unix_ms)?;
+        Ok(signed.update.head.clone())
+    }
+
     /// Authenticate a fresh presentation of the exact durable head, or apply a
     /// strict monotonic successor. Confirmation never writes a new frontier and
     /// never bypasses signature, profile, or feed lifetime verification.

@@ -19,7 +19,7 @@ workspace = true
 
 [dependencies]
 ed25519-dalek = { workspace = true }
-ml-dsa = { version = "=0.1.1", default-features = false, features = ["alloc", "zeroize"] }
+ml-dsa = { version = "=0.1.2", default-features = false, features = ["alloc", "zeroize"] }
 rustix = { workspace = true, features = ["event", "fs", "net", "process", "time"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
@@ -28,6 +28,7 @@ zeroize = { workspace = true }
 
 [target.'cfg(windows)'.dependencies]
 codex-utils-path = { workspace = true }
+codex-utils-windows-private-state = { workspace = true }
 
 [dev-dependencies]
 codex-utils-cargo-bin = { workspace = true }

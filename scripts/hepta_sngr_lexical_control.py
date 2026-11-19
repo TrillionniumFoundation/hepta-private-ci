@@ -6,8 +6,6 @@ of real-task success, or a neural FBSDE result. Its rules were chosen after
 inspection of the 16-case dataset and MUST NOT be called a held-out result.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 from pathlib import Path

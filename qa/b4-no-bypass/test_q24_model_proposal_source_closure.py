@@ -20,10 +20,10 @@ sys.modules[SPEC.name] = PROOF
 SPEC.loader.exec_module(PROOF)
 AGENT = "codex-rs/hepta-agentd/src/"
 OWNER = AGENT + "cell_q24_model_proposal.rs"
-CURRENT = AGENT + "cell_q24_model_current_owner.rs"
 ADMISSION = AGENT + "cell_q24_model_proposal_admission.rs"
 FACTORY = AGENT + "root_q24_model_factory.rs"
 PROJECTION = AGENT + "cell_q24_model_projection.rs"
+CURRENT = AGENT + "cell_q24_model_current_owner.rs"
 LANE = AGENT + "cell_q24_training_model_lane.rs"
 TRAINER = AGENT + "cell_composed_q24_training_owner.rs"
 BOUND = AGENT + "cell_q24_source_bound_stage.rs"
@@ -72,10 +72,10 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             assert branch_end is not None
             self.assertLessEqual(branch_end, end)
             end = branch_end
-        body = source[start : end + 1]
-        self.assertEqual(body.count(marker), 1, marker)
-        offset = start + body.index(marker)
-        changed = source[:offset] + source[offset + len(marker) :]
+        offset, after = source_marker_span(source, marker, start, end + 1)
+        with self.assertRaises(ValueError):
+            source_marker_span(source, marker, after, end + 1)
+        changed = source[:offset] + source[after:]
         rows = [
             row for row in self.manifest["protected_file"] if row["path"] == path
         ]
@@ -89,16 +89,17 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.assertRaises(PROOF.VerificationFailure):
                 PROOF._verify_protected_files(root, {"protected_file": rows})
 
-    def test_model_borrows_original_lane_and_host_entrypoints_remain_closed(self):
+    def test_owner_entrypoints_require_original_root_factory(self):
         for identifier, expected in BOUNDARIES.items():
             with self.subTest(boundary=identifier):
                 row = self.boundaries[identifier]
                 self.assertEqual(row.product_callers, expected)
                 PROOF._verify_boundary(ROOT, row, self.sources, ())
-                with self.assertRaises(PROOF.VerificationFailure):
-                    PROOF._verify_boundary(
-                        ROOT, replace(row, product_callers=()), self.sources, ()
-                    )
+                for caller in expected:
+                    with self.assertRaises(PROOF.VerificationFailure):
+                        PROOF._verify_boundary(
+                            ROOT, replace(row, product_callers=tuple(path for path in expected if path != caller)), self.sources, ()
+                        )
                 sources = dict(self.sources)
                 method = row.symbol.rsplit("::", 1)[-1]
                 sources[AGENT + "unregistered_model_proposal.rs"] = (
@@ -108,6 +109,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
                     PROOF._verify_boundary(ROOT, row, sources, ())
 
 
+    def test_model_borrows_original_lane_and_host_entrypoints_remain_closed(self):
         # The split current-material impl contains the Model owner type, but
         # both readbacks belong to its original durable journal. Reverting
         # either real call independently must reproduce the closed scanner
@@ -331,6 +333,7 @@ class Q24ModelProposalSourceClosureTests(unittest.TestCase):
             with self.subTest(function=function):
                 self.rejects(OWNER, function, marker)
         self.rejects(PROJECTION, "fn project_original_qualified_model<", "&request")
+
 
     def test_shared_lane_cannot_skip_original_completion_or_exact_attestation(self):
         for function, markers in (

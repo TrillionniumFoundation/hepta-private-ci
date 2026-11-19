@@ -1,0 +1,36 @@
+name: context-compiler-source-snapshot
+
+on:
+  push:
+    branches:
+      - context-compiler/v3-provider-bound-closure-20260927
+
+permissions:
+  contents: read
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out exact branch head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Build source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/hepta-private-ci-${GITHUB_SHA}.tar.gz"
+          tar --exclude=.git --exclude=target -czf "$archive" .
+          sha256sum "$archive" > "$archive.sha256"
+      - name: Retain exact source snapshot
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: context-compiler-source-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz
+            ${{ runner.temp }}/hepta-private-ci-${{ github.sha }}.tar.gz.sha256
+          if-no-files-found: error
+          retention-days: 1

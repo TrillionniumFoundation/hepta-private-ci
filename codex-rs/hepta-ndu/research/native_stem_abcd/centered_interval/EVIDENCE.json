@@ -1,0 +1,59 @@
+{
+  "schema": "hepta.ndu.r22.centered_interval.evidence.v1",
+  "parent_R21_sha": "77fc87181d0abe28150b8293070bf48112bcab54",
+  "protocol_pre_execution_commit": "4e6e1eaf418ce8a4717edde80bfb1cd6d0550c5d",
+  "original_120_weights_zip_sha256": "75b7f84db4fa749c48b502c4ff1fe23af02e8b7fa5fd045f99c487e80c1f1d99",
+  "original_zip_members_verified": 1120,
+  "original_unchanged_tensor_seals_verified": 120,
+  "new_training_runs": 0,
+  "six_exact_proof_runs": 6,
+  "six_proof_split_nodes_replayed": 19510,
+  "historical_certified": 20,
+  "retrospective_certified": 39,
+  "newly_certified_without_refit": 19,
+  "still_uncertified": 81,
+  "fixed_node_cap": 4000,
+  "fixed_global_gap_threshold": "1/100",
+  "per_width": {
+    "2": {
+      "original": "20/40",
+      "enhanced": "20/40",
+      "frozen_candidate_qualified": true
+    },
+    "3": {
+      "original": "0/40",
+      "enhanced": "19/40",
+      "frozen_candidate_qualified": false
+    },
+    "4": {
+      "original": "0/40",
+      "enhanced": "0/40",
+      "frozen_candidate_qualified": false
+    }
+  },
+  "proof_cpu_seconds": 279.325558402,
+  "independent_replay_audit_cpu_seconds": 222.14777468,
+  "distinct_tests_passed": 37,
+  "tests_skipped": 0,
+  "source_sha256": {
+    "centered.py": "bfa9b84b807f78970c10680ebbc0be9c46136daaf277a99125fc219648b39899",
+    "test_centered.py": "6a5a45e3091f13f4010dedc4a16097e1266b992cc3c0160e7be2c5b3e8d981b8",
+    "audit.py": "69a2a0a075c331c9207d2ba2a87e184d285333d55a2c5b6a5aa9718a1db44e80",
+    "test_tamper.py": "6c9ed074c54b8d6aefdd983bf26b1dc01fe36efa35b633faebcb4f3b115bb057",
+    "git_replay.py": "fc0365993fc2a432408451e9c2dcf82251e6c692b228df78514f84836bfcea11",
+    "emit_scores.py": "31e6affb3ce86e681bcd005326f3b42145dda2bfffc375049d92371fc9b463b6"
+  },
+  "complete_conversation_zip_name": "hepta_native_ndu_centered_interval_round22_20261015.zip",
+  "complete_conversation_zip_bytes": 15533364,
+  "complete_conversation_zip_sha256": "f8f8f368541cf786b03764f12f7e0c030dd4d998c8845571122f2636388cfb34",
+  "archive_content_members_individually_verified": 55,
+  "archive_total_members": 56,
+  "full_original_parent_zip_separate": true,
+  "source_slice_cpu_only": true,
+  "project_cloud_executed": false,
+  "production_authorized": false,
+  "flop_count": null,
+  "energy_joules": null,
+  "gpu_compute": null,
+  "hosted_ci_pass_observed": false
+}

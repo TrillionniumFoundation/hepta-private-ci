@@ -1,0 +1,252 @@
+{
+  "execution_schedule": [],
+  "freeze_sha256": "54564cb45d68df584c7b4d842826647f210d35c72057ef1e84c79be195c687f9",
+  "numerical_runtime": {
+    "cpu_affinity": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "errors": {},
+    "numpy_geterr": {
+      "divide": "warn",
+      "invalid": "warn",
+      "over": "warn",
+      "under": "ignore"
+    },
+    "numpy_path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy/__init__.py",
+    "numpy_version": "2.3.5",
+    "observed_process_threads": 1,
+    "profile_active": false,
+    "python": "3.12.14 (main, Aug 25 2026, 14:00:49) [Clang 22.1.3 ]",
+    "python_executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "sampling": {
+      "cpu_ns": 35812052,
+      "wall_ns": 38436839
+    },
+    "schema": "hepta.numerical-runtime.v1",
+    "scope": "same-process boundary observation; no configuration changes or peak-thread claim",
+    "thread_environment": {
+      "MKL_NUM_THREADS": "1",
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "PYTHONDONTWRITEBYTECODE": "1"
+    },
+    "threadpools": [
+      {
+        "architecture": "SkylakeX",
+        "filepath": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/site-packages/numpy.libs/libscipy_openblas64_-fdde5778.so",
+        "internal_api": "openblas",
+        "num_threads": 1,
+        "prefix": "libscipy_openblas",
+        "sha256": "ee2039cf13a45e1e89f04d0cea9585657d93ffaa425594e1935161013fdf4e12",
+        "threading_layer": "pthreads",
+        "user_api": "blas",
+        "version": "0.3.30"
+      }
+    ],
+    "threadpools_truncated": false,
+    "trace_active": false
+  },
+  "phases": [
+    {
+      "after": {
+        "container": {
+          "cpu_stat": {
+            "burst_usec": 0,
+            "nice_usec": 0,
+            "nr_bursts": 0,
+            "nr_periods": 47880,
+            "nr_throttled": 129,
+            "system_usec": 204816969,
+            "throttled_usec": 17019004,
+            "usage_usec": 999027548,
+            "user_usec": 794210578
+          },
+          "memory_events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "scope": "container, not process; deltas do not establish causation"
+        },
+        "errors": {},
+        "identity": {
+          "pid": 30124,
+          "start_ticks": 1976641,
+          "thread_id": 30124
+        },
+        "process_cpu_ns": 517179403,
+        "process_threads": 1,
+        "rusage": {
+          "involuntary_context_switches": 4,
+          "major_faults": 0,
+          "minor_faults": 13287,
+          "system_cpu_ns": 62437000,
+          "user_cpu_ns": 454747000,
+          "voluntary_context_switches": 21
+        },
+        "sampling": {
+          "cpu_ns": 510260,
+          "wall_ns": 509762
+        },
+        "schema": "hepta.resource-snapshot.v1",
+        "thread_cpu_ns": 517500760,
+        "wall_ns": 19766938998637
+      },
+      "before": {
+        "container": {
+          "cpu_stat": {
+            "burst_usec": 0,
+            "nice_usec": 0,
+            "nr_bursts": 0,
+            "nr_periods": 47877,
+            "nr_throttled": 129,
+            "system_usec": 204802770,
+            "throttled_usec": 17019004,
+            "usage_usec": 998757944,
+            "user_usec": 793955173
+          },
+          "memory_events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "scope": "container, not process; deltas do not establish causation"
+        },
+        "errors": {},
+        "identity": {
+          "pid": 30124,
+          "start_ticks": 1976641,
+          "thread_id": 30124
+        },
+        "process_cpu_ns": 247722349,
+        "process_threads": 1,
+        "rusage": {
+          "involuntary_context_switches": 1,
+          "major_faults": 0,
+          "minor_faults": 9077,
+          "system_cpu_ns": 34686000,
+          "user_cpu_ns": 213042000,
+          "voluntary_context_switches": 21
+        },
+        "sampling": {
+          "cpu_ns": 277387,
+          "wall_ns": 277418
+        },
+        "schema": "hepta.resource-snapshot.v1",
+        "thread_cpu_ns": 247896763,
+        "wall_ns": 19766669119836
+      },
+      "difference": {
+        "container": {
+          "cpu_stat": {
+            "burst_usec": 0,
+            "nice_usec": 0,
+            "nr_bursts": 0,
+            "nr_periods": 3,
+            "nr_throttled": 0,
+            "system_usec": 14199,
+            "throttled_usec": 0,
+            "usage_usec": 269604,
+            "user_usec": 255405
+          },
+          "memory_events": {
+            "high": 0,
+            "low": 0,
+            "max": 0,
+            "oom": 0,
+            "oom_group_kill": 0,
+            "oom_kill": 0
+          },
+          "scope": "container, not process; deltas do not establish causation"
+        },
+        "errors": {},
+        "process_cpu_ns": 269457054,
+        "process_threads": {
+          "after": 1,
+          "before": 1
+        },
+        "rusage": {
+          "involuntary_context_switches": 3,
+          "major_faults": 0,
+          "minor_faults": 4210,
+          "system_cpu_ns": 27751000,
+          "user_cpu_ns": 241705000,
+          "voluntary_context_switches": 0
+        },
+        "schema": "hepta.resource-delta.v1",
+        "thread_cpu_ns": 269603997,
+        "wall_ns": 269878801
+      },
+      "gc": {
+        "active": false,
+        "count": 8,
+        "cpu_ns_max": 2208935,
+        "cpu_ns_total": 3056650,
+        "dropped_events": 0,
+        "events": [
+          {
+            "cpu_ns": 317219,
+            "generation": 0,
+            "wall_ns": 316265
+          },
+          {
+            "cpu_ns": 130852,
+            "generation": 0,
+            "wall_ns": 129776
+          },
+          {
+            "cpu_ns": 63389,
+            "generation": 0,
+            "wall_ns": 62145
+          },
+          {
+            "cpu_ns": 44677,
+            "generation": 0,
+            "wall_ns": 43338
+          },
+          {
+            "cpu_ns": 2208935,
+            "generation": 1,
+            "wall_ns": 2209055
+          },
+          {
+            "cpu_ns": 113807,
+            "generation": 0,
+            "wall_ns": 113282
+          },
+          {
+            "cpu_ns": 53008,
+            "generation": 0,
+            "wall_ns": 52080
+          },
+          {
+            "cpu_ns": 124763,
+            "generation": 0,
+            "wall_ns": 122820
+          }
+        ],
+        "pending": false,
+        "scope": "GC callback intervals; process CPU may include other threads",
+        "unmatched_starts": 0,
+        "unmatched_stops": 0,
+        "wall_ns_max": 2209055,
+        "wall_ns_total": 3048761
+      },
+      "phase": "shared_preparation"
+    }
+  ],
+  "schema": "hepta.joint-generation.phase-telemetry.v1",
+  "scope": "diagnostic observations; capture overhead included while the arm is active",
+  "source_commit": "893a13fd165ae530531687933133fbbe2f9f58b4",
+  "test_opened": false
+}

@@ -27,7 +27,7 @@ LINEAGE = ("source_bundle", "dataset", "update_rule", "evaluation_profile")
 
 
 def digest_bytes(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[0-9a-f]{64}", value):
+    if type(value) is not str or not re.fullmatch(r"[0-9a-f]{64}", value):
         raise ValueError("digest must be 32 lowercase hex bytes")
     raw = bytes.fromhex(value)
     if not any(raw):
@@ -36,7 +36,7 @@ def digest_bytes(value):
 
 
 def stable_id_bytes(value):
-    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
+    if type(value) is not str or not re.fullmatch(r"[A-Za-z0-9._:-]{1,128}", value):
         raise ValueError("invalid native StableId")
     raw = value.encode("ascii")
     return len(raw).to_bytes(4, "big") + raw
@@ -53,7 +53,13 @@ class Bundle:
     def canonical_bytes(self):
         if type(self.generation) is not int or not 1 <= self.generation < 2**64:
             raise ValueError("generation must be a positive native u64")
-        if set(self.components) != set(REQUIRED + OPTIONAL):
+        # Python string subclasses can spoof equality/hash while encoding
+        # different wire bytes. Native field names have one representation.
+        if (
+            type(self.components) is not dict
+            or any(type(key) is not str for key in self.components)
+            or set(self.components) != set(REQUIRED + OPTIONAL)
+        ):
             raise ValueError("component fields differ from native bundle")
         if (self.training_lineage is None) != (self.rollback_predecessor is None):
             raise ValueError("lineage and predecessor must be present together")
@@ -71,7 +77,11 @@ class Bundle:
             if value is not None:
                 raw.extend(digest_bytes(value))
         if self.training_lineage is not None:
-            if set(self.training_lineage) != set(LINEAGE):
+            if (
+                type(self.training_lineage) is not dict
+                or any(type(key) is not str for key in self.training_lineage)
+                or set(self.training_lineage) != set(LINEAGE)
+            ):
                 raise ValueError("lineage fields differ from native bundle")
             if self.training_lineage["source_bundle"] != self.rollback_predecessor:
                 raise ValueError("lineage names a different predecessor")
@@ -109,6 +119,13 @@ class Bundle:
 
 def validate_local_update(family, source, candidate, trainable="heads"):
     """Mirror the native local-update restriction; no adoption is performed."""
+    if (
+        type(source) is not Bundle
+        or type(candidate) is not Bundle
+        or type(family) is not str
+        or type(trainable) is not str
+    ):
+        raise ValueError("update requires canonical Bundle and scope types")
     source_digest = source.digest()
     candidate.digest()
     if family not in ("shared_semantic", "stateful_temporal"):

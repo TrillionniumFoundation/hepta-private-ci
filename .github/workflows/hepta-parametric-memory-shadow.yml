@@ -8,6 +8,11 @@ on:
         type: boolean
         required: true
         default: false
+      accept_model_terms:
+        description: "Run the pinned SmolLM2-135M-Instruct confirmation study and confirm I accept its applicable model licenses and usage terms"
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -37,6 +42,37 @@ jobs:
         with:
           ref: ${{ env.SOURCE_SHA }}
           persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12"
@@ -66,7 +102,7 @@ jobs:
       - name: Install pinned CPU model runtime
         run: |
           set -euo pipefail
-          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.5.1'
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install --only-binary=:all: -r scripts/memory_cell/requirements.txt
           python -m pip check
           python -m pip freeze > "$RUNNER_TEMP/parametric-metadata/runtime.txt"
@@ -80,11 +116,13 @@ jobs:
           python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_evolution.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/evolution.log"
           python -m unittest discover -s qa/stem-bakeoff -p 'test_cell_process_inference.py' -v 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/process.log"
       - name: Acquire the pinned public decoder
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         timeout-minutes: 10
         run: |
           set -euo pipefail
           python scripts/memory_cell/prepare_parametric.py --output "$RUNNER_TEMP/smol135m" --download 2>&1 | tee "$RUNNER_TEMP/parametric-metadata/acquisition.log"
       - name: Run the actual confirmation and require the mechanism gate
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.accept_model_terms == true }}
         timeout-minutes: 45
         env:
           HF_HUB_OFFLINE: "1"
@@ -110,3 +148,11 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --check
           git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

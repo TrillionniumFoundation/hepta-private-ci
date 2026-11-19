@@ -1,0 +1,32 @@
+{
+  "schema": "rrsnn.bootstrap-format-only-supersession.v1",
+  "preformat_source_sha256": "df98ccc5ca1d7c87f4e1ab5bf99aca9b3190b2bab4e00e758c0caeed6d2aa154",
+  "final_source_sha256": "c92c7250cb62f0eaacc3557cc0c846d3cd985388eaab1286fe41cbd5384ded6b",
+  "preformat_patch_sha256": "4a1276bb8b57402949b28025b898159e350eda560ff1bf495e1c6f9e4e76616f",
+  "final_patch_sha256": "d8d937f15537f7372516736f3fa38969ead90afe061f85ad9ad06f272b01798e",
+  "formatting_only_verified": true,
+  "whitespace_only": false,
+  "optional_trailing_argument_comma_removed": true,
+  "diff": "--- tested-preformat\n+++ final-rustfmt\n@@ -157,13 +157,8 @@\n             return Err(NeuronRuntimeError::BootstrapWitnessPresent);\n         }\n         // The externally supplied anchor is checked before any tail repair.\n-        let journal = SparseJournal::open_anchored(\n-            file,\n-            native,\n-            scope,\n-            max_records,\n-            expected_first,\n-        )?;\n+        let journal =\n+            SparseJournal::open_anchored(file, native, scope, max_records, expected_first)?;\n         let current = journal\n             .current()?\n             .map(|checkpoint| JournalAnchor {\n",
+  "rustfmt_check_command": [
+    "/tmp/chain-pon-rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustfmt",
+    "--check",
+    "--edition",
+    "2024",
+    "--config",
+    "skip_children=true",
+    "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/patched_upstream/codex-rs/hepta-neuron/src/runtime.rs"
+  ],
+  "rustfmt_check_code": 0,
+  "tests_not_rerun_after_format": true,
+  "test_binary_preserved": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/crate_validation_build/bin/hepta-neuron-unit-tests",
+  "test_binary_sha256": "08f1f69d3ab492a915e13e64a65f17fa3cdcd9b7967551a388ec699522d7b67a",
+  "unit_tests_passed_before_format": 86,
+  "nextest_repo_profile_failed_in_reduced_workspace": true,
+  "fix_applicability": "AGENTS requires just fix before large changes; this upstream patch adds one ~60-line method. No lint fix applied to baseline crate sources.",
+  "cache_cleanup": {
+    "only_deleted": "/workspace/scratch/38ad1e295a60/rrsnn_v4/hepta/crate_validation_build/target",
+    "current_free_bytes": 288657408
+  },
+  "prior_proof_binary_and_review_not_repointed": true
+}

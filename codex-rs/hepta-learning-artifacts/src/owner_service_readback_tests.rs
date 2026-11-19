@@ -224,3 +224,51 @@ fn original_publication_readback_bounds_the_actual_transaction_scan() {
     assert_eq!(fixture.bytes(), before);
     assert!(fixture.service.recovery_required().is_none());
 }
+
+#[test]
+fn original_publication_readback_refuses_pending_physical_withdrawal() {
+    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let pending = fixture.directory.0.join("withdrawal.pending");
+    fs::write(&pending, b"unresolved original withdrawal").fixture("pending original frontier");
+    let before = fixture.bytes();
+    assert!(matches!(
+        fixture.service.read_original_publication_current(
+            &fixture.baseline.operation_id,
+            fixture.baseline_intent,
+        ),
+        Err(OriginalArtifactPublicationReadbackErrorV1::Owner(
+            ArtifactOwnerHostError::Indeterminate
+        ))
+    ));
+    assert_eq!(fixture.bytes(), before);
+    assert_eq!(
+        fs::read(pending).fixture("pending marker is not repaired by readback"),
+        b"unresolved original withdrawal"
+    );
+    assert!(fixture.service.recovery_required().is_none());
+}
+
+#[test]
+fn original_publication_readback_bounds_all_head_directory_entries() {
+    let fixture = OriginalPublicationReadbackFixture::fresh();
+    let directory = fixture.directory.0.join("heads");
+    for index in 0..4_097 {
+        fs::write(
+            directory.join(format!("readback-bound-{index}.ignored")),
+            b"",
+        )
+        .fixture("actual original head-directory entry");
+    }
+    let before = fixture.bytes();
+    assert!(matches!(
+        fixture.service.read_original_publication_current(
+            &fixture.baseline.operation_id,
+            fixture.baseline_intent,
+        ),
+        Err(OriginalArtifactPublicationReadbackErrorV1::Owner(
+            ArtifactOwnerHostError::Capacity
+        ))
+    ));
+    assert_eq!(fixture.bytes(), before);
+    assert!(fixture.service.recovery_required().is_none());
+}

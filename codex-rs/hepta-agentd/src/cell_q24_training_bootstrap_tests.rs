@@ -562,5 +562,5 @@ mod command_connection;
 #[path = "cell_q24_training_candidate_tests.rs"]
 mod candidate_material;
 
-#[path = "cell_q24_training_readback_tests.rs"]
+#[path = "cell_q24_training_bootstrap_readback_tests.rs"]
 mod original_readback;

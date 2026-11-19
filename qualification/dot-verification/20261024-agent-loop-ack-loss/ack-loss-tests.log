@@ -1,0 +1,29 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+warning: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-types)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-wire)
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-contracts)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-agent-loop v0.0.0 (/workspace/scratch/f24caf690188/hepta-native-loop-ack-loss/codex-rs/hepta-agent-loop)
+    Finished `test` profile [unoptimized] target(s) in 8.10s
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#proc-macro2@1.0.107` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#quote@1.0.47` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#generic-array@0.14.7` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_core@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#zmij@1.0.23` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#curve25519-dalek@4.1.3` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde@1.0.229` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#rustix@1.1.5` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#serde_json@1.0.154` which wasn't produced by cargo metadata
+warning: warning: saw package ID `registry+https://github.com/rust-lang/crates.io-index#thiserror@2.0.21` which wasn't produced by cargo metadata
+────────────
+ Nextest run ID c6900fa8-4ce3-4ce9-a7e8-915c24bf2aff with nextest profile: local
+    Starting 6 tests across 1 binary
+        PASS [   0.003s] codex-hepta-agent-loop::commit_ack_loss tool_commit_reply_loss_does_not_repeat_effect_observation
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss cancel_intent_reply_loss_reloads_before_both_owner_acks
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss model_commit_reply_loss_reloads_committed_tool_cursor
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss prewrite_failure_reobserves_same_key_with_owner_receipt
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss missing_owner_receipt_negative_control_executes_twice
+        PASS [   0.004s] codex-hepta-agent-loop::commit_ack_loss cancel_terminal_reply_loss_does_not_repeat_owner_cancellation
+────────────
+     Summary [   0.005s] 6 tests run: 6 passed, 0 skipped

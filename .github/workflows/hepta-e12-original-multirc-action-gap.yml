@@ -1,0 +1,184 @@
+name: Hepta E12 original MultiRC action gap (research DENY_ALL)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/shared-stem-system2-architecture/e12_gap_multirc*.py"
+      - "qualification/shared-stem-system2-architecture/test_e12_gap_multirc.py"
+      - "qualification/shared-stem-system2-architecture/E12_ORIGINAL_MULTIRC_ACTION_GAP_20261016.md"
+      - ".github/workflows/hepta-e12-original-multirc-action-gap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  blind-original-model:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: "1"
+      ARCHIVE: /tmp/hepta-e12-original-multirc-11946621518.zip
+      BLIND: /tmp/hepta-gap-blind-${{ matrix.profile }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Pin the exact real-model source and executed code
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$BLIND"
+          git rev-parse HEAD > "$BLIND/source-head.txt"
+          if [[ '${{ matrix.profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          for f in e12_nonlinear_cert.py e12_independent_audit.py e12_action_gap.py e12_action_gap_study.py e12_gap_multirc.py e12_gap_multirc_score.py test_e12_gap_multirc.py; do
+            test -s "$ROOT/$f"
+          done
+          sha256sum "$ROOT"/e12_*.py "$ROOT"/test_e12_*.py > "$BLIND/source-hashes.sha256"
+      - name: Obtain frozen original pretrained MultiRC artifact, no new model inference
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip" \
+            --output "$ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$ARCHIVE" | sha256sum -c -
+      - name: Validate original archive and adversarial controls without labels
+        shell: bash
+        env:
+          HEPTA_E12_MULTIRC_ORIGINAL: /tmp/hepta-e12-original-multirc-11946621518.zip
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover -s "$ROOT" -p "test_e12_gap_multirc.py" -v > "$BLIND/tests-normal.txt" 2>&1 || { cat "$BLIND/tests-normal.txt"; exit 1; }
+          python -O -W error::ResourceWarning -m unittest discover -s "$ROOT" -p "test_e12_gap_multirc.py" -v > "$BLIND/tests-optimized.txt" 2>&1 || { cat "$BLIND/tests-optimized.txt"; exit 1; }
+          grep -F 'Ran 11 tests' "$BLIND/tests-normal.txt"
+          grep -F 'Ran 11 tests' "$BLIND/tests-optimized.txt"
+          if grep -E 'skipped |FAILED |ERROR:' "$BLIND"/tests-*.txt; then exit 1; fi
+      - name: Create-only 33-original-model-case source-bound decisions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e12_gap_multirc.py" --archive "$ARCHIVE" \
+            --output "$BLIND/blind-original-policies.json" | tee "$BLIND/blind-stdout.json"
+          (cd "$BLIND" && sha256sum blind-original-policies.json > blind.sha256)
+          grep -Eq '^[0-9a-f]{64}  blind-original-policies[.]json$' "$BLIND/blind.sha256"
+          test ! -e "$BLIND/validation.parquet"
+      - name: Preserve unscored policy plus all failed attempt information
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-original-multirc-blind-${{ matrix.profile }}
+          path: /tmp/hepta-gap-blind-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn
+
+  independent-original-human-score:
+    needs: blind-original-model
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      ROOT: qualification/shared-stem-system2-architecture
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: "1"
+      ARCHIVE: /tmp/hepta-e12-scoring-original-11946621518.zip
+      SCORE: /tmp/hepta-gap-scored-${{ matrix.profile }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/download-artifact@v4
+        with:
+          name: e12-original-multirc-blind-${{ matrix.profile }}
+          path: /tmp/hepta-gap-blind-read
+      - name: Recheck byte-frozen source and blind receipt before human labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$SCORE"
+          test "$(git rev-parse HEAD)" = "$(cat /tmp/hepta-gap-blind-read/source-head.txt)"
+          sha256sum --check /tmp/hepta-gap-blind-read/source-hashes.sha256
+          cd /tmp/hepta-gap-blind-read
+          grep -Eq '^[0-9a-f]{64}  blind-original-policies[.]json$' blind.sha256
+          sha256sum --check blind.sha256
+      - name: Install only pinned human-publisher scoring libraries
+        shell: bash
+        run: python -m pip install --disable-pip-version-check huggingface-hub==0.36.0 pyarrow==20.0.0
+      - name: Independently reacquire original model and publisher human material
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --max-time 240 \
+            -H "Authorization: Bearer $GH_TOKEN" -H "X-GitHub-Api-Version: 2022-11-28" \
+            "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11946621518/zip" \
+            --output "$ARCHIVE"
+          printf '%s  %s\n' '1a9b485b6b1ee28c952934069b2cd4d765a17742655f3f3cb3339d3ca672ad17' "$ARCHIVE" | sha256sum -c -
+          python - <<'PY'
+          from hashlib import sha256
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          import shutil
+          path = Path(hf_hub_download(
+              repo_id="aps/super_glue", repo_type="dataset",
+              revision="4e14482c58d790d467ecfb29b6790e1917bf8756",
+              filename="multirc/validation-00000-of-00001.parquet"))
+          if sha256(path.read_bytes()).hexdigest() != "5eb64893afc5af7828b2f3b41d6a4574eb7a82cbb17c86c75842f5f95f679ada":
+              raise SystemExit("original human validation source has changed")
+          shutil.copyfile(path, "/tmp/hepta-gap-original-multirc-validation.parquet")
+          PY
+      - name: Independently replay full E12 tree and score sealed 33 answers
+        shell: bash
+        run: |
+          set -euo pipefail
+          HEAD_SHA="$(git rev-parse HEAD)"
+          printf '%s\n' "$HEAD_SHA" > "$SCORE/review-source-head.txt"
+          PRELABEL="/tmp/hepta-gap-blind-read/blind-original-policies.json"
+          SEALED_SHA="$(cut -d ' ' -f1 /tmp/hepta-gap-blind-read/blind.sha256)"
+          python "$ROOT/e12_gap_multirc_score.py" --archive "$ARCHIVE" \
+            --blind "$PRELABEL" --blind-sha "$SEALED_SHA" \
+            --validation-parquet /tmp/hepta-gap-original-multirc-validation.parquet \
+            --output "$SCORE/independent-human-review.json" | tee "$SCORE/score-stdout.json"
+          sha256sum "$SCORE/independent-human-review.json" > "$SCORE/score.sha256"
+          python - "$SCORE/independent-human-review.json" <<'PY'
+          import json,sys
+          d=json.load(open(sys.argv[1]))
+          assert d["results"]["conditioned"]["correct"] == 16
+          assert d["results"]["mean_pool_query_fused"]["correct"] == 17
+          assert d["candidate_answers"] == 33 and d["model_calls_new"] == 0
+          assert d["authority"] == "DENY_ALL"
+          assert d["natural_reasoning_gain_verified"] is False
+          print(json.dumps({"original_correct": [16,17],
+                            "gap_policy": d["results"]["certified_action_gap"],
+                            "certified_cases": d["mathematical_certificates"]}, sort_keys=True))
+          PY
+      - name: Retain independent scored aggregate but not human Parquet
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e12-original-multirc-scored-${{ matrix.profile }}
+          path: /tmp/hepta-gap-scored-${{ matrix.profile }}/
+          retention-days: 14
+          if-no-files-found: warn

@@ -13,7 +13,7 @@ import sys
 import time
 
 from budget_ledger import BudgetExceeded, digest
-from cohort_contract import file_sha, retain, validate_seal
+from cohort_contract import bind_implementation, file_sha, retain
 from model_budget import allocate_parent, inventory, ledger_for, model_call
 from model_load import continued_load
 from retrieval_index import tokens
@@ -119,6 +119,7 @@ def execute_reads(arm, versions, queries, routes, records, ledger, args, directo
                 event,
                 request,
                 implementation=args.implementation,
+                study=args.study,
                 directory=directory / event,
             )
             raw = measurement["output"]
@@ -265,6 +266,7 @@ def _arm_run(arm, args, protocol, shared, parent_measurement):
             "train",
             request,
             implementation=args.implementation,
+            study=args.study,
             directory=destination / "training-process",
             expected_updates=96,
         )
@@ -392,7 +394,7 @@ def run(args):
         raise ValueError(
             "root must explicitly allocate the single pretrained execution lane"
         )
-    validate_seal(args.study)
+    source_binding = bind_implementation(args.study, args.implementation)
     head = subprocess.check_output(
         ["git", "rev-parse", "HEAD"], cwd=args.implementation, text=True
     ).strip()
@@ -405,6 +407,7 @@ def run(args):
         dict(
             protocol_sha256=file_sha(args.study / "protocol.json"),
             source_head=head,
+            implementation_binding=source_binding,
             started_at_ns=time.time_ns(),
             arm_order=ARMS,
             model_path=str(args.model),
@@ -429,6 +432,7 @@ def run(args):
                 output=str(shared),
             ),
             implementation=args.implementation,
+            study=args.study,
             directory=args.output / "shared" / "process",
             expected_updates=32,
         )
@@ -441,7 +445,7 @@ def run(args):
     if parent is not None and parent_pin is not None:
         for index, arm in enumerate(ARMS):
             try:
-                validate_seal(args.study)
+                bind_implementation(args.study, args.implementation)
                 if shared_identity(shared) != parent_pin:
                     raise ValueError("shared parent/source files changed between arms")
             except Exception as error:
@@ -453,7 +457,7 @@ def run(args):
             results.append(arm_run(arm, args, protocol, shared, parent))
     final_integrity, error_text = True, None
     try:
-        validate_seal(args.study)
+        bind_implementation(args.study, args.implementation)
         if parent_pin is not None and shared_identity(shared) != parent_pin:
             raise ValueError("shared parent/source final identity mismatch")
     except Exception as error:

@@ -1,0 +1,29 @@
+{
+  "fixed_all64_gates": {
+    "all64_reference_gradients_compared": true,
+    "all_exact_normalized_rows_admitted": true,
+    "all_extended_normalized_rows_admitted": true,
+    "extended_exact_gradient_parity_1e8": true,
+    "extended_exact_joint_parity_1e12": true,
+    "fixed_failure_reproduced": true,
+    "normalization_joint_change_within_1e12": true,
+    "normalization_marginal_change_within_1e12": true,
+    "reference_value_parity_1e10": true
+  },
+  "generation_quality_gate": null,
+  "literal_tests": {
+    "errors": 0,
+    "failures": 0,
+    "run": 4
+  },
+  "original_science_status": "ABORTED_NUMERICAL_DOMAIN_NOT_EVALUATED",
+  "public_boundary": "No private paths, payloads, raw policies, per-request outcomes or row identifiers",
+  "rust_checks": "Not run: portable Python-only change",
+  "scope": "Independent static and saved-record review; no numerical replay, model selection or validation",
+  "source_sha256": {
+    "PLAN.md": "57ec642f5424e22bec1a3be25c8a9d7deac1479cd101b37e93edd11bbb4a4611",
+    "reference.py": "f882c0a56afc808f9b7be98f83c4edc845f6ca93b69d06da7c3b3148f7a5ee3c",
+    "test_reference.py": "8573a0a204568447a6353bdd68c855c728ee34f471572404215cc3918754b34d"
+  },
+  "status": "PASS_FIXED_PREFIX_NUMERICAL_DIAGNOSTIC_ONLY"
+}

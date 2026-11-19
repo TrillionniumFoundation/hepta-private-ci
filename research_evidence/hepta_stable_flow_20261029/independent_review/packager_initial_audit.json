@@ -1,0 +1,81 @@
+{
+  "version": "hepta-independent-packager-audit-initial-v1",
+  "created_unix": 1793279439.7526608,
+  "packager_sha256": "948d6842a24e002c1a853222b7f4ffa2c3444cbe14ff488248d7f7528bb082af",
+  "fixture_directory": "/tmp/hepta_release_audit_7ly89ud0",
+  "synthetic_fixture_not_scientific_evidence": true,
+  "valid_archive_verified": true,
+  "archive_rejections": {
+    "same_size_member_tamper": {
+      "rejected": true,
+      "error_type": "RuntimeError",
+      "message": "Archive member hash mismatch"
+    },
+    "missing_declared_member": {
+      "rejected": true,
+      "error_type": "RuntimeError",
+      "message": "Archive is missing declared evidence"
+    },
+    "duplicate_member": {
+      "rejected": true,
+      "error_type": "RuntimeError",
+      "message": "Unexpected member, duplicate or link"
+    },
+    "unsafe_member_path": {
+      "rejected": true,
+      "error_type": "RuntimeError",
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "symlink_member": {
+      "rejected": true,
+      "error_type": "RuntimeError",
+      "message": "Unexpected member, duplicate or link"
+    }
+  },
+  "safe_name_cases": {
+    "../escape": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "/absolute": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "a/../escape": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "a//b": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    "./a": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    },
+    ".": {
+      "rejected": false
+    },
+    "": {
+      "rejected": true,
+      "message": "Noncanonical or unsafe archive path"
+    }
+  },
+  "isolated_standard_library_verify_tree": {
+    "returncode": 0,
+    "stdout": "{\"files\": 13, \"manifest_identity_sha256\": \"e155681176177b7c2aa429fc5cfb0847abf9119151814e4767d2a844a06759fd\", \"status\": \"relocated_tree_verified\"}",
+    "stderr": ""
+  },
+  "ancestor_symlink_tree_check": {
+    "rejected": false
+  },
+  "findings": [
+    "safe_name accepts dot as a file member path; require a nonempty component path excluding dot.",
+    "verify_tree accepts an ancestor-directory symlink to outside root when leaf file hashes match; path.is_symlink on the leaf is insufficient. Reject symlink ancestors/roots and require resolved containment for all evidence reads."
+  ],
+  "static_completion_observations": [
+    "Complete gates only count selected/results rows; they do not yet ensure unique complete task-arm-seed-budget alias coverage or exact selected-checkpoint equality with scored rows.",
+    "Complete gates currently do not require the trained numerical/runtime appendix receipts or independent final artifact audit. Add these as completion/integrity requirements, while preserving numerical/scientific failed or unresolved statuses.",
+    "verify_tree verifies declared members but does not reject extra in-scope files; exact-tree verification should compare the relevant inventory to the manifest, with explicit release/pycache exclusions."
+  ]
+}

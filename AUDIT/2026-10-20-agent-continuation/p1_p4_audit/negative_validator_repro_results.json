@@ -1,0 +1,99 @@
+{
+  "classification": "SYNTHETIC_ADVERSARIAL_VALIDATOR_REPRO_ONLY",
+  "python": "3.12.14",
+  "production_evidence": false,
+  "target_host_workloads_executed": 0,
+  "models_loaded": 0,
+  "external_signatures_generated": 0,
+  "permission_posture": "DRAFT / SHADOW_ONLY / DENY_ALL / HOLD_NO_GO",
+  "results": [
+    {
+      "pr": 2734,
+      "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "source_blob": "a9081eadf885afd3d14aeb2b885168ed94f272aa",
+      "source_sha256": "f6a2e8c0386ea314d714aaf4305c4eb2e509d0a55d94a5a4c5b848c62e459fdb",
+      "attack": "unsigned_self_asserted_observer",
+      "input_case_count": 16,
+      "validator_accepted_untrusted_input": true,
+      "exception": null,
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2734,
+      "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "source_blob": "a9081eadf885afd3d14aeb2b885168ed94f272aa",
+      "source_sha256": "f6a2e8c0386ea314d714aaf4305c4eb2e509d0a55d94a5a4c5b848c62e459fdb",
+      "attack": "duplicate_case_after_rebinding",
+      "input_case_count": 17,
+      "validator_accepted_untrusted_input": true,
+      "exception": null,
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2734,
+      "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "source_blob": "a9081eadf885afd3d14aeb2b885168ed94f272aa",
+      "source_sha256": "f6a2e8c0386ea314d714aaf4305c4eb2e509d0a55d94a5a4c5b848c62e459fdb",
+      "attack": "invalid_factor_after_rebinding",
+      "input_case_count": 16,
+      "validator_accepted_untrusted_input": true,
+      "exception": null,
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2734,
+      "source_head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "source_blob": "a9081eadf885afd3d14aeb2b885168ed94f272aa",
+      "source_sha256": "f6a2e8c0386ea314d714aaf4305c4eb2e509d0a55d94a5a4c5b848c62e459fdb",
+      "attack": "incorrect_final_report_digest",
+      "input_case_count": 16,
+      "validator_accepted_untrusted_input": true,
+      "exception": null,
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2850,
+      "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+      "source_blob": "39cfb2a7df5295db978e0089bcb9d201fa402456",
+      "source_sha256": "a392d6ec4b04b103af52218ff283588b691220b0a6658d7c4d9f3ba9603235cd",
+      "attack": "unsigned_self_asserted_observer",
+      "input_case_count": 64,
+      "validator_accepted_untrusted_input": false,
+      "exception": "ValueError: trusted independent Ed25519 observer public key is required",
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2850,
+      "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+      "source_blob": "39cfb2a7df5295db978e0089bcb9d201fa402456",
+      "source_sha256": "a392d6ec4b04b103af52218ff283588b691220b0a6658d7c4d9f3ba9603235cd",
+      "attack": "duplicate_case_after_rebinding",
+      "input_case_count": 65,
+      "validator_accepted_untrusted_input": false,
+      "exception": "ValueError: report must contain unique and complete matrix cases",
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2850,
+      "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+      "source_blob": "39cfb2a7df5295db978e0089bcb9d201fa402456",
+      "source_sha256": "a392d6ec4b04b103af52218ff283588b691220b0a6658d7c4d9f3ba9603235cd",
+      "attack": "invalid_factor_after_rebinding",
+      "input_case_count": 64,
+      "validator_accepted_untrusted_input": false,
+      "exception": "ValueError: matrix factor or Cell-count identity mismatch",
+      "expected_observation_matched": true
+    },
+    {
+      "pr": 2850,
+      "source_head_sha": "05cf9bb88fc22054ebda949b34d95e908c4ab9de",
+      "source_blob": "39cfb2a7df5295db978e0089bcb9d201fa402456",
+      "source_sha256": "a392d6ec4b04b103af52218ff283588b691220b0a6658d7c4d9f3ba9603235cd",
+      "attack": "incorrect_final_report_digest",
+      "input_case_count": 64,
+      "validator_accepted_untrusted_input": false,
+      "exception": "ValueError: report digest mismatch",
+      "expected_observation_matched": true
+    }
+  ]
+}

@@ -477,6 +477,33 @@ fn invalid_scalarization_rejects_singleton_and_abstain_only_frontiers() {
 }
 
 #[test]
+fn real_evaluation_records_rejections_and_quarantine_observations() {
+    let before = crate::operational_metrics_snapshot_v1();
+    let mut unsafe_candidate = contribution("unsafe-observed", 100, 0);
+    unsafe_candidate.feasibility = FeasibilityPosture::HardConstraintViolation;
+    must(evaluate_candidates_with_policy(
+        set(vec![contribution("abstain", 0, 0), unsafe_candidate]),
+        profile(),
+        None,
+        must(legacy_evaluation_policy(&profile())),
+    ));
+    let mut malformed = contribution("malformed-observed", 1, 1);
+    malformed.support_digest = Digest32::ZERO;
+    let quarantined = must(crate::evaluate_candidates_with_quarantine(
+        set(vec![contribution("abstain", 0, 0), malformed]),
+        &profile(),
+        &must(legacy_evaluation_policy(&profile())),
+        None,
+    ));
+    assert_eq!(quarantined.quarantined_candidates.len(), 1);
+    let after = crate::operational_metrics_snapshot_v1();
+    assert!(after.evaluation_count >= before.evaluation_count + 2);
+    assert!(after.candidate_rejections > before.candidate_rejections);
+    assert!(after.candidate_quarantines > before.candidate_quarantines);
+    assert!(after.evaluation_latency_micros_total >= before.evaluation_latency_micros_total);
+}
+
+#[test]
 fn pareto_matches_independent_grid_oracle_and_input_permutations() {
     let grid: Vec<(i64, i64)> = (-1..=1)
         .flat_map(|x| (-1..=1).map(move |y| (x, y)))

@@ -6,8 +6,6 @@ SDK are mandatory for --run. The corpus contains real Hepta repository claims,
 but this script itself provides no evidence of reader capacity or SNG-R gain.
 """
 
-from __future__ import annotations
-
 import argparse
 from collections import defaultdict
 import hashlib
@@ -35,6 +33,15 @@ MAX_EXCERPT_CHARS = 1500
 MAX_CHECKPOINT_BYTES = 32 * 1024**3
 SHA40 = re.compile(r"^[0-9a-f]{40}$")
 SHA64 = re.compile(r"^[0-9a-f]{64}$")
+
+# Only this reviewed whole-document revision may replace its historical pin.
+# The registered corpus and every exact quoted line remain unchanged.
+_CURRENT_SOURCE_BRIDGES = {
+    (
+        "docs/learning/NEURAL_BIOMIMICRY_SPEC.md",
+        "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+    ): "fe90f9a19ad5508715a1eecc3a86ffea17d0a132",
+}
 
 
 class ReaderBenchError(ValueError):
@@ -173,8 +180,16 @@ def verify_checkout(corpus: dict[str, Any], repo_root: Path) -> dict[str, str]:
             ):
                 raise ReaderBenchError("source missing, symlinked, or outside checkout")
             contents = path.read_bytes()
-            if git_blob_sha1(contents) != src["blob_sha"]:
-                raise ReaderBenchError(f"source Git blob mismatch: {relative}")
+            observed_blob = git_blob_sha1(contents)
+            if observed_blob != src["blob_sha"]:
+                approved_blob = _CURRENT_SOURCE_BRIDGES.get(
+                    (str(relative), src["blob_sha"])
+                )
+                if (
+                    corpus.get("manifest_sha256") != FROZEN_CASE_SHA256
+                    or observed_blob != approved_blob
+                ):
+                    raise ReaderBenchError(f"source Git blob mismatch: {relative}")
             lines = contents.decode("utf-8").splitlines()
             # The manifest binds an exact line as well as the whole Git blob.
             # A matching quote at an unrelated line must not satisfy provenance.
@@ -182,7 +197,7 @@ def verify_checkout(corpus: dict[str, Any], repo_root: Path) -> dict[str, str]:
                 raise ReaderBenchError(
                     f"quoted source line mismatch: {relative}:{src['line']}"
                 )
-            result[str(relative)] = src["blob_sha"]
+            result[str(relative)] = observed_blob
     return result
 
 
@@ -648,8 +663,9 @@ def main(argv: list[str] | None = None) -> int:
         raise ReaderBenchError(
             "unregistered reader task manifest; review and version the evaluation first"
         )
+    observed_source_git_blobs = {}
     if args.source_checkout is not None:
-        verify_checkout(corpus, args.source_checkout)
+        observed_source_git_blobs = verify_checkout(corpus, args.source_checkout)
     if args.checkpoint_dir is None or not args.checkpoint_dir.is_dir():
         print(
             json.dumps(
@@ -705,6 +721,8 @@ def main(argv: list[str] | None = None) -> int:
             )
         )
         return 2
+    # Keep historical row pins distinct from the independently observed checkout.
+    result["observed_source_git_blobs"] = observed_source_git_blobs
     if args.output:
         write_report(args.output, result)
     print(

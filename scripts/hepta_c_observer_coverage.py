@@ -458,6 +458,7 @@ PAIRED_PRODUCT_CASES = (
     "product_runner::tests::execution_tests::paired_tests::paired_changed_execution_body_cannot_replace_original_signature",
     "product_runner::tests::execution_tests::paired_tests::paired_mode_cannot_decode_or_reuse_a_shared_behavior_execution",
     "product_runner::tests::execution_tests::paired_tests::paired_best_case_at_the_producer_pair_upper_bound_keeps_current_metrics_ineligible",
+    "product_runner::tests::execution_tests::paired_tests::paired_provider_receives_original_consumption_borrow",
 )
 
 PRE_B_PRODUCT_POLICY_CASES = (

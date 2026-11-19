@@ -1,0 +1,115 @@
+{
+  "schema": "hepta_exact_source_full_caller_bundle_manifest_v1",
+  "source": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "tree": "b2a21d98380340b1c091006f4130aafdbeabca50",
+  "invocation_id": "p0-30a697c-full-caller-scan-20261111-v1",
+  "files": [
+    {
+      "file": "AFTER.json",
+      "bytes": 7316,
+      "sha256": "b31a895c221d4d3c9635fd87e0e6f92376fedf00d03b33983ff8ed4f0222a358"
+    },
+    {
+      "file": "ATTEMPT.json",
+      "bytes": 998,
+      "sha256": "4863e6f45a7d37c43c8f4dc368fa626665964a4b19864f3d9e3277554cdf1d44"
+    },
+    {
+      "file": "BEFORE.json",
+      "bytes": 7317,
+      "sha256": "63508708684313d3945bb08447dced17661f35246f36f88b17b94b6ddbb75ddf"
+    },
+    {
+      "file": "EXECUTION.json",
+      "bytes": 2486,
+      "sha256": "0dc6be10d031232da42f31ad08053e0a4587a462b31a260483a52ae78ef929b6"
+    },
+    {
+      "file": "HEARTBEATS.jsonl",
+      "bytes": 3546,
+      "sha256": "1a85ec91e395f90d5cba91e88fd174592541b687a13f3c2a2ea9d00a1fad60ec"
+    },
+    {
+      "file": "PREFLIGHT_NOTE.json",
+      "bytes": 1254,
+      "sha256": "244140146bf6c5407bac01cb7d07f4ea9f7c48f82a4b91ea44ae31cac69b1c40"
+    },
+    {
+      "file": "PREPARATION.json",
+      "bytes": 5020,
+      "sha256": "a87b4dacd361b444ecab7cb8893135ed9dec8a60d49bda90410c4116dfddc8b4"
+    },
+    {
+      "file": "RESULTS.md",
+      "bytes": 3590,
+      "sha256": "53fd6ccc2ec88f04adb7bdfb5187c5a3deb4b150261631481fe9acf95bffdd76"
+    },
+    {
+      "file": "RESULT_SUMMARY.json",
+      "bytes": 5027,
+      "sha256": "4abf681393b6eebeb3622b449437adacac3da8028676ecad0af5c2dee0e580b9"
+    },
+    {
+      "file": "after-status.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "before-status.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "fetch.stderr.raw",
+      "bytes": 140,
+      "sha256": "9f8babdb2bd6f1f25a5764971661bec3bd5ef42602dea398926ac2121d7ec1ae"
+    },
+    {
+      "file": "fetch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "preparation-final-status.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "preparation-initial-status.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "run_full_caller.preflight-v1.py",
+      "bytes": 8178,
+      "sha256": "575b2926ac242f1d60cbab24e12248be3d2fd3d3139d84bc9bd79584eca245a1"
+    },
+    {
+      "file": "run_full_caller.py",
+      "bytes": 9885,
+      "sha256": "b1f81b2c6f55c8516fd25c8034e1a936b004614ae6f259a9e001cfa5031b6b26"
+    },
+    {
+      "file": "stderr.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "stdout.raw",
+      "bytes": 103063,
+      "sha256": "83201a799a7be1e04116ad1b089b32761ae6d37ed77de35885e12d441f825c7c"
+    },
+    {
+      "file": "switch.stderr.raw",
+      "bytes": 66,
+      "sha256": "f46bcbd02f6e31b078bc2ed4352973de1764cef0de9061b16d33587ba6edf0b7"
+    },
+    {
+      "file": "switch.stdout.raw",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "includes_all_regular_bundle_files_except_this_manifest": true,
+  "scope": "One complete static caller verifier invocation; original raw stdout/stderr and before/after source binding. No native execution or production authority."
+}

@@ -64,6 +64,7 @@ use core_test_support::apps_test_server::DIRECT_CALENDAR_APP_ONLY_TOOL;
 use core_test_support::apps_test_server::recorded_apps_tool_calls;
 use core_test_support::apps_test_server::search_capable_apps_builder;
 use core_test_support::assert_regex_match;
+use core_test_support::first_party::FirstPartyMockServer;
 use core_test_support::responses;
 use core_test_support::responses::ResponseMock;
 use core_test_support::responses::ResponsesRequest;
@@ -6285,6 +6286,61 @@ text(JSON.stringify({
         "expected elapsed_ms >= 100, got {elapsed_ms}"
     );
     assert_eq!(compared.get("waited_long_enough"), Some(&Value::Bool(true)));
+
+    Ok(())
+}
+
+#[cfg_attr(windows, ignore = "no exec_command on Windows")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn code_mode_exec_surfaces_handler_errors_as_exceptions_for_first_party_provider()
+-> Result<()> {
+    skip_if_no_network!(Ok(()));
+
+    let server = FirstPartyMockServer::start().await?;
+    let builder = server
+        .test_codex()
+        .with_model("test-gpt-5.1-codex")
+        .with_config(|config| {
+            let _ = config.features.enable(Feature::CodeMode);
+            let _ = config.features.enable(Feature::ExecutedToolCallMetadata);
+        });
+    let (_test, second_mock) = run_code_mode_turn_with_builder(
+        &server,
+        "surface nested tool handler failures as script exceptions",
+        r#"
+try {
+  await tools.exec_command({});
+  text("no-exception");
+} catch (error) {
+  text(`caught:${error?.message ?? String(error)}`);
+}
+"#,
+        builder,
+    )
+    .await?;
+
+    let request = second_mock.single_request();
+    assert_eq!(
+        request.custom_tool_call_output("call-1")["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
+        serde_json::json!([
+            {"name": "exec_command", "arguments": {}},
+        ]),
+        "failed nested tool attempts remain private request metadata",
+    );
+    let (output, success) = custom_tool_output_body_and_success(&request, "call-1");
+    assert_ne!(
+        success,
+        Some(false),
+        "script should catch the nested tool error: {output}"
+    );
+    assert!(
+        output.contains("caught:"),
+        "expected caught exception text in output: {output}"
+    );
+    assert!(
+        !output.contains("no-exception"),
+        "nested tool error should not allow success path: {output}"
+    );
 
     Ok(())
 }

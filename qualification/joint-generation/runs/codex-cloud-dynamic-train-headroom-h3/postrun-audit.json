@@ -1,0 +1,144 @@
+{
+  "schema": "hepta.dynamic-h3-postrun-independent-audit.v1",
+  "auditor": "/root/audit_acceptance",
+  "audit_date_utc": "2026-10-23",
+  "diagnostic_id": "dynamic-train-headroom-h3",
+  "qualification_eligible": false,
+  "conclusion": "The sole H3 invocation failed in pre-TRAIN artifact/cost binding. Ten binary artifacts were restored as bytes, but no TRAIN construction, model object load, content probe or service measurement began. The strict floating-seconds identity check rejected representation differences that preserve the same canonical integer nanoseconds. This is a technical binding failure, not a measured scientific effect. H3 remains consumed and was not rerun.",
+  "executed_identity": {
+    "source_commit": "9ca2a3e7e7f318793608a311fee644e1f4fe84e8",
+    "execution_commit": "c35fc6b5a57909b2ccb2aa707d0100d054320035",
+    "freeze_sha256": "829c2b8ae3bdc56e168a5185e41a8e837b042b518cb51df44e88a65387ea5928",
+    "protocol_sha256": "f9c43168de490bd23468448379678db685610b140431414279d4f67f20950be1",
+    "executed_worker_sha256": "dc5ba6c57c39ecdccb90c186cbd0e7e49a24fa007799e2c15f4ffd58c57a904c",
+    "freeze_and_protocol_match_saved_START_and_diagnostic": true,
+    "committed_worker_analyzer_protocol_binding_checks": 3,
+    "committed_binding_mismatches": [],
+    "scope": "Historical executed bytes were checked against the frozen source commit. Later corrected source is not substituted for the failed execution."
+  },
+  "failure": {
+    "outcome": "failed",
+    "phase": "verify_and_restore_artifacts",
+    "error_type": "ValueError",
+    "error": "historical complete build cost changed",
+    "original_traceback_retained": true,
+    "worker_exit_code": 1,
+    "overall_exit_code": 1,
+    "nonzero_statuses_consistent": true,
+    "recorded_phases": ["dependency_imports", "verify_and_restore_artifacts"],
+    "cost_identity_evidence": {
+      "source": "runs/codex-cloud-dynamic-h3-source-preflight/canonical-cost-real-archive-smoke.json",
+      "NC": {
+        "original_complete_build_cpu_seconds": 8.537556029000005,
+        "protocol_complete_build_cpu_seconds": 8.537556029,
+        "floating_difference_seconds": 5.329070518200751e-15,
+        "canonical_integer_nanoseconds": 8537556029
+      },
+      "N": {
+        "original_complete_build_cpu_seconds": 8.307966292000007,
+        "protocol_complete_build_cpu_seconds": 8.307966292,
+        "floating_difference_seconds": 7.105427357601002e-15,
+        "canonical_integer_nanoseconds": 8307966292
+      },
+      "interpretation": "Both pairs round to identical integer nanoseconds. The strict float comparison in the executed source rejected this serialization/arithmetic representation difference; no build budget or historical measured cost was changed."
+    }
+  },
+  "executed_and_unexecuted_scope": {
+    "dependency_initialization_completed": true,
+    "legal_ledger_arm": "H3-TRAIN-RD-not-qualification",
+    "archive_bytes_verified_and_restored": true,
+    "restored_binary_artifacts": 10,
+    "restored_roles": {"selected_models": 6, "selected_controllers": 3, "native_library": 1},
+    "restored_binary_SHA_mismatches": [],
+    "restoration_is_not_model_loading_or_native_execution": true,
+    "TRAIN_constructions": 0,
+    "model_object_loads": 0,
+    "content_probes": 0,
+    "attempted_service_calls": 0,
+    "completed_service_calls": 0,
+    "planned_service_calls_unexecuted": 36,
+    "inputs_in_original_diagnostic": {},
+    "known_consumed_units": 0,
+    "unsettled_reserved_operator_units_upper_bound": 0,
+    "possible_consumed_units_interval": {"lower_inclusive": 0, "upper_inclusive": 0},
+    "accounting_complete_in_original_receipt": true,
+    "absent_artifacts": ["train.npz", "train-metadata.json", "content-values.npz", "content-checks.json", "reports", "T11-binding.json"],
+    "basis": "The saved phases and traceback stop inside safe_restore, before the subsequent TRAIN/model/content/service blocks. Empty attempt/call lists and absent data/measurement artifacts corroborate that control flow. Zero model/operator measurements do not mean zero research resource use."
+  },
+  "actual_process_costs": {
+    "worker_receipt_cpu_ns": 722328020,
+    "worker_receipt_wall_ns": 724431170,
+    "dependency_imports_phase_cpu_ns": 88563904,
+    "verify_restore_phase_cpu_ns": 265072070,
+    "outer_full_worker_and_descendant_cpu_ns": 784206000,
+    "outer_launcher_own_cpu_ns_before_receipt": 22962997,
+    "outer_total_H3_research_cpu_ns_before_receipt": 807168997,
+    "outer_total_equals_worker_plus_launcher": true,
+    "outer_wall_ns": 786689283,
+    "outer_started_utc": "2026-10-23T16:22:58.602581+00:00",
+    "outer_completed_utc": "2026-10-23T16:22:59.389263+00:00",
+    "registered_CPU_cap_seconds": 30.0,
+    "outer_CPU_cap_pass": true,
+    "retained_prior_H2_research_cpu_ns": 519258463,
+    "cumulative_registered_H2_H3_cpu_ns_before_receipts": 1326427460,
+    "cumulative_sum_verified": true,
+    "scope": "The cumulative value includes the two failed registered invocations and their recorded launcher costs. It excludes separately reported startup smoke, metadata regression, later audit and other development costs; it is not total lifetime research cost or a model-budget credit. Final outer-receipt serialization retains its original enclosing-execution remainder limitation."
+  },
+  "one_shot_and_protection": {
+    "stage_and_output_START_copies_byte_equal": true,
+    "stage_PARTIAL_and_output_diagnostic_byte_equal": true,
+    "H3_START_consumed": true,
+    "H2_consumed_failure_unchanged": true,
+    "protected_previous_entries_hashed": 92,
+    "protected_hash_mismatches": [],
+    "worker_protected_evidence_verified_at_exit": true,
+    "core_opening_marker_sha256": "1312e8b106f6ee24c65caa880bbe41889e6878ff5cfe768d4cdbebf485a106f2",
+    "core_opening_marker_unchanged": true,
+    "r2_opening_marker_absent": true,
+    "retry_H3_or_create_H4_authorized_by_this_audit": false
+  },
+  "original_artifact_verification": {
+    "run_files_before_this_audit": 13,
+    "run_bytes_before_this_audit": 494137,
+    "original_manifest_entries_verified": 12,
+    "original_manifest_hash_or_byte_count_mismatches": [],
+    "original_three_files": {
+      "START.json": {"bytes": 846, "sha256": "8a648ccf3fc911e036022734acafe3ec708b2ce739c7d561a2ef17e470093a3e"},
+      "diagnostic.json": {"bytes": 5301, "sha256": "c05d77366a0d53b79ce77cbd4ff173ea1806c432660857e3f1449eec2d930e90"},
+      "manifest.json": {"bytes": 1560, "sha256": "f07f273ca902dcdad1af3f1a7d6ee8bd0ab9a36a6141dffbb3f5e1b0dcbab897"}
+    },
+    "outer_receipt": {
+      "path": "runs/codex-cloud-dynamic-h3-source-preflight/actual-worker-execution.json",
+      "sha256": "0b89e35ea0f54eed7e61b660273294149cd997b10c037eeca295003a3c1b730a"
+    }
+  },
+  "post_failure_metadata_smoke_observed_not_executed_by_auditor": {
+    "receipt": "runs/codex-cloud-dynamic-h3-source-preflight/canonical-cost-real-archive-smoke.json",
+    "outcome": "passed",
+    "corrected_worker_sha256": "1f38b5c24cba3334d63a680d1d0a4489a51407e525c57dbe99e335d39bca9607",
+    "scope": "An isolated metadata-only check of the real frozen archive and canonical nanosecond identity. This later smoke is not an H3 continuation or model measurement.",
+    "reported_numeric_imports": 0,
+    "reported_dataset_constructions": 0,
+    "reported_model_object_loads": 0,
+    "reported_service_measurements": 0,
+    "reported_metadata_smoke_process_cpu_ns": 268692397,
+    "cost_is_additional_development_not_a_refund": true
+  },
+  "not_measured": [
+    "NC/full, forced-go, forced-stop or selected NDU/full service costs on the registered TRAIN sample.",
+    "NC utility/gain equivalence to Q1 or selected NDU TRAIN decoded utility.",
+    "New-wave marginal prices, free-label oracle raw ceiling, conditional proxy headroom or content/cost gap decomposition.",
+    "Any dynamic benefit, new content generalization or scientific qualification."
+  ],
+  "audit_limits": {
+    "new_data_model_probe_service_or_smoke_execution": false,
+    "model_or_NPZ_array_loading": false,
+    "formal_semantic_data_or_results_read": false,
+    "formal_artifact_bytes_hashed_only_for_protection": true,
+    "source_or_original_artifact_edits": false,
+    "only_file_added": "runs/codex-cloud-dynamic-train-headroom-h3/postrun-audit.json",
+    "audit_CPU_independently_bracketed": false,
+    "audit_cost_policy": "Administrative/development work; not credited to any registered invocation or model budget."
+  },
+  "remaining_blocker": "H3 is consumed by its preserved pre-TRAIN binding failure. Canonical-nanosecond source repair and metadata regression do not authorize an H3 retry or private H4. A recovery proposal requires prospective authorization; none was executed by this audit."
+}

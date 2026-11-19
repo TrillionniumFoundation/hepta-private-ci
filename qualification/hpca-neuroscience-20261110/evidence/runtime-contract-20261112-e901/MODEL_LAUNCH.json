@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/home/qq/hepta-smollm2-weight-research-20261103/venv/bin/python",
+    "/home/qq/work/hpca-output-contract-20261112-e901/qualification/hpca-neuroscience-20261110/real_freegen.py",
+    "--plan",
+    "/home/qq/work/hpca-output-contract-20261112-e901/qualification/hpca-neuroscience-20261110/HPCA_V2_OOD_PLAN.json",
+    "--archive",
+    "/home/qq/work/hpca-output-contract-20261112-e901/qualification/hpca-neuroscience-20261110/real_cpu_clock_v2_RESULT.json",
+    "--previous",
+    "/home/qq/work/hpca-output-contract-20261112-e901/qualification/hpca-neuroscience-20261110/ACTUAL_OOD_FORWARD_RESULT.json",
+    "--model",
+    "/home/qq/hepta-smollm2-weight-research-20261103/pinned-base",
+    "--adapter-root",
+    "/home/qq/hpca-clock-v2-actual-cpu-20261111-a/run-11-17-23-29",
+    "--out",
+    "/home/qq/work/hpca-output-contract-20261112-e901/qualification/hpca-neuroscience-20261110/evidence/runtime-contract-20261112-e901/RESULT.json",
+    "--threads",
+    "4"
+  ],
+  "authority": "DENY_ALL_HOLD_NO_GO",
+  "declared_cpu_quota_percent": 400,
+  "declared_memory_max_bytes": 4294967296,
+  "idempotency_key": "hpca-e901-native-freegen-0b75caf-v1",
+  "independent_future_B": false,
+  "runtime_host": "ai395",
+  "schema": "HPCA-NATIVE-FREEGEN-LAUNCH-1",
+  "source_head": "0b75caf446a18807e527f8e2ed9937ae3cae515d",
+  "started_utc": "2026-11-12T00:44:58.732439+00:00"
+}

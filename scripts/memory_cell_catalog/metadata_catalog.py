@@ -67,7 +67,8 @@ class MetadataCatalog:
             raise ValueError("independently retained catalog SHA256 required")
         self.path = Path(path).absolute()
         self.expected_sha256 = expected_sha256
-        self._read()
+        # The initial verified snapshot; read() still revalidates the path.
+        self.document = self._read()
 
     def _read(self):
         info = self.path.lstat()

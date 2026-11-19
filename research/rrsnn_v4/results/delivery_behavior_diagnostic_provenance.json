@@ -1,0 +1,18 @@
+{
+  "schema": "rrsnn-v4-delivery-behavior-provenance-1",
+  "created_at_utc": "2026-10-29T16:10:06.082763+00:00",
+  "scope": "Post-result read-only descriptive audit; does not execute models, train, retune, change original acceptance, or substitute isolated precision outputs.",
+  "files": {
+    "delivery_behavior_diagnostic.py": "957e2314c5ccad817097ef6c4afa52716e4925b91d837e3e1ebe4e7549494175",
+    "resource_audit/delivery_behavior_diagnostic_original_stdin.py": "5e150fb2054770ac7441ebd26cf0dbbf74b5d6f391155f347061626f9d70a058",
+    "results/delivery_behavior_diagnostic.json": "25d5c7fd79cd72fdbdc761afa1b23f330f6d807a8fd324c482a631eaa912171b"
+  },
+  "original_execution_source": "resource_audit/delivery_behavior_diagnostic_original_stdin.py",
+  "portable_replay_source": "delivery_behavior_diagnostic.py",
+  "portable_changes": "Original calculation copied unchanged into build(root); replace workspace-specific root with caller/default root, add write-once generation and --verify-only read-only comparison.",
+  "portable_recompute_matches_preserved_output_except_creation_timestamp": true,
+  "verified_raw_files": 180,
+  "verification_command": "python -m rrsnn_v4.delivery_behavior_diagnostic --verify-only",
+  "original_report_preserved": true,
+  "artifact_purpose": "Explain observed internal-pulse/task-delivery/budget patterns; causal explanations remain hypotheses."
+}

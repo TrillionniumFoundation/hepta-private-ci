@@ -1,0 +1,75 @@
+{
+  "actor_manifest_sha256": "28f23acc14b261ab16ab82abfb8b0b2e6b385f9a2d69ab1d9585df6633fc1aec",
+  "actor_model_sha256": "81bdc5636435e990ef66df71c3515bb040e5d08971e1ca8af176f99b37913ab9",
+  "environment": {
+    "cuda": false,
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "python": "3.12.14",
+    "threads": 1,
+    "timing": "process CPU and elapsed wall; CPU is not hardware energy",
+    "torch": "2.8.0+cpu"
+  },
+  "historical_actor_result_sha256": "2a3d6b9e9696081752639fdfaed37077037a50e37098caee8ffc993b94f1076a",
+  "historical_actor_training_cpu_seconds": 8.91882564800001,
+  "protocol": {
+    "actor_seeds": [
+      4401,
+      4402,
+      4403,
+      4404,
+      4405
+    ],
+    "actor_source": "unchanged study001 selected actor checkpoints; no new actor-training cost attributed to zero",
+    "calibration": "one positive temperature fit on training prefixes; all three primary policies share calibrated odds",
+    "cold_replay": "first Python episode per split/policy is replayed from serialized state in-process; first continuing native episode per split/policy restores stream, task cursor and native owner in a new native process",
+    "comparison": "same actor, calibrated odds, SNR/cost/horizon, correctness reward and every paid observation; causal stop",
+    "direct_updates": 100,
+    "native": {
+      "action_authority": "original sparse kernel and native NDU",
+      "actor_seed": 4403,
+      "episodes_per_split_policy": 2,
+      "total_policy_episodes": 96
+    },
+    "new_episode_seed_offset": 9000000,
+    "ood_cost": [
+      0.01,
+      0.04,
+      0.12
+    ],
+    "ood_horizon": 5,
+    "ood_snr": [
+      0.15,
+      0.35,
+      0.7,
+      1.1
+    ],
+    "policies": [
+      "fixed",
+      "direct",
+      "value"
+    ],
+    "test_id_size": 2,
+    "test_ood_size": 2,
+    "train_cost": [
+      0.005,
+      0.025,
+      0.08
+    ],
+    "train_horizon": 4,
+    "train_size": 32,
+    "train_snr": [
+      0.25,
+      0.5,
+      0.8
+    ],
+    "utility_intervals": "four value-minus-fixed/direct contrasts across ID/OOD; 98.75% paired Student-t intervals",
+    "validation_size": 16
+  },
+  "seed": 4403,
+  "source_seals": {
+    "base": "unsealed-development",
+    "followup": "unsealed-development"
+  },
+  "started_unix": 1793188843.1012046
+}

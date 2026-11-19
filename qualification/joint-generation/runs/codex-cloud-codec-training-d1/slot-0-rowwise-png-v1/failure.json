@@ -1,0 +1,8 @@
+{
+  "error": "ndu:selected_validation_complete actual CPU 10.022472113s exceeds frozen cap 10.000000000s",
+  "error_type": "BudgetExceeded",
+  "freeze_sha256": "97f83d0e26251546cbaeecbc3b613ee8abe9ed44285352827a555e98ca0246dc",
+  "source_commit": "525fa87a3e0f7220553fbcc9782df3f2e4b073e8",
+  "test_opened": false,
+  "traceback": "Traceback (most recent call last):\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 870, in train\n    guard_cpu_budget(system, plan, run, ledger, cost,\n  File \"/workspace/hepta-private-ci/qualification/joint-generation/independent/run.py\", line 143, in guard_cpu_budget\n    raise error\nindependent.accounting.BudgetExceeded: ndu:selected_validation_complete actual CPU 10.022472113s exceeds frozen cap 10.000000000s\n"
+}

@@ -38,7 +38,8 @@
       "operation": "compose_runtime",
       "nativeSymbol": "pub fn compose_runtime(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "designOperation": "start_run",
@@ -61,7 +62,8 @@
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "designOperation": "admit_revalidated_run_start",
@@ -92,7 +94,8 @@
       "operation": "admit_revalidated_run_start",
       "nativeSymbol": "pub(crate) fn start_revalidated_run_start(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "designOperation": "cancel_run",
@@ -115,7 +118,8 @@
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "designOperation": "attach_context",
@@ -138,7 +142,8 @@
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "designOperation": "daemon_run_lifecycle_control",
@@ -174,7 +179,8 @@
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "cd715f6b0f1977fd7454c2776ecccca4479defdf"
     },
     {
       "designOperation": "agentd_neuron_owner",
@@ -212,7 +218,8 @@
       "operation": "agentd_neuron_owner",
       "nativeSymbol": "pub struct AgentdNeuronOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
     },
     {
       "operation": "shared_terminal_cell_train",
@@ -232,7 +239,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     },
     {
       "operation": "shared_terminal_cell_load",
@@ -252,7 +260,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     },
     {
       "operation": "shared_terminal_cell_predict",
@@ -272,7 +281,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     }
   ],
   "repositoryControlledGaps": [
@@ -344,15 +354,15 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "76177c22ad41792b4a77753ddf6445a10861ce7c"
+      "object": "c0197bcf49b3901353650c8cc6e5465c4bb6ba84"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "c0fb09512f4567a6b6624eee44822ff5fd43ab26"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-      "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+      "object": "5c2601957ba753230b149b9291bd14b463a48957"
     },
     {
       "path": "codex-rs/hepta-agentd/src/main.rs",
@@ -368,7 +378,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
-      "object": "8121e010c00f0da23d8412adadc4a3725ded58ca"
+      "object": "6cad747e3c4bba52665aea4b37208528201b09ae"
     },
     {
       "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
@@ -376,19 +386,19 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "57294c9e77cf95ed5e31f28abe74c3c66fe92907"
+      "object": "df7372299a9c6edce9d219f85493a617becc6213"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "682eefa82c23ced19823c756ba927d6012d70bfd"
+      "object": "cd715f6b0f1977fd7454c2776ecccca4479defdf"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
+      "object": "2202706c8a4cd4d23761061fb719a11d42d2bd9a"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e"
+      "object": "8990c7336abbab8af2d461f51adeb9e9c8a0e0fc"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
@@ -406,5 +416,15 @@
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "d5e6054b0996d79324fb5c2fb40901b5193ea0aa"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "observedAtHead": {
+    "commit": "38bd86afdec6ee0558af47ae58bb2813e2ad788e",
+    "tree": "62f767b394adbda686f21499f4af5cb4584673dc"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd"
   ]
 }

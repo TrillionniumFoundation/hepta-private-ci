@@ -73,9 +73,9 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
         start = code.index(function)
         end = PROOF._rust_item_end(code, start)
         self.assertIsNotNone(end)
-        first, last = source_marker_span(source, marker, start, end + 1)
+        offset, limit = source_marker_span(source, marker, start, end + 1)
         self.verifies(path, source)
-        changed = source[:first] + replacement + source[last:]
+        changed = source[:offset] + replacement + source[limit:]
         with self.assertRaises(PROOF.VerificationFailure):
             self.verifies(path, changed)
 
@@ -104,7 +104,7 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
             (MODEL, "fn read_candidate_material(", "SourceLaneProof::require_original(source, training)?"),
             (MODEL, "fn read_candidate_material(", "CellQ24TrainingOwnerV1::readback(training)?"),
             (MODEL, "fn read_candidate_material(", "completed.attestation.clone()"),
-            (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceV1::begin_source_operation(source)"),
+            (MODEL, "fn in_model_lane<", "source.as_ref().map(crate::OriginalCellQ24TrainingSourceV1::begin_source_operation)"),
             (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceOperationV1::read_after_native("),
             (MODEL, "fn in_model_lane<", "OriginalCellQ24TrainingSourceOperationV1::finish(operation, source)"),
             (MODEL, "fn in_model_lane<", "current.receipt != original.receipt || current.attestation != original.attestation"),
@@ -210,7 +210,7 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
             (SERVICE, "fn candidate_material_response(", "session.require_owner(self as *const Self as usize)?"),
             (SERVICE, "fn candidate_material_response(", "request.phase == candidate_wire::Phase::Page"),
             (SERVICE, "fn candidate_material_response(", "session.require_current(&self.context, started_at)?"),
-            (SERVICE, "fn candidate_material_response(", 'Phase::Begin => {\n                                session.begin(&request, material, fresh_now)?'),
+            (SERVICE, "fn candidate_material_response(", "Phase::Begin => { session.begin(&request, material, fresh_now)?"),
             (SERVICE, "fn candidate_material_response(", "Phase::Finish => session.finish(&request, material)?"),
             (SERVICE, "fn candidate_material_response(", "session.encode_response(request, result)"),
             (TRANSFER, "fn require_current(", "current < lower || current < original.last_at"),
@@ -305,11 +305,14 @@ class OriginalCandidateMaterialClosureTests(unittest.TestCase):
         self.assertIsNotNone(end)
         for marker in ("channel.peer.check_peer_lifetime()", "cancelled.load(Ordering::Acquire)"):
             with self.subTest(last_actual_exchange_check=marker):
-                # The second check must survive independently of the first.
-                first, last = source_marker_span(source, marker, start, end + 1)
-                first, last = source_marker_span(source, marker, last, end + 1)
+                # The second complete check must survive independently of the first.
+                first, first_limit = source_marker_span(source, marker, start, end + 1)
+                offset, limit = source_marker_span(source, marker, first_limit, end + 1)
+                self.assertLess(first, offset)
+                with self.assertRaises(ValueError):
+                    source_marker_span(source, marker, limit, end + 1)
                 with self.assertRaises(PROOF.VerificationFailure):
-                    self.verifies(CLIENT, source[:first] + source[last:])
+                    self.verifies(CLIENT, source[:offset] + source[limit:])
 
 
 

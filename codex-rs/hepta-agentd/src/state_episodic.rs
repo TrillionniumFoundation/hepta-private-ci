@@ -49,7 +49,7 @@ impl AgentdState {
         self.episodic_imports.load(Ordering::Acquire)
     }
 
-    pub(super) fn episodic_import_drain_clear(&self) -> bool {
+    pub(crate) fn episodic_import_drain_clear(&self) -> bool {
         // Acquire the decrement before inspecting its preceding unresolved flag.
         self.episodic_import_pending_count() == 0
             && !self.episodic_import_unresolved.load(Ordering::Acquire)

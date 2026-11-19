@@ -1,0 +1,46 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+filegroup(
+    name = "package-files",
+    srcs = glob(
+        ["**"],
+        exclude = [
+            "BUILD.bazel",
+            "target/**",
+        ],
+    ),
+    visibility = ["//visibility:public"],
+)
+
+# Match the resolved production features, including all compression formats.
+# The registry package excludes upstream test resources; first-party ZIP
+# compatibility tests remain in codex-core-plugins.
+rust_library(
+    name = "zip",
+    srcs = glob(["src/**/*.rs"]),
+    compile_data = ["README.md"],
+    crate_features = [
+        "_bzip2_any",
+        "_deflate-any",
+        "aes-crypto",
+        "bzip2-rs",
+        "deflate",
+        "deflate-flate2",
+        "deflate-flate2-zlib-rs",
+        "deflate-zopfli",
+        "deflate64",
+        "lzma",
+        "ppmd",
+        "time",
+        "xz",
+        "zstd",
+    ],
+    crate_name = "zip",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    proc_macro_deps = all_crate_deps(proc_macro = True),
+    version = "9.1.3",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+)

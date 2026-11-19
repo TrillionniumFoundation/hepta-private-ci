@@ -2055,3 +2055,32 @@ pub use circuit_on_policy_evaluation::OriginalCircuitOnPolicyProtocolV1;
 pub use neuron_cell_evaluation::freeze_paired_cell_learning_evaluation_plan_v1;
 #[cfg(target_os = "linux")]
 pub use neuron_cell_evaluation::freeze_paired_cell_learning_evaluation_plan_v2;
+
+mod native_shadow_execution;
+#[cfg(unix)]
+mod private_directory_fd;
+pub use native_shadow_execution::ShadowExecutionCandidateV1;
+pub use native_shadow_execution::propose_native_shadow_execution_v1;
+mod shadow_execution;
+pub use codex_hepta_agent_protocol::AgentRunBinding;
+pub use codex_hepta_agent_protocol::AgentRunReconciliationState;
+pub use codex_hepta_agent_protocol::AgentRunTerminalObservation;
+pub use shadow_execution::propose_shadow_execution_v1;
+mod memory_trainer_process;
+mod shared_memory_training;
+pub use memory_trainer_process::MemoryTrainerProcessConfigV1;
+pub use memory_trainer_process::MemoryTrainerProcessV1;
+pub use shared_memory_training::SelectedMemoryTensorModelV1;
+pub use shared_memory_training::SharedMemoryTensorCandidateV1;
+pub use shared_memory_training::SharedMemoryTensorModelV1;
+pub use shared_memory_training::SharedMemoryTrainingError;
+pub use shared_memory_training::SharedMemoryTrainingV1;
+mod memory_serving_process;
+pub use memory_serving_process::MemoryServingProcessConfigV1;
+pub use memory_serving_process::MemoryServingProcessV1;
+pub use memory_serving_process::MemoryServingQueryV1;
+pub use memory_serving_process::MemoryServingResultV1;
+pub use shared_memory_training::MemoryServingHandleV1;
+pub use shared_memory_training::MemoryServingOwnerHandlesV1;
+pub use shared_memory_training::MemoryServingQualificationV1;
+pub use shared_memory_training::SelectedMemoryServiceV1;

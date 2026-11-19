@@ -478,3 +478,6 @@ mod selection_owner;
 
 #[path = "circuit_learning_retained_publication_tests.rs"]
 mod retained_publication;
+
+#[path = "circuit_q24_next_use_recovery_tests.rs"]
+mod recovered_attestation;

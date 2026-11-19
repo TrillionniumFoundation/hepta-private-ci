@@ -11,6 +11,8 @@ import sys
 import tempfile
 import unittest
 
+from rust_source_marker_support import source_marker_span
+
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = importlib.util.spec_from_file_location(
     "retained_publication_proof", ROOT / "scripts/verify_hepta_callers.py"
@@ -46,8 +48,8 @@ class RetainedPublicationClosureTests(unittest.TestCase):
         start = source.index(function)
         end = PROOF._rust_item_end(PROOF._strip_rust_non_code(source), start)
         self.assertIsNotNone(end)
-        offset = source.index(marker, start, end + 1)
-        self.rejects_source(path, source[:offset] + source[offset + len(marker):])
+        offset, limit = source_marker_span(source, marker, start, end + 1)
+        self.rejects_source(path, source[:offset] + source[limit:])
 
     def rejects_source(self, path, changed):
         source = (ROOT / path).read_text()

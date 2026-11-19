@@ -88,7 +88,7 @@ fn candidate(
         normalized_score: FixedQ32::ONE,
         ood: ProbabilityQ32::ZERO,
         support_digest: digest(support),
-        contradiction_group_digest: None,
+        contradiction_evidence: None,
         generation_vector_digest: cue().snapshot_key.vector_digest,
     }
 }

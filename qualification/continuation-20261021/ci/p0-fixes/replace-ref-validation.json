@@ -1,0 +1,21 @@
+{
+  "base_sha": "603238ba4721b2e9656c4647ce41c5f1664c1154",
+  "patch": "/workspace/scratch/337c309bc660/hepta-ci-fix/replace-ref-identity.patch",
+  "patch_sha256": "a768d104f2080b25e5bd329b7332b7d97d090cd85b6fa4aa07c1d8c23593488c",
+  "changed_files": {
+    "scripts/hepta_ci_exec.py": "4a0279f0615e52911048c67ea343b9d77fbf98db9ce32ca66c236a0a4e7c1146",
+    "scripts/test_hepta_ci_exec.py": "f5a5757b0dbe2b5f59aa45be55ace79a03d2aeaab659b46136becd55b8fe58fb"
+  },
+  "red_tests": {
+    "run": 4,
+    "failed": 4,
+    "log": "../hepta-audit/ci/replace-regressions-red.log"
+  },
+  "green_tests": {
+    "run": 28,
+    "passed": 28,
+    "skipped": 0,
+    "log": "../hepta-audit/ci/replace-regressions-green.log"
+  },
+  "formatting": "Two line-wrap-only changes after successful suite; AST parsed; pinned Ruff pending parent"
+}

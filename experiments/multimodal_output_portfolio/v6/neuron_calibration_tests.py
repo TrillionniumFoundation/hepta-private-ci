@@ -106,6 +106,40 @@ class NeuronCalibrationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "preregistered"):
                 completed_registration(root)
 
+    def test_run_retains_exact_calibrator_before_model_import(self):
+        from unittest.mock import patch
+        from . import neuron_calibration as calibration
+
+        original_import = __import__
+        def stop_model_import(name, *args, **kwargs):
+            if name == "numpy":
+                raise ModuleNotFoundError("fixture stops before model imports")
+            return original_import(name, *args, **kwargs)
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            output = root / "calibration"
+            specification = Path(calibration.__file__).with_name("neuron_calibration_spec.json")
+            with patch("builtins.__import__", side_effect=stop_model_import):
+                with self.assertRaisesRegex(ModuleNotFoundError, "before model imports"):
+                    calibration.run(root / "unused-experiment", root / "unused-cache",
+                                    specification, output)
+            retained = output / "calibrator-source.py"
+            self.assertTrue(retained.is_file(), "run must retain the source required by its verifier")
+            self.assertEqual(retained.read_bytes(), Path(calibration.__file__).read_bytes())
+            self.assertEqual((output / "specification.json").read_bytes(), specification.read_bytes())
+            failure = __import__("json").loads((output / "failure.json").read_text())
+            self.assertEqual(failure["state"], "failed")
+            self.assertEqual(failure["type"], "ModuleNotFoundError")
+            self.assertFalse((output / "registration.json").exists())
+            self.assertFalse((output / "rows.jsonl").exists())
+            original = retained.read_bytes()
+            with self.assertRaises(FileExistsError):
+                calibration.run(root / "unused-experiment", root / "unused-cache",
+                                specification, output)
+            self.assertEqual(retained.read_bytes(), original)
+
+
 
 if __name__ == "__main__":
     unittest.main()

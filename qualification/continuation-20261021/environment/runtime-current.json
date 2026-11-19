@@ -1,0 +1,202 @@
+{
+  "observed_utc": "2026-10-21T01:05:42.123525+00:00",
+  "host": "aca3bc6a1853",
+  "kernel": "Linux-6.18.55-x86_64-with-glibc2.39",
+  "cpu_count": 9,
+  "memory": {
+    "MemTotal": "10206484 kB",
+    "MemAvailable": "5748296 kB",
+    "SwapTotal": "0 kB",
+    "SwapFree": "0 kB"
+  },
+  "disk": {
+    "total": 33770192896,
+    "used": 27386535936,
+    "free": 4648894464
+  },
+  "processes_proc_view": [
+    {
+      "pid": 657248,
+      "ppid": 657247,
+      "state": "S",
+      "comm": "codex",
+      "cwd": "/workspace/scratch/337c309bc660",
+      "executable": "/opt/codex/bin/codex"
+    },
+    {
+      "pid": 657249,
+      "ppid": 657248,
+      "state": "S",
+      "comm": "bash",
+      "cwd": "/workspace/scratch/337c309bc660",
+      "executable": "/usr/bin/bash"
+    },
+    {
+      "pid": 657252,
+      "ppid": 657249,
+      "state": "R",
+      "comm": "python",
+      "cwd": "/workspace/scratch/337c309bc660",
+      "executable": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+    }
+  ],
+  "processes_ps_view": {
+    "command": [
+      "ps",
+      "-eo",
+      "pid,ppid,stat,etime,pcpu,pmem,comm"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "fatal library error, lookup self\n"
+  },
+  "command_availability": {
+    "ssh": "/usr/bin/ssh",
+    "nvidia-smi": null,
+    "docker": null,
+    "kubectl": null,
+    "tmux": null,
+    "screen": null,
+    "gh": null
+  },
+  "gpu_device_paths": [],
+  "repositories": [
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-work",
+      "head": {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "0cb777545966333a96be265a69d03c9982231bc7\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/hepta-p0-provenance-clippy-20261021\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-work\nHEAD 0cb777545966333a96be265a69d03c9982231bc7\nbranch refs/heads/agents/hepta-p0-provenance-clippy-20261021\n\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "status",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-reader-work",
+      "head": {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "ca2768978429a2c9a98641fa2d58a8f587b88874\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/hepta-reader-evidence-bindings-20261021\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-reader-work\nHEAD ca2768978429a2c9a98641fa2d58a8f587b88874\nbranch refs/heads/agents/hepta-reader-evidence-bindings-20261021\n\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "status",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    },
+    {
+      "path": "/workspace/scratch/337c309bc660/hepta-native-qualification",
+      "head": {
+        "command": [
+          "git",
+          "rev-parse",
+          "HEAD"
+        ],
+        "exit_code": 0,
+        "stdout": "f740aaef183e0c1724871189fe1d72fc5204a49d\n",
+        "stderr": ""
+      },
+      "branch": {
+        "command": [
+          "git",
+          "branch",
+          "--show-current"
+        ],
+        "exit_code": 0,
+        "stdout": "agents/hepta-p0-provenance-clippy-20261021\n",
+        "stderr": ""
+      },
+      "worktrees": {
+        "command": [
+          "git",
+          "worktree",
+          "list",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "worktree /workspace/scratch/337c309bc660/hepta-native-qualification\nHEAD f740aaef183e0c1724871189fe1d72fc5204a49d\nbranch refs/heads/agents/hepta-p0-provenance-clippy-20261021\n\n",
+        "stderr": ""
+      },
+      "status": {
+        "command": [
+          "git",
+          "--no-optional-locks",
+          "status",
+          "--porcelain"
+        ],
+        "exit_code": 0,
+        "stdout": "",
+        "stderr": ""
+      }
+    }
+  ],
+  "remote_workstation_access": "NOT_ACCESSIBLE: no configured dedicated SSH/cloud endpoint was found in this session; this container is not certified as the intended target host.",
+  "process_scope": "Read-only current execution environment; /proc and ps namespace views retained separately. No remote-process absence claim. No command-line credentials copied."
+}

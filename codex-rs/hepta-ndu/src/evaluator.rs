@@ -31,7 +31,7 @@ use crate::evaluation_digest::push_axis_values;
 use crate::scoring::pareto_frontier;
 use crate::scoring::score_frontier;
 
-const MAX_CONTRIBUTIONS: usize = 4096;
+pub(crate) const MAX_CONTRIBUTIONS: usize = 4096;
 const MAX_CANDIDATES: usize = 128;
 const MAX_UTILITY_DIMENSIONS: usize = 8;
 const MAX_RISK_RESOURCE_DIMENSIONS: usize = 32;
@@ -81,6 +81,23 @@ pub fn evaluate_candidates(
 /// Pareto filtering and optional registered scalarization. Any recommendation
 /// remains advisory and carries no selection or effect authority.
 pub fn evaluate_candidates_with_policy(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+    policy: EvaluationPolicyV1,
+) -> Result<NduEvaluationReceiptV2, NduError> {
+    let started = std::time::Instant::now();
+    let result = evaluate_candidates_inner(set, profile, scalarization, policy);
+    let metrics = crate::operational_metrics::process_metrics();
+    metrics.record_evaluation(started.elapsed());
+    metrics.record_evaluation_outcome(result.as_ref().ok().map(|receipt| &receipt.base));
+    if let Ok(receipt) = &result {
+        metrics.record_candidate_rejections(receipt.base.rejected_candidates.len());
+    }
+    result
+}
+
+pub(crate) fn evaluate_candidates_inner(
     set: ContributionSet,
     mut profile: UtilityProfile,
     scalarization: Option<ScalarizationProfile>,

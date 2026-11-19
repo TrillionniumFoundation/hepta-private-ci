@@ -1,0 +1,2876 @@
+{
+  "scope": {
+    "quality_unit": "task_id cluster; seeds are repeated paired probes",
+    "offline_completion_is_policy_knowledge": false,
+    "duration_ns_is_end_to_end": false,
+    "overlapping_measurements_are_additive": false,
+    "full_lifetime_cost_measured": false,
+    "efficiency_gain_qualified": false,
+    "missing_measurements_are_zero": false
+  },
+  "arms": {
+    "fixed": {
+      "episodes": 512,
+      "task_clusters": 64,
+      "offline_complete": 256,
+      "offline_oracle_unknown": 0,
+      "claimed_success": 256,
+      "claim_unknown": 0,
+      "false_success": 0,
+      "false_success_unassessed": 0,
+      "policy_confirmed_complete": 256,
+      "unknown_effect_outcomes": 96,
+      "measurements": {
+        "end_to_end_ns": {
+          "sum": 1295718220,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duration_ns": {
+          "sum": 1283769148,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "selection_ns": {
+          "sum": 56911422,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "primitive_calls": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "owner_requests": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "independent_oracle_queries": {
+          "sum": 512,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duplicate_effects": {
+          "sum": 0,
+          "measured_rows": 512,
+          "missing_rows": 0
+        }
+      }
+    },
+    "gru": {
+      "episodes": 512,
+      "task_clusters": 64,
+      "offline_complete": 256,
+      "offline_oracle_unknown": 0,
+      "claimed_success": 256,
+      "claim_unknown": 0,
+      "false_success": 0,
+      "false_success_unassessed": 0,
+      "policy_confirmed_complete": 256,
+      "unknown_effect_outcomes": 96,
+      "measurements": {
+        "end_to_end_ns": {
+          "sum": 1629376938,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duration_ns": {
+          "sum": 1580398483,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "selection_ns": {
+          "sum": 237939088,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "primitive_calls": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "owner_requests": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "independent_oracle_queries": {
+          "sum": 512,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duplicate_effects": {
+          "sum": 0,
+          "measured_rows": 512,
+          "missing_rows": 0
+        }
+      }
+    },
+    "head": {
+      "episodes": 512,
+      "task_clusters": 64,
+      "offline_complete": 256,
+      "offline_oracle_unknown": 0,
+      "claimed_success": 256,
+      "claim_unknown": 0,
+      "false_success": 0,
+      "false_success_unassessed": 0,
+      "policy_confirmed_complete": 256,
+      "unknown_effect_outcomes": 96,
+      "measurements": {
+        "end_to_end_ns": {
+          "sum": 1348286016,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duration_ns": {
+          "sum": 1337127647,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "selection_ns": {
+          "sum": 89852071,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "primitive_calls": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "owner_requests": {
+          "sum": 4640,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "independent_oracle_queries": {
+          "sum": 512,
+          "measured_rows": 512,
+          "missing_rows": 0
+        },
+        "duplicate_effects": {
+          "sum": 0,
+          "measured_rows": 512,
+          "missing_rows": 0
+        }
+      }
+    }
+  },
+  "paired_task_results": [
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/expired",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/no_repair",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/pause_resume",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/running",
+      "arm": "gru",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/lost_reply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/normal/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/opaque_after_apply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n3/partial_failure/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/lost_reply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/normal/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/opaque_after_apply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v1/n5/partial_failure/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/lost_reply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/normal/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/opaque_after_apply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n3/partial_failure/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/lost_reply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/normal/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/opaque_after_apply/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/expired",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/no_repair",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/pause_resume",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    },
+    {
+      "task_id": "act3/filesystem/v2/n5/partial_failure/running",
+      "arm": "head",
+      "seed_pairs": 8,
+      "measured_seed_pairs": 8,
+      "unknown_seed_pairs": 0,
+      "mean_completion_delta": 0.0
+    }
+  ],
+  "promotion": false,
+  "production_adoption": false,
+  "learning_gain_qualified": false,
+  "fixed_reference_retained": true,
+  "new_independent_real_tasks": 0,
+  "async_wait_qualified": false,
+  "cross_process_lifecycle_qualified": false,
+  "status": "CONTROLLED_LIFECYCLE_PROBES_COMPLETED",
+  "base_probes": 16,
+  "schedule_conditions": 64,
+  "deadline_semantics": "fence new mutations; allow reconciliation after expiry",
+  "measurement_window": "owner initialization through score audit; excludes model load, close and archive",
+  "by_schedule": {
+    "running": {
+      "scope": {
+        "quality_unit": "task_id cluster; seeds are repeated paired probes",
+        "offline_completion_is_policy_knowledge": false,
+        "duration_ns_is_end_to_end": false,
+        "overlapping_measurements_are_additive": false,
+        "full_lifetime_cost_measured": false,
+        "efficiency_gain_qualified": false,
+        "missing_measurements_are_zero": false
+      },
+      "arms": {
+        "fixed": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 431098175,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 428373817,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 21941468,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "gru": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 517289984,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 514706037,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 84863804,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "head": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 473846581,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 470885392,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 32231068,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        }
+      },
+      "paired_task_results": [
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/running",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/running",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        }
+      ],
+      "promotion": false
+    },
+    "pause_resume": {
+      "scope": {
+        "quality_unit": "task_id cluster; seeds are repeated paired probes",
+        "offline_completion_is_policy_knowledge": false,
+        "duration_ns_is_end_to_end": false,
+        "overlapping_measurements_are_additive": false,
+        "full_lifetime_cost_measured": false,
+        "efficiency_gain_qualified": false,
+        "missing_measurements_are_zero": false
+      },
+      "arms": {
+        "fixed": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 461693531,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 458686708,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 19273650,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "gru": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 605717076,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 601571010,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 81102230,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "head": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 96,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 96,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 96,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 473883055,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 470280606,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 31158037,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1600,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        }
+      },
+      "paired_task_results": [
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/pause_resume",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/pause_resume",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        }
+      ],
+      "promotion": false
+    },
+    "expired": {
+      "scope": {
+        "quality_unit": "task_id cluster; seeds are repeated paired probes",
+        "offline_completion_is_policy_knowledge": false,
+        "duration_ns_is_end_to_end": false,
+        "overlapping_measurements_are_additive": false,
+        "full_lifetime_cost_measured": false,
+        "efficiency_gain_qualified": false,
+        "missing_measurements_are_zero": false
+      },
+      "arms": {
+        "fixed": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 0,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 0,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 0,
+          "unknown_effect_outcomes": 0,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 42681613,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 40787414,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "gru": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 0,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 0,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 0,
+          "unknown_effect_outcomes": 0,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 77419294,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 38943240,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "head": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 0,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 0,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 0,
+          "unknown_effect_outcomes": 0,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 40323805,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 38368267,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        }
+      },
+      "paired_task_results": [
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/expired",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/expired",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        }
+      ],
+      "promotion": false
+    },
+    "no_repair": {
+      "scope": {
+        "quality_unit": "task_id cluster; seeds are repeated paired probes",
+        "offline_completion_is_policy_knowledge": false,
+        "duration_ns_is_end_to_end": false,
+        "overlapping_measurements_are_additive": false,
+        "full_lifetime_cost_measured": false,
+        "efficiency_gain_qualified": false,
+        "missing_measurements_are_zero": false
+      },
+      "arms": {
+        "fixed": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 64,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 64,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 64,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 360244901,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 355921209,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 15696304,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "gru": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 64,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 64,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 64,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 428950584,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 425178196,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 71973054,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        },
+        "head": {
+          "episodes": 128,
+          "task_clusters": 16,
+          "offline_complete": 64,
+          "offline_oracle_unknown": 0,
+          "claimed_success": 64,
+          "claim_unknown": 0,
+          "false_success": 0,
+          "false_success_unassessed": 0,
+          "policy_confirmed_complete": 64,
+          "unknown_effect_outcomes": 32,
+          "measurements": {
+            "end_to_end_ns": {
+              "sum": 360232575,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duration_ns": {
+              "sum": 357593382,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "selection_ns": {
+              "sum": 26462966,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "primitive_calls": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "owner_requests": {
+              "sum": 1312,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "independent_oracle_queries": {
+              "sum": 128,
+              "measured_rows": 128,
+              "missing_rows": 0
+            },
+            "duplicate_effects": {
+              "sum": 0,
+              "measured_rows": 128,
+              "missing_rows": 0
+            }
+          }
+        }
+      },
+      "paired_task_results": [
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/no_repair",
+          "arm": "gru",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/lost_reply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/normal/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/opaque_after_apply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n3/partial_failure/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/lost_reply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/normal/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/opaque_after_apply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v1/n5/partial_failure/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/lost_reply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/normal/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/opaque_after_apply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n3/partial_failure/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/lost_reply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/normal/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/opaque_after_apply/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        },
+        {
+          "task_id": "act3/filesystem/v2/n5/partial_failure/no_repair",
+          "arm": "head",
+          "seed_pairs": 8,
+          "measured_seed_pairs": 8,
+          "unknown_seed_pairs": 0,
+          "mean_completion_delta": 0.0
+        }
+      ],
+      "promotion": false
+    }
+  }
+}

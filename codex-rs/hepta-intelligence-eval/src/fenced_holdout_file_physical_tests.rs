@@ -137,16 +137,13 @@ fn original_holdout_consumption_refuses_corruption_then_restoration() {
     overwrite(&mut observation, &corrupt);
     assert_eq!(
         original.read_consumption(&frozen),
-        Err(crate::FencedHoldoutError::Store(
-            FinalHoldoutCasStoreError::Indeterminate
-        ))
+        Err(crate::FencedHoldoutError::Indeterminate)
     );
+    assert!(original.is_poisoned());
     overwrite(&mut observation, &saved);
     assert_eq!(
         original.read_consumption(&frozen),
-        Err(crate::FencedHoldoutError::Store(
-            FinalHoldoutCasStoreError::Indeterminate
-        ))
+        Err(crate::FencedHoldoutError::Poisoned)
     );
 }
 

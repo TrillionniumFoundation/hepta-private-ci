@@ -1,0 +1,264 @@
+{
+  "schema": "rrsnn_v4.scientific_scope_closeout_review.v1",
+  "reviewed_at_utc": "2026-10-29T16:43:27.281756+00:00",
+  "reviewer": "independent r4_query_environment agent",
+  "disposition": "no_material_scientific_scope_or_direction_error_found",
+  "review_mode": "Read-only report, source-text, and existing JSON evidence inspection. Only this audit JSON is written.",
+  "checked_files_sha256": {
+    "REPORT_TEMPLATE.zh-CN.md": "440fcd77243d24742c3bf71cddba0e6a050da0edacf545a7f144a69a3f33f78c",
+    "MATHEMATICAL_SCOPE.zh-CN.md": "c2a5c57e2de689b6f227acc48772b72edbd397e87ef028d05443b6e3eccbd30e",
+    "build_closeout.py": "2baf1eb19e3405c28a2876438022be0d1b03710de6408358cf807664ee9be4cb",
+    "pre_data_freeze.json": "2c4e0e135940cf8fce04aa672963f47041be4065d8836d56671c335d7369e6bc",
+    "experiment_protocol.json": "e550dfca79fdb1b6bca551c5f1e6c3f8e4bd796fda310b6db2c48eaeabbaa09d",
+    "selection.json": "dbad2690403992f75c46105722670026e7e13acb523f4973f4726a91d6e5d6bd",
+    "results/evaluation_matrix_status.json": "4a528628e5701ca1ae1818392fbf5e18e93063fa232bcb9834043139a618a184",
+    "results/aggregate.json": "1ac919f5a07aebac96b3b7a49be9905a4f026ce5927d61464ba5aba3d12b8773",
+    "results/mechanism_contrasts.json": "6468c31ed77072794ed0a9997f49a11a88886c37b2fc240b560500e9582dba09",
+    "aggregate.py": "eb4157f0f149089a35e66a51f1fd4a808aeab53e8edc5acef8f0eee43dffe671",
+    "baselines.py": "14d06b7189982bdef8b737c912e2704a8d2647385789c60f5a9760f279037325",
+    "models.py": "a0bc0100ae7e937322d5210d19d0def4ae3eae0e8b62a5a0ea280dcd7e186154",
+    "operators.py": "2d2b85a8695d79f8e81eab21ea67a3796aae2d8f5b346a83ca990068b3c61398",
+    "task.py": "fb25701b47bd12df3006732a544d9a454de7495c395ccb98daada944baae87d4",
+    "report_mechanism_contrasts.py": "3bc1efccad84f9c4dc14ad4cd547779b2ba1eed50ee91951df43cfc217fc45bd"
+  },
+  "reviewed_report_hashes_unchanged_at_closeout": true,
+  "frozen_source_identity": {
+    "files": 14,
+    "all_match_pre_data_freeze": true
+  },
+  "checks": [
+    {
+      "id": "financial_attribution",
+      "status": "pass",
+      "finding": "Both documents attribute the modeling relation and free-boundary/Laplace/value-matching/smooth-pasting techniques to He-Xiong, while explicitly treating firing, reset, refractoriness and the Lambert-W threshold as a separate restricted neuron model."
+    },
+    {
+      "id": "three_mathematical_levels",
+      "status": "pass",
+      "finding": "The scalar fixed-cost arithmetic-Brownian reset model, its W0 threshold and verification conditions are separated from the finite 16-active-state plus 2-Erlang-phase CTMC implementation and from the unsolved dynamic-budget/deadline-measure QVI. The deterministic and Erlang refractory discount factors are explicitly different."
+    },
+    {
+      "id": "full_network_scope",
+      "status": "pass",
+      "finding": "Finite-chain matrix propagation and interval-held controls are not presented as an exact unbounded diffusion or a globally optimal asynchronous network. The complete implementation also carries continuous context/trace state; the finite CTMC claim concerns its interval-conditioned discrete carrier."
+    },
+    {
+      "id": "novelty_and_promotion",
+      "status": "pass",
+      "finding": "Neither document claims established novelty, biological validity, production readiness, or a solved global resource/期限 optimization. Existing related mechanisms and the outstanding real-window, full-Cell, dot, owner-lifecycle and CI qualifications remain explicit."
+    },
+    {
+      "id": "matrix_arithmetic",
+      "status": "pass",
+      "finding": "16 configurations times five training seeds yields 80 selected checkpoints; three datasets times four latent replays yields 12 evaluation files per checkpoint, hence 960. Matrix metadata reports 80 completed jobs, every job has 12 outputs, no failed or unstarted jobs, and all_completed=true."
+    },
+    {
+      "id": "baseline_naming",
+      "status": "pass",
+      "finding": "Source confirms continuously decaying ALIF adaptation with physical-spike increments and the observation-held exponential-relaxation CT-RNN. Documents explicitly avoid claims of a full LSNN training reproduction or paper CfC reproduction; larger-state and CPU-budget controls are labeled."
+    },
+    {
+      "id": "primary_direction_and_gate",
+      "status": "pass",
+      "finding": "aggregate.compare computes candidate minus comparator. The fixed primary is ctrnn_state_cpu. Report construction uses rr_full against_primary normalized percentage-point gain and requires strictly positive lower CI on both test and shift. The existing negative gains are not inverted, discarded, or rescued by validation-selected secondary results."
+    },
+    {
+      "id": "paired_interaction_direction",
+      "status": "pass",
+      "finding": "Condition order A0,A2,B0,B2 yields (B2-B0)-(A2-A0) in raw expected utility. RR interaction gain then subtracts the primary comparator interaction. The report correctly says the interaction sign alone is not model quality. Matching physical state/RNG is within the same model, training seed and latent replay across the four paired conditions."
+    },
+    {
+      "id": "mechanism_contrasts",
+      "status": "pass",
+      "finding": "All five predeclared contrasts use rr_full minus named ablation, preserve the primary acceptance gate, and bind the main aggregate SHA. All ten test/shift normalized gain intervals contain zero, consistent with the report wording. These are descriptive pointwise intervals, not a family-wise proof."
+    },
+    {
+      "id": "numeric_repair_scope",
+      "status": "pass",
+      "finding": "The documents keep original float32 failures and original primary utility/resource evidence separate from the later isolated precision repair. They do not claim unrecorded full-state/RNG production equivalence, repaired-kernel throughput, or automatic native bridge qualification."
+    },
+    {
+      "id": "task_and_training_scope",
+      "status": "pass",
+      "finding": "Finite-task DP/action-set imitation, closed-loop delivery utility and internal stochastic events are distinguished. Synthetic query draws are not called a real production future window; internal spikes are not converted into communication value or unsupported energy equivalence."
+    }
+  ],
+  "matrix_metadata": {
+    "checkpoint_jobs": 80,
+    "outputs_per_job": [
+      12
+    ],
+    "evaluation_files": 960,
+    "all_completed": true,
+    "coverage_source": "evaluation_matrix_status.json metadata; raw payloads were not reprocessed"
+  },
+  "existing_main_gain_percentage_points": {
+    "test": {
+      "mean": -47.84416506916263,
+      "ci95": [
+        -56.275504709626595,
+        -40.261291490499424
+      ]
+    },
+    "shift": {
+      "mean": -57.32195849552549,
+      "ci95": [
+        -63.832672902400866,
+        -50.40915782688043
+      ]
+    },
+    "paired": {
+      "mean": -55.350782766186306,
+      "ci95": [
+        -59.4881279549922,
+        -51.08044657641383
+      ]
+    }
+  },
+  "existing_rr_minus_primary_interaction_raw_utility": {
+    "mean": -0.9069877836620688,
+    "ci95": [
+      -1.1536781440253598,
+      -0.6544079963656774
+    ]
+  },
+  "existing_mechanism_test_shift_ci_checks": [
+    {
+      "dataset": "test",
+      "ablation": "fp_no_rollover",
+      "ci95": [
+        -0.19880527771130488,
+        3.0222131177808627
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "test",
+      "ablation": "rr_fixed_boundary",
+      "ci95": [
+        -0.002413474344954324,
+        4.395800001285715
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "test",
+      "ablation": "rr_frozen_resource",
+      "ci95": [
+        -1.4251504870530574,
+        0.3010585611247243
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "test",
+      "ablation": "rr_mean_maturity",
+      "ci95": [
+        -0.6561648124996968,
+        4.688835606404297
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "test",
+      "ablation": "rr_shuffle_maturity",
+      "ci95": [
+        -0.776049068824224,
+        1.3436186335488909
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "shift",
+      "ablation": "fp_no_rollover",
+      "ci95": [
+        -0.12750249627949398,
+        1.6382420330278449
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "shift",
+      "ablation": "rr_fixed_boundary",
+      "ci95": [
+        -0.011045171396296172,
+        3.932543326992296
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "shift",
+      "ablation": "rr_frozen_resource",
+      "ci95": [
+        -0.25678568836605653,
+        1.3475242965096315
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "shift",
+      "ablation": "rr_mean_maturity",
+      "ci95": [
+        -0.25358795787752925,
+        3.549219686951595
+      ],
+      "contains_zero": true
+    },
+    {
+      "dataset": "shift",
+      "ablation": "rr_shuffle_maturity",
+      "ci95": [
+        -0.013785447772710197,
+        2.094106368977795
+      ],
+      "contains_zero": true
+    }
+  ],
+  "blocking_corrections": [],
+  "recommended_clarifications": [
+    {
+      "priority": "low",
+      "file": "REPORT_TEMPLATE.zh-CN.md",
+      "location": "section 4, secondary comparator sentence",
+      "observed_text": "次对照 alif_analog 由五 seed 验证 NLL 最小值选出",
+      "suggestion": "Explicitly write 按五个训练 seed 的平均 best_validation_nll 最小值选择, with lexical tie-breaking if desired. The frozen selection already uses that rule; this removes a possible reading as a single-seed minimum.",
+      "changes_results_or_acceptance": false
+    },
+    {
+      "priority": "low",
+      "file": "MATHEMATICAL_SCOPE.zh-CN.md",
+      "location": "section 5, terminal-query utility formula",
+      "suggestion": "Define t_i as the communication emission time, and state separately that delivery occurs at t_i+0.1 and must precede the horizon. task.py computes quality from emitted_at, not delivered_at. The current formula is consistent but its time variable is implicit.",
+      "changes_results_or_acceptance": false
+    },
+    {
+      "priority": "low",
+      "file": "MATHEMATICAL_SCOPE.zh-CN.md",
+      "location": "section 3, matrix exponential / uniformization sentence",
+      "suggestion": "Prefer 矩阵指数表示与 uniformization 的一致性核对针对这个有限生成矩阵, or explicitly separate the exact infinite-series identity from finite-precision implementation and Poisson-tail truncation. Current wording 一致性证明 could be read too broadly, although the finite-chain and diffusion qualifications are already correct.",
+      "changes_results_or_acceptance": false
+    }
+  ],
+  "primary_source_attribution_check": {
+    "title": "Rollover Risk and Credit Risk",
+    "authors": [
+      "Zhiguo He",
+      "Wei Xiong"
+    ],
+    "publication": "The Journal of Finance, 2012",
+    "author_hosted_final_pdf": "https://zhiguohe.net/wp-content/uploads/2023/12/The-Journal-of-Finance-2012-HE-Rollover-Risk-and-Credit-Risk.pdf",
+    "checked_locations": [
+      "Section I.B: stationary debt structure with uniformly spread maturities",
+      "Section II: E(V_B)=0, smooth-pasting E_prime(V_B)=0 and free-boundary solution",
+      "Appendix A: equity equation and Laplace-transform method"
+    ],
+    "qualification": "This confirms methodological attribution, not an exhaustive novelty search. Arbitrary deadline measures and the project neuron reset/refractory model are separate extensions; no local PDF byte digest is claimed."
+  },
+  "review_limits": [
+    "No Torch import, actor execution, training, holdout replay, numerical validation rerun, or statistical recomputation was performed.",
+    "The report template and its builder were inspected; this is not a final rendered-report or figure-layout certification.",
+    "Coverage counts were read from existing complete matrix metadata; this audit does not replace independent raw-result audits.",
+    "Review disposition does not change the original failed candidate gate or close real future-window, full-Cell, dot, production CI, global-theory, or broad novelty blockers.",
+    "Only the reviewed versions identified by SHA are covered; subsequent report edits require corresponding re-review."
+  ]
+}

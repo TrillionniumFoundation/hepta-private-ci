@@ -1,0 +1,6 @@
+bazel mod deps --lockfile_mode=update
+Extracting Bazel installation...
+Starting local Bazel server (9.3.0) and connecting to it...
+ERROR: --jobs=2 :: Unrecognized option: --jobs=2
+INFO: Invocation ID: 609dd0f9-e40b-4a9f-a136-f1a9bde20ce5
+error: recipe `bazel-lock-update` failed on line 150 with exit code 2

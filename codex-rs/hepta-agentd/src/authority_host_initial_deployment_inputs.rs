@@ -2,6 +2,7 @@
 //! Paths and public data are checked again by the original same-Root enrollment.
 
 use super::data::InitialDeploymentData;
+use super::shared_data::SelectionData;
 use super::shared_files::OriginalFile;
 use crate::AgentdGenerationSelectionFilesV1;
 use crate::RootArtifactPublicationInputsV1;
@@ -55,7 +56,7 @@ impl InitialOriginalFiles {
             },
         )
         .map_err(io::Error::other)?;
-        let selected = data.selection.original_selection()?;
+        let selected = SelectionData::original_selection(&data.selection)?;
         let now: u64 = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .map_err(io::Error::other)?

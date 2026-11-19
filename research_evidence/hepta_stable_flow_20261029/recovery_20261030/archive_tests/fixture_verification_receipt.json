@@ -1,0 +1,56 @@
+{
+  "artifacts": [
+    {
+      "bytes": 15598,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/recovery_archive.py",
+      "sha256": "6af2cf7e7e802f6e3aec1733d6ff2e79c4c8758b9cdc9ffcfb2e22187373df94"
+    },
+    {
+      "bytes": 8955,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/archive_tests/test_recovery_archive.py",
+      "sha256": "1f8674c615d57c2e8a205a435604c97a95959ec23e8d86a85e1c5977e51fc97f"
+    },
+    {
+      "bytes": 0,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/archive_tests/tests.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "bytes": 920,
+      "path": "research_evidence/hepta_stable_flow_20261029/recovery_20261030/archive_tests/tests.stderr.log",
+      "sha256": "dfedc7561666e5acb47ab694d8b9e8011e706f42b25b8fa34a42ba19fb5b963e"
+    }
+  ],
+  "checks": [
+    "deterministic archive bytes across different output filenames",
+    "archive and extracted-tree roundtrip",
+    "no overwrite",
+    "extra extracted file rejection",
+    "tampered payload rejection",
+    "missing archive member rejection",
+    "duplicate archive member rejection",
+    "unsafe traversal path rejection",
+    "incomplete audit rejection",
+    "missing critical audit binding rejection",
+    "changed or missing bound artifact rejection",
+    "symlink rejection",
+    "output recursion rejection",
+    "scientific failures retained without positive-success gate"
+  ],
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+    "-I",
+    "-S",
+    "/workspace/scratch/45b3735e7225/hepta-cfb/research_evidence/hepta_stable_flow_20261029/recovery_20261030/archive_tests/test_recovery_archive.py",
+    "-v"
+  ],
+  "finished_utc": "2026-10-30T01:16:29.845418+00:00",
+  "no_actual_scientific_archive_created": true,
+  "purpose": "Small synthetic format/integrity fixtures, no scientific training or archive publication. Explicit standard-library isolation with -I -S.",
+  "returncode": 0,
+  "schema": "hepta-recovery-archive-fixture-verification-v1",
+  "started_utc": "2026-10-30T01:16:28.640039+00:00",
+  "test_fixture_primary_sha_is_patched_in_memory_only": true,
+  "tests": 6,
+  "wall_seconds": 1.2053844330002903
+}

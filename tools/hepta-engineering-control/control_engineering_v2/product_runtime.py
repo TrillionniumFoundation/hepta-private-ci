@@ -2,8 +2,8 @@
 
 This object is the source-level product composition point: one durable
 EngineeringStore, one exact repository identity, one injected signature-verifier
-port, resource-aware planning, and the worker claim lifecycle. It grants no merge,
-release, deployment, or runtime capability authority.
+port, resource-aware planning, measured capacity admission, and the worker claim
+lifecycle. It grants no merge, release, deployment, or runtime capability authority.
 """
 
 from __future__ import annotations
@@ -11,6 +11,19 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Iterable
 
+from .capacity_policy import (
+    ControlCapacityDecision,
+    ControlCapacityPolicy,
+    REFERENCE_CONTROL_CAPACITY_POLICY,
+    evaluate_control_capacity,
+    require_new_work_capacity,
+)
+from .clock_policy import (
+    ClockSkewPolicy,
+    STRICT_CLOCK_POLICY,
+    checked_now,
+    validate_signed_window,
+)
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .integration_controller import (
@@ -48,6 +61,10 @@ from .worker_lifecycle import (
     worker_claim,
     worker_completion_observation_digest,
 )
+from .worker_registration import (
+    WorkerRegistrationRenewalReceipt,
+    renew_worker_registration,
+)
 
 
 class EngineeringControlProduct:
@@ -58,10 +75,18 @@ class EngineeringControlProduct:
         *,
         expected_repository: str,
         trust_store: SignatureTrustStore,
+        clock_policy: ClockSkewPolicy = STRICT_CLOCK_POLICY,
+        capacity_policy: ControlCapacityPolicy = REFERENCE_CONTROL_CAPACITY_POLICY,
     ):
+        if not isinstance(clock_policy, ClockSkewPolicy):
+            raise EngineeringError("clock_policy_required")
+        if not isinstance(capacity_policy, ControlCapacityPolicy):
+            raise EngineeringError("control_capacity_policy_required")
         self.repository = Path(repository).resolve()
         self.expected_repository = expected_repository
         self.trust_store = trust_store
+        self.clock_policy = clock_policy
+        self.capacity_policy = capacity_policy
         self.store = EngineeringStore(database)
         self._startup_reconciled = False
 
@@ -78,12 +103,47 @@ class EngineeringControlProduct:
     def close(self) -> None:
         self.store.close()
 
+    def capacity_status(self, *, now_ns: int | None = None) -> ControlCapacityDecision:
+        return evaluate_control_capacity(
+            self.store,
+            self.capacity_policy,
+            now_ns=now_ns,
+        )
+
+    def _admit_new_work(self, *, now_ns: int | None = None) -> None:
+        require_new_work_capacity(
+            self.store,
+            self.capacity_policy,
+            now_ns=now_ns,
+        )
+
+    def _validate_receipt_window(
+        self,
+        receipt: object,
+        *,
+        error_code: str,
+        now_ns: int | None = None,
+    ) -> None:
+        try:
+            observed = getattr(receipt, "observed_unix_ns")
+            expires = getattr(receipt, "expires_unix_ns")
+        except AttributeError:
+            raise EngineeringError(error_code) from None
+        validate_signed_window(
+            observed,
+            expires,
+            checked_now(now_ns),
+            self.clock_policy,
+            error_code=error_code,
+        )
+
     def admit_repository_envelope(
         self,
         envelope: WorkEnvelope,
         *,
         now_ns: int | None = None,
     ) -> WorkEnvelope:
+        self._admit_new_work(now_ns=now_ns)
         return issue_repository_work_envelope(
             self.repository,
             self.store,
@@ -103,6 +163,7 @@ class EngineeringControlProduct:
         expires_unix_ns: int,
         now_ns: int | None = None,
     ):
+        self._admit_new_work(now_ns=now_ns)
         return self.store.acquire_path_lease(
             lease_id,
             envelope_id,
@@ -124,12 +185,20 @@ class EngineeringControlProduct:
         generation_id: str,
         now_ns: int | None = None,
     ) -> EngineeringPlan:
+        self._admit_new_work(now_ns=now_ns)
+        completion_values = tuple(completion_receipts)
+        for receipt in completion_values:
+            self._validate_receipt_window(
+                receipt,
+                error_code="product_completion_receipt_stale",
+                now_ns=now_ns,
+            )
         return plan_engineering_work(
             self.store,
             envelope,
             packages,
             workers,
-            completion_receipts,
+            completion_values,
             self.trust_store,
             capacity,
             generation_id=generation_id,
@@ -154,10 +223,30 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> str:
+        self._admit_new_work(now_ns=now_ns)
+        self._validate_receipt_window(
+            receipt,
+            error_code="product_worker_registration_stale",
+            now_ns=now_ns,
+        )
         return register_worker(
             self.store,
             receipt,
             self.trust_store,
+            now_ns=now_ns,
+        )
+
+    def renew_worker(
+        self,
+        receipt: WorkerRegistrationRenewalReceipt,
+        *,
+        now_ns: int | None = None,
+    ) -> str:
+        return renew_worker_registration(
+            self.store,
+            receipt,
+            self.trust_store,
+            clock_policy=self.clock_policy,
             now_ns=now_ns,
         )
 
@@ -173,6 +262,7 @@ class EngineeringControlProduct:
     ) -> WorkerClaim:
         if not self._startup_reconciled:
             raise EngineeringError("product_startup_reconciliation_required")
+        self._admit_new_work(now_ns=now_ns)
         return claim_assignment(
             self.store,
             generation_id,
@@ -190,6 +280,11 @@ class EngineeringControlProduct:
         heartbeat_ttl_ns: int,
         now_ns: int | None = None,
     ) -> WorkerClaim:
+        self._validate_receipt_window(
+            receipt,
+            error_code="product_worker_heartbeat_stale",
+            now_ns=now_ns,
+        )
         return heartbeat_claim(
             self.store,
             receipt,
@@ -204,6 +299,11 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
+        self._validate_receipt_window(
+            receipt,
+            error_code="product_worker_result_stale",
+            now_ns=now_ns,
+        )
         return submit_worker_result(
             self.store,
             receipt,
@@ -219,6 +319,11 @@ class EngineeringControlProduct:
         *,
         now_ns: int | None = None,
     ) -> WorkerClaim:
+        self._validate_receipt_window(
+            completion,
+            error_code="product_completion_receipt_stale",
+            now_ns=now_ns,
+        )
         return observe_claim_completion(
             self.store,
             claim_id,
@@ -243,6 +348,7 @@ class EngineeringControlProduct:
         base_tree: str,
         now_ns: int | None = None,
     ) -> IntegrationQueueGeneration:
+        self._admit_new_work(now_ns=now_ns)
         return publish_integration_queue(
             self.store,
             plan,
@@ -265,6 +371,11 @@ class EngineeringControlProduct:
         now_ns: int | None = None,
     ) -> IntegrationQueueItem:
         if stage_receipt is not None:
+            self._validate_receipt_window(
+                stage_receipt,
+                error_code="product_integration_stage_receipt_stale",
+                now_ns=now_ns,
+            )
             if terminal_outcome is not None or terminal_receipt is not None:
                 raise ValueError("integration_stage_terminal_mix")
             return observe_integration_stage(
@@ -275,6 +386,12 @@ class EngineeringControlProduct:
                 current_base_tree=current_base_tree,
                 receipt=stage_receipt,
                 trust_store=self.trust_store,
+                now_ns=now_ns,
+            )
+        if terminal_receipt is not None:
+            self._validate_receipt_window(
+                terminal_receipt,
+                error_code="product_integration_terminal_receipt_stale",
                 now_ns=now_ns,
             )
         return reconcile_integration_item(

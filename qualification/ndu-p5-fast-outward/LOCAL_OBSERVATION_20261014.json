@@ -1,0 +1,29 @@
+{
+  "authority": "DENY_ALL",
+  "certified_new": 192,
+  "certified_old": 192,
+  "continuous_time_fbsde_certified": false,
+  "cost_adjusted_online_gain_established": false,
+  "data_type": "synthetic source-bound local CPU run",
+  "exact_binary64_coefficients": true,
+  "historical_full_picard_cpu_ms": 126.928829,
+  "input_file_sha256": {
+    "fast-audit-stdout.json": "e7e00de99bca2bf9923857905f88c00bbd9fd00db76f4fc90c1d55d6aebadd18",
+    "fast-outward-audit.json": "995c1d2aa4c461097917d92d1104af0dfec65f9911a070e4ed2cca902e50dc08",
+    "independent-score.json": "d3d9c6412975467e3f3d915fb8c4e72e688a35db95692aa9b2ab48ae94987378",
+    "plan.json": "92c568e9694c259b64ac1f8bb1f6db9d9214dd14ca13c81ff7d1f75bbea7a607",
+    "sealed-predictions.json": "f8fdab2444a460486589ae86cc1d9dc83a96564cd40cc49e000eaec3719fde35"
+  },
+  "method": "Taylor-16 exp argument reduction plus 6 outward integer squarings",
+  "new_interval_cpu_ms": 1040.93355,
+  "new_p95_cpu_ms_per_task": 5.645807,
+  "new_pretrained_model_task_gain": false,
+  "old_interval_cpu_ms": 2927.000105,
+  "old_p95_cpu_ms_per_task": 16.474645,
+  "original_192_task_count": 192,
+  "original_work_calls": 1511,
+  "production_accepted": false,
+  "same_source_reused_not_new_future": true,
+  "schema": "hepta.p5.fast-outward-local-measurement.v1",
+  "source_held_work_replay_cpu_ms": 41.505621
+}

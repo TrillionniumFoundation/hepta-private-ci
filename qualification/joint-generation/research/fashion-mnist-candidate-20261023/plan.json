@@ -1,0 +1,99 @@
+{
+  "schema": "hepta.fashion-mnist.candidate-plan.v1",
+  "status": "review candidate; no data or model execution; not an experiment freeze",
+  "task": "Fixed Gaussian-corrupted official TRAIN thumbnail to category word and continuous instance pixels",
+  "source_commit_before_candidate": "4cedb1c92874f321552d78c659f77ce5fd51b1dd",
+  "official_data_commit": "b2617bb6d3ffa2e429640350f613e3291e10b141",
+  "data": {
+    "pool": "all 60000 official TRAIN rows at original row weights; all ten categories",
+    "official_TEST": "not downloaded, read, split, scored or used for tuning",
+    "source_unit": "SHA256 of exact 784 uint8 reference bytes; original row IDs and duplicate multiplicity retained",
+    "split": "big-endian integer SHA256(UTF8(hepta-fashion-split-v1) || NUL || pixel_hash_bytes) modulo 6: 0..3 FIT, 4 SELECT, 5 SCREEN",
+    "metadata_preflight": "Verify publisher MD5 and IDX headers; pin SHA256, group membership, duplicates/conflicting labels, exact counts and class counts before fit; missing class stops without resampling",
+    "corruption": {
+      "sigma": 0.2,
+      "views_per_source": 1,
+      "seed": "first 128 bits big-endian SHA256(UTF8(hepta-fashion-noise-v1) || NUL || pixel_hash_bytes)",
+      "rng": "NumPy2.3.5 PCG64DXSM; float64 standard normals and arithmetic, clip once and cast float32",
+      "formula": "clip(reference_uint8/255 + sigma*epsilon,0,1)",
+      "selection": "fixed before data; independent of class, route, models, outcomes"
+    },
+    "service_inputs": ["the fixed noisy float32 image; public sigma constant"],
+    "canonical_class_words": ["T-shirt/top", "Trouser", "Pullover", "Dress", "Coat", "Sandal", "Shirt", "Sneaker", "Bag", "Ankle boot"],
+    "forbidden_service_inputs": ["clean reference", "true class", "row/group identity", "noise seed or realization", "target residual", "target-using observer"],
+    "SCREEN_policy": "single development screen after all choices; no confirmation claim, tuning or rerun"
+  },
+  "model": {
+    "patches": "49 nonoverlapping 4x4 patches",
+    "weights": "shared across steps; exact dimensions in model_inventory.py",
+    "content_parameters": 65562,
+    "actions": {"T": "update category state then text posterior", "I": "update patch states then continuous image residual", "J": "both in parallel from the old shared state"},
+    "dynamic_schedule": "initial generation, fixed J, one learned final T/I/J action",
+    "policy": "32 legal feedback features -> 8 tanh -> 3 raw action-value regressions; 291 params, fixed T/I/J argmax tie order",
+    "feedback": "fully differentiable content training; cache unchanged observations and heads for all methods",
+    "strong_static_pixel_heads": "direct/deep/CNN all use the same clip(noisy_input + learned continuous residual,0,1) skip and same common supervision/risk weights",
+    "output": "actual canonical category UTF8 word and float32 28x28 image; existing RGB contract uses identical-plane replication, not implemented yet"
+  },
+  "training": {
+    "seeds": [11, 23, 47],
+    "batch_size": 64,
+    "optimizer": "Adam",
+    "learning_rate": 0.001,
+    "content_total_workload_reference_epochs": 4,
+    "checkpoint_chronology": "initial after two epochs or150 content CPU seconds/seed, whichever first; initial SELECT picks S's constant schedule; D continues uniform paths, S that sequence, other statics their graph until content subcap. Freeze final content before single OOF/full actor fits; never update content afterward. D uses final weights; static SELECT can retain best initial/final checkpoint/sequence. No intermediate search or actor refit after SELECT/SCREEN",
+    "sequence_training": "model-independent cyclic TT/TI/TJ/IT/II/IJ/JT/JI/JJ batches; all methods share objective and supervision weights",
+    "content_loss": "CE + MSE(mean_image,reference)/0.04 - 0.1*N",
+    "N": "-0.5*log(1-p_y + p_y*mean_k(exp(-2*q_k)))",
+    "q_k": "exp(-MSE(clip(mean_image+0.05*epsilon_k,0,1),reference)/0.04)",
+    "terminal_K": 4,
+    "rho": 2,
+    "sampling_boundary": "terminal image noise only; exact categorical marginalization; no repeated backbone; fixed-K auxiliary risk, not unbiased population entropic gradient",
+    "policy_label_sources": "512 FIT groups by smallest SHA256(UTF8(hepta-fashion-policy-v1)||NUL||pixel_hash_bytes); retain row multiplicity and require all classes without resampling",
+    "policy_labels": "three actual greedy terminal U values after common J prefix; references only offline; no threshold search",
+    "policy_fit": "three OOF group folds from SHA256(UTF8(hepta-fashion-oof-v1)||NUL||pixel_hash_bytes) modulo3, then full FIT-label fit; each 256 Adam updates, B64, LR.001",
+    "policy_loss": "mean squared error of three predicted raw U action values; content features frozen during actor fitting",
+    "selection": "SELECT once at initial and once at final content checkpoint only; maximum mean U, ties lower complete measured CPU then the complete_arms/static_schedules array order; D final fixed; no LR grid"
+  },
+  "scores": {
+    "E": "MSE of decoded float32 transport pixels and reference, all rows",
+    "A": "actual canonical word matches class",
+    "primary_U": "A*exp(-E/0.04)",
+    "components": ["unconditional accuracy", "unconditional MSE", "mean per-image PSNR, preserving positive infinity", "PSNR from total MSE", "per-class and paired per-source values", "target support x>0.1 and background errors; derived support, not official mask"],
+    "controls": ["noisy identity pixels with legal classifier", "black pixels with same classifier", "predicted-category FIT mean image", "offline fixed within-class output permutation"],
+    "auxiliary_risk": "reported separately; cannot substitute for actual service accuracy or pixel improvement"
+  },
+  "research_probe": {
+    "static_schedules": ["empty", "T", "I", "J", "TT", "TI", "TJ", "IT", "II", "IJ", "JT", "JI", "JJ"],
+    "shared_evaluation": "all nine depth2 paths use shared 695840 MAC forward per row; common J-prefix final action labels use 450912 MAC, plus all non-affine/scoring costs",
+    "record": ["three J-prefix final-action raw oracle headroom to best of all13 constant sequences", "per-source/class/seed action crossings", "OOF policy regret and expensive wrong-action tails", "complete measured path CPU; no median-mixture upper bound"],
+    "stop_before_other_arms_if": "any seed lacks positive raw oracle headroom or OOF raw U improvement to its best constant final action; or cap/implementation failure",
+    "interpretation": "conservative development continuation rule, no p-value or qualification pass"
+  },
+  "complete_arms": [
+    "D: shared content plus final-action policy; initial headroom work charged",
+    "S: optimized all fixed 0/1/2-step schedules and continued useful training of selected schedule",
+    "direct MLP784->64->(10,784)",
+    "deep MLP784->320->192->128->(10,784)",
+    "CNN3x3 1->4->8, image1x1 8->1 and flatten category head",
+    "compiled/distilled feedback family; both exact fixed-graph T/I expansion AND direct-MLP student required; full common teacher build/labels charged once to family and full standalone bill attached to each descendant; student adds unit KL(teacher p||student p) plus unit MSE(student mu,teacher mu) to common supervised objective"
+  ],
+  "budget_proposal": {
+    "per_complete_three_seed_arm_CPU_seconds": 1800,
+    "whole_study_max_CPU_seconds_if_six_arms_needed": 10800,
+    "peak_RSS_bytes": 2147483648,
+    "retained_payload_bytes": 2147483648,
+    "phase_subcaps_CPU_seconds": {"shared_intake_preparation": 150, "build_each_seed": 450, "all_SCREEN_service_passes_controls_and_report": 300},
+    "SCREEN_service_count": "ordinary arms one full row pass/seed, compiled/distilled both candidates/seed; all declared output controls charged; B64 final partial batch included",
+    "D_each_seed_build": {"content_updates_max_CPU_seconds": 300, "policy_selection_export_max_CPU_seconds": 150},
+    "static_each_seed_build": {"useful_content_updates_max_CPU_seconds": 425, "selection_export_max_CPU_seconds": 25},
+    "compiled_distilled": "each seed has 450 build CPU seconds for full standalone teacher build plus remaining compilation/distillation; ordinary static425/25 split does not apply to its teacher. Unable to finish is incomplete baseline, never free teacher",
+    "budget_boundary": "process CPU plus descendants, all loading/checksums/noise/loss/Adam/labels/search/OOF/compiler/distill/export/load/serialization/service; shared physical work fully assigned to each dependent standalone method",
+    "stop_rule": "deterministic batches, one bounded charged FIT-side reservation calibration, no next step if reservation exceeds subcap; exact code/boundary tests not yet implemented; overrun/incomplete phase is retained nonzero terminal status without timing retries",
+    "unused": "record actual unused CPU; no padding; static policy savings can buy real further content updates",
+    "operation_account": "separate primitive inventory and actual CPU/RSS, no MAC-to-CPU conversion or speedup claim"
+  },
+  "development_screen_continuation": "Under cap, D must exceed strongest completed static mean U in each seed, with accuracy no lower and MSE no higher each seed. D MSE must also be strictly below noisy identity, black, predicted-category FIT mean and fixed within-class-permuted outputs in every seed. Both compiled/distilled candidates and all other required families must be complete. This is not confirmation.",
+  "not_run": ["dataset access/intake", "model allocation", "gradient tests", "training", "throughput calibration", "service", "SCREEN", "official TEST", "r2 test", "CORE rerun", "AV generation"],
+  "implementation_gaps_before_any_fit": ["actual NumPy forward/backward and loss gradient parity", "continuous grayscale-to-existing-contract backend/export", "no-label-channel and action output tests", "complete CPU/RSS ledger and next-step reservations", "source freeze and prospective review"],
+  "next_confirmation": "Separate future protocol only after development, with all old research history, independent data, predeclared lifecycle cost horizon/frontier and prospective cross-study error control"
+}

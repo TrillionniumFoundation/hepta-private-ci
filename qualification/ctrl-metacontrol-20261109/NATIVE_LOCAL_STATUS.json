@@ -1,0 +1,80 @@
+{
+  "schema": "hepta.ctrl.native_validation_status.v1",
+  "scope": "Fixture-only integration of real OCR, isolated actor, file delivery, separate scorer and content identity receipts",
+  "status": "BLOCKED_MANDATORY_ISOLATION",
+  "report_basis": "Last observed test invocation before formatting; no test rerun after formatting",
+  "test_runner": {
+    "executed_tests": 0,
+    "setup_errors": 1,
+    "skipped_tests": 0,
+    "planned_native_checks": 3,
+    "native_checks_passed": 0,
+    "result": "FAILED (errors=1)"
+  },
+  "method": {
+    "fixture": "Generated receipt image plus byte-bound train packet, reference, rubric and role-bound reference index",
+    "episode": "Actual EpisodeHost.run with WRITE_TEXT followed by STOP",
+    "components_mocked": [],
+    "required_boundary": "Existing mandatory Linux Landlock and seccomp enforcement before actor exec",
+    "intended_checks": [
+      "Actual OCR candidate selection, raw actor wire, host exchange digest, delivery bytes, independent evaluation and identity sidecar agree",
+      "Modified observed wire is rejected",
+      "Wrong model digest is rejected before actions"
+    ]
+  },
+  "observed_launch": {
+    "exit_code": 1,
+    "enforced_before_actor_exec": false,
+    "launch_receipt": null,
+    "limit_reason": null,
+    "protocol_error": null,
+    "callback_error": null,
+    "host_exchange_count": 0,
+    "stdout_bytes": 0,
+    "landlock_required_abi_minimum": 3,
+    "landlock_observed_abi": -1,
+    "landlock_errno": 38,
+    "landlock_errno_name": "ENOSYS",
+    "error": "Mandatory Landlock ABI >=3 is unavailable: abi=-1, errno=38",
+    "launcher_source_sha256": "03e23e125465984d794b011eab2ecf82a84a8b0f6b91ec6ef670fcd421652354"
+  },
+  "environment_confirmed": {
+    "system": "Linux",
+    "machine": "x86_64",
+    "kernel": "6.18.57",
+    "uid": 1000,
+    "python": "3.12.14",
+    "torch": "2.5.1+cpu",
+    "numpy": "2.3.5",
+    "pillow": "13.0.0",
+    "tesseract_executable_present": true,
+    "english_ocr_data_discovered": true,
+    "tesseract_version": null
+  },
+  "model": {
+    "architecture": "ReceiptPortfolioModel(core=ordinary)",
+    "initialization_seed": 5450,
+    "randomly_initialized_fixture": true,
+    "checkpoint_created_and_pinned": true,
+    "checkpoint_digest_retained": false,
+    "actor_loaded_checkpoint": false,
+    "model_inference_executed": false
+  },
+  "boundaries": {
+    "private_fixture_outside_runtime_read_roots": true,
+    "isolation_bypassed": false,
+    "linux_skipped": false,
+    "unsandboxed_fallback_used": false,
+    "historical_5450_data_read": false,
+    "historical_content_root_cause_established": false,
+    "real_corpus_efficacy_evaluated": false,
+    "policy_improvement_established": false,
+    "native_end_to_end_pass_claimed": false
+  },
+  "required_followup": "Run the unchanged mandatory integration checks on a host supporting Landlock ABI >=3 before claiming native end-to-end validation",
+  "formatting": {
+    "formatter": "ruff format",
+    "owned_file_formatted": true,
+    "test_rerun_after_formatting": false
+  }
+}

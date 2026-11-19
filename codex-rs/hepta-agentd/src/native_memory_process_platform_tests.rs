@@ -10,6 +10,7 @@ async fn native_memory_refuses_unsupported_process_group_platform_before_io() {
         &config,
         b"unspawned".to_vec(),
         &tokio_util::sync::CancellationToken::new(),
+        || Ok(()),
     )
     .await
     .unwrap_err();

@@ -107,7 +107,7 @@ class OriginalEvaluationHostClosureTests(unittest.TestCase):
     def test_original_brand_and_all_current_reads_precede_final_full_authentication(self):
         self.rejects(OWNER, "fn create(", "host_origin: HostOrigin::FreshCreate")
         self.rejects(OWNER, "fn recover(", "host_origin: HostOrigin::ReadbackOnly")
-        self.rejects(OPERATION, "fn attest_with_training<", "self.host_origin = HostOrigin::ReadbackOnly")
+        self.rejects(OPERATION, "fn attest_sources_with_training<", "self.host_origin = HostOrigin::ReadbackOnly")
         for marker in (
             "receipt.training != primary.training", "receipt.scope != primary.scope",
             "receipt.plan != primary.plan",

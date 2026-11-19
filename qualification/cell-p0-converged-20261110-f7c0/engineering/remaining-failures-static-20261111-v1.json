@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-11T01:22:36.709907+00:00",
+  "scope": "Static diagnosis from retained original CI log and pinned source only; no new native job",
+  "original_failure": {
+    "source_sha": "c7633658aef42077f51fa71a1b727b4653ddb76b",
+    "job_id": 130130648526,
+    "log": "/workspace/scratch/f7c0ded86bcc/p0-ci-audit/job-130130648526.log",
+    "log_sha256": "0a1cfe9f3d870d68a9a0e3249e74704a233de745473ef2b16422adcb4ce503ed"
+  },
+  "local_static_source": "5d7f18b06a1830b68ae1adf8155587e7cfd69aa0",
+  "unchanged_source_identity": [
+    {
+      "file": "codex-rs/ext/git-attribution/src/policy.rs",
+      "old_failure_git_blob": "cf607d64d6d6543281e1b88db7a80f63a1bd27ee",
+      "local_base_git_blob": "cf607d64d6d6543281e1b88db7a80f63a1bd27ee",
+      "equal": true
+    },
+    {
+      "file": "codex-rs/ext/git-attribution/src/git_attribution_tests.rs",
+      "old_failure_git_blob": "0123f5b4e85d50d5a0e462d3ca3b4e4b7f6c9852",
+      "local_base_git_blob": "0123f5b4e85d50d5a0e462d3ca3b4e4b7f6c9852",
+      "equal": true
+    },
+    {
+      "file": "codex-rs/login/src/auth/manager.rs",
+      "old_failure_git_blob": "f4f415e2531897a401dfdfdba99a770016a6f88e",
+      "local_base_git_blob": "f4f415e2531897a401dfdfdba99a770016a6f88e",
+      "equal": true
+    },
+    {
+      "file": "codex-rs/hepta-matrix-sdk/src/sdk.rs",
+      "old_failure_git_blob": "3bd27de9e13f5c1998e49aa9710f8b19852ced05",
+      "local_base_git_blob": "3bd27de9e13f5c1998e49aa9710f8b19852ced05",
+      "equal": true
+    },
+    {
+      "file": "codex-rs/hepta-matrix-sdk/tests/store_version_migration.rs",
+      "old_failure_git_blob": "6f53acc073af77ba496273f2acd98dccff6d4990",
+      "local_base_git_blob": "6f53acc073af77ba496273f2acd98dccff6d4990",
+      "equal": true
+    },
+    {
+      "file": "codex-rs/hepta-matrix-sdk/tests/support/crypto_migration.rs",
+      "old_failure_git_blob": "bfb69673ded99b3289c6e1f64c26ca5f78bf2357",
+      "local_base_git_blob": "bfb69673ded99b3289c6e1f64c26ca5f78bf2357",
+      "equal": true
+    }
+  ],
+  "auth_refresh": {
+    "case": "codex-git-attribution tests::policy_resolution_retries_after_auth_refresh",
+    "observed_outer_attempt_seconds": [
+      0.702,
+      0.756
+    ],
+    "observed_failure": "panic: policy should resolve after refresh",
+    "confirmed": "The original .await.ok().flatten() erased the distinction between timeout Err(Elapsed) and Ok(None). Both executions reached the final policy assertion after the first request and external-auth installation.",
+    "source_boundaries": [
+      "policy.rs wraps the whole loop with 500 ms under cfg(test), 5 s in production.",
+      "The mock sequence is delayed 200 response (100 ms), 401, 200; successful behavior requires three HTTP requests after the mid-flight account change.",
+      "None can result from backend request/decoding failure, unavailable unauthorized recovery, or refresh failure. No-auth/non-backend auth returns Some(false), which is a different assertion failure.",
+      "AuthManager auths_equal_for_refresh compares complete token data for ChatgptAuthTokens, including account identity, and set_cached_auth increments the revision for changes. No static evidence of the hypothesized same-token/different-account revision loss was found.",
+      "The policy loop reconstructs unauthorized recovery when the observed auth generation changes."
+    ],
+    "plausible_but_unproven": "Whole-loop timeout under load is compatible with the duration, but total test duration includes setup and does not establish timeout.",
+    "minimal_next_observation": "Run the original case once with the already-committed Result-preserving diagnostic; capture Err(Elapsed) versus Ok(None) before considering a repair.",
+    "status": "UNRESOLVED; diagnostic-only change is not a repair pass"
+  },
+  "matrix_reopen": {
+    "case": "codex-hepta-matrix-sdk::store_version_migration encrypted_state_identity_session_and_queues_survive_restart",
+    "observed_outer_attempt_seconds": [
+      12.094,
+      12.379
+    ],
+    "observed_failure": "Error: Initialization",
+    "confirmed": "The original log retains no inner build error and no reopen-only elapsed time. The test duration includes fixture preparation and encrypted session preparation.",
+    "source_boundaries": [
+      "The fixture builds the real encrypted stores using the SDK directly, persists exact session/state, then reopens through production login_or_restore with a password that cannot replace the old session.",
+      "Initialization can represent the five-second build timeout, SDK store/client build error, sync-token removal, session-callback setup, or persisted session-file validation/read/parse errors. A failed restore may also enter a fresh fallback build.",
+      "Matrix 0.19.1 HomeserverConfig::HomeserverUrl only parses the supplied URL. The default Native sliding-sync version does not request /versions. Automatic homeserver discovery during the initial build is not supported as the default explanation for this fixture.",
+      "Store construction opens state, event-cache, media and crypto stores. Encrypted reopen therefore includes real passphrase-KDF and SQLite work.",
+      "profile.dev.package.matrix-sdk-store-encryption opt-level=3 is already present in the original c763 and common 0c99 manifests. It is not a missing setting introduced by this integration.",
+      "The SDK retains PBKDF2 KDF_ROUNDS=200000. No cryptographic strength, startup timeout, assertion or stored identity was altered by the diagnostic patch."
+    ],
+    "plausible_but_unproven": "A five-second local-build timeout is compatible with the total duration, but neither timeout nor KDF as its cause is established.",
+    "minimal_next_observation": "Run the unchanged original case once and retain the already-committed production-reopen elapsed diagnostic. If the result remains Initialization, collect phase-local inner error/elapsed before selecting a production change.",
+    "status": "UNRESOLVED; diagnostic-only change is not a repair pass"
+  },
+  "local_compiler_terminations": {
+    "rmcp_attempt3": "codex-protocol rustc signal 9; exit101; observed runtime cases0",
+    "core_attempt1": "starlark rustc signal 9; exit101; observed runtime cases0",
+    "proven_cause": null,
+    "interpretation": "These are compiler-process terminations, with no source/type error or kernel evidence in the retained logs. Memory exhaustion, external termination and other resource causes remain distinguishable only with new host evidence."
+  },
+  "scheduling": "No new native jobs, retries or scoped just fix started after the parent hold. Existing owner queue is handled separately.",
+  "scientific_evidence_scope": "No independent task sample, net learning gain or complete P0-chain admission is created by this analysis."
+}

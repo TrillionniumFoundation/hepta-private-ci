@@ -174,21 +174,9 @@ fn cell_owner(
     root: &Path,
     inputs: &[CircuitTaskSourceInputV1],
 ) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
-    cell_owner_from_files(
-        opened(root, "cell-journal")?,
-        opened(root, "cell-witness")?,
-        inputs,
-    )
-}
-
-fn cell_owner_from_files(
-    journal_file: File,
-    witness_file: File,
-    inputs: &[CircuitTaskSourceInputV1],
-) -> anyhow::Result<CellOwnerJournalV1<FileAnchorWitnessStore>> {
     Ok(CellOwnerJournalV1::open(
-        journal_file,
-        witness_from_file(witness_file, "cell-witness")?,
+        opened(root, "cell-journal")?,
+        witness(root, "cell-witness")?,
         inputs
             .iter()
             .map(|input| CellJournalPartitionV1 {
@@ -306,19 +294,9 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         "cell-witness",
     ]
     .map(|name| fs::read(root.path().join(name)).expect("original files"));
-    let source_file = opened(root.path(), "source-journal")?;
-    let source_witness_file = opened(root.path(), "source-witness")?;
-    let cell_file = opened(root.path(), "cell-journal")?;
-    let cell_witness_file = opened(root.path(), "cell-witness")?;
-    let observers = [
-        source_file.try_clone()?,
-        source_witness_file.try_clone()?,
-        cell_file.try_clone()?,
-        cell_witness_file.try_clone()?,
-    ];
     let reopened = Source::recover(
-        source_file,
-        witness_from_file(source_witness_file, "source-witness")?,
+        opened(root.path(), "source-journal")?,
+        witness(root.path(), "source-witness")?,
         &identity,
         &fence,
         &registry()?,
@@ -341,7 +319,7 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
         inputs: reopened.clone(),
         cells: AgentdCircuitCellOwnerV1::new(
             registry()?,
-            cell_owner_from_files(cell_file, cell_witness_file, &sources)?,
+            cell_owner(root.path(), &sources)?,
             model,
             cell::Encoder,
         ),
@@ -358,9 +336,13 @@ async fn ordinary_source_publishes_original_circuit_result_and_reopens_exact_inp
     drop(driver);
     drop(reopened);
     assert_eq!(
-        observers
-            .each_ref()
-            .map(|file| { crate::test_support::read_file_bytes(file).expect("same files") }),
+        [
+            "source-journal",
+            "source-witness",
+            "cell-journal",
+            "cell-witness"
+        ]
+        .map(|name| fs::read(root.path().join(name)).expect("same files")),
         original_files
     );
     let reopened = Source::recover(
@@ -445,10 +427,8 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
     let fence = fence(&identity)?;
     let store = AutomationStore::open(&identity.layout).await?;
     let sources = vec![source("A", b"source A")];
-    let source_file = opened(root.path(), "source-journal")?;
-    let source_observer = source_file.try_clone()?;
     let mut owner = Source::create(
-        source_file,
+        opened(root.path(), "source-journal")?,
         witness(root.path(), "source-witness")?,
         &identity,
         &fence,
@@ -517,7 +497,6 @@ async fn ordinary_source_rejects_rebound_record_dispatch_source_and_torn_history
         retained
     );
     drop(owner);
-    drop(source_observer);
     let mut substituted = sources.clone();
     substituted[0].candidates[0].allowed = false;
     assert!(
@@ -742,10 +721,8 @@ async fn ordinary_source_input_and_result_ack_loss_never_repeat_committed_infere
         drop(driver);
         drop(owner);
         let unchanged = fs::read(root.path().join("source-journal"))?;
-        let source_file = opened(root.path(), "source-journal")?;
-        let source_observer = source_file.try_clone()?;
         let reopened = Source::recover(
-            source_file,
+            opened(root.path(), "source-journal")?,
             witness(root.path(), "source-witness")?,
             &identity,
             &fence,

@@ -162,7 +162,7 @@ def _checked_image(row, origin, *, allow_image_id=False):
             raise CohortContractError(f"{origin}: invalid original image_id")
         canonical_id = f"coco:val2017:{image_id}"
         if "source_id" in row and identifier != canonical_id:
-            raise CohortContractError(f"{origin}: source_id/image_id mismatch")
+            raise CohortContractError(f"{origin}: inconsistent original image_id and source_id (source_id/image_id mismatch)")
         if allow_image_id and "source_id" not in row:
             identifier = canonical_id
     if not isinstance(identifier, str) or not identifier.strip():

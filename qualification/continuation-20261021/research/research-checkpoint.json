@@ -1,0 +1,764 @@
+{
+  "schema": "hepta.research-audit-checkpoint.v1",
+  "created_at": "2026-10-21T00:57:20.244280+00:00",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "posture": {
+    "shadow_only": true,
+    "authority": "DENY_ALL",
+    "production_accepted": false,
+    "selection_enabled": false,
+    "new_model_calls": 64,
+    "training_runs": 0,
+    "new_hosted_reader_calls": 64,
+    "new_local_model_calls": 0,
+    "new_memory40x72_calls": 0
+  },
+  "current_prs": [
+    {
+      "number": 1452,
+      "head": "codex/memory-cell-evidence-20261008",
+      "head_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+      "base": "main",
+      "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "state": "open",
+      "draft": false,
+      "merged": false,
+      "mergeable": true,
+      "updated_at": "2026-10-19T02:09:17Z"
+    },
+    {
+      "number": 2688,
+      "head": "codex/memory-cell-contracts-20261017",
+      "head_sha": "55088dd78b4950407f77a43f054efed0816409cb",
+      "base": "main",
+      "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "updated_at": "2026-10-20T07:58:58Z"
+    },
+    {
+      "number": 2695,
+      "head": "codex/group-ndu-deterministic-20261017",
+      "head_sha": "74bbcc9b0bb330649cd54d9881ae3676d3968bae",
+      "base": "main",
+      "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "updated_at": "2026-10-20T05:03:34Z"
+    },
+    {
+      "number": 2734,
+      "head": "shared-encoder-blocker-closure-rerun-20261018",
+      "head_sha": "dc271d4f47028e941decce70cc8ef81fb24d2141",
+      "base": "main",
+      "base_sha": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "updated_at": "2026-10-19T12:44:49Z"
+    },
+    {
+      "number": 2714,
+      "head": "research/real-reader-intake-p4-20261017",
+      "head_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+      "base": "research/checkpoint-resource-binding-p3-20261017",
+      "base_sha": "e08323af4805ed9a8d14afabf2212923195f2156",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": true,
+      "updated_at": "2026-10-18T15:27:19Z"
+    },
+    {
+      "number": 2786,
+      "head": "fix/memory-cell-fixtures-current-head-20261018",
+      "head_sha": "3a0a5f97cc1b126c4eb88fc8cede39818e6f97ae",
+      "base": "codex/memory-cell-contracts-20261017",
+      "base_sha": "65380f6f8b7901357aa901eb3b78a6e9ab2612fe",
+      "state": "open",
+      "draft": true,
+      "merged": false,
+      "mergeable": false,
+      "updated_at": "2026-10-18T07:24:26Z"
+    }
+  ],
+  "memory40x72": {
+    "evidence_type": "Historical real model executions; artifacts reverified now using current #1452 source; no fresh model inference",
+    "generator_source_sha": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+    "generator_run": 38423223376,
+    "generator_attempt": 16,
+    "generator_conclusion": "failure; all 32 model shards succeeded, evaluation collector failed, independent replay skipped",
+    "archived_verifier_run": 38590620658,
+    "archived_verifier_source_sha": "73f282338cbed20edee6cf945fadeef9983de265",
+    "archived_verifier_conclusion": "success",
+    "current_verifier_source_sha": "81d9fcb36bddfcc6dc914f87697c642824273cc1",
+    "verified_artifact_files": 272,
+    "local_replay_exit_code": 0,
+    "local_replay_matches_archived_report": true,
+    "artifacts": [
+      {
+        "id": 11906888485,
+        "name": "memory-disjoint-archived-release.zip",
+        "bytes": 525824,
+        "sha256": "9305aa9c637601cc1efec844537ac4de57c52aaf83fbc1c6fb5a65aaa84defab"
+      },
+      {
+        "id": 11906918262,
+        "name": "memory-disjoint-archived-independent-replay.zip",
+        "bytes": 506590,
+        "sha256": "ffb27c88fa665fd5a5f09d712d39a7552010090095c10b2550adeaa8420f85a8"
+      }
+    ],
+    "model": {
+      "id": "Qwen/Qwen2.5-3B-Instruct",
+      "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+      "identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+      "file_bytes": 6183463389
+    },
+    "calibration": {
+      "attempts": 40,
+      "all_model_calls_succeeded": true,
+      "strict_success": {
+        "k1": 4,
+        "k2": 4,
+        "k3": 4,
+        "k4": 4,
+        "k6": 2
+      },
+      "original_raw_sha256": "6fcce2a017ebb2411a9d8fcd80fd929199fc003541101dfed8e183090f0f76c0"
+    },
+    "evaluation": {
+      "attempts": 72,
+      "all_model_calls_succeeded": true,
+      "strict_success": {
+        "selected_k": 5,
+        "hybrid_k4": 3,
+        "hybrid_k6": 2,
+        "hybrid_k4_reversed": 3,
+        "single_hop": 4,
+        "entity_time": 8,
+        "organized": 8,
+        "program_support": 8,
+        "empty": 0
+      },
+      "original_raw_sha256": "3c96834694ba6a97e62c341f3208f0cf2061a66b4c35e6ae197d3b923585f814"
+    },
+    "independent_source_families": 0,
+    "independent_semantic_judge": false,
+    "longitudinal_observations": 0,
+    "statistical_superiority": false,
+    "production_accepted": false,
+    "formal_citation_chain_by_arm": {
+      "selected_k": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 5,
+        "correct_with_full_program_declared_citations": 3,
+        "correct_with_public_event_chain_connected": 3,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 2
+      },
+      "hybrid_k4": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "correct_with_public_event_chain_connected": 1,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 2
+      },
+      "hybrid_k6": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 2,
+        "correct_with_full_program_declared_citations": 0,
+        "correct_with_public_event_chain_connected": 0,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 2
+      },
+      "hybrid_k4_reversed": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 3,
+        "correct_with_full_program_declared_citations": 1,
+        "correct_with_public_event_chain_connected": 1,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 2
+      },
+      "single_hop": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 4,
+        "correct_with_full_program_declared_citations": 4,
+        "correct_with_public_event_chain_connected": 4,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 0
+      },
+      "entity_time": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "correct_with_public_event_chain_connected": 4,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 4
+      },
+      "organized": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "correct_with_public_event_chain_connected": 4,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 4
+      },
+      "program_support": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 8,
+        "correct_with_full_program_declared_citations": 4,
+        "correct_with_public_event_chain_connected": 4,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 4
+      },
+      "empty": {
+        "attempted": 8,
+        "generations_succeeded": 8,
+        "generations_failed": 0,
+        "strict_task_success": 0,
+        "correct_with_full_program_declared_citations": 0,
+        "correct_with_public_event_chain_connected": 0,
+        "correct_without_citation_marker": 0,
+        "correct_missing_program_declared_support": 0
+      }
+    },
+    "missing_acceptance": [
+      "independent new source families and registered held-out evaluation",
+      "independent semantic and citation-sufficiency adjudication",
+      "full extraction/indexing/storage/maintenance/revocation/recovery cost accounting",
+      "model-learning/negative-transfer and longitudinal proof",
+      "independent deployment and production acceptance"
+    ],
+    "generator_attempt_note": "GitHub final run metadata is attempt 16; historical raw shards were generated across preserved earlier attempts, not 112 fresh inferences at attempt 16",
+    "calibration_shard_attempt_census": {
+      "2": 7,
+      "1": 4,
+      "3": 2,
+      "4": 1,
+      "11": 1,
+      "5": 1
+    },
+    "evaluation_shard_attempt_census": {
+      "13": 5,
+      "12": 2,
+      "11": 6,
+      "16": 2,
+      "15": 1
+    }
+  },
+  "reader_patch": {
+    "source_pr": 2714,
+    "parent_sha": "f191cd081ba16fed8827a18093b5a5b39e9a36cd",
+    "parent_tree": "42865df641069d9a11285038e7d75b3df9111248",
+    "base_branch_for_new_child_pr": "research/real-reader-intake-p4-20261017",
+    "original_pr_base": "research/checkpoint-resource-binding-p3-20261017",
+    "original_pr_base_sha": "e08323af4805ed9a8d14afabf2212923195f2156",
+    "changed_files": [
+      {
+        "path": "qualification/neuron-shared-encoder/neuron_shared_encoder/reader_runtime_receipt.py",
+        "sha256": "1d2b1010980a2d0d521c81a7761423cbcd32fa50c30dc3d33f62197591837019",
+        "git_blob_sha": "585c77d133f98bb29964c6ce71670f2af7676b33",
+        "bytes": 18988
+      },
+      {
+        "path": "qualification/neuron-shared-encoder/tests/test_reader_receipt_context_bindings.py",
+        "sha256": "a83ae9200ebc91dec3c9503d53cbec4ecab2cafc629970f00af86669ff1e7f7a",
+        "git_blob_sha": "a981f032581d2439ee3e8ff55291c3f2ec2ca884",
+        "bytes": 12253
+      }
+    ],
+    "patch_sha256": "01cf3e2804f6c7f9f9cb4ea80a7ceb3748062c30aa7ac8dee928f20374a9b53c",
+    "scope": [
+      "candidate_id/source_split context corroboration",
+      "checkpoint digest consistency",
+      "strict runtime_digest/runtime_receipt_digest aliases"
+    ],
+    "baseline_suite_methods": 109,
+    "final_suite_methods": 125,
+    "new_regression_methods": 16,
+    "final_failures": 0,
+    "final_errors": 0,
+    "final_skips": 0,
+    "original_context_negative_failures": 36,
+    "pre_alias_fix_negative_failures": 14,
+    "independent_reader_methods": 40,
+    "independent_cases_passed": 158,
+    "independent_cases_failed": 0,
+    "ruff_version": "0.15.13",
+    "ruff_check": "PASS E,F,I",
+    "ruff_format_check": "PASS 2 files already formatted",
+    "limitations": "Missing legacy context still comes from caller; matching declarations do not authenticate scientific provenance. This patch grants no authority.",
+    "published_pr": 2969,
+    "published_source_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+    "published_tree_sha": "9f208412f8b8457df764b3b7026869f4e4718103"
+  },
+  "native_qualification": {
+    "schema": "hepta.native-scoped-qualification.v1",
+    "observed_at": "2026-10-21T01:31:57.090051+00:00",
+    "source_base_sha": "6b074e52621d77338112f02119beb0cb1a6f869f",
+    "source_base_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+    "source_description": "Exact prospective merge of current #2944 and #2968 plus the existing-owner #2743 fixture and reviewed TLS lock updates; uncommitted local candidate at test time",
+    "working_diff_sha256": "99ba4b1d81447b477e44bf414f8da398739746f74b591c3e30a8b31385a232a1",
+    "modified_files": {
+      "MODULE.bazel.lock": {
+        "bytes": 1751659,
+        "sha256": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "git_blob": "2d523b71987f905a5d17137487a77c11e7c5a236"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 417851,
+        "sha256": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+        "git_blob": "2b65c4c5596e7e5d920c8c4c585df7b59241bed3"
+      },
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": {
+        "bytes": 40733,
+        "sha256": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43",
+        "git_blob": "dc6ae36263e1aab8c5c83e13649892ae9d3112c2"
+      }
+    },
+    "fixture_owner": {
+      "pr": 2743,
+      "head": "4290ec6480944af84646e8846dfe5e3dc5e73f81",
+      "branch": "maintenance/windows-memory-v15-fixture-20261017",
+      "exact_existing_blob_reused": true,
+      "production_migrations_unchanged": true,
+      "preservation_and_revocation_assertions_unchanged": true
+    },
+    "native_runtime": {
+      "platform": "Linux x86_64",
+      "rustc": "1.95.0 (59807616e 2026-04-14)",
+      "cargo": "1.95.0",
+      "nextest": "0.9.103",
+      "cache_reuse": "build acceleration only; source, locks, commands and actual executions recorded"
+    },
+    "validation": [
+      {
+        "receipt": "final-combined-memory-lib-result.json",
+        "receipt_sha256": "ba91bbcef70f85fa7ab44e0ba46f3d8f38e4b0c6c52475646f51bb507ea9da5c",
+        "log": "final-combined-memory-lib.log",
+        "log_sha256": "610ba25d61c92d237c64bb11f39d7f29e0905a30db2a4eeda6065ffb0f99d929",
+        "command": [
+          "just",
+          "test",
+          "-p",
+          "codex-hepta-memory",
+          "--lib",
+          "--locked"
+        ],
+        "counts": {
+          "run": 272,
+          "passed": 272,
+          "failed": 0,
+          "skipped": 7
+        },
+        "exit_code": 0,
+        "started_at": "2026-10-21T01:26:05.118509+00:00",
+        "finished_at": "2026-10-21T01:27:23.039505+00:00",
+        "duration_seconds": 77.88005672300642
+      },
+      {
+        "receipt": "final-combined-cargo-bin-test-result.json",
+        "receipt_sha256": "b2dce29cc4c8f67e2efcb0abaa3d23f57f6a4cb16eb3836d62b8e759a7ef6554",
+        "log": "final-combined-cargo-bin-test.log",
+        "log_sha256": "c6acb4192fedd6c0e0c67fc74f103916eff564f731b6a4f7d96c9bbe3986ada6",
+        "command": [
+          "just",
+          "test",
+          "-p",
+          "codex-utils-cargo-bin",
+          "--locked"
+        ],
+        "counts": {
+          "run": 2,
+          "passed": 2,
+          "failed": 0,
+          "skipped": 0
+        },
+        "exit_code": 0,
+        "started_at": "2026-10-21T01:27:49.438589+00:00",
+        "finished_at": "2026-10-21T01:27:51.025961+00:00",
+        "duration_seconds": 1.5412236440024571
+      },
+      {
+        "receipt": "final-combined-memory-clippy-result.json",
+        "receipt_sha256": "f2816bdbfa78eb5d63241e9f9db4dd8d257d1a77631caa3d1fa24da1ec1360b8",
+        "log": "final-combined-memory-clippy.log",
+        "log_sha256": "cf44e6af259a047dbd52892970804038021e7b7fb3b6bc8c3101844a1a883a2d",
+        "command": [
+          "just",
+          "clippy",
+          "-p",
+          "codex-hepta-memory",
+          "--locked",
+          "--",
+          "-D",
+          "clippy::correctness",
+          "-D",
+          "clippy::await_holding_lock",
+          "-D",
+          "clippy::await_holding_invalid_type",
+          "-D",
+          "clippy::expect_used",
+          "-D",
+          "clippy::unwrap_used"
+        ],
+        "counts": {},
+        "exit_code": 0,
+        "started_at": "2026-10-21T01:28:17.701822+00:00",
+        "finished_at": "2026-10-21T01:29:16.158267+00:00",
+        "duration_seconds": 58.41383274299733
+      },
+      {
+        "receipt": "final-combined-cargo-bin-clippy-result.json",
+        "receipt_sha256": "ab1aec9efb88fd83d80212338ea39f42b59a63638881663635a011216cd53a6d",
+        "log": "final-combined-cargo-bin-clippy.log",
+        "log_sha256": "3de6cbed82786bf034780f4a298179d44077aa37713218e2b1ecedc63fdec15f",
+        "command": [
+          "just",
+          "clippy",
+          "-p",
+          "codex-utils-cargo-bin",
+          "--locked",
+          "--",
+          "-D",
+          "clippy::correctness",
+          "-D",
+          "clippy::await_holding_lock",
+          "-D",
+          "clippy::await_holding_invalid_type",
+          "-D",
+          "clippy::expect_used",
+          "-D",
+          "clippy::unwrap_used"
+        ],
+        "counts": {},
+        "exit_code": 0,
+        "started_at": "2026-10-21T01:29:37.914005+00:00",
+        "finished_at": "2026-10-21T01:29:40.630181+00:00",
+        "duration_seconds": 2.666264423998655
+      }
+    ],
+    "existing_ignored_tests_not_qualified": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
+        "line": 117,
+        "test": "qualification_knowledge_graph_capacity_receipt",
+        "existing_reason": "#[ignore = \"qualification: knowledge.graph PERF-LIBRARY capacity receipt\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+        "line": 2472,
+        "test": "qualification_durable_writer_crash_reopen_probe",
+        "existing_reason": "#[ignore = \"qualification: child-process crash/reopen probe\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+        "line": 991,
+        "test": "sqlite_1000_operation_seeded_reopen_replay_stress",
+        "existing_reason": "#[ignore = \"qualification stress: 1000 SQLite operations with deterministic reopen/replay\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/local_compact_executor_tests.rs",
+        "line": 1486,
+        "test": "host_restart_reopen_replay_process_soak",
+        "existing_reason": "#[ignore = \"qualification stress: 1000 real child-process kill/reopen/replay operations\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
+        "line": 446,
+        "test": "target_host_owner_retrieval_reports_latency_percentiles",
+        "existing_reason": "#[ignore = \"target-host qualification probe; run explicitly with --ignored --nocapture\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "line": 355,
+        "test": "kg_projection_crash_child",
+        "existing_reason": "#[ignore = \"qualification: child-process KG transaction crash probe\"]"
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "line": 436,
+        "test": "qualification_kg_projection_crash_windows_restore_exact_predecessor",
+        "existing_reason": "#[ignore = \"qualification: child-process KG transaction crash/reopen matrix\"]"
+      }
+    ],
+    "fmt": {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/337c309bc660/hepta-native-qualification/codex-rs",
+      "started_at": "2026-10-21T01:30:29.178691+00:00",
+      "finished_at": "2026-10-21T01:30:29.361992+00:00",
+      "duration_seconds": 0.18330421000428032,
+      "exit_code": 0,
+      "diff_check_exit_code": 0,
+      "file_sha256_before": {
+        "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+      },
+      "file_sha256_after": {
+        "MODULE.bazel.lock": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "codex-rs/Cargo.lock": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43"
+      },
+      "tested_files_unchanged_by_fmt": true,
+      "no_tests_rerun_after_fmt": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "baseline": {
+      "f740_source_sha": "f740aaef183e0c1724871189fe1d72fc5204a49d",
+      "f740_memory": {
+        "passed": 271,
+        "failed": 1,
+        "skipped": 7,
+        "exit_code": 100
+      },
+      "f740_strict_clippy_exit_code": 0,
+      "0cb_exact_unmodified_focus": {
+        "passed": 0,
+        "failed": 1,
+        "excluded_by_filter": 278,
+        "exit_code": 100
+      },
+      "only_failure": "migration ledger asserted 1..14 while the actual migration chain is 1..15",
+      "initial_missing_sysroot_attempt_retained": true,
+      "interrupted_compile_attempt_has_no_terminal_result": true
+    },
+    "posture": {
+      "authority": "DENY_ALL",
+      "production_activation": false,
+      "fresh_model_calls": 0
+    },
+    "limits": [
+      "Scoped Linux library and cargo-bin tests only; not full workspace or cross-platform qualification",
+      "Seven existing ignored Memory qualification/stress/target-host cases were not run",
+      "Strict Clippy uses repository requested deny groups, not blanket -D warnings",
+      "No performance, model quality, scientific acceptance or production authority is inferred"
+    ]
+  },
+  "updated_at": "2026-10-21T01:36:03.670843+00:00",
+  "reader_hosted_execution": {
+    "schema": "hepta.reader-artifact-independent-check.v1",
+    "workflow_run": 39524743076,
+    "job": 118976636455,
+    "artifact_id": 12312374935,
+    "source_sha": "ca2768978429a2c9a98641fa2d58a8f587b88874",
+    "artifact_sha256": "beb82b997808c7e2d158fa51d711fb04259069480c891f16a67f8627bce5210d",
+    "verified_new_hosted_predict_calls": 64,
+    "unique_registered_cases": 16,
+    "rows_per_arm": {
+      "distractor": 16,
+      "full": 16,
+      "none": 16,
+      "withheld": 16
+    },
+    "source_files_verified": {
+      "docs/learning/NDU_FBSDE_SPEC.md": "d7ecc62df03eb1cf9456787b5cc7d916c414b258",
+      "docs/learning/NEURAL_BIOMIMICRY_SPEC.md": "edd13a6bfe240b93fb2a7836c7f98de68a34660d",
+      "docs/modules/automation.taskflow/TECHNICAL.md": "a18df0b8b1f375191e0918da82a3a979f7ae89dc",
+      "docs/modules/inference.control/TECHNICAL.md": "fbaed3bc0efa82d3f7a8038c4abeb1a10426a412",
+      "codex-rs/hepta-ndu/src/recursive.rs": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+      "docs/readiness/NDU_SYSTEM_EXECUTION.md": "9e21bd587e229de3a0b51d11c3d6e8de81505c6b"
+    },
+    "manifest_sha256": "eb869c45c77db4e85bf9e6013aa62925c3981d804c1709d0b2bb4a6e9a1edc89",
+    "source_dataset_base": "f8c9419df6ddeb36ff8b522a50219981fb8d9345",
+    "model_repo": "convaiinnovations/laya",
+    "model_revision": "c5d78730f3493e4fe16d61507ef4b78eef7318cf",
+    "reported_model_snapshot_sha256": "94fe55dd163eedcb9b0c3e167e4afe87ab13cc8daf39b299f880ada2860e5d5a",
+    "recomputed_metrics": {
+      "none": {
+        "top1_gold_fraction": 0.4375,
+        "abstention_fraction": 0.125,
+        "evidence_condition_accuracy": 0.125,
+        "multiclass_brier_evidence_target": 0.8939312625,
+        "mean_reported_probability_expected_answer": 0.1924625,
+        "unsupported_assertion_fraction": 0.875,
+        "reported_confidence_correctness_mse_diagnostic": 0.38078849375,
+        "p50_wall_ms": 911.97155,
+        "p95_wall_ms": 978.66858,
+        "mean_input_characters": 817,
+        "mean_reported_input_tokens": 167.6875
+      },
+      "distractor": {
+        "top1_gold_fraction": 0.3125,
+        "abstention_fraction": 0.375,
+        "evidence_condition_accuracy": 0.375,
+        "multiclass_brier_evidence_target": 0.7582478375,
+        "mean_reported_probability_expected_answer": 0.23893124999999998,
+        "unsupported_assertion_fraction": 0.625,
+        "reported_confidence_correctness_mse_diagnostic": 0.261429138125,
+        "p50_wall_ms": 1008.99103,
+        "p95_wall_ms": 1179.35682,
+        "mean_input_characters": 904.4375,
+        "mean_reported_input_tokens": 191.4375
+      },
+      "withheld": {
+        "top1_gold_fraction": 0.5625,
+        "abstention_fraction": 0.125,
+        "evidence_condition_accuracy": 0.125,
+        "multiclass_brier_evidence_target": 0.8374884375,
+        "mean_reported_probability_expected_answer": 0.21210625,
+        "unsupported_assertion_fraction": 0.875,
+        "reported_confidence_correctness_mse_diagnostic": 0.477627114375,
+        "p50_wall_ms": 1028.72923,
+        "p95_wall_ms": 1184.51605,
+        "mean_input_characters": 947.3125,
+        "mean_reported_input_tokens": 197.6875
+      },
+      "full": {
+        "top1_gold_fraction": 1,
+        "abstention_fraction": 0,
+        "evidence_condition_accuracy": 1,
+        "multiclass_brier_evidence_target": 0.30251311875,
+        "mean_reported_probability_expected_answer": 0.53575625,
+        "unsupported_assertion_fraction": 0,
+        "reported_confidence_correctness_mse_diagnostic": 0.633637719375,
+        "p50_wall_ms": 1138.199795,
+        "p95_wall_ms": 1385.13967,
+        "mean_input_characters": 1052.375,
+        "mean_reported_input_tokens": 219.5625
+      }
+    },
+    "runtime": {
+      "laya_version": "0.3.20",
+      "match_count": 1,
+      "patch_id": "torch-cutedsl-cse-two-args-v1",
+      "patch_path": "_inductor/codegen/cutedsl/cutedsl_kernel.py",
+      "patched_sha256": "7c8094f25f41c42df4438a394c56de8e380974690454d4518624234933de304f",
+      "production_selection_authority": false,
+      "python_version": "3.12.3",
+      "runtime_kind": "real_reader_cpu",
+      "schema": "hepta.sngr.runtime-compatibility-receipt.v1",
+      "source_sha256": "bf60bb964eb96f78131f5344a48eff99adf6be03369226234530bb8b8a0b297b",
+      "torch_version": "2.11.0+cpu",
+      "transformers_version": "4.57.6"
+    },
+    "posture": {
+      "production_selection_authority": false,
+      "statistical_qualification": false,
+      "independent_heldout_calibration": false
+    },
+    "limitations": [
+      "Registered repository diagnostic cases are not newly independent source families or future-window samples",
+      "One answer presentation; position-counterbalanced diagnostics were not run",
+      "Hosted runtime emitted an invalid-temperature/clamping warning; confidence is not certified calibrated",
+      "Retained rows do not include the complete class probability vector; aggregate Brier values are recomputed from retained per-row scores, not from original vectors",
+      "No weights or individual checkpoint-file inventory retained here; the observed fingerprint cannot be independently recomputed from these non-weight artifacts",
+      "No FLOPs, energy, full peak memory, complete checkpoint/resource/calibration join, or production acceptance is supplied",
+      "These are 64 Laya Reader calls, separate from historical Qwen Memory 40+72"
+    ],
+    "local_model_calls_by_this_verifier": 0
+  },
+  "local_model_preflight_initial": {
+    "cpu_count": 9,
+    "free_disk_bytes": 3752443904,
+    "torch_installed": false,
+    "transformers_installed": false,
+    "accelerate_installed": false,
+    "safetensors_installed": false,
+    "nvidia_smi": null,
+    "gpu_devices": [],
+    "memory": {
+      "MemTotal": "10206484 kB",
+      "MemAvailable": "5607636 kB"
+    },
+    "huggingface_cache_exists": false
+  },
+  "local_model_preflight_final": {
+    "observed_at": "2026-10-21T01:31:57.090051+00:00",
+    "snapshot_only_not_permanent_capacity_claim": true,
+    "cpu_count": 9,
+    "free_disk_bytes": 1806667776,
+    "memory": {
+      "MemTotal": "10206484 kB",
+      "MemAvailable": "5865048 kB"
+    },
+    "cgroup_memory": {
+      "memory.max": "8589934592",
+      "memory.current": "8499822592"
+    },
+    "python_version": "3.12.14",
+    "python_packages_available": {
+      "torch": false,
+      "transformers": false,
+      "accelerate": false,
+      "safetensors": false
+    },
+    "nvidia_smi": null,
+    "gpu_device_count": 0,
+    "default_huggingface_hub_cache_exists": false,
+    "native_target_allocated_bytes": 2683024452,
+    "native_cache_allocated_bytes": 920696236,
+    "fixed_memory_baseline": {
+      "model": "Qwen/Qwen2.5-3B-Instruct",
+      "revision": "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+      "recorded_model_files_bytes": 6183463389,
+      "fresh_local_calls": 0
+    },
+    "decision": "No local rerun of fixed Memory 40+72: remaining disk is below the fixed checkpoint alone and the required Python runtime is not installed; runtime/peak-memory and independent-data acceptance remain separate requirements. Reassess if resources change. Hosted Laya Reader 64 was verified separately; no redundant local Reader run."
+  },
+  "published_p0_source_mapping": {
+    "recorded_at": "2026-10-21T01:36:03.670843+00:00",
+    "repository": "TrillionniumFoundation/hepta-private-ci",
+    "pull_request": 2968,
+    "published_commit": "b11459f46519e814ab9036c34a0cd7d3c3028e2b",
+    "published_tree": "0e52330db78ca9fbc9f42dd3554f08d66b9d4268",
+    "published_parents": [
+      "0cb777545966333a96be265a69d03c9982231bc7",
+      "98b40cb04a23a36a07212ef7d826024f37536057"
+    ],
+    "publication_reported_by": "/root; non-force remote update",
+    "mapping_basis": "Root reports the published tree equals the tested combined source plus the same three candidate files and THIRD_WAVE.md. This append records that reported publication mapping without a new network read.",
+    "evidence_class": "source-equivalent scoped local evidence",
+    "tests_executed_at_published_commit": false,
+    "actual_tested_base_sha": "6b074e52621d77338112f02119beb0cb1a6f869f",
+    "actual_tested_base_tree": "cc6170562020d8271196cbdf9d0e71fde7955ded",
+    "actual_tested_working_diff_sha256": "99ba4b1d81447b477e44bf414f8da398739746f74b591c3e30a8b31385a232a1",
+    "final_scoped_source_file_identity": {
+      "MODULE.bazel.lock": {
+        "bytes": 1751659,
+        "sha256": "394f5d9cdcc1d9c96cebc357ad4635a01f0fa80f2e76a4d6665989343352f3ea",
+        "git_blob": "2d523b71987f905a5d17137487a77c11e7c5a236"
+      },
+      "codex-rs/Cargo.lock": {
+        "bytes": 417851,
+        "sha256": "aa3efcad4d26d4ba8d5b8adbea793955acef36551f00da43ef7b03bbab3bfb5a",
+        "git_blob": "2b65c4c5596e7e5d920c8c4c585df7b59241bed3"
+      },
+      "codex-rs/hepta-memory/src/cognitive_store_tests.rs": {
+        "bytes": 40733,
+        "sha256": "ae83a5d269c556f39257f20595b1592070ed7986b628a9dc8e2ee0b1123b7b43",
+        "git_blob": "dc6ae36263e1aab8c5c83e13649892ae9d3112c2"
+      }
+    },
+    "additional_delivery_document_reported_by_root": "THIRD_WAVE.md",
+    "scope": "Existing local Memory library and cargo-bin test/Clippy evidence only; no exact-new-commit execution receipt, new CI result, new test run, or expanded qualification is claimed",
+    "authority": "DENY_ALL",
+    "production_activation": false
+  }
+}

@@ -42,6 +42,8 @@ mod hcsn_supervisor;
 mod hcsn_taskflow;
 mod lifecycle;
 mod model;
+#[cfg(target_os = "linux")]
+mod native_process_wait;
 mod neural_circuit;
 mod operation_destination;
 mod schedule_v2;
@@ -165,12 +167,21 @@ pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitEvidenceV1;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitObservationV1;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessInputWaitObserver;
+#[cfg(target_os = "linux")]
+pub use native_process_wait::NativeProcessWaitError;
 pub use neural_circuit::CircuitCompilationReceiptV1;
 pub use neural_circuit::CircuitEdgeV1;
 pub use neural_circuit::CircuitNodeRoleV1;
 pub use neural_circuit::CircuitNodeV1;
 pub use neural_circuit::CircuitProgramV1;
 pub use neural_circuit::NEURAL_CIRCUIT_SCHEMA_VERSION;
+pub use neural_circuit::NeuralCircuitCandidateInputV1;
 pub use neural_circuit::NeuralCircuitCandidateV1;
 pub use neural_circuit::validate_circuit_successor_v1;
 pub use operation_destination::AUTOMATION_OPERATION_DESTINATION;

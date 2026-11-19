@@ -1,0 +1,129 @@
+{
+  "schema": "hepta-original-training-snapshot-component-v1",
+  "source_commit": "8ad9f24e238b0680f975fea8c9d26db146066a8c",
+  "tree": "eaa8b27f16a5f9fed87e9d6882cd23dfaecfd125",
+  "base": "30a697c50e10abd56e61b6b84f28ac9ae9f32f5d",
+  "worktree": "/tmp/hepta-p0-training-snapshot-f7c0",
+  "branch": "codex/cell-p0-training-snapshot-f7c0",
+  "clean_after_commit": true,
+  "implementation": {
+    "production_module_lines": 74,
+    "changed_files": 7,
+    "public_api": "read_cell_q24_training_snapshot_v1(&OriginalCellQ24TrainingStageV1<impl AnchorWitnessStore + Send + 'static, impl AnchorWitnessStore + Send + 'static>, &LearningIterationSnapshotV1, &LearningIterationReceiptV1) -> Result<OriginalCellQ24TrainingCompletionV1, OriginalCellQ24TrainingReadbackErrorV1>",
+    "new_error_type": "OriginalCellQ24TrainingReadbackErrorV1 { Binding, Iteration, Stage }",
+    "effect": "Read the existing native outcome, exact Generator receipt and original attestation. No fitting, first attestation, signing, time renewal or authority assembly.",
+    "validation_order": [
+      "Validate the full supplied snapshot including suffix and head with the existing Coordinator.",
+      "Require expected receipt stage Training (includes TrainingNoUpdateV2).",
+      "Replay original receipts using their observed times to derive exact Dataset prefix. If supplied history retains Training, require full retained receipt equality with expected.",
+      "Validate expected as a historical legal extension of the exact Dataset cut.",
+      "Delegate once to the existing typed stage.readback, retaining its one lane and original CURRENT, enrollment and signature validity checks.",
+      "Require full actual original receipt equality with expected and return existing completion/attestation."
+    ]
+  },
+  "caller_delta": {
+    "new_boundary": "learning_original_training_snapshot_readback",
+    "new_public_api_product_callers": [],
+    "only_added_stage_readback_product_caller": "codex-rs/hepta-agentd/src/cell_q24_training_snapshot_readback.rs",
+    "total_boundary_inventory": 224,
+    "total_protected_files": 219,
+    "root_full_stage_assembly_product_callers": [],
+    "production_host_constructor_or_execute_added": false,
+    "caller_verifier_changed": false,
+    "full_repository_caller_scan_performed_for_this_component": false
+  },
+  "validation": {
+    "format": {
+      "record": "FORMAT_GUARD_SIGNATURE.json",
+      "result": "PASS",
+      "source_effect": "fmt completed before immutable commit; resulting tree equals all successful static gates"
+    },
+    "source_guard_unit_tests": {
+      "record": "source-closure.json",
+      "result": "PASS",
+      "test_cases": 9
+    },
+    "protected_inventory": {
+      "record": "protected-inventory-2.json",
+      "result": "PASS",
+      "boundaries": 224,
+      "inventory": 224,
+      "protected_files": 219
+    },
+    "diff_check": {
+      "record": "diff-check.json",
+      "result": "PASS"
+    },
+    "prior_failures_preserved": [
+      {
+        "record": "source-closure-preflight-failure.json",
+        "phase": "wrapper preflight, no unittest launched",
+        "cause": "Two metadata wrappers concurrently called git write-tree; one saw existing index.lock. No lock removed; subsequent gates sequential."
+      },
+      {
+        "record": "protected-inventory.json",
+        "phase": "static protected-source gate",
+        "result": "FAILED",
+        "cause": "New generic function signature did not match existing exact fn name( source marker grammar. Only the new function signature changed to argument-position impl Trait; verifier unchanged.",
+        "source_tree": "06f4d3a5170a60676cd5deb6701889ad236b3768"
+      }
+    ],
+    "native_build_or_test_executed": false,
+    "local_just_fix_executed": false,
+    "native_status": "PENDING_CI_EXPLICIT_RESOURCE_CONSTRAINT"
+  },
+  "native_cases": {
+    "new_case_count": 5,
+    "new_case_names": [
+      "original_training_snapshot_reads_both_outcomes_and_lost_ack_exactly",
+      "original_training_snapshot_refuses_rebuilt_replacement_and_invalid_cuts",
+      "original_training_snapshot_missing_and_pending_never_start_work",
+      "original_training_snapshot_keeps_original_deadline_and_signature_expiry",
+      "original_training_snapshot_rechecks_both_original_current_witnesses"
+    ],
+    "existing_stage_cases": [
+      "original_training_stage_runs_both_outcomes_and_reopens_exactly",
+      "original_training_stage_rejects_wrong_pair_and_pending_without_work",
+      "original_training_stage_distinguishes_missing_receipt_from_missing_native",
+      "original_training_stage_expired_missing_never_claims_or_attests",
+      "original_training_stage_request_expiry_preserves_only_original_completed_receipts",
+      "original_training_stage_keeps_lane_until_cancelled_waiter_worker_exits"
+    ],
+    "existing_stage_case_count": 6,
+    "existing_stage_source_unchanged": true,
+    "runtime_compatibility_verified": false,
+    "suggested_ci_command": [
+      "just",
+      "test",
+      "-p",
+      "codex-hepta-agentd",
+      "--lib",
+      "-E",
+      "test(original_training_snapshot_) | test(original_training_stage_)"
+    ],
+    "suggested_ci_cwd": "codex-rs",
+    "command_executed_locally": false,
+    "fixture_limits": "Native fit and receipt signing in test fixtures use existing explicit fixture credentials/Dataset; subsequent history is structural fixture data only, not independent B/C or production adoption."
+  },
+  "retained_limits": [
+    "Dataset-only is legitimate lost-ACK structure, but this adapter does not authenticate Root checkpoint CURRENT or independently prove no checkpoint rollback. The caller must supply original checkpoint custody.",
+    "Only Training evidence is authenticated. Structural Evaluation/Proposal/Selection/NextUse suffixes are not authenticated here.",
+    "No product host caller for this new function, no LearningIterationStageOwnerPortsV1 implementation, no Root startup assembly, no file/key/trust provisioning.",
+    "No plain Model-to-Parameter proposal mapping, independent B, C, whole-process cold recovery, sustained benefit or RSI claim."
+  ],
+  "acceptance": {
+    "ordinary_product_adopt_runs": 0,
+    "ordinary_product_no_update_runs": 0,
+    "runtime_authority": false,
+    "production_caller": false,
+    "production_writer": false,
+    "external_effect": false,
+    "self_issued_acceptance": false,
+    "promotion": false,
+    "release": false
+  },
+  "unchanged_source_proof": "SOURCE_COMPATIBILITY.json",
+  "source_files": "SOURCE_BLOBS.json",
+  "patch": "component.patch",
+  "original_30a_audit_preserved": "/workspace/scratch/f7c0ded86bcc/p0-wiring-gap-30a-20261111-f7c0/HANDOFF.json"
+}

@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 import sys
 
-from cohort_contract import file_sha, retain, validate_seal
+from cohort_contract import bind_implementation, file_sha, retain, validate_seal
 from workflow_records import (
     FINAL_TEMPLATE,
     SCOPE,
@@ -244,9 +244,19 @@ def read(request, Cell):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--implementation", required=True)
+    parser.add_argument("--study", required=True)
+    parser.add_argument("--seal-sha256", required=True)
     args = parser.parse_args()
     request = json.loads(sys.stdin.read())
-    Cell = imports(args.implementation)
+    binding = bind_implementation(args.study, args.implementation, args.seal_sha256)
+    if request.get("source_binding") != binding:
+        raise ValueError(
+            "worker request differs from independently pinned implementation"
+        )
+    if request["phase"] in ("parent", "arm"):
+        if str(Path(request["study"]).resolve(strict=True)) != binding["study"]:
+            raise ValueError("request study differs from independently pinned study")
+    Cell = imports(binding["implementation"])
     operations = {"parent": parent, "arm": train_arm, "read": read}
     result = operations[request["phase"]](request, Cell)
     io = {
@@ -255,5 +265,6 @@ if __name__ == "__main__":
             line.split(": ") for line in Path("/proc/self/io").read_text().splitlines()
         )
     }
+    result["source_binding"] = binding
     result["worker_process_io_before_stdout"] = io
     print(json.dumps(result, sort_keys=True))

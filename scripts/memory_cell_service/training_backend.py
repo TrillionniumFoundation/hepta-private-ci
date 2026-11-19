@@ -124,8 +124,7 @@ def verify_candidate(candidate, snapshot, artifacts):
         != [f["source_digest"] for f in snapshot["facts"]]
     ):
         raise ValueError("candidate was not clean-replayed from the exact live facts")
-    MetadataCatalog(catalog_path, candidate["catalog_sha256"])
-    catalog = strict_json(bounded_read(catalog_path, 128 * 1024))
+    catalog = MetadataCatalog(catalog_path, candidate["catalog_sha256"]).document
     expected = {
         "schema": SCHEMA,
         "scope": snapshot["scope"],

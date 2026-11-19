@@ -1,0 +1,90 @@
+name: Hepta P3 original E14 four-archive CPU and human score replay (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - "qualification/shared-stem-system2-architecture/archived_e14_independent.py"
+      - "qualification/shared-stem-system2-architecture/test_archived_e14_independent.py"
+      - "qualification/shared-stem-system2-architecture/ACTUAL_E14_ORIGINAL_FOUR_ARCHIVES_20261015.json"
+      - "qualification/shared-stem-system2-architecture/P3_E14_FOUR_ARCHIVE_REPLAY.md"
+      - ".github/workflows/hepta-p3-original-e14-archive-replay.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  exact-original-replay:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [source_head, synthetic_merge]
+    env:
+      PYTHONPATH: qualification/shared-stem-system2-architecture
+      PYTHONDONTWRITEBYTECODE: "1"
+      ROOT: qualification/shared-stem-system2-architecture
+      HEPTA_E14_BLIND_SOURCE: /tmp/e14-original-blind-source.zip
+      HEPTA_E14_BLIND_MERGE: /tmp/e14-original-blind-merge.zip
+      HEPTA_E14_SCORE_SOURCE: /tmp/e14-original-score-source.zip
+      HEPTA_E14_SCORE_MERGE: /tmp/e14-original-score-merge.zip
+    steps:
+      - name: Checkout original source HEAD or prospective merge (no write token)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ matrix.profile == 'source_head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          persist-credentials: false
+      - name: Verify scoped source and original E14 outer ZIP digests
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          if [[ '${{ matrix.profile }}' == 'source_head' && '${{ github.event_name }}' == 'pull_request' ]]; then
+            test "$(git rev-parse HEAD)" = '${{ github.event.pull_request.head.sha }}'
+          fi
+          python3 -m py_compile "$ROOT/archived_e14_independent.py" "$ROOT/test_archived_e14_independent.py"
+          fetch_original() {
+            local id="$1" checksum="$2" dest="$3"
+            curl --fail --location --retry 2 --max-time 120 \
+              --proto '=https' --proto-redir '=https' \
+              -H "Authorization: Bearer $GH_TOKEN" -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$id/zip" \
+              -o "$dest"
+            printf '%s  %s\n' "$checksum" "$dest" | sha256sum -c -
+          }
+          fetch_original 11947743374 e8cc5bfad419de8976c467df676bc20f91f6a4d37af376b55bfdb58a8ab43a81 "$HEPTA_E14_BLIND_SOURCE"
+          fetch_original 11947373682 e143cdc891bfefb93df6b25fe12d5bdb73084531b419a0a4e9b8dde2531f5146 "$HEPTA_E14_BLIND_MERGE"
+          fetch_original 11946818427 d7ee5bc9d8f4a3f2323dc83dc6e94fee31db2966a610f3af4ede148562506908 "$HEPTA_E14_SCORE_SOURCE"
+          fetch_original 11947358809 efd3525b6c412b1681333b1f1185a6879973ae93340b12f786139eb45a3ff0f4 "$HEPTA_E14_SCORE_MERGE"
+          echo "ORIGINAL_ARTIFACTS_SHA_PINNED / NO NEW PRETRAINED FORWARDS"
+      - name: Run 10 original four-archive adversarial and cost tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s "$ROOT" -p 'test_archived_e14_independent.py' -v
+      - name: Repeat all ten tests under optimized Python
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -O -m unittest discover -s "$ROOT" -p 'test_archived_e14_independent.py' -v
+      - name: Independently replay original human outcomes and assert original aggregate SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$ROOT/archived_e14_independent.py" \
+            --blind-source "$HEPTA_E14_BLIND_SOURCE" --blind-merge "$HEPTA_E14_BLIND_MERGE" \
+            --score-source "$HEPTA_E14_SCORE_SOURCE" --score-merge "$HEPTA_E14_SCORE_MERGE" \
+            --output "$RUNNER_TEMP/actual-e14-four-archive-replay.json"
+          test "$(sha256sum "$RUNNER_TEMP/actual-e14-four-archive-replay.json" | cut -d' ' -f1)" = f221a37f5f0fa0fdfb07fc8801553601482a2ced662b7cf74ca4c0ddfefabf6f
+          cmp "$RUNNER_TEMP/actual-e14-four-archive-replay.json" "$ROOT/ACTUAL_E14_ORIGINAL_FOUR_ARCHIVES_20261015.json"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads(Path('qualification/shared-stem-system2-architecture/ACTUAL_E14_ORIGINAL_FOUR_ARCHIVES_20261015.json').read_text())
+          for key in ('full_serving_latency_or_energy_matched','general_FBSDE_inferiority_proven','model_or_NDU_promotion_permitted','prospective_original_human_tasks','statistical_superiority_certified'):
+              assert result[key] is False, key
+          assert result['authority_posture']=='DENY_ALL'
+          print('E14_ORIGINAL_PAIRED_NEGATIVE_ONLY / DENY_ALL')
+          PY

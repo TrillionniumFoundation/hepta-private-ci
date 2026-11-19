@@ -99,6 +99,37 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.run_research == true && inputs.operator_accepted_terms == true && inputs.run_real_checkpoint_bakeoff == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
       - name: Verify exact source identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -115,12 +146,26 @@ jobs:
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_forward.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_teacher_media_seal.py' -v
           python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_retrieval_probe.py' -v
+          python3 -m unittest discover -s qa/stem-bakeoff -p 'test_memory_nine_arm_gate.py' -v
           python3 -m py_compile qa/stem-bakeoff/stem_bakeoff.py qa/stem-bakeoff/evidence_gate.py qa/stem-bakeoff/teacher_snapshot.py qa/stem-bakeoff/teacher_forward.py qa/stem-bakeoff/teacher_media_seal.py qa/stem-bakeoff/test_teacher_media_seal.py qa/stem-bakeoff/feature_shard.py qa/stem-bakeoff/offline_shard_distill.py qa/stem-bakeoff/test_offline_shard_distill.py
+      - name: Exercise portable archive verification in both Python modes
+        working-directory: qa/stem-bakeoff
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest -v test_evidence_archive_validation
       - name: Confirm source tree unchanged
         if: always()
         run: |
           git diff --check
           git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14
 
   native-latent-cpu-smoke:
     if: >-
@@ -171,6 +216,12 @@ jobs:
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" qa/stem-bakeoff/scale_probe.py --repeats 2 > "$RUNNER_TEMP/stem-scale-probe.json"
           "$RUNNER_TEMP/hepta-stem-venv/bin/python" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert [x["cells"] for x in r["measurements"]] == [1,8,64,256,1024,4096]; assert all(x["module_forward_hook_calls"] == 2 and x["owner_forward_calls"] == 2 for x in r["measurements"]); assert r["may_satisfy_real_model_bakeoff_gate"] is False; assert r["production_activation_allowed"] is False' "$RUNNER_TEMP/stem-scale-probe.json"
           cat "$RUNNER_TEMP/stem-scale-probe.json"
+      - name: Exercise bounded artifact input contracts
+        working-directory: qa/stem-bakeoff
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -B -m unittest -v test_bounded_npy test_artifact_input_boundaries
+          "$RUNNER_TEMP/hepta-stem-venv/bin/python" -O -B -m unittest -v test_bounded_npy test_artifact_input_boundaries
       - name: Confirm source tree unchanged
         if: always()
         run: |
@@ -189,6 +240,7 @@ jobs:
         candidate:
           [granite97m, mmbert_small, embeddinggemma2_740m, laya_encoder_only]
     env:
+      MODEL_TERMS_ACCEPTED: ${{ inputs.operator_accepted_terms == true }}
       CANDIDATE: ${{ matrix.candidate }}
       OPERATOR_ACCEPTED_TERMS: ${{ inputs.operator_accepted_terms }}
       HF_HUB_OFFLINE: "1"
@@ -199,6 +251,37 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Record explicit model request without granting qualification
+        env:
+          MODEL_TERMS_ACCEPTED: ${{ github.event_name == 'workflow_dispatch' && inputs.run_research == true && inputs.operator_accepted_terms == true && inputs.run_real_checkpoint_bakeoff == true }}
+          REQUESTED_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -I -S -B - <<'PY'
+          import json, os, subprocess
+          from pathlib import Path
+          source = subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip()
+          if source != os.environ["REQUESTED_SOURCE_SHA"]:
+              raise SystemExit("model request source differs from checkout")
+          requested = os.environ["MODEL_TERMS_ACCEPTED"] == "true"
+          record = {
+              "source_sha": source,
+              "event": os.environ["GITHUB_EVENT_NAME"],
+              "run_id": os.environ["GITHUB_RUN_ID"],
+              "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "actor": os.environ["GITHUB_ACTOR"],
+              "accepted_model_terms": requested,
+              "model_execution": "requested" if requested else "not-requested",
+              "qualification_established": False,
+              "production_activation_allowed": False,
+          }
+          out = Path(os.environ["RUNNER_TEMP"]) / "model-request" / os.environ["GITHUB_JOB"]
+          out.mkdir(parents=True, exist_ok=True)
+          (out / "request.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a") as summary:
+              summary.write(f"Model study requested: {requested}. This request is not an execution or qualification result. Skipped model steps confer no qualification.\n")
+          PY
       - name: Verify exact source identity
         env:
           EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -275,3 +358,11 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+      - name: Preserve the explicit model request separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: model-request-${{ github.job }}-${{ matrix.candidate }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/model-request/${{ github.job }}/request.json
+          if-no-files-found: error
+          retention-days: 14

@@ -6,8 +6,6 @@ come from the *known analytic* scalar affine decoupling field of an FBSDE.
 PyTorch is optional and intentionally NOT imported by the default Hepta CI.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 import math

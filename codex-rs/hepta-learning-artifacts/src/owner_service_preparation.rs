@@ -123,6 +123,7 @@ impl LearningArtifactOwnerService {
         if self.original_preparation_fenced.load(Ordering::Acquire) {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
+        self.require_original_withdrawal()?;
         if self.recovery_required.is_some()
             || self
                 .host
@@ -210,6 +211,7 @@ impl LearningArtifactOwnerService {
         if self.original_preparation_fenced.load(Ordering::Acquire) {
             return Err(OriginalArtifactPreparationErrorV1::Fenced);
         }
+        self.require_original_withdrawal()?;
         let result = LearningArtifactOwnerHost::read_original_registry_durable(
             &self.host,
             context,

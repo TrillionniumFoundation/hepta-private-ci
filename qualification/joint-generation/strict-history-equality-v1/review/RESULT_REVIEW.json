@@ -1,0 +1,85 @@
+{
+  "status": "PASS_PUBLICATION_AS_LIMITED_MIXED_SAVED128_DIAGNOSTIC",
+  "review_mode": "Independent source inspection plus saved bytes, hashes, JSON linkage, work ledgers and arithmetic. No candidate or original implementation import, execution, rerun, model decoding or training.",
+  "candidate_freeze_sha256": "5a1a726f3db9e892b72aea9941413a8544a37244d276b5f827c3891825ceb8ab",
+  "result_sha256": "a36315f00ee8b453afd2711c5d29adaff725074f46e09b015c62ffda710a1806",
+  "wait4_receipt_sha256": "4c5de6aa40b7aff99fda27c05a49dbc7d78a9007a9f293d3cd8067413a3e81d1",
+  "input_audit": {
+    "files": 392,
+    "bytes": 2406239,
+    "all_hashes_match": true,
+    "reconstructed_history_leaves": 128,
+    "opaque_payloads_checked": 256,
+    "full_walk_payload_bytes": 1680512,
+    "publication_frozen_files_byte_identical": true,
+    "publication_summary_objects_equal_saved_evidence": true
+  },
+  "qualification_record": {
+    "literal_pairs": 676,
+    "saved_equal_pairs": 128,
+    "saved_counter_and_type_negative_pairs": 256,
+    "nonfinite_refusals": 6,
+    "deep_equal_depth": 450,
+    "reviewer_reran_qualification": false,
+    "basis": "Frozen assertions, retained COMPLETE record and bound successful child receipt; source reviewed separately."
+  },
+  "history_ledger": {
+    "calls": 22,
+    "history_walks": 18,
+    "history_leaves_validated": 1668,
+    "payload_read_calls": 3328,
+    "payload_bytes_read": 21846656,
+    "absolute_counts_and_per_call_errors_verified": true,
+    "disk_corruption_tests_executed": false,
+    "counter_scope": "Logical source-defined reads, not physical disk traffic; excludes history bytes, barriers and other IO."
+  },
+  "timing": {
+    "original_total_CPU_ns": 64000860,
+    "candidate_total_CPU_ns": 59854436,
+    "candidate_over_original": 0.935212995575372,
+    "original_minus_candidate_CPU_ns": 4146424,
+    "prespecified_sum_screen_pass": true,
+    "block_candidate_over_original": [
+      1.321028932348208,
+      0.7974256492759025,
+      1.0039508927927125,
+      0.750117426638118
+    ],
+    "slower_blocks": 2,
+    "faster_blocks": 2,
+    "zero_CPU_short_rejection_records": 8,
+    "effective_clock_resolution_established": false,
+    "stable_speedup_or_significance_established": false
+  },
+  "process_and_cost": {
+    "child_complete_wait": true,
+    "child_raw_wait_status": 0,
+    "child_exit_code": 0,
+    "whole_child_CPU_seconds": 0.285247,
+    "outer_CPU_prefix_seconds": 0.041751895,
+    "known_invocation_CPU_lower_bound_seconds": 0.326998895,
+    "outer_final_tail": "unknown_nonzero",
+    "preparation_review_history": "additional_nonzero",
+    "recorded_operation_CPU_seconds_already_included": 0.195132031,
+    "max_child_RSS_KiB": 14400,
+    "child_stdout_and_stderr_empty": true,
+    "outer_terminal_evidence": "Read saved OUTER_TOOL_TRANSCRIPT.json, explicitly a posthoc excerpt provided by the invoking agent: original exec_command chunk b50f5d, exit_code 0, no session_id and Script completed. Its stdout JSON equals the child receipt. This is relayed tool-transcript provenance, not an independently generated outer wait4 receipt.",
+    "strict256_aggregate_budget_established": false,
+    "outer_tool_transcript_sha256": "9a2fdf868f7f3083a7b1c064a4774f4804354c5c3321be300ca33c6a0a58d944",
+    "outer_tool_excerpt_stdout_matches_child_receipt": true
+  },
+  "source_findings_corrected_before_run": [
+    "Canonical Unicode astral/surrogate-pair aliases: unequal strings and differing dictionary keys fall back to original serialization.",
+    "Earlier Python recursive comparison exhaustion: catch RecursionError at outer wrapper and fall back after unwinding.",
+    "Tip-hash negative masked by terminal boundary: omit terminal checkpoint to reach actual reference comparison."
+  ],
+  "publication_limits": [
+    "Only this frozen saved128 engineering workload; two faster and two slower blocks must remain visible.",
+    "Zero short-call timings and near-12/16/20-ms clusters warrant a clock-granularity or noise caveat, not an asserted exact clock quantum.",
+    "No statistical significance, stable acceleration, whole-controller benefit, cold-disk claim, natural-data result or strict256 admission.",
+    "Six negatives modify call arguments, not disk files. No new disk-corruption qualification.",
+    "Per-process caps are not complete-subtree budget certification. Outer tail and preparation/review/history are additional.",
+    "Runner depends on original sibling saved128 files and shared lock; snapshot is not standalone and publication does not authorize a rerun.",
+    "No authority for integration, training, merging, deployment, permission changes or relaxing holds."
+  ]
+}

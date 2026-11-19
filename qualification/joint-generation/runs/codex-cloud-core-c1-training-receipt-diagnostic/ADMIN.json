@@ -1,0 +1,45 @@
+{
+  "child_cpu_seconds": 0.0,
+  "command": "PYTHONDONTWRITEBYTECODE=1 python runs/codex-cloud-core-c1-training-receipt-diagnostic/diagnose.py",
+  "cost_scope": "administrative stdlib-only diagnostic through report creation and input immutability verification; final ADMIN/manifest persistence excluded; never credited to qualification budgets",
+  "cwd": "/workspace/hepta-private-ci/qualification/joint-generation",
+  "diagnostic_source_sha256": "de8d29e5808249340c3dba78e4b3a5e3789954646baaacf35ebd27f2db3d52f7",
+  "execution_commit": "8ca460b29d4bdb7a117a72074fa18ee8e06c1064",
+  "finished_utc": "2026-10-23T14:49:51.580032+00:00",
+  "input_files": {
+    "selection.json": {
+      "bytes": 5935621,
+      "sha256": "8141ed76433b8663f51f4c3adb39ef0313b05d35e3804458b293185941f96881"
+    },
+    "telemetry.json": {
+      "bytes": 566534,
+      "sha256": "ca95531c47b9d91e632c42acc583bf53ff4763e03ee785b831a6c773803168ba"
+    }
+  },
+  "input_files_unchanged_after_analysis": true,
+  "preliminary_inspection": {
+    "cpu_not_instrumented": true,
+    "scope": "one stdlib JSON schema/batch/shared-phase read, no model execution",
+    "tool_wall_seconds": 0.016871066
+  },
+  "process_cpu_ns": 93675844,
+  "schema": "hepta.saved-training-receipt-diagnostic.v1",
+  "selection_plan_sha256": "94d84d8eb1af73c4c766604b3ddbcac0be2d9a2b1638b2afa10acf8216c2762b",
+  "source_commit": "cff9562102a21eb2a852daa61810e2e0b576ed9d",
+  "source_hashes": {
+    "independent/evaluation.py": {
+      "current_sha256": "01ae0e3c7213206a9fcd1a4a297a52b2e2e97023ff96a6fd5c13738554f3ae0e",
+      "frozen_sha256": "01ae0e3c7213206a9fcd1a4a297a52b2e2e97023ff96a6fd5c13738554f3ae0e"
+    },
+    "independent/refinement.py": {
+      "current_sha256": "00568b4b228d7f930ec7a0fbb8d0f6ea6c390de68cccea56e006e8399a06b8bd",
+      "frozen_sha256": "00568b4b228d7f930ec7a0fbb8d0f6ea6c390de68cccea56e006e8399a06b8bd"
+    },
+    "independent/run.py": {
+      "current_sha256": "c2748e786deb45b6460a5cf0717e628599da7092649743fedff14eaf04c40b7f",
+      "frozen_sha256": "c2748e786deb45b6460a5cf0717e628599da7092649743fedff14eaf04c40b7f"
+    }
+  },
+  "started_utc": "2026-10-23T14:49:51.486180+00:00",
+  "wall_ns": 93677122
+}

@@ -11,6 +11,34 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         E: ProductEvaluationExecutionStoreV1,
     >(
         &mut self,
+        source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        training: TrainingRead<'_>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.attest_sources_with_training(source.into(), training)
+            .await
+    }
+
+    pub(crate) async fn readback_with_training<
+        S: FinalHoldoutCasStoreV1,
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        E: ProductEvaluationExecutionStoreV1,
+    >(
+        &mut self,
+        source: OriginalCellEvaluationReceiptSourcesV1<'_, S, C, F, E>,
+        training: TrainingRead<'_>,
+    ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
+        self.readback_sources_with_training(source.into(), training)
+            .await
+    }
+
+    pub(super) async fn attest_sources_with_training<
+        S: FinalHoldoutCasStoreV1,
+        C: AnchorWitnessStore,
+        F: AnchorWitnessStore,
+        E: ProductEvaluationExecutionStoreV1,
+    >(
+        &mut self,
         mut source: ReceiptSources<'_, S, C, F, E>,
         training: TrainingRead<'_>,
     ) -> Result<(LearningIterationReceiptV1, SignedLearningEvidenceV1), Error> {
@@ -21,8 +49,8 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             return Err(OwnerError::Binding("new Evaluation attestation after deadline").into());
         }
         let prepared = self.prepare(&mut source)?;
-        let observed_training = training
-            .receipt_evidence(source.trainer, source.snapshot, &self.config)
+        let observed_training = self
+            .original_training_evidence(source.trainer, source.snapshot, training)
             .await?;
         self.authenticate_roles(&source, &prepared.1, &observed_training)?;
         if self.prepare(&mut source)? != prepared {
@@ -69,7 +97,7 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
             .await
     }
 
-    pub(crate) async fn readback_with_training<
+    pub(super) async fn readback_sources_with_training<
         S: FinalHoldoutCasStoreV1,
         C: AnchorWitnessStore,
         F: AnchorWitnessStore,
@@ -101,8 +129,8 @@ impl<W: AnchorWitnessStore> OriginalCellEvaluationReceiptOwnerV1<W> {
         if payload != learning_iteration_receipt_signing_bytes_v1(&prepared.0)? {
             return Err(OwnerError::Binding("changed original Evaluation payload").into());
         }
-        let observed_training = training
-            .receipt_evidence(source.trainer, source.snapshot, &self.config)
+        let observed_training = self
+            .original_training_evidence(source.trainer, source.snapshot, training)
             .await?;
         if self.prepare(source)? != prepared {
             return Err(OwnerError::CommitUncertain.into());

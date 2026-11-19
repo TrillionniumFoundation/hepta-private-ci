@@ -1,0 +1,24 @@
+{
+  "schema": "act3_gru_async_recovery_source_v1",
+  "tests": 8,
+  "model": {
+    "path": "qualification/act2-learning-20261110/run2/B4_gru-seed-700.npz",
+    "sha256": "7388073b70b5b27953dc74a41a2052ea57e7e70fe0ca220b50d1da0815bc116c"
+  },
+  "source_sha256": {
+    "async_owner_wait.py": "eaec392cc53da967fcb719ad3f554e97369345bf7998b2192b4b67fe725d6a6f",
+    "durable_async_owner.py": "e12b19e15bc38278de05689e773d037b2272f66eca6b5c715392e329d1ae2703",
+    "file_family.py": "9d65246d0374d18d7035428b930ccbee68075ff8b264bb47bff1ee69dfd62dfd",
+    "gru_async_continuation.py": "dbb14de58a542df79039c588b071b7c3190b7ad0803c00428cd17ff9d2a95913",
+    "models.py": "f16718a16a52dfe79c3d527555ce23eefb3d401820746182d33a8bf8cc885ee2",
+    "run.py": "062aa061ec739f6e7036422d6d56d93478fcdc327d74aad587a639d650936c3c",
+    "test_gru_async_continuation.py": "070d7ee6a1858cd083b7500de7eaecbde58cf6a2e00f0e92d42a7be14dce09b1"
+  },
+  "artifacts": {
+    "formatter-check.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "freshness-red-green-originals.tar.xz": "6ea7f456781ff205c1d8a2133403d195d8591be67e31dfc11f5489f2dd6ce91d",
+    "gru-async-final-originals.tar.xz": "6bed85031729003b156f20f51e675551c0b31606c1cd0882f77bd05a17f4fec3",
+    "gru-async-final-tests.log": "7fed13cdcc05c2f8853bc6bf81b980ac6b9deb7cde224895edfccf167c811695"
+  },
+  "scope": "controlled single original async invocation; no production authority or learning-benefit claim"
+}

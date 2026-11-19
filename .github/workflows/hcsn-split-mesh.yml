@@ -1,0 +1,35 @@
+name: HCSN split mesh exploratory checks
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/hcsn_split_mesh/**'
+      - '.github/workflows/hcsn-split-mesh.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  split-mesh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      OPENBLAS_NUM_THREADS: '1'
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Verify dedicated source and four discrete controls
+        run: python -B -m qualification.hcsn_split_mesh.qualify --output split-mesh-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hcsn-split-mesh-exploratory-${{ github.event.pull_request.head.sha || github.sha }}
+          path: split-mesh-evidence/

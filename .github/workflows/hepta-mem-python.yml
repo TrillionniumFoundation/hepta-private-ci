@@ -568,7 +568,7 @@ jobs:
           python --version > "$records/python-version.txt"
           python -m pip install --disable-pip-version-check \
             --report "$records/torch-install.json" \
-            --index-url https://download.pytorch.org/whl/cpu 'torch==2.9.1+cpu'
+            --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0+cpu'
           python -m pip install --disable-pip-version-check \
             --report "$records/numeric-install.json" 'numpy==1.26.4' 'Pillow==12.0.0'
           sudo apt-get update

@@ -92,7 +92,7 @@ impl OriginalInputs {
             },
         )
         .map_err(io::Error::other)?;
-        let selected = material.selection.original_selection()?;
+        let selected = SelectionData::original_selection(&material.selection)?;
         // Locators come from the same actual read-view; late JSON cannot add paths.
         let reader: LearningArtifactReadViewV1 = LearningArtifactReadViewV1::open_original(
             data.artifact_root.clone(),

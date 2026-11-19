@@ -1,0 +1,345 @@
+{
+  "schema": "hepta.p0.daemon-compile-failure-readback.v1",
+  "recorded_at_utc": "2026-11-11T02:58:59.119317+00:00",
+  "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+  "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+  "run_id": 42942991526,
+  "run_attempt": 1,
+  "job_id": 130268988425,
+  "artifact_id": 13824681106,
+  "github_run_and_job_conclusion": "failure",
+  "failure": {
+    "phase": "ordinary test binary compilation",
+    "error_code": "E0659",
+    "message": "`assert_eq` is ambiguous",
+    "error_count": 22,
+    "first_location": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs:31:9",
+    "glob_import_location": "codex-rs/hepta-agentd/src/cell_q24_training_stage_tests.rs:10:5",
+    "all_source_locations": [
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:105:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:10:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:134:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:152:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:156:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:187:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:188:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:213:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:253:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:263:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:267:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:268:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:269:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:275:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:31:9",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:355:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:371:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:375:5",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:50:9",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:62:9",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:66:9",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:70:9",
+      "hepta-agentd/src/cell_q24_training_stage_tests.rs:88:5"
+    ],
+    "compiler_reason": "A macro obtained through use super::* conflicts with the std prelude macro.",
+    "suggested_minimal_change_not_applied": "Add explicit use pretty_assertions::assert_eq; in the stage test module, matching the parent test module import.",
+    "parent_import_verified_from_exact_cb_source": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner_tests.rs:13"
+  },
+  "ordinary": {
+    "after": {
+      "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "dirty": false,
+      "parents": [
+        "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+      ],
+      "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "dirty": false,
+      "parents": [
+        "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+      ],
+      "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "command_exit_code": 101,
+    "elapsed_seconds": 232.28716827400012,
+    "error": "required tests were not observed passing",
+    "exit_code": 101,
+    "finished_at": "2026-11-11T02:56:40.285272+00:00",
+    "job": "native",
+    "lane": "source-head",
+    "log_bytes": 49435,
+    "log_file": "ordinary.json.66c684b2d3cf4c71886f45340bd3bd5b.log",
+    "log_sha256": "e27b205801a3b425f0718d3fbb7a14aa706073b1602575d6182ef4daec267e2b",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 101,
+    "run_attempt": "1",
+    "run_id": "42942991526",
+    "schema_version": 1,
+    "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "started_at": "2026-11-11T02:52:47.997625+00:00",
+    "status": "failed",
+    "tested_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "junit_collection": {
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "error": "[Errno 2] No such file or directory: '/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml'",
+    "execution_file": "ordinary.json",
+    "execution_sha256": "0d30f34014307c677844e7ff0a8dec53136dc0fcd16591cc0ba0431c2c227c4e",
+    "job": "native",
+    "kind": "native-junit-collection",
+    "native_path": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/target/nextest/local/junit.xml",
+    "run_attempt": "1",
+    "run_id": "42942991526",
+    "schema_version": 1,
+    "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "source_tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca",
+    "status": "rejected"
+  },
+  "actual_testcase_executions": 0,
+  "new_six_training_stage_cases_executed": 0,
+  "root_lane": "not reached; no Root execution records or fresh Root JUnit exist in this artifact",
+  "maintenance": {
+    "failed": true,
+    "maintenance_complete": false,
+    "maintenance_started": false,
+    "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1"
+  },
+  "driver_error": {
+    "error": "ordinary failed; retained execution and fresh JUnit observations"
+  },
+  "source_cuts": {
+    "checkout": {
+      "snapshot": {
+        "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "files": 14401,
+        "inventory_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+        "status": "",
+        "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+      },
+      "compressed_bytes": 1109042,
+      "compressed_sha256": "a3c0a91dbd6050487402dbe52c8e8e25c2c81c8137a050b191a37d9411116021",
+      "uncompressed_bytes": 3333188,
+      "uncompressed_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+      "actually_full_decompressed_and_compared_to_checkout": true,
+      "all_bytes_equal": true,
+      "included_in_delivery": false
+    },
+    "before-tests": {
+      "snapshot": {
+        "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "files": 14401,
+        "inventory_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+        "status": "",
+        "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+      },
+      "compressed_bytes": 1109046,
+      "compressed_sha256": "e11053513052cdd306e10b55d24640075a8892d7d35518e6742861ac852283c0",
+      "uncompressed_bytes": 3333188,
+      "uncompressed_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+      "actually_full_decompressed_and_compared_to_checkout": true,
+      "all_bytes_equal": true,
+      "included_in_delivery": false
+    },
+    "final": {
+      "snapshot": {
+        "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "files": 14401,
+        "inventory_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+        "status": "",
+        "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+      },
+      "compressed_bytes": 1109039,
+      "compressed_sha256": "958a1bd3cc398d6e9f522248511d2f23555c766dd2eb0a0936fe21f1c2a2bc7c",
+      "uncompressed_bytes": 3333188,
+      "uncompressed_sha256": "a29d98c98e66f15367fc32de8f6e9f5b594d4db5eae2b06509c3621e8d45ad85",
+      "actually_full_decompressed_and_compared_to_checkout": true,
+      "all_bytes_equal": true,
+      "included_in_delivery": false
+    }
+  },
+  "helper": {
+    "build_record": {
+      "after": {
+        "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "dirty": false,
+        "parents": [
+          "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+        ],
+        "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+      },
+      "base_sha": "",
+      "before": {
+        "commit": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+        "dirty": false,
+        "parents": [
+          "6ecfa504d2132f3682ffb01f8c9d65346b26cf5b"
+        ],
+        "tree": "59a019b79a6b879bbc27f6a614e1222fe87581ca"
+      },
+      "command": [
+        "python3",
+        "scripts/hepta_cell_test_helpers.py",
+        "--package",
+        "codex-hepta-infer-worker-host",
+        "--output-dir",
+        "/home/runner/work/_temp/daemon-learning-records/helpers",
+        "--github-env",
+        "/home/runner/work/_temp/_runner_file_commands/set_env_a055b41f-e614-4604-9f21-6c064d08baaf"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 490.46804687100007,
+      "exit_code": 0,
+      "finished_at": "2026-11-11T02:52:46.925239+00:00",
+      "job": "native",
+      "lane": "source-head",
+      "log_bytes": 173,
+      "log_file": "helper-build.json.fe36f39215e143a0afe09845abecd4d1.log",
+      "log_sha256": "ee101f8d7690e6ef53d5bb7b6371da8af194f581626152581e302c06d73fae7b",
+      "minimum_tests": 0,
+      "observed_failed_tests": 0,
+      "observed_passed_tests": 0,
+      "output_limit_exceeded": false,
+      "returncode": 0,
+      "run_attempt": "1",
+      "run_id": "42942991526",
+      "schema_version": 1,
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "started_at": "2026-11-11T02:44:36.450060+00:00",
+      "status": "passed",
+      "tested_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "timed_out": false,
+      "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+    },
+    "manifest": {
+      "schema_version": 1,
+      "source_sha": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "source_sha_after": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+      "source_status_before": "",
+      "source_status_after": "",
+      "workspace": "/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs",
+      "selected_packages": [
+        "codex-hepta-infer-worker-host"
+      ],
+      "builds": [
+        {
+          "package": "codex-hepta-infer-worker-host",
+          "binaries": [
+            "hepta-joint-propose"
+          ],
+          "command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--message-format=json-render-diagnostics",
+            "-p",
+            "codex-hepta-infer-worker-host",
+            "--bin",
+            "hepta-joint-propose"
+          ],
+          "stdout": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.jsonl",
+          "stderr": "/home/runner/work/_temp/daemon-learning-records/helpers/codex-hepta-infer-worker-host.stderr.log",
+          "exit_code": 0,
+          "cargo_finished": true,
+          "complete": true
+        }
+      ],
+      "artifacts": {
+        "hepta-joint-propose": {
+          "package": "codex-hepta-infer-worker-host",
+          "package_id": "path+file:///home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host#codex-hepta-infer-worker-host@0.0.0",
+          "compiler_executable": "/home/runner/work/_temp/hepta-daemon-learning-target/debug/hepta-joint-propose",
+          "executable": "/home/runner/work/_temp/daemon-learning-records/helpers/bin/hepta-joint-propose",
+          "profile": {
+            "opt_level": "0",
+            "debuginfo": 0,
+            "debug_assertions": true,
+            "overflow_checks": true,
+            "test": false
+          },
+          "sha256": "26c976816b7e748ecfe1056944211d7bd4eee329111476c0fc7c5bde422e8824",
+          "bytes": 1439816
+        }
+      },
+      "complete": true,
+      "exit_code": 0
+    },
+    "compiler_jsonl_messages": 1303,
+    "complete_jsonl_preserved": true,
+    "build_finished_success": true,
+    "post_test_verify_only_not_reached": true,
+    "executable_binary_absent_from_original_artifact": true
+  },
+  "decoded_job_log": {
+    "bytes": 1838052,
+    "sha256": "08ddd8401498e198b647cbea2f08ab486788523362cee45baa1845578173a135",
+    "gzip_bytes": 220541,
+    "gzip_sha256": "087f06c8d8cfc6f7dbf2fb2080788b0f304717105f7043ff2989b1e97a5119b7",
+    "complete_terminal_refetch_identical": true
+  },
+  "costs_seconds": {
+    "helper_build_command": 490.46804687100007,
+    "ordinary_compile_command": 232.28716827400012,
+    "cpu": null,
+    "peak_rss_bytes": null,
+    "monetary_cost": null
+  },
+  "scope_limits": [
+    "This is a compiler failure with zero executed testcases, not 22 failing tests.",
+    "Root, fmt/fix/bins and post-test helper verification were not reached.",
+    "The old 6ec daemon and shared results are not transferred to this cb source.",
+    "Windows success on cb concerns its own selected Windows scope, not these new training-stage cases.",
+    "Only checkout, before-tests, and final snapshots exist here; no six-cut success pattern is assumed.",
+    "Three large source inventories and the full original ZIP are retained locally but omitted from delivery; their full hashes and actual byte equality checks are recorded."
+  ],
+  "new_ci_runs_started": 0,
+  "new_native_jobs_started": 0,
+  "source_changes_applied_by_readback": 0
+}

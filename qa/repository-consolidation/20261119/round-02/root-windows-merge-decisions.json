@@ -1,0 +1,358 @@
+[
+  {
+    "path": "codex-rs/Cargo.toml",
+    "blocks": 7,
+    "choices": [
+      "ours",
+      "theirs",
+      "theirs",
+      "ours",
+      "theirs",
+      "union",
+      "ours"
+    ],
+    "reason": "Retain maintained OAuth/RMCP time patches and provenance notes; combine incoming YAML compatibility and full ZIP codec support; preserve original-owner optimization without relaxing deadlines.",
+    "sha256": "e4a06b14ebbcbe6955097d342bedca5327614b3751e1734311fed05efe30ed21"
+  },
+  {
+    "path": "codex-rs/core-plugins/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Match incoming codex_utils_yaml facade migration with actual package dependency.",
+    "sha256": "63132e583a6a888c05536b9fabfb489d0a8da0f4681379b6b0a356e115c380f0"
+  },
+  {
+    "path": "codex-rs/ext/skills/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Match incoming codex_utils_yaml facade migration with actual package dependency.",
+    "sha256": "4159f5f83864714f0b593247ea5322f3bc13bfc69b2e8d555bafef71d8a19847"
+  },
+  {
+    "path": "codex-rs/external-agent-migration/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Match incoming codex_utils_yaml facade migration with actual package dependency.",
+    "sha256": "3e93d8898cb674fae69101e887ae41d5c85619af616a2bfa0614a27ed79077e3"
+  },
+  {
+    "path": "codex-rs/skills/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Match incoming codex_utils_yaml facade migration with actual package dependency.",
+    "sha256": "68403ab839b55f57c345a2cded3ba129e0661d399ab4f257be923cc798f684a2"
+  },
+  {
+    "path": "codex-rs/hepta-contracts/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Retain incoming exact ML-DSA 0.1.2 patch release and zeroize/alloc features.",
+    "sha256": "e287e5868b6d94de52ca29cd91906ccf226637489a0f4f6d262462df07510045"
+  },
+  {
+    "path": "codex-rs/hepta-cell-roles/Cargo.toml",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Keep Windows canonical-path dependency and original pretty_assertions test dependency.",
+    "sha256": "22cbfb7d6334362dba5b399b26ad47d5aa17c3b2634e655452922ec407e226d6"
+  },
+  {
+    "path": "codex-rs/deny.toml",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Preserve narrow incoming libbz2-rs-sys@0.2.5 license review; no vulnerability or unmaintained advisory suppression.",
+    "sha256": "6d5ff79b292e514fd2609a1f4633d753b3e489d954b5ef1fbf7ed85fd3162eba"
+  },
+  {
+    "path": "codex-rs/hepta-infer-worker-host/Cargo.toml",
+    "reason": "Enable existing qualification-only owned WAL read API for native Windows byte-equality resume tests; production feature set unchanged.",
+    "sha256": "0afab59dc67f54d422633ff1c2b620020f60dcf6b29d1c9ecef6db236dc9e67f"
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v6/neuron_calibration.py",
+    "blocks": 2,
+    "choices": [
+      "theirs",
+      "theirs"
+    ],
+    "reason": "Retain exact calibrator source before model imports and bind registration to the retained bytes.",
+    "sha256": "04b525b43cf64a07d3e32779e00d03f2fd1d4df485651c65fc2bbc9db1ec46c5"
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v6/neuron_calibration_tests.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Preserve new failed-import/source retention and exclusive-create regression tests.",
+    "sha256": "bf2bacde6393532fd465dac65d98ff6a5055161348987a9058384a88866be1a9"
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v6/owner_worker.py",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve source-package initializer rejection before imports and around digest reads.",
+    "sha256": "03e62107d4202e2247420ecd8ee9b7e5bbae9b20603936b190bf910b3d0cba31"
+  },
+  {
+    "path": "experiments/multimodal_output_portfolio/v6/requirements.txt",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Retain incoming pinned CPU torch 2.15.0 across Linux/Windows and Darwin.",
+    "sha256": "31005c8eef94510ddfea0f461a079a098da8f38e299b434ca8784bc1b899972c"
+  },
+  {
+    "path": "qa/ndu-grounded-generation/cohort_firewall.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Preserve exact mismatch rejection with expanded diagnostic containing the original error substring.",
+    "sha256": "3d71611f3d944be2a256ddde14171e520e63ab984357ff621af528d87446cfea"
+  },
+  {
+    "path": "qualification/hcsn_currentstate_n256_joint_comparator_intent/joint_runner_contract.py",
+    "blocks": 3,
+    "choices": [
+      "ours",
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve independently recomputed canonical finite nonnegative FP64 max/sum error thresholds instead of trusting producer passed flags.",
+    "sha256": "1a3e99635883810de356d23983b83d1356dbad26b83993cb92d01f2a0a43be67"
+  },
+  {
+    "path": "qualification/hcsn_currentstate_n256_joint_comparator_intent/test_static.py",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve max/sum threshold fixture and forged-pass/noncanonical regression controls.",
+    "sha256": "28590042aa875961f74e79d11e6381e41c93023f9ec40bdc8b42c42348b3e30b"
+  },
+  {
+    "path": "qualification/hcsn_currentstate_n256_joint_comparator_intent/SOURCE_FREEZE.json",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Retain current historical source freeze and stronger controls; verify hashes against actual union separately.",
+    "sha256": "f6dac9512ddab43381d01ccc176628bcb3f16dd147ecb1c97b2ee2c76dab0fc7"
+  },
+  {
+    "path": "qualification/hcsn_differentiable/tests/test_evidence_chain.py",
+    "blocks": 3,
+    "choices": [
+      "ours",
+      "ours",
+      "ours"
+    ],
+    "reason": "Keep distinct named declaration/HOLD and artifact-integrity test classes; all actual tests are auto-unioned.",
+    "sha256": "a4f78b5a9c34b5003f5f84ff38e01a8af069bc6683cba495e2b1c8f9dcfb2ba5"
+  },
+  {
+    "path": "qualification/hcsn_hpca_joint_gate/run.py",
+    "blocks": 1,
+    "choices": [
+      "        \"c2-terminal\": 46,\n        \"hpca-normal\": 18,\n        \"hpca-optimized\": 18,\n"
+    ],
+    "reason": "Retain larger independent suite requirements from each parent; verify union test identities and actual count separately, never reduce to make a run pass.",
+    "sha256": "7d472387168a3a95f38c0c7b0aee2ca9ba7cc60dd4008a286f7197979cf04853"
+  },
+  {
+    "path": "qualification/neuroscience-20261110/study.py",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve bounded actions/feedback and cutoff-prefix isolation, including no-outcome count; incoming valid empty-feedback semantics already retained.",
+    "sha256": "4af7c3722c94bf77dc7b40e3deab0c208376d7aab31c331d669994f6bc362048"
+  },
+  {
+    "path": "qualification/neuroscience-20261110/test_study.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Retain incoming zero-feedback NoUpdate and empty-actions rejection tests.",
+    "sha256": "ab148e701becce62ae65bb81405efe3eee8ca6820996db60bf8b3e959bdbf49f"
+  },
+  {
+    "path": "scripts/HEPTA_SNGR_READER_EVAL.md",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Retain full evidence provenance limitations and exact oracle budget accounting.",
+    "sha256": "52569609b9eea844657d63180c804cf1646c7f413d3ca5bc5636ed5470b62de3"
+  },
+  {
+    "path": "scripts/HEPTA_SNGR_SHADOW.md",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Retain full evidence provenance limitations and exact oracle budget accounting.",
+    "sha256": "663f3207ee214486c6ce7331d01baacbfc8d7835ad7d70c71fd283e1f1bf1ea5"
+  },
+  {
+    "path": "scripts/hepta_sngr_cell_pilot.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Apply incoming removal of future import per repository Python conventions; verify module imports in regression suite.",
+    "sha256": "9e5115156016cb8d79b612829405456dc77fd1848868f0ddc27e0050d5fed7ad"
+  },
+  {
+    "path": "scripts/hepta_sngr_learned_shadow.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Apply incoming removal of future import per repository Python conventions; verify module imports in regression suite.",
+    "sha256": "ca631eea1b96c8a947e4c9842f845815e288837a5c5808fab1b67cd061d31af9"
+  },
+  {
+    "path": "scripts/hepta_sngr_shadow.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Apply incoming removal of future import per repository Python conventions; verify module imports in regression suite.",
+    "sha256": "bd8e551b733d1fe6f3afc5c56d0d363f6edc003d00377e0f1e9bc20df8f0e2bc"
+  },
+  {
+    "path": "scripts/hepta_sngr_lexical_control.py",
+    "blocks": 3,
+    "choices": [
+      "theirs",
+      "ours",
+      "ours"
+    ],
+    "reason": "Remove future import while preserving exclusive temporary-file writer and symlink protection.",
+    "sha256": "2963adacf0c7bfe2a9923469aec416860f2359aa94a08fbcadc92464fa7d2771"
+  },
+  {
+    "path": "scripts/hepta_sngr_nonlinear_shadow.py",
+    "blocks": 4,
+    "choices": [
+      "theirs",
+      "ours",
+      "ours",
+      "ours"
+    ],
+    "reason": "Remove future import; retain every initialization, iteration, and terminal evaluation charged to original oracle budget.",
+    "sha256": "e87ebae4347bb797bdb87e8db660f8147ee58fc3f04ce7a5a2982a35c682d6e5"
+  },
+  {
+    "path": "scripts/hepta_sngr_reader_eval.py",
+    "blocks": 8,
+    "choices": [
+      "theirs",
+      "ours",
+      "theirs",
+      "ours",
+      "theirs",
+      "theirs",
+      "theirs",
+      "    # Keep historical row pins distinct from the independently observed checkout.\n    result[\"observed_source_git_blobs\"] = observed_source_git_blobs\n    if args.output:\n        write_report(args.output, result)\n"
+    ],
+    "reason": "Preserve exclusive output writer; add exact registered document-revision bridge without changing frozen corpus/quoted-line checks, and record observed blobs separately.",
+    "sha256": "ff9c3f7974872d4d5ff72e7b072325c350eec47932b59946f10f1d56961feb26"
+  },
+  {
+    "path": "scripts/ndu_real_runtime/stopped_calibration_run.py",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "ffd42d49393ab39e0bd08e67247bd85b9012e172bf3704bbe6be740a85e55fd3"
+  },
+  {
+    "path": "scripts/ndu_real_runtime/stopped_control.py",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "be0bf24a4e4fadb220c1fb2df7cefc39432a876a8bc605bd306263a96b56cc07"
+  },
+  {
+    "path": "scripts/ndu_real_runtime/stopped_torch.py",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "1431778eec715b4320381981d83512a84a75c28285fbe0554336c7428812980f"
+  },
+  {
+    "path": "scripts/ndu_real_runtime/test_stopped_calibration_run.py",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "45ea739d5956b9776d64b94955fb8287605cf7390968385eead752c862fadefc"
+  },
+  {
+    "path": "scripts/test_hepta_sngr_lexical_control.py",
+    "blocks": 1,
+    "choices": [
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "a8a8d078a3303918270e9dbad9e594991f5838ede869dc4ef8415546fff02931"
+  },
+  {
+    "path": "scripts/test_hepta_sngr_nonlinear_shadow.py",
+    "blocks": 2,
+    "choices": [
+      "ours",
+      "ours"
+    ],
+    "reason": "Preserve current ordinary-risk controls, complete terminal scenarios, dependency identity, and independent regression assertions.",
+    "sha256": "208b457fe629ccb08abd012c8d24d5e73d0c9ad9f7e798dd8ed33151f1cea143"
+  },
+  {
+    "path": "scripts/test_hepta_sngr_reader_eval.py",
+    "blocks": 1,
+    "choices": [
+      "theirs"
+    ],
+    "reason": "Retain exact approved-bridge, provenance, quoted-line and tamper-negative tests.",
+    "sha256": "411eaad5eb1dda409c107857769599583a68b2b8467b0e6e7cbf4ec0b1426a8d"
+  },
+  {
+    "path": "qualification/hcsn_differentiable/CURRENT.md",
+    "reason": "Retain complete incoming status index and an exact-byte archive of the prior integration index; add an explicit unqualified current-merge boundary.",
+    "sha256": "83b1f4758abce26c19d58f030e3af74a97064171593ae3003ece98ab542c324a",
+    "archive": "qualification/hcsn_differentiable/CURRENT.integration-e3443eb4.md",
+    "archive_sha256": "b181bf7c4212cda8821597839fea9417b15a6a727bc7be695f5c3ca1d1908245"
+  }
+]

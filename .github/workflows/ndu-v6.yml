@@ -198,7 +198,8 @@ jobs:
           python ../scripts/hepta_ci_exec.py \
             --output "$V6_EVIDENCE/commands/generation-contracts.json" \
             --minimum-tests 1 --timeout-seconds 1200 -- \
-            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host \
+            --features codex-hepta-infer-worker-host/composition-model-driver-qualification
 
       - name: Execute the real model through durable inference owner lifecycle
         id: generation_owner
@@ -213,7 +214,8 @@ jobs:
           python ../scripts/hepta_ci_exec.py \
             --output "$V6_EVIDENCE/commands/generation-owner.json" \
             --minimum-tests 1 --timeout-seconds 1800 -- \
-            just test --locked -p codex-hepta-infer-worker-host --test generation_owner_execution \
+            just test --locked -p codex-hepta-infer-worker-host \
+            --features composition-model-driver-qualification --test generation_owner_execution \
             --run-ignored only --test-threads 1
 
       - name: Compile the opt-in calibration and plasticity-prerequisite integrations
@@ -223,7 +225,8 @@ jobs:
           set -euo pipefail
           python ../scripts/hepta_ci_exec.py \
             --output "$V6_EVIDENCE/commands/neuron-calibration-compile.json" --timeout-seconds 900 -- \
-            cargo check --locked -p codex-hepta-agentd --test generation_neuron_calibration \
+            cargo check --locked -p codex-hepta-agentd --features composition-model-driver-qualification \
+            --test generation_neuron_calibration \
             --test generation_plasticity_rejection
 
       - name: Execute real text and image generation with native receipts
@@ -322,7 +325,8 @@ jobs:
           python ../scripts/hepta_ci_exec.py \
             --output "$V6_EVIDENCE/commands/trained-generation-owner.json" \
             --minimum-tests 1 --timeout-seconds 1800 -- \
-            just test --locked -p codex-hepta-infer-worker-host --test generation_owner_execution \
+            just test --locked -p codex-hepta-infer-worker-host \
+            --features composition-model-driver-qualification --test generation_owner_execution \
             --run-ignored only --retries 0 --test-threads 1 \
             -E 'test(existing_owners_execute_controlled_generation)'
           cd ..

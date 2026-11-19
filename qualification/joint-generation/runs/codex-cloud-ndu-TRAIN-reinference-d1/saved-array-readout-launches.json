@@ -1,0 +1,25 @@
+{
+  "scope": "supplementary saved-array report, after the successful model diagnostic",
+  "launches": [
+    {
+      "technical_identity": "readout-launch-1-no-PYTHONPATH",
+      "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -W error runs/codex-cloud-ndu-TRAIN-reinference-d1/read_saved.py",
+      "status": "failed before loading arrays",
+      "exit_code": 1,
+      "error": "ModuleNotFoundError: No module named 'independent'",
+      "model_calls": 0,
+      "elapsed_cpu": "not instrumented"
+    },
+    {
+      "technical_identity": "readout-launch-2-PYTHONPATH-dot",
+      "command": "PYTHONPATH=. OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python3 -W error runs/codex-cloud-ndu-TRAIN-reinference-d1/read_saved.py",
+      "status": "complete",
+      "exit_code": 0,
+      "model_calls": 0,
+      "cpu_after_receipt": 0.220680851,
+      "evidence": "saved-array-readout-execution.json"
+    }
+  ],
+  "original_model_diagnostic_runs": 1,
+  "original_model_diagnostic_retries": 0
+}

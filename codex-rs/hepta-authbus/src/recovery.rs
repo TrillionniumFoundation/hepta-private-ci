@@ -64,7 +64,7 @@ impl AuthBusAuthorityStore {
                 .map_err(storage)?;
             }
         }
-        set_dirty(&mut tx, false).await?;
+        set_dirty(&mut tx, /*dirty*/ false).await?;
         tx.commit().await.map_err(storage)
     }
 
@@ -84,6 +84,9 @@ impl AuthBusAuthorityStore {
         let dirty = is_dirty(&mut tx).await?;
         if external == current {
             if !dirty {
+                if authority_frontier_digest_tx(&mut tx).await? != current.digest {
+                    return Err(AuthBusAuthorityError::RollbackDetected);
+                }
                 tx.commit().await.map_err(storage)?;
                 return Ok(None);
             }
@@ -106,7 +109,7 @@ impl AuthBusAuthorityStore {
             && external.digest == authority_frontier_digest_tx(&mut tx).await?
         {
             persist_checkpoint(&mut tx, external).await?;
-            set_dirty(&mut tx, false).await?;
+            set_dirty(&mut tx, /*dirty*/ false).await?;
             tx.commit().await.map_err(storage)?;
             return Ok(None);
         }
@@ -133,7 +136,7 @@ impl AuthBusAuthorityStore {
             return Err(AuthBusAuthorityError::RollbackDetected);
         }
         persist_checkpoint(&mut tx, external).await?;
-        set_dirty(&mut tx, false).await?;
+        set_dirty(&mut tx, /*dirty*/ false).await?;
         tx.commit().await.map_err(storage)
     }
 
@@ -277,6 +280,26 @@ async fn authority_frontier_digest_tx(
     tx: &mut Transaction<'_, Sqlite>,
 ) -> Result<Digest32, AuthBusAuthorityError> {
     let mut bytes = b"hepta.authbus.authority-frontier.v1\0".to_vec();
+    let version: i64 =
+        sqlx::query_scalar("SELECT auth_version FROM authbus_crypto_profile WHERE singleton = 1")
+            .fetch_one(&mut **tx)
+            .await
+            .map_err(storage)?;
+    match version {
+        1 => {}
+        2 => {
+            bytes = b"hepta.authbus.authority-frontier.pq.v2\0".to_vec();
+            append_rows(tx, &mut bytes, "time_freshness",
+                "SELECT COALESCE(hex(valid_until_ms),'-') FROM authbus_trusted_time ORDER BY singleton").await?;
+            append_rows(tx, &mut bytes, "time_challenge",
+                "SELECT hex(nonce)||'|'||hex(issued_at_ms)||'|'||hex(expires_at_ms) FROM authbus_time_challenge ORDER BY nonce").await?;
+        }
+        _ => {
+            return Err(AuthBusAuthorityError::CorruptState(
+                "invalid authority profile",
+            ));
+        }
+    }
     append_rows(
         tx,
         &mut bytes,

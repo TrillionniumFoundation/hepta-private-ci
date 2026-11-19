@@ -1,0 +1,16 @@
+{
+  "ast_equal_after_top_level_import_order_normalization": true,
+  "candidate_sources_untouched": true,
+  "explicit_semantic_mapping": "Only independent stdlib pathlib import position changed; all remaining AST exactly equal. Exact tested bytes retained in reproduce_large_review.tested.py.",
+  "final_ruff_check": "All checks passed",
+  "final_ruff_format": "unchanged",
+  "formatter": "ruff0.17.4",
+  "full_ast_equal": false,
+  "initial_ruff_check": "I001 import ordering, corrected before final check",
+  "no_array_model_tests_rerun_after_format": true,
+  "only_scoped_inspector_formatted": true,
+  "published_source_sha256": "6907eeef487cc510c4c7688e64c45d1a32ca95a1fbe193fee107575eca7adbc4",
+  "repository_just_fmt": "Inspector lives outside candidate repository; candidate sources and its just formatter were not invoked.",
+  "schema": "hcsn-independent-inspector-format-v2",
+  "tested_source_sha256": "5438f1dfffcb526a24bd5a1ef79c2bd7a09ce6f69ff467e874b0570329aad6d4"
+}

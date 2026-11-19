@@ -1,0 +1,1059 @@
+{
+  "schema_version": 1,
+  "source_commit": null,
+  "source_files_sha256": {
+    "__init__.py": "4502992afe553d132b2dd77148e6bcf69cac92b736194c5ac28bbded8cae380d",
+    "attempts.py": "4b1ea35d42f2a88307228c4d039b5654395c0648058855e7b1a51e3a78437b22",
+    "audit_population.py": "2154a964a2722a0859ae3b1dda98af9a40c4376d4580146e4b3c1b7079e15136",
+    "baselines.py": "a98cbbe7b1ba15486a44a2dd06542b64e39560012df395a2f2f393e67561640d",
+    "benchmark.py": "d6b96100a09e9bbcccd6d7ff998771600c08c9b0c6f9d0354849afb044b94540",
+    "cells.py": "9a2cd6b059b5b01532c1bb920196c34960b8013825068fc7a8762640ad2459d6",
+    "checks.py": "7a48f3fc993d6234615982165f1aac7725ce33bba4b3b79393e15b714915688c",
+    "execution.py": "cec0644b0ae13721a5162eba217c183f2aa69adc73909a2183bd3dd5727abcd7",
+    "mechanisms.py": "fa64def064d603c16111d0ed29cd1cdb6c64308ed0db5ded96ee6b4614e5b6ed",
+    "population.py": "3de163561abeb475573a8f680357000f68bffdb485405d61bf1fe40b493f6178",
+    "population_torch.py": "80af92d1e8c900b4d29bbd76492572a19e70840b3b09747243df39843b0efe3d",
+    "reference.py": "8cae6a0b5274bde355e0eeacaf9600f04be779cdde65a379ddcfb0194cd461c2",
+    "rematerialization.py": "ea0be5db010342050437fc5aa5d0458b8601b744670a4d7e3abd84cfbc52ae38",
+    "tensor.py": "624d293a9d3a7afa7e32be3e9133ac18cc0f90e49e7bdc5ff9a3b25c4563bddc",
+    "tests/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/test_audit_population.py": "249a8118632082d802bebed55005abd100ebaf292290e5573822d594ef57dc6d",
+    "tests/test_benchmark.py": "15939465d403647ecbd924dfb97297aee43c0c8e64e69d196d157ebdf19852e2",
+    "tests/test_cells.py": "e579936cb01bd810636ab5de963ed2f24a64013da0056d8568d45d42d5ebd79b",
+    "tests/test_checks.py": "54c994b9a6ca76d9e048f5fb0b3f770bfe4f6025329d29be22808b493e3ca68f",
+    "tests/test_execution.py": "7c887fb9e38d7d39ba2f53238dbd0b2bb61fb5b0f6cf4454e9684caaa8a561cc",
+    "tests/test_hx_tensor.py": "d1c405651f956b112d907f4109c0d759648703b6d6b303e503cb716228fde7a4",
+    "tests/test_population.py": "85dacb782ac9cf6f61f7c5c70027693d3ef50f83da24ce40348658ea0ed04c95",
+    "tests/test_population_torch.py": "7bf3ba7a2f54f8dd7707a166fddf0a5f91c90d017a4e3564666a8f9ec0798076",
+    "tests/test_reference.py": "d95e4eefbd46f8f9fd37813b63f20549ad1fbae43ae436a0f1ca0fdae4c0eb8d",
+    "tests/test_tensor.py": "355ba9bf747bc427acb0f10c8525ed80bc5f6e55f9f897602141bf0b6cb4421f",
+    "validate.py": "d6f925e9784770705230adbe871547726dd0db91f476dcfc1e265c525e377045",
+    "configs/full-rematerialized.json": "43fb7b280bb80643c0bcdbfceae6788b37dd1d45fad682805ec6045088b31611",
+    "configs/full.json": "7fa3d05b8c04a918043afdfa1c266a17beccb814351258d0555a753baf13777a",
+    "configs/smoke.json": "3c0e9eb10d1ae13035ba7d455a2fd280531d43c0af15329f49a814722a4a3a57"
+  },
+  "python": "3.12.14",
+  "platform": "Linux-6.18.57-x86_64-with-glibc2.39",
+  "software": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": null,
+    "ncps": null,
+    "mamba-ssm": null
+  },
+  "require_torch": false,
+  "tests_discovered": 109,
+  "tests_run": 109,
+  "passed": 52,
+  "failed": 0,
+  "errors": 0,
+  "skipped": 57,
+  "expected_failures": 0,
+  "unexpected_successes": 0,
+  "unfinished": 0,
+  "fixture_failures": 0,
+  "fixture_errors": 0,
+  "fixture_skipped": 0,
+  "failure_records": 0,
+  "error_records": 0,
+  "skipped_records": 57,
+  "method_outcomes": [
+    {
+      "test": "hcsn.tests.test_audit_population.AuditTests.test_actual_saved_weights_forward_buffers_dataset_and_original_mse",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_audit_population.AuditTests.test_copied_report_and_runs_audit_uses_relative_verified_weights",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_audit_population.AuditTests.test_empty_full_audit_retains_twenty_identities_and_exits_nonzero",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_audit_population.AuditTests.test_partial_coverage_retains_unavailable_identity",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_audit_population.AuditTests.test_tampered_seed_dt_split_grid_and_validation_identity_are_rejected",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_bad_dataset_and_budget_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_completed_run_resume_verifies_weights_and_exact_budget",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_energy_counter_wraps_without_estimating_missing_measurements",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_interrupted_attempt_retains_unknown_budget_and_energy_on_resume",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_recall_and_adding_labels_follow_task_definition",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_resume_rebinds_copied_checkpoint_directory_to_verified_weights",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_retry_preserves_failed_attempt_budget_energy_and_failure_rate",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_same_seed_reproduces_and_different_split_seed_changes_examples",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_source_change_quarantines_weights_before_any_reusable_cache",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_trained_grid_audit_reproduces_encoder_and_preserves_refractory",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_benchmark.DatasetTests.test_unavailable_is_not_counted_as_a_failed_training_run",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_attention_is_causal_and_optional_mamba_is_not_substituted",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_call_only_skips_first_passage_feature",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_each_native_ablation_and_baseline_trains_one_step",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_financial_parameter_box_has_nonnegative_continuation_equity",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_frozen_update_preserves_bounds_and_zero_time_identity",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_full_rollover_backpropagates_to_liquidity_and_input_boundary",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_official_cfc_batch_timespans_match_scalar_cell_steps",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_risk_only_preserves_liquidity_and_boundary_sensitivity",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_cells.CellTests.test_value_map_rejects_a_boundary_above_assets_without_clipping",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_failure_and_error_in_one_method_have_one_outcome",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_multiple_failing_subtests_count_one_failed_method",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_passing_methods_can_qualify_without_subtest_overcounting",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_require_torch_missing_returns_exit_two_without_running_tests",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_setup_class_error_does_not_invent_executed_methods",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_subtest_and_fixture_skips_cannot_qualify_strict_gate",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_checks.ReceiptCountingTests.test_teardown_class_error_preserves_real_method_pass",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.CandidateExecutionTests.test_candidate_policy_both_variants_saved_replay_and_resume",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_execution.CandidateExecutionTests.test_missing_gradient_is_failure_but_intentionally_frozen_parameter_is_allowed",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_execution.CandidateExecutionTests.test_nonfinite_norm_and_updated_parameter_preserve_actual_update_count",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_cuda_public_metadata_and_cap_are_bound_without_ordinal_guess",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_energy_counter_uses_canonical_nvml_identity_and_retains_both_raw_values",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_failed_allocator_cap_prevents_matrix_attempts_without_torch",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_failed_terminal_sync_keeps_partial_reading_and_precedes_meter_stop",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_invalid_cuda_identity_refuses_smi_and_cap_without_ordinal_fallback",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_invalid_policy_rejected_and_policy_changes_cache_identity",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_mixed_energy_intervals_keep_cost_and_do_not_promote_legacy",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_nvml_wrong_or_invalid_identity_and_unsupported_counter_remain_missing",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_training_peak_requires_own_reset_and_keeps_reserved_separate",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_uuid_normalizes_public_bare_format_and_prefixed_hex_case",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_execution.ExecutionEvidenceTests.test_uuid_rejects_malformed_mig_ordinals_ambiguous_and_nontext_values",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_boundary_and_equity_parameter_gradcheck",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_boundary_value_slope_and_curvature",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_closed_values_against_independent_oracle_grid",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_custom_boundary_retains_nonzero_slope",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_debt_pde_and_equity_ode_with_autograd",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_dtype_switch_values_slopes_and_ode_against_independent_integrals",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_economic_guard_distinguishes_formal_solution",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_elementary_q_derivatives_against_complex_contour",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_evaluate_preserves_fp32_near_boundary_distance",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_fp32_parameter_gradients_against_reference_finite_differences",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_fp32_short_maturity_expansion_and_switch_against_oracle",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_full_hx_time_unit_covariance",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_normal_tail_integral_and_zero_lambda_gradient",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_zero_lambda_deep_tail_has_finite_log_gradients",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_hx_tensor.HXTorchTests.test_zero_liquidity_boundary_gradient",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_coupling_scan_is_reproducible_and_accounts_for_mass",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_empty_and_infinite_intervals",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_first_passage_refinement",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_invalid_parameters_and_state_rejected",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_mass_balance_under_drive_and_recovery",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_quiet_state_and_repeatable_pulses",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_rate_correlation_does_not_invent_constant_or_nonfinite_results",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_rate_correlation_recovers_known_delay_with_correct_sign",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_refractory_from_actual_event_rounds_up_without_an_extra_step",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_refractory_has_no_early_release",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_transition_matches_density_quadrature",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population.PopulationTests.test_zero_refractory_resets_at_end",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_drift_gradient_matches_finite_difference",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_empty_and_infinite_intervals_have_finite_backward",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_fp32_mass_and_bptt_are_finite",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_fp64_numpy_parity",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_large_finite_drift_tails_conserve_mass_and_have_finite_gradients",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_population_torch.TensorPopulationTests.test_zero_probability_difference_has_finite_backward",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_broadcasting",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_cdf_and_discounted_cdf_against_density_integrals",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_density_is_time_derivative",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_laplace_and_eventual_default_limits",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_survival_and_deep_tails",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.FirstPassageTests.test_time_zero_and_boundary_atom",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_boundary_condition_from_independent_integral",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_debt_pde_and_payoff",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_divided_difference_against_positive_integral",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_equity_ode_and_closed_form_against_oracle",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_formal_ode_solution_is_not_automatically_economic_equity",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_full_hx_time_unit_covariance",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_money_scale_homogeneity",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_original_regular_reference_values",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_parameter_domains_are_not_silently_clamped",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_small_distance_and_parameter_limits",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_reference.HXReferenceTests.test_zero_liquidity_and_zero_log_drift",
+      "events": [
+        "passed"
+      ],
+      "status": "passed"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_autograd_matches_finite_differences",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_boundary_atom_and_surviving_t0",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_cdf_time_derivative_is_density",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_discount_taylor_switch_keeps_value_and_gradient",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_fp32_gradients_against_differentiated_density_integrals",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_integrals_float64_and_float32",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_invalid_domains_are_rejected",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_positive_time_boundary_right_derivatives",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_small_margin_no_rollover_and_tails",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_t0_mask_does_not_propagate_nan_gradients",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_time_unit_rescaling",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_has_correct_gradient",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    },
+    {
+      "test": "hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_second_derivatives",
+      "events": [
+        "skipped"
+      ],
+      "status": "skipped"
+    }
+  ],
+  "fixture_outcomes": [],
+  "skipped_tests": [
+    {
+      "test": "test_actual_saved_weights_forward_buffers_dataset_and_original_mse (hcsn.tests.test_audit_population.AuditTests.test_actual_saved_weights_forward_buffers_dataset_and_original_mse)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_copied_report_and_runs_audit_uses_relative_verified_weights (hcsn.tests.test_audit_population.AuditTests.test_copied_report_and_runs_audit_uses_relative_verified_weights)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_empty_full_audit_retains_twenty_identities_and_exits_nonzero (hcsn.tests.test_audit_population.AuditTests.test_empty_full_audit_retains_twenty_identities_and_exits_nonzero)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_partial_coverage_retains_unavailable_identity (hcsn.tests.test_audit_population.AuditTests.test_partial_coverage_retains_unavailable_identity)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_tampered_seed_dt_split_grid_and_validation_identity_are_rejected (hcsn.tests.test_audit_population.AuditTests.test_tampered_seed_dt_split_grid_and_validation_identity_are_rejected)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_completed_run_resume_verifies_weights_and_exact_budget (hcsn.tests.test_benchmark.DatasetTests.test_completed_run_resume_verifies_weights_and_exact_budget)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_interrupted_attempt_retains_unknown_budget_and_energy_on_resume (hcsn.tests.test_benchmark.DatasetTests.test_interrupted_attempt_retains_unknown_budget_and_energy_on_resume)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_resume_rebinds_copied_checkpoint_directory_to_verified_weights (hcsn.tests.test_benchmark.DatasetTests.test_resume_rebinds_copied_checkpoint_directory_to_verified_weights)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_retry_preserves_failed_attempt_budget_energy_and_failure_rate (hcsn.tests.test_benchmark.DatasetTests.test_retry_preserves_failed_attempt_budget_energy_and_failure_rate)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_source_change_quarantines_weights_before_any_reusable_cache (hcsn.tests.test_benchmark.DatasetTests.test_source_change_quarantines_weights_before_any_reusable_cache)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_trained_grid_audit_reproduces_encoder_and_preserves_refractory (hcsn.tests.test_benchmark.DatasetTests.test_trained_grid_audit_reproduces_encoder_and_preserves_refractory)",
+      "reason": "PyTorch not installed"
+    },
+    {
+      "test": "test_attention_is_causal_and_optional_mamba_is_not_substituted (hcsn.tests.test_cells.CellTests.test_attention_is_causal_and_optional_mamba_is_not_substituted)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_call_only_skips_first_passage_feature (hcsn.tests.test_cells.CellTests.test_call_only_skips_first_passage_feature)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_each_native_ablation_and_baseline_trains_one_step (hcsn.tests.test_cells.CellTests.test_each_native_ablation_and_baseline_trains_one_step)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_financial_parameter_box_has_nonnegative_continuation_equity (hcsn.tests.test_cells.CellTests.test_financial_parameter_box_has_nonnegative_continuation_equity)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_frozen_update_preserves_bounds_and_zero_time_identity (hcsn.tests.test_cells.CellTests.test_frozen_update_preserves_bounds_and_zero_time_identity)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_full_rollover_backpropagates_to_liquidity_and_input_boundary (hcsn.tests.test_cells.CellTests.test_full_rollover_backpropagates_to_liquidity_and_input_boundary)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_official_cfc_batch_timespans_match_scalar_cell_steps (hcsn.tests.test_cells.CellTests.test_official_cfc_batch_timespans_match_scalar_cell_steps)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_risk_only_preserves_liquidity_and_boundary_sensitivity (hcsn.tests.test_cells.CellTests.test_risk_only_preserves_liquidity_and_boundary_sensitivity)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_value_map_rejects_a_boundary_above_assets_without_clipping (hcsn.tests.test_cells.CellTests.test_value_map_rejects_a_boundary_above_assets_without_clipping)",
+      "reason": "PyTorch is unavailable; tensor verification is not claimed"
+    },
+    {
+      "test": "test_candidate_policy_both_variants_saved_replay_and_resume (hcsn.tests.test_execution.CandidateExecutionTests.test_candidate_policy_both_variants_saved_replay_and_resume)",
+      "reason": "PyTorch not installed; candidate execution is not verified"
+    },
+    {
+      "test": "test_missing_gradient_is_failure_but_intentionally_frozen_parameter_is_allowed (hcsn.tests.test_execution.CandidateExecutionTests.test_missing_gradient_is_failure_but_intentionally_frozen_parameter_is_allowed)",
+      "reason": "PyTorch not installed; candidate execution is not verified"
+    },
+    {
+      "test": "test_nonfinite_norm_and_updated_parameter_preserve_actual_update_count (hcsn.tests.test_execution.CandidateExecutionTests.test_nonfinite_norm_and_updated_parameter_preserve_actual_update_count)",
+      "reason": "PyTorch not installed; candidate execution is not verified"
+    },
+    {
+      "test": "test_boundary_and_equity_parameter_gradcheck (hcsn.tests.test_hx_tensor.HXTorchTests.test_boundary_and_equity_parameter_gradcheck)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_boundary_value_slope_and_curvature (hcsn.tests.test_hx_tensor.HXTorchTests.test_boundary_value_slope_and_curvature)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_closed_values_against_independent_oracle_grid (hcsn.tests.test_hx_tensor.HXTorchTests.test_closed_values_against_independent_oracle_grid)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_custom_boundary_retains_nonzero_slope (hcsn.tests.test_hx_tensor.HXTorchTests.test_custom_boundary_retains_nonzero_slope)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_debt_pde_and_equity_ode_with_autograd (hcsn.tests.test_hx_tensor.HXTorchTests.test_debt_pde_and_equity_ode_with_autograd)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_dtype_switch_values_slopes_and_ode_against_independent_integrals (hcsn.tests.test_hx_tensor.HXTorchTests.test_dtype_switch_values_slopes_and_ode_against_independent_integrals)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_economic_guard_distinguishes_formal_solution (hcsn.tests.test_hx_tensor.HXTorchTests.test_economic_guard_distinguishes_formal_solution)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_elementary_q_derivatives_against_complex_contour (hcsn.tests.test_hx_tensor.HXTorchTests.test_elementary_q_derivatives_against_complex_contour)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_evaluate_preserves_fp32_near_boundary_distance (hcsn.tests.test_hx_tensor.HXTorchTests.test_evaluate_preserves_fp32_near_boundary_distance)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_fp32_parameter_gradients_against_reference_finite_differences (hcsn.tests.test_hx_tensor.HXTorchTests.test_fp32_parameter_gradients_against_reference_finite_differences)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_fp32_short_maturity_expansion_and_switch_against_oracle (hcsn.tests.test_hx_tensor.HXTorchTests.test_fp32_short_maturity_expansion_and_switch_against_oracle)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_full_hx_time_unit_covariance (hcsn.tests.test_hx_tensor.HXTorchTests.test_full_hx_time_unit_covariance)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_normal_tail_integral_and_zero_lambda_gradient (hcsn.tests.test_hx_tensor.HXTorchTests.test_normal_tail_integral_and_zero_lambda_gradient)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_zero_lambda_deep_tail_has_finite_log_gradients (hcsn.tests.test_hx_tensor.HXTorchTests.test_zero_lambda_deep_tail_has_finite_log_gradients)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_zero_liquidity_boundary_gradient (hcsn.tests.test_hx_tensor.HXTorchTests.test_zero_liquidity_boundary_gradient)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_drift_gradient_matches_finite_difference (hcsn.tests.test_population_torch.TensorPopulationTests.test_drift_gradient_matches_finite_difference)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_empty_and_infinite_intervals_have_finite_backward (hcsn.tests.test_population_torch.TensorPopulationTests.test_empty_and_infinite_intervals_have_finite_backward)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_fp32_mass_and_bptt_are_finite (hcsn.tests.test_population_torch.TensorPopulationTests.test_fp32_mass_and_bptt_are_finite)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_fp64_numpy_parity (hcsn.tests.test_population_torch.TensorPopulationTests.test_fp64_numpy_parity)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_large_finite_drift_tails_conserve_mass_and_have_finite_gradients (hcsn.tests.test_population_torch.TensorPopulationTests.test_large_finite_drift_tails_conserve_mass_and_have_finite_gradients)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_zero_probability_difference_has_finite_backward (hcsn.tests.test_population_torch.TensorPopulationTests.test_zero_probability_difference_has_finite_backward)",
+      "reason": "PyTorch is not installed"
+    },
+    {
+      "test": "test_autograd_matches_finite_differences (hcsn.tests.test_tensor.PassageTensorTests.test_autograd_matches_finite_differences)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_boundary_atom_and_surviving_t0 (hcsn.tests.test_tensor.PassageTensorTests.test_boundary_atom_and_surviving_t0)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_cdf_time_derivative_is_density (hcsn.tests.test_tensor.PassageTensorTests.test_cdf_time_derivative_is_density)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_discount_taylor_switch_keeps_value_and_gradient (hcsn.tests.test_tensor.PassageTensorTests.test_discount_taylor_switch_keeps_value_and_gradient)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_fp32_gradients_against_differentiated_density_integrals (hcsn.tests.test_tensor.PassageTensorTests.test_fp32_gradients_against_differentiated_density_integrals)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_integrals_float64_and_float32 (hcsn.tests.test_tensor.PassageTensorTests.test_integrals_float64_and_float32)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_invalid_domains_are_rejected (hcsn.tests.test_tensor.PassageTensorTests.test_invalid_domains_are_rejected)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_positive_time_boundary_right_derivatives (hcsn.tests.test_tensor.PassageTensorTests.test_positive_time_boundary_right_derivatives)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_small_margin_no_rollover_and_tails (hcsn.tests.test_tensor.PassageTensorTests.test_small_margin_no_rollover_and_tails)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_t0_mask_does_not_propagate_nan_gradients (hcsn.tests.test_tensor.PassageTensorTests.test_t0_mask_does_not_propagate_nan_gradients)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_time_unit_rescaling (hcsn.tests.test_tensor.PassageTensorTests.test_time_unit_rescaling)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_zero_discount_zero_drift_has_correct_gradient (hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_has_correct_gradient)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    },
+    {
+      "test": "test_zero_discount_zero_drift_second_derivatives (hcsn.tests.test_tensor.PassageTensorTests.test_zero_discount_zero_drift_second_derivatives)",
+      "reason": "PyTorch is required; the CI job treats its absence as a failure"
+    }
+  ],
+  "failures": [],
+  "status": "partial",
+  "elapsed_seconds": 4.405894128998625
+}

@@ -1,0 +1,70 @@
+{
+  "catalog_real_checkpoint_integration": {
+    "all_gates_passed": true,
+    "fresh_worker_processes": 1,
+    "result": "catalog-admission-001/result.json",
+    "training_updates": 0,
+    "unknown_stale_withdrawn_model_callbacks": 0
+  },
+  "catalog_required_formatting": {
+    "command": "just fmt",
+    "exit_code": 0,
+    "files": {
+      "scripts/memory_cell_catalog/metadata_catalog.py": {
+        "ast_equivalent": true,
+        "executed_before_format_sha256": "6f546243d0a2c40336af6ba7ac14ae5df181802225e0031e80b373bc0d1fc4c5",
+        "published_after_format_sha256": "dd0056057a91b084b349eecb975cafe5a0f62e3d95f0ca82b557aa549339538f"
+      },
+      "scripts/memory_cell_catalog/test_metadata_catalog.py": {
+        "ast_equivalent": true,
+        "executed_before_format_sha256": "1297218802efc5da17c98acf8374e0defe0d1235af89a3b934fd8c965ab1a86b",
+        "published_after_format_sha256": "d01f3a1116699eec2158218daa686cb413c577becf14269f6cbfd4b9f293dcf2"
+      }
+    },
+    "post_format_tests_not_rerun": true
+  },
+  "catalog_source_commit": "cbd139ad7cfeaf0be226688f2475cdeb364aa3e1",
+  "catalog_unit": {
+    "command": "PYTHONPATH=scripts/memory_cell:scripts/memory_cell_catalog python -B -m unittest discover -s scripts/memory_cell_catalog -p test_metadata_catalog.py -v",
+    "executor": "action_lifecycle",
+    "methods": 6,
+    "output_provenance": "observed execution reported by delegated implementation agent",
+    "passed": 6,
+    "seconds": 0.058
+  },
+  "complete_remote_ci_passed": false,
+  "existing_evolution": {
+    "methods": 22,
+    "passed": 22,
+    "seconds": 9.608
+  },
+  "existing_process": {
+    "methods": 14,
+    "passed": 14,
+    "seconds": 59.593
+  },
+  "full_local_confirmation": {
+    "gates_passed": 17,
+    "gates_total": 17,
+    "result": "confirmation-001/result.json",
+    "source_byte_identity_reconciled": true,
+    "unchanged_git_head_run": false
+  },
+  "historical_dependency_ast_checked": true,
+  "historical_dependency_commit": "c64e0ade0d2599841554b3ff91200d188d7e7671",
+  "historical_future_annotation_directives_excluded": true,
+  "parametric_unit": {
+    "methods": 27,
+    "passed": 27,
+    "seconds": 6.179
+  },
+  "remote_ci_state_at_write": "queued, no runner assigned",
+  "required_formatting": {
+    "command": "just fmt",
+    "exit_code": 0
+  },
+  "schema": "hepta.parametric-memory.validation-summary.v1",
+  "source_commit": "1e12dbb8187a007134b83928cfc25e663899ac9a",
+  "tests_completed_before_required_formatting": true,
+  "total_local_unit_regression_methods_passed": 69
+}

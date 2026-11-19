@@ -119,7 +119,7 @@ def main():
     results = []
     expected_tests = {
         "hcsn-spatial-phase": 19,
-        "c2-terminal": 33,
+        "c2-terminal": 51,
         "hpca-normal": 18,
         "hpca-optimized": 18,
     }
