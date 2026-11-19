@@ -8,7 +8,7 @@ from pathlib import Path
 
 from example_validation_source_vm import Program
 
-SOURCE = (Path(__file__).parent / 'example_validation_continuation.hepta').read_text()
+SOURCE = (Path(__file__).resolve().parents[1] / 'example_validation_continuation.hepta').read_text(encoding='utf-8')
 
 
 class VmStaticScreen(unittest.TestCase):
