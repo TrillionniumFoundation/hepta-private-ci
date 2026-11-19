@@ -27,5 +27,16 @@
     "normal_tests_passed": 4,
     "optimized_tests_passed": 4,
     "numeric_execution_during_repair": 0
+  },
+  "runner_setup_failure": {
+    "run_id": 44462321348,
+    "job_id": 135351817800,
+    "head_sha": "78789871bc28799614179a58ce5bb8a21cf6b4d6",
+    "observed_os": "Ubuntu 26.04.1",
+    "error": "The version '3.12.3' with architecture 'x64' was not found for Ubuntu 26.04.",
+    "launcher_step": "skipped",
+    "numerical_execution": 0,
+    "log_sha256": "0391e5333f4ffdfba06c71301598cc42bf99fee2aa36cee82b2d41799cd1d112",
+    "repair": "Pin ubuntu-24.04, matching the glibc2.39 frozen runtime observation; preserve runtime identity before fail-closed comparison."
   }
 }
