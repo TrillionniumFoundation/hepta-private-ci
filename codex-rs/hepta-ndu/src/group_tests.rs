@@ -451,7 +451,7 @@ fn budget_preflight_rejects_forged_selection_and_mismatched_trace() {
         Err(GroupSystem2Error::DecisionMismatch)
     );
 
-    let mut altered = trace.clone();
+    let mut altered = trace;
     altered.behavior_digest = digest("new-behavior");
     assert_eq!(
         preflight_group_future_cost_v1(&subject, &altered, &candidates, &decision, 1),
@@ -477,7 +477,7 @@ fn budget_preflight_denies_zero_and_over_remaining_future_cost() {
         })
     );
 
-    let mut nearly_exhausted = trace.clone();
+    let mut nearly_exhausted = trace;
     nearly_exhausted.cells[0].cost_micros = 99;
     let decision = must(decide_group_continuation_v1(
         &subject,
