@@ -1,0 +1,36 @@
+{
+  "identity": "hcsn-gamma061-native-expm-diagnosis-20261119-2f215-attempt001",
+  "owner": "/root/n256_closure",
+  "point": {
+    "rate_fp64": "1.7",
+    "time": "61/100",
+    "delay": "1/5",
+    "initial_signed_channels": [
+      1,
+      -0.4,
+      0.3
+    ]
+  },
+  "roster": [
+    "native torch matrix_exp trajectory",
+    "same one-point trajectory using independently computed 80-digit matrix exponentials rounded to FP64"
+  ],
+  "maximum_kernel_exp_requests_per_trajectory": 32,
+  "maximum_unique_matrices": 32,
+  "maximum_matrix_order": 32,
+  "matrix_reference_digits": 80,
+  "max_cpu_seconds": 125,
+  "max_wall_seconds": 150,
+  "max_address_space_bytes": 4294967296,
+  "cpu_affinity": [
+    7
+  ],
+  "source_freeze_unix_time": 1795092360.765055,
+  "files": {
+    "kernel_snapshot.py": "fdc78bec642c2a58ab6daadd73235c16a04e62ac937f2af5218990e91b28cf73",
+    "diagnose.py": "dd15748c1cd05541ed30832a4331f26bdd238903904adcf0425a0b2fbf1d3ab4",
+    "run.py": "78e41b457f958bd6213526766245e418c254b8c869aa630904b4d85873fd1242"
+  },
+  "no_model_training_or_optimizer": true,
+  "grid_repeats": 0
+}
