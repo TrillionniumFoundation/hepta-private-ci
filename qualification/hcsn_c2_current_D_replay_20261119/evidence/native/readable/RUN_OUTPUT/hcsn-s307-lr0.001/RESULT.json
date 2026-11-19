@@ -1,0 +1,15 @@
+{
+  "E_access": false,
+  "backward_calls": 0,
+  "cpu_seconds": 0.088896367,
+  "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 77, in child\n    checked(item[\"path\"], item[\"sha256\"])\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 69, in checked\n    require(Path(path).is_file() and not Path(path).is_symlink() and sha(path) == expected,\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: bound input identity: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/initial.pt\n",
+  "inputs_unchanged": true,
+  "name": "hcsn-s307-lr0.001",
+  "optimizer_construct_restore_step": 0,
+  "original_controller_terminal": "UNKNOWN",
+  "original_full_training_replays": "0/6",
+  "peak_rss_kib": 22396,
+  "status": "FAILED_OR_UNFINISHED",
+  "training_updates": 0,
+  "wall_seconds": 0.4660707089933567
+}

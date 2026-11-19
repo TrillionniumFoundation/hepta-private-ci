@@ -1,0 +1,23 @@
+{
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-c\",\n      \"import hashlib,json,os,pathlib,resource,zlib,time\\ncompressed=pathlib.Path('/home/qian-qi/hepta-c2-D-config-reconciliation-20261119-2f215-source.zlib').read_bytes()\\nassert hashlib.sha256(compressed).hexdigest()==\\\"6318a184a55cdf64e1bbc601da55899db36234d010582d0f26e2db52c566498d\\\"\\nraw=zlib.decompress(compressed)\\nassert hashlib.sha256(raw).hexdigest()==\\\"a7368779f4bad0ec07e287ed339416607d76c4f2b11f01bf53a7136e4bc96753\\\"\\nroot=pathlib.Path('/home/qian-qi/hepta-c2-D-config-reconciliation-20261119-2f215')\\nroot.mkdir(exist_ok=False)\\nfor name,content in json.loads(raw).items():\\n q=root/name;q.parent.mkdir(exist_ok=True,parents=True);q.write_text(content)\\nfreeze=json.loads((root/'SOURCE_FREEZE.json').read_bytes())\\nfor name,expected in freeze['files'].items():\\n assert hashlib.sha256((root/name).read_bytes()).hexdigest()==expected,name\\n(root/'DISPATCH.json').write_text(\\\"{\\\\n  \\\\\\\"source_commit\\\\\\\": \\\\\\\"6665a66ebdae1224d8a6bac4f22c0878136b33f7\\\\\\\",\\\\n  \\\\\\\"source_tree\\\\\\\": \\\\\\\"7ccc4c5803e40c79ec43cae320b9fa19d29c6c01\\\\\\\",\\\\n  \\\\\\\"native_key\\\\\\\": \\\\\\\"hcsn-c2-D-strict-config-index-20261119-2f215-001\\\\\\\",\\\\n  \\\\\\\"global_deadline_unix\\\\\\\": 1795095504.542,\\\\n  \\\\\\\"E_access\\\\\\\": false\\\\n}\\\\n\\\")\\nresource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592))\\nassert time.time()<1795095504.542\\npy='/home/qian-qi/hepta-c2-original-runtime-20261119-2f215/venv/bin/python'\\nos.execve(py,[py,'-B',str(root/'reconcile_configuration.py')],dict(os.environ))\\n\"\n    ],\n    \"created_unix_ms\": 1795095036315,\n    \"cwd\": \"/home/qian-qi\",\n    \"env_keys\": [\n      \"CUDA_VISIBLE_DEVICES\",\n      \"MKL_NUM_THREADS\",\n      \"NUMEXPR_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\",\n      \"PYTHONHASHSEED\",\n      \"PYTHONNOUSERSITE\",\n      \"PYTHONPATH\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1f400819b-ffbe-eac\",\n    \"idempotency_key\": \"hcsn-c2-D-strict-config-index-20261119-2f215-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f400819b-ffbe-eac\",\n    \"request_digest\": \"f9c4927e6d85946af8f8693f36454001a3a9c3704ee79f227362f2cfe1df4fd5\",\n    \"request_fingerprint\": 17997671082580350058,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f400819b-ffbe-eac\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1f400819b-ffbe-eac\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795095322438,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1f400819b-ffbe-eac\",\n  \"launch_nonce\": \"59b150aa68ed06a703d5fc03d100fcab\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 1374,\n      \"stored\": 1374\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "scientific_scope": "Original-configuration derivation followed by first full-D forward for only two previously failed continuation checkpoints. No training or E."
+}

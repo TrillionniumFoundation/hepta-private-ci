@@ -1,0 +1,15 @@
+{
+  "E_access": false,
+  "backward_calls": 0,
+  "cpu_seconds": 4.770181679999999,
+  "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/replay.py\", line 103, in child\n    require(checkpoint[\"epochs_completed\"] == row[\"strict_history\"][\"best_epoch\"] and\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: checkpoint semantics\n",
+  "inputs_unchanged": true,
+  "name": "hcsn-s211-lr0.001",
+  "optimizer_construct_restore_step": 0,
+  "original_controller_terminal": "UNKNOWN",
+  "original_full_training_replays": "0/6",
+  "peak_rss_kib": 539564,
+  "status": "FAILED_OR_UNFINISHED",
+  "training_updates": 0,
+  "wall_seconds": 4.993379488005303
+}

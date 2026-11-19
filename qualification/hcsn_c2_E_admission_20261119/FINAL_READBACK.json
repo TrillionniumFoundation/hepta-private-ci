@@ -1,0 +1,1251 @@
+{
+  "E_access": false,
+  "E_admission": "HOLD",
+  "archive_reader_CPU_seconds": 2.9176498289999997,
+  "archive_reader_model_construction_forward_backward_optimizer_operations": 0,
+  "archive_reader_peak_rss_kib": 228560,
+  "archive_reader_wall_seconds": 2.9404070980017423,
+  "archives": [
+    {
+      "bytes": 8492120,
+      "members": 60,
+      "sha256": "16ec51e3480048b0e19a59ac85d4a5a4a8188d37624453c257f01cfb1513bafa",
+      "stage": "hcsn_c2_current_D_replay_20261119",
+      "whole_stage_wall_seconds": 428.51255394599866
+    },
+    {
+      "bytes": 2952963,
+      "global_elapsed_seconds": 710.7018866539001,
+      "members": 48,
+      "sha256": "79cebc33bd0d70daa51cc076d7a3faf79c7e664a43dcb3215d44b941c984f8e2",
+      "stage": "hcsn_c2_D_path_reconciliation_20261119"
+    },
+    {
+      "bytes": 5679341,
+      "global_elapsed_seconds": 1617.8239147663116,
+      "members": 53,
+      "sha256": "3a59a535c78ef88d07940876cc606bc13f5a9c27d3bb247cdaff812375d4c9c2",
+      "stage": "hcsn_c2_D_configuration_reconciliation_20261119"
+    }
+  ],
+  "common_LR_D_means": {
+    "0.001": 0.35489660888847246,
+    "0.003": 0.3762526948891313
+  },
+  "complete_current_best_D_replays": "6/6",
+  "cumulative_fit_costs": {
+    "hcsn-s101-lr0.001": {
+      "attempts": [
+        {
+          "cpu_seconds": 124.494502,
+          "name": "hcsn-s101-lr0.001",
+          "peak_rss_kib": 885516,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 125.09513911401154
+        }
+      ],
+      "cpu_seconds": 124.494502,
+      "peak_rss_kib": 885516,
+      "wall_seconds": 125.09513911401154
+    },
+    "hcsn-s101-lr0.003": {
+      "attempts": [
+        {
+          "cpu_seconds": 0.176859,
+          "name": "hcsn-s101-lr0.003",
+          "peak_rss_kib": 22104,
+          "returncode": 2,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 0.20168612501583993
+        },
+        {
+          "cpu_seconds": 125.706377,
+          "name": "hcsn-s101-lr0.003",
+          "peak_rss_kib": 888292,
+          "prior_stage_wall_seconds": 0.20168612501583993,
+          "remaining_original_stage_grant": 209.79831387498416,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_D_path_reconciliation_20261119",
+          "timed_out": false,
+          "wall_seconds": 126.2002793639549
+        }
+      ],
+      "cpu_seconds": 125.883236,
+      "peak_rss_kib": 888292,
+      "wall_seconds": 126.40196548897075
+    },
+    "hcsn-s211-lr0.001": {
+      "attempts": [
+        {
+          "cpu_seconds": 0.17291600000000001,
+          "name": "hcsn-s211-lr0.001",
+          "peak_rss_kib": 22044,
+          "returncode": 2,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 0.20160499104531482
+        },
+        {
+          "cpu_seconds": 5.366243,
+          "name": "hcsn-s211-lr0.001",
+          "peak_rss_kib": 622080,
+          "prior_stage_wall_seconds": 0.20160499104531482,
+          "remaining_original_stage_grant": 209.79839500895469,
+          "returncode": 2,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_D_path_reconciliation_20261119",
+          "timed_out": false,
+          "wall_seconds": 5.609433618024923
+        },
+        {
+          "cpu_seconds": 132.349243,
+          "name": "hcsn-s211-lr0.001",
+          "peak_rss_kib": 883372,
+          "prior_stage_wall_seconds": 5.811038609070238,
+          "remaining_original_stage_grant": 204.18896139092976,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_D_configuration_reconciliation_20261119",
+          "timed_out": false,
+          "wall_seconds": 133.11137061100453
+        }
+      ],
+      "cpu_seconds": 137.888402,
+      "peak_rss_kib": 883372,
+      "wall_seconds": 138.92240922007477
+    },
+    "hcsn-s211-lr0.003": {
+      "attempts": [
+        {
+          "cpu_seconds": 145.159749,
+          "name": "hcsn-s211-lr0.003",
+          "peak_rss_kib": 885284,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 145.52689169999212
+        }
+      ],
+      "cpu_seconds": 145.159749,
+      "peak_rss_kib": 885284,
+      "wall_seconds": 145.52689169999212
+    },
+    "hcsn-s307-lr0.001": {
+      "attempts": [
+        {
+          "cpu_seconds": 0.178345,
+          "name": "hcsn-s307-lr0.001",
+          "peak_rss_kib": 22396,
+          "returncode": 2,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 0.6022693830309436
+        },
+        {
+          "cpu_seconds": 5.4375219999999995,
+          "name": "hcsn-s307-lr0.001",
+          "peak_rss_kib": 622056,
+          "prior_stage_wall_seconds": 0.6022693830309436,
+          "remaining_original_stage_grant": 209.39773061696906,
+          "returncode": 2,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_D_path_reconciliation_20261119",
+          "timed_out": false,
+          "wall_seconds": 5.508869731973391
+        },
+        {
+          "cpu_seconds": 133.02023400000002,
+          "name": "hcsn-s307-lr0.001",
+          "peak_rss_kib": 874476,
+          "prior_stage_wall_seconds": 6.111139115004335,
+          "remaining_original_stage_grant": 203.88886088499567,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_D_configuration_reconciliation_20261119",
+          "timed_out": false,
+          "wall_seconds": 133.41381800500676
+        }
+      ],
+      "cpu_seconds": 138.63610100000002,
+      "peak_rss_kib": 874476,
+      "wall_seconds": 139.5249571200111
+    },
+    "hcsn-s307-lr0.003": {
+      "attempts": [
+        {
+          "cpu_seconds": 140.70831,
+          "name": "hcsn-s307-lr0.003",
+          "peak_rss_kib": 888328,
+          "returncode": 0,
+          "scope": "exact child wait4 through exit",
+          "stage": "hcsn_c2_current_D_replay_20261119",
+          "timed_out": false,
+          "wall_seconds": 142.42388421995565
+        }
+      ],
+      "cpu_seconds": 140.70831,
+      "peak_rss_kib": 888328,
+      "wall_seconds": 142.42388421995565
+    }
+  },
+  "metadata_charged_wall_seconds": 41.1928800139688,
+  "metadata_wait4_CPU_seconds_excluding_external_diagnostic": 25.287476,
+  "original_commit_errors": 0,
+  "original_complete_epoch_commits_verified": 289,
+  "original_controller_terminal": "UNKNOWN",
+  "original_full_C2_chain_auditor_completed": false,
+  "original_full_training_replays": "0/6",
+  "original_resume_witness_matches": "6/6",
+  "remaining_original_chain_failures": {
+    "hcsn-s211-lr0.001": {
+      "original_C2_journal_order_and_partial_work": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 131, in <lambda>\n    phase = check(\"original_C2_journal_order_and_partial_work\", lambda: reconstruct_journal(events, episodes, fit_plan[\"seed\"], 32, 8,\n                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/checks.py\", line 108, in reconstruct_journal\n    require(events and events[-1]['kind'] == 'finished', 'journal lacks terminal event')\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: journal lacks terminal event\n",
+      "original_producer_terminal_report": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 107, in <lambda>\n    original_report = check(\"original_producer_terminal_report\", lambda: data(native / \"result.json\"))\n                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 44, in data\n    return json.loads(bound(path, expected).read_bytes())\n                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 37, in bound\n    raise FileNotFoundError(str(path))\nFileNotFoundError: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/result.json\n"
+    },
+    "hcsn-s307-lr0.001": {
+      "original_C2_journal_order_and_partial_work": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 131, in <lambda>\n    phase = check(\"original_C2_journal_order_and_partial_work\", lambda: reconstruct_journal(events, episodes, fit_plan[\"seed\"], 32, 8,\n                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/checks.py\", line 108, in reconstruct_journal\n    require(events and events[-1]['kind'] == 'finished', 'journal lacks terminal event')\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: journal lacks terminal event\n",
+      "original_producer_terminal_report": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 107, in <lambda>\n    original_report = check(\"original_producer_terminal_report\", lambda: data(native / \"result.json\"))\n                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 44, in data\n    return json.loads(bound(path, expected).read_bytes())\n                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 37, in bound\n    raise FileNotFoundError(str(path))\nFileNotFoundError: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/result.json\n"
+    }
+  },
+  "retained_failed_receipts": [
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 77, in child\n    checked(item[\"path\"], item[\"sha256\"])\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 69, in checked\n    require(Path(path).is_file() and not Path(path).is_symlink() and sha(path) == expected,\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: bound input identity: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003/initial.pt\n",
+      "name": "hcsn-s101-lr0.003",
+      "receipt_sha256": "a8fc3edd07429707aa2470bd2ca9e2d960c42db2cbccbe1fcdeb470c3162cb77",
+      "stage": "hcsn_c2_current_D_replay_20261119"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 77, in child\n    checked(item[\"path\"], item[\"sha256\"])\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 69, in checked\n    require(Path(path).is_file() and not Path(path).is_symlink() and sha(path) == expected,\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: bound input identity: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/initial.pt\n",
+      "name": "hcsn-s211-lr0.001",
+      "receipt_sha256": "e9154fe7689924d8a2125d0c750b3667438ad321ab001ca696769b617c97c04f",
+      "stage": "hcsn_c2_current_D_replay_20261119"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 77, in child\n    checked(item[\"path\"], item[\"sha256\"])\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/replay.py\", line 69, in checked\n    require(Path(path).is_file() and not Path(path).is_symlink() and sha(path) == expected,\n  File \"/home/qian-qi/hepta-c2-current-D-replay-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: bound input identity: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/initial.pt\n",
+      "name": "hcsn-s307-lr0.001",
+      "receipt_sha256": "169bed1d9f676f06a7c9dedd46ee4cb878c821a31112ab5bd096f885f8ea121f",
+      "stage": "hcsn_c2_current_D_replay_20261119"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/replay.py\", line 103, in child\n    require(checkpoint[\"epochs_completed\"] == row[\"strict_history\"][\"best_epoch\"] and\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: checkpoint semantics\n",
+      "name": "hcsn-s211-lr0.001",
+      "receipt_sha256": "a87e02ca398e040c061638b4bbb77a8816b7af5cd52e37fe54f68542dd309a63",
+      "stage": "hcsn_c2_D_path_reconciliation_20261119"
+    },
+    {
+      "error": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/replay.py\", line 103, in child\n    require(checkpoint[\"epochs_completed\"] == row[\"strict_history\"][\"best_epoch\"] and\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: checkpoint semantics\n",
+      "name": "hcsn-s307-lr0.001",
+      "receipt_sha256": "561d9499eecb8e607061e85ee475bddbf983ce0b3b2ff1ea52028c5611025191",
+      "stage": "hcsn_c2_D_path_reconciliation_20261119"
+    }
+  ],
+  "saved_logit_match_semantics": "max_abs_logit_difference=0 and torch.equal establish numeric equality; the frozen field named bitwise_saved_logit_match does not check signed-zero byte patterns.",
+  "schema": "independent-current-C2-D-archive-readback-v1",
+  "status": "PASS",
+  "successes": {
+    "hcsn-s101-lr0.001": {
+      "checkpoint_sha256": "9334f1c0aa990005c87bcb303fda7b27e59376ac10f58d39ba3b33ed297449fa",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 106,
+      "fresh_logit_payload_sha256": "aaacec22ce629c019c29044e3d403451d90c7177aca4b2d9719e4dd168aa850d",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 5.551115123125783e-17,
+      "metrics": {
+        "accuracy": 0.6681584877315974,
+        "balanced_accuracy_present_classes": 0.3504044264108845,
+        "brier_half_sum": 0.2623567597616288,
+        "brier_mean_classes": 0.04770122904756887,
+        "confusion_matrix": [
+          [
+            5609,
+            0,
+            120,
+            0,
+            0,
+            801,
+            53,
+            2,
+            17,
+            7,
+            0
+          ],
+          [
+            108,
+            0,
+            0,
+            47,
+            0,
+            268,
+            5,
+            18,
+            185,
+            0,
+            0
+          ],
+          [
+            576,
+            1,
+            313,
+            11,
+            0,
+            78,
+            30,
+            65,
+            27,
+            39,
+            0
+          ],
+          [
+            2,
+            0,
+            141,
+            9793,
+            0,
+            1,
+            670,
+            757,
+            136,
+            0,
+            0
+          ],
+          [
+            166,
+            0,
+            18,
+            0,
+            0,
+            95,
+            3,
+            0,
+            0,
+            15,
+            0
+          ],
+          [
+            903,
+            0,
+            152,
+            0,
+            0,
+            3775,
+            33,
+            0,
+            42,
+            86,
+            0
+          ],
+          [
+            168,
+            0,
+            59,
+            1671,
+            0,
+            234,
+            703,
+            32,
+            387,
+            0,
+            0
+          ],
+          [
+            0,
+            1,
+            43,
+            341,
+            0,
+            6,
+            84,
+            443,
+            107,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            2,
+            1109,
+            0,
+            3,
+            74,
+            68,
+            689,
+            0,
+            0
+          ],
+          [
+            88,
+            0,
+            4,
+            0,
+            0,
+            72,
+            7,
+            0,
+            3,
+            24,
+            0
+          ],
+          [
+            8,
+            0,
+            0,
+            169,
+            0,
+            38,
+            30,
+            2,
+            114,
+            0,
+            0
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.17599071159858495,
+        "events": 31952,
+        "macro_f1_11_classes": 0.3440169977772091,
+        "macro_f1_present_classes": 0.3440169977772091,
+        "nll": 1.1456396587632
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_current_D_replay_20261119"
+    },
+    "hcsn-s101-lr0.003": {
+      "checkpoint_sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 74,
+      "fresh_logit_payload_sha256": "4482f105d65c86f40b985f761ff7328ca2621b253d45aedd5683289a090c9705",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 2.220446049250313e-16,
+      "metrics": {
+        "accuracy": 0.6739797195793691,
+        "balanced_accuracy_present_classes": 0.38955121856536246,
+        "brier_half_sum": 0.2323476783699494,
+        "brier_mean_classes": 0.042245032430899894,
+        "confusion_matrix": [
+          [
+            5787,
+            0,
+            282,
+            0,
+            8,
+            411,
+            52,
+            0,
+            61,
+            0,
+            8
+          ],
+          [
+            76,
+            0,
+            7,
+            33,
+            0,
+            336,
+            47,
+            13,
+            119,
+            0,
+            0
+          ],
+          [
+            320,
+            0,
+            620,
+            2,
+            0,
+            71,
+            49,
+            53,
+            21,
+            0,
+            4
+          ],
+          [
+            3,
+            0,
+            239,
+            8674,
+            0,
+            3,
+            2238,
+            308,
+            31,
+            0,
+            4
+          ],
+          [
+            143,
+            0,
+            28,
+            0,
+            15,
+            103,
+            1,
+            0,
+            0,
+            7,
+            0
+          ],
+          [
+            546,
+            4,
+            369,
+            0,
+            9,
+            3928,
+            32,
+            0,
+            33,
+            70,
+            0
+          ],
+          [
+            177,
+            0,
+            181,
+            873,
+            0,
+            143,
+            1655,
+            11,
+            77,
+            0,
+            137
+          ],
+          [
+            0,
+            0,
+            42,
+            113,
+            0,
+            8,
+            492,
+            362,
+            2,
+            0,
+            7
+          ],
+          [
+            2,
+            0,
+            0,
+            786,
+            0,
+            25,
+            670,
+            15,
+            443,
+            0,
+            4
+          ],
+          [
+            66,
+            0,
+            18,
+            0,
+            18,
+            75,
+            2,
+            0,
+            0,
+            19,
+            0
+          ],
+          [
+            28,
+            0,
+            0,
+            33,
+            0,
+            15,
+            220,
+            0,
+            33,
+            0,
+            32
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.08473790027599092,
+        "events": 31952,
+        "macro_f1_11_classes": 0.38783425965779494,
+        "macro_f1_present_classes": 0.38783425965779494,
+        "nll": 1.0556253040124541
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_D_path_reconciliation_20261119"
+    },
+    "hcsn-s211-lr0.001": {
+      "checkpoint_sha256": "83f7b3148c10fa377feb9f4449ffa42a0b1679f073569f1886852d7eb82145c3",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 144,
+      "fresh_logit_payload_sha256": "4c2c116c795830412d7b846aa2fb4d626e010a98e0514a16f5beca0482ba8b98",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 2.220446049250313e-16,
+      "metrics": {
+        "accuracy": 0.71457185778668,
+        "balanced_accuracy_present_classes": 0.3875948380341843,
+        "brier_half_sum": 0.21967211341202708,
+        "brier_mean_classes": 0.03994038425673219,
+        "confusion_matrix": [
+          [
+            5961,
+            0,
+            91,
+            3,
+            1,
+            417,
+            113,
+            12,
+            10,
+            1,
+            0
+          ],
+          [
+            58,
+            74,
+            0,
+            40,
+            0,
+            357,
+            1,
+            0,
+            96,
+            0,
+            5
+          ],
+          [
+            325,
+            22,
+            563,
+            35,
+            0,
+            174,
+            1,
+            5,
+            10,
+            5,
+            0
+          ],
+          [
+            4,
+            128,
+            314,
+            9560,
+            0,
+            15,
+            938,
+            225,
+            261,
+            0,
+            55
+          ],
+          [
+            132,
+            0,
+            8,
+            1,
+            0,
+            151,
+            1,
+            0,
+            1,
+            3,
+            0
+          ],
+          [
+            158,
+            6,
+            230,
+            9,
+            0,
+            4336,
+            117,
+            3,
+            0,
+            132,
+            0
+          ],
+          [
+            307,
+            2,
+            229,
+            949,
+            0,
+            30,
+            1667,
+            47,
+            6,
+            0,
+            17
+          ],
+          [
+            0,
+            0,
+            15,
+            408,
+            4,
+            99,
+            184,
+            213,
+            96,
+            7,
+            0
+          ],
+          [
+            1,
+            53,
+            0,
+            687,
+            0,
+            45,
+            511,
+            0,
+            427,
+            0,
+            221
+          ],
+          [
+            73,
+            0,
+            0,
+            3,
+            2,
+            109,
+            0,
+            0,
+            0,
+            11,
+            0
+          ],
+          [
+            29,
+            0,
+            0,
+            100,
+            0,
+            4,
+            169,
+            0,
+            39,
+            0,
+            20
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.11018863784089047,
+        "events": 31952,
+        "macro_f1_11_classes": 0.388353751030186,
+        "macro_f1_present_classes": 0.388353751030186,
+        "nll": 1.0103585569280258
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_D_configuration_reconciliation_20261119"
+    },
+    "hcsn-s211-lr0.003": {
+      "checkpoint_sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 40,
+      "fresh_logit_payload_sha256": "b0332256376d88c39fb4c3aecd49d2e5d92dae1081588702e96190180243c24a",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 1.1102230246251565e-16,
+      "metrics": {
+        "accuracy": 0.702272158237356,
+        "balanced_accuracy_present_classes": 0.392141998216934,
+        "brier_half_sum": 0.23309423742507895,
+        "brier_mean_classes": 0.042380770440923456,
+        "confusion_matrix": [
+          [
+            5619,
+            0,
+            59,
+            2,
+            0,
+            640,
+            268,
+            6,
+            15,
+            0,
+            0
+          ],
+          [
+            37,
+            58,
+            0,
+            58,
+            0,
+            316,
+            8,
+            0,
+            154,
+            0,
+            0
+          ],
+          [
+            333,
+            8,
+            482,
+            77,
+            0,
+            78,
+            121,
+            4,
+            35,
+            2,
+            0
+          ],
+          [
+            3,
+            64,
+            185,
+            9554,
+            0,
+            0,
+            753,
+            236,
+            705,
+            0,
+            0
+          ],
+          [
+            119,
+            0,
+            2,
+            0,
+            0,
+            169,
+            7,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            348,
+            0,
+            181,
+            1,
+            0,
+            3879,
+            467,
+            0,
+            28,
+            87,
+            0
+          ],
+          [
+            190,
+            0,
+            26,
+            1106,
+            0,
+            8,
+            1279,
+            51,
+            594,
+            0,
+            0
+          ],
+          [
+            0,
+            4,
+            22,
+            456,
+            1,
+            20,
+            211,
+            248,
+            64,
+            0,
+            0
+          ],
+          [
+            0,
+            11,
+            0,
+            571,
+            0,
+            4,
+            45,
+            0,
+            1314,
+            0,
+            0
+          ],
+          [
+            85,
+            0,
+            0,
+            1,
+            0,
+            70,
+            36,
+            0,
+            0,
+            6,
+            0
+          ],
+          [
+            26,
+            0,
+            0,
+            118,
+            0,
+            1,
+            73,
+            0,
+            143,
+            0,
+            0
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.16305902501378883,
+        "events": 31952,
+        "macro_f1_11_classes": 0.3910932361454862,
+        "macro_f1_present_classes": 0.3910932361454862,
+        "nll": 1.0173874314444633
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_current_D_replay_20261119"
+    },
+    "hcsn-s307-lr0.001": {
+      "checkpoint_sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 126,
+      "fresh_logit_payload_sha256": "19f362e2dac6c2a2fc6ec5bff1396d146b900544d206ab38e138467bd5b02080",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 5.551115123125783e-17,
+      "metrics": {
+        "accuracy": 0.6724774661992989,
+        "balanced_accuracy_present_classes": 0.3474281123134719,
+        "brier_half_sum": 0.24761366008003668,
+        "brier_mean_classes": 0.04502066546909758,
+        "confusion_matrix": [
+          [
+            5521,
+            13,
+            50,
+            1,
+            0,
+            649,
+            41,
+            0,
+            87,
+            0,
+            247
+          ],
+          [
+            87,
+            29,
+            0,
+            26,
+            0,
+            300,
+            36,
+            0,
+            135,
+            0,
+            18
+          ],
+          [
+            287,
+            0,
+            545,
+            37,
+            0,
+            222,
+            7,
+            0,
+            2,
+            0,
+            40
+          ],
+          [
+            0,
+            4,
+            260,
+            9505,
+            0,
+            90,
+            1222,
+            226,
+            79,
+            0,
+            114
+          ],
+          [
+            168,
+            1,
+            0,
+            0,
+            0,
+            126,
+            2,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            302,
+            0,
+            13,
+            1,
+            0,
+            4623,
+            48,
+            0,
+            0,
+            0,
+            4
+          ],
+          [
+            127,
+            0,
+            363,
+            1033,
+            0,
+            135,
+            957,
+            19,
+            0,
+            0,
+            620
+          ],
+          [
+            3,
+            3,
+            118,
+            125,
+            0,
+            42,
+            496,
+            236,
+            2,
+            0,
+            1
+          ],
+          [
+            0,
+            17,
+            0,
+            277,
+            0,
+            147,
+            1209,
+            0,
+            5,
+            0,
+            290
+          ],
+          [
+            55,
+            0,
+            0,
+            0,
+            0,
+            142,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            32,
+            0,
+            0,
+            2,
+            0,
+            5,
+            256,
+            0,
+            0,
+            0,
+            66
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.11415553916595987,
+        "events": 31952,
+        "macro_f1_11_classes": 0.33231907785802234,
+        "macro_f1_present_classes": 0.33231907785802234,
+        "nll": 1.2096608028889795
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_D_configuration_reconciliation_20261119"
+    },
+    "hcsn-s307-lr0.003": {
+      "checkpoint_sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe",
+      "complete_recurrent_density_content_delay_state_bytes": null,
+      "epoch": 62,
+      "fresh_logit_payload_sha256": "17cb7959369e19eedd8468267b15dcf093ebdda5e6e27330f45d79c7d35363a2",
+      "max_abs_logit_difference": 0.0,
+      "max_metric_error": 2.220446049250313e-16,
+      "metrics": {
+        "accuracy": 0.6692225838758137,
+        "balanced_accuracy_present_classes": 0.36147676459698797,
+        "brier_half_sum": 0.24083726763678942,
+        "brier_mean_classes": 0.0437885941157799,
+        "confusion_matrix": [
+          [
+            5783,
+            5,
+            91,
+            0,
+            0,
+            392,
+            42,
+            0,
+            121,
+            0,
+            175
+          ],
+          [
+            119,
+            46,
+            0,
+            47,
+            0,
+            210,
+            66,
+            0,
+            86,
+            0,
+            57
+          ],
+          [
+            278,
+            0,
+            556,
+            29,
+            0,
+            150,
+            86,
+            0,
+            1,
+            0,
+            40
+          ],
+          [
+            0,
+            1,
+            123,
+            8977,
+            0,
+            48,
+            1948,
+            245,
+            31,
+            0,
+            127
+          ],
+          [
+            181,
+            1,
+            0,
+            0,
+            0,
+            112,
+            2,
+            0,
+            1,
+            0,
+            0
+          ],
+          [
+            395,
+            3,
+            86,
+            0,
+            0,
+            4491,
+            14,
+            0,
+            0,
+            0,
+            2
+          ],
+          [
+            174,
+            0,
+            279,
+            747,
+            0,
+            149,
+            1118,
+            126,
+            0,
+            0,
+            661
+          ],
+          [
+            0,
+            0,
+            69,
+            69,
+            0,
+            11,
+            560,
+            314,
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            13,
+            0,
+            151,
+            0,
+            42,
+            1147,
+            0,
+            27,
+            0,
+            565
+          ],
+          [
+            46,
+            0,
+            0,
+            0,
+            0,
+            151,
+            1,
+            0,
+            0,
+            0,
+            0
+          ],
+          [
+            38,
+            0,
+            0,
+            6,
+            0,
+            10,
+            236,
+            0,
+            0,
+            0,
+            71
+          ]
+        ],
+        "ece_15_equal_width_bins": 0.06398163132412829,
+        "events": 31952,
+        "macro_f1_11_classes": 0.3498305888641129,
+        "macro_f1_present_classes": 0.3498305888641129,
+        "nll": 1.232970584396008
+      },
+      "model_state_dict_tensor_bytes": 146280,
+      "source_stage": "hcsn_c2_current_D_replay_20261119"
+    }
+  }
+}

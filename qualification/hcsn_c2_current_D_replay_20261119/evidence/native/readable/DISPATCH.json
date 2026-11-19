@@ -1,0 +1,21 @@
+{
+  "schema": "current-six-best-D-and-surviving-chain-dispatch-v1",
+  "source_commit": "6e53707e317f6d0a12d5402ac9dd14c26dc3ae4c",
+  "source_tree": "d7867464f654fe7f0fd7e88a8f2c1dc22fb46fd9",
+  "native_key": "hcsn-c2-current-best-D-20261119-2f215-delivery003",
+  "E_access": false,
+  "original_controller_terminal": "UNKNOWN",
+  "prior_deliveries": [
+    {
+      "job_id": "1a1f3e91c82-ffbe-e73",
+      "status": "failed_preexec",
+      "exit_code": 127
+    },
+    {
+      "job_id": "1a1f3e9fd9e-ffbe-e78",
+      "status": "launch_unknown_no_remote_job_directory_observed"
+    }
+  ],
+  "atomic_execution_guard": "All delivery wrappers use the same create-only root before writing source or executing any scientific stage; at most one can execute.",
+  "source_payload_sha256": "59c79977b477eaa37c978fcae65a52e722e6f3021e8db9cc9781bd580e78649c"
+}

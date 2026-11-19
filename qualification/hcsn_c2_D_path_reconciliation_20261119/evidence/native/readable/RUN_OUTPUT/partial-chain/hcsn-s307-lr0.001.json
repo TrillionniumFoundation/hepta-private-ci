@@ -1,0 +1,524 @@
+{
+  "checks": {
+    "initial_checkpoint": true,
+    "parent_journal_order_and_partial_work": {
+      "logged_new_updates": 560,
+      "logical_updates": 560,
+      "possibly_unlogged_optimizer_updates": [
+        0,
+        0
+      ],
+      "unclosed_forward_backward": false,
+      "unclosed_optimizer_call": false
+    },
+    "parent_last_checkpoint": true,
+    "parent_report": {
+      "complete_epochs": 46,
+      "status": "budget_exhausted"
+    },
+    "resume_witness_full_model_optimizer_RNG": true
+  },
+  "commit_chain": {
+    "errors": [],
+    "full_optimizer_objects_constructed_or_restored": 0,
+    "strict_history": [
+      {
+        "best": 0.33231907785802234,
+        "best_epoch": 126,
+        "plateau_anchor": 0.33231907785802234,
+        "stale_epochs": 1
+      },
+      null
+    ],
+    "verified": [
+      {
+        "checkpoint_sha256": "6b63f7ad68bc72f04a94f282c411e5e96a4716c3e18df0887fb71c153fd22dff",
+        "epoch": 47
+      },
+      {
+        "checkpoint_sha256": "ea5213c1389482206511981f2895816355b4cc2e28e52ed56707657404880b88",
+        "epoch": 48
+      },
+      {
+        "checkpoint_sha256": "de1ac6c13c2cb9433d51f713bc71458ac1785ebd80c479ccee68343092fa2c0d",
+        "epoch": 49
+      },
+      {
+        "checkpoint_sha256": "74a7c15e83cbeafd85c10cef3a00639bb11998550e69c1060e00203252d420e4",
+        "epoch": 50
+      },
+      {
+        "checkpoint_sha256": "58ce154ad3539cc61d4ab87f555ebd584f6a163f2e7dda7b0a28a2b5e25da1e3",
+        "epoch": 51
+      },
+      {
+        "checkpoint_sha256": "2ffbc2890b534b4c26ca10d4cbb4a8f6fc836c95c013f2735e75c46d1e761beb",
+        "epoch": 52
+      },
+      {
+        "checkpoint_sha256": "9d24036d85ee4a4209d96f43edfcd066e0c617d65cb41a54299f0c2598ce40a4",
+        "epoch": 53
+      },
+      {
+        "checkpoint_sha256": "4056c05100aca6f748bf46af21de3b893fbf679bf1b6a89888f6fc0e19420386",
+        "epoch": 54
+      },
+      {
+        "checkpoint_sha256": "a7cfc1416f5eb40e6c25eada7fd4aa2e6289d28dc770e37ba626511efb82cda5",
+        "epoch": 55
+      },
+      {
+        "checkpoint_sha256": "d1e88317253348bfe76ffc2a243b2bf1dfec7d5be71dbdb469622a57e6e9004e",
+        "epoch": 56
+      },
+      {
+        "checkpoint_sha256": "32701442d02bbf476d142202271fad689d786c5406781a6753af42b7cd8f83f3",
+        "epoch": 57
+      },
+      {
+        "checkpoint_sha256": "acf413d51b0c16cf4678aae88e43dd9c8b954ed0406972e107a64f98c14fe6ef",
+        "epoch": 58
+      },
+      {
+        "checkpoint_sha256": "7a11eaba7ca86fddc9a16f77cc9ee68132201dea205a0b5da3c12ec2ff584397",
+        "epoch": 59
+      },
+      {
+        "checkpoint_sha256": "36af36dbcfda9327cf932c1277f437333b2af041cc08f8466999e27c85ec8b81",
+        "epoch": 60
+      },
+      {
+        "checkpoint_sha256": "d5517df72f341473f8225322e6f0008a060fd7c88d5a6d398d8688a45b55718a",
+        "epoch": 61
+      },
+      {
+        "checkpoint_sha256": "92ab1c98fa6531ba92fd26393e661da63f5ad26233b5718f5128c31188843004",
+        "epoch": 62
+      },
+      {
+        "checkpoint_sha256": "3929cb2972e64094d6cc87d6dc6ec9057925e3f5513a9d0b036e918dd355b9eb",
+        "epoch": 63
+      },
+      {
+        "checkpoint_sha256": "10fbb9c2a0f9e6b988540f3a8b0ac994c8c99669b78491fd8eefdad0f2914b90",
+        "epoch": 64
+      },
+      {
+        "checkpoint_sha256": "9205306af1c9936446d0d21cdcb05da44150c530bbd78cb69cdf050cc3cf8c97",
+        "epoch": 65
+      },
+      {
+        "checkpoint_sha256": "da68e148e71d06f31ae35145fb439bb78c645b2f2b8d91fda9a47d08a21b8784",
+        "epoch": 66
+      },
+      {
+        "checkpoint_sha256": "278f95b06c743abb342132c06881190fc29bcf9c9adbe17c724bef0d9e614f89",
+        "epoch": 67
+      },
+      {
+        "checkpoint_sha256": "c0c1747b207961ab96e939fb28c88fe344fafc8e534b6ee707ef3afb50c3f79e",
+        "epoch": 68
+      },
+      {
+        "checkpoint_sha256": "4774907e0df7323f15e5a96d7b4f3755b450ae6de3f44853450ae7398f1da2b7",
+        "epoch": 69
+      },
+      {
+        "checkpoint_sha256": "738bd55010d2bb14005d6b29b7cc6b2b11ae32a22b426df4d4c0b533922d3e3e",
+        "epoch": 70
+      },
+      {
+        "checkpoint_sha256": "0ae6ae4350c1dd7ef905d413232d8075db5f78ccb2256c37760dc88bb9260f49",
+        "epoch": 71
+      },
+      {
+        "checkpoint_sha256": "9390b3ee3ca3a96c9fffb7b4c3b1f3887fce82cc33f719c477c7a218470531ff",
+        "epoch": 72
+      },
+      {
+        "checkpoint_sha256": "420f361c18778a4bc46ac45958fff1da952fe7db92726524e9d76fa173b18679",
+        "epoch": 73
+      },
+      {
+        "checkpoint_sha256": "105031e37b1fa212757c78d7d0e6e68e223b0f3987bb9bcc0a951d2b4ef56afb",
+        "epoch": 74
+      },
+      {
+        "checkpoint_sha256": "d96bd936d09ce2e00a6e7c98ca921f6e353147d4b067b599f57cc1b5b825c98b",
+        "epoch": 75
+      },
+      {
+        "checkpoint_sha256": "627a5df62b7f92fa784ec4a1bb782ffb7a70d55c512b6001c6ce9e0ae4d338d1",
+        "epoch": 76
+      },
+      {
+        "checkpoint_sha256": "e0e7332ed329458b78dab4e4a80efd178a247a9e13683f0b50b720bb64471483",
+        "epoch": 77
+      },
+      {
+        "checkpoint_sha256": "f1c5c42115991ef975cbe787c7a367aca0bb1ee52bb6eab8b03bda59201c9a36",
+        "epoch": 78
+      },
+      {
+        "checkpoint_sha256": "102b8cd2e2095bdcd2f2600808c3abfc7973ac59ef4f69e0e6fb51537cdec454",
+        "epoch": 79
+      },
+      {
+        "checkpoint_sha256": "cbc9940cf7bf89300b720ae324f1c45d88783cc2cba316b69b0c3bc11964f568",
+        "epoch": 80
+      },
+      {
+        "checkpoint_sha256": "afa3ed0e364322b8ac6e7728dfcd11cd6c68c5ccae14ba07efd3710f87627b18",
+        "epoch": 81
+      },
+      {
+        "checkpoint_sha256": "14605e0263cf93bef762bb4905589366ef099e1b818ca2a131d8f92d07f306aa",
+        "epoch": 82
+      },
+      {
+        "checkpoint_sha256": "8612916d04a627de4c54ea223c735ff7f5db7f4c910f64ebb3b1e7a4f982d8ef",
+        "epoch": 83
+      },
+      {
+        "checkpoint_sha256": "e68bfc4ad0eab8b1efc0106e45e9b91c4122b085576f94e2448137afe1093de4",
+        "epoch": 84
+      },
+      {
+        "checkpoint_sha256": "be1c49eb61925c3478c45eec0abb1248e89e6b1dfcc8a69ef413de7792eed263",
+        "epoch": 85
+      },
+      {
+        "checkpoint_sha256": "c0c2430f5231c9af784fb8ca5c25df3f828d62a0e63359de9dfdab5f84dca7e8",
+        "epoch": 86
+      },
+      {
+        "checkpoint_sha256": "2b84ef2810400aba2bea1c05edd5e7a93c29c3f3f504e77e41256c0018a9e7b7",
+        "epoch": 87
+      },
+      {
+        "checkpoint_sha256": "e1ddef66b9cda9251a8ddfd04a0601dfc217437299212842e72362cca94fe24f",
+        "epoch": 88
+      },
+      {
+        "checkpoint_sha256": "3d2f274a641ce8595a03d08cf165ae21f0eced1d644b71c4774057d0888f5a7f",
+        "epoch": 89
+      },
+      {
+        "checkpoint_sha256": "4c43ce06a56ce665de000c134cad0862ed160dcd6c3cb8bc196d9a6c5cfc3417",
+        "epoch": 90
+      },
+      {
+        "checkpoint_sha256": "9cd9680c49b002685f3bc2eca71853fcb3b009f083a449ef207b5ab15cddb082",
+        "epoch": 91
+      },
+      {
+        "checkpoint_sha256": "7d70e59f3f83bc001b892104230913d59852c5fda7bf18ebda6d25c166f27a97",
+        "epoch": 92
+      },
+      {
+        "checkpoint_sha256": "5a087f3591e4b245762b80dd1134550e3a2f607c957850c91e0fd17cddc27d6f",
+        "epoch": 93
+      },
+      {
+        "checkpoint_sha256": "4a8444086bacf149c07a3b69bf1798c04841fb5adfec3eace6a8b0354b80c758",
+        "epoch": 94
+      },
+      {
+        "checkpoint_sha256": "ed8acffe6f051eff652771aec21c550bc7324402de598d99e8a1cf1f55d60ebe",
+        "epoch": 95
+      },
+      {
+        "checkpoint_sha256": "9e8fe4a2ab45136e43de5eff7b7f1cd3c087c1b3cc96c027e67798b668a0362d",
+        "epoch": 96
+      },
+      {
+        "checkpoint_sha256": "7afa30f16e6f9c272783638e4f28fb6b8c749026dc50adccb0b8310df9a47c92",
+        "epoch": 97
+      },
+      {
+        "checkpoint_sha256": "8efed6087e3a96b0f10b00474f73c4e620183880b6fccf46282fc68edec22c81",
+        "epoch": 98
+      },
+      {
+        "checkpoint_sha256": "8f1a68eca038836ec19198d0edca9e0db51623fc1af59df89d592bfce2cd826d",
+        "epoch": 99
+      },
+      {
+        "checkpoint_sha256": "287202a8bd45669dcfe448948228d7f4348b6fbe4595d35609fbee2826505257",
+        "epoch": 100
+      },
+      {
+        "checkpoint_sha256": "51fdad2732406d3df3ecd4d21a0f0949b46ac14b96db4dd031be08b842c31aa7",
+        "epoch": 101
+      },
+      {
+        "checkpoint_sha256": "b43637d2341aadfe9ad18b28d5dc7a630574b5c1c8359a288712538a71167b52",
+        "epoch": 102
+      },
+      {
+        "checkpoint_sha256": "6d7ce8ee073c51a11a49d043ea15d9e82291a0bca949cd716aafad15e35c1cc2",
+        "epoch": 103
+      },
+      {
+        "checkpoint_sha256": "b578c065129d70f8e17fd0b893e389046f6802cf9d2a49f697ca639862c9e3ed",
+        "epoch": 104
+      },
+      {
+        "checkpoint_sha256": "a2c5cb4c42fb64854338c3d5a688e3fdd88da447bd48b80cd59fc12975c9a1f8",
+        "epoch": 105
+      },
+      {
+        "checkpoint_sha256": "34cedd92aec732779982b78ebce1b11f8569eff607824f7c83d4c6f45e3f7490",
+        "epoch": 106
+      },
+      {
+        "checkpoint_sha256": "e870eaaaf156f578dca7bd0f254f29326f0174b0ef542aa17cf95d85df554b5e",
+        "epoch": 107
+      },
+      {
+        "checkpoint_sha256": "11e7515f3ec7d3c05fae4d2cdb532d70893f4948581bfe72029af154eb919463",
+        "epoch": 108
+      },
+      {
+        "checkpoint_sha256": "946ea0610621d315b8e021e068b22ab4012e81afce132addfb3c747e5c650570",
+        "epoch": 109
+      },
+      {
+        "checkpoint_sha256": "98dec5c7c774393f44b6b21ce7639d4c28ab15898445f7fe89079d3f7b41618d",
+        "epoch": 110
+      },
+      {
+        "checkpoint_sha256": "23bd72a336dc2ecd750054925906b696db96e5206e29a6fcb312edc78441a4bf",
+        "epoch": 111
+      },
+      {
+        "checkpoint_sha256": "2e0b43e1a72f5d0c41fbc3cddaa1de31755b5f46d5703e4e94b34f1bf061ef6d",
+        "epoch": 112
+      },
+      {
+        "checkpoint_sha256": "e28c7f42ee85f21720a91cc262694d72301eb0cba5713b2f6d4e7065b0aadef6",
+        "epoch": 113
+      },
+      {
+        "checkpoint_sha256": "14c31a1df951074d7c4e9836f582f6536ca09abd6205804e8d7f189517af03c5",
+        "epoch": 114
+      },
+      {
+        "checkpoint_sha256": "c6cd5cd169bde1ecad3c3dd1d544c00b32716227d1a6d85e5a988980c74c2433",
+        "epoch": 115
+      },
+      {
+        "checkpoint_sha256": "4ea8c43fef03f06117bc6f54a9c4c08bec29d06d9a2293268da424f1440aa1ba",
+        "epoch": 116
+      },
+      {
+        "checkpoint_sha256": "35a4073161c3a75c02c776b610a809bb3e9a11da87167c4a9b85d386d18f3f18",
+        "epoch": 117
+      },
+      {
+        "checkpoint_sha256": "6a8b469a50c6be69e8464010ef5c7d6d6302a5e8ddad76100c261eabf14b91db",
+        "epoch": 118
+      },
+      {
+        "checkpoint_sha256": "d17df25207676d6c4ce59a4afdb03409858f797b6c10ce58f1935df4009f5d1d",
+        "epoch": 119
+      },
+      {
+        "checkpoint_sha256": "a35b0542a3c530183eabdcf28c5d666d3ac54624bf82c933e7eb4d97efb56672",
+        "epoch": 120
+      },
+      {
+        "checkpoint_sha256": "a47c480301377d0d84cc0014bda0d4493ba70261ab4aac6285099a433e41b117",
+        "epoch": 121
+      },
+      {
+        "checkpoint_sha256": "35eeaa8142eb842a2dba470996d96d04f2ffa139c34111aa5b1cf31728718525",
+        "epoch": 122
+      },
+      {
+        "checkpoint_sha256": "3ecf0f1151eaa21d14f2b3f23c9bcf516d7d313ae2f4cd4320a554761d5f19f2",
+        "epoch": 123
+      },
+      {
+        "checkpoint_sha256": "12622739f891d49d16e760a92577a2bdf3b0e154b67cf129b7e7927edb66bfb0",
+        "epoch": 124
+      },
+      {
+        "checkpoint_sha256": "9e263ac6e60851897d0c9030e0f978943eb79bb8b0685eb288726008740d04f7",
+        "epoch": 125
+      },
+      {
+        "checkpoint_sha256": "14a9c527bf87ad6524c771ab7da5a1ccf32723cd1f2fc6c7d8f6d8797d1b2ed9",
+        "epoch": 126
+      },
+      {
+        "checkpoint_sha256": "032d43dc0e6f20a6d4113102ae32faa57809c714875beec4ab2ab76358e93441",
+        "epoch": 127
+      }
+    ]
+  },
+  "costs": {
+    "missing_cost_is_not_zero": true,
+    "nested_timers_are_not_added": true,
+    "old_controller_lifetime_CPU": null,
+    "original_parent_outer": {
+      "adequate": false,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3/train.py",
+        "--prepared",
+        "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+        "--manifest-sha256",
+        "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001",
+        "--arm",
+        "hcsn",
+        "--seed",
+        "307",
+        "--learning-rate",
+        "0.001",
+        "--width",
+        "16",
+        "--batch-size",
+        "32",
+        "--min-epochs",
+        "30",
+        "--max-epochs",
+        "100",
+        "--patience",
+        "10",
+        "--memorization-updates",
+        "1024",
+        "--memorization-check-every",
+        "64",
+        "--plateau-delta",
+        "0.002",
+        "--quality-threshold",
+        "0.3",
+        "--threads",
+        "1",
+        "--wall-seconds",
+        "14370",
+        "--rss-bytes",
+        "6442450944",
+        "--s4-repo",
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "--hcsn-grid-json",
+        "{\"active_cells\": 256, \"endpoint\": 4.8, \"initial_log_std\": 0.08, \"phase_cells\": 16, \"quadrature_order\": 32, \"refractory\": 0.2, \"tail_rate\": 1.0}",
+        "--trace-records",
+        "4096",
+        "--trace-bytes",
+        "33554432",
+        "--cache-frozen-tables",
+        "--learn-core-adapter",
+        "--micro-batch-size",
+        "8"
+      ],
+      "arm": "hcsn",
+      "common_weights_unchanged": true,
+      "cpu_seconds": 14370.44915991,
+      "dispatch_offset_seconds": 0.01247810386121273,
+      "epochs": 46,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400,
+      "learning_rate": 0.001,
+      "name": "hcsn-s307-lr0.001",
+      "peak_rss_bytes": 4060377088,
+      "result_sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0",
+      "returncode": 2,
+      "seed": 307,
+      "selected_development": null,
+      "source_unchanged": true,
+      "status": "failed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "2dbac5faf71b5ad6ef1e6173b4de7feb50362227cf0d1f1abe06fd644d96e87d",
+      "whole_process_wall_seconds": 14375.544506336097
+    },
+    "original_parent_work_refund_seconds": 0,
+    "surviving_C2_controller_commands": [
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.060347+00:00",
+        "name": "hcsn-s307-lr0.001",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14375.544506336097,
+        "process_started": false,
+        "status": "preparing",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      },
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "command": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import os,resource,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); os.execv(sys.argv[1],sys.argv[1:])",
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/c2_runner.py",
+          "--parent",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001",
+          "--outer",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/parent-records/hcsn-s307-lr0.001.json",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+          "--contract",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/CONTRACT.json",
+          "--program-manifest",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/PROGRAM-MANIFEST.json",
+          "--policy",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/POSTERIOR-POLICY.json",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001",
+          "--execute",
+          "--decision",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-decision-v1-20261110-c385.json",
+          "--decision-sha256",
+          "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+        ],
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.060347+00:00",
+        "name": "hcsn-s307-lr0.001",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14375.544506336097,
+        "parent_outer_record": {
+          "bytes": 2503,
+          "sha256": "48c2cebf30f4ab0c53a9e9310d2a4209fa4c2c04cc1d46a33c7e25a973da089c"
+        },
+        "pid": 2132908,
+        "prelaunch_wall_seconds": 0.01832461217418313,
+        "process_started": true,
+        "remaining_at_dispatch_seconds": 28824.455493663903,
+        "spawn_attempted": true,
+        "status": "running",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      }
+    ]
+  },
+  "failures": {
+    "original_C2_journal_order_and_partial_work": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 131, in <lambda>\n    phase = check(\"original_C2_journal_order_and_partial_work\", lambda: reconstruct_journal(events, episodes, fit_plan[\"seed\"], 32, 8,\n                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/checks.py\", line 108, in reconstruct_journal\n    require(events and events[-1]['kind'] == 'finished', 'journal lacks terminal event')\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/audit_io.py\", line 11, in require\n    raise ValueError(message)\nValueError: journal lacks terminal event\n",
+    "original_producer_terminal_report": "Traceback (most recent call last):\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 90, in check\n    value = call()\n            ^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 107, in <lambda>\n    original_report = check(\"original_producer_terminal_report\", lambda: data(native / \"result.json\"))\n                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 44, in data\n    return json.loads(bound(path, expected).read_bytes())\n                      ^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215/partial_chain.py\", line 37, in bound\n    raise FileNotFoundError(str(path))\nFileNotFoundError: /home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/result.json\n"
+  },
+  "journal_survival": {
+    "complete_epochs": 81,
+    "malformed_lines": [
+      3114
+    ],
+    "optimizer_completed_lower_bound": 983,
+    "optimizer_started_lower_bound": 983,
+    "original_finished_event_present": false,
+    "rows": 3113
+  },
+  "name": "hcsn-s307-lr0.001",
+  "original_controller_terminal": "UNKNOWN",
+  "status": "SURVIVING_EVIDENCE_AUDITED_ORIGINAL_TERMINAL_GATE_HOLD"
+}

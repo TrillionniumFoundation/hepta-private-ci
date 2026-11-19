@@ -1,0 +1,75 @@
+{
+  "E_admitted": false,
+  "E_data_access": false,
+  "automatic_trigger": false,
+  "current_D_readback_sha256": "2d7657124c366eff56d2afc8cbc0f3289d054c4de4dbd779558f681323bc53d7",
+  "gates": [
+    {
+      "number": 1,
+      "original_requirement": "All six original HCSN and C2 opportunities have immutable authentic terminal receipts; no live writer, unknown launch or missing terminal identity.",
+      "status": "BLOCKED_MISSING_AUTHENTIC_ORIGINAL_TERMINALS"
+    },
+    {
+      "number": 2,
+      "original_requirement": "The separately authorized 1800-second independent C2 auditor has completed chain, strict-best full-D replay, original partial-work and cost checks inside its caps; missing, failed or source-changed checks withhold credit.",
+      "status": "BLOCKED_INCOMPLETE_ORIGINAL_CHAIN_TRACE_COST_AUDIT"
+    },
+    {
+      "number": 3,
+      "original_requirement": "Both learning rates and all three seeds retain independently verified D checkpoint quality; no omitted failures or per-seed LR selection.",
+      "status": "PASS_CURRENT_BEST_FULL_D_SIX_MODELS"
+    },
+    {
+      "number": 4,
+      "original_requirement": "The higher-mean-D common LR's three seeds all pass the declared memorization/minimum-30/.002-patience10/finite-gradient/source heuristic; no replacement by a lower-scoring adequate LR to unlock E.",
+      "status": "PASS_RECORDED_WINNING_COMMON_LR_ADEQUACY"
+    },
+    {
+      "number": 5,
+      "original_requirement": "All selected baseline three-seed sets meet the same training-adequacy rule; preserve the earlier C1 resume-start-witness limitation.",
+      "status": "PASS_RECORDED_SELECTED_BASELINE_ADEQUACY_C1_WITNESS_LIMITATION_RETAINED"
+    },
+    {
+      "number": 6,
+      "original_requirement": "Parent makes a separate explicit decision after reviewing quality increment, full costs and unresolved numerical/causal issues; binds final plan/program/runtime/checkpoints/D-selection/budget before any E interpretation.",
+      "status": "NOT_ADMITTED_PRIOR_NECESSARY_GATES_UNSATISFIED"
+    }
+  ],
+  "missing_original_paths": [
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/RESULT.json",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.001/result.json",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.001/result.json"
+  ],
+  "new_diagnostic_E_created_to_bypass_original_gates": false,
+  "original_controller_status": "UNKNOWN",
+  "original_full_chain_trace_cost_auditor_complete": false,
+  "original_full_training_replay": "0/6",
+  "original_gate_text_unchanged": true,
+  "original_journal_terminal_gaps": {
+    "hcsn-s211-lr0.001": {
+      "complete_epochs": 80,
+      "malformed_lines": [
+        3075
+      ],
+      "optimizer_completed_lower_bound": 970,
+      "optimizer_started_lower_bound": 971,
+      "original_finished_event_present": false,
+      "rows": 3074
+    },
+    "hcsn-s307-lr0.001": {
+      "complete_epochs": 81,
+      "malformed_lines": [
+        3114
+      ],
+      "optimizer_completed_lower_bound": 983,
+      "optimizer_started_lower_bound": 983,
+      "original_finished_event_present": false,
+      "rows": 3113
+    }
+  },
+  "original_plan_path": "qualification/hcsn_differentiable/evidence/p0p5-c2-progress-20261110/confirmation-E-proposal/PLAN.json",
+  "original_plan_sha256": "be778e57d203779e7765ff2e2bc84e977d61a992894d747dd1b89b091a486ddf",
+  "reason": "The original immutable terminal/complete-auditor evidence remains missing. Current-D reproducibility and surviving commit checks do not create a historical terminal or a complete original audit. No external-owner artifact is invented.",
+  "schema": "C2-original-E-gate-evidence-review-v1",
+  "sealed_selection_sha256": "6c20a236747ec5733643a68e1761fdcdb31e186643d89b2ab4ae8e615d3531b6"
+}

@@ -1,0 +1,64 @@
+[
+  {
+    "bound_parent_plan": {
+      "bytes": 1110,
+      "copy": "bound-plans/hcsn-s211-lr0.001.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/plan.json",
+      "sha256": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7"
+    },
+    "construction_source_sha256": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+    "derived_configuration": {
+      "arm": "hcsn",
+      "cache_frozen_tables": true,
+      "freeze_shared": true,
+      "hcsn_grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 211,
+      "width": 16
+    },
+    "name": "hcsn-s211-lr0.001",
+    "original_index_configuration": null,
+    "original_terminal_snapshot_sha256": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+  },
+  {
+    "bound_parent_plan": {
+      "bytes": 1110,
+      "copy": "bound-plans/hcsn-s307-lr0.001.json",
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/plan.json",
+      "sha256": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e"
+    },
+    "construction_source_sha256": "170d057d4b33d9e13a15c1f3c8e7db6ce06087c7bd1edb32412fb753f79e3714",
+    "derived_configuration": {
+      "arm": "hcsn",
+      "cache_frozen_tables": true,
+      "freeze_shared": true,
+      "hcsn_grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 307,
+      "width": 16
+    },
+    "name": "hcsn-s307-lr0.001",
+    "original_index_configuration": null,
+    "original_terminal_snapshot_sha256": "17df82cc70fce7d42ad1389c5770ba42a8039522ab07f36f6b6403b1d0156c49"
+  }
+]
