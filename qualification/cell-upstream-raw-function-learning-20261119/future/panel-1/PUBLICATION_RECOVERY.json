@@ -1,0 +1,48 @@
+{
+  "status": "PUBLICATION_CACHE_LOSS_RECOVERED_BEFORE_ANY_COMMIT_OR_REF_MUTATION",
+  "base_commit_verified_by_original_GitHub_ref": "6c7ad834d752f93318a577ad49205785675c7d15",
+  "base_tree_verified_by_original_Git_commit": "ff158ec27f960561f3fa34e2c75a05fbdc715616",
+  "unreferenced_tree_without_base_not_published": "c5f07a32f343497b585cab949d0d87634ed48922",
+  "failed_commit": {
+    "content": [
+      {
+        "type": "text",
+        "text": "InvalidActionArgumentsError: Missing required tool arguments: `parent_sha`."
+      }
+    ],
+    "structuredContent": {
+      "error": "InvalidActionArgumentsError: Missing required tool arguments: `parent_sha`.",
+      "error_code": "INVALID_ARGUMENT",
+      "error_data": {
+        "type": "invalid_action_arguments",
+        "code": "invalid_action_arguments",
+        "reason": "missing_required_argument",
+        "failure_stage": "argument_binding"
+      }
+    },
+    "isError": true
+  },
+  "failed_ref": {
+    "content": [
+      {
+        "type": "text",
+        "text": "InvalidActionArgumentsError: Missing required tool arguments: `branch_name`, `sha`."
+      }
+    ],
+    "structuredContent": {
+      "error": "InvalidActionArgumentsError: Missing required tool arguments: `branch_name`, `sha`.",
+      "error_code": "INVALID_ARGUMENT",
+      "error_data": {
+        "type": "invalid_action_arguments",
+        "code": "invalid_action_arguments",
+        "reason": "missing_required_argument",
+        "failure_stage": "argument_binding"
+      }
+    },
+    "isError": true
+  },
+  "original_39_export_byte_hashes_verified": true,
+  "new_model_calls": 0,
+  "new_native_children": 0,
+  "new_training_updates": 0
+}
