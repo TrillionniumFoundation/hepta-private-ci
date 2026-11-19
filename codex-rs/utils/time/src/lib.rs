@@ -40,6 +40,18 @@ pub enum SecondsFormat {
     AutoSi,
 }
 
+/// The UTC calendar layouts used by persisted paths and clock presentation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum UtcFormat {
+    Date,
+    Time,
+    DateTime,
+    DateTimeUtc,
+    DatePath,
+    Compact,
+    Filename,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ParseTimestampError;
 
@@ -55,8 +67,10 @@ impl Timestamp {
     pub const UNIX_EPOCH: Self = Self { seconds: 0, nanoseconds: 0 };
 
     pub fn now() -> Self {
-        Self::from_datetime(OffsetDateTime::now_utc())
-            .expect("system clock is within the supported timestamp range")
+        match Self::from_datetime(OffsetDateTime::now_utc()) {
+            Some(timestamp) => timestamp,
+            None => panic!("system clock is outside the supported timestamp range"),
+        }
     }
 
     pub fn from_datetime(value: OffsetDateTime) -> Option<Self> {
@@ -119,10 +133,12 @@ impl Timestamp {
     /// The calendar second containing this timestamp. Leap seconds retain
     /// their preceding second; use `to_rfc3339_opts` to display the `:60` field.
     pub fn calendar(&self) -> OffsetDateTime {
-        OffsetDateTime::from_unix_timestamp(self.seconds)
-            .expect("validated timestamp")
-            .replace_nanosecond(self.nanoseconds % 1_000_000_000)
-            .expect("validated nanoseconds")
+        match OffsetDateTime::from_unix_timestamp(self.seconds)
+            .and_then(|calendar| calendar.replace_nanosecond(self.nanoseconds % 1_000_000_000))
+        {
+            Ok(calendar) => calendar,
+            Err(_) => unreachable!("private timestamp fields were validated at construction"),
+        }
     }
 
     pub fn checked_add(self, duration: Duration) -> Option<Self> {
@@ -179,31 +195,26 @@ impl Timestamp {
         parse::filename_timestamp(value).ok_or(ParseTimestampError)
     }
 
-    /// Format the UTC calendar fields used by persisted paths, log clocks,
-    /// and current-time reminders. An unsupported directive is an error.
-    pub fn format_utc(&self, pattern: &str) -> Result<String, fmt::Error> {
-        use fmt::Write;
+    /// Format a supported calendar layout without a fallible runtime format
+    /// string. Canonical RFC3339 formatting has separate precision controls.
+    pub fn format_utc(&self, layout: UtcFormat) -> String {
         let calendar = self.calendar();
-        let mut result = String::new();
-        let mut chars = pattern.chars();
-        while let Some(character) = chars.next() {
-            if character != '%' { result.push(character); continue; }
-            match chars.next().ok_or(fmt::Error)? {
-                '%' => result.push('%'),
-                'Y' => {
-                    let year = calendar.year();
-                    if (0..=9999).contains(&year) { write!(result, "{year:04}")?; }
-                    else { write!(result, "{year:+05}")?; }
-                }
-                'm' => write!(result, "{:02}", u8::from(calendar.month()))?,
-                'd' => write!(result, "{:02}", calendar.day())?,
-                'H' => write!(result, "{:02}", calendar.hour())?,
-                'M' => write!(result, "{:02}", calendar.minute())?,
-                'S' => write!(result, "{:02}", u32::from(calendar.second()) + self.nanoseconds / 1_000_000_000)?,
-                _ => return Err(fmt::Error),
-            }
+        let year = calendar.year();
+        let year = if (0..=9999).contains(&year) { format!("{year:04}") } else { format!("{year:+05}") };
+        let month = u8::from(calendar.month());
+        let day = calendar.day();
+        let hour = calendar.hour();
+        let minute = calendar.minute();
+        let second = u32::from(calendar.second()) + self.nanoseconds / 1_000_000_000;
+        match layout {
+            UtcFormat::Date => format!("{year}-{month:02}-{day:02}"),
+            UtcFormat::Time => format!("{hour:02}:{minute:02}:{second:02}"),
+            UtcFormat::DateTime => format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02}"),
+            UtcFormat::DateTimeUtc => format!("{year}-{month:02}-{day:02} {hour:02}:{minute:02}:{second:02} UTC"),
+            UtcFormat::DatePath => format!("{year}/{month:02}/{day:02}"),
+            UtcFormat::Compact => format!("{year}{month:02}{day:02}T{hour:02}{minute:02}{second:02}Z"),
+            UtcFormat::Filename => format!("{year}-{month:02}-{day:02}T{hour:02}-{minute:02}-{second:02}"),
         }
-        Ok(result)
     }
 
     pub fn to_rfc3339(&self) -> String {
@@ -248,14 +259,20 @@ pub fn parse_date(value: &str) -> Result<time::Date, ParseTimestampError> {
 impl Add<Duration> for Timestamp {
     type Output = Self;
     fn add(self, duration: Duration) -> Self {
-        self.checked_add(duration).expect("timestamp addition is out of range")
+        match self.checked_add(duration) {
+            Some(timestamp) => timestamp,
+            None => panic!("timestamp addition is out of range"),
+        }
     }
 }
 
 impl Sub<Duration> for Timestamp {
     type Output = Self;
     fn sub(self, duration: Duration) -> Self {
-        self.checked_sub(duration).expect("timestamp subtraction is out of range")
+        match self.checked_sub(duration) {
+            Some(timestamp) => timestamp,
+            None => panic!("timestamp subtraction is out of range"),
+        }
     }
 }
 
@@ -266,7 +283,10 @@ impl Sub<Timestamp> for Timestamp {
 
 impl From<SystemTime> for Timestamp {
     fn from(value: SystemTime) -> Self {
-        Self::from_system_time(value).expect("system time is outside the supported timestamp range")
+        match Self::from_system_time(value) {
+            Some(timestamp) => timestamp,
+            None => panic!("system time is outside the supported timestamp range"),
+        }
     }
 }
 

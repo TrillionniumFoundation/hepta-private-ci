@@ -182,7 +182,7 @@ fn rollout_summary_file_stem_from_parts(
                 .unwrap_or(source_updated_at);
             let short_hash_seed = (thread_uuid.as_u128() & 0xFFFF_FFFF) as u32;
             (
-                timestamp.format_utc("%Y-%m-%dT%H-%M-%S").expect("supported timestamp format"),
+                timestamp.format_utc(codex_utils_time::UtcFormat::Filename),
                 short_hash_seed,
             )
         }
@@ -194,7 +194,7 @@ fn rollout_summary_file_stem_from_parts(
                     .wrapping_add(u32::from(byte));
             }
             (
-                source_updated_at.format_utc("%Y-%m-%dT%H-%M-%S").expect("supported timestamp format"),
+                source_updated_at.format_utc(codex_utils_time::UtcFormat::Filename),
                 short_hash_seed,
             )
         }

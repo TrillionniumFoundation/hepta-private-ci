@@ -95,7 +95,7 @@ pub(crate) fn maybe_init(config: &Config) {
         let mut p = config.log_dir.clone();
         let filename = format!(
             "session-{}.jsonl",
-            codex_utils_time::Timestamp::now().format_utc("%Y%m%dT%H%M%SZ").expect("supported timestamp format")
+            codex_utils_time::Timestamp::now().format_utc(codex_utils_time::UtcFormat::Compact)
         );
         p.push(filename);
         p

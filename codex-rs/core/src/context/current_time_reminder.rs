@@ -13,7 +13,7 @@ impl CurrentTimeReminder {
 
     pub(crate) fn formatted_time(&self) -> String {
         self.current_time
-            .format_utc("%Y-%m-%d %H:%M:%S UTC").expect("supported timestamp format")
+            .format_utc(codex_utils_time::UtcFormat::DateTimeUtc)
     }
 }
 
