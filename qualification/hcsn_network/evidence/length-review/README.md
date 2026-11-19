@@ -8,7 +8,7 @@ This review reads the existing eight profile artifacts from source PR #6754, com
 - Reader SHA256: `edbbba83a7c131617d3d81180acdacc0f3881060756cad8e2116562359639632`.
 - Protocol SHA256: `9601216e77b3dc5b3b41f77d7df8f124b7ab176692b0a0b66f24773b95eec9e0`.
 - `SOURCE.json` froze all 67 original files, totaling 1,297,344 bytes, before the unique reader execution `attempt001`.
-- All 25 protocol-pinned source files and all original artifact hashes were checked before and after reading. All eight process requests, exit statuses, stdout/result pairs, cost records and output rosters agree.
+- All 26 protocol-pinned source files and all original artifact hashes were checked before and after reading. All eight process requests, exit statuses, stdout/result pairs, cost records and output rosters agree.
 - Reader resource scope: CPU 8, one numerical thread, 4 GiB address-space limit, 60/65-second CPU limits, 90-second wall deadline. One execution, exit 0, no timeout or scientific rerun.
 
 ## Findings and limits
