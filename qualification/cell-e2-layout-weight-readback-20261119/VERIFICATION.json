@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.e2-layout-frozen-weights-readonly-verification.v1",
+  "evidence_role": "read-only exact script execution receipt; not controller certification",
+  "source_pr": 6722,
+  "execution_source": "78099aa6af4c70c00f26cb11888e20aa59510014",
+  "parent_commit": "48c5b1f3c201d29aad408b526bb97c5c46be0699",
+  "verified_readme_blob_sha": "08edd55d8511ede55585a733dd01b39f168a943f",
+  "host": "desktop",
+  "idempotency_key": "audit-e2-pr6733-exact-script-run20261119-v1",
+  "session_id": "dpty-da9b7d72e57ed96d8dc437b1046693c122a220991ad9f62ed267bd81398d3afe",
+  "created_unix_ms": 1795047284274,
+  "exit_code": 0,
+  "state": "exited",
+  "output_complete": true,
+  "captured_bytes": 71,
+  "stdout": "32/32 paired, exact adapter bytes verified; no adoption/qualification\n",
+  "original_adapter_hashes": {
+    "document_evidence": "e612261e3f501ad6766ce886461780ba0dbc5413fedd6d75017016e90cc3d93b",
+    "native_feedback": "8a3eb33d68d2af9ca359e9b18f5587508a2eada369972c40b670ce1d0620be83"
+  },
+  "expected_pairing": {
+    "pairs": 32,
+    "matched_fields": [
+      "step",
+      "task_id",
+      "group",
+      "target_ids_digest",
+      "padded_positions",
+      "supervised_positions",
+      "head_positions"
+    ],
+    "different_fields": [
+      "input_group_digest",
+      "input_tokens"
+    ]
+  },
+  "independent_controller_authenticated": false,
+  "human_source_authenticated": false,
+  "b3_released_by_this_action": false,
+  "model_or_verifier_called": false,
+  "native_adoption": false,
+  "complete_physical_cost_known": false,
+  "qualification": "HOLD_NO_GO"
+}
