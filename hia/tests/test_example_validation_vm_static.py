@@ -83,7 +83,8 @@ class VmStaticScreen(unittest.TestCase):
             '_ = buffer.store.u64.le(e23_output,e23_zero,e23_event)',
             '_:u64 = buffer.store.u64.le(e23_output,e23_zero,e23_event)', 1,
         )
-        with self.assertRaisesRegex(ValueError, 'store must discard result'):
+        # The general SSA result-type guard rejects this before the store-specific guard.
+        with self.assertRaisesRegex(ValueError, 'wrong SSA result type'):
             Program(source)
 
     def test_reject_duplicate_constant_json_member(self):
