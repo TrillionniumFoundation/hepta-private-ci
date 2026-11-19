@@ -445,7 +445,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-app-server-protocol",
  "codex-config",
  "codex-core",
@@ -455,6 +454,7 @@ dependencies = [
  "codex-models-manager",
  "codex-protocol",
  "codex-utils-cargo-bin",
+ "codex-utils-time",
  "core_test_support",
  "pretty_assertions",
  "serde",
@@ -1830,10 +1830,8 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1aa79e62e7697b8e29b513a68abacf485adcd1fe8284a4316c5ae868e6633327"
 dependencies = [
  "iana-time-zone",
- "js-sys",
  "num-traits",
  "serde",
- "wasm-bindgen",
  "windows-link",
 ]
 
@@ -2079,11 +2077,11 @@ dependencies = [
  "async-channel",
  "base64 0.22.1",
  "bytes",
- "chrono",
  "codex-client",
  "codex-http-client",
  "codex-protocol",
  "codex-utils-rustls-provider",
+ "codex-utils-time",
  "codex-websocket-client",
  "eventsource-stream",
  "futures",
@@ -2094,6 +2092,7 @@ dependencies = [
  "serde",
  "serde_json",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tokio-test",
  "tokio-tungstenite 0.28.0",
@@ -2113,7 +2112,6 @@ dependencies = [
  "app_test_support",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-agent-extension",
  "codex-analytics",
@@ -2179,6 +2177,7 @@ dependencies = [
  "codex-utils-path",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "codex-utils-time",
  "codex-web-search-extension",
  "codex-windows-sandbox",
  "core_test_support",
@@ -2328,7 +2327,6 @@ dependencies = [
  "anyhow",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-api",
  "codex-app-server-protocol",
@@ -2341,6 +2339,7 @@ dependencies = [
  "codex-uds",
  "codex-utils-absolute-path",
  "codex-utils-rustls-provider",
+ "codex-utils-time",
  "constant_time_eq 0.3.1",
  "futures",
  "gethostname",
@@ -2507,7 +2506,6 @@ dependencies = [
  "app_test_support",
  "assert_cmd",
  "assert_matches",
- "chrono",
  "clap",
  "clap_complete",
  "codex-api",
@@ -2559,6 +2557,7 @@ dependencies = [
  "codex-utils-cli",
  "codex-utils-home-dir",
  "codex-utils-path",
+ "codex-utils-time",
  "codex-windows-sandbox",
  "crossterm",
  "futures",
@@ -2576,6 +2575,7 @@ dependencies = [
  "supports-color 3.0.2",
  "sys-locale",
  "tempfile",
+ "time",
  "tokio",
  "tokio-tungstenite 0.28.0",
  "toml 0.9.12+spec-1.1.0",
@@ -2608,7 +2608,6 @@ name = "codex-cloud-config"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
- "chrono",
  "codex-agent-identity",
  "codex-backend-client",
  "codex-config",
@@ -2617,6 +2616,7 @@ dependencies = [
  "codex-login",
  "codex-otel",
  "codex-protocol",
+ "codex-utils-time",
  "hmac 0.12.1",
  "pretty_assertions",
  "serde",
@@ -2624,6 +2624,7 @@ dependencies = [
  "sha2 0.10.9",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tracing",
 ]
@@ -2633,7 +2634,6 @@ name = "codex-cloud-tasks"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "clap",
  "codex-cloud-tasks-client",
  "codex-cloud-tasks-mock-client",
@@ -2644,6 +2644,7 @@ dependencies = [
  "codex-model-provider",
  "codex-tui",
  "codex-utils-cli",
+ "codex-utils-time",
  "crossterm",
  "http 1.5.0",
  "insta",
@@ -2666,11 +2667,11 @@ name = "codex-cloud-tasks-client"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-api",
  "codex-backend-client",
  "codex-git-utils",
  "codex-http-client",
+ "codex-utils-time",
  "serde",
  "serde_json",
  "thiserror 2.0.21",
@@ -2680,8 +2681,8 @@ dependencies = [
 name = "codex-cloud-tasks-mock-client"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-cloud-tasks-client",
+ "codex-utils-time",
  "diffy",
 ]
 
@@ -2878,7 +2879,6 @@ dependencies = [
  "async-channel",
  "base64 0.22.1",
  "bm25",
- "chrono",
  "clap",
  "codex-agent-graph-store",
  "codex-analytics",
@@ -2948,6 +2948,7 @@ dependencies = [
  "codex-utils-redacted-string",
  "codex-utils-stream-parser",
  "codex-utils-string",
+ "codex-utils-time",
  "codex-web-search-extension",
  "codex-windows-sandbox",
  "core_test_support",
@@ -2983,6 +2984,7 @@ dependencies = [
  "test-case",
  "test-log",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tokio-tungstenite 0.28.0",
  "tokio-util",
@@ -3029,7 +3031,6 @@ name = "codex-core-plugins"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-analytics",
  "codex-app-server-protocol",
  "codex-config",
@@ -3052,6 +3053,7 @@ dependencies = [
  "codex-utils-path",
  "codex-utils-path-uri",
  "codex-utils-plugins",
+ "codex-utils-time",
  "dirs",
  "flate2",
  "futures",
@@ -3068,6 +3070,7 @@ dependencies = [
  "tar",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "toml 0.9.12+spec-1.1.0",
  "tracing",
@@ -3418,7 +3421,6 @@ name = "codex-goal-extension"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-analytics",
  "codex-core",
  "codex-extension-api",
@@ -3429,6 +3431,7 @@ dependencies = [
  "codex-tools",
  "codex-utils-absolute-path",
  "codex-utils-template",
+ "codex-utils-time",
  "pretty_assertions",
  "serde",
  "serde_json",
@@ -4027,7 +4030,6 @@ dependencies = [
 name = "codex-hepta-memory-extension"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-extension-api",
  "codex-hepta-contracts",
  "codex-hepta-memory",
@@ -4038,10 +4040,12 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-output-truncation",
  "codex-utils-path-uri",
+ "codex-utils-time",
  "serde",
  "serde_json",
  "sha2 0.10.9",
  "tempfile",
+ "time",
  "tokio",
 ]
 
@@ -4349,7 +4353,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "async-channel",
- "chrono",
  "codex-config",
  "codex-plugin",
  "codex-protocol",
@@ -4357,6 +4360,7 @@ dependencies = [
  "codex-utils-output-truncation",
  "codex-utils-path-uri",
  "codex-utils-pty",
+ "codex-utils-time",
  "futures",
  "pretty_assertions",
  "regex",
@@ -4495,7 +4499,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
- "chrono",
  "codex-agent-identity",
  "codex-config",
  "codex-http-client",
@@ -4506,6 +4509,7 @@ dependencies = [
  "codex-secrets",
  "codex-terminal-detection",
  "codex-utils-template",
+ "codex-utils-time",
  "codex-workload-identity",
  "core_test_support",
  "http 1.5.0",
@@ -4522,6 +4526,7 @@ dependencies = [
  "sha2 0.10.9",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tiny_http",
  "tokio",
  "tracing",
@@ -4676,7 +4681,6 @@ name = "codex-memories-write"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-backend-client",
  "codex-config",
  "codex-core",
@@ -4696,12 +4700,14 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-output-truncation",
  "codex-utils-template",
+ "codex-utils-time",
  "core_test_support",
  "futures",
  "pretty_assertions",
  "serde",
  "serde_json",
  "tempfile",
+ "time",
  "tokio",
  "tracing",
  "uuid",
@@ -4771,7 +4777,6 @@ dependencies = [
 name = "codex-models-manager"
 version = "0.0.0"
 dependencies = [
- "chrono",
  "codex-collaboration-mode-templates",
  "codex-http-client",
  "codex-login",
@@ -4779,10 +4784,12 @@ dependencies = [
  "codex-protocol",
  "codex-utils-output-truncation",
  "codex-utils-template",
+ "codex-utils-time",
  "pretty_assertions",
  "serde",
  "serde_json",
  "tempfile",
+ "time",
  "tokio",
  "tracing",
 ]
@@ -4923,7 +4930,6 @@ version = "0.0.0"
 dependencies = [
  "anyhow",
  "chardetng",
- "chrono",
  "codex-async-utils",
  "codex-execpolicy",
  "codex-extension-items",
@@ -4934,6 +4940,7 @@ dependencies = [
  "codex-utils-path-uri",
  "codex-utils-redacted-string",
  "codex-utils-string",
+ "codex-utils-time",
  "encoding_rs",
  "globset",
  "http 1.5.0",
@@ -4954,6 +4961,7 @@ dependencies = [
  "sys-locale",
  "tempfile",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tracing",
  "ts-rs",
@@ -5065,7 +5073,6 @@ name = "codex-rollout"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-extension-items",
  "codex-file-search",
  "codex-git-utils",
@@ -5075,6 +5082,7 @@ dependencies = [
  "codex-state",
  "codex-utils-absolute-path",
  "codex-utils-path",
+ "codex-utils-time",
  "pretty_assertions",
  "regex",
  "serde",
@@ -5249,12 +5257,12 @@ name = "codex-state"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-git-utils",
  "codex-history",
  "codex-protocol",
  "codex-utils-absolute-path",
  "codex-utils-path",
+ "codex-utils-time",
  "libc",
  "libsqlite3-sys",
  "log",
@@ -5265,6 +5273,7 @@ dependencies = [
  "sha2 0.10.9",
  "sqlx",
  "strum 0.27.2",
+ "time",
  "tokio",
  "tracing",
  "tracing-subscriber",
@@ -5321,7 +5330,6 @@ name = "codex-thread-store"
 version = "0.0.0"
 dependencies = [
  "anyhow",
- "chrono",
  "codex-app-server-protocol",
  "codex-extension-items",
  "codex-git-utils",
@@ -5333,6 +5341,7 @@ dependencies = [
  "codex-utils-absolute-path",
  "codex-utils-path",
  "codex-utils-path-uri",
+ "codex-utils-time",
  "futures",
  "pretty_assertions",
  "pulldown-cmark",
@@ -5382,7 +5391,6 @@ dependencies = [
  "assert_matches",
  "axum",
  "base64 0.22.1",
- "chrono",
  "clap",
  "codex-ansi-escape",
  "codex-app-server-client",
@@ -5428,6 +5436,7 @@ dependencies = [
  "codex-utils-sandbox-summary",
  "codex-utils-sleep-inhibitor",
  "codex-utils-string",
+ "codex-utils-time",
  "codex-windows-sandbox",
  "color-eyre",
  "core_test_support",
@@ -5441,6 +5450,7 @@ dependencies = [
  "image",
  "insta",
  "itertools 0.14.0",
+ "jiff",
  "lazy_static",
  "libc",
  "pathdiff",
@@ -5463,6 +5473,7 @@ dependencies = [
  "tempfile",
  "textwrap 0.16.4",
  "thiserror 2.0.21",
+ "time",
  "tokio",
  "tokio-stream",
  "tokio-tungstenite 0.28.0",
@@ -5751,6 +5762,17 @@ name = "codex-utils-template"
 version = "0.0.0"
 dependencies = [
  "pretty_assertions",
+]
+
+[[package]]
+name = "codex-utils-time"
+version = "0.0.0"
+dependencies = [
+ "jiff",
+ "pretty_assertions",
+ "serde",
+ "serde_json",
+ "time",
 ]
 
 [[package]]

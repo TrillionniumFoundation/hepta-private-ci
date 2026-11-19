@@ -444,9 +444,8 @@ mod tests {
         )
         .await
         .map_err(std::io::Error::other)?;
-        let created_at = chrono::DateTime::parse_from_rfc3339("2025-01-05T12:00:00Z")
-            .expect("timestamp should parse")
-            .with_timezone(&chrono::Utc);
+        let created_at = codex_utils_time::Timestamp::parse_from_rfc3339("2025-01-05T12:00:00Z")
+            .expect("timestamp should parse");
         let mut builder = codex_state::ThreadMetadataBuilder::new(
             thread_id,
             rollout_path.clone(),

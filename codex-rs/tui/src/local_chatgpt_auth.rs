@@ -63,7 +63,6 @@ mod tests {
     use super::*;
 
     use base64::Engine;
-    use chrono::Utc;
     use codex_login::AuthDotJson;
     use codex_login::auth::login_with_chatgpt_auth_tokens;
     use codex_login::save_auth;
@@ -112,7 +111,7 @@ mod tests {
                 refresh_token: "refresh-token".to_string(),
                 account_id: Some("workspace-1".to_string()),
             }),
-            last_refresh: Some(Utc::now()),
+            last_refresh: Some(codex_utils_time::Timestamp::now()),
             agent_identity: None,
             personal_access_token: None,
             bedrock_api_key: None,

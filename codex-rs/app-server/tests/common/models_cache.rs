@@ -1,5 +1,3 @@
-use chrono::DateTime;
-use chrono::Utc;
 use codex_core::test_support::all_model_presets;
 use codex_models_manager::client_version_to_whole;
 use codex_protocol::config_types::ReasoningSummary;
@@ -107,8 +105,8 @@ pub fn write_models_cache_with_models(
     models: Vec<ModelInfo>,
 ) -> std::io::Result<()> {
     let cache_path = codex_home.join("models_cache.json");
-    // DateTime<Utc> serializes to RFC3339 format by default with serde
-    let fetched_at: DateTime<Utc> = Utc::now();
+    // codex_utils_time::Timestamp serializes to RFC3339 format by default with serde
+    let fetched_at: codex_utils_time::Timestamp = codex_utils_time::Timestamp::now();
     let client_version = client_version_to_whole();
     let cache = json!({
         "fetched_at": fetched_at,
