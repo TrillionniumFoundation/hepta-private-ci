@@ -1,0 +1,35 @@
+{
+  "schema": "mem8.blocking-9bd2.root-full-remote-audit.v1",
+  "immutable_commit": "c950c77887cc9a8865bd260a1eba56245ce1327b",
+  "archive": {
+    "bytes": 11136468,
+    "sha256": "420c21b88cb8ef4d502cb19cbdf0b69ebf975301786bfb670af79139eb235c12",
+    "git_blob": "f26d30d9f6257e53c1dc47b05cc28e435979282c"
+  },
+  "actual_parts": 25,
+  "outer_members": 24,
+  "inner_members": 38,
+  "verifier": {
+    "status": "PASS_ORIGINAL_BLOCKING_TERMINAL_WITH_EXPLICIT_MAC_RAW_GAP",
+    "original_run": 43021840778,
+    "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "job_counts": {
+      "success": 19,
+      "failure": 9,
+      "cancelled": 5,
+      "skipped": 4
+    },
+    "full_decoded_job_logs": 13,
+    "mac_full_job_raw_included": false,
+    "mac_original_execution_artifact_crc_and_bytes_verified": true,
+    "prior_frozen_checkpoint_members": 38,
+    "outer_members": 24,
+    "native_commands_executed_by_auditor": 0,
+    "model_calls": 0,
+    "overall_ci_pass": false
+  },
+  "whole_archive_git_blob_created": false,
+  "original_mac_full_job_gap_retained": true,
+  "native_commands": 0,
+  "model_requests": 0
+}

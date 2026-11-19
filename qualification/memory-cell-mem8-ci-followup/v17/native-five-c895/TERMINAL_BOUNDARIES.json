@@ -1,0 +1,192 @@
+{
+  "active_execution_status_counts": {
+    "FAIL": 0,
+    "LEAK": 0,
+    "PASS": 5,
+    "SKIP": 0,
+    "TIMEOUT": 0
+  },
+  "actual_helper_bindings": [
+    {
+      "bytes": 35408896,
+      "name": "codex-windows-sandbox-setup",
+      "sha256": "b8cd85d78efe471de717bc38a0ecdaf1b45a3bfac7a0f76b752c90a981ab9441",
+      "source": "D:\\a\\_temp\\mem-native-five-target-43047914262-1\\dev-small\\codex-windows-sandbox-setup.exe",
+      "testSibling": "D:\\a\\_temp\\mem-native-five-target-43047914262-1\\dev-small\\deps\\codex-windows-sandbox-setup.exe"
+    },
+    {
+      "bytes": 24122368,
+      "name": "codex-command-runner",
+      "sha256": "2b42e85eeb2a7bc1ed51fce0ff7efa6a56029c80a749c861e135822317ef2b67",
+      "source": "D:\\a\\_temp\\mem-native-five-target-43047914262-1\\dev-small\\codex-command-runner.exe",
+      "testSibling": "D:\\a\\_temp\\mem-native-five-target-43047914262-1\\dev-small\\deps\\codex-command-runner.exe"
+    }
+  ],
+  "api_job_conclusion": "cancelled",
+  "attempt": 1,
+  "auditor_started_native_or_model_requests": 0,
+  "created_at": "2026-11-11T16:31:53.704604+00:00",
+  "filtered_counts_are_not_executed_cases": true,
+  "harness_head": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+  "job_id": 130616746852,
+  "known_native_success_not_erased_by_later_lint_interruption": true,
+  "later_combined_source_requires_its_own_qualification": true,
+  "lint_status": {
+    "codex-core": "Started with 72.181792 seconds left; original command exit UNKNOWN after cancellation; no pass.",
+    "codex-windows-sandbox": "No intent, raw log or execution evidence; not run.",
+    "core_test_support": "Actual exit 0 and clean before/after; independently qualified."
+  },
+  "model_boundary": {
+    "driver_issued_real_provider_requests": 0,
+    "physical_network_requests": null,
+    "selected_cases": "Original local mock/fixture tests; no scientific memory benefit or original provider recovery is claimed."
+  },
+  "native_cases": [
+    {
+      "binary_id": "core_test_support",
+      "case": "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests",
+      "phase": "phase-2-matched-responses-loopback",
+      "status": "PASS"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "case": "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+      "phase": "phase-3-original-subagent-hooks",
+      "status": "PASS"
+    },
+    {
+      "binary_id": "codex-core::all",
+      "case": "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+      "phase": "phase-3-original-subagent-hooks",
+      "status": "PASS"
+    },
+    {
+      "binary_id": "codex-windows-sandbox",
+      "case": "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+      "phase": "phase-4-setup-pipe-and-original-leak",
+      "status": "PASS"
+    },
+    {
+      "binary_id": "codex-windows-sandbox",
+      "case": "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit",
+      "phase": "phase-4-setup-pipe-and-original-leak",
+      "status": "PASS"
+    }
+  ],
+  "native_passes_independently_bound_to_three_junit_uuids": [
+    "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests",
+    "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+    "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents",
+    "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+    "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit"
+  ],
+  "original_driver_status": "failed_or_interrupted",
+  "original_job_timeout_minutes": 65,
+  "original_junit": [
+    {
+      "attributes": {
+        "errors": "0",
+        "failures": "0",
+        "name": "nextest-run",
+        "tests": "1",
+        "time": "0.046",
+        "timestamp": "2026-11-11T15:57:58.442+00:00",
+        "uuid": "efe56379-8822-4d3d-9d1f-d19882279e8a"
+      },
+      "bytes": 535,
+      "case_names": [
+        "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests"
+      ],
+      "path": "phase-2-matched-responses-loopback.junit.xml",
+      "sha256": "e11da3cdfe3a66c7b052f16c59526ede226fedefff36c34a4bd553bb5663dbc6",
+      "testcase_status_elements": {
+        "responses::matcher_tests::matched_response_helpers_record_only_accepted_requests": []
+      },
+      "uuid": "efe56379-8822-4d3d-9d1f-d19882279e8a"
+    },
+    {
+      "attributes": {
+        "errors": "0",
+        "failures": "0",
+        "name": "nextest-run",
+        "tests": "2",
+        "time": "4.615",
+        "timestamp": "2026-11-11T16:11:53.810+00:00",
+        "uuid": "c87b76c9-aaf3-427a-b426-35ba48bdd998"
+      },
+      "bytes": 756,
+      "case_names": [
+        "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context",
+        "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents"
+      ],
+      "path": "phase-3-original-subagent-hooks.junit.xml",
+      "sha256": "bc280b5258756a3396ba054ce95ef750646b2446939c3a6344550c0aa11efd98",
+      "testcase_status_elements": {
+        "suite::subagent_notifications::subagent_start_replaces_session_start_and_injects_context": [],
+        "suite::subagent_notifications::subagent_stop_replaces_stop_and_skips_internal_subagents": []
+      },
+      "uuid": "c87b76c9-aaf3-427a-b426-35ba48bdd998"
+    },
+    {
+      "attributes": {
+        "errors": "0",
+        "failures": "0",
+        "name": "nextest-run",
+        "tests": "2",
+        "time": "2.321",
+        "timestamp": "2026-11-11T16:12:18.517+00:00",
+        "uuid": "4d953afd-50a0-4325-9674-076c5e6b918e"
+      },
+      "bytes": 749,
+      "case_names": [
+        "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles",
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit"
+      ],
+      "path": "phase-4-setup-pipe-and-original-leak.junit.xml",
+      "sha256": "b7363941f7685064cd8ccb53fa12cfeeb3a365c6fd15a7a4d4128191e858af15",
+      "testcase_status_elements": {
+        "setup::isolated_process::tests::non_elevated_setup_excludes_ambient_pipe_handles": [],
+        "unified_exec::tests::elevated_non_tty_cmd_forwards_env_output_and_exit": []
+      },
+      "uuid": "4d953afd-50a0-4325-9674-076c5e6b918e"
+    }
+  ],
+  "run_id": 43047914262,
+  "schema": "mem-native-five-original-terminal-boundaries-v1",
+  "source_and_integrity_boundary": {
+    "all_three_native_phases_and_first_fix": "Complete same-source clean before/after plus identical actual tool, helper and lock fingerprints.",
+    "auditor_false_integrity_checks": "Four false checks identify missing terminal/after evidence, not observed source, tool or helper drift.",
+    "collection": {
+      "boundary": "Observation only; missing exits/after receipts cannot be reconstructed as successful settlement.",
+      "collected_at": "2026-11-11T16:28:45.284527+00:00",
+      "source": {
+        "commit": "c89540598693697577cda8cba31cb07f6ce65317",
+        "dirty": false,
+        "locks": {
+          "MODULE.bazel.lock": {
+            "bytes": 1788299,
+            "sha256": "783b3ad329fa53bd4a0e48be6907d38259fa2880d61bd1994b863d7f78bbca57"
+          },
+          "codex-rs/Cargo.lock": {
+            "bytes": 421005,
+            "sha256": "98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69"
+          }
+        },
+        "parents": [],
+        "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+      },
+      "status": "partial_or_failed"
+    },
+    "missing_whole_job_after_receipt": "The later collection independently observed the same clean source and locks; it does not manufacture settlement or after-tool/helper evidence for the interrupted second fix.",
+    "second_fix": "Original command_exit_code remains null and after tool/helper/source receipt is absent. The job log reports cancellation and the raw subprocess log contains KeyboardInterrupt. This is an interrupted UNKNOWN exit, not a clean lint pass."
+  },
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "timeout_or_exit_not_extended": true,
+  "unselected_filtered_counts_by_original_group": [
+    36,
+    1098,
+    187
+  ],
+  "whole_job_qualification": "NOT_QUALIFIED_RETAIN_ORIGINAL_FAILURE_OR_UNKNOWN"
+}

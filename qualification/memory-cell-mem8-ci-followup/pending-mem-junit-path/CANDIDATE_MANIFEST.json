@@ -1,0 +1,67 @@
+{
+  "schema": "mem8.mem-native-junit-path.candidate.v1",
+  "base_commit": "189711e3563ea13a5328d52e99a286f082045b98",
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "files": [
+    {
+      "path": ".github/workflows/hepta-mem-python.yml",
+      "pre": {
+        "bytes": 23448,
+        "sha256": "f222c1c44e5295cce511b3304746fb5e4c1ebc89ee58c4b744d53b0fca05a9df",
+        "git_blob": "ca292ac9882fc6cfcb804f4b2312d34453f736ac"
+      },
+      "post": {
+        "bytes": 23608,
+        "sha256": "e0e94ceaf14e373a7df7b7cf00ac1bab337e694eb90411ff6bab3e3aeb1c77ad",
+        "git_blob": "f6926400461f7fefa503df46299a91c2795e1999"
+      }
+    }
+  ],
+  "patch": {
+    "bytes": 1371,
+    "sha256": "1d73c78d5e20d085d79048bb059dcd3cdc7aad440c11d661aff258eff6b7d860",
+    "git_blob": "f5e9fce2f1d3a2bb9659be921980219aeef69add"
+  },
+  "diff_lines": {
+    "added": 5,
+    "deleted": 3
+  },
+  "actual_original_native_artifact_preimage_matches": true,
+  "yaml_parsed": true,
+  "yaml_changed_fields": [
+    [
+      "jobs",
+      "native-owner",
+      "steps",
+      13,
+      "run"
+    ],
+    [
+      "jobs",
+      "native-owner",
+      "steps",
+      16,
+      "run"
+    ]
+  ],
+  "unchanged": "All triggers, permissions, job controls, command/test selections, native budgets, retries, receipts, JUnit existence/symlink/fresh UUID/time/case gates and source-clean checks remain unchanged. Final always-step collection now uses the same correct pinned store path.",
+  "execution": {
+    "native_tests": 0,
+    "provider_requests": 0,
+    "format_executed": false,
+    "refs_modified": false
+  },
+  "already_frozen_v3_inputs_modified": false,
+  "static_audit_history": [
+    {
+      "attempt": 1,
+      "result": "failed",
+      "reason": "Expected YAML list indices were off by one; source and patch unchanged, no native execution."
+    },
+    {
+      "attempt": 2,
+      "result": "passed",
+      "method": "Verified actual zero-based indices plus exact original step names and all other YAML fields unchanged."
+    }
+  ]
+}

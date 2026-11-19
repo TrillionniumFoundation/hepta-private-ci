@@ -1,0 +1,33 @@
+--- c895/verify_original.py
++++ d0f/verify_original.py
+@@ -1,5 +1,5 @@
+ #!/usr/bin/env python3
+-"""Audit only retained bytes from c895's one original Windows-current attempt."""
++"""Audit only retained bytes from d0f's one original Windows-current attempt."""
+ import collections
+ import hashlib
+ import json
+@@ -9,10 +9,10 @@
+ from pathlib import Path, PurePosixPath
+ 
+ ROOT = Path(__file__).resolve().parent
+-HEAD = "c89540598693697577cda8cba31cb07f6ce65317"
+-TREE = "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
+-RUN = 43048569129
+-JOB = 130619117269
++HEAD = "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
++TREE = "658fa040046285116b1fd81b94ff8c96444072ad"
++RUN = 43062473110
++JOB = 130668436858
+ SCOPE_BLOB = "72f75127e9f92236def02a67a099fd90bb2a9b09"
+ ANSI = re.compile(r"\x1b\[[0-?]*[ -/]*[@-~]")
+ TERM = re.compile(r"^\s*(PASS|FAIL|TIMEOUT|EXECFAIL|LEAK|SKIP)\s+\[[^\]\n]+\]\s+(?:\(\s*\d+/\d+\)\s+)?(\S+)\s+(\S+)\s*$", re.MULTILINE)
+@@ -184,7 +184,7 @@
+     expected_observed = [("Neither", "false", "false"), ("TargetOnly", "true", "true"), ("ParentOnly", "true", "true"), ("Both", "true", "true")]
+     assert ordinary_routes == elevated_routes == expected_observed
+     assert "distinct_token=true backup_present=false restore_present=false other_privileges_unchanged=true" in observations[0]["text"]
+-    return {"schema": "mem.c895.windows-current-original-audit.v1", "run_id": RUN, "job_id": JOB,
++    return {"schema": "mem.d0f.windows-current-original-audit.v1", "run_id": RUN, "job_id": JOB,
+             "attempt": 1, "head": HEAD, "tree": TREE, "job_conclusion": job["conclusion"],
+             "job_started_at": job["started_at"], "job_completed_at": job["completed_at"],
+             "raw": pin(raw), "artifact_id": metadata["id"], "archive": pin(zip_data), "members": members,

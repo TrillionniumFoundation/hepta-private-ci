@@ -1,0 +1,68 @@
+--- c895/verify_private_original.py
++++ d0f/verify_private_original.py
+@@ -1,4 +1,4 @@
+-"""Offline verification of the original c895 Windows-private evidence."""
++"""Offline verification of the original d0f Windows-private evidence."""
+ 
+ import hashlib
+ import json
+@@ -7,8 +7,8 @@
+ import sys
+ import zipfile
+ 
+-HEAD = "c89540598693697577cda8cba31cb07f6ce65317"
+-TREE = "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae"
++HEAD = "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
++TREE = "658fa040046285116b1fd81b94ff8c96444072ad"
+ CASE = "circuit_cell::tests::credit_tests::signed_tests::signed_credit_rejects_cross_owner_ledger_episode_before_any_append"
+ 
+ 
+@@ -81,9 +81,9 @@
+ def verify(root):
+     job = json_file(root / "original/job.json")
+     run = json_file(root / "original/run.json")
+-    assert run["id"] == 43048568252 and run["run_attempt"] == 1
++    assert run["id"] == 43062473076 and run["run_attempt"] == 1
+     assert run["head_sha"] == HEAD and run["status"] == "completed" and run["conclusion"] == "success"
+-    assert job["id"] == 130619111545 and job["run_id"] == 43048568252
++    assert job["id"] == 130668436521 and job["run_id"] == 43062473076
+     assert job["head_sha"] == HEAD and job["status"] == "completed" and job["conclusion"] == "success"
+     assert any(s["name"] == "Confirm no generated or modified tracked source" and s["conclusion"] == "success" for s in job["steps"])
+     raw = (root / "original/job.log").read_bytes()
+@@ -99,15 +99,15 @@
+     assert not re.search(r"^\s*(RTRY|RETRY)\s", plain, re.M)
+ 
+     artifacts = json_file(root / "original/artifacts.json")["artifacts"]
+-    assert {a["id"] for a in artifacts} == {13870555680, 13869303170}
++    assert {a["id"] for a in artifacts} == {13875243416, 13876965022}
+     for artifact in artifacts:
+-        assert artifact["workflow_run"]["id"] == 43048568252
++        assert artifact["workflow_run"]["id"] == 43062473076
+         assert artifact["workflow_run"]["head_sha"] == HEAD
+         file = root / "original" / (str(artifact["id"]) + ".zip")
+         data = file.read_bytes()
+         assert len(data) == artifact["size_in_bytes"]
+         assert "sha256:" + hashlib.sha256(data).hexdigest() == artifact["digest"]
+-        folder = root / ("credit" if artifact["id"] == 13870555680 else "acquisition")
++        folder = root / ("credit" if artifact["id"] == 13875243416 else "acquisition")
+         with zipfile.ZipFile(file) as archive:
+             assert archive.testzip() is None
+             for item in archive.infolist():
+@@ -116,7 +116,7 @@
+                 assert archive.read(item) == (folder / item.filename).read_bytes()
+ 
+     receipt = json_file(root / "credit/credit-fixture.json")
+-    assert receipt["status"] == "passed" and receipt["run_id"] == "43048568252" and receipt["run_attempt"] == "1"
++    assert receipt["status"] == "passed" and receipt["run_id"] == "43062473076" and receipt["run_attempt"] == "1"
+     assert receipt["tested_sha"] == receipt["source_sha"] == HEAD
+     assert receipt["case"] == CASE
+     assert receipt["before"] == receipt["after"]
+@@ -161,7 +161,7 @@
+         controls.append({"lane":name,**actual,"observations":lane["observations"],"case_statuses":lane["statuses"]})
+ 
+     result = {
+-        "source_head":HEAD,"source_tree":TREE,"run_id":43048568252,"run_attempt":1,"job_id":130619111545,
++        "source_head":HEAD,"source_tree":TREE,"run_id":43062473076,"run_attempt":1,"job_id":130668436521,
+         "job_conclusion":"success","job_log":digest(raw),
+         "original_unmutated_named_passes":34,"original_unmutated_unique_case_ids":34,
+         "original_case_ids":[{"package":package,"case":case} for _,package,case in statuses],

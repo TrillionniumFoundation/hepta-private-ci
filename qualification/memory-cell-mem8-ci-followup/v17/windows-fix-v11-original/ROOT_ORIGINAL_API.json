@@ -1,0 +1,156 @@
+{
+  "jobs": {
+    "total_count": 1,
+    "jobs": [
+      {
+        "id": 130703409994,
+        "run_id": 43072390230,
+        "workflow_name": "MEM Windows sandbox scoped lint (exact source)",
+        "head_branch": "codex/mem8-windows-sandbox-fix-v11-20261111-ed353817",
+        "run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/43072390230",
+        "run_attempt": 1,
+        "node_id": "CR_kwDOTrgxoM8AAAAebofDSg",
+        "head_sha": "fe824cce50037071ff559e1aabdf36f9d5954908",
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/jobs/130703409994",
+        "html_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/43072390230/job/130703409994",
+        "status": "completed",
+        "conclusion": "success",
+        "created_at": "2026-11-11T17:52:54Z",
+        "started_at": "2026-11-11T17:52:58Z",
+        "completed_at": "2026-11-11T18:12:56Z",
+        "name": "sandbox-fix",
+        "steps": [
+          {
+            "name": "Set up job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 1,
+            "started_at": "2026-11-11T17:52:59Z",
+            "completed_at": "2026-11-11T17:53:00Z"
+          },
+          {
+            "name": "Record this original job's observed budget anchor",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 2,
+            "started_at": "2026-11-11T17:53:00Z",
+            "completed_at": "2026-11-11T17:53:01Z"
+          },
+          {
+            "name": "Checkout the exact harness event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 3,
+            "started_at": "2026-11-11T17:53:01Z",
+            "completed_at": "2026-11-11T17:53:18Z"
+          },
+          {
+            "name": "Checkout the independently frozen formatted source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 4,
+            "started_at": "2026-11-11T17:53:18Z",
+            "completed_at": "2026-11-11T17:53:32Z"
+          },
+          {
+            "name": "Install the same pinned native compiler and scoped lint component",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 5,
+            "started_at": "2026-11-11T17:53:32Z",
+            "completed_at": "2026-11-11T17:53:43Z"
+          },
+          {
+            "name": "Install the repository's pinned test runners",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 6,
+            "started_at": "2026-11-11T17:53:43Z",
+            "completed_at": "2026-11-11T17:53:49Z"
+          },
+          {
+            "name": "Build real helpers and run the one frozen Windows sandbox scoped lint",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 7,
+            "started_at": "2026-11-11T17:53:49Z",
+            "completed_at": "2026-11-11T18:12:46Z"
+          },
+          {
+            "name": "Collect original results without inventing an interrupted exit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 8,
+            "started_at": "2026-11-11T18:12:46Z",
+            "completed_at": "2026-11-11T18:12:47Z"
+          },
+          {
+            "name": "Retain every original intent, raw log and source rewrite",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 9,
+            "started_at": "2026-11-11T18:12:47Z",
+            "completed_at": "2026-11-11T18:12:48Z"
+          },
+          {
+            "name": "Post Checkout the independently frozen formatted source",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 17,
+            "started_at": "2026-11-11T18:12:48Z",
+            "completed_at": "2026-11-11T18:12:51Z"
+          },
+          {
+            "name": "Post Checkout the exact harness event commit",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 18,
+            "started_at": "2026-11-11T18:12:51Z",
+            "completed_at": "2026-11-11T18:12:53Z"
+          },
+          {
+            "name": "Complete job",
+            "status": "completed",
+            "conclusion": "success",
+            "number": 19,
+            "started_at": "2026-11-11T18:12:53Z",
+            "completed_at": "2026-11-11T18:12:53Z"
+          }
+        ],
+        "check_run_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/check-runs/130703409994",
+        "labels": [
+          "windows-latest"
+        ],
+        "runner_id": 1000111899,
+        "runner_name": "GitHub Actions 1000111899",
+        "runner_group_id": 0,
+        "runner_group_name": "GitHub Actions"
+      }
+    ]
+  },
+  "artifacts": {
+    "total_count": 1,
+    "artifacts": [
+      {
+        "id": 13882391484,
+        "node_id": "MDg6QXJ0aWZhY3QxMzg4MjM5MTQ4NA==",
+        "name": "mem-windows-sandbox-fix-ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80-43072390230-1",
+        "size_in_bytes": 104338,
+        "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13882391484",
+        "archive_download_url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/13882391484/zip",
+        "expired": false,
+        "digest": "sha256:a40a03f485304e86f7f23f04614148d001d75fd6a36d5831629e055d168bc4cb",
+        "created_at": "2026-11-11T18:12:48Z",
+        "updated_at": "2026-11-11T18:12:48Z",
+        "expires_at": "2026-11-25T18:12:47Z",
+        "workflow_run": {
+          "id": 43072390230,
+          "repository_id": 1320694176,
+          "head_repository_id": 1320694176,
+          "head_branch": "codex/mem8-windows-sandbox-fix-v11-20261111-ed353817",
+          "head_sha": "fe824cce50037071ff559e1aabdf36f9d5954908"
+        }
+      }
+    ]
+  }
+}

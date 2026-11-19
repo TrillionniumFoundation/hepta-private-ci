@@ -1,0 +1,45 @@
+{
+  "all_four_blobs_actually_created_and_full_text_readback": true,
+  "branch": "codex/mem8-windows-sandbox-fix-v11-20261111-ed353817",
+  "driver_support_workflow_and_20_source_bytes_preserved": true,
+  "expected_harness_entries": 14057,
+  "expected_harness_tree": "ac382f3fc9989017ad77ed64e07b02e1e42cb5cc",
+  "no_ref_or_run_created_by_this_preparation": true,
+  "only_plan_qualification_metadata_changed_after_provisional": true,
+  "proposed_parent": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "root_source_gate_audit": {
+    "bytes": 1513,
+    "git_blob": "f6eca22113eb2612e5a88ff47b5d18124b64a11a",
+    "sha256": "cd82e07467d57c30e6174aea67d394e2935ab657e6111570400a12f730d58e82"
+  },
+  "source_entries": 14053,
+  "source_head": "ceadcb3b11dbd94a9d07afb7e6301555e4ff3f80",
+  "source_tree": "27651abb15e269c427c75f28f92a3bd1cd9d191f",
+  "status": "PREPARED_NOT_ADMITTED",
+  "tree_elements": [
+    {
+      "mode": "100644",
+      "path": ".github/scripts/mem_windows_sandbox_fix.py",
+      "sha": "a6e1f9d76de87cb7f86bfe7b7db76b2675034cc4",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/scripts/mem_windows_sandbox_fix_support.py",
+      "sha": "85b6407d0b8a8fa6bd6859f86ccbbdbae3635595",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/workflows/hepta-mem-windows-sandbox-fix.yml",
+      "sha": "cfd269de944d445e4772cd943bc95695c595d3d9",
+      "type": "blob"
+    },
+    {
+      "mode": "100644",
+      "path": ".github/fixtures/mem-windows-sandbox-fix-plan.json",
+      "sha": "30da23e724b6dca96ec9f17477fe045757308925",
+      "type": "blob"
+    }
+  ]
+}

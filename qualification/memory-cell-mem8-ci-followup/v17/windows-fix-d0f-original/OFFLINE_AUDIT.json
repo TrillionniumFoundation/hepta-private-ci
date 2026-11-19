@@ -1,0 +1,101 @@
+{
+  "archive_members": 153,
+  "archived_commands_executed_by_auditor": 0,
+  "artifact": {
+    "bytes": 118313,
+    "git_blob": "8bbc09a57268b22c8b6bc2c0ad502c7d0f9d9963",
+    "id": 13875238036,
+    "sha256": "060611541b972d9818b2ac60cfc3f27b29b502642f62343865e4022d90d84e38"
+  },
+  "attempt": 1,
+  "cause_of_cancellation": null,
+  "collection_status": "partial_or_failed",
+  "driver_status": "failed_or_interrupted",
+  "full_job_raw": {
+    "bytes": 86753,
+    "git_blob": "0abe00e8b460e8b633d09fcc1ec1bf0cd1e36317",
+    "sha256": "93e14524eb090d28ac1d734cc05196a8272f6d8fe595c22ddff3750b8a676b4c"
+  },
+  "harness_head": "23d9f41532e5e6310ca791a5b849ab1cff7466eb",
+  "harness_tree": "4bddc28958d0bde7d2735d0a626c2052d33ccb24",
+  "helpers_boundary": "Original compiler-artifact outputs and driver-observed byte hashes are bound; helper PE binaries are not included in this artifact.",
+  "historical_passes_transferred": false,
+  "job_completed_at": "2026-11-11T17:15:20Z",
+  "job_conclusion": "failure",
+  "job_id": 130667533098,
+  "job_started_at": "2026-11-11T16:50:23Z",
+  "manifest_complete": true,
+  "model_commands": 0,
+  "native_test_commands": 0,
+  "observed_job_start_plus_65_min": "2026-11-11T17:55:23+00:00",
+  "phases": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox",
+        "--profile",
+        "dev-small",
+        "--message-format=json",
+        "--bin",
+        "codex-windows-sandbox-setup",
+        "--bin",
+        "codex-command-runner"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 877.422,
+      "error": null,
+      "finished_at": "2026-11-11T17:06:02.003447+00:00",
+      "helpers_unchanged": true,
+      "id": "phase-1-build-sandbox-helpers",
+      "integrity_error": null,
+      "kind": "helpers",
+      "raw": {
+        "bytes": 648093,
+        "git_blob": "9aec9535b9f28584af1288bec070b8b04c36f5e0",
+        "sha256": "998977066f5a21cea3dd14f60c79d6d5e3101e889faabcdee63ba22f5c2cde99"
+      },
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T16:51:24.577112+00:00",
+      "state": "passed_clean",
+      "tools_unchanged": true
+    },
+    {
+      "command": [
+        "just",
+        "fix",
+        "--locked",
+        "-p",
+        "codex-windows-sandbox"
+      ],
+      "command_exit_code": 0,
+      "elapsed_seconds": 545.797,
+      "error": null,
+      "finished_at": "2026-11-11T17:15:09.035978+00:00",
+      "helpers_unchanged": true,
+      "id": "phase-2-fix-codex-windows-sandbox",
+      "integrity_error": "ValueError: source is not the frozen clean commit/tree",
+      "kind": "fix",
+      "raw": {
+        "bytes": 24097,
+        "git_blob": "f60bea3ca635ac7857fe0887540920465d52abba",
+        "sha256": "d4a038eb183497c8e872821bbbf91f4f469a7194a64d8b6e49fbcdae595317fd"
+      },
+      "source_before_after_clean": false,
+      "started_at": "2026-11-11T17:06:03.235549+00:00",
+      "state": "failed_or_interrupted",
+      "tools_unchanged": true
+    }
+  ],
+  "physical_network_requests": null,
+  "qualification_passed": false,
+  "run_id": 43062162500,
+  "schema": "mem8.windows-sandbox-fix-d0f.original-evidence-audit.v1",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_rewrite_paths": [
+    "codex-rs/windows-sandbox-rs/src/setup_process.rs"
+  ],
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad"
+}

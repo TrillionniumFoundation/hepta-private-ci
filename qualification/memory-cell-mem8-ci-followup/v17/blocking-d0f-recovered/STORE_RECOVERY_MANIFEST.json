@@ -1,0 +1,1291 @@
+{
+  "schema": "hepta.mem8.d0f.original-logs-store-recovery.v1",
+  "created_at_utc": "2026-11-11 18:30:08 UTC",
+  "kind": "NONTERMINAL_RECOVERY_CHECKPOINT",
+  "repo": "TrillionniumFoundation/hepta-private-ci",
+  "source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "original_run_id": 43062473474,
+  "original_run_attempt": 1,
+  "original_run_snapshot": {
+    "observed_at_utc": "2026-11-11 18:22:38 UTC",
+    "status": "in_progress",
+    "conclusion": null,
+    "total_jobs": 36,
+    "counts": {
+      "success": 24,
+      "failure": 3,
+      "cancelled": 4,
+      "skipped": 4,
+      "in_progress": 1
+    },
+    "active_job_id": 130668671390,
+    "active_step": "Install OpenSSH for the native operator-acceptance test action",
+    "bazel_tests_started_observed": false,
+    "aggregate_required_job_created_observed": false
+  },
+  "recovery_method": "Original decoded tool-response text retained in functions.store; exact UTF-8 text split at at most 300000 UTF-16 code units without splitting a surrogate pair. Every actual Git part was fetched back in full and compared byte-for-byte. Two small terminal job logs were freshly retrieved from the unchanged original job after their retained store keys could not be located.",
+  "raw_file_count": 26,
+  "total_raw_bytes": 13669185,
+  "raw_part_count": 62,
+  "raw_files": [
+    {
+      "path": "raw/job-130668439366.log",
+      "source_store_key": "d0f-log-130668439366",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 27624,
+        "sha256": "26ad61d0af0e1b4b6dde695f5814826041e2510f6f55848f824f97fde362801f",
+        "git_blob": "6ff55b6a8be64458ffa032a613ed618d02b66683"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 27622,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 27622,
+          "path": "raw/job-130668439366.log.utf8.part-001",
+          "bytes": 27624,
+          "sha256": "26ad61d0af0e1b4b6dde695f5814826041e2510f6f55848f824f97fde362801f",
+          "git_blob": "6ff55b6a8be64458ffa032a613ed618d02b66683",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668439547.log",
+      "source_store_key": "d0f-log-130668439547",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 1643776,
+        "sha256": "fa73d786c462e821c1013b952e153d33a29922a6dc871ade201136d98ad5c35e",
+        "git_blob": "7ff9d1f4b6bd697918f38aeccb5e32a3a1918f78"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 1643754,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668439547.log.utf8.part-001",
+          "bytes": 300014,
+          "sha256": "0bb490102a4d5324990f7bc3b7b8bde3f9b55cb78b10a8d6efe952e74f12d1a0",
+          "git_blob": "26d81bcac842606296d893a845255a7b5696cf3a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668439547.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "e565dec684f48c66d444d8b5a56f20d54c7f39a80e471871353c6c07c2f198fa",
+          "git_blob": "5b626c821faea376525b065525050fe51f8b4e54",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668439547.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "5f5ded2996356ebcf661384bdb4b619109750dff0d82004950e642eb61a52808",
+          "git_blob": "fec869815b1bc7b00efaae99981e05becca045d8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668439547.log.utf8.part-004",
+          "bytes": 300000,
+          "sha256": "e4287395a4c33c3463821999554ba00f3879ca65fa09a8ff143ae4946afe18b4",
+          "git_blob": "bdcbe22e981c9e974b4ae9518037249d9206281d",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668439547.log.utf8.part-005",
+          "bytes": 300000,
+          "sha256": "176933565ef5e4e128175364da4b59d45e2bbf5dff75f2c311a4e15a7c2083b1",
+          "git_blob": "2bca30c26ae0b231dddfcbd149ac4a6b17921a95",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1643754,
+          "path": "raw/job-130668439547.log.utf8.part-006",
+          "bytes": 143762,
+          "sha256": "ba8b7ee41677ff8c46ab1cdd3894e525e8aeac95104d1dabcf47e32bffbae78a",
+          "git_blob": "d19318612bbcd8ddf03db0bb7067295eb9377c40",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669591.log",
+      "source_store_key": "d0f-log-130668669591",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 1605768,
+        "sha256": "6c38fe10e52ae32365c5450264baf1140dbecc1eead6e12adb386ee776f868a3",
+        "git_blob": "cd36b6dd5d5b88c9ba981c3776fd3ead340dca47"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 1605766,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668669591.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "dc89dfb3a1e31d4e8617aa5dd48f9bcb9882743f39cbfddf94e8be14d0f9074c",
+          "git_blob": "0bd3b4763845f4bbd93836c3a65585543540d10a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668669591.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "46d79653c39bded683938fa6f4b1bec0411027de7dfcaf36ceedd877d2115bc4",
+          "git_blob": "5922a607815970263e3fdf6668c87fa66c064db7",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668669591.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "c8a82bb94e14640b21d0db8676be11e329d11d502eed2b71dab2d29a97fbde96",
+          "git_blob": "8b6911a46291494e9cb765b491abbf8e29d63ad9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668669591.log.utf8.part-004",
+          "bytes": 300000,
+          "sha256": "6873026535bd6a5b5900caec9bea6dd9b72d9fb24462bd200e41e35dd7caf216",
+          "git_blob": "38c8fc4d54fced12a359947144055ac7dc46bea0",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668669591.log.utf8.part-005",
+          "bytes": 300000,
+          "sha256": "c1ac3dea7f871502f9717a3b82ffbb14989f0eafcda69da749b9c4972c31ab0e",
+          "git_blob": "1ae758f80f67fe17f9bd147694bfb22f58a9d289",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1605766,
+          "path": "raw/job-130668669591.log.utf8.part-006",
+          "bytes": 105766,
+          "sha256": "6f99e4e682d7ff4a11c7bb8f9887a1acbb033aa8dc274913b05ecc55d1e33812",
+          "git_blob": "43599e5bb77982843af49837290494e429904a74",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669632.log",
+      "source_store_key": "d0f-log-130668669632",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 223089,
+        "sha256": "cbe77ba107933af401e39bcb56faaf1748a4f4fee5fa9bfb75bc8661fab992db",
+        "git_blob": "9d00149a7837a4a31c0da0e0a3cd923f8083b403"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 223033,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 223033,
+          "path": "raw/job-130668669632.log.utf8.part-001",
+          "bytes": 223089,
+          "sha256": "cbe77ba107933af401e39bcb56faaf1748a4f4fee5fa9bfb75bc8661fab992db",
+          "git_blob": "9d00149a7837a4a31c0da0e0a3cd923f8083b403",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669786.log",
+      "source_store_key": "d0f-log-130668669786",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 32480,
+        "sha256": "3ccfa4b4b9d4ed56db91d4cf6d7a6dc5ca7520490fdbe66e44ba8a256a21613b",
+        "git_blob": "d25fe88b8b4b6a27a1bfa17129c83e37d549ff6c"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 32398,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 32398,
+          "path": "raw/job-130668669786.log.utf8.part-001",
+          "bytes": 32480,
+          "sha256": "3ccfa4b4b9d4ed56db91d4cf6d7a6dc5ca7520490fdbe66e44ba8a256a21613b",
+          "git_blob": "d25fe88b8b4b6a27a1bfa17129c83e37d549ff6c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669838.log",
+      "source_store_key": "d0f-log-130668669838",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 97259,
+        "sha256": "cc3409335faaae2d862df2cd9250f6188496ff2ac58d03a2ea2618a8ab752a93",
+        "git_blob": "3b5be419debc52a0e2f34ed31c89a19d508f71ae"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 97209,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 97209,
+          "path": "raw/job-130668669838.log.utf8.part-001",
+          "bytes": 97259,
+          "sha256": "cc3409335faaae2d862df2cd9250f6188496ff2ac58d03a2ea2618a8ab752a93",
+          "git_blob": "3b5be419debc52a0e2f34ed31c89a19d508f71ae",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669839.log",
+      "source_store_key": "d0f-log-130668669839",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 95650,
+        "sha256": "e20bd345d52629f8a6f2d4fa9155f46b25364c06c0878cc82dd2c5a8611503b2",
+        "git_blob": "d6e29a66f4f7dbc1f4bf0ac70fa55b1144788f04"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 95600,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 95600,
+          "path": "raw/job-130668669839.log.utf8.part-001",
+          "bytes": 95650,
+          "sha256": "e20bd345d52629f8a6f2d4fa9155f46b25364c06c0878cc82dd2c5a8611503b2",
+          "git_blob": "d6e29a66f4f7dbc1f4bf0ac70fa55b1144788f04",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669844.log",
+      "source_store_key": "d0f-log-130668669844",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 32409,
+        "sha256": "719e68650d008073ec5ac53cf25766d472a7f3d6d27191fbb49fd9e706ac7a20",
+        "git_blob": "189452cf915afccf59ab6a67f7b15ca47099724a"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 32407,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 32407,
+          "path": "raw/job-130668669844.log.utf8.part-001",
+          "bytes": 32409,
+          "sha256": "719e68650d008073ec5ac53cf25766d472a7f3d6d27191fbb49fd9e706ac7a20",
+          "git_blob": "189452cf915afccf59ab6a67f7b15ca47099724a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669915.log",
+      "source_store_key": "d0f-log-130668669915",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 713807,
+        "sha256": "20ecd5312468776fdc85a74ac48624d905fa3e5380987a8f3e15fac2db2e0513",
+        "git_blob": "1e54630f4a511f40f4ca46aed808f8c5d10f818a"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 713743,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668669915.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "f082fb4abfc417ba8cbb8aef39f6aa69789076e60313cc9c442d8e197e248ca3",
+          "git_blob": "5d715204e2f40375221ee35d1c1408a7142597ee",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668669915.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "38ef39c6ac971f5838d2f4dc254572e2d3db7699d97319d86e14a9996878ab39",
+          "git_blob": "8338d630998044be24975a0bcbe2c98162ee9b15",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 713743,
+          "path": "raw/job-130668669915.log.utf8.part-003",
+          "bytes": 113805,
+          "sha256": "fffa228e06368ca7ef431ed59db9da8fd638f9700e3b74bfc692f5d3cb8f612a",
+          "git_blob": "f5fd90b32d457a2b620eb6fee1ca752032887bc8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671072.log",
+      "source_store_key": "d0f-log-130668671072",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 804904,
+        "sha256": "601962039eb868a932a4ce5ce7f7a2d9ea99c4297a31b8963245190d5002af88",
+        "git_blob": "5e66782df8e424013a25061c5cdb2ae26d688cca"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 804902,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671072.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "32f287f759d416afc74c0f19e6d117ac927f8d324b23c0293e652596f6e00ea6",
+          "git_blob": "1bfe9407e07cee152913a0d9e63c939713b78c51",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671072.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "3ed716e47c4a9ad9706db7b5120af21116e6f5bfea86978f90d9b32a33a26ede",
+          "git_blob": "0b34747e26378aeabcfd6f46b58b3a2b43585528",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 804902,
+          "path": "raw/job-130668671072.log.utf8.part-003",
+          "bytes": 204902,
+          "sha256": "28a8e88c4e777b5e31914aa327092c47fa8a3365bfe5d16241d9262e17cc3219",
+          "git_blob": "705639869d00e41b7a7528d1b01132c7da57fab8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671156.log",
+      "source_store_key": "d0f-log-130668671156",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 829802,
+        "sha256": "1c3bab55b10ab83814a78f8ef68393d3357df466880fccbc4c64e80c0b9d731a",
+        "git_blob": "f723a521076d41ee88c2a6dc33fbbb772aeafdc2"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 829800,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671156.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "d906317e4f7c987fdf83b00d07341176d3280b8e9f7dd2253503f0a1c9a670f6",
+          "git_blob": "4b027a11d22203596d377d1b53d802ec7370a8d1",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671156.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "9b3abedce78a895c3b8712b5f04bc3fbd59b86ea0992d565bf215292fa27980f",
+          "git_blob": "ebe907646ae2495e60a9bee90cce62afac90489d",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 829800,
+          "path": "raw/job-130668671156.log.utf8.part-003",
+          "bytes": 229800,
+          "sha256": "9c91c75e84bc753861e7e4808857c4fd88e215b71d25adfea3fc47d646503b38",
+          "git_blob": "9f4ab8a9a3d57a74e23e1520e18db19afad331a9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671187.log",
+      "source_store_key": "d0f-log-130668671187",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 447339,
+        "sha256": "9663fdf3e660183dfe909e45bced2176d754aaf6f7cbc9c61a336c9c472a146c",
+        "git_blob": "5c1bed5693e37bed03c1c1398abdd5246dd7e957"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 447337,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671187.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "6420bc44c930f7522337f7ac8c51fe3100c640819d1a1ce0d18be9473e072f0c",
+          "git_blob": "bb080961c5dccb28a9386c1871a8928621877873",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 447337,
+          "path": "raw/job-130668671187.log.utf8.part-002",
+          "bytes": 147337,
+          "sha256": "3514213fd3b2da34dce081c1881906ebcaeebc406176b24c34439d6f9ed1476d",
+          "git_blob": "35ab4db973c9f95e27175b130de296bdde96525e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671236.log",
+      "source_store_key": "d0f-log-130668671236",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 404204,
+        "sha256": "b51670bd9d4edf19b5d672ff0a697bb61731afba650f265f228828847b555c26",
+        "git_blob": "f07f665f48b1e4cde9896467ced7047bc0f3ced8"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 404202,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671236.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "d0c78a18669dbe48430fb9a0c4918b0016c564a6a099cdfa1df24d346f5ce486",
+          "git_blob": "80bbaf095cc85fd904c72717debacf244d507fee",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 404202,
+          "path": "raw/job-130668671236.log.utf8.part-002",
+          "bytes": 104202,
+          "sha256": "e64064dc14bceb3cc3cd2001f94b84f50ae5849b8a28f177d9c2937153beecf2",
+          "git_blob": "9b89d299164b93a6a0c91c6dbeba9629fef59edc",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671237.log",
+      "source_store_key": "d0f-log-130668671237",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 511763,
+        "sha256": "b354bd179b407df595c47bbfed430e2b73ce73c347145b7f42434192b8e41ffe",
+        "git_blob": "344bc46e507bfec638404a168dd0eaaa54963d0c"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 511761,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671237.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "fdac9bf4a87d71d3fe59adad72056ac6aabed6f11d864ee02db1a6507312d810",
+          "git_blob": "7747560431b68a4674e2fba4af0e0f6d4b1ecaed",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 511761,
+          "path": "raw/job-130668671237.log.utf8.part-002",
+          "bytes": 211761,
+          "sha256": "21117e9f0fef26684f8d8be87cc50c2da783c4aec94cf266d7e589fe107b54c1",
+          "git_blob": "51fe68e01144856608cf505eb6275bb89bf3b420",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671323.log",
+      "source_store_key": "d0f-log-130668671323",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 435599,
+        "sha256": "a95b899a3a025cd9b83c7efaeac8342c0eb1f57342940afe845547aedd8178cc",
+        "git_blob": "77d0cd2dafb52e686493281a81703788a85825c4"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 435597,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671323.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "08ed6f7f35f1416334c4d604d0ade8df268f44f4e53276cce41ebdea1b6e9cae",
+          "git_blob": "fb70a873fef749c88dcceee624c9fda33fdf7349",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 435597,
+          "path": "raw/job-130668671323.log.utf8.part-002",
+          "bytes": 135597,
+          "sha256": "56fabd3991cf67db8699cf33af9bc036f77395469a67ce63b36e2a7a31caf472",
+          "git_blob": "8857873ab891f93793c2cb27607690d94f1ba87a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671332.log",
+      "source_store_key": "d0f-log-130668671332",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 601497,
+        "sha256": "ee9fa45b6f2d59233031e96bfad2b2e3fcf005c0a08c75a395bcfefc3d86248f",
+        "git_blob": "75c4f5631ed4f037af56f8493f3396ed7ce55bf5"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 601495,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671332.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "1b0afcb87cdc4413558c573f11712a7a34955894552a1beb0884dcfc54f817dd",
+          "git_blob": "9163bc821103be5837206333fe88694cc8f8bb99",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671332.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "a35a9261732d4c0887fb281722e3ce73476c569a722ea0a873296946dd2adbaa",
+          "git_blob": "8d1fd93e15f9cce3a7fcf371c8c164d5e6246154",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 601495,
+          "path": "raw/job-130668671332.log.utf8.part-003",
+          "bytes": 1495,
+          "sha256": "48ad5434c44a0d4ecf51c28bae5eb1a657760f57e278eed03e1cb292f5c0262d",
+          "git_blob": "f168ae5ada6b502f7b371c44f806ab5ef7f80417",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671376.log",
+      "source_store_key": "d0f-log-130668671376",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 3201889,
+        "sha256": "499edf02dad83e7669006f1d788edbdca1a7d43b144086631b539f306ffaf239",
+        "git_blob": "fac09318fdd6d4272167bbbf7d13815bd9e41b94"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 3201537,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671376.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "49c82243f49accdc588f6e0b3404f864e10cd1ec8408343d8e5eb978ae91d686",
+          "git_blob": "3730a2977ee660137658d1e860b79a426db527cf",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671376.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "dda2ee44049445a0735bf65cea37ea03eb83894b858f306ebdf0eb981ea507f5",
+          "git_blob": "dd51a2fa9a5acd73f23dbf924084b8738be7dcd1",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668671376.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "747bb6c164f06e02912e957a693157c20f941614319b97c0fec19ef970c74ccd",
+          "git_blob": "e65a600fa10750723af556dbcd8ce811e658fcf8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668671376.log.utf8.part-004",
+          "bytes": 300048,
+          "sha256": "880e45f45445954ad38641e075556d66fbc2094bb5fbf607027ecf0a140cb2f3",
+          "git_blob": "ccc81b1466009e27c9505c270e934db49f5dd993",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668671376.log.utf8.part-005",
+          "bytes": 300036,
+          "sha256": "05cb0e4d3e850f67e8a5989ae431f3fec7322aabdbd279cdc1d80b80dbcad077",
+          "git_blob": "0d29d9a6dd2c38adabc0897be1e519b97840c196",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1800000,
+          "path": "raw/job-130668671376.log.utf8.part-006",
+          "bytes": 300054,
+          "sha256": "0268a1faa66c86a397854fed3be2224da88e2de90047a65d99dde4e7a2fa2284",
+          "git_blob": "41f849c5fdd29a71be26a1b073936e55db2c8d2b",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 7,
+          "char_start": 1800000,
+          "char_end": 2100000,
+          "path": "raw/job-130668671376.log.utf8.part-007",
+          "bytes": 300054,
+          "sha256": "ebfc41ba9da86c40e661e121318f9c1e794d6af76b29427dc6b292f960704901",
+          "git_blob": "3e1920384488918997498a9f5908b768c9a98bd9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 8,
+          "char_start": 2100000,
+          "char_end": 2400000,
+          "path": "raw/job-130668671376.log.utf8.part-008",
+          "bytes": 300056,
+          "sha256": "3a96ee4513bca29af8a87d9a03421e65f1d0d04d193d60e8eadf7d42933fc8c7",
+          "git_blob": "eec388695e345b642ec422d84c596e6196a21843",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 9,
+          "char_start": 2400000,
+          "char_end": 2700000,
+          "path": "raw/job-130668671376.log.utf8.part-009",
+          "bytes": 300054,
+          "sha256": "29d05aaaf0bbf3968c367bd9df1cb7ea697645f830266d85f0b4e17e3f003348",
+          "git_blob": "8aab20de0964f6446b4519bd25daa84eb6d72de7",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 10,
+          "char_start": 2700000,
+          "char_end": 3000000,
+          "path": "raw/job-130668671376.log.utf8.part-010",
+          "bytes": 300048,
+          "sha256": "d1d8506cb4d766e93cdf179c91b701fee263a7122089dd9c08be668be6b6c2e4",
+          "git_blob": "485d21a5d71532027a0a7840983f4f83b172772e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 11,
+          "char_start": 3000000,
+          "char_end": 3201537,
+          "path": "raw/job-130668671376.log.utf8.part-011",
+          "bytes": 201537,
+          "sha256": "a59a251d30ed8bb0091586f714cda5560129c7d622b3c58195e1c4aa937fb447",
+          "git_blob": "41629016e85d1215a924b04c1363069689c22d45",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671426.log",
+      "source_store_key": "d0f-log-130668671426",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 384869,
+        "sha256": "589a9b7a680e1e83a1fa35b7060057eeffa2ff1b2dc5b9ec549bb82caea0d2dd",
+        "git_blob": "92c1db32e8c44f3a42500b416f8b9d71f3fc86a1"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 384867,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671426.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "4d94c08977379cc1c31d0321904458a35a1986e14e0607e59e7b93865a91b1be",
+          "git_blob": "91d740b54f9067e4e3342a185dd1e5851d24dd35",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 384867,
+          "path": "raw/job-130668671426.log.utf8.part-002",
+          "bytes": 84867,
+          "sha256": "f87b567b916a4c9da0a03374003f9358b7e473ce406088a7bbb8ef8d3da081fb",
+          "git_blob": "d77b9eb45b46a35c158d8bbc0fa8c3c1e1c5a8f4",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671482.log",
+      "source_store_key": "d0f-log-130668671482",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 995116,
+        "sha256": "9aae343f5e637c7ec550b9c3177624a58a9cb886f58d60a5dfca92c0e24a3315",
+        "git_blob": "c0d252d7dab6feed9b288376562256daba4bd184"
+      },
+      "full_git_blob_integrity_only_when_multipart": true,
+      "stored_text_characters": 995114,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671482.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "03b9d34023a859bd4e65e3990fce2c6a9990a99a188af07f993ddd5bdf42a5e1",
+          "git_blob": "9a5b0a37ccdd6712f4a40e4be83b4afc6b37892c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671482.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "a4adf67b44f75c5f0b5afba02c088feb0db8b6f7d3005f7bcdfdc500ebc8356d",
+          "git_blob": "443a65b80c5f66f4793e83af970ee0898dbd95ab",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668671482.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "e654af87d0dbfe3822e42e9aba3e2d24d0f0c65aec80eff5afc21549d7311005",
+          "git_blob": "004a67570dead5deefcfd9cb028957db533d5bb5",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 995114,
+          "path": "raw/job-130668671482.log.utf8.part-004",
+          "bytes": 95114,
+          "sha256": "36f496d8390f91b785b6e17cb2e09b87ab90f5bb63c79e82d7cae6e7dd974f3e",
+          "git_blob": "8250ad4ac13ed389631390128bedd262a443240e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842242.log",
+      "source_store_key": "d0f-log-130668842242",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 133645,
+        "sha256": "3793cfbad645b8130e3ee7501fdee9c39621e3b25c8b35beeb6e88ff583d7a6a",
+        "git_blob": "6b132a9db536161bacf95304fa161955689b189c"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 133643,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 133643,
+          "path": "raw/job-130668842242.log.utf8.part-001",
+          "bytes": 133645,
+          "sha256": "3793cfbad645b8130e3ee7501fdee9c39621e3b25c8b35beeb6e88ff583d7a6a",
+          "git_blob": "6b132a9db536161bacf95304fa161955689b189c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842658.log",
+      "source_store_key": "d0f-log-130668842658",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 185658,
+        "sha256": "2a2df8e5a796c1dbe6236ef4ef238a90edf43beda2b50db552df29dad046b78a",
+        "git_blob": "8a1a928b18167c98483553a73e15f710d1da4b15"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 185656,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 185656,
+          "path": "raw/job-130668842658.log.utf8.part-001",
+          "bytes": 185658,
+          "sha256": "2a2df8e5a796c1dbe6236ef4ef238a90edf43beda2b50db552df29dad046b78a",
+          "git_blob": "8a1a928b18167c98483553a73e15f710d1da4b15",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130669042117.log",
+      "source_store_key": "d0f-log-130669042117",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 173716,
+        "sha256": "d4547bcf20ec8ea795e76e868ef83721dcdde2765e75b92a4c221e2bfe5bb26c",
+        "git_blob": "9504f8633914135eec0f85b28ab32af39905f91f"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 173698,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 173698,
+          "path": "raw/job-130669042117.log.utf8.part-001",
+          "bytes": 173716,
+          "sha256": "d4547bcf20ec8ea795e76e868ef83721dcdde2765e75b92a4c221e2bfe5bb26c",
+          "git_blob": "9504f8633914135eec0f85b28ab32af39905f91f",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130669910594.log",
+      "source_store_key": "d0f-log-130669910594",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 4906,
+        "sha256": "90145b6300adc3e9dfcf389f4687785b5002b707ff6e750d28d2399bd20d4a7c",
+        "git_blob": "84011a1cc0e1ff561df82b98048fd3b0b046eb0b"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 4904,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 4904,
+          "path": "raw/job-130669910594.log.utf8.part-001",
+          "bytes": 4906,
+          "sha256": "90145b6300adc3e9dfcf389f4687785b5002b707ff6e750d28d2399bd20d4a7c",
+          "git_blob": "84011a1cc0e1ff561df82b98048fd3b0b046eb0b",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130683493034.log",
+      "source_store_key": "d0f-log-130683493034",
+      "source_recovery": "original tool-response retained in functions.store",
+      "observed_at_utc": null,
+      "full_pin": {
+        "bytes": 2640,
+        "sha256": "80a838b24b426e0467adef2b9b68e8bddfcfa0b41abefeb62b61708f45455ccc",
+        "git_blob": "a91732efe6d1dc019f3101dc9ab040dad8a8bcf5"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 2638,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 2638,
+          "path": "raw/job-130683493034.log.utf8.part-001",
+          "bytes": 2640,
+          "sha256": "80a838b24b426e0467adef2b9b68e8bddfcfa0b41abefeb62b61708f45455ccc",
+          "git_blob": "a91732efe6d1dc019f3101dc9ab040dad8a8bcf5",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668438898.log",
+      "source_store_key": "d0f-rescue-read-log-130668438898-value",
+      "source_recovery": "fresh GET of unchanged original terminal job after scratch disconnection",
+      "observed_at_utc": "2026-11-11 18:28:19 UTC",
+      "full_pin": {
+        "bytes": 44964,
+        "sha256": "789f1e81931f8fb223fad7762893953ee0615433cebed7597eb82a63d2a6314c",
+        "git_blob": "c62a3ef4995ab0c5fc598f7247b79efa0023ef19"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 44962,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 44962,
+          "path": "raw/job-130668438898.log.utf8.part-001",
+          "bytes": 44964,
+          "sha256": "789f1e81931f8fb223fad7762893953ee0615433cebed7597eb82a63d2a6314c",
+          "git_blob": "c62a3ef4995ab0c5fc598f7247b79efa0023ef19",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842286.log",
+      "source_store_key": "d0f-rescue-read-log-130668842286-value",
+      "source_recovery": "fresh GET of unchanged original terminal job after scratch disconnection",
+      "observed_at_utc": "2026-11-11 18:28:19 UTC",
+      "full_pin": {
+        "bytes": 34812,
+        "sha256": "fe9ffeaea406590c365ce7c6ebf70b0f2fc4e372b8cc9d605c012d7a9fdd04ae",
+        "git_blob": "72541c1cb3111ce30881473e14e08a4a15c2f53e"
+      },
+      "full_git_blob_integrity_only_when_multipart": false,
+      "stored_text_characters": 34810,
+      "reassemble": "Concatenate part UTF-8 byte sequences in ascending sequence; verify bytes, SHA-256 and Git blob SHA-1 against full_pin. Do not normalize newline/BOM.",
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 34810,
+          "path": "raw/job-130668842286.log.utf8.part-001",
+          "bytes": 34812,
+          "sha256": "fe9ffeaea406590c365ce7c6ebf70b0f2fc4e372b8cc9d605c012d7a9fdd04ae",
+          "git_blob": "72541c1cb3111ce30881473e14e08a4a15c2f53e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    }
+  ],
+  "metadata": [
+    {
+      "path": "snapshots/snapshot-018/run.json",
+      "bytes": 16567,
+      "sha256": "745d64b59f314454dd7e3ab4ba6b456610de21d41d4fb8525efec9a140157e41",
+      "git_blob": "6f1abf1a0c1dd683792a878124d98ed05a2c4055",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "snapshots/snapshot-018/jobs.json",
+      "bytes": 86221,
+      "sha256": "c6e9deac7e4f9958ebde687ca2467212653b7d93faae34d967d892ad693a1b85",
+      "git_blob": "052e313586184df005b5bc69e4e092344980cf81",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "snapshots/snapshot-018/artifacts.json",
+      "bytes": 8087,
+      "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+      "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "original_error_responses": [
+    {
+      "path": "read-errors/original-job-130668669641-first-fetch-response.json",
+      "bytes": 210,
+      "sha256": "94706eab5bc599a6309f59bd5b1923c166c13dc39ca3a08038dbaf0b15c51b01",
+      "git_blob": "c701e3d00536096d456f8b2730f755914e32ebeb",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "read-errors/original-job-130668842286-first-fetch-response.json",
+      "bytes": 227,
+      "sha256": "3f87860ab0d8d109b527eae0a3856aaffd3c352a08f86ab3c7d4f1692f5d6cae",
+      "git_blob": "b7e4bff5f11e720d94b873a5f381353ba12fcad3",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "absent_fullraw": [
+    {
+      "job_id": 130668669641,
+      "api_conclusion": "success",
+      "reason": "Two prior full-log reads returned transport failure; first exact tool response is included. Second original failure response currently only in disconnected scratch; no third read was issued."
+    },
+    {
+      "job_id": 130668671390,
+      "api_status": "in_progress",
+      "reason": "Original 120-minute job not terminal; original partial log read was 404. No terminal log exists in this checkpoint."
+    }
+  ],
+  "scratch_only_currently_unavailable": {
+    "original_offline_parser": "audit_bazel_observed.py",
+    "original_offline_parser_output": "BAZEL_OBSERVED_AUDIT.json",
+    "other_original_audits": [
+      "MAC_INTEL_FAILURE_BLOCKS.json",
+      "WINDOWS_SHARD1_PARTIAL_SEGMENT_ADDENDUM.json",
+      "WINDOWS_SHARD2_FAILURE_AUDIT.json",
+      "WINDOWS_SHARD4_TARGET_RECORDS.v2.json",
+      "MUSL_CONCURRENCY_READONLY_AUDIT.json"
+    ],
+    "unexecuted_packet_scaffolds": [
+      "build_packet.py",
+      "verify_package.py",
+      "seal_packet.py"
+    ],
+    "mac_artifact": {
+      "artifact_id": 13876372739,
+      "bytes": 10555309,
+      "sha256": "8b8fb19211e1227414670de11a9695cfd3773cc81081a5022714055fbf7eee56",
+      "local_full_zip_crc_and_member_check_previously_completed": true,
+      "zip_bytes_not_recovered_from_store": true,
+      "github_artifact_still_listed": true,
+      "semantic_compact_execution_decode_not_performed": true
+    }
+  },
+  "byte_helper": {
+    "git_blob": "378f4a781b9392bb1f57aa2cc8eb70b14e9a1b2e",
+    "bytes": 4385,
+    "sha256": "2f653d6975bb58d7895738673f85f1e02a81e8347a272b5182d847514a482dbc",
+    "empty_and_abc_vectors_verified": true
+  },
+  "boundaries": {
+    "no_workflow_rerun_or_dispatch": true,
+    "no_ref_change": true,
+    "no_native_or_model_execution": true,
+    "nonterminal_snapshot_not_final_run_result": true,
+    "cached_targets_and_flaky_attempts_not_strict_new_case_passes": true,
+    "original_v10_fence_subreason_unknown": true,
+    "original_provider_outcome_unknown": true,
+    "v12_diagnostic_only_prepared_not_qualified": true,
+    "original_detailed_parser_output_not_recreated_or_claimed_recovered": true
+  }
+}

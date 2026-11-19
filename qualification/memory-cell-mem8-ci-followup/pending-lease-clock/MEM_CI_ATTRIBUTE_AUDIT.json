@@ -1,0 +1,116 @@
+{
+  "schema": "mem8.clock.ci-independent-attribute-audit.v1",
+  "base_tree": "e253b99e0a5c3b3a680569da0d224fabff0781ba",
+  "candidate_patch_bytes": 34628,
+  "candidate_patch_sha256": "8f95aab31d8124f22ae9ddd67ae78f05862ee707459637ce32285a79c4010898",
+  "all23_source_hashes_preimages_independently_verified": true,
+  "packages": [
+    {
+      "package": "codex-rs/app-server",
+      "crate_name": "codex_app_server",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "5677ccd63951a988b4ac69dbe93f728539b146be"
+    },
+    {
+      "package": "codex-rs/app-server-client",
+      "crate_name": "codex_app_server_client",
+      "variant_features": [
+        "test-support"
+      ],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "48bc630e73b6250c79209af8005b4b8b8f0e907f"
+    },
+    {
+      "package": "codex-rs/ext/hepta-memory",
+      "crate_name": "codex_hepta_memory_extension",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "c952c51ca6852783ff9707069807a5f1a4639a37"
+    },
+    {
+      "package": "codex-rs/hepta-agentd",
+      "crate_name": "codex_hepta_agentd",
+      "variant_features": [
+        "production-cognitive-write"
+      ],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "152af12c28d87e91f569bd10dc5be5fae8a2a1c3"
+    },
+    {
+      "package": "codex-rs/hepta-codex-adapter",
+      "crate_name": "codex_hepta_codex_adapter",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "a5a90b0d0fc4b1b38a0cb8f8e88e410ccbeba488"
+    },
+    {
+      "package": "codex-rs/hepta-cognitive-store",
+      "crate_name": "codex_hepta_cognitive_store",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "2d7bc67175c6edd67def9f53e012aea220d337a1"
+    },
+    {
+      "package": "codex-rs/hepta-infer-worker-host",
+      "crate_name": "codex_hepta_infer_worker_host",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "d2b86921a989eef2c98a1532cc36ea66d9a5f11e"
+    },
+    {
+      "package": "codex-rs/hepta-memory",
+      "crate_name": "codex_hepta_memory",
+      "variant_features": [
+        "qualification-lease-clock"
+      ],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "a4ae7831230294dbcc423cb5955cf5f0dd615b5d"
+    },
+    {
+      "package": "codex-rs/hepta-supervisor",
+      "crate_name": "codex_hepta_supervisor",
+      "variant_features": [],
+      "compile_data_equal_to_original": true,
+      "ordinary_macro_preserved_except_extension_test_replacement": true,
+      "normal_library_extra_data_flags_env_deps_absent": true,
+      "build_rs_absent_in_complete_tree": true,
+      "extra_sources_equal_original_unit_extra_sources": true,
+      "post_build_git_blob": "cd91c51a7ac0753fc95c558f6face20a1a79ab0c"
+    }
+  ],
+  "default_toolchain_edition_2024_pinned_module_blob": "f0be7de63337cb7c0aa2c68dc93771aa5723e546",
+  "native_or_bazel_execution": false
+}

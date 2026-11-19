@@ -1,0 +1,85 @@
+{
+  "schema": "mem8.architecture.preflight.root-addendum-audit.v1",
+  "status": "PASS_COMPLETE_ORIGINAL_LINES_AND_UNCHANGED_OFFLINE_REPLAY",
+  "addendum": {
+    "bytes": 57858,
+    "sha256": "1ff6c01b7033188995ff9448ef2bc72ff07f81f12563bcf98b149bc35ad34911",
+    "git_blob": "ea2c005cc90ce4920c02c46b1700b3d18ad2a459"
+  },
+  "original_jobs": [
+    {
+      "job": 130573424803,
+      "source": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "lane": "source-head",
+      "full_raw": {
+        "bytes": 85376,
+        "sha256": "611a587ef421183bfe1b837bcd229e4a9fe3968c2001afee0259b9b4efdf44e5",
+        "git_blob": "4fcbb1d5a1a3860f5341540fea37b746f235ba5c"
+      }
+    },
+    {
+      "job": 130573424857,
+      "source": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "lane": "base-merge",
+      "full_raw": {
+        "bytes": 92313,
+        "sha256": "d730a01752b78e0c7840c8811688a13e41dba9b6597ec0b28798de5d8becff8b",
+        "git_blob": "f5b8912540913a35a839e4994f25eadb33676815"
+      }
+    },
+    {
+      "job": 130619111897,
+      "source": "c89540598693697577cda8cba31cb07f6ce65317",
+      "lane": "source-head",
+      "full_raw": {
+        "bytes": 85755,
+        "sha256": "02abd9d018cc833a337a89dd4bbdf352dbbe97982fe6c6a85da31a411eb750ac",
+        "git_blob": "c7c828bcdc4f507652f0cf0d144a0a631f250bdd"
+      }
+    },
+    {
+      "job": 130619111431,
+      "source": "c89540598693697577cda8cba31cb07f6ce65317",
+      "lane": "base-merge",
+      "full_raw": {
+        "bytes": 92701,
+        "sha256": "24da201ffb1eac0d0bd68cc9301d01f69ffaeaff34b11a49f93304f6d8de5288",
+        "git_blob": "c0e697a278eb87540cac7880221e711ba9fb3b8f"
+      }
+    }
+  ],
+  "per_source_counts": [
+    {
+      "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "qualification_receipted_executions": 272,
+      "additional_raw_only_executions": 16,
+      "all_python_executions": 288,
+      "distinct_python_case_ids": 144,
+      "each_lane": {
+        "receipted": 136,
+        "raw_only": 8,
+        "total": 144
+      }
+    },
+    {
+      "source_commit": "c89540598693697577cda8cba31cb07f6ce65317",
+      "qualification_receipted_executions": 272,
+      "additional_raw_only_executions": 16,
+      "all_python_executions": 288,
+      "distinct_python_case_ids": 144,
+      "each_lane": {
+        "receipted": 136,
+        "raw_only": 8,
+        "total": 144
+      }
+    }
+  ],
+  "all_literal_invocations_results_summaries_and_source_bindings_verified": true,
+  "original_receipt_scope_of_136_unchanged": true,
+  "additional_8_case_ids_disjoint_from_136_receipt_ids": true,
+  "full_original_verifier_replayed_without_change": true,
+  "full_replayed_addendum_bytes_equal": true,
+  "original_raw_and_historical_audits_modified": false,
+  "new_native_tests_CI_runs_or_model_requests": 0,
+  "limit": "The extra eight outcomes are raw-only preflight cases; no missing structured per-command receipt or native qualification is inferred."
+}

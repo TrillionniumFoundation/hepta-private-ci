@@ -1,0 +1,98 @@
+{
+  "schema": "hepta.mem8.architecture9bd2.complete-original-artifact-audit.v1",
+  "source_head": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "base": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+  "run_id": 43021840388,
+  "run_attempt": 1,
+  "run_terminal": {
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-11T12:36:45Z",
+    "updated_at": "2026-11-11T13:17:49Z"
+  },
+  "job_terminals": [
+    {
+      "id": 130526675057,
+      "name": "Architecture convergence (base-merge)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T12:36:50Z",
+      "completed_at": "2026-11-11T12:37:21Z"
+    },
+    {
+      "id": 130526675565,
+      "name": "Architecture convergence (source-head)",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T12:36:51Z",
+      "completed_at": "2026-11-11T13:17:43Z"
+    },
+    {
+      "id": 130546877927,
+      "name": "Architecture required",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-11T13:17:45Z",
+      "completed_at": "2026-11-11T13:17:48Z"
+    }
+  ],
+  "source_head_artifact": {
+    "id": 13857194575,
+    "archive": {
+      "bytes": 107292,
+      "sha256": "9959a923942e0f6c4acef3bda2fa9eee7981d035fda0d4a63dc49ea9b507ed6c",
+      "git_blob": "766d71925b808ca15c8dc23d486829ef9dc3a4a2"
+    },
+    "regular_members_full_hash_verified": 65
+  },
+  "source_head_lane": {
+    "strict_receipts": 31,
+    "passed_execution_observations": 664,
+    "failed": 0,
+    "python_passed": 138,
+    "rust_passed": 526,
+    "metadata_commands_zero_cases": 1,
+    "rust_libtest_ignored_observations": 5,
+    "rust_libtest_filtered_observations": 2808,
+    "rust_nextest_skipped_observations": 899,
+    "all_receipts_exact_head_tree_clean_before_after": true,
+    "counts_are_executions_not_claim_of_unique_cases": true
+  },
+  "base_merge": {
+    "tested_sha": "6032d1f09f2b2e70c6be42336b6922fdade5f60c",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "python_passed": 136,
+    "failed": 0,
+    "metadata_command_with_zero_cases": 1
+  },
+  "both_lanes_passed_execution_observations": 800,
+  "aggregate_required": {
+    "job_id": 130546877927,
+    "status": "completed",
+    "conclusion": "success",
+    "raw_result_success_checked": true
+  },
+  "candidate_transport_advisory": {
+    "activation_authorized": false,
+    "admin_denial_proven": false,
+    "advisory": true,
+    "credential_separation_proven": false,
+    "http_status": 403,
+    "observation_status": "unknown",
+    "pull_request_write_denial_proven": false,
+    "reason": "no_explicit_write_denial",
+    "write_transport_denied": null
+  },
+  "native_model_smoke_selected": false,
+  "original_provider_settlement_status": "UNCHANGED_UNKNOWN",
+  "real_successor_benefit_established": false,
+  "original_owner_recovery_established": false,
+  "prior_head_counts_transferred": false,
+  "workflow_or_test_code_executed_by_this_audit": false,
+  "old_189_counts_may_equal_new_totals_but_all_new_raw_receipts_recounted": true,
+  "audit_revision": {
+    "supersedes": "ARCHITECTURE_AUDIT.json",
+    "reason": "Initial metadata used a duplicate source_head key; no raw identity, result, or counting changed."
+  }
+}

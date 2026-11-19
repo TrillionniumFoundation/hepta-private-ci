@@ -1,0 +1,15 @@
+# Original c895 Windows-current attempt
+
+This packet retains run `43048569129`, job `130619117269`, attempt `1`, source `c89540598693697577cda8cba31cb07f6ce65317`, tree `5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae`. The original job began at 15:27:43 UTC and finished **CANCELLED at 16:32:55 UTC on 2026-11-11**. The cancellation's scheduler cause was not observed. Its duration alone does not establish the cause.
+
+The declared scope remains 19 groups and 167 original Rust case IDs. Fifteen groups have completed original receipts: 139 distinct cases, **138 PASS, 1 FAIL, 0 LEAK**, with 14 strictly passing groups. Every completed group used its original exact selection, one test thread and zero retries. Duplicate summary rows are not additional executions. The nine Python driver preflight tests separately report `OK`; their fake nextest rows are not Rust executions.
+
+The only observed Rust failure is `unified_exec::tests::delete_permission_tests::legacy_refuses_before_elevated_four_cell_delete_boundary`. Its original ordinary-control child reports a distinct TokenId and absence of Backup/Restore privileges, and its four control outcomes meet the fixture's expectation. The elevated child still deletes the file and directory in TargetOnly, ParentOnly and Both, while Neither is preserved. Original physical observations after handle release and assertion failure remain inside the complete artifact. The ordinary child privilege record is not an inventory of the elevated child's token.
+
+Group 16, `exec-server-observation-wire`, was compiling when its original log recorded KeyboardInterrupt. It has no nextest UUID, start header, case terminal, or completed group receipt. Groups 17–19 have no original logs. These 28 case IDs have no observed terminal result. There is no final `receipt.json` or final source-after observation; neither is reconstructed from the initial clean source. This attempt does not qualify the whole 167-case scope.
+
+`ORIGINAL_ARTIFACT.zip` is the complete 114,237-byte original GitHub artifact, including all 22 members. `ORIGINAL_JOB.log` is the full 167,907-byte decoded job log returned by GitHub. Original run/job/artifact metadata, exact scope/workflow/driver source, and per-member hashes are retained. Native helper receipts bind two actual compiler artifacts and hashes; executable bytes are not included in the original artifact. No test, model, owner, or host operation was repeated by the audit.
+
+To replay only the retained-byte audit, run `python3 verify_original.py <this-directory>`. Its output must equal `OFFLINE_AUDIT.json`. The audit validates original bytes, ZIP CRC and member identities, source pins, every actual group command/UUID/case set/skip count, and strict PASS versus FAIL/LEAK. It never launches archived code, native tests or models. `FILE_MANIFEST.json` covers every other archive member. The three new hardlink helper cases are outside this original 167-case selection.
+
+These software observations do not establish memory benefit, original production owner recovery, independent trust-domain restoration or real effect-state recovery. No older source's PASS is transferred to c895.

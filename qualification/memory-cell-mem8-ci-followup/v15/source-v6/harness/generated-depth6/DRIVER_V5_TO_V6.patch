@@ -1,0 +1,267 @@
+--- v5/DRIVER_V5_TO_V6.patch
++++ v6/DRIVER_V5_TO_V6.patch
+@@ -19,13 +19,21 @@
+ import sys
+ import tarfile
+ import time
++import tomllib
+ import traceback
+ 
+-HEAD = 'c842e995b047eb2ee7d81c073f14fb2fcaa6bff2'
+-TREE = 'e9ba2746237562d68b1c732bee0f86df9e352cde'
++HEAD = '421d15080b3cb942be8ac51bbe443e268d124a9e'
++TREE = 'df293c7709860ecfc3889e4cabb1f970fb649d8e'
+ BASE = '2ae5215beaf8d7b7df111a090b82134beae2683d'
+ BASE_TREE = '12159640adcf073b51f3837e75575e11f5c20233'
+-INPUT_SHA = '948e8c9ff924317f55feaa45a0c9bac92c29196f6bf652a888ddf7c8795bb0d0'
++INPUT_SHA = '265cb24707274661cf7777a7988f7b67a97a8a842f2ff02c20d4dbe2e08860ec'
++INPUT_BYTES = 348524
++PATH_COUNT = 109
++GOLDEN_SHA = '17ac4ede6046ccde7f2a2952d2e3e699ff75258089e195b3783638ac9735fc96'
++GOLDEN_BYTES = 75046
++CALLERS_BLOB = 'c1a1b945171cdb20723e398cabe6a7888fa0abdb'
++EXPECTED_RUST_FILES = 6201
++REGRESSION_CASES = {'scripts/test_hepta_typed_callers.py': ['TypedAuthorityCallTests.test_absent_method_does_not_parse_unbalanced_owner', 'TypedAuthorityCallTests.test_arbitrary_parameter_and_borrowed_clone_alias', 'TypedAuthorityCallTests.test_arbitrary_typed_variable_field_without_authority_import', 'TypedAuthorityCallTests.test_arc_clone_preserves_the_original_authority_receiver', 'TypedAuthorityCallTests.test_constructor_binding_never_depends_on_receiver_name', 'TypedAuthorityCallTests.test_explicit_unrelated_type_does_not_manufacture_authority', 'TypedAuthorityCallTests.test_field_owner_is_visible_across_split_impl_module', 'TypedAuthorityCallTests.test_local_type_import_alias_and_type_alias_remain_target', 'TypedAuthorityCallTests.test_malformed_matching_owner_still_refuses', 'TypedAuthorityCallTests.test_opaque_possible_authority_receiver_refuses_closed', 'TypedAuthorityCallTests.test_qualified_use_does_not_hide_an_opaque_receiver', 'TypedAuthorityCallTests.test_same_variable_name_in_other_function_does_not_hide_call', 'TypedAuthorityCallTests.test_shared_clone_of_explicit_other_type_is_not_authority', 'TypedAuthorityCallTests.test_trait_impl_keeps_typed_authority_field', 'TypedAuthorityCallTests.test_type_alias_declared_in_another_module_remains_authority', 'TypedAuthorityCallTests.test_unknown_shared_clone_cannot_hide_possible_authority'], 'scripts/test_hepta_caller_cache.py': ['InvocationFieldIndexTests.test_no_method_call_does_not_suppress_global_field_index_failure', 'InvocationFieldIndexTests.test_two_boundary_proof_rejects_changed_source_on_next_invocation']}
+ AGENTS_BLOB = 'faa57cc0db48123e1011f1eb47692cd3bbbcfc3a'
+ LOCKS = {
+     'codex-rs/Cargo.lock': '98b3767c6e74bf6eeb5894db760259dbc400cbfd0685af8ad915c92d25408d69',
+@@ -64,9 +72,82 @@
+         os.fsync(stream.fileno())
+ 
+ 
++
++def strict_json(raw):
++    def unique_pairs(pairs):
++        result = {}
++        for key, value in pairs:
++            if key in result:
++                raise ValueError('duplicate JSON object key: ' + key)
++            result[key] = value
++        return result
++
++    def invalid_constant(value):
++        raise ValueError('non-JSON constant: ' + value)
++
++    return json.loads(raw.decode('utf-8'), object_pairs_hook=unique_pairs,
++                      parse_constant=invalid_constant)
++
++
++def canonical_json(value):
++    # Preserve array ordering and scalar types; in particular false is not 0.
++    return json.dumps(value, sort_keys=True, separators=(',', ':'), ensure_ascii=True,
++                      allow_nan=False).encode()
++
++
++def rust_source_inventory(tree_entries, manifest_bytes):
++    manifest = tomllib.loads(manifest_bytes.decode('utf-8'))
++    roots = manifest['source_roots']
++    if not isinstance(roots, list) or not roots or not all(isinstance(x, str) for x in roots):
++        raise RuntimeError('invalid frozen caller source_roots')
++    paths, by_root = [], []
++    for root in roots:
++        relative = PurePosixPath(root)
++        if relative.is_absolute() or '..' in relative.parts or '.git' in relative.parts:
++            raise RuntimeError('unsafe caller source root')
++        prefix = relative.as_posix().rstrip('/') + '/'
++        selected = []
++        for name, row in sorted(tree_entries.items()):
++            if name.startswith(prefix) and name.endswith('.rs'):
++                if row['type'] != 'blob' or row['mode'] not in ('100644', '100755'):
++                    raise RuntimeError('nonregular frozen Rust source: ' + name)
++                selected.append(name)
++        # Match _source_files exactly: each root contributes all *.rs paths;
++        # ignored_path_fragments do not reduce rustFilesScanned.
++        paths.extend(selected)
++        by_root.append({'root': root, 'rust_files': len(selected)})
++    return {'source_roots': roots, 'count_by_root': by_root, 'paths': sorted(paths),
++            'rust_files': len(paths), 'ignored_path_fragments_applied': False}
++
++
++def regression_counts(raw, expected, command_exit):
++    text = raw.decode('utf-8')
++    summaries = re.findall(r'^Ran (\d+) tests? in [0-9.]+s$', text, re.MULTILINE)
++    named = []
++    for method, identifier, outcome in re.findall(
++        r'^(test_[A-Za-z0-9_]+) \(([^()\r\n]+)\) \.\.\. (.+)$', text, re.MULTILINE
++    ):
++        named.append({'method': method, 'id': identifier, 'outcome': outcome})
++    expected_ids = ['__main__.' + case for case in expected]
++    observed_ids = [row['id'] for row in named]
++    passed = (command_exit == 0 and summaries == [str(len(expected))]
++              and len(named) == len(expected)
++              and len(observed_ids) == len(set(observed_ids))
++              and sorted(observed_ids) == sorted(expected_ids)
++              and all(row['outcome'] == 'ok' and row['id'].endswith('.' + row['method']) for row in named)
++              and text.rstrip().endswith('\nOK'))
++    return {'status': 'PASS' if passed else 'FAIL', 'command_exit': command_exit,
++            'expected_case_ids': expected_ids, 'named_cases': named,
++            'ran_test_summaries': summaries,
++            'actual_named_pass': sum(row['outcome'] == 'ok' for row in named),
++            'actual_named_fail': sum(row['outcome'] in ('FAIL', 'ERROR', 'unexpected success') for row in named),
++            'actual_named_skip': sum(row['outcome'].startswith('skipped') for row in named),
++            'raw': info(raw), 'no_native_or_model_execution': True}
++
++
+ def main():
+     parser = argparse.ArgumentParser()
+-    for flag in ('source', 'output', 'input', 'expected-head', 'expected-tree', 'base'):
++    for flag in ('source', 'output', 'input', 'golden', 'expected-head', 'expected-tree', 'base'):
+         parser.add_argument('--' + flag, required=True)
+     parser.add_argument('--timeout-seconds', required=True, type=int)
+     args = parser.parse_args()
+@@ -76,7 +157,7 @@
+     output = Path(args.output).resolve()
+     input_path = Path(args.input)
+     workspace = Path(os.environ['GITHUB_WORKSPACE']).resolve()
+-    if source != workspace / 'source' or output != Path(os.environ['RUNNER_TEMP']).resolve() / 'mem8-source-gates-v5':
++    if source != workspace / 'source' or output != Path(os.environ['RUNNER_TEMP']).resolve() / 'mem8-source-gates-v6':
+         raise RuntimeError('unexpected isolated checkout or record directory')
+     if input_path.is_symlink() or not input_path.is_file():
+         raise RuntimeError('input is not a regular capsule')
+@@ -170,20 +251,39 @@
+     status, failure, completed = 'failed', None, []
+     source_before = source_after = candidate_tree = None
+     rows = []
++    source_python_regressions = {}
++    caller_equivalence = None
+     try:
+         encoded = input_path.read_bytes()
+-        if (len(encoded), info(encoded)['sha256']) != (333228, INPUT_SHA):
+-            raise RuntimeError('frozen V5 input bytes differ')
++        if (len(encoded), info(encoded)['sha256']) != (INPUT_BYTES, INPUT_SHA):
++            raise RuntimeError('frozen V6 input bytes differ')
+         config_bytes = lzma.decompress(encoded)
+         config = json.loads(config_bytes)
+         rows = config['files']
+         expected = {row['path'] for row in rows}
+-        if (config['base_sha'], config['base_tree'], config['source_gate_run_version']) != (BASE, BASE_TREE, 5):
++        if (config['base_sha'], config['base_tree'], config['source_gate_run_version']) != (BASE, BASE_TREE, 6):
+             raise RuntimeError('unexpected source capsule lineage')
+         if config['ready_to_execute'] is not True or config['execution_scope'] != 'source-only-format-caller-and-full-tree-scan':
+             raise RuntimeError('capsule not frozen for source-only execution')
+-        if len(expected) != len(rows) or len(rows) != 103:
++        if len(expected) != len(rows) or len(rows) != PATH_COUNT:
+             raise RuntimeError('unexpected reviewed path inventory')
++        golden_path = Path(args.golden)
++        if (golden_path.is_symlink() or not golden_path.is_file()
++                or golden_path.resolve() != workspace / 'harness' / 'qualification' / 'memory-cell-mem8-source-gates-v6' / 'GOLDEN_CALLER_RECEIPT.json'):
++            raise RuntimeError('golden caller receipt is not the separate frozen harness input')
++        golden_bytes = golden_path.read_bytes()
++        write(records / 'GOLDEN_CALLER_RECEIPT.json', golden_bytes)
++        if (len(golden_bytes), info(golden_bytes)['sha256']) != (GOLDEN_BYTES, GOLDEN_SHA):
++            raise RuntimeError('golden caller receipt exact bytes differ')
++        golden = strict_json(golden_bytes)
++        if (golden.get('schema'), golden.get('status'), golden.get('authorityGranted'),
++                golden.get('rustFilesScanned')) != (
++                'hepta.caller-proof-receipt.v2', 'PASS_HEPTA_CALLER_CLOSED_SET', False, 6200):
++            raise RuntimeError('unexpected original golden caller receipt')
++        if config['expected_initial_tree'] != TREE or len(config['case_renames']) != 13:
++            raise RuntimeError('initial tree or original whole-tree rename inventory differs')
++        if {key: config['reference_caller_receipt'][key] for key in ('bytes', 'sha256', 'git_blob')} != info(golden_bytes):
++            raise RuntimeError('capsule golden reference differs from retained original')
+         write(records / 'DRIVER.py', Path(__file__).read_bytes())
+         write(records / 'INPUT.json.xz', encoded)
+         write(records / 'INPUT.json', config_bytes)
+@@ -219,9 +319,21 @@
+                 raise RuntimeError('candidate content differs from frozen bytes')
+             expected_tree[row['path']] = {'mode': row['mode'], 'type': 'blob', 'git_blob': row['input_git_blob']}
+         if listing(initial_listing) != expected_tree:
+-            raise RuntimeError('complete initial tree differs from base plus frozen 103-path overlay')
++            raise RuntimeError('complete initial tree differs from base plus frozen 109-path overlay')
+         if set(git('diff', '--name-only', BASE, HEAD).decode().splitlines()) != expected:
+             raise RuntimeError('initial changed-path set differs from capsule')
++        caller_manifest = (source / 'CALLERS.toml').read_bytes()
++        if info(caller_manifest)['git_blob'] != CALLERS_BLOB or expected_tree['CALLERS.toml']['git_blob'] != CALLERS_BLOB:
++            raise RuntimeError('frozen caller manifest changed')
++        write(records / 'CALLERS.toml', caller_manifest)
++        caller_inventory = rust_source_inventory(expected_tree, caller_manifest)
++        if caller_inventory['rust_files'] != EXPECTED_RUST_FILES:
++            raise RuntimeError('full frozen tree Rust source count differs from reviewed inventory')
++        save('CALLER_SOURCE_INVENTORY.json', {
++            'initial_commit': HEAD, 'initial_tree': TREE, 'caller_manifest': info(caller_manifest),
++            'original_golden_count': golden['rustFilesScanned'],
++            'derived_count_delta': caller_inventory['rust_files'] - golden['rustFilesScanned'],
++            'only_allowed_receipt_field_change': 'rustFilesScanned', **caller_inventory})
+         locks_before = lock_pins()
+         save('START.json', {'started_at': start.isoformat(), 'deadline_utc': (start + timedelta(seconds=600)).isoformat(),
+              'source_before': source_before, 'source_input': info(encoded), 'locks': locks_before,
+@@ -279,9 +391,41 @@
+              'renames': config['case_renames'], 'matches': matches, 'review_required': bool(matches),
+              'historical_sources_must_not_be_rewritten': True})
+         completed.append('full-tree-rename-scan')
+-        command('caller-self-test', [sys.executable, '-B', 'scripts/verify_hepta_callers.py', 'self-test'])
++        for script, expected_cases in REGRESSION_CASES.items():
++            label = 'python-' + Path(script).stem
++            raw = command(label, [sys.executable, '-B', script, '-v'], allowed=(0, 1))
++            phase = strict_json((records / (label + '.json')).read_bytes())
++            counts = regression_counts(raw, expected_cases, phase['exit_code'])
++            source_python_regressions[label] = counts
++            save(label + '-COUNTS.json', counts)
++            if counts['status'] != 'PASS':
++                raise RuntimeError('source Python regression identities/counts/OK check failed: ' + label)
++            completed.append(label)
++        self_test_raw = command('caller-self-test', [sys.executable, '-B', 'scripts/verify_hepta_callers.py', 'self-test'])
++        self_test = strict_json(self_test_raw)
++        if canonical_json(self_test) != canonical_json({'status': 'PASS_HEPTA_CALLER_PROOF_SELF_TEST'}):
++            raise RuntimeError('caller self-test receipt differs from the original exact status')
++        save('CALLER_SELF_TEST_CHECK.json', {'status': 'PASS', 'receipt': self_test, 'raw': info(self_test_raw)})
+         completed.append('caller-self-test')
+-        command('caller-verify', [sys.executable, '-B', 'scripts/verify_hepta_callers.py', 'verify'])
++        caller_raw = command('caller-verify', [sys.executable, '-B', 'scripts/verify_hepta_callers.py', 'verify'])
++        actual_caller = strict_json(caller_raw)
++        expected_caller = strict_json(golden_bytes)
++        expected_caller['rustFilesScanned'] = caller_inventory['rust_files']
++        save('EXPECTED_CALLER_RECEIPT.json', expected_caller)
++        equal = canonical_json(actual_caller) == canonical_json(expected_caller)
++        caller_equivalence = {
++            'status': 'PASS' if equal else 'FAIL', 'full_json_comparison': True,
++            'array_order_and_scalar_types_preserved': True, 'duplicate_object_keys_rejected': True,
++            'ignored_receipt_fields': [], 'only_derived_field': 'rustFilesScanned',
++            'original_golden': info(golden_bytes), 'actual_original_raw': info(caller_raw),
++            'original_golden_count': golden['rustFilesScanned'],
++            'derived_frozen_tree_count': caller_inventory['rust_files'],
++            'explicit_count_delta': caller_inventory['rust_files'] - golden['rustFilesScanned'],
++            'expected_canonical_sha256': info(canonical_json(expected_caller))['sha256'],
++            'actual_canonical_sha256': info(canonical_json(actual_caller))['sha256']}
++        save('CALLER_GOLDEN_COMPARISON.json', caller_equivalence)
++        if not equal:
++            raise RuntimeError('full caller JSON differs beyond the frozen-tree-derived Rust count')
+         completed.append('caller-verify')
+         for row in postimages:
+             if info((source / row['path']).read_bytes()) != {key: row[key] for key in ('bytes', 'sha256', 'git_blob')}:
+@@ -295,7 +439,7 @@
+         if (current['head'], current['tree']) != (HEAD, TREE):
+             raise RuntimeError('source HEAD moved during qualification')
+         if set(git('diff', '--cached', '--name-only', BASE).decode().splitlines()) != expected:
+-            raise RuntimeError('staged delta differs from all 103 reviewed paths')
++            raise RuntimeError('staged delta differs from all 109 reviewed paths')
+         for row in postimages:
+             path = source / row['path']
+             mode = '100755' if path.stat().st_mode & 0o111 else '100644'
+@@ -334,7 +478,7 @@
+             # Preserve partially rewritten reviewed files even when fmt failed.
+             # This observation cannot turn a failure into qualification.
+             partial = {'status': 'UNQUALIFIED_FAILURE_OBSERVATION', 'observed_at': now(),
+-                       'scope': 'at most 103 reviewed paths, not a complete dirty-tree claim',
++                       'scope': 'at most 109 reviewed paths, not a complete dirty-tree claim',
+                        'paths': [], 'complete_reviewed_path_capture': True,
+                        'git_observation': 'not_attempted', 'errors': []}
+             remaining_bytes = 16 * 1024 * 1024
+@@ -375,6 +519,8 @@
+                   'deadline_utc': (start + timedelta(seconds=600)).isoformat(), 'completed': completed,
+                   'initial_commit': HEAD, 'initial_tree': TREE, 'base_commit': BASE, 'base_tree': BASE_TREE,
+                   'source_before': source_before, 'source_after': source_after, 'candidate_tree': candidate_tree,
++                  'source_python_regressions': source_python_regressions,
++                  'caller_golden_comparison': caller_equivalence,
+                   'source_candidate_committed': False, 'source_refs_modified': False, 'donor_used': False,
+                   'native_tests_executed': 0, 'model_requests_executed': 0,
+                   'scope': 'Independent CI source-only operation; no remote execution reconciliation or native qualification'}
+@@ -387,7 +533,7 @@
+             if path.is_file():
+                 inventory.append({'path': path.relative_to(records).as_posix(), **info(path.read_bytes())})
+         save('FILE_MANIFEST.json', {'schema': 'hepta.mem8.ci-source.records.v1', 'members': inventory})
+-        archive = output / 'mem8-source-gates-v5-records.tar.xz'
++        archive = output / 'mem8-source-gates-v6-records.tar.xz'
+         with archive.open('xb') as stream:
+             with tarfile.open(fileobj=stream, mode='w:xz', preset=6) as tar:
+                 for path in sorted(records.rglob('*')):
