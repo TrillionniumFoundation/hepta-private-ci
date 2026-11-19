@@ -1,0 +1,33 @@
+{
+  "exit_code": 0,
+  "deadline_kill_sent": false,
+  "whole_child_wall_upper_seconds": 40.98899175900442,
+  "child_cpu_user_seconds": 39.851617,
+  "child_cpu_system_seconds": 0.53438,
+  "child_cpu_seconds": 40.385996999999996,
+  "child_maxrss_kib": 72888,
+  "parent_cpu_seconds_before_final_write": 0.40410424,
+  "controller_interval_before_final_write_seconds": 40.992891581998265,
+  "artifact_files_before_cost": {
+    "REFERENCE_COORDINATES.json": 1870558,
+    "stdout": 2927,
+    "RESULT.json": 47029,
+    "INDEPENDENT_OPERATORS.json": 281643,
+    "LEVEL-256.json": 33601,
+    "ACTION-512-1.json": 780049,
+    "ACTION-256-0.json": 377015,
+    "stderr": 0,
+    "LEVEL-512.json": 45221,
+    "ACTION-512-0.json": 776997,
+    "PROCESS_REQUEST.json": 3761,
+    "ACTION-256-1.json": 378649
+  },
+  "artifact_bytes_before_cost": 4597450,
+  "full_child_scope": "Includes interpreter imports, source/input checks, independent assembly, all reference work, writing and shutdown; wall upper also includes parent preparation before fork and wait4 polling.",
+  "body_cost_separate": true,
+  "numerical_retry": false,
+  "cpu_affinity": [
+    7
+  ],
+  "all_closed": false
+}

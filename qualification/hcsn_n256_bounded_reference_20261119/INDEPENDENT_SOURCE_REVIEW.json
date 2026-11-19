@@ -1,0 +1,10 @@
+{
+  "schema": "hcsn-independent-source-review-v1",
+  "reviewer": "/root",
+  "kernel_review": "The nonnegative shift preserves signed endpoint order. A maximum row-sum majorant bounds the row-action signed tail using initial total variation. Geometric tail ratio is valid for K+2>w; exp(q) has positive outward bounds and its reciprocal and four-point products preserve containment. Integer floor/ceil rounding is included at every recurrence. Duhamel delta*exp(max row-sum) bounds time-scaling rounding only.",
+  "input_review": "STATE/PHASE/METADATA/NPY and both archives are hash-pinned. Exact input assembly target is distinct from continuum accuracy. rho=0.15 satisfies positive-discount scalar occupation precondition.",
+  "readback_review": "Independent wire parser and native Fraction-to-float endpoint rounding cover all coordinates and exact error arithmetic without importing producer modules. It verifies retained results and does not independently regenerate interval series.",
+  "original_bitwise_gate": "RED_UNCHANGED",
+  "reviewer_numerical_calls": 0,
+  "all_closed": false
+}
