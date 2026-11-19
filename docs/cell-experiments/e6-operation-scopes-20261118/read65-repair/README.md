@@ -34,3 +34,9 @@ Until the original full parent actually completes Training, independent B, evalu
 The full original caller CLI for the first frozen candidate reported an unresolved temporary Live-ledger receiver after 434.792 seconds. A targeted scan then identified the inferred prepared receiver in delivery bootstrap. Both negatives are retained. The final spelling names the actual Live ledger before its existing UFCS operation call and explicitly borrows the actual prepared Cell value. It adds no clone, observation, authority or helper. The original typed verifier is unchanged.
 
 The coupled 143 source-mutation tests and all 892 protected rows remain mandatory. A focused scan of the six changed actual boundary inventories now passes; the complete 1,124-boundary CLI continues independently. These source results do not establish read64 business completion.
+
+### Actual full-scan follow-up at 3f312ec
+
+The six directly reviewed boundaries passed, but the unchanged complete caller CLI failed after 432.90381192206405 seconds at `q24_original_dataset_operation_read`: it could not infer the historical preparation closure's `OriginalDatasetOperationV1` receiver. The original result and stderr are retained in `source-closure-5/`. All 143 selected mutation tests and all 892 protected rows passed before that failure; these are not a complete caller proof or native qualification.
+
+The follow-up adds only an explicit `&OriginalDatasetOperationV1<'_>` type to the very same borrowed closure argument. It adds no clone, constructor, read, lifetime extension, budget change, or verifier exception. The manifest and its exact digest remain unchanged. Before the next complete CLI, the original verifier checks every boundary defined in or calling into the affected physical source files and retains all failures. The complete CLI and fresh native execution remain required.

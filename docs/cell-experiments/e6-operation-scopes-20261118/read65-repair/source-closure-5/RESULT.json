@@ -1,0 +1,147 @@
+{
+  "source_parent": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+  "scope": "isolated four-file read-budget repair; narrowly reviewed operation borrowing contracts; unchanged verifier, original physical read limit and all 892 protected rows",
+  "modules": [
+    "test_completed_learning_client_source_closure",
+    "test_historical_current_trust_client_source_closure",
+    "test_historical_dataset_capability_source_closure",
+    "test_historical_freezer_source_closure",
+    "test_historical_learning_delivery_source_closure",
+    "test_historical_preparation_source_closure",
+    "test_historical_task_read_source_closure",
+    "test_ordinary_original_callers_source_closure",
+    "test_original_owner_initialization_source_closure",
+    "test_original_task_data_source_closure",
+    "test_post_a_c_recovery_source_closure",
+    "test_post_a_deadline_source_closure",
+    "test_post_a_owner_files_source_closure",
+    "test_q24_freeze_identity_source_closure",
+    "test_q24_preparation_shared_checks_source_closure",
+    "test_q24_pure_projection_source_closure",
+    "test_q24_training_plan_source_closure",
+    "test_root_learning_scope_source_closure"
+  ],
+  "protected_file_sweep": {
+    "passed": true,
+    "rows": 892,
+    "wall_seconds": 1.261350868968293
+  },
+  "before_sha256": {
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "c61e054f7fb85f2abc4e149e789a2eba143551dfa04c61a6f3b628baaa48f897",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs": "07e6d0e27b6bb1027b1bda2e4ded1214d8cf331b2dad8a6f334c11ef1dc64198",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs": "4c8695c4327effb30c200ebbd6800c7d4915be320c79df82425eaf53d93ab56f",
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "5d349d7d7a058e77f511f4650037f897ef4650fb53d2d81badf01df60ea5ac13",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "17b31b002d00fe8e102ee89893624d96f2d0750906b3bd6489d712a1849da82b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "12e3b4022a01568cfdb3350ae693ec5c218b475d003142fc819663d62acc6d34",
+    "qa/b4-no-bypass/test_historical_preparation_source_closure.py": "2fa8897f4ab20b010dd6b3a2b1432703b4592ad1296db8183e0febd767405cdd",
+    "qa/b4-no-bypass/test_historical_learning_delivery_source_closure.py": "e3531b8ca28e8dee3cc8be70e04c491bd165a7a077ee83dd6e5764e73e2e12c0",
+    "qa/b4-no-bypass/test_original_task_data_source_closure.py": "45e499d9f44392c872f4c79cf3261a2488cdaffdfde998664f3a865cca08fe4d",
+    "CALLERS.toml": "6d18430a99967656866b6f339a1f25fa243078b45232b7c8253cf3fb40ff5ea7"
+  },
+  "after_format_sha256": {
+    "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs": "c61e054f7fb85f2abc4e149e789a2eba143551dfa04c61a6f3b628baaa48f897",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs": "07e6d0e27b6bb1027b1bda2e4ded1214d8cf331b2dad8a6f334c11ef1dc64198",
+    "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs": "4c8695c4327effb30c200ebbd6800c7d4915be320c79df82425eaf53d93ab56f",
+    "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs": "5d349d7d7a058e77f511f4650037f897ef4650fb53d2d81badf01df60ea5ac13",
+    "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs": "0a7a0e9113711ce91698f7d816836653297c059a6cba154e1a8129a568a1c374",
+    "codex-rs/hepta-agentd/src/cell_q24_learning_preparation_tests.rs": "ebf12f2f68c50123200e0af01c25bdfcdfa0a9868f61a49ee5aa634fceb96428",
+    "qa/b4-no-bypass/test_post_a_owner_files_source_closure.py": "d21121a36815af59e3f65d8b396e8306a9fe1bbe022b92803f74e557a8e1d786",
+    "qa/b4-no-bypass/test_q24_preparation_shared_checks_source_closure.py": "17b31b002d00fe8e102ee89893624d96f2d0750906b3bd6489d712a1849da82b",
+    "qa/b4-no-bypass/test_historical_dataset_capability_source_closure.py": "12e3b4022a01568cfdb3350ae693ec5c218b475d003142fc819663d62acc6d34",
+    "qa/b4-no-bypass/test_historical_preparation_source_closure.py": "2fa8897f4ab20b010dd6b3a2b1432703b4592ad1296db8183e0febd767405cdd",
+    "qa/b4-no-bypass/test_historical_learning_delivery_source_closure.py": "e3531b8ca28e8dee3cc8be70e04c491bd165a7a077ee83dd6e5764e73e2e12c0",
+    "qa/b4-no-bypass/test_original_task_data_source_closure.py": "45e499d9f44392c872f4c79cf3261a2488cdaffdfde998664f3a865cca08fe4d",
+    "CALLERS.toml": "6d18430a99967656866b6f339a1f25fa243078b45232b7c8253cf3fb40ff5ea7"
+  },
+  "just_fmt_exit": 0,
+  "tests_run": 143,
+  "source_tests_successful": true,
+  "targeted_callers": {
+    "passed": true,
+    "rows": [
+      {
+        "id": "q24_original_historical_dataset_read",
+        "symbol": "HistoricalDatasetLedgerV1::with_current",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": []
+      },
+      {
+        "id": "q24_original_historical_dataset_batch",
+        "symbol": "CellQ24TrainingBatchV1::from_original_historical_dataset",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "q24_original_historical_preparation",
+        "symbol": "CellQ24DatasetFreezePreparationV1::capture_historical",
+        "callPattern": null,
+        "receiverType": "CellQ24DatasetFreezePreparationV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/production_post_a_q24.rs"
+        ]
+      },
+      {
+        "id": "q24_prepared_historical_dataset",
+        "symbol": "CellQ24PreparedLearningV1::from_historical",
+        "callPattern": null,
+        "receiverType": null,
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs"
+        ]
+      },
+      {
+        "id": "q24_original_dataset_operation",
+        "symbol": "OriginalDatasetLedgerV1::with_original_ledger_operation",
+        "callPattern": null,
+        "receiverType": "OriginalDatasetLedgerV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_freeze_operation.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs"
+        ]
+      },
+      {
+        "id": "q24_original_prepared_operation",
+        "symbol": "CellQ24PreparedLearningV1::with_original_prepared_operation",
+        "callPattern": null,
+        "receiverType": "CellQ24PreparedLearningV1",
+        "receiverMethods": [],
+        "productCallers": [
+          "codex-rs/hepta-agentd/src/cell_q24_learning_evaluation_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_historical_stage.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_model_root.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_operation_lane.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_learning_owner_initialization.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_owner_files.rs",
+          "codex-rs/hepta-agentd/src/cell_q24_source_receipt_owner.rs",
+          "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+          "codex-rs/hepta-agentd/src/production_post_a_q24_owners.rs"
+        ]
+      }
+    ],
+    "wall_seconds": 9.024059255840257
+  },
+  "full_caller_proof_exit": 1,
+  "full_caller_proof_wall_seconds": 432.90381192206405,
+  "failures": [],
+  "errors": [],
+  "skipped": [],
+  "wall_seconds": 465.31402780511416,
+  "native_tests": 0,
+  "model_calls": 0,
+  "original_executor_mutated": false
+}

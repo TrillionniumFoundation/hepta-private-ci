@@ -19,6 +19,7 @@ impl CellQ24DatasetFreezePreparationV1 {
         let ledger = HistoricalDatasetLedgerV1::capture_original(receipt, trust, vec![task])?;
         let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger));
         original.with_original_ledger_operation(|operation| {
+            let operation: &OriginalDatasetOperationV1<'_> = operation;
             let (snapshot, frontier) =
                 operation.read_historical(&ledger, |data, _, _, observed_at| {
                     require_historical_configuration(&config, &ledger).map_err(io::Error::other)?;
