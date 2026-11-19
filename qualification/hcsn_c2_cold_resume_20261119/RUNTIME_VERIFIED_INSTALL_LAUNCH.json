@@ -1,0 +1,33 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-c",
+      "set -eu\npython3 /home/qian-qi/hepta-c2-cold-resume-20261119-d741/install_verified_range.py\n/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python -m pip install --only-binary=:all: --index-url https://pypi.org/simple /home/qian-qi/hepta-c2-cold-resume-20261119-d741/wheels/torch-2.8.0+cpu-cp312-cp312-manylinux_2_28_x86_64.whl 'numpy==2.3.5' 'mpmath==1.3.0' 'einops==0.8.1'\n/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python -c 'import torch,numpy; print(torch.__version__,numpy.__version__)'"
+    ],
+    "created_unix_ms": 1795068075787,
+    "cwd": null,
+    "env_keys": [],
+    "executable": "/bin/sh",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1f2651f0b-ffbe-b0a",
+    "idempotency_key": "hcsn-c2-cpu-runtime-local-range-install-20261119-d741-001",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f2651f0b-ffbe-b0a",
+    "request_digest": "26bc87f89cfeae14e5d3a8c16f41f2bd983e300f6cddd990b654d1ce3b6b209b",
+    "request_fingerprint": 2791255370918440400,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1f2651f0b-ffbe-b0a"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1f2651f0b-ffbe-b0a"
+  },
+  "local_record_pending": false,
+  "reused": false
+}
