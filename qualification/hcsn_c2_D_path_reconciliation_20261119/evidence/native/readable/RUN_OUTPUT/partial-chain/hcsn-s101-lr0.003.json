@@ -1,0 +1,399 @@
+{
+  "checks": {
+    "initial_checkpoint": true,
+    "original_C2_journal_order_and_partial_work": {
+      "logged_new_updates": 348,
+      "logical_updates": 912,
+      "possibly_unlogged_optimizer_updates": [
+        0,
+        0
+      ],
+      "unclosed_forward_backward": false,
+      "unclosed_optimizer_call": false
+    },
+    "original_producer_terminal_report": {
+      "best_epoch": 74,
+      "status": "completed_development"
+    },
+    "parent_journal_order_and_partial_work": {
+      "logged_new_updates": 569,
+      "logical_updates": 569,
+      "possibly_unlogged_optimizer_updates": [
+        0,
+        0
+      ],
+      "unclosed_forward_backward": true,
+      "unclosed_optimizer_call": false
+    },
+    "parent_last_checkpoint": true,
+    "parent_report": {
+      "complete_epochs": 47,
+      "status": "budget_exhausted"
+    },
+    "resume_witness_full_model_optimizer_RNG": true
+  },
+  "commit_chain": {
+    "errors": [],
+    "full_optimizer_objects_constructed_or_restored": 0,
+    "strict_history": [
+      {
+        "best": 0.38783425965779483,
+        "best_epoch": 74,
+        "plateau_anchor": 0.3863534276047101,
+        "stale_epochs": 10
+      },
+      76
+    ],
+    "verified": [
+      {
+        "checkpoint_sha256": "3222bfacc5c8ec181ef74f5a4942b9904788c6858f3f2a035210685952e8ff4f",
+        "epoch": 48
+      },
+      {
+        "checkpoint_sha256": "9d1f6328b99d9df5868f30fbd32ab1986e4a929f8f329c04a19ca60776a0b20b",
+        "epoch": 49
+      },
+      {
+        "checkpoint_sha256": "c1dd2320f659843f92e81e8d071394126e4aed762be254bebde7d6279dbe70c3",
+        "epoch": 50
+      },
+      {
+        "checkpoint_sha256": "70a5bf43d004e837d3cd86468fbafbaec53abf6fb210c19f44d03e90deae8a2f",
+        "epoch": 51
+      },
+      {
+        "checkpoint_sha256": "b54390a82961aa6448f274f9787c5dfa78edbfbcd257dcc0eb795cf6ec6be9ad",
+        "epoch": 52
+      },
+      {
+        "checkpoint_sha256": "0719fe4936e97704edec99159bcc6b6e1c405db0cf56e2d3ef8cb93d7912a0b5",
+        "epoch": 53
+      },
+      {
+        "checkpoint_sha256": "6b340cd5521e1d900efbac5d9d0c52c0da5d52dfbaffc79cb85903035d4df60b",
+        "epoch": 54
+      },
+      {
+        "checkpoint_sha256": "63fab58b300d47469782a80f2f55773dfd5783966ee34269f0718b12a4d3d1c1",
+        "epoch": 55
+      },
+      {
+        "checkpoint_sha256": "813ba4f74f8529b6423ccbd9cd7a2ceb10466f218e7788d6855279bf24d2f380",
+        "epoch": 56
+      },
+      {
+        "checkpoint_sha256": "ee6b54c286a156ad708273c003e7de6bdc13b39cd32adb652e226e96c7b818e7",
+        "epoch": 57
+      },
+      {
+        "checkpoint_sha256": "24072d3f42873a43dd8f0176b10bc94210cd2ed7e45451b0080cb1394da6b9c6",
+        "epoch": 58
+      },
+      {
+        "checkpoint_sha256": "2a1167df6ca9aa54fe66b0daad653640304c40f399fa941cfa71ca8a314235d5",
+        "epoch": 59
+      },
+      {
+        "checkpoint_sha256": "965cf6f7e3c69fc153c7b421d062c714925793037f82d3d9865a72be49a3c443",
+        "epoch": 60
+      },
+      {
+        "checkpoint_sha256": "ed3806662985ec5afc756b102d5e561f5cf6a1dc7b928b49efac79f8a4502e3e",
+        "epoch": 61
+      },
+      {
+        "checkpoint_sha256": "626af17cd1b2c67895f4d45b16743223d75da665dde0094348421ea9b1ebe9e5",
+        "epoch": 62
+      },
+      {
+        "checkpoint_sha256": "3b7019471647361fde907fc46521ae34b47e2d28724512fb2a7cbf82d04799ff",
+        "epoch": 63
+      },
+      {
+        "checkpoint_sha256": "52ddc79d8c99d3a816baf6a87bf90f6b736eba41a9b12f3bbf3ca273a614f990",
+        "epoch": 64
+      },
+      {
+        "checkpoint_sha256": "ce823f6c1c7bf2387ec290290ea8c7c06a72c382aa80818efdc5bf12472b916a",
+        "epoch": 65
+      },
+      {
+        "checkpoint_sha256": "8e1311240363ce3a5110fd609216b0e166129685014c8eecc1c31a3fae25cfcf",
+        "epoch": 66
+      },
+      {
+        "checkpoint_sha256": "53a046f5f10778548a417df31a5542cce99000b0d4559b212a328c3639acb98c",
+        "epoch": 67
+      },
+      {
+        "checkpoint_sha256": "f29bd9351d52dc327caf75b23a4698efb820e6ff95343159e0314f9edd6961e1",
+        "epoch": 68
+      },
+      {
+        "checkpoint_sha256": "12d6a7e6f2e2e0e0389409aa8ec93c59437e5fd58ded4cc92231f723773cc7f3",
+        "epoch": 69
+      },
+      {
+        "checkpoint_sha256": "add77209faa1921e1048a4c1e629d01c191498beabdd3a437e89d925fe205c62",
+        "epoch": 70
+      },
+      {
+        "checkpoint_sha256": "31531b7911f101463fcaebed71ec2279782a53d3145262d2a47881e4217a3183",
+        "epoch": 71
+      },
+      {
+        "checkpoint_sha256": "bac758867b278bc4d0182f4f2e9c2a5e66d46ba199362fedb0af279e8169d330",
+        "epoch": 72
+      },
+      {
+        "checkpoint_sha256": "2bf2e2f8a8d406498be143b950258fda3fab873c9bd5889835438ddc1efa52f8",
+        "epoch": 73
+      },
+      {
+        "checkpoint_sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8",
+        "epoch": 74
+      },
+      {
+        "checkpoint_sha256": "e03fa60f0329f8f40924dabe5067171cffb7c1b50a439b5638b913a9bf5645fe",
+        "epoch": 75
+      },
+      {
+        "checkpoint_sha256": "bdd2342af17e2e04bd4403af6c4f0aef5875bb192faa254396ad3b5d56c810e5",
+        "epoch": 76
+      }
+    ]
+  },
+  "costs": {
+    "missing_cost_is_not_zero": true,
+    "nested_timers_are_not_added": true,
+    "old_controller_lifetime_CPU": null,
+    "original_parent_outer": {
+      "adequate": false,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3/train.py",
+        "--prepared",
+        "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+        "--manifest-sha256",
+        "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003",
+        "--arm",
+        "hcsn",
+        "--seed",
+        "101",
+        "--learning-rate",
+        "0.003",
+        "--width",
+        "16",
+        "--batch-size",
+        "32",
+        "--min-epochs",
+        "30",
+        "--max-epochs",
+        "100",
+        "--patience",
+        "10",
+        "--memorization-updates",
+        "1024",
+        "--memorization-check-every",
+        "64",
+        "--plateau-delta",
+        "0.002",
+        "--quality-threshold",
+        "0.3",
+        "--threads",
+        "1",
+        "--wall-seconds",
+        "14370",
+        "--rss-bytes",
+        "6442450944",
+        "--s4-repo",
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "--hcsn-grid-json",
+        "{\"active_cells\": 256, \"endpoint\": 4.8, \"initial_log_std\": 0.08, \"phase_cells\": 16, \"quadrature_order\": 32, \"refractory\": 0.2, \"tail_rate\": 1.0}",
+        "--trace-records",
+        "4096",
+        "--trace-bytes",
+        "33554432",
+        "--cache-frozen-tables",
+        "--learn-core-adapter",
+        "--micro-batch-size",
+        "8"
+      ],
+      "arm": "hcsn",
+      "common_weights_unchanged": true,
+      "cpu_seconds": 14373.070992436,
+      "dispatch_offset_seconds": 0.008861335925757885,
+      "epochs": 47,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400,
+      "learning_rate": 0.003,
+      "name": "hcsn-s101-lr0.003",
+      "peak_rss_bytes": 4047704064,
+      "result_sha256": "5cd6f329a00a78c9c0b948dd209897bfaa62c1cbaef1c3c0ba76675dc4e6f1bf",
+      "returncode": 2,
+      "seed": 101,
+      "selected_development": null,
+      "source_unchanged": true,
+      "status": "failed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "67a8961e58bcb6a9c82689ab2b84cce8fe192020db69122fce3b7e1f1642bb7e",
+      "whole_process_wall_seconds": 14378.026858798927
+    },
+    "original_parent_work_refund_seconds": 0,
+    "surviving_C2_controller_commands": [
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.058202+00:00",
+        "name": "hcsn-s101-lr0.003",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14378.026858798927,
+        "process_started": false,
+        "status": "preparing",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      },
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "command": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import os,resource,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); os.execv(sys.argv[1],sys.argv[1:])",
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/c2_runner.py",
+          "--parent",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003",
+          "--outer",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/parent-records/hcsn-s101-lr0.003.json",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+          "--contract",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/CONTRACT.json",
+          "--program-manifest",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/PROGRAM-MANIFEST.json",
+          "--policy",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/POSTERIOR-POLICY.json",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003",
+          "--execute",
+          "--decision",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-decision-v1-20261110-c385.json",
+          "--decision-sha256",
+          "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+        ],
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.058202+00:00",
+        "name": "hcsn-s101-lr0.003",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14378.026858798927,
+        "parent_outer_record": {
+          "bytes": 2505,
+          "sha256": "dd3d6f263356bc174720c4c7e7493d959cbeaeabe89a55594fa3938a5d78d275"
+        },
+        "pid": 2132909,
+        "prelaunch_wall_seconds": 0.019551321864128113,
+        "process_started": true,
+        "remaining_at_dispatch_seconds": 28821.973141201073,
+        "spawn_attempted": true,
+        "status": "running",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      },
+      {
+        "adequate": true,
+        "attempt_wrapper_wall_seconds": 8750.49039845285,
+        "child_cpu_scope": "exact per-PID wait4 whole process including imports and finalization",
+        "child_cpu_seconds": 8746.954086,
+        "child_peak_rss_bytes": 3991629824,
+        "child_system_cpu_seconds": 209.974853,
+        "child_terminal_unknown": false,
+        "child_user_cpu_seconds": 8536.979233,
+        "command": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import os,resource,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); os.execv(sys.argv[1],sys.argv[1:])",
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/c2_runner.py",
+          "--parent",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s101-lr0.003",
+          "--outer",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/parent-records/hcsn-s101-lr0.003.json",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+          "--contract",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/CONTRACT.json",
+          "--program-manifest",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/PROGRAM-MANIFEST.json",
+          "--policy",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/POSTERIOR-POLICY.json",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003",
+          "--execute",
+          "--decision",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-decision-v1-20261110-c385.json",
+          "--decision-sha256",
+          "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+        ],
+        "cumulative_active_wall_cap_seconds": 43200,
+        "cumulative_epochs_completed": 76,
+        "cumulative_parent_and_c2_active_wall_seconds": 23128.517257251777,
+        "dispatch_utc": "2026-11-10T21:13:44.058202+00:00",
+        "fit_status": "completed_development",
+        "hard_timeout_sent": false,
+        "kill_error": null,
+        "name": "hcsn-s101-lr0.003",
+        "new_main_updates_completed": 348,
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14378.026858798927,
+        "parent_outer_record": {
+          "bytes": 2505,
+          "sha256": "dd3d6f263356bc174720c4c7e7493d959cbeaeabe89a55594fa3938a5d78d275"
+        },
+        "pid": 2132909,
+        "prelaunch_wall_seconds": 0.019551321864128113,
+        "process_started": true,
+        "remaining_at_dispatch_seconds": 28821.973141201073,
+        "result": {
+          "bytes": 578890,
+          "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+        },
+        "returncode": 0,
+        "spawn_attempted": true,
+        "status": "completed",
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "terminal_evidence_complete": true,
+        "whole_process_wall_seconds": 8750.430073021911
+      }
+    ]
+  },
+  "failures": {},
+  "journal_survival": {
+    "complete_epochs": 29,
+    "malformed_lines": [],
+    "optimizer_completed_lower_bound": 348,
+    "optimizer_started_lower_bound": 348,
+    "original_finished_event_present": true,
+    "rows": 1104
+  },
+  "name": "hcsn-s101-lr0.003",
+  "original_controller_terminal": "UNKNOWN",
+  "status": "SURVIVING_EVIDENCE_AUDITED_ORIGINAL_TERMINAL_GATE_HOLD"
+}

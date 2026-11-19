@@ -1,0 +1,295 @@
+{
+  "checks": {
+    "initial_checkpoint": true,
+    "original_C2_journal_order_and_partial_work": {
+      "logged_new_updates": 36,
+      "logical_updates": 600,
+      "possibly_unlogged_optimizer_updates": [
+        0,
+        0
+      ],
+      "unclosed_forward_backward": false,
+      "unclosed_optimizer_call": false
+    },
+    "original_producer_terminal_report": {
+      "best_epoch": 40,
+      "status": "completed_development"
+    },
+    "parent_journal_order_and_partial_work": {
+      "logged_new_updates": 565,
+      "logical_updates": 565,
+      "possibly_unlogged_optimizer_updates": [
+        0,
+        0
+      ],
+      "unclosed_forward_backward": true,
+      "unclosed_optimizer_call": false
+    },
+    "parent_last_checkpoint": true,
+    "parent_report": {
+      "complete_epochs": 47,
+      "status": "budget_exhausted"
+    },
+    "resume_witness_full_model_optimizer_RNG": true
+  },
+  "commit_chain": {
+    "errors": [],
+    "full_optimizer_objects_constructed_or_restored": 0,
+    "strict_history": [
+      {
+        "best": 0.3910932361454862,
+        "best_epoch": 40,
+        "plateau_anchor": 0.3910932361454862,
+        "stale_epochs": 10
+      },
+      50
+    ],
+    "verified": [
+      {
+        "checkpoint_sha256": "58e84ae0637e366e94ea46bf2502b63573bb8baf0107dfc668ecc207af0a5867",
+        "epoch": 48
+      },
+      {
+        "checkpoint_sha256": "24bfadc54a8c0543171c4e56a5709b0e0541071c3e138b4861e1903193161c3d",
+        "epoch": 49
+      },
+      {
+        "checkpoint_sha256": "1fd9f82188a7e376cc5f81b190144f72e477f3043d87d3c0612618fa7a2e1a0f",
+        "epoch": 50
+      }
+    ]
+  },
+  "costs": {
+    "missing_cost_is_not_zero": true,
+    "nested_timers_are_not_added": true,
+    "old_controller_lifetime_CPU": null,
+    "original_parent_outer": {
+      "adequate": false,
+      "argv": [
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+        "-B",
+        "-c",
+        "import resource,runpy,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); script=sys.argv[1];sys.argv=sys.argv[1:];sys.path.insert(0,str(__import__('pathlib').Path(script).parent));runpy.run_path(script,run_name='__main__')",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8/proposals/localization-v3/train.py",
+        "--prepared",
+        "/home/qian-qi/hepta-hcsn-discriminative-20261109-7e8f70f19cba/execution/data",
+        "--manifest-sha256",
+        "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+        "--output",
+        "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003",
+        "--arm",
+        "hcsn",
+        "--seed",
+        "211",
+        "--learning-rate",
+        "0.003",
+        "--width",
+        "16",
+        "--batch-size",
+        "32",
+        "--min-epochs",
+        "30",
+        "--max-epochs",
+        "100",
+        "--patience",
+        "10",
+        "--memorization-updates",
+        "1024",
+        "--memorization-check-every",
+        "64",
+        "--plateau-delta",
+        "0.002",
+        "--quality-threshold",
+        "0.3",
+        "--threads",
+        "1",
+        "--wall-seconds",
+        "14370",
+        "--rss-bytes",
+        "6442450944",
+        "--s4-repo",
+        "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "--hcsn-grid-json",
+        "{\"active_cells\": 256, \"endpoint\": 4.8, \"initial_log_std\": 0.08, \"phase_cells\": 16, \"quadrature_order\": 32, \"refractory\": 0.2, \"tail_rate\": 1.0}",
+        "--trace-records",
+        "4096",
+        "--trace-bytes",
+        "33554432",
+        "--cache-frozen-tables",
+        "--learn-core-adapter",
+        "--micro-batch-size",
+        "8"
+      ],
+      "arm": "hcsn",
+      "common_weights_unchanged": true,
+      "cpu_seconds": 14371.966740957,
+      "dispatch_offset_seconds": 0.011709254002198577,
+      "epochs": 47,
+      "fit_status": "budget_exhausted",
+      "hard_wall_seconds": 14400,
+      "learning_rate": 0.003,
+      "name": "hcsn-s211-lr0.003",
+      "peak_rss_bytes": 4039749632,
+      "result_sha256": "66182f0b1f0eae1699c6be05e9d3f1cb5f5c20c484f9af6a8b12f302357dd3c1",
+      "returncode": 2,
+      "seed": 211,
+      "selected_development": null,
+      "source_unchanged": true,
+      "status": "failed",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_sha256": "d00033ef112da31cb6ce65a69d78c38fb743f8f235f9858142ab1b04db4b8906",
+      "whole_process_wall_seconds": 14376.949902404798
+    },
+    "original_parent_work_refund_seconds": 0,
+    "surviving_C2_controller_commands": [
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.059594+00:00",
+        "name": "hcsn-s211-lr0.003",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14376.949902404798,
+        "process_started": false,
+        "status": "preparing",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      },
+      {
+        "attempt_wrapper_wall_seconds": null,
+        "child_cpu_seconds": null,
+        "command": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import os,resource,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); os.execv(sys.argv[1],sys.argv[1:])",
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/c2_runner.py",
+          "--parent",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003",
+          "--outer",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/parent-records/hcsn-s211-lr0.003.json",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+          "--contract",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/CONTRACT.json",
+          "--program-manifest",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/PROGRAM-MANIFEST.json",
+          "--policy",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/POSTERIOR-POLICY.json",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003",
+          "--execute",
+          "--decision",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-decision-v1-20261110-c385.json",
+          "--decision-sha256",
+          "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+        ],
+        "cumulative_active_wall_cap_seconds": 43200,
+        "dispatch_utc": "2026-11-10T21:13:44.059594+00:00",
+        "name": "hcsn-s211-lr0.003",
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14376.949902404798,
+        "parent_outer_record": {
+          "bytes": 2505,
+          "sha256": "2361c1eaec7aa4e7c34f7b4cbb7c0992b2d47f7c083fb468c9a85054993bd3f9"
+        },
+        "pid": 2132911,
+        "prelaunch_wall_seconds": 0.022802894935011864,
+        "process_started": true,
+        "remaining_at_dispatch_seconds": 28823.0500975952,
+        "spawn_attempted": true,
+        "status": "running",
+        "terminal_evidence_complete": false,
+        "whole_process_wall_seconds": null
+      },
+      {
+        "adequate": true,
+        "attempt_wrapper_wall_seconds": 1266.1814752598293,
+        "child_cpu_scope": "exact per-PID wait4 whole process including imports and finalization",
+        "child_cpu_seconds": 1263.453444,
+        "child_peak_rss_bytes": 3929714688,
+        "child_system_cpu_seconds": 25.948633,
+        "child_terminal_unknown": false,
+        "child_user_cpu_seconds": 1237.504811,
+        "command": [
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "-c",
+          "import os,resource,sys; resource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592)); os.execv(sys.argv[1],sys.argv[1:])",
+          "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/bin/python",
+          "-B",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/c2_runner.py",
+          "--parent",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003",
+          "--outer",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/parent-records/hcsn-s211-lr0.003.json",
+          "--source",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/run-source-v8",
+          "--contract",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/CONTRACT.json",
+          "--program-manifest",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/PROGRAM-MANIFEST.json",
+          "--policy",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-source-v4-20261110-c385/POSTERIOR-POLICY.json",
+          "--output",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003",
+          "--execute",
+          "--decision",
+          "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-execution-decision-v1-20261110-c385.json",
+          "--decision-sha256",
+          "bee192193f0f12599f783f348b6dea8c10b2a18df359487c3cc0c0c44d071370"
+        ],
+        "cumulative_active_wall_cap_seconds": 43200,
+        "cumulative_epochs_completed": 50,
+        "cumulative_parent_and_c2_active_wall_seconds": 15643.131377664628,
+        "dispatch_utc": "2026-11-10T21:13:44.059594+00:00",
+        "fit_status": "completed_development",
+        "hard_timeout_sent": false,
+        "kill_error": null,
+        "name": "hcsn-s211-lr0.003",
+        "new_main_updates_completed": 36,
+        "parent_actual_hard_wall_seconds": 14400,
+        "parent_full_outer_wall_seconds": 14376.949902404798,
+        "parent_outer_record": {
+          "bytes": 2505,
+          "sha256": "2361c1eaec7aa4e7c34f7b4cbb7c0992b2d47f7c083fb468c9a85054993bd3f9"
+        },
+        "pid": 2132911,
+        "prelaunch_wall_seconds": 0.022802894935011864,
+        "process_started": true,
+        "remaining_at_dispatch_seconds": 28823.0500975952,
+        "result": {
+          "bytes": 360283,
+          "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+        },
+        "returncode": 0,
+        "spawn_attempted": true,
+        "status": "completed",
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "terminal_evidence_complete": true,
+        "whole_process_wall_seconds": 1266.1501302358229
+      }
+    ]
+  },
+  "failures": {},
+  "journal_survival": {
+    "complete_epochs": 3,
+    "malformed_lines": [],
+    "optimizer_completed_lower_bound": 36,
+    "optimizer_started_lower_bound": 36,
+    "original_finished_event_present": true,
+    "rows": 116
+  },
+  "name": "hcsn-s211-lr0.003",
+  "original_controller_terminal": "UNKNOWN",
+  "status": "SURVIVING_EVIDENCE_AUDITED_ORIGINAL_TERMINAL_GATE_HOLD"
+}

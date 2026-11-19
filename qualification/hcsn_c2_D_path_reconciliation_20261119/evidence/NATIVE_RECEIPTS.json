@@ -1,0 +1,22 @@
+{
+  "launch": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-c\",\n      \"import hashlib,json,os,pathlib,resource,zlib,time\\ncompressed=pathlib.Path('/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215-source.zlib').read_bytes()\\nassert hashlib.sha256(compressed).hexdigest()==\\\"8942c400899a74ecad6e2366a67e6c0b4fcd1b7fa1a981ee89c9fc7a43966835\\\"\\nraw=zlib.decompress(compressed)\\nassert hashlib.sha256(raw).hexdigest()==\\\"c1d35b95c8a75c3ccdcccfafc06010d8ae868cd808e425650fda4488db2506ac\\\"\\nfiles=json.loads(raw)\\nroot=pathlib.Path('/home/qian-qi/hepta-c2-D-path-reconciliation-20261119-2f215')\\nroot.mkdir(exist_ok=False)\\nfor name,content in files.items():\\n p=root/name;p.parent.mkdir(exist_ok=True,parents=True);p.write_text(content)\\nfreeze=json.loads((root/'SOURCE_FREEZE.json').read_bytes())\\nfor name,expected in freeze['files'].items():\\n assert hashlib.sha256((root/name).read_bytes()).hexdigest()==expected,name\\n(root/'DISPATCH.json').write_text(\\\"{\\\\n  \\\\\\\"source_commit\\\\\\\": \\\\\\\"9d4366cba399dff877879cc8f6ac03e0f3a1ba67\\\\\\\",\\\\n  \\\\\\\"source_tree\\\\\\\": \\\\\\\"29568558579b1dfee241c753153ca99b43b911f5\\\\\\\",\\\\n  \\\\\\\"native_key\\\\\\\": \\\\\\\"hcsn-c2-D-exact-initial-alias-20261119-2f215-001\\\\\\\",\\\\n  \\\\\\\"predecessor_native_job\\\\\\\": \\\\\\\"1a1f3ec2f5e-ffbe-e7f\\\\\\\",\\\\n  \\\\\\\"global_deadline_unix\\\\\\\": 1795095504.542,\\\\n  \\\\\\\"E_access\\\\\\\": false\\\\n}\\\\n\\\")\\nresource.setrlimit(resource.RLIMIT_AS,(8589934592,8589934592))\\nassert time.time()<1795095504.542\\npy='/home/qian-qi/hepta-c2-original-runtime-20261119-2f215/venv/bin/python'\\nos.execve(py,[py,'-B',str(root/'reconcile_paths.py')],dict(os.environ))\\n\"\n    ],\n    \"created_unix_ms\": 1795094256050,\n    \"cwd\": \"/home/qian-qi\",\n    \"env_keys\": [\n      \"CUDA_VISIBLE_DEVICES\",\n      \"MKL_NUM_THREADS\",\n      \"NUMEXPR_NUM_THREADS\",\n      \"OMP_NUM_THREADS\",\n      \"OPENBLAS_NUM_THREADS\",\n      \"PYTHONDONTWRITEBYTECODE\",\n      \"PYTHONHASHSEED\",\n      \"PYTHONNOUSERSITE\",\n      \"PYTHONPATH\"\n    ],\n    \"executable\": \"/usr/bin/python3\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"desktop\",\n    \"id\": \"1a1f3f499b2-ffbe-e8d\",\n    \"idempotency_key\": \"hcsn-c2-D-exact-initial-alias-20261119-2f215-001\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f3f499b2-ffbe-e8d\",\n    \"request_digest\": \"53e25ac4c158cc399f97a1db32618d3a0f912a9391d094e7c05b58e1e6f7610a\",\n    \"request_fingerprint\": 6044493450988538937,\n    \"ssh_target\": \"desktop-ts\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f3f499b2-ffbe-e8d\"\n  },\n  \"launch\": {\n    \"backend\": \"systemd\",\n    \"launcher_pid\": null,\n    \"ok\": true,\n    \"unit\": \"hepta-runtime-job-1a1f3f499b2-ffbe-e8d\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  },
+  "terminal": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\n  \"at_unix_ms\": 1795094415296,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 2,\n  \"job_id\": \"1a1f3f499b2-ffbe-e8d\",\n  \"launch_nonce\": \"512768d79c66037b120c375b377c8c43\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 1664,\n      \"stored\": 1664\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"failed\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+      }
+    ],
+    "structuredContent": null,
+    "isError": false
+  }
+}

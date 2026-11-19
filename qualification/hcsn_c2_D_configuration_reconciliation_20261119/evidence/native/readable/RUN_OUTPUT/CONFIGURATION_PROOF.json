@@ -1,0 +1,66 @@
+{
+  "E_access": false,
+  "inputs": {
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/plan.json": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.001/result.json": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s211-lr0.003/initial.pt": "143cfe696633a7e73dd3c2f3ac9600ae30ce8ea263f5c19a3efed3f9221f6552",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/plan.json": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.001/result.json": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/hcsn-s307-lr0.003/initial.pt": "9b3821159fdcb47bbb40af4dcda89daa87fa1bef85b3bf675b0af860a4f4faa7"
+  },
+  "model_constructions_forwards_backwards_optimizer_operations": 0,
+  "proofs": [
+    {
+      "configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 211,
+        "width": 16
+      },
+      "initial_sha256": "143cfe696633a7e73dd3c2f3ac9600ae30ce8ea263f5c19a3efed3f9221f6552",
+      "name": "hcsn-s211-lr0.001",
+      "parent_plan_sha256": "74a25f964a655a0302440cd431f69a46cd4ea62a056c2282f11547ebbec2d8a7",
+      "parent_report_sha256": "27246c56ac32c62ff375c0c0e170807f01eaa7e108619f7fc6d21c5d49f29033"
+    },
+    {
+      "configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 307,
+        "width": 16
+      },
+      "initial_sha256": "9b3821159fdcb47bbb40af4dcda89daa87fa1bef85b3bf675b0af860a4f4faa7",
+      "name": "hcsn-s307-lr0.001",
+      "parent_plan_sha256": "359c278aea86b9d748f95c5b91efb5d5281302405f84ee07d4afbd6ce36e379e",
+      "parent_report_sha256": "cae58fc7825505e687e7416516968f65017753d3337183a78a2847d5b0e20dd0"
+    }
+  ],
+  "status": "PASSED",
+  "wall_seconds": 6.822583777015097
+}
