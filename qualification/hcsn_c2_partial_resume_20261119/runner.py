@@ -1,4 +1,4 @@
-"""Independent bounded C2 continuation using the unchanged original numerical helpers."""
+"""Resume one archived partial C2 epoch under a separately bounded research budget."""
 
 import argparse
 import copy
@@ -15,6 +15,8 @@ import signal
 import sys
 import time
 import traceback
+
+from resume_state import validate_partial_state, with_cursor
 
 
 HERE = Path(__file__).resolve().parent
@@ -80,7 +82,7 @@ def run(fit_name):
         "new_optimizer_started": 0, "new_optimizer_completed": 0, "new_micro_forwards_started": 0,
         "optimizer_completions_after_scientific_deadline": 0,
         "development_forwards_started": 0, "epochs": [], "start_epoch": fit["epoch"],
-        "last_complete_epoch": fit["epoch"], "logical_main_updates": fit["epoch"] * bound["steps_per_epoch"],
+        "last_complete_epoch": fit["epoch"], "logical_main_updates": fit["main_updates"],
         "original_partial_work": request["original_partial_work"], "cold_probe_calls_separate": 4,
         "scientific_wall_budget_seconds": limits["scientific_wall_seconds_per_fit"],
         "finalization_reserve_seconds": limits["finalization_reserve_seconds"],
@@ -89,6 +91,9 @@ def run(fit_name):
         "unmeasured_cost_reason": "CPU continuation; no complete-system energy meter",
         "runtime": {}, "uncommitted_optimizer_call": False,
         "frozen_initial_comparison_verified": False,
+        "resumed_partial_checkpoint": fit["checkpoint_sha256"],
+        "previous_continuation_wall_seconds": request["prior_cost"]["previous_continuation_wall_seconds"],
+        "original_budget_eligibility": False,
         "deadline_overrun_scope": "May include an uninterruptible in-flight operation and Python finalization; no additional qualified training or validation budget."}
     model = optimizer = order_rng = cold = None
     last_update = last_epoch = best_path = None
@@ -175,7 +180,7 @@ def run(fit_name):
             "resolved_executable_sha256": sha(Path(sys.executable).resolve()), "platform": platform.platform(),
             "affinity": sorted(os.sched_getaffinity(0)), "torch_threads": torch.get_num_threads(),
             "torch_interop_threads": torch.get_num_interop_threads()}
-        cores, support, capacity, plan, data, state, native, expectations = cold.original_context(request, fit, torch)
+        cores, support, capacity, plan, data, state, native, expectations = cold.original_context(request, fit["original_fit"], torch)
         source = Path(request["original_root"]) / request["source_relative"]
         for name, expected in expectations["source_files"].items():
             all_inputs[str(source / name)] = {"sha256": expected}
@@ -192,6 +197,9 @@ def run(fit_name):
                 "original stopping helper agrees with complete inherited history")
         require(boundary.first_plateau_epoch(history, plan["plateau_delta"], plan["min_epochs"], plan["patience"]) is None,
                 "no earlier inherited stopping event")
+        state = torch.load(bound["last_checkpoint"], weights_only=True, map_location="cpu")
+        cursor = validate_partial_state(state, fit, bound, data["train"], plan)
+        require(state["data_manifest_sha256"] == request["manifest_sha256"], "partial data identity")
         initial = torch.load(bound["initial_checkpoint"], weights_only=True, map_location="cpu")
         require(initial["model_configuration"] == state["model_configuration"], "exact original initial configuration")
         model = cores.CoreStudyModel(**state["model_configuration"])
@@ -205,12 +213,14 @@ def run(fit_name):
         order_rng = random.Random()
         order_rng.setstate(state["order_rng"])
         torch.set_rng_state(state["torch_rng"])
-        restored = cold.snapshot(model, optimizer, order_rng, fit["epoch"], state["main_updates"], request["manifest_sha256"], torch)
+        restored = with_cursor(cold.snapshot(model, optimizer, order_rng, fit["epoch"], state["main_updates"],
+                                             request["manifest_sha256"], torch), cursor)
         require(cold.semantic(restored, torch) == cold.semantic(state, torch), "complete restored model/AdamW/RNG/schema")
         require(all(float(row["step"]) == state["main_updates"] for row in optimizer.state_dict()["state"].values()),
                 "original AdamW update age")
-        last_update = last_epoch = save(out / "RESUME_START.pt", restored)
-        reloaded = torch.load(last_epoch["path"], weights_only=True, map_location="cpu")
+        last_update = save(out / "RESUME_START.pt", restored)
+        last_epoch = copy.deepcopy(bound["last_complete_epoch_checkpoint"])
+        reloaded = torch.load(last_update["path"], weights_only=True, map_location="cpu")
         require(cold.semantic(reloaded, torch) == cold.semantic(state, torch), "durable complete restore roundtrip")
         with (out / "INHERITED_BEST.pt").open("xb") as stream:
             stream.write(Path(bound["best_checkpoint"]).read_bytes())
@@ -219,12 +229,14 @@ def run(fit_name):
         best_path = out / "INHERITED_BEST.pt"
         require(sha(best_path) == fit["best_checkpoint_sha256"], "exact strict-best bytes")
         write(out / "RESUME_WITNESS.json", {"source_checkpoint_sha256": fit["checkpoint_sha256"],
-            "restored": last_epoch, "full_state_equal": True, "frozen_tensors_match_original_initial": True,
+            "restored": last_update, "full_state_equal": True,
+            "partial_cursor": cursor, "no_replayed_completed_batches": True, "frozen_tensors_match_original_initial": True,
             "initial_source": bound["initial_checkpoint"], "initial_original_path_missing": not bound["original_initial_path_exists"],
             "stopping": stopping, "source_files_verified": len(expectations["source_files"]),
             "new_optimizer_completed": 0, "new_phase_wall_seconds": elapsed()})
         write(out / "INPUT_IDENTITIES.json", all_inputs)
-        event("restore_verified", checkpoint=last_epoch, stopping=stopping)
+        event("restore_verified", checkpoint=last_update, stopping=stopping,
+              current_epoch=cursor["current_epoch"], next_episode_offset=cursor["next_episode_offset"])
         model.load_state_dict(torch.load(best_path, weights_only=True, map_location="cpu")["model"], strict=True)
         observed_best = evaluate(data["dev"])
         reference_best = bound["best_development"]
@@ -239,8 +251,8 @@ def run(fit_name):
         model.load_state_dict(state["model"], strict=True)
         torch.set_rng_state(state["torch_rng"])
         order_rng.setstate(state["order_rng"])
-        require(cold.semantic(cold.snapshot(model, optimizer, order_rng, fit["epoch"], state["main_updates"],
-                request["manifest_sha256"], torch), torch) == cold.semantic(state, torch),
+        require(cold.semantic(with_cursor(cold.snapshot(model, optimizer, order_rng, fit["epoch"], state["main_updates"],
+                request["manifest_sha256"], torch), cursor), torch) == cold.semantic(state, torch),
                 "restore still exact after inherited-best validation")
         targets = [label for row in data["train"] for label in row["y"]]
         require(sorted(set(targets)) == list(range(11)) and len(targets) == 89216, "complete original training support")
@@ -248,16 +260,26 @@ def run(fit_name):
         weights /= weights.mean()
         for epoch in range(fit["epoch"] + 1, request["maximum_cumulative_epochs"] + 1):
             budget()
-            order = list(range(len(data["train"])))
-            order_rng.shuffle(order)
-            episode_order = [data["train"][index]["id"] for index in order]
-            event("epoch_started", epoch=epoch, episode_order=episode_order)
-            losses = []
-            cursor = {"schema": "hcsn-c2-mid-epoch-continuation-v2", "current_epoch": epoch,
-                "episode_indices": order, "episode_ids": episode_order, "next_episode_offset": 0,
-                "completed_effective_batches": 0, "completed_batch_objectives": [],
-                "batch_size": plan["batch_size"], "micro_batch_size": plan["micro_batch_size"], "complete_epoch": False}
-            for batch_index, (ids, x, dt, y) in enumerate(support.batches(data["train"], order, plan["batch_size"])):
+            if epoch == fit["epoch"] + 1:
+                order = list(cursor["episode_indices"])
+                episode_order = list(cursor["episode_ids"])
+                losses = copy.deepcopy(cursor["completed_batch_objectives"])
+                first_batch = cursor["completed_effective_batches"]
+                event("partial_epoch_resumed", epoch=epoch, episode_order=episode_order,
+                      already_completed_batches=first_batch, next_episode_offset=cursor["next_episode_offset"])
+            else:
+                order = list(range(len(data["train"])))
+                order_rng.shuffle(order)
+                episode_order = [data["train"][index]["id"] for index in order]
+                event("epoch_started", epoch=epoch, episode_order=episode_order)
+                losses, first_batch = [], 0
+                cursor = {"schema": "hcsn-c2-mid-epoch-continuation-v2", "current_epoch": epoch,
+                    "episode_indices": order, "episode_ids": episode_order, "next_episode_offset": 0,
+                    "completed_effective_batches": 0, "completed_batch_objectives": [],
+                    "batch_size": plan["batch_size"], "micro_batch_size": plan["micro_batch_size"], "complete_epoch": False}
+            remaining_order = order[first_batch * plan["batch_size"]:]
+            for batch_index, (ids, x, dt, y) in enumerate(
+                    support.batches(data["train"], remaining_order, plan["batch_size"]), start=first_batch):
                 budget()
                 model.train()
                 optimizer.zero_grad(set_to_none=True)
@@ -279,6 +301,10 @@ def run(fit_name):
                 norm = torch.nn.utils.clip_grad_norm_(active, 1.0)
                 require(bool(torch.isfinite(norm)), "finite gradient norm")
                 budget()
+                if report["new_optimizer_completed"] == 0:
+                    report["first_clipped_gradients"] = save(out / "FIRST_GRADIENTS.pt",
+                        {name: parameter.grad.detach().clone() for name, parameter in model.named_parameters()
+                         if parameter.requires_grad})
                 report["new_optimizer_started"] += 1
                 report["uncommitted_optimizer_call"] = True
                 event("optimizer_started", logical_next_update=report["logical_main_updates"] + 1)

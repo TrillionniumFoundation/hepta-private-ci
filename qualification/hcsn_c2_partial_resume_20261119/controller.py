@@ -1,4 +1,4 @@
-"""Standard-library controller for two independently identified C2 continuations."""
+"""Standard-library controller for one separately identified C2 partial continuation."""
 
 import atexit
 import hashlib
@@ -13,6 +13,8 @@ import subprocess
 import sys
 import threading
 import time
+
+from resources import cgroup_chain, resource_rejections
 
 
 HERE = Path(__file__).resolve().parent
@@ -92,7 +94,9 @@ def host_resources(request):
             arguments = path.joinpath('cmdline').read_bytes().decode(errors='replace').split('\0')
             old = any(Path(x).name in ('c2_runner.py', 'c2_controller.py') for x in arguments)
             old = old or any(old_key in x or request['original_c2_program'] in x for x in arguments)
-            duplicate = any(str(HERE/'runner.py') == x or str(HERE/'controller.py') == x for x in arguments)
+            duplicate = any(str(HERE/'runner.py') == x or str(HERE/'controller.py') == x
+                            or str(Path(request['previous_continuation_root'])/name) == x
+                            for x in arguments for name in ('runner.py', 'controller.py'))
             if old or duplicate:
                 conflicts.append({'pid': int(path.name), 'arguments': arguments})
         except FileNotFoundError:
@@ -101,10 +105,10 @@ def host_resources(request):
             unreadable.append(int(path.name))
     return {'observed_unix_time': time.time(), 'observed_monotonic': time.monotonic(),
             'memory_bytes': memory, 'disk_free_bytes': shutil.disk_usage(HERE).free,
-            'affinity': affinity, 'physical_core_topology': cores, 'selected_cpus': selected[:2],
+            'affinity': affinity, 'physical_core_topology': cores, 'selected_cpus': selected[:1],
             'conflicting_processes': conflicts, 'unreadable_process_cmdlines': unreadable,
             'original_key_path': old_key, 'original_key_path_exists': Path(old_key).exists(),
-            'original_artifacts_modified': False}
+            'original_artifacts_modified': False, 'cgroup_chain': cgroup_chain()}
 
 
 def process_memory(pid):
@@ -158,15 +162,15 @@ def main():
         terminal['source_freeze'] = verify_freeze(request)
         observation = host_resources(request)
         write(OUTPUT/'RESOURCE.json', observation)
-        reasons = []
-        if len(request['fits']) != 2 or budget['concurrency'] != 2 or budget['threads_per_fit'] != 1:
-            reasons.append('exactly two one-thread fits required')
+        reasons = resource_rejections(observation["cgroup_chain"], budget)
+        if len(request['fits']) != 1 or budget['concurrency'] != 1 or budget['threads_per_fit'] != 1:
+            reasons.append('exactly one one-thread fit required')
         if observation['memory_bytes']['MemAvailable'] < budget['minimum_available_memory_bytes']:
             reasons.append('insufficient MemAvailable')
         if observation['disk_free_bytes'] < budget['minimum_output_disk_free_bytes']:
             reasons.append('insufficient output disk space')
-        if len(observation['selected_cpus']) < 2:
-            reasons.append('two distinct available physical cores required')
+        if len(observation['selected_cpus']) < 1:
+            reasons.append('one available physical core required')
         if observation['conflicting_processes']:
             reasons.append('old or duplicate C2 process remains alive')
         if reasons:
@@ -180,7 +184,7 @@ def main():
     for sig in (signal.SIGTERM, signal.SIGINT):
         signal.signal(sig, lambda number, frame: interrupted.append(number))
     active, messages = {}, queue.Queue()
-    # Keep controller bookkeeping inside the same two logical CPUs as its fits.
+    # Keep controller bookkeeping inside the same logical CPU as its fit.
     os.sched_setaffinity(0, set(observation['selected_cpus']))
     terminal['controller_affinity'] = sorted(os.sched_getaffinity(0))
     def emergency_cleanup():
@@ -280,6 +284,7 @@ def main():
     terminal['status'] = ('REVIEWABLE_TERMINALS' if all(x['status'] == 'REVIEWABLE_TERMINAL'
                                                        for x in terminal['fits'].values()) else 'INCOMPLETE_OR_FAILED')
     terminal['controller_signals'] = interrupted
+    terminal['cgroup_chain_after'] = cgroup_chain()
     try:
         terminal['source_freeze_after'] = verify_freeze(request)
     except Exception as error:
