@@ -145,7 +145,7 @@ class ModelProcessTests(unittest.TestCase):
 
     def test_receipt_preserves_raw_output_and_empty_reader_directory(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             reader = root / "reader"
             reader.mkdir()
             script = root / "echo.py"
