@@ -1,0 +1,31 @@
+{
+  "changed_function_AST_vs_v3": [
+    "bound",
+    "attest",
+    "inside",
+    "run_native"
+  ],
+  "changes": [
+    "retain exact AFTER root conftest.py at original /package location; immutable original tests share original relative namespace",
+    "when root conftest exists retain exact original pytest.ini, reject unsupported option keys/selection filters; fixed CLI timeout and explicit original-file selectors remain",
+    "additional dependency only as exact manifest-bound readonly tree, every file hash checked outside and inside sandbox; no old venv mutation"
+  ],
+  "dependency_manifest_sha256": "b7ac6bea3d51e05bb22c86b4696977cf44190c35e3560b7741017add564da8df",
+  "new_model_calls": 0,
+  "new_native_children": 0,
+  "old_failed_native_attempts_retained": true,
+  "original_case_file_scope_unchanged": true,
+  "original_gate_and_payload_parser_unchanged": true,
+  "prior_v2_16_codec_controls_reused_only_for_identical_convert_and_original_gate": true,
+  "requires_actual_v4_original_native_pairs_before_candidate_use": true,
+  "unchanged_function_AST_vs_v3": [
+    "sha",
+    "canonical",
+    "write",
+    "load_module",
+    "before_oracle",
+    "convert",
+    "verify",
+    "feedback"
+  ]
+}
