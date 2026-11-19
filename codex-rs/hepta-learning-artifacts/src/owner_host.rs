@@ -63,8 +63,6 @@ mod withdrawal_frontier;
 
 #[path = "owner_host_readback.rs"]
 mod readback;
-#[path = "owner_withdrawal_frontier.rs"]
-mod withdrawal_frontier;
 
 #[path = "owner_host_registry_durable.rs"]
 mod registry_durable;
