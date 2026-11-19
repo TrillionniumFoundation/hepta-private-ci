@@ -1,0 +1,4009 @@
+{
+  "schema": "hepta.rust-branch-census-shard.v1",
+  "range": [
+    41,
+    50
+  ],
+  "entries": [
+    {
+      "name": "fix/hepta-cell-split-durable-metrics-barrier-20261014",
+      "sha": "e3501db116c81feb944e91b7967f9824b1d00a08"
+    },
+    {
+      "name": "fix/hepta-cell-split-eval-clippy-mechanics-20261017",
+      "sha": "e5c6dca0f48f89772729607327979028a89cdfdd"
+    },
+    {
+      "name": "fix/hepta-cell-split-evidence-retention-join-20261014",
+      "sha": "89e2de41dace249dd36af8536751ed56061b6ff8"
+    },
+    {
+      "name": "fix/hepta-cell-split-exact-head-rustfmt-20261014",
+      "sha": "487cd1f0f704eb5486dacc8f5b8010eaa1195998"
+    },
+    {
+      "name": "fix/hepta-cell-split-exact-head-rustfmt-convergence-20261014",
+      "sha": "a0bdeaaeb0f7785e5a6c9ef9607cb273bf8d1e88"
+    },
+    {
+      "name": "fix/hepta-cell-split-final-callback-local-fence-20261017",
+      "sha": "66fca903cbb47deb4ac078accedaeed5822d2f09"
+    },
+    {
+      "name": "fix/hepta-cell-split-hosted-rustfmt-ratchet-20261016",
+      "sha": "92fd28919dd6d2734bca19ce49d6f5a8e6c8beb1"
+    },
+    {
+      "name": "fix/hepta-cell-split-incomplete-verified-prefix-20261016",
+      "sha": "28fd6249962d5ecec6621e7948900b17380f55c3"
+    },
+    {
+      "name": "fix/hepta-cell-split-invalid-posteffect-ack-20261016",
+      "sha": "9785e61e0fca9c7057d2cc6f7ac3aaa3482a5ea0"
+    },
+    {
+      "name": "fix/hepta-cell-split-measurement-integrity-20261012",
+      "sha": "521263841bc7c835054e04e4aab17ba9b939f547"
+    },
+    {
+      "name": "fix/hepta-cell-split-metrics-acked-observer-audit-20261014",
+      "sha": "f3f6ec616b6c6d96d35fce6e15fc8c8fe5cd1c50"
+    },
+    {
+      "name": "fix/hepta-cell-split-metrics-exact-rustfmt-20261014",
+      "sha": "bf7b4a07ba16f6b4dad1b9e78d5c30abc220390f"
+    },
+    {
+      "name": "fix/hepta-cell-split-monotonic-process-floor-20261012",
+      "sha": "5684e472ade1c2dd5f5cc3bbeebd181c07a9a894"
+    },
+    {
+      "name": "fix/hepta-cell-split-observer-inode-continuity-20261017",
+      "sha": "b99fc23937d011f2ffb292c8db3cf631ea34ce8f"
+    },
+    {
+      "name": "fix/hepta-cell-split-observer-pinned-dirfd-20261016",
+      "sha": "3c2cd2547e03a8507ef71d771f0ddb5437e3dab6"
+    },
+    {
+      "name": "fix/hepta-cell-split-observer-pinned-inodes-20261016",
+      "sha": "669327c47b7390c7173255a5ef2e4e95d374751b"
+    },
+    {
+      "name": "fix/hepta-cell-split-p0-fd-witness-on-p0-58-20261017",
+      "sha": "1fd7682b05c1c48285c11598ec4f2a5963341ac2"
+    },
+    {
+      "name": "fix/hepta-cell-split-p0-live-frame-continuity-20261017",
+      "sha": "877821b81e4385556845949d40f9eb51ee949b46"
+    },
+    {
+      "name": "fix/hepta-cell-split-p0-operator-cli-denial-20261015",
+      "sha": "658c2cae8698b6f291882b6fd67871d8d15dcf69"
+    },
+    {
+      "name": "fix/hepta-cell-split-pending-reconcile-only-20261014",
+      "sha": "b6aa085f830d5a3e0f6b72f2c4784852753b330d"
+    },
+    {
+      "name": "fix/hepta-cell-split-pending-signed-reconciliation-20261014",
+      "sha": "6fe8cf04e1e19f56fe3f5a000e7ec598927a1771"
+    },
+    {
+      "name": "fix/hepta-cell-split-pending-transcript-denial-20261016",
+      "sha": "2a39780d3183f2fa5d907527d01760161f36f093"
+    },
+    {
+      "name": "fix/hepta-cell-split-physical-cns-control-fence-20261014",
+      "sha": "d4d6f965d7f8ef14378168f1e59247955cb4133e"
+    },
+    {
+      "name": "fix/hepta-cell-split-posteffect-admission-convergence-20261014",
+      "sha": "62e2c09988e83617d8a6176192eb2c15ff297314"
+    },
+    {
+      "name": "fix/hepta-cell-split-posteffect-ambiguous-p0-20261017",
+      "sha": "778933b74166ccbd5cd909bd28bb0b49c374ba07"
+    },
+    {
+      "name": "fix/hepta-cell-split-postprepare-ambiguous-20261016",
+      "sha": "db38eefe811de5fe2f89816d04e46820d8cf410a"
+    },
+    {
+      "name": "fix/hepta-cell-split-reference-route-no-bypass-20261014",
+      "sha": "87d226eb31e4b07a0031c22d91051b0a44e15ed2"
+    },
+    {
+      "name": "fix/hepta-cell-split-socket2-ownedfd-20261014",
+      "sha": "660f78d0d4e5064abc36c8c3af1d380d61ba3b8c"
+    },
+    {
+      "name": "fix/hepta-cell-split-unledgered-original-probe-20261016",
+      "sha": "bcd781e05e9085eaba25584a762d06f9fa29cecf"
+    },
+    {
+      "name": "fix/hepta-central-yaml-lock-compile-20261013",
+      "sha": "86d74d7c18d798a07abce95a2a803b2ee936bd63"
+    },
+    {
+      "name": "fix/hepta-child-cas-native-width-fixture-20261014",
+      "sha": "7232b6211e06bdccc6456c65a4a6646a73f776de"
+    },
+    {
+      "name": "fix/hepta-ci-dossier-scope-fail-closed-20261023-gpt6",
+      "sha": "7a4f17728fa32c5c23cf53544872a8aed28aa510"
+    },
+    {
+      "name": "fix/hepta-ci-fixture-background-git-v1",
+      "sha": "89a3a63596adcd8b5987a951888c4ccb9f6bb0ee"
+    },
+    {
+      "name": "fix/hepta-ci-fixture-git-maintenance-v1",
+      "sha": "0e71a0c571c004e86a3728447a87d39191a85f5a"
+    },
+    {
+      "name": "fix/hepta-ci-git-fixture-cleanup-20261012",
+      "sha": "48a8fe837d47d097bbb6340ffa860013cfd2add4"
+    },
+    {
+      "name": "fix/hepta-ci-git-fixture-cleanup-v1",
+      "sha": "af4c7fc67833d2576c58fc509c1b57c60269403f"
+    },
+    {
+      "name": "fix/hepta-ci-pins-fleet-clippy-20261022",
+      "sha": "9c7a8c877ddcd4e936b077eadbea21d2e9056b95"
+    },
+    {
+      "name": "fix/hepta-ci-procfs-read-esrch-20261104",
+      "sha": "6a5042886572b35de1847347b6c61208b4a191fa"
+    },
+    {
+      "name": "fix/hepta-ci-reject-control-paths-20261023-gpt6",
+      "sha": "a89d91b023c69381499d87b1407aa679f0eb3d3d"
+    },
+    {
+      "name": "fix/hepta-ci-scope-isolated-git-fixtures-20261012",
+      "sha": "a6559480659559f9b1a6f6090fd53a7258c289ca"
+    },
+    {
+      "name": "fix/hepta-cloned-observation-control-20261027",
+      "sha": "bf32538ccb9b52e3e0a8e089983eea7e3940b6a5"
+    },
+    {
+      "name": "fix/hepta-cns-physical-cutover-deny-on-evidence-20261014",
+      "sha": "4767f825e86ea9e780b90a95dae69a3110d28faa"
+    },
+    {
+      "name": "fix/hepta-cns-replay-bootstrap-test-isolation-20261014",
+      "sha": "d1ebc3fe7f91bc9d92ee2eac443455e2bf0bf231"
+    },
+    {
+      "name": "fix/hepta-cns-replay-test-owner-root-isolation-20261014",
+      "sha": "f50c1803ce722d62f4d1d3b5c7161588fa774ad1"
+    },
+    {
+      "name": "fix/hepta-cns-test-string-errors-20261014",
+      "sha": "0415c2f28a993b272a78e57094272549a92f4cac"
+    },
+    {
+      "name": "fix/hepta-confirmed-unlearning-20261022",
+      "sha": "d36482a4f37c9317564ecd644c5ef65d434d0f7e"
+    },
+    {
+      "name": "fix/hepta-console-owner-20261028",
+      "sha": "0f387be74db046e2b4969919e1dab698dd755a5c"
+    },
+    {
+      "name": "fix/hepta-control-2099-denied-cns-restart-readback-20261015",
+      "sha": "20b25d3c8bc168b886aaa87c31f37358b41dfae4"
+    },
+    {
+      "name": "fix/hepta-control-cns-canonical-ancestor-20261015",
+      "sha": "2c4d8d13ebce8eb04ede80bd240c1d21ee38822d"
+    },
+    {
+      "name": "fix/hepta-control-cns-commit-receipt-binding-20261014",
+      "sha": "78f62f1f8d321653e00f6e9b1ab8f0bae8dfb4b7"
+    },
+    {
+      "name": "fix/hepta-control-cns-exact-rustfmt-20261014",
+      "sha": "1257fce8a1b9d6061f0877ffa1de2a6faa268ad7"
+    },
+    {
+      "name": "fix/hepta-control-cns-original-receipt-join-20261014",
+      "sha": "54a927bb0ff49d9f51d2f61a822a414abe92a6f0"
+    },
+    {
+      "name": "fix/hepta-control-inplace-wal-tail-fence-20261014",
+      "sha": "82bb868f944d0f20862298d94cd69708241beeb6"
+    },
+    {
+      "name": "fix/hepta-control-ndu-current-poison-mut-20261014",
+      "sha": "d7651df76ab9df8b4ce3bb4b5f5b1d9c768f334a"
+    },
+    {
+      "name": "fix/hepta-control-ndu-private-temp-root-20261014",
+      "sha": "b0673d6eefa8b2d81d101298bf180c23d34ec82a"
+    },
+    {
+      "name": "fix/hepta-control-observer-2076-cns-negative-test-20261015",
+      "sha": "12770b68002275e00f291237e53b6616f99180ea"
+    },
+    {
+      "name": "fix/hepta-control-pinned-marker-read-20261015",
+      "sha": "b39ac468a43d7cc8b9f0ac5e5078e9c5eafc7444"
+    },
+    {
+      "name": "fix/hepta-control-wal-inplace-tamper-20261014",
+      "sha": "41eaf913fb9a2f7a28138e9fb2f045c6b689b334"
+    },
+    {
+      "name": "fix/hepta-control-wal-pinned-dirfd-20261015",
+      "sha": "ac8dd972df86cc09fa1aeded017206047810f98d"
+    },
+    {
+      "name": "fix/hepta-core-response-map-ci-v1",
+      "sha": "ad3399c054a0fe1a0c5cd4bd4d7d4be9f2db67d4"
+    },
+    {
+      "name": "fix/hepta-core-stream-test-context-20261012",
+      "sha": "d8e8eeedadcd50278becaafaff7cd390677324ca"
+    },
+    {
+      "name": "fix/hepta-custody-cns-no-control-compile-20261015",
+      "sha": "4285ff10559e8a553670bfd4323d18361214bae3"
+    },
+    {
+      "name": "fix/hepta-docs-foreign-path-test-quote-20261107",
+      "sha": "b695172e860858ea5051a6c1a4c61e45c38a694f"
+    },
+    {
+      "name": "fix/hepta-evidence-bounded-flush-barrier-20261014",
+      "sha": "e11e93d800aa83f4c8254327e9558b9898a334b4"
+    },
+    {
+      "name": "fix/hepta-evidence-cold-restart-original-marker-20261014",
+      "sha": "729e375f967e7dedba6629d6986371b6bd8059ba"
+    },
+    {
+      "name": "fix/hepta-evidence-durable-frontier-highwater-20261014",
+      "sha": "8f7f5ae6feecb01d5d02126cb08c9bb1c3f9f405"
+    },
+    {
+      "name": "fix/hepta-evidence-frontier-history-observer-20261014",
+      "sha": "a78aa138f4466831dc495ceb39fbc10c1956b823"
+    },
+    {
+      "name": "fix/hepta-evidence-group-commit-live-wal-frontier-20261014",
+      "sha": "a6db300bf26eb535e241a396e82a21e906af70c1"
+    },
+    {
+      "name": "fix/hepta-evidence-independent-join-native-gates-20261014",
+      "sha": "12a1e79922259eeb0a033dfef05f26141772b1c2"
+    },
+    {
+      "name": "fix/hepta-evidence-observer-full-prefix-replay-20261014",
+      "sha": "6dbf0e57a1be5045276edb09f41210b72da359d4"
+    },
+    {
+      "name": "fix/hepta-evidence-operation-bound-observer-readback-20261014",
+      "sha": "226cb29031e4ffab57b4d2df93f8c75674e5b324"
+    },
+    {
+      "name": "fix/hepta-evidence-original-wal-frontier-20261014",
+      "sha": "1f5f69b247ba34dcc02272f224bdbb334f4c5d8d"
+    },
+    {
+      "name": "fix/hepta-evidence-outbox-global-capacity-20261015",
+      "sha": "d35288a71718c8f7fcc7153a28d75f7982529e9f"
+    },
+    {
+      "name": "fix/hepta-evidence-owner-marker-replay-fence-20261014",
+      "sha": "0e9c67fad9848135e8bf3bff8e0721664f0dade4"
+    },
+    {
+      "name": "fix/hepta-evidence-stop-ack-after-unlock-20261014",
+      "sha": "10af33cf336c806b2c4c09c26282224011fb1838"
+    },
+    {
+      "name": "fix/hepta-evidence-stop-original-lock-handoff-20261014",
+      "sha": "d74cedebbb0cb1c325326c8737318c21aed4e7ff"
+    },
+    {
+      "name": "fix/hepta-exact-head-rustfmt-20261016",
+      "sha": "de046889cde4dfee4a0154e98ba95a9d698f97ab"
+    },
+    {
+      "name": "fix/hepta-exact-pr-ci-pinned-modern-20261017",
+      "sha": "62a324a920b67abaee3bd7391c3642345bb3f5be"
+    },
+    {
+      "name": "fix/hepta-execution-p2d-trigger-clippy-20261015",
+      "sha": "a2d9d5ef229e5dc2ea3baee4e60195b40b3ff056"
+    },
+    {
+      "name": "fix/hepta-execution-port-stream-witness-20261017",
+      "sha": "2d485e2a7ba0aa3382958885bee12332b63423ee"
+    },
+    {
+      "name": "fix/hepta-feature-cache-evict-retired-scope-20261022",
+      "sha": "9479292493ef7fc05f5a606bd147a7fc5589e34e"
+    },
+    {
+      "name": "fix/hepta-feature-cache-monotone-global-cutover-20261022",
+      "sha": "765dffde06cec71d9a57a7d2c817677b40b5f7b2"
+    },
+    {
+      "name": "fix/hepta-feature-cache-scope-local-cutover-20261022",
+      "sha": "2ac274782b5ce1c4f25738e63e423160fab8ca6f"
+    },
+    {
+      "name": "fix/hepta-final-use-claim-head-20261103",
+      "sha": "a53e6e2a7aacf4784e48c680a5980960a17d8a35"
+    },
+    {
+      "name": "fix/hepta-final-use-mldsa65-v2-20261029",
+      "sha": "96a446e1f48a04cf837610da8349e93c8bf9c91e"
+    },
+    {
+      "name": "fix/hepta-final-use-revocation-capacity-20261015",
+      "sha": "f29731bd030214c86c59426703708987072d890c"
+    },
+    {
+      "name": "fix/hepta-fleet-authority-port-clippy-20261018",
+      "sha": "518a80a0daf684180367d136fc18a38776edfb43"
+    },
+    {
+      "name": "fix/hepta-fleet-clippy-admit-host-test-20261014",
+      "sha": "ecd29af2846747e3c967284420a183a50d6e98b5"
+    },
+    {
+      "name": "fix/hepta-fleet-windows-verbatim-workspace-20261016",
+      "sha": "e6df539458bfc2e163e09b986c2f33697d0b1c6f"
+    },
+    {
+      "name": "fix/hepta-frozen-final-fold-lineage-20261029",
+      "sha": "47884ac6047f2341869ae566e4f599e57e864d45"
+    },
+    {
+      "name": "fix/hepta-generic-topology-control-fence-20261014",
+      "sha": "98457272bcddc16b8b9ef69bb7269edc9be8fe44"
+    },
+    {
+      "name": "fix/hepta-global-ci-p0-20261013",
+      "sha": "fc0325c8c7b6c93f74d1c7d4718a20c91d8159f7"
+    },
+    {
+      "name": "fix/hepta-global-ci-provider-context-v1",
+      "sha": "5213117b1597a259b19d125e81bd9e3a3335086e"
+    },
+    {
+      "name": "fix/hepta-global-ci-rootcause-20261013",
+      "sha": "a408c7cd654c27fa79369f83f7952f8f95a4870f"
+    },
+    {
+      "name": "fix/hepta-integrated-p0-p5-complete-advisory-digest-20261022",
+      "sha": "c204d3bd60e8c7870b85e1257ef516b069a50d50"
+    },
+    {
+      "name": "fix/hepta-joint-h1-20261105-93bfc-frozen",
+      "sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc"
+    },
+    {
+      "name": "fix/hepta-joint-h1-prepare-20261105-93bfc",
+      "sha": "9f785cb201ba12ab0ae0f0d341c0f7912cc65efc"
+    },
+    {
+      "name": "fix/hepta-joint-h2-20261105-93bfc-frozen",
+      "sha": "620cb63ae9b58904483005bcb2c4e1507df99539"
+    },
+    {
+      "name": "fix/hepta-joint-h2-prepare-20261105-93bfc",
+      "sha": "e452defdbcc7b48c4949eb3d5cbf73ed667ca879"
+    },
+    {
+      "name": "fix/hepta-joint-h3-20261105-93bfc-frozen",
+      "sha": "6db78eca53a5acdda0d96873d3f4cd65863426f0"
+    },
+    {
+      "name": "fix/hepta-joint-h3-20261105-93bfc-prepare",
+      "sha": "595475a615a03ca9f63c2c1f6e532bd362c20a74"
+    },
+    {
+      "name": "fix/hepta-learning-artifacts-libc-lock-20261021",
+      "sha": "a9e2ac98b6c3a163aa059ea4219e4c88edd8966b"
+    },
+    {
+      "name": "fix/hepta-learning-artifacts-metric-bind-fence-20261016",
+      "sha": "e2ba423c9d90b5bdb54d96f2ae3c275ecf4bccec"
+    },
+    {
+      "name": "fix/hepta-legacy-cns-route-publication-deny-20261014",
+      "sha": "3a7bb13cbb4b485b04f7dd9bd0b3fb0d67d3d337"
+    },
+    {
+      "name": "fix/hepta-load-cleanup-owned-latch-20261022",
+      "sha": "661ccb79f0e26e9ae70063dd9fac6663579ce926"
+    },
+    {
+      "name": "fix/hepta-load-owner-attempt-20261022",
+      "sha": "55bfd449db36da6f4b1d26af7dd9f0c87d5c4b56"
+    },
+    {
+      "name": "fix/hepta-m15-initial-material-20261106-47615",
+      "sha": "7758798f628ebe86e0cbf3c177559edab96cf5ab"
+    },
+    {
+      "name": "fix/hepta-memory-native-test-visibility-20261105",
+      "sha": "97e08862890cd3e089fe26e26faa67dc494f3399"
+    },
+    {
+      "name": "fix/hepta-memory-retirement-migration-sqlite-shim-20261105",
+      "sha": "19c5b771315bfd7297c0964e3875081f195297e5"
+    },
+    {
+      "name": "fix/hepta-meta-numpy-research-ci-20261015",
+      "sha": "264235313aff5db3fd83a70458b739b36685da0f"
+    },
+    {
+      "name": "fix/hepta-meta-router-pinned-numpy-ci-20261015",
+      "sha": "11b768a189bf8fdc42bd23ac77a29bf34d35ed5b"
+    },
+    {
+      "name": "fix/hepta-metric-callback-public-final-use-deny-20261014",
+      "sha": "597fec0617f581b7a716e712a158179df8018f8c"
+    },
+    {
+      "name": "fix/hepta-metrics-bounded-flush-20261014",
+      "sha": "c5ca6ea411c731797523ba613eb39bea122c61e4"
+    },
+    {
+      "name": "fix/hepta-microbatch-clock-admission-20261012",
+      "sha": "0c9e586342aa2c912386855b0af0464bf525334d"
+    },
+    {
+      "name": "fix/hepta-model-envelope-freeze-20261022",
+      "sha": "a768a0a66f41837e186bb914664f404c1a7c899b"
+    },
+    {
+      "name": "fix/hepta-model-owner-terminal-20261022",
+      "sha": "07e87460cdc29810de0e5efe489c6795fa759bd1"
+    },
+    {
+      "name": "fix/hepta-monotonic-source-sequence-20261013",
+      "sha": "885b1765ec360d3f1e21c51c688398b66fdc620f"
+    },
+    {
+      "name": "fix/hepta-native-admission-receipt-gate-20261022",
+      "sha": "17ca231fdea8446569277a1ff07afcad6470c0af"
+    },
+    {
+      "name": "fix/hepta-native-clippy-exact-20261017",
+      "sha": "febeb38ee5113607eeb7b8d1df1c8bd0c3220be7"
+    },
+    {
+      "name": "fix/hepta-native-core-clippy-exact-head-20261016",
+      "sha": "53542a8f51632bc985c4dbaf2b84ad294ebb601f"
+    },
+    {
+      "name": "fix/hepta-native-full-preview-18e9703e-20261024",
+      "sha": "18e9703ec14b6b22f13bae5aecb16795b6218d10"
+    },
+    {
+      "name": "fix/hepta-native-global-ci-20261012-v1",
+      "sha": "ea8253da648c4976c13157a0fbd0a65c34a2e918"
+    },
+    {
+      "name": "fix/hepta-native-msvc-cache-abi-20261029",
+      "sha": "f6cfb44ad06d79a2f7413a5d752963cd0872e07d"
+    },
+    {
+      "name": "fix/hepta-native-output-20261022",
+      "sha": "467cad2048927a8d505031e9e4be572cdd225fd2"
+    },
+    {
+      "name": "fix/hepta-native-owner-trace-20261024",
+      "sha": "394d1c7559513f4c28930b4bb1425ff383350ddc"
+    },
+    {
+      "name": "fix/hepta-ndu-objective-binding-20261022",
+      "sha": "65dd7d7976be39ba614fdda78f0e322dc2071851"
+    },
+    {
+      "name": "fix/hepta-ndu-portfolio-receipt-integrity-20261022",
+      "sha": "aced1d7eaab0a7badb8cafddd097e1d5608c8c95"
+    },
+    {
+      "name": "fix/hepta-ndu-zero-risk-rounding-20261022",
+      "sha": "3cad70dc4c68423231bc3075d20f2c66c94fd9a0"
+    },
+    {
+      "name": "fix/hepta-neural-custody-full-ci-20261025",
+      "sha": "5d47c2044295257d4a519aaf38ff3c4f198ff57a"
+    },
+    {
+      "name": "fix/hepta-neural-preview-full-ci-20261025",
+      "sha": "ccff5bed2ee85ccdd2b8db3791db67dbbb636a62"
+    },
+    {
+      "name": "fix/hepta-neural-provenance-f75-20261027",
+      "sha": "3394148c2188ca3f1c156627692aa53077528160"
+    },
+    {
+      "name": "fix/hepta-neural-read-observation-20261027",
+      "sha": "38ff6bbd0f0a21cc29c894e36aa48fa1fc52b70f"
+    },
+    {
+      "name": "fix/hepta-neuron-2118-exact-hosted-rustfmt-20261015",
+      "sha": "2c65d0c49a85439887f0e16ddf59eff3243e30e0"
+    },
+    {
+      "name": "fix/hepta-neuron-blocking-ci-convergence-20261013",
+      "sha": "c87f9876a7e80d1febe849fe6c533b02521518a4"
+    },
+    {
+      "name": "fix/hepta-neuron-clippy-transitive-owner-20261017",
+      "sha": "9f5c7c5b9fae07e994b9720129eea8125e220431"
+    },
+    {
+      "name": "fix/hepta-observed-execution-v1-20261028",
+      "sha": "4c542f81a61a66531d219670545f8fd0e7149d29"
+    },
+    {
+      "name": "fix/hepta-observed-protected-host-20261028",
+      "sha": "5c291a75c8aa84a8bdc551e75b271b01853157ac"
+    },
+    {
+      "name": "fix/hepta-operator-legacy-admission-private-20261014",
+      "sha": "d08eab614871639ab4d56655e70e19db6c0ba4e0"
+    },
+    {
+      "name": "fix/hepta-ordinary-pq-effects-20261104",
+      "sha": "1556a4df6e279055fd8196f81a4ca2fe0f19384a"
+    },
+    {
+      "name": "fix/hepta-ordinary-prerequisites-20261027",
+      "sha": "746d7590990eec46d20400293feb80f499813bd9"
+    },
+    {
+      "name": "fix/hepta-ordinary-runtime-drain-20261027",
+      "sha": "5cec842c70fc64cae8c2fad0a59f501038257481"
+    },
+    {
+      "name": "fix/hepta-original-evidence-bound-worker-owner-20261014",
+      "sha": "8a354edbc4e275e2bdae7ed214d5c4740580df12"
+    },
+    {
+      "name": "fix/hepta-original-evidence-worker-hosted-rustfmt-20261014",
+      "sha": "60f8ab1e4b526bac856e87c8c159ef1e511c334f"
+    },
+    {
+      "name": "fix/hepta-original-finaluse-control-shell-clippy-20261017",
+      "sha": "85ed1fdda133c39c55ed5ccd30aca5fda998f156"
+    },
+    {
+      "name": "fix/hepta-original-learning-artifacts-strict-clippy-20261016",
+      "sha": "fb7b23617867c38bd95afafd9efc54fc2f6eb596"
+    },
+    {
+      "name": "fix/hepta-original-neuron-batch-resource-fence-20261017",
+      "sha": "c4bab11fc583b7f9b1a38ed4c017a4e11314ee9e"
+    },
+    {
+      "name": "fix/hepta-original-owner-real-test-count-gates-20261016",
+      "sha": "f743cfaa64db8f91e94070262caa0e1692c44dfc"
+    },
+    {
+      "name": "fix/hepta-original-rustfmt-exact-20261016",
+      "sha": "74389d3ac56b7d9302ae258f986cabf910252b98"
+    },
+    {
+      "name": "fix/hepta-original-rustfmt-native-20261017",
+      "sha": "3f173f386d6b42c76e4d2c58c4f13bbb5f797acc"
+    },
+    {
+      "name": "fix/hepta-original-transitive-clippy-20261017",
+      "sha": "962677790dfdcb8dc4e91b957c09fb520ba22d6a"
+    },
+    {
+      "name": "fix/hepta-original-worker-cold-recovery-deny-20261014",
+      "sha": "8538b4a8dd7f0be1fdc7605681edd4818668d587"
+    },
+    {
+      "name": "fix/hepta-original-worker-hosted-extra-rustfmt-20261014",
+      "sha": "6c996953236f077720988de083396b44266d8830"
+    },
+    {
+      "name": "fix/hepta-owner-native-full-ci-20261024",
+      "sha": "0cb5b74d6b1a9a406856969ad889bf270562434e"
+    },
+    {
+      "name": "fix/hepta-owner-release-original-effect-deny-20261014",
+      "sha": "7bfd3ae8a3ee928bd25fed22fa19774a65fd9b10"
+    },
+    {
+      "name": "fix/hepta-p0-58-ruff-source-only-frozen-20261016",
+      "sha": "66bb3cee796d13dda83e902ad4f201a27983d54e"
+    },
+    {
+      "name": "fix/hepta-p0-2811-ruff-exact-20261018",
+      "sha": "1fab72740d7d1d9686e99da3f7a1cd804b0b664e"
+    },
+    {
+      "name": "fix/hepta-p0-b4-atomic-original-control-join-20261014",
+      "sha": "fe873dd9225941b55f5990b6d270f32a3aad2a77"
+    },
+    {
+      "name": "fix/hepta-p0-capacity-fixture-durable-frontier-20261015",
+      "sha": "8748a3aea04e2c26bdd7e4e3632f7ac652ac621b"
+    },
+    {
+      "name": "fix/hepta-p0-capacity-native-rustfmt-20261015",
+      "sha": "4f3607752f7f510b7d727f2c721fb4b10eceb305"
+    },
+    {
+      "name": "fix/hepta-p0-cns-b4-first-action-native-20261014",
+      "sha": "db1929a11d535e5a40c78db20e080f607bb98121"
+    },
+    {
+      "name": "fix/hepta-p0-cns-native-test-types-and-denial-20261015",
+      "sha": "bc4f1e428dbd5ab051d5da2b13397f12d97c7035"
+    },
+    {
+      "name": "fix/hepta-p0-cns-prod-feature-check-20261015",
+      "sha": "18227a945361918bcbbc0ac099901af2bc7585a4"
+    },
+    {
+      "name": "fix/hepta-p0-cns-restart-none-receipt-20261015",
+      "sha": "bba86b015d4228a74f6250bb05ca51d1bb75c17d"
+    },
+    {
+      "name": "fix/hepta-p0-cns-restart-two-hosted-rustfmt-20261015",
+      "sha": "9e958281183d18650053d214b4bf03802b817f76"
+    },
+    {
+      "name": "fix/hepta-p0-complete-native-facade-custody-20261022",
+      "sha": "4719edd6d244bdb0ee1cc4652bcbb0099e380f7f"
+    },
+    {
+      "name": "fix/hepta-p0-control-observer-ratchet-b4-20261014",
+      "sha": "77a331e48ba97a9e77c654cc96fdad33c6516f9a"
+    },
+    {
+      "name": "fix/hepta-p0-control-original-ndu-hosted-rustfmt-20261014",
+      "sha": "b0c4bcc773b77f69de9a57ee0da3fb8908c9824b"
+    },
+    {
+      "name": "fix/hepta-p0-crossplatform-ci-20261012",
+      "sha": "3e996bc88ad5d68d842e6c129b28636c14b27d0f"
+    },
+    {
+      "name": "fix/hepta-p0-deep-observer-hosted-digest-rustfmt-20261015",
+      "sha": "e7100c6d3b9162aa765d073f9939991ec6d17d5c"
+    },
+    {
+      "name": "fix/hepta-p0-deep-observer-private-digest-20261015",
+      "sha": "1839dcbf2e3702390b0359104784554d31605c4f"
+    },
+    {
+      "name": "fix/hepta-p0-evidence-32-hosted-rustfmt-20261015",
+      "sha": "1f43731e0a253bf96edee8dcc426eaab6a3c88a5"
+    },
+    {
+      "name": "fix/hepta-p0-git-hook-preflight-20261022",
+      "sha": "43f37923081dd6f833eaec3c4e6f879d18f08c09"
+    },
+    {
+      "name": "fix/hepta-p0-global-ci-oct13-v1",
+      "sha": "04450f70b7cc8a502fef002ccb41cffec4f19ce8"
+    },
+    {
+      "name": "fix/hepta-p0-hickory-adapter-20261022",
+      "sha": "029fe2628cecde20b467ecc200b7cba4cebf2c71"
+    },
+    {
+      "name": "fix/hepta-p0-original-inode-observer-after-timeout-20261014",
+      "sha": "99cc18db2ee2e5655d52fb8d427ee03360680ea3"
+    },
+    {
+      "name": "fix/hepta-p0-p5-locked-toml-indexmap-20261022",
+      "sha": "fc2d2b844a5b3f8718600b293777a0dd9074010e"
+    },
+    {
+      "name": "fix/hepta-p0-p7-hosted-exact-source-ci-20261023",
+      "sha": "1ff7457ec9a3237430dae3d8ecd7e3dbdb5ef077"
+    },
+    {
+      "name": "fix/hepta-p0-runtime-17-hosted-rustfmt-20261015",
+      "sha": "6baf4664372464fb1a2ac01fdbeee4437a303679"
+    },
+    {
+      "name": "fix/hepta-p0-runtime-cns-rustfmt-20261014",
+      "sha": "dc2041a9c7a4479c41cdb639c8e1bf6f56e538a0"
+    },
+    {
+      "name": "fix/hepta-p0-supervisor-ci-20261013",
+      "sha": "81082eb417aaeccc81832e20feae42c3caff37ba"
+    },
+    {
+      "name": "fix/hepta-p0-tar-security-20261022",
+      "sha": "29569032a140ad7c97ef651c6de21e8c8d269213"
+    },
+    {
+      "name": "fix/hepta-p0-windows-wal-restart-20261019",
+      "sha": "0b061c193b95985fbfa97ffac7dd819d57153767"
+    },
+    {
+      "name": "fix/hepta-p0p5-cargo-lock-resolver-exact-20261022",
+      "sha": "2a982c8939e0d3c811b67f12e1dfc75e254f86ed"
+    },
+    {
+      "name": "fix/hepta-p0p7-distinct-heldout-groups-20261023",
+      "sha": "e497c66876ef008fa09b86049a971f399ff398c0"
+    },
+    {
+      "name": "fix/hepta-p1-source-groups-ruff-f841-20261014",
+      "sha": "4133d6ac5bd3f8d4200c56fffb09e6aba004a084"
+    },
+    {
+      "name": "fix/hepta-p5-cross-claim-receipts-20261022",
+      "sha": "6024f5b2f676cc89390a6bf6ca8590acb8214b20"
+    },
+    {
+      "name": "fix/hepta-p1761-exact-rustfmt-20261014",
+      "sha": "4e6d211b50b45d79c37a3039f71b8266c697a75a"
+    },
+    {
+      "name": "fix/hepta-plasticity-integration-ledger-20261029",
+      "sha": "ff12b31339ebd93706064e382b3b70151dac349d"
+    },
+    {
+      "name": "fix/hepta-pn-cell-closure-20261031",
+      "sha": "4c93a641945044f904a656cbf1d23e358a074d52"
+    },
+    {
+      "name": "fix/hepta-pn-closure-20261022",
+      "sha": "3e9efb15faa261a4dc3ffc3205cd259aaee41a3f"
+    },
+    {
+      "name": "fix/hepta-pon-bounded-exchange-observation-20261008",
+      "sha": "d888f77d8ec7b73a60f71e7c5f214b33668b5754"
+    },
+    {
+      "name": "fix/hepta-pon-effect-pq-20261105-2c2b",
+      "sha": "9e9eaad62463f78882f986c8e90981986b4cdb89"
+    },
+    {
+      "name": "fix/hepta-pon-five-axis-final-pair-20261011",
+      "sha": "7941d7050c3432214c7af996ede65b6ed027a3bf"
+    },
+    {
+      "name": "fix/hepta-pon-ordinary-upgrade-20261027",
+      "sha": "5b69804fc3f1507620214bdb41af4e2c0dfcea91"
+    },
+    {
+      "name": "fix/hepta-pon-upgrade-20261019",
+      "sha": "d4d89bae9a1759909fb441abe106e2a0ff0fa58b"
+    },
+    {
+      "name": "fix/hepta-pq-native-evidence-20261101",
+      "sha": "93aa8462479f685836ef11f41a282a90105de45e"
+    },
+    {
+      "name": "fix/hepta-pq-packet-v1-20261105-df8969",
+      "sha": "65d6ab4053e4140b57865fca0afe86820ed0a759"
+    },
+    {
+      "name": "fix/hepta-pq-policy-bound-renewal-20261101",
+      "sha": "cd3c1b860f2b0f05c24bfb8d4b5da6ba7f99704a"
+    },
+    {
+      "name": "fix/hepta-pq-prepared-owner-20261107-e0c10cd6",
+      "sha": "a0d080e863575f1c4b7b305c9b05dc9d7c740119"
+    },
+    {
+      "name": "fix/hepta-pq-verifier-reuse-20261106-a864cf",
+      "sha": "5cba396d3ff72357de6836c033dbdd597dc960da"
+    },
+    {
+      "name": "fix/hepta-prod-agentd-metrics-flush-ci-cleanup-20261014",
+      "sha": "64ab3382e334ba5e658deffca0cc46f22111cfb0"
+    },
+    {
+      "name": "fix/hepta-provider-context-host-20261112-df05",
+      "sha": "733e50684d2084a89cd33dd59112a4bf6893e524"
+    },
+    {
+      "name": "fix/hepta-provider-context-journal-20261112-df05",
+      "sha": "021848e76829d6e84c9d2e5d42156010e81b611d"
+    },
+    {
+      "name": "fix/hepta-provider-operation-binding-20261030",
+      "sha": "c809b4cec93bd7daa64c2bfe0a2d7af5c886f2b9"
+    },
+    {
+      "name": "fix/hepta-python-generator-security-20261022",
+      "sha": "56683288a5e494accd116ee731d874805b250d3b"
+    },
+    {
+      "name": "fix/hepta-readiness-root-discovery-20261113-c06d",
+      "sha": "a3382f5f8078346c2ab2e5753951771bbf07dd6d"
+    },
+    {
+      "name": "fix/hepta-real-ci-clippy-contracts-20261016",
+      "sha": "af4033c1337368e86bf19add482613155bb1cefd"
+    },
+    {
+      "name": "fix/hepta-router-microbatch-metrics-convergence-20261022",
+      "sha": "0c1887d422c511a31a420b39818295a88c630d82"
+    },
+    {
+      "name": "fix/hepta-runtime-receipt-admission-fence-20261022",
+      "sha": "3370a73ac574e6011a16e33df0caee8cf8868cc0"
+    },
+    {
+      "name": "fix/hepta-rustls-02346-security-20261016",
+      "sha": "e254830b01ec8a2c0a1765b0b35dcf148048c946"
+    },
+    {
+      "name": "fix/hepta-sandbox-host-python3123-metadata-20261028-80ce9e5",
+      "sha": "2e0999e42a549033df5d1b989f5c76ac0d0fadcc"
+    },
+    {
+      "name": "fix/hepta-scoped-ci-disk-20261013",
+      "sha": "43451efca47e65d4d2b0ffa85fd62f23378a0e71"
+    },
+    {
+      "name": "fix/hepta-scoped-disk-shards-20261013",
+      "sha": "74f75f87e3ba780e890d1007a212e980254ada36"
+    },
+    {
+      "name": "fix/hepta-scoped-native-disk-shards-20261015",
+      "sha": "b96a6981c6a472f123a08b697a3929c58d202eb3"
+    },
+    {
+      "name": "fix/hepta-scoped-runner-disk-20261013",
+      "sha": "f2102913cbbeebf234c67527a8c50b181edf30c0"
+    },
+    {
+      "name": "fix/hepta-seven-sealed-chain250-pair-20261008",
+      "sha": "c11bec4270476e2529a683c0e58c04548c5d1aab"
+    },
+    {
+      "name": "fix/hepta-shared-q24-rustfmt-20261017",
+      "sha": "38a252bde57090bcf7f4603d36878a83af6dbbb0"
+    },
+    {
+      "name": "fix/hepta-signed-worker-poison-preclaim-20261017",
+      "sha": "adf76931a82e82b0b06acb38bb83d71d553e4b30"
+    },
+    {
+      "name": "fix/hepta-silent-native-terminal-receipt-20261022",
+      "sha": "4335aa6ef3e1b927cfd30a40260a5446e215f3d5"
+    },
+    {
+      "name": "fix/hepta-smollm-pon-pair-20261027",
+      "sha": "bcb8f97164cefe494918fb0efe482029d7dfe6be"
+    },
+    {
+      "name": "fix/hepta-split-2050-ci-fmt-b4-reaper-20261015",
+      "sha": "cb4468162c1248681eaa48b9fe57ee4d2ee7877e"
+    },
+    {
+      "name": "fix/hepta-split-2056-exact-ci-rustfmt-20261015",
+      "sha": "0c240d984b050a5d15b22b2c113241b742b19cb5"
+    },
+    {
+      "name": "fix/hepta-split-2056-exact-fmt-20261015",
+      "sha": "9ebb554b6439972d074030baed244fc47045f38f"
+    },
+    {
+      "name": "fix/hepta-split-2066-original-control-negative-native-20261015",
+      "sha": "bbd4b494f8ffcfd4ecedb014780b0a30e7d04375"
+    },
+    {
+      "name": "fix/hepta-split-2070-runtime-rustfmt-20261015",
+      "sha": "e5527bff630177fe954157b72e03eec4272a197d"
+    },
+    {
+      "name": "fix/hepta-split-2079-evidence-ack-test-e0308-20261015",
+      "sha": "b8609ada0856c14eed82603e6778d4ed11932be7"
+    },
+    {
+      "name": "fix/hepta-split-2083-evidence-unused-import-20261015",
+      "sha": "ea54d396b8af1d4bd06004b4dea8af9bc6d51ade"
+    },
+    {
+      "name": "fix/hepta-split-ack-ledger-failclosed-admission-20261014",
+      "sha": "e6cfe06a98510cdc9a3a6d3c66ed02cdaeb8eaa3"
+    },
+    {
+      "name": "fix/hepta-split-durable-evidence-ack-20261014",
+      "sha": "c143d03b7a1beb83cae3fae91a06466c7e6c4cb0"
+    },
+    {
+      "name": "fix/hepta-split-hosted-native-rustfmt-private-frame-20261016",
+      "sha": "a768c7b67fd11d3188d01358d5fd5512273d831b"
+    },
+    {
+      "name": "fix/hepta-split-incomplete-original-prefix-20261016",
+      "sha": "44d71b487fc079f641e461b2a73c01544050c28f"
+    },
+    {
+      "name": "fix/hepta-split-live-completion-20261012",
+      "sha": "9bd315297a144a38bc7410cbd7dd52d5af6aff6c"
+    },
+    {
+      "name": "fix/hepta-split-matrix-source-env-fence-20261013",
+      "sha": "6492e99c832aa0ce3c73c63dda6612777d3e7d20"
+    },
+    {
+      "name": "fix/hepta-split-metrics-ledger-independent-join-20261014",
+      "sha": "3716cf40dabd79a22582832c5b3c60710526c260"
+    },
+    {
+      "name": "fix/hepta-split-negative-owner-cold-recovery-gates-20261016",
+      "sha": "191269931b326bd92c23c8caafec85c19a2351dc"
+    },
+    {
+      "name": "fix/hepta-split-no-public-admission-callback-20261014",
+      "sha": "c493f12bbb3905dd64d00c196ed647c06ff4a3cb"
+    },
+    {
+      "name": "fix/hepta-split-pending-observer-ambiguity-20261016",
+      "sha": "193a339c3478f0211f6782358b84c705b795aa22"
+    },
+    {
+      "name": "fix/hepta-split-posteffect-admission-20261013",
+      "sha": "730644db4f1b7cf4416efc9dcb95099c5646d03c"
+    },
+    {
+      "name": "fix/hepta-split-telemetry-late-withdrawal-20261014",
+      "sha": "b4940ed95c8009a4305f044914bb5e22c3372420"
+    },
+    {
+      "name": "fix/hepta-supervisor-monotonic-independent-custody-fixture-20261015",
+      "sha": "575c81832a489c154e2cf068f8784e36369c6312"
+    },
+    {
+      "name": "fix/hepta-supervisor-restart-exhaustion-20261022",
+      "sha": "aa3cd39da1e35d77e982a45994351917fc6e53bd"
+    },
+    {
+      "name": "fix/hepta-supervisor-rustfmt-a70a79d-20261018",
+      "sha": "a70a79dff8ef019834dd0bbaa46887638cb7f81b"
+    },
+    {
+      "name": "fix/hepta-tcl2-pair-qualification-20261023",
+      "sha": "3d64db0971d573f180e91f2b93e418f4f6617666"
+    },
+    {
+      "name": "fix/hepta-transitive-clippy-structural-20261017",
+      "sha": "0a30e1c850c743b0bbf9fb21b017724c6ec527ef"
+    },
+    {
+      "name": "fix/hepta-v4-ordinary-cli-20261031",
+      "sha": "3a81000aae08c658276958d678874aca4db5eedd"
+    },
+    {
+      "name": "fix/hepta-v8-current-pair-873-20261023",
+      "sha": "aced0f33c5b5ec4ba273bea6d2897bd6410306b1"
+    },
+    {
+      "name": "fix/hepta-windows-bazel-provider-policy-context-v1",
+      "sha": "98f2ae0a435519d5343c38fcf91378ccbb154e6a"
+    },
+    {
+      "name": "fix/hepta-windows-canonical-path-20261022",
+      "sha": "84c965b65e9350e44558a87b6b6c7e1d07d27c89"
+    },
+    {
+      "name": "fix/hepta-windows-core-provider-policy-v1",
+      "sha": "d9e722b187f4ffeb547b4f689895514c17b1898b"
+    },
+    {
+      "name": "fix/hepta-windows-native-repairs-20261024",
+      "sha": "291ae1b56e2a6dbfa92a42f7962fa5352da356df"
+    },
+    {
+      "name": "fix/hepta-windows-provider-response-context-20261012",
+      "sha": "7f0da38502c0d659d1e7df087de1f581f7999849"
+    },
+    {
+      "name": "fix/hepta-worker-caller-clock-regression-20261014",
+      "sha": "e1af14e1e7833096d7db121d72a58723da7b12fe"
+    },
+    {
+      "name": "fix/hepta-worker-commit-before-publish-20261014",
+      "sha": "2f78a6faf0a46ea2e17d7f61d20a406e5b3f9cd3"
+    },
+    {
+      "name": "fix/hepta-worker-evidence-flush-readiness-20261014",
+      "sha": "f7db6618b929a59a8e9de658564dd4944591cc38"
+    },
+    {
+      "name": "fix/hepta-worker-evidence-sink-identity-fence-20261014",
+      "sha": "e1f0578b995ac3b7367d7235f2e543965bd3b482"
+    },
+    {
+      "name": "fix/hepta-worker-independent-custody-fixture-20261015",
+      "sha": "a3a7a04e4754a3e416e87952bb3bf6cc3b23a7b4"
+    },
+    {
+      "name": "fix/hepta-worker-init-fence-and-metrics-history-20261014",
+      "sha": "bf6c6c5f8d6f519b29e79d9516d809996259b7ae"
+    },
+    {
+      "name": "fix/hepta-worker-metrics-before-final-use-20261014",
+      "sha": "b762830fde51b85fbd17bde0ec6a576c960c4629"
+    },
+    {
+      "name": "fix/hepta-worker-original-evidence-observed-admission-regression-20261014",
+      "sha": "398bfe5e24e1df2cfd4810133f8768ef4ef4e860"
+    },
+    {
+      "name": "fix/hepta-worker-owner-anchored-clock-20261014",
+      "sha": "71f244173cfcb86ed14668e415b647c7a0ea2b14"
+    },
+    {
+      "name": "fix/hepta-worker-per-intent-monotonic-deadline-20261014",
+      "sha": "5e1ee4de9af4ba37a99f73af22a0a21f526e3fae"
+    },
+    {
+      "name": "fix/hepta-worker-per-item-batch-metrics-20261014",
+      "sha": "a730700bf60a65ef7709a172b3cb80fd96d18f8b"
+    },
+    {
+      "name": "fix/hepta-worker-terminal-evidence-indeterminate-20261014",
+      "sha": "feb32d39ee69185aa5c3f0e8bc877e5a1aef4289"
+    },
+    {
+      "name": "fix/hepta-zip-mode-security-20261017",
+      "sha": "bd1faf69c2c901a2a7135274c1d76e795a9ee8b3"
+    },
+    {
+      "name": "fix/holdout-file-lock-lifecycle-20261106",
+      "sha": "4a1410f332e4a34564feafbc4dcb2e808c7f6c5f"
+    },
+    {
+      "name": "fix/hos2-retirement-live-revoke-rendezvous-20261021",
+      "sha": "4ff4ff080ef560ff79993a52fe9fe87d6583fe0d"
+    },
+    {
+      "name": "fix/hos2-three-ci-regressions-20261021",
+      "sha": "2daf9a55c089dbd0dce4b8a0607dd2d505dfcfc7"
+    },
+    {
+      "name": "fix/hos2-v2-migration-ledger-0016-20261021",
+      "sha": "1d590527724d71f336ef7fc5319d309861912e8c"
+    },
+    {
+      "name": "fix/hpca-chat-evidence-workflow-restore-20261112-c06d",
+      "sha": "c6b55b89f24b833c8b5d20a43fd3dae59b62803d"
+    },
+    {
+      "name": "fix/hpca-recorded-admission-original-restore-20261113-c06d",
+      "sha": "976962fb89c92f023918bc3e1e756d0b52f4c21d"
+    },
+    {
+      "name": "fix/human-text-cas-inventory-20261106-run8",
+      "sha": "2f31ca366464b42f60f611977b96e5db377cfb4b"
+    },
+    {
+      "name": "fix/i18n-config-bazel-target-alias-20261022-2138",
+      "sha": "14dba8f28a2a9465f41deb1862a9390488be33c3"
+    },
+    {
+      "name": "fix/inferworker-mac-socket-e516-20261104",
+      "sha": "54e811430324325cc72ce1efc932c81dc21bb192"
+    },
+    {
+      "name": "fix/intelligence-control-production-closure-20260926",
+      "sha": "130fe83156dc7c02a570fe824fd7f70f6b7330aa"
+    },
+    {
+      "name": "fix/joint-hepta-v3-prefix-cost-20261103",
+      "sha": "c6773fcc3fe0520f58e0d5234713d60ecf246f31"
+    },
+    {
+      "name": "fix/kernel-evidence-followup-20260928",
+      "sha": "a4b0d8f1b87390d79b363f3432bef16810884579"
+    },
+    {
+      "name": "fix/kernel-evidence-production-closure",
+      "sha": "e4d70ab148eee7d635acba394b1f5b3d2e8c2313"
+    },
+    {
+      "name": "fix/keyless-bazel-ci-policy-20261005",
+      "sha": "2fb11b3e18034266008aa24c7471f482ecd85742"
+    },
+    {
+      "name": "fix/keyring-sync-exact-cargo-lock-39112769610-20261018",
+      "sha": "9253edc42e03578fcbf3d12f4e9379ef6587c2ad"
+    },
+    {
+      "name": "fix/lane-a-kernel-operations-gate-truth-20261106-gpt6",
+      "sha": "f120e75efa158ec49ced749d6fdaceabab700baf"
+    },
+    {
+      "name": "fix/lane-a-kernel-operations-gate-truth-20261106",
+      "sha": "6fc6da8b86a3c20ae7b1ddb51c54572308b76c36"
+    },
+    {
+      "name": "fix/lane-e-legacy-writer-cleanup-20261020-ci",
+      "sha": "3cb0f287ef899c64a5a175a89ac7e781591d2d84"
+    },
+    {
+      "name": "fix/lane-e-legacy-writer-cleanup-20261020",
+      "sha": "3cb0f287ef899c64a5a175a89ac7e781591d2d84"
+    },
+    {
+      "name": "fix/learn-mac-temp-rustfmt-20261112-gpt6",
+      "sha": "a4f0ed76a37dc4ee0307ecc99bc12b93719e40b1"
+    },
+    {
+      "name": "fix/learning-artifacts-owner-qualification-20260927",
+      "sha": "2dc4356335161744e0ba7feffe77118dc73db3b1"
+    },
+    {
+      "name": "fix/learning-artifacts-production-closure-20260927",
+      "sha": "893961386eb8e253b210ec3798e18a194377b37b"
+    },
+    {
+      "name": "fix/learning-artifacts-qualification-20260927",
+      "sha": "65a20388338824962fdd3ee0d89b9277938243e0"
+    },
+    {
+      "name": "fix/learning-artifacts-qualified-owner-20260927",
+      "sha": "c032a25d7454dc5b8c2890ef87c9b50da4b28d96"
+    },
+    {
+      "name": "fix/learning-eval-full-convergence-20260926",
+      "sha": "db5e9da4d4c7340eb6370964a68a76a35226a610"
+    },
+    {
+      "name": "fix/learning-eval-production-closure-2026-09-27",
+      "sha": "9d291c7fce494cb41645f14b664fd46ab585d2ec"
+    },
+    {
+      "name": "fix/learning-eval-production-closure-20260927",
+      "sha": "7d655831c6c218d80db8e3325a73a0ef06108558"
+    },
+    {
+      "name": "fix/learning-local-choice-windows-rustfmt-20261111",
+      "sha": "7c9dc97b3756b4190f272348a20377cc37a5b6cb"
+    },
+    {
+      "name": "fix/learning-native-maintenance-postimages-20261111-7c9dc97",
+      "sha": "afd2c91b3b9ef75ab9a174e3af772ad322118f7a"
+    },
+    {
+      "name": "fix/learning-plasticity-single-candidate-closure-20260930",
+      "sha": "ecb300639457ea51c0b6820d858a5cc527dedf68"
+    },
+    {
+      "name": "fix/lifecycle-peer-identity-20261005",
+      "sha": "4ba01f4e573a332d13c1510cb906cb11965c24a3"
+    },
+    {
+      "name": "fix/linux-landlock-nnp-api-union-20261104-gpt6",
+      "sha": "b915772e36dccb9645f3b533940ba3075c68fa3a"
+    },
+    {
+      "name": "fix/main-product-blockers-20261005",
+      "sha": "f349a05435c4b442c1799d854aafdee84c286337"
+    },
+    {
+      "name": "fix/mem1-cost-recovery-evidence-20261108-c2de",
+      "sha": "afa0638cc26792772830f1f9ec87bc154a20a430"
+    },
+    {
+      "name": "fix/mem6-source-allowlist-dependency-closure-20261110",
+      "sha": "7f3024890b0656fd27d9245f8d3c24c9923b170e"
+    },
+    {
+      "name": "fix/mem8-integrated-semaphore-and-caller-20261111-2ae",
+      "sha": "b5dc55965420c4915f3f0c735775af002d8483df"
+    },
+    {
+      "name": "fix/memory2688-macos-canonical-fleet-fixture-20261021-0931",
+      "sha": "55088dd78b4950407f77a43f054efed0816409cb"
+    },
+    {
+      "name": "fix/memory2688-macos-canonical-test-fleet-20261021",
+      "sha": "55088dd78b4950407f77a43f054efed0816409cb"
+    },
+    {
+      "name": "fix/memory2688-sqlite-fixture-rustfmt-20261020",
+      "sha": "55088dd78b4950407f77a43f054efed0816409cb"
+    },
+    {
+      "name": "fix/memory2688-v2-migration-ledger-v15-20261020",
+      "sha": "55088dd78b4950407f77a43f054efed0816409cb"
+    },
+    {
+      "name": "fix/memory3125-toml-lock-exact-20261022",
+      "sha": "20d39c8c68ca1c415029be71ec14da6e80e92434"
+    },
+    {
+      "name": "fix/memory-2688-exact-rustfmt-39144828284",
+      "sha": "c1f8c7d4088e983c251baac52dfc6d1fcc1d0db9"
+    },
+    {
+      "name": "fix/memory-2988-ledger-preflight-20261022-0144",
+      "sha": "36af7815f33845f01aa3c3884591ab40725c3ffb"
+    },
+    {
+      "name": "fix/memory-canonical-fixtures-e516-20261104",
+      "sha": "875a511b25915b3e4e81c31a98cbbd22c5287150"
+    },
+    {
+      "name": "fix/memory-cell-2688-fmt-clippy-20261018",
+      "sha": "49fd9331cf019df9663bb7ba4766e5ec33b3bb7f"
+    },
+    {
+      "name": "fix/memory-cell-fixtures-current-head-20261018",
+      "sha": "3a0a5f97cc1b126c4eb88fc8cede39818e6f97ae"
+    },
+    {
+      "name": "fix/memory-cell-migration-rustfmt-20261020",
+      "sha": "5a29c427cf263473541d18d00ef2cae268b1b95b"
+    },
+    {
+      "name": "fix/memory-cell-windows-agentd-rustfmt-20261022",
+      "sha": "15a3464abccff39016feb581fe30e8cb76dea2fc"
+    },
+    {
+      "name": "fix/memory-extension-canonical-e516-20261104",
+      "sha": "3175caf0006df25ee5a7ab4e88130fdea47c6f5a"
+    },
+    {
+      "name": "fix/memory-federation-full-closure-20260927",
+      "sha": "50d1c4cb36e86a39bc1dd9e956cf5eff66b45911"
+    },
+    {
+      "name": "fix/memory-federation-host-semantics-20260930-r1",
+      "sha": "ef5ef0ec2a857b7e1ba052521b65666e2c8d4876"
+    },
+    {
+      "name": "fix/memory-federation-product-qualification-20260930",
+      "sha": "b6f5cb8d3c8e4d3fad56e33ae5e3329ce73afc52"
+    },
+    {
+      "name": "fix/memory-federation-product-semantics-20260930",
+      "sha": "ecb502a7a1435d84441a74cb8c3159e76f9b8a69"
+    },
+    {
+      "name": "fix/memory-federation-stop-fence-20261001",
+      "sha": "5aaf222accfbcbdbe7dd714e2e32f4020aa42dfd"
+    },
+    {
+      "name": "fix/memory-federation-v3-production-closure-20260927",
+      "sha": "61520fbfd2246dcf07d5d60ebef721ca41f05129"
+    },
+    {
+      "name": "fix/memory-initial-wal-private-mode-20261025",
+      "sha": "7aed25e6aa2dbe9d8501bc7eb2799d93b10ffe73"
+    },
+    {
+      "name": "fix/memory-meta-2988-core-cli-runfile-20261022-0625",
+      "sha": "935aaaffb445a2c2db865713a599ed3d50cf3fc9"
+    },
+    {
+      "name": "fix/memory-meta-2988-ledger-denial-preflight-20261022",
+      "sha": "36af7815f33845f01aa3c3884591ab40725c3ffb"
+    },
+    {
+      "name": "fix/memory-meta-2988-ledger-preflight-20261022-0220",
+      "sha": "36af7815f33845f01aa3c3884591ab40725c3ffb"
+    },
+    {
+      "name": "fix/memory-meta-2988-rustfmt-ci-20261021-1816",
+      "sha": "14fd11104efe6e1de5256203f6bda22fd5a93ea1"
+    },
+    {
+      "name": "fix/memory-meta-2988-rustfmt-exact-20261021-1324",
+      "sha": "14fd11104efe6e1de5256203f6bda22fd5a93ea1"
+    },
+    {
+      "name": "fix/memory-meta-2988-rustfmt-exact-20261021-2052",
+      "sha": "14fd11104efe6e1de5256203f6bda22fd5a93ea1"
+    },
+    {
+      "name": "fix/memory-meta-2988-windows-cli-runfile-20261022",
+      "sha": "935aaaffb445a2c2db865713a599ed3d50cf3fc9"
+    },
+    {
+      "name": "fix/memory-supervisor-restart-evidence-20261023-0233",
+      "sha": "20d39c8c68ca1c415029be71ec14da6e80e92434"
+    },
+    {
+      "name": "fix/memory-v14-query-local-fence-20261103",
+      "sha": "6d2551388ed42355f02afbf528472ee2b4d8488b"
+    },
+    {
+      "name": "fix/memory-v15-admission-identity-20261105-b5d58",
+      "sha": "f88b826d3c22b5f89fd350dab4813be2855a2f93"
+    },
+    {
+      "name": "fix/memory-v15-identifiers-20261105-659d",
+      "sha": "31880a58db10fbaed9a9e4077c1f81640fe02c97"
+    },
+    {
+      "name": "fix/memorycell-2688-ledger-v15-exact-20261019",
+      "sha": "d53530e463b360c21349d70c022250195fb1860d"
+    },
+    {
+      "name": "fix/memorycell-2688-restart-budget-fault-20261019",
+      "sha": "bddca69f03c9dfd1e42cc9d90614256079dbf729"
+    },
+    {
+      "name": "fix/memorycell-3046-scoped-native-disk-20261021-1521",
+      "sha": "8df40a53d713e36ebf0ceb1d95e00849f6335e39"
+    },
+    {
+      "name": "fix/memorycell-fleet-authority-clippy-20261018",
+      "sha": "65380f6f8b7901357aa901eb3b78a6e9ab2612fe"
+    },
+    {
+      "name": "fix/memorycell-host-admission-clippy-20261018-0912",
+      "sha": "0adc8b1c2d9b3a3d907fbdb019b7167d9fca27de"
+    },
+    {
+      "name": "fix/memorycell-macos-canonical-fixture-20261021-1144",
+      "sha": "8df40a53d713e36ebf0ceb1d95e00849f6335e39"
+    },
+    {
+      "name": "fix/memorycell-macos-fixture-on-convergence-20261021-1650",
+      "sha": "d50f043a5017ff1315e8d40669c535fe89eb65bd"
+    },
+    {
+      "name": "fix/meta-granite-offline-pycompile-continuation-20261015",
+      "sha": "9aef5fb80091ba7d1c11a905db5773a8c9e3b473"
+    },
+    {
+      "name": "fix/meta-granite-public-metrics-source-replay-20261015",
+      "sha": "f019280f1c1fe77b13b847901ad69098b1e1a2ba"
+    },
+    {
+      "name": "fix/meta-granite-redacted-evidence-artifacts-20261015",
+      "sha": "d46b8ba39fed16a6715f12e0bb602aba1fb31cf5"
+    },
+    {
+      "name": "fix/meta-os-shard-architecture-parity-20261015",
+      "sha": "49c44c87eca291caa93bd16398d8db12b56dbae2"
+    },
+    {
+      "name": "fix/meta-redacted-artifact-source-rehash-20261015",
+      "sha": "a14141be69c60cb5af36dd5fc706960b3f2bfcf9"
+    },
+    {
+      "name": "fix/model-worker-rejected-load-cleanup-fence-20261022",
+      "sha": "9f1162d946ebd1c25889da161cfe25858ba19c4a"
+    },
+    {
+      "name": "fix/msvc-host-platform-triple-20261107-gpt6",
+      "sha": "6dbf0b07f0d7beccc33ad1f1bfae2c22e8680620"
+    },
+    {
+      "name": "fix/native3241-restart-v15-20261022-2230",
+      "sha": "36a9ab88151b4c959b136c1864b08be08b66277a"
+    },
+    {
+      "name": "fix/native3241-supervisor-memory-ledger-20261022-2140",
+      "sha": "36a9ab88151b4c959b136c1864b08be08b66277a"
+    },
+    {
+      "name": "fix/native-abc-reject-success-tool-conflict-20261023",
+      "sha": "7fbd183621f2eafa2e3f252550ed79d8a646d7a1"
+    },
+    {
+      "name": "fix/native-agent-cost-evidence-converged-20261023",
+      "sha": "6a46fba297abf1b641a8637e007595dfd2ad03c8"
+    },
+    {
+      "name": "fix/native-agent-evidence-cost-provenance-20261023",
+      "sha": "57ed39a50207fd137714a9fbd135a25160d60ae5"
+    },
+    {
+      "name": "fix/native-agent-robrix-runfiles-on-4234-20261029",
+      "sha": "9cedf314276d2a7c4536b47e5a1cf3a1a6d2413e"
+    },
+    {
+      "name": "fix/native-cell-outbox-lease-deadline-20261022",
+      "sha": "36a9ab88151b4c959b136c1864b08be08b66277a"
+    },
+    {
+      "name": "fix/native-gate-execution-20261104",
+      "sha": "ddd71584533d4fb318aea1c2a6fe74038a60eb7c"
+    },
+    {
+      "name": "fix/native-loop-expiry-20261023-gpt6",
+      "sha": "dc1e17ca4c19b510e82bc5dfb3771367bec5fdeb"
+    },
+    {
+      "name": "fix/native-model-finaluse-port-20261023-gpt6",
+      "sha": "0f76052ab8d1db6c206421598f57eb529c5e662b"
+    },
+    {
+      "name": "fix/native-msvc-clippy-on-cli-union-20261103-gpt6-auto11",
+      "sha": "3cc71d6ec7e5e084dcecceb2757bc940459f0ada"
+    },
+    {
+      "name": "fix/native-presentation-pulse-dependency-20261104",
+      "sha": "ec5a615dbc35b14fb3426d08d7d11469fc1a2ef5"
+    },
+    {
+      "name": "fix/native-source-guard-paired-dot-20261023",
+      "sha": "46dc890e40cf5bb7057012e4de756eab73c21351"
+    },
+    {
+      "name": "fix/native-sshsig-20261005",
+      "sha": "3589a2964d1aa5fd6119e2dd9a363ab4579a981b"
+    },
+    {
+      "name": "fix/native-windows-clippy-targets-20261103",
+      "sha": "9b20aa5a6b4f3559411b286b157cec8cf1771c4a"
+    },
+    {
+      "name": "fix/native-windows-rama030-20261026",
+      "sha": "788fd6d2c6a9722fe541038a64445e248998a509"
+    },
+    {
+      "name": "fix/navigation-prose-ci-scope-20261005",
+      "sha": "42dce5d650b5eb09f552397e74ef22a7b8374008"
+    },
+    {
+      "name": "fix/ndu2959-signed-intent-abort-recovery-20261020-2216",
+      "sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f"
+    },
+    {
+      "name": "fix/ndu2959-supervisor-rustfmt-20261020-2123",
+      "sha": "8aa52b4a1d6dd004400500191d70b7b573b5a23f"
+    },
+    {
+      "name": "fix/ndu-3202-native-rustfmt-20261022-1233",
+      "sha": "a623469bce20e9ecfc4b6bcd3c674d5f9c9d689c"
+    },
+    {
+      "name": "fix/ndu-4070-cp437-prefix-codespell-20261027",
+      "sha": "88bcc7f92b9a52bf77e0095614fd496288b6ca86"
+    },
+    {
+      "name": "fix/ndu-4070-fleet-clippy-compose-20261027-a820",
+      "sha": "a8734c50cb545c4d0a831fb699e1e0c10fa8d937"
+    },
+    {
+      "name": "fix/ndu-4070-fleet-clippy-compose-20261027",
+      "sha": "99560c199d79209d3b2199c67f5a028b63a842bc"
+    },
+    {
+      "name": "fix/ndu-4070-frozen-evidence-codespell-20261027-d3c2",
+      "sha": "12e2249e5f28a3ca7edbb36d6799fc4e400b13a1"
+    },
+    {
+      "name": "fix/ndu-4070-statics-filename-codespell-20261027-3a779a6",
+      "sha": "e330119066402339118aad99017e12d2680fe871"
+    },
+    {
+      "name": "fix/ndu-4094-fleet-clippy-compose-20261027-e330",
+      "sha": "807398b096dad4f1ecc9459a3f54c69c28963636"
+    },
+    {
+      "name": "fix/ndu-4117-keyring-clippy-compose-20261027-12e2249",
+      "sha": "bb77f8b04b47f2473da5e2da825546b49b8ddea9"
+    },
+    {
+      "name": "fix/ndu-4122-synapse-oci-gitsha1-20261027-bb77f8b",
+      "sha": "1989a5cfd6bb020ca3c024a90b593e4996767341"
+    },
+    {
+      "name": "fix/ndu-4133-fleet-rustfmt-20261027-dc20fd8",
+      "sha": "a23feca731aeb7a7a8c82d12297f2e7d10e07fc3"
+    },
+    {
+      "name": "fix/ndu-4134-recovery-retired-approval-fixture-20261027-a23fec",
+      "sha": "9bc872670fa5614d5ca8fec71053de14bd862987"
+    },
+    {
+      "name": "fix/ndu-4138-windows-paired-owner-backup-20261027-9bc8726",
+      "sha": "e4921496751658c15074e0e5cc66edf04368dea2"
+    },
+    {
+      "name": "fix/ndu-4141-automation-windows-owner-root-20261027-79fddb3",
+      "sha": "1e6c2baca6c895984b89a99b1a83d9549f9c13ad"
+    },
+    {
+      "name": "fix/ndu-4142-paired-owner-rustfmt-20261027-1e6c2ba",
+      "sha": "eb0831a4accd4f578625d37f8872ee48cf8cb084"
+    },
+    {
+      "name": "fix/ndu-4227-zip-assert-ambiguity-20261030",
+      "sha": "c47f9952c4b018cb511c705700e82cc631cf26ff"
+    },
+    {
+      "name": "fix/ndu-candidate-snapshot-digest-current-spine-20261022",
+      "sha": "a3364935778fe7330dcf2d59af694b54add79b92"
+    },
+    {
+      "name": "fix/ndu-cargo-lock-security-refresh-20261107-gpt6",
+      "sha": "eb6aebab12ed687366bd5bbc19da1294dbac9902"
+    },
+    {
+      "name": "fix/ndu-ci-scope-shallow-20261108-8ef7",
+      "sha": "bf7a9eb8cef4d2d148ff31c15247e1542b72390a"
+    },
+    {
+      "name": "fix/ndu-complete-receipt-digest-20261022",
+      "sha": "2bbcf47c4d224e43b6cb26441e75259255f3a59b"
+    },
+    {
+      "name": "fix/ndu-current-artifact-provenance-20261004",
+      "sha": "4336031c0e9a2f91072a76dd3195aa7c12ea924b"
+    },
+    {
+      "name": "fix/ndu-dmgp-media-format-admission-20261023",
+      "sha": "a88f2832f2a1a4d3734c1c88f76977dcc9b98ff1"
+    },
+    {
+      "name": "fix/ndu-docs-upstream-workflow-fixture-format-20261107-gpt6",
+      "sha": "ffa31d9c31ae79d726b17b23725e50d927c121ff"
+    },
+    {
+      "name": "fix/ndu-docs-upstream-workflow-reference-boundary-20261107-gpt6",
+      "sha": "fce80ac284e928670772943e4ca5946bb06cdf04"
+    },
+    {
+      "name": "fix/ndu-fast-feedback-discovery-import-20261107-gpt6",
+      "sha": "13ef3b07a48526fad6b87860e78de33f4804378b"
+    },
+    {
+      "name": "fix/ndu-group-abstain-net-baseline-20261023-gpt6",
+      "sha": "22f61f86246a2c2b210bb25d35f565755b2127ba"
+    },
+    {
+      "name": "fix/ndu-hosted-rustfmt-exact-20261022",
+      "sha": "3277300d6cf76a680514e4673ff590d83bc54d45"
+    },
+    {
+      "name": "fix/ndu-image-fingerprint-20261107-8ef7",
+      "sha": "9ee30c9eb8f2f10725cd13e134a4b07ad04c3ca2"
+    },
+    {
+      "name": "fix/ndu-json-transport-exact-head-checkout-20261106-gpt6",
+      "sha": "482d12b20ff5639dd432ec6322e67e6e3c59af81"
+    },
+    {
+      "name": "fix/ndu-json-transport-output-cap-20261106-gpt6-run10",
+      "sha": "5e6610d525d64f0f24c0d5ba79fca5d9c0b02b17"
+    },
+    {
+      "name": "fix/ndu-json-transport-reject-partial-stdin-20261106-gpt6",
+      "sha": "0285aca2ee3dc2c5183ef005c1932c044d46e541"
+    },
+    {
+      "name": "fix/ndu-material-ledger-chain-20261108",
+      "sha": "14693540fd7717c405c68f3a11867ba5afba0756"
+    },
+    {
+      "name": "fix/ndu-mgp-cvar90-fractional-tail-20261022",
+      "sha": "8a1833926868e3364b6194a979caf52d000fbb6f"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-absolute-world-budget-20261022",
+      "sha": "71f514220cd19a229a01d2fc593106287623c299"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-budget-protected-coverage-20261023",
+      "sha": "13ad5519fbd8cda04b7fe6a36371eb750a60a9b9"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-common-randomness-20261023",
+      "sha": "f10d0e89669c24f06ffa1e71605baa80472e772b"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-cost-confidence-20261022",
+      "sha": "f5bc6fbe9cc62f13322ab05be85bb9cb479c29d2"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-evidence-admission-20261022",
+      "sha": "91fdb5b8999e3b7a2a1ec1ee7c545e87ce4cb404"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-exact-source-receipt-20261022",
+      "sha": "b35518642af4c77833e4b00753827f893725d0d5"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-four-split-source-integrity-20261022",
+      "sha": "8be90a24012f3815104d05c624e41f2d85f88f02"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-frozen-protected-cohort-gpt6-20261023",
+      "sha": "96f3cf01340f519da3ccb60187313ed815c8472a"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-frozen-protected-labels-20261022",
+      "sha": "d9f723011e3fce640d5372827dfa71d0c28b5050"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-heldout-cohort-budget-20261023",
+      "sha": "227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-integrated-admission-cost-20261022",
+      "sha": "5519823b20e0835e06f0d891c3e650b06e291d4c"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-integrated-paired-exact-sha-20261023",
+      "sha": "5519823b20e0835e06f0d891c3e650b06e291d4c"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-measured-cost-units-20261023",
+      "sha": "26ead9ac950166dca2c30b85a5674424ae409b84"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-paired-true-head-20261022",
+      "sha": "71f514220cd19a229a01d2fc593106287623c299"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-physical-tail-cvar-20261023",
+      "sha": "85da8cc2195511a5d5368f40fa9df3351a2ef5be"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-prettier-20261023",
+      "sha": "b64a150251d2545752cea2387a99c9190e5ad545"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-protected-absolute-service-20261022",
+      "sha": "00c60b4a9f83c7886849d6571a99ee48bd1e7d92"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-protected-cost-attestation-20261023",
+      "sha": "da1edb7f1fb5e64a6bce6509979b85aa605edaca"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-protected-loss-cvar-modality-20261022",
+      "sha": "ee73276a2162508c85bc49dc73b4a28a16113892"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-protected-source-coverage-20261022",
+      "sha": "f77efdb380c0586107942c694510a0b76a6e5603"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-score-and-ledger-ceilings-20261022",
+      "sha": "0f11076690f7eacb123f9d9573518bfe04aead61"
+    },
+    {
+      "name": "fix/ndu-mgp-p1-source-cluster-bootstrap-20261022",
+      "sha": "b35518642af4c77833e4b00753827f893725d0d5"
+    },
+    {
+      "name": "fix/ndu-mgp-paired-source-head-guard-20261022",
+      "sha": "d9f723011e3fce640d5372827dfa71d0c28b5050"
+    },
+    {
+      "name": "fix/ndu-mgp-shadow-prettier-20261022",
+      "sha": "fbd5d9c021150128dbcb6f1275575cad4bade316"
+    },
+    {
+      "name": "fix/ndu-mgp-shadow-source-sha-guard-20261022",
+      "sha": "fbd5d9c021150128dbcb6f1275575cad4bade316"
+    },
+    {
+      "name": "fix/ndu-native-msvc-exec-platform-20261107-gpt6",
+      "sha": "3ae9d2d48c11a2cd3954240e7cfb3aa4d9ddb3e8"
+    },
+    {
+      "name": "fix/ndu-native-msvc-executable-mode-20261107-gpt6",
+      "sha": "5827024ee6d0bf175c0f34cfe7e31ad2c43bd20a"
+    },
+    {
+      "name": "fix/ndu-native-msvc-host-platform-20261107-gpt6",
+      "sha": "227bd2c796b88f5102ca0063f2b9bb2615cb17cc"
+    },
+    {
+      "name": "fix/ndu-p0p5-hosted-fmt-gpt6-20261022",
+      "sha": "0ba531c4b41d3833a75a9301fa7f2a4d0572a810"
+    },
+    {
+      "name": "fix/ndu-p0p5-lock-graph-after-rustfmt-20261022",
+      "sha": "5a98a4bb207b16a09b316088298b176779165291"
+    },
+    {
+      "name": "fix/ndu-p3-source-seed-custody-20261022",
+      "sha": "233e06f6d90d3aac2b0034172bc12744ad734535"
+    },
+    {
+      "name": "fix/ndu-python-format-20261107-gpt6",
+      "sha": "ab7f4d7fa3e5a7379183960cafc9e4c2c3a9a8a7"
+    },
+    {
+      "name": "fix/ndu-rustsec-tls-lockfile-20261023",
+      "sha": "ae8d1db1745112552b560ddabe75547b4553903e"
+    },
+    {
+      "name": "fix/ndu-semantic-state-ci-deps-20261107-gpt6",
+      "sha": "d7a0edcfc92e97d81a1fe7e333e2047a362e2597"
+    },
+    {
+      "name": "fix/ndu-shadow-stable-id-boundary-20261023",
+      "sha": "aa24fc41a615115c30ff15cbb1132005b2c39d3e"
+    },
+    {
+      "name": "fix/ndu-tree-typed-prompt-boundary-20261017",
+      "sha": "529e4e9a8ea37b6d2b5f4eddebb54cfc5d88b9ff"
+    },
+    {
+      "name": "fix/ndu-unique-candidate-identity-current-spine-20261022",
+      "sha": "38549138cc0f62af17aa2b6868715907fa257a76"
+    },
+    {
+      "name": "fix/ndu-v2-bounded-duplicate-key-denial-20261023",
+      "sha": "686f8aa484a07073f921ddd30215d2525ae5e0bd"
+    },
+    {
+      "name": "fix/ndu-v2-candidate-jpeg-fd-custody-20261023",
+      "sha": "700979ea8411a4cbe67cb7d999e412ff5365bc74"
+    },
+    {
+      "name": "fix/ndu-v2-complete-history-bounds-20261022",
+      "sha": "fa1c76f442c039153a0995e301b5d3c529c9c7ee"
+    },
+    {
+      "name": "fix/ndu-v2-cross-history-task-custody-20261022",
+      "sha": "ce8288f9fff8dc4b0c1448f50ba889dfe2e53f3e"
+    },
+    {
+      "name": "fix/ndu-v2-cross-history-task-id-gpt6-20261023",
+      "sha": "eab57791b2ae446baced3bd00d6695387e437bec"
+    },
+    {
+      "name": "fix/ndu-v2-descriptor-pinned-image-ancestors-20261023",
+      "sha": "6a828fb65514f73b166be0807dae1fbf72b655e8"
+    },
+    {
+      "name": "fix/ndu-v2-frozen-history-pins-20261023",
+      "sha": "64731a3c5ac78104c7a806113dec162029922c32"
+    },
+    {
+      "name": "fix/ndu-v2-frozen-receipt-preflight-20261023",
+      "sha": "37e57daed6922d164df952a1ffd4e63d75bcae75"
+    },
+    {
+      "name": "fix/ndu-v2-global-task-identity-20261023",
+      "sha": "6dd0621bb0f8d9c29b71fdc1da77c9b818195347"
+    },
+    {
+      "name": "fix/ndu-v2-original-history-pins-20261023",
+      "sha": "f2b9f31f5a2b07ac04817821ed19debe85d873b8"
+    },
+    {
+      "name": "fix/ndu-v2-source-id-image-id-binding-20261022",
+      "sha": "a71e80654810b4cd8c0509c338561dc9121f69fb"
+    },
+    {
+      "name": "fix/ndu-v2-strict-json-evidence-20261022",
+      "sha": "e6cf3bad1ebc4553a9d7ebf61e0deaacb2e51756"
+    },
+    {
+      "name": "fix/ndu-v4-bounded-solver-cache-20261023",
+      "sha": "daa5040f4bb37893123c9639238d8ff81ce2d786"
+    },
+    {
+      "name": "fix/ndu-v4-counterfactual-public-state-replay-20261024",
+      "sha": "7f1ab4710c9cc8e5ecf93bb16e45c1a07ece4f5e"
+    },
+    {
+      "name": "fix/ndu-v4-cross-seed-source-reuse-20261023",
+      "sha": "0d52239a4bf4a9dadf5461f02936399a69836928"
+    },
+    {
+      "name": "fix/ndu-v4-fractional-outcome-mass-20261024",
+      "sha": "480e83532df57ec691ce70ff7ecb572717887a7e"
+    },
+    {
+      "name": "fix/ndu-v4-fresh-root-custody-20261023",
+      "sha": "cb97779e6f4ff361b5c1988523cb4dea87974ad4"
+    },
+    {
+      "name": "fix/ndu-v4-hosted-binary-codespell-admission-20261023",
+      "sha": "632a2f5f1754bba398530430c9b2462096443b89"
+    },
+    {
+      "name": "fix/ndu-v4-immutable-sequence-admission-20261024",
+      "sha": "85f67ac9948e96d53bc31657b604529c023a128e"
+    },
+    {
+      "name": "fix/ndu-v4-near-neutral-entropic-continuity-20261023",
+      "sha": "3497976815963832755934da3c889583c46f07dc"
+    },
+    {
+      "name": "fix/ndu-v4-public-policy-replay-20261023",
+      "sha": "2b90d3835059ef8523ff9839110ee7a0dd59b00d"
+    },
+    {
+      "name": "fix/ndu-v4-risk-support-and-profile-admission-20261023",
+      "sha": "4940122fc0cd30917f85db66b0069d097999bb6a"
+    },
+    {
+      "name": "fix/ndu-v4-risk-weighted-span-20261023",
+      "sha": "4e49a5aa5025807d289b8219d049125327d3fbdd"
+    },
+    {
+      "name": "fix/ndu-v5-bellman-cache-lifecycle-20261023",
+      "sha": "bc8ba2a30cf252ef9f6a7ddbe9a3f0836fc60513"
+    },
+    {
+      "name": "fix/ndu-v5-fresh-root-budget-custody-20261023",
+      "sha": "df2b8165dd7e7ac8488d1eec73ecaede148dae20"
+    },
+    {
+      "name": "fix/ndu-v5-near-neutral-entropic-stability-20261023",
+      "sha": "f7e6ac8d4aa5b6a57fe9167c9f98c2ee19996bf8"
+    },
+    {
+      "name": "fix/ndu-v5-zero-mass-policy-custody-20261023",
+      "sha": "4a73ffb59a5d21d64e7239fb611c26f0a579c30d"
+    },
+    {
+      "name": "fix/ndu-zip-archive-permission-policy-20261023",
+      "sha": "327fc9b1dcc3d21e5128cb8b45d1ab39a84dde64"
+    },
+    {
+      "name": "fix/neuro4-native-collection-split-guard-20261112-t9",
+      "sha": "88a7ba3dd6125f1e17f4e596f64ec1a9d9887ba0"
+    },
+    {
+      "name": "fix/neuron-b4-authorized-caller-inventory-20261018",
+      "sha": "811bdef32100cec083f846450da1669c2682c315"
+    },
+    {
+      "name": "fix/neuron-b4-both-inventories-current-head-20261019",
+      "sha": "22293e588c95f4fcb5b45907eb4fed3b73fdb755"
+    },
+    {
+      "name": "fix/neuron-b4-closed-world-f9591bc-20261018",
+      "sha": "f9591bc62e4ce3ebafe7ceff970d4871bb157618"
+    },
+    {
+      "name": "fix/neuron-batch-cohort-memory-fence-20261017",
+      "sha": "6827d3f976110a58eb783176f323bb1ec5dab163"
+    },
+    {
+      "name": "fix/neuron-ci-global-windows-provider-policy-v1",
+      "sha": "a37b6b5308c1d6e50e24274d46f251c48f13fb1b"
+    },
+    {
+      "name": "fix/neuron-current-b4-closed-world-20261022",
+      "sha": "f0778f973157db6b91e3eee597262f5f5fefe522"
+    },
+    {
+      "name": "fix/neuron-dual-b4-head-20261019",
+      "sha": "20bf22ba773148a28a1e6b0d16b8401b731d37db"
+    },
+    {
+      "name": "fix/neuron-durable-pre-dispatch-intent-20261018",
+      "sha": "6ed33f2add916059f8bbdf4f6ab76a1b7aa99429"
+    },
+    {
+      "name": "fix/neuron-e1e5-codespell-20261015",
+      "sha": "d76dee287d39b56819337da6e6145e69e65c011e"
+    },
+    {
+      "name": "fix/neuron-exact-b4-parity-current-owner-20261019",
+      "sha": "26105daf252e2d6aa416b881c650d6db2c8a9e81"
+    },
+    {
+      "name": "fix/neuron-final-use-closed-caller-inventory-20261018",
+      "sha": "d6cc2f6412cb4cf745e1840ec68a99ce32f9ebdf"
+    },
+    {
+      "name": "fix/neuron-final-use-effect-inventory-20261018",
+      "sha": "a2c92aba6d9f046ca703e4bf0609dd9bf6e251b0"
+    },
+    {
+      "name": "fix/neuron-final-use-rustfmt-gate-20261018",
+      "sha": "3986ce2862663fad4d2589a899e1dbb9121e7ad3"
+    },
+    {
+      "name": "fix/neuron-finaluse-callers-inventory-20261018-0754",
+      "sha": "21fa9596d4bfe11e4b6eb3d4e0fb4d15fecfac9e"
+    },
+    {
+      "name": "fix/neuron-independent-b4-caller-allowlist-20261018",
+      "sha": "6b8022f7dbb46b58fba9bea1fc9d81cce29f3de1"
+    },
+    {
+      "name": "fix/neuron-intent-caller-proof-20261018",
+      "sha": "6b36545af86e8c9f2cfa0d29f81c67e84f1e9f09"
+    },
+    {
+      "name": "fix/neuron-matrix-p0-rust-native-repair-20261017",
+      "sha": "42d220fe118f1c9b2408ef65cb18884f3703b2ca"
+    },
+    {
+      "name": "fix/neuron-metrics-alias-ci-source-identity-20261020-1514",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c"
+    },
+    {
+      "name": "fix/neuron-metrics-wal-alias-fence-20261018",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c"
+    },
+    {
+      "name": "fix/neuron-microbatch-snapshot-fixture-20261019",
+      "sha": "04a580e0d302621c45d69a062264fede0717e757"
+    },
+    {
+      "name": "fix/neuron-native-ci-quality-gates-20261015",
+      "sha": "3cf50a59c683adb31332bea7bc6c120bf9f85091"
+    },
+    {
+      "name": "fix/neuron-native-observed-turn-start-check-20261017",
+      "sha": "21ac4ba2c69a8c9485fa3ca8731e1a9688ad9770"
+    },
+    {
+      "name": "fix/neuron-native-rustfmt-20261015",
+      "sha": "3621977ee2487af53400c9c1bd07ff06928b77cd"
+    },
+    {
+      "name": "fix/neuron-output-digest-identity-v2-20261018",
+      "sha": "9731125ea1bf4095dfc9a322462c59ec0de91ae3"
+    },
+    {
+      "name": "fix/neuron-output-v2-rustfmt-20261018-ci",
+      "sha": "098ce9fefe8f06d3972b97a47b697b0732582b03"
+    },
+    {
+      "name": "fix/neuron-p0-cognitive-schema-discovery-20261015",
+      "sha": "a05950e4ef3cc179d2252cd8c680f85d565e6948"
+    },
+    {
+      "name": "fix/neuron-p0-global-ci-20261013",
+      "sha": "31c929f54683b18f82a9d16dae1af6d41ee3fcd4"
+    },
+    {
+      "name": "fix/neuron-p0-windows-helper-20261013",
+      "sha": "f873dd83c52800693cea5442bcbe7b607cafae8a"
+    },
+    {
+      "name": "fix/neuron-p1-frozen-learned-step-parity-fix-20261015",
+      "sha": "60c78002c1697a229c48159889fbc8ed87398584"
+    },
+    {
+      "name": "fix/neuron-preflight-sequence-clock-before-inference-20261014",
+      "sha": "360a58659b8dc144d9aaa1927b4425324c7c9fcd"
+    },
+    {
+      "name": "fix/neuron-public-q24-exact-rustfmt-20261017",
+      "sha": "a9d6b96f49b3e7b9b17f10100eb349c91b54cf0f"
+    },
+    {
+      "name": "fix/neuron-q24-batch-boundary-20261018",
+      "sha": "0896d6f877b1456e354d965db0a3ddfea55e19cf"
+    },
+    {
+      "name": "fix/neuron-q24-native-app-server-ci-20261017",
+      "sha": "c3464731f45e3c0f61ab6b15a6c68e33683ee299"
+    },
+    {
+      "name": "fix/neuron-retained-history-integrity-20261004",
+      "sha": "701e025ddb3c37c0537be0fe36d96e8c465268eb"
+    },
+    {
+      "name": "fix/neuron-secure-p0-cognitive-schema-20261015",
+      "sha": "bb2678af1c824bca37f5a7d98f5e33ff9c505181"
+    },
+    {
+      "name": "fix/neuron-shadow-prettier-exact-20261014",
+      "sha": "c504ff81b4223c4de44b7168d99679a8367bac0b"
+    },
+    {
+      "name": "fix/neuron-shared-feature-arc-memory-floor-20261012",
+      "sha": "24cc48253c2e510174f3c0efa6476e9c89344f2f"
+    },
+    {
+      "name": "fix/neuron-shared-transient-grant-fence-20261017",
+      "sha": "0593281741b7761fc3949659bbe2007308cb46bb"
+    },
+    {
+      "name": "fix/neuron-signed-finaluse-caller-proof-20261018",
+      "sha": "1b3e5c3037d0e8c0c9a0933bdd59a5047db31603"
+    },
+    {
+      "name": "fix/neuron-signed-rustfmt-q24-stack-20261018",
+      "sha": "c1da61047a6e001ed7da56b423c827b4e9c59bd3"
+    },
+    {
+      "name": "fix/neuron-stack-core-response-map-v1",
+      "sha": "9a1d14f7c912c43bb43338d5d48e71befada6185"
+    },
+    {
+      "name": "fix/neuron-stem-blocking-ci-oct13-v1",
+      "sha": "05c9103e6966d34f49b6ae49d0929a2dbe5327d5"
+    },
+    {
+      "name": "fix/neuron-stem-windows-response-map-tests-v1",
+      "sha": "e84a67ccde2afed720094032bcd8c49a84801628"
+    },
+    {
+      "name": "fix/neuron-transitive-clippy-p0",
+      "sha": "c972f7ca8b525b31530fb5b5c0715c69ea1bd1c0"
+    },
+    {
+      "name": "fix/neuron-unsigned-batch-api-fence-20261013",
+      "sha": "6e4988f977ada56d1127fa9dd07ac335adfeac02"
+    },
+    {
+      "name": "fix/neuron-v1-feature-postdispatch-fence-20261012",
+      "sha": "98060bcd489a1a722a3ff0f6c7bde7814f00eb75"
+    },
+    {
+      "name": "fix/neuron-v1-post-dispatch-fence-20261012",
+      "sha": "48c98a61d4ad1fd006c19a6e32cd3672a414047a"
+    },
+    {
+      "name": "fix/neuron-v1-single-dispatch-uncertainty-fence-20261012",
+      "sha": "567ae26f182eae3b79d15baa4309dc0080cb8dba"
+    },
+    {
+      "name": "fix/neuron-v1-single-dispatch-unknown-fence-20261013",
+      "sha": "d55872d6799a1f12fe35102b801d55da15feb8e1"
+    },
+    {
+      "name": "fix/neuron-v2-4096-native-format-20261014",
+      "sha": "1812a3503e148e360147216974fe01eebd98d4d8"
+    },
+    {
+      "name": "fix/neuron-v2-monotonic-cache-fence-20261013",
+      "sha": "87088eed943355be27f0547396cac264a86c15c5"
+    },
+    {
+      "name": "fix/neuron-v3-binding-pr2591",
+      "sha": "27429a46e83575b0016ef14605c463ad28b86478"
+    },
+    {
+      "name": "fix/neuron-v3-gated-scratch-accounting-20261017",
+      "sha": "4fd97ecfffff5d5859a77973baefed4393906922"
+    },
+    {
+      "name": "fix/neuron-v3-normalizer-cell-fence-20261017",
+      "sha": "cd73adfd1f01e7d492231809441d7143e922c293"
+    },
+    {
+      "name": "fix/neuron-v8-rustls-security-p0-20261015",
+      "sha": "379aa2230dea4429b11103d1654d7bdbb2cd4770"
+    },
+    {
+      "name": "fix/neuron-windows-durable-ledger-handles-v1",
+      "sha": "e55e74aac922c4885f8b7c788d1e0e62891c2383"
+    },
+    {
+      "name": "fix/neuron-worker-memory-receipt-floor-20261013",
+      "sha": "edb1c0cee906190d226208c99f686e6965a56add"
+    },
+    {
+      "name": "fix/neuron-worker-transitive-clippy-v1",
+      "sha": "32c54c0aabe45dadf8bb72c1df92dd531b40494b"
+    },
+    {
+      "name": "fix/neuroscience-prefix-causal-shadow-20261111",
+      "sha": "f7ddd140c130fd93804a719fd22008b87c1858f4"
+    },
+    {
+      "name": "fix/nextest-archive-budget-and-pins-20261005",
+      "sha": "2d0cdbaaba975b26d6be0d4ed9f518103f0eb15f"
+    },
+    {
+      "name": "fix/notes-predecessor-linux-cfg-20261026-1517",
+      "sha": "572b69d96dd9c2494eeb2bae5f3373990c8351a0"
+    },
+    {
+      "name": "fix/objective-owner-uv-e516-20261104",
+      "sha": "b4b04c7466e5d0e43a88173294325b1b31751944"
+    },
+    {
+      "name": "fix/objective-submission-map-20261026",
+      "sha": "1584a0bc2aa29f74e295daaf41e7c5208615cb8c"
+    },
+    {
+      "name": "fix/operations-renewal-current-intent-20261004",
+      "sha": "61f7e3669bbdc3ce8b71b11db1b5b5c461323eb0"
+    },
+    {
+      "name": "fix/operator-native-sshsig-20261103",
+      "sha": "1e27eb9b1a28bf23063efed9bc373a9aa0707040"
+    },
+    {
+      "name": "fix/original-cohort-clippy-b4-20261016",
+      "sha": "d7cc0aa0993ae2576f0b55c507dc6b7802c5155a"
+    },
+    {
+      "name": "fix/original-evidence-source-head-ruff-20261015",
+      "sha": "94d59b4159362e5e9e430f64c01add3fa610c07e"
+    },
+    {
+      "name": "fix/original-stem-clippy-caller-proof-20261016",
+      "sha": "d5f573357853fc5202952695714fb6b3741fb163"
+    },
+    {
+      "name": "fix/original-worker-transitive-strict-clippy-20261016",
+      "sha": "22a807f0235afde5cac13fcd4727df649114cc8b"
+    },
+    {
+      "name": "fix/owner-compat-junit-proof-20261023",
+      "sha": "5a33d5a935ea7167a4948e1dfcbb2eca41ea6e0b"
+    },
+    {
+      "name": "fix/owner-initial-current-843351d3-20261118-556e5fc18a5b",
+      "sha": "0cdb2a4985c91327e0ae3d59ceead35b950b16e9"
+    },
+    {
+      "name": "fix/p0-agentd-duplicate-tests-module-20261016",
+      "sha": "a32fc90c9df67ce2702fa2ca627b26204d00a5f5"
+    },
+    {
+      "name": "fix/p0-appserver-windows-sqlite-path-20261018",
+      "sha": "684324e8ca89ea4af76fec275717074456b4af96"
+    },
+    {
+      "name": "fix/p0-bazel-alias-kinds-bd81a8e1e601",
+      "sha": "6fb3e33043b3b3220c035943caa0da115be83d36"
+    },
+    {
+      "name": "fix/p0-bazel-lock-rustls-20261018",
+      "sha": "30eca253dd6b2daf74f6c84d674be9e5f55af2d5"
+    },
+    {
+      "name": "fix/p0-ci-rustfmt-20261018",
+      "sha": "8f6391412a53f60a215ed2a08153fce3d2fdde10"
+    },
+    {
+      "name": "fix/p0-corrupt-cargo-lock-header-20261018",
+      "sha": "4deca7096fd202cd6f1d0fc074f5fe7a2e80ca8e"
+    },
+    {
+      "name": "fix/p0-exact-global-ruff-proposal-20261017",
+      "sha": "0b1eda6f15bf1ca93753ae5218b1e664102372b4"
+    },
+    {
+      "name": "fix/p0-fleet-clippy-result-fixture-20261021",
+      "sha": "7f45eb8892ea007828fef643d6768f0989f970d0"
+    },
+    {
+      "name": "fix/p0-fleet-expect-import-20261018-0635",
+      "sha": "1116285d370d9cb0a3d61b4271316dadab18e29c"
+    },
+    {
+      "name": "fix/p0-fleet-fixture-assert-exact-20261018-2230",
+      "sha": "673325ce149abfd32d1f28a889f9c894138fcabf"
+    },
+    {
+      "name": "fix/p0-fleet-macos-rustfmt-2903-20261019",
+      "sha": "0b061c193b95985fbfa97ffac7dd819d57153767"
+    },
+    {
+      "name": "fix/p0-fleet-macos-rustfmt-exact-20261019",
+      "sha": "9943dd8bcafaf38f59696583068f60b94f03c85a"
+    },
+    {
+      "name": "fix/p0-fleet-unwrap-observer-base-20261018-1309",
+      "sha": "b844e35fa04a1f4ed33c80d6595a2c354277d0af"
+    },
+    {
+      "name": "fix/p0-global-ci-core-response-context-20261012",
+      "sha": "5c8cefb8430d63f190ad69aa242b827fc8090edc"
+    },
+    {
+      "name": "fix/p0-hepta-cli-include-inner-attr-20261019-0629",
+      "sha": "1c9b1b079eedff01d2c2c41bee7f84604bcb7d04"
+    },
+    {
+      "name": "fix/p0-keyring-cargo-metadata-lock-20261018",
+      "sha": "9253edc42e03578fcbf3d12f4e9379ef6587c2ad"
+    },
+    {
+      "name": "fix/p0-local-git-hook-preflight-20261022",
+      "sha": "d657ee6d4e79f9149e5478832fae5e37096be911"
+    },
+    {
+      "name": "fix/p0-local-output-tail-cap-20261022",
+      "sha": "dd1f6a313776b74b0e76ca1265e857dc16a0f8a0"
+    },
+    {
+      "name": "fix/p0-mmbert-native-loading-collections-20261016",
+      "sha": "12c4a3a64c508ac9f2838ac2efb20657c653f483"
+    },
+    {
+      "name": "fix/p0-multirc-offpanel-raw-length-v13-20261015",
+      "sha": "a254784e7d90bb534a7e2b3736555bf44c596990"
+    },
+    {
+      "name": "fix/p0-native-codex-version-bound-20261022",
+      "sha": "48df4156b2402c26cedc772ab0aa7bb935947a14"
+    },
+    {
+      "name": "fix/p0-neuron-native-manifest-trigger-20261013",
+      "sha": "17b2c5c15c876144a290be38e29a373430120735"
+    },
+    {
+      "name": "fix/p0-neuron-windows-queue-python-hook-20261015",
+      "sha": "9a10d343a9aa8f8c1621287f41a2304f7ace977b"
+    },
+    {
+      "name": "fix/p0-original-learning-multisource-20261110-6b21",
+      "sha": "ee82452192695ac84aef6fe7de4148aa682c2127"
+    },
+    {
+      "name": "fix/p0-original-physical-model-compat-v14-20261016",
+      "sha": "883b7c107348675153aece3db40a1d00e41c0a09"
+    },
+    {
+      "name": "fix/p0-p6-local-committed-source-proof-20261022",
+      "sha": "24c786d4ebfbb0709f8c969c909a2fa5274f539c"
+    },
+    {
+      "name": "fix/p0-p6-local-execution-env-fence-20261022",
+      "sha": "8558310ba7378414ac7033431e496b1945ead164"
+    },
+    {
+      "name": "fix/p0-p6-local-kernel-log-budget-20261022",
+      "sha": "209b4203d6e48486043b419e7d5fdab4d7274eb0"
+    },
+    {
+      "name": "fix/p0-p6-windows-local-process-isolation-20261022",
+      "sha": "e283bc44ea80b2637908dbf0bdf12ed92bc95808"
+    },
+    {
+      "name": "fix/p0-p7-atomic-evidence-fd-20261023",
+      "sha": "e03eb7be875653fd30600accef08417dc926913e"
+    },
+    {
+      "name": "fix/p0-p7-blocking-ci-mandatory-jobs-20261023-gpt6",
+      "sha": "ea7e80ee44ec438455b0d69a8cc96f444b581d26"
+    },
+    {
+      "name": "fix/p0-p7-pinned-cohort-inputs-20261023-gpt6",
+      "sha": "5de0a42e159ce64581f9925184860acaa2ddb10f"
+    },
+    {
+      "name": "fix/p0-pure-native-fmt-3224-20261022-1512",
+      "sha": "48df4156b2402c26cedc772ab0aa7bb935947a14"
+    },
+    {
+      "name": "fix/p0-restore-native-green-locked-graph-20261022",
+      "sha": "e376f17804ae0ddadf894201bdc82a9fcef70e28"
+    },
+    {
+      "name": "fix/p0-scoped-control-wal-windows-locked-read-20261018",
+      "sha": "c2d0b67b3785b0fc8347a16ae4da67ec63f48823"
+    },
+    {
+      "name": "fix/p0-v8-macos-intel-bazel37-20261015",
+      "sha": "2c42ba281621bc9eb8c6201239958cd98ff377bd"
+    },
+    {
+      "name": "fix/p0-v8-smoke-serial-init-20261021",
+      "sha": "127b3f24d051bf7f9d83648159575fa93c562057"
+    },
+    {
+      "name": "fix/p0-win-pty-void-abi-20261018-1528",
+      "sha": "7aa9a8f929dca04a1ca2700c27f27321df0e3838"
+    },
+    {
+      "name": "fix/p0-windows-acl-ace-bounds-20261016",
+      "sha": "a086ee66b2589ceb01039bf1c1d6cfa9bb9e37cf"
+    },
+    {
+      "name": "fix/p0-windows-fences-convergence-bd81a8e1e601",
+      "sha": "dc28e90b782590d296f862d4e485a53b7c22ee68"
+    },
+    {
+      "name": "fix/p0-windows-pty-ffi-sourcehead-20261018-1736",
+      "sha": "7aa9a8f929dca04a1ca2700c27f27321df0e3838"
+    },
+    {
+      "name": "fix/p0-winpty-ffi-2879-20261018",
+      "sha": "7aa9a8f929dca04a1ca2700c27f27321df0e3838"
+    },
+    {
+      "name": "fix/p0-yaml-owner-trigger-closure-20261016",
+      "sha": "9163785f0cbb0113b0415e1dfdde523dc2f4c7a8"
+    },
+    {
+      "name": "fix/p0p5-toml-locked-resolver-20261022",
+      "sha": "3e7639fa7be5296c806a708bd817c0385b73cdb4"
+    },
+    {
+      "name": "fix/p0p7-readiness-workflow-file-identity-20261023",
+      "sha": "2f055ecaff2e795e65e346901a6726b8799adc8a"
+    },
+    {
+      "name": "fix/p1-original-ci-closure-20261105",
+      "sha": "d4a6e26bf7a79879118420db27d10e5e054ca9c8"
+    },
+    {
+      "name": "fix/p2-adapterstatus-exact-source-20261021-0614",
+      "sha": "1514fb24b6c64e5ca50fc5126afeeaeff80ceca1"
+    },
+    {
+      "name": "fix/p3-current-spine-unique-proposal-20261022",
+      "sha": "da2c69c419492280934e4135b0b60fdeca4b94ab"
+    },
+    {
+      "name": "fix/p3-ndu-covariance-hedge-admission-20261022",
+      "sha": "04d631da56c6dedbd9e0f354205552fb04d58a9b"
+    },
+    {
+      "name": "fix/p4-bound-child-output-capture-20261018",
+      "sha": "91f642496f2cd26626aa1906b88cbae1621ae0ff"
+    },
+    {
+      "name": "fix/p4-closed-signed-report-schema-20261018",
+      "sha": "dcd8c9a32ddc458c67adaabe35c2fe24199d1f51"
+    },
+    {
+      "name": "fix/p4-durable-report-directory-20261022",
+      "sha": "ff317ed6c21801be2bca23bb33d50a8838b9c91a"
+    },
+    {
+      "name": "fix/p4-frozen-output-custody-20261022",
+      "sha": "30f0b4a2ea78a5756a350d27ca06feb5f90830bc"
+    },
+    {
+      "name": "fix/p4-integrated-wal5-25tests-ruff-20261018",
+      "sha": "41df5c0bb47f2cdeb17d79db4ba39c8e1187c82c"
+    },
+    {
+      "name": "fix/p4-loworder-matrix-ruff-20261018-0948",
+      "sha": "6c8d293aaebd379d77d2bdf2448b838378263459"
+    },
+    {
+      "name": "fix/p4-matrix-clean-checkout-20261018",
+      "sha": "cf8d552e99067c30822d37a458e24160575dff7b"
+    },
+    {
+      "name": "fix/p4-matrix-exact-head-ci-20261018",
+      "sha": "ce2de02696027d541e64d9fee2944e2b346f2012"
+    },
+    {
+      "name": "fix/p4-matrix-post-observer-blocker-20261018",
+      "sha": "9658c763e81f6803d8583d1a1c4791cb2c168975"
+    },
+    {
+      "name": "fix/p4-matrix-post-observer-workload-fence-20261018",
+      "sha": "138481f4a79eae824612bf5ec9f4540a8b06227e"
+    },
+    {
+      "name": "fix/p4-matrix-report-classifier-fence-20261018",
+      "sha": "1237f261ccaa959c41ec9e0cd5a1a16b364697a5"
+    },
+    {
+      "name": "fix/p4-matrix-report-ruff-exact-20261018",
+      "sha": "20b3162b653f34bb3a0e3505b14c5fa1ecf68b89"
+    },
+    {
+      "name": "fix/p4-matrix-ruff-check-20261018",
+      "sha": "4acc57ee5822d631b2807f1bf0f22ce328bf1bcc"
+    },
+    {
+      "name": "fix/p4-matrix-worker-binding-20261018",
+      "sha": "5b9960fefdabaad5aa82ef7dd44b70e350d63941"
+    },
+    {
+      "name": "fix/p4-observer-negative-test-20261018-1310",
+      "sha": "6c8d293aaebd379d77d2bdf2448b838378263459"
+    },
+    {
+      "name": "fix/p4-observer-prime-order-assertion-20261018-1046",
+      "sha": "803a122a1ffe22c16ed34cb1e561afae44e1f1df"
+    },
+    {
+      "name": "fix/p4-observer-trust-preflight-20261018",
+      "sha": "afc976aff0d42e40da13c5a9f20701dd5954b644"
+    },
+    {
+      "name": "fix/p4-post-observer-frozen-workload-20261018-v2",
+      "sha": "17b15cae6d8781c0e20a2ed263580e552b4384c3"
+    },
+    {
+      "name": "fix/p4-preflight-convergence-bd81a8e1e601",
+      "sha": "2e1957619bef3370efdb650fb1ba4b97d9fb38c6"
+    },
+    {
+      "name": "fix/p4-seal-provisional-report-custody-20261022",
+      "sha": "6dec707be086e03570441302f7bc6d54a74f24ee"
+    },
+    {
+      "name": "fix/p4-wal5-strong-matrix-exact-ruff-20261018",
+      "sha": "e5cf5b06c6e265e73cd0ea01ec4d0f05130e7d22"
+    },
+    {
+      "name": "fix/p4-worker-metrics-object-type-20261018",
+      "sha": "df415b4e30fd2bcc7d2574d3a8bfb38c8ffac609"
+    },
+    {
+      "name": "fix/p5-cross-arm-evidence-integrated-20261022",
+      "sha": "8390349b900a900ccb82671fc8f3ed21b052ddb3"
+    },
+    {
+      "name": "fix/p5-current-cell-evidence-custody-20261022",
+      "sha": "b5b34689f9d42b09049a3995dd182b006eb9646e"
+    },
+    {
+      "name": "fix/p5-current-spine-contract-trigger-20261022",
+      "sha": "48902a843833dcc3dceaa83a04b8fcc26c40819f"
+    },
+    {
+      "name": "fix/p5-identity-proof-role-boundaries-20261022",
+      "sha": "5dee00c9cf5530600cdde0b9a6bd7737078ae714"
+    },
+    {
+      "name": "fix/p5-identity-proof-role-fence-20261022",
+      "sha": "c1dd5d069aa9afb7d0f6f18578e3338d57a85d42"
+    },
+    {
+      "name": "fix/p5-independent-evidence-per-arm-20261022",
+      "sha": "c857938374a2b492939f9c2428e35144f8187239"
+    },
+    {
+      "name": "fix/p5-metrics-evidence-cross-category-replay-20261022",
+      "sha": "1903b60b820ae3ddefb108536a4681d85d595744"
+    },
+    {
+      "name": "fix/p5-metrics-evidence-receipt-isolation-20261022",
+      "sha": "acd43ed21c57c56faf1c61f68c043382fc13d3eb"
+    },
+    {
+      "name": "fix/p5-provenance-receipt-role-isolation-20261022",
+      "sha": "72451bf6be7c0f3adb9bf7a9999bac91bb16fa75"
+    },
+    {
+      "name": "fix/p5-reject-zero-evidence-digests-20261022",
+      "sha": "7407b359b39e5c3f2724fdb720a6589cd2d0234c"
+    },
+    {
+      "name": "fix/p6-local-check-bounded-log-and-descendant-20261022",
+      "sha": "1debae2fd15d9289cb4a8be84c9d872036336545"
+    },
+    {
+      "name": "fix/p6-prime-order-ed25519-trust-20261022",
+      "sha": "79326343b20ed1ebe9ecf45811b2e55b0e9da9b3"
+    },
+    {
+      "name": "fix/p40-native-cost-finite-json-integers-20261022",
+      "sha": "317c9c5fc8a02a9952fc105884f0a0a6ee77a520"
+    },
+    {
+      "name": "fix/p40-native-head-job-context-20261022",
+      "sha": "896f20de2831b480217eb1bb0e089c12a3b86de7"
+    },
+    {
+      "name": "fix/p41-kernel-evidence-string-error-20261023",
+      "sha": "b06d683cedabffc05034c31e7cabe3aec0c54378"
+    },
+    {
+      "name": "fix/p41-strict-native-dispatch-counter-types-20261022",
+      "sha": "f5a71f860e18c8cd736c3d3ac911cda57fa9bbb5"
+    },
+    {
+      "name": "fix/paired-control-protocol-20261005",
+      "sha": "1f5f615b51b26ad9f42e2b458583d00326c97f7d"
+    },
+    {
+      "name": "fix/pon-baseline-native-candidates-20261009",
+      "sha": "f53d9b3c2be240f38c1e972f069e9609ee551664"
+    },
+    {
+      "name": "fix/pon-bounded-snapshot-pair-20261009",
+      "sha": "7d9e7a8e8527da25e642b60381a43d5af2a2e118"
+    },
+    {
+      "name": "fix/pon-canonical-migration-cut-20261010",
+      "sha": "cc42054bfeeb424bda3219ae629b4ed6e0aeb667"
+    },
+    {
+      "name": "fix/pon-chain311-ci-pair-20261015",
+      "sha": "707134c5e2bfa2717031f17386351ac8a778efa3"
+    },
+    {
+      "name": "fix/pon-evaluated-noupdate-bundle-20261107-525798",
+      "sha": "9c352c77d21923eb7c2022c96496228ee428d278"
+    },
+    {
+      "name": "fix/pon-exact-receipt-source-20261012",
+      "sha": "106400a5ffc7ef969dbe0812c1cda869323b59e1"
+    },
+    {
+      "name": "fix/pon-finality-byte-binding-pair-20261014",
+      "sha": "0f617eb4ab192c8c750ec43af25a1e5c138648fc"
+    },
+    {
+      "name": "fix/pon-finality-inventory-pair-20261014",
+      "sha": "e6294eff949284c776e5dfb06fb70380fea6f1dc"
+    },
+    {
+      "name": "fix/pon-five-acceptance-continuation-20261009",
+      "sha": "cac683de2d85131c394195b858ca33d4a86bacad"
+    },
+    {
+      "name": "fix/pon-five-axis-baseline-owners-20261010",
+      "sha": "e9863eebb77fb221e43e387b6fca48622ea31e7c"
+    },
+    {
+      "name": "fix/pon-five-priority-pair-20261009",
+      "sha": "86d8c0b53ead781d5151a1678b3639bd56e7f3c2"
+    },
+    {
+      "name": "fix/pon-five-track-baseline-20261012-r3",
+      "sha": "0e03a4cc54d77432941855297ffd7f480a6d13ac"
+    },
+    {
+      "name": "fix/pon-five-track-delivery-20261012",
+      "sha": "3ab51bb08d6c971fa6293da8b1b67a71246428bb"
+    },
+    {
+      "name": "fix/pon-five-track-exact-chain-pair-20261012-r2",
+      "sha": "961b879f7e9f38fc40b901ac32065abbb6d68990"
+    },
+    {
+      "name": "fix/pon-five-track-format-20261012",
+      "sha": "442abd7ccdb7cc84740f04b644ce778d6802b47b"
+    },
+    {
+      "name": "fix/pon-five-track-format-cdb4454-20261012",
+      "sha": "2d2a334021b5b0598dc820d377f4e37e823becbb"
+    },
+    {
+      "name": "fix/pon-fleet-format-pair-20261010",
+      "sha": "8c0084022c677f079526126cb10d94b24746283a"
+    },
+    {
+      "name": "fix/pon-fleet-revocation-entry-20261010",
+      "sha": "bc0c0549e892bbfe8e4697e4ed003a072cd31ba1"
+    },
+    {
+      "name": "fix/pon-fleet-sealed-publication-20261010",
+      "sha": "4da345c2a9071e120b26d5eac9aa64ee821cebf3"
+    },
+    {
+      "name": "fix/pon-hepta-exchange-observation-seven-20261008",
+      "sha": "ac517d42cbe4e2d178c9f10967d2e1ac3fa690a5"
+    },
+    {
+      "name": "fix/pon-holdout-preflight-20261012",
+      "sha": "94b92481d4bfc481caccb269b1cf329501ed581d"
+    },
+    {
+      "name": "fix/pon-native-wrapper-faults-20261011",
+      "sha": "caf36242fbd9f8e61c87d64bcf643464cb7ecc6a"
+    },
+    {
+      "name": "fix/pon-nullable-blob-pair-20261010",
+      "sha": "c2017815a05f56641950478744683d0a76a5939f"
+    },
+    {
+      "name": "fix/pon-owned-ci-exit-convergence-20261013",
+      "sha": "363b9b3d842e02003c4f418ab79f6b81785bb50c"
+    },
+    {
+      "name": "fix/pon-paired-baseline-convergence-20261013",
+      "sha": "e2beb203c64b4198c49050adf0992dcbe8f3efe8"
+    },
+    {
+      "name": "fix/pon-priority-pressure-pair-20261008",
+      "sha": "8c8d1ce2cab0ad2c4b54dcc2fb6abd555e0f1d24"
+    },
+    {
+      "name": "fix/pon-receipt-input-pair-20261010",
+      "sha": "746da31022d3ffc4f8884f248212f2a763c1e848"
+    },
+    {
+      "name": "fix/pon-rustls-security-advisories-20261015",
+      "sha": "7a5665d510896bb3d199ac0c42bfe5d4b0f9b317"
+    },
+    {
+      "name": "fix/pon-sparse-root-m10-pair-20261014",
+      "sha": "c5ef1a49725f9611ab3a8e6d1085469538f10102"
+    },
+    {
+      "name": "fix/pon-win-operator-owner-acl-lock-20261015",
+      "sha": "8a17006f4898c5d926fd583d944bf90706eda432"
+    },
+    {
+      "name": "fix/pon-windows-git-contained-child-20261015",
+      "sha": "cf5e8601a2dbc88a5591d0b179db46ba273c706c"
+    },
+    {
+      "name": "fix/pon-windows-git-job-owner-fail-closed-20261015",
+      "sha": "ee174dc3ab6d336ca991881d98926c348022740e"
+    },
+    {
+      "name": "fix/pon-work-collector-pair-20261011",
+      "sha": "e60a806e5ec88bec3e9a4bf7aadc50db23a7a6c3"
+    },
+    {
+      "name": "fix/pon-yaml-prerequisite-rejection-20261013",
+      "sha": "f039298bc74d10f62eeafb28fb1f38c66a2855b1"
+    },
+    {
+      "name": "fix/portable-operator-trust-fixtures-20261005",
+      "sha": "ffd0b90fe66c0746df388d4a3fa0317a4ecd0e7e"
+    },
+    {
+      "name": "fix/pr1452-sealed-census-error",
+      "sha": "e5280d2c14464f576a2d24e5c3c19c3d4a573f74"
+    },
+    {
+      "name": "fix/pr-1450-cargo-lock",
+      "sha": "b4a2850bc1f81d68ed66a80f99be71411ecf344f"
+    },
+    {
+      "name": "fix/pred-immutable-source-codespell-20261112-86e9",
+      "sha": "978797a921d510f388d4256888acafe09f90b6ba"
+    },
+    {
+      "name": "fix/pred-native-admission-20261112-86e9",
+      "sha": "c941a5f72ee4c5f6a1535c72082e077895d3bc80"
+    },
+    {
+      "name": "fix/pred-replay-fixture-bytes-20261109-3727",
+      "sha": "218dac0f5009d1c4f1c1501a3bcc6d54dbe7b21a"
+    },
+    {
+      "name": "fix/pred-snapshot-structure-20261110-4456",
+      "sha": "7fe7a0b58f0e3388d74cde6ccb16e504d8182f50"
+    },
+    {
+      "name": "fix/private-ci-4855-exact-rustfmt-335-20261106-gpt6",
+      "sha": "983808d43f35fb3c4d6902b49c8fa4f6ef1b4118"
+    },
+    {
+      "name": "fix/private-ci-4855-rustfmt-17files-20261105-gpt6",
+      "sha": "70fbb985e7957f4b5ca55b3320570f18022f93ec"
+    },
+    {
+      "name": "fix/private-ci-4855-rustfmt-29files-20261105-gpt6-11",
+      "sha": "17cf7ca1560a1319581923330f798d16f22b48c6"
+    },
+    {
+      "name": "fix/private-ci-architecture-pinned-dbus-20261103-gpt6",
+      "sha": "5ceb3d8afad9c03fbf8e3c87b1bed66fd40031e6"
+    },
+    {
+      "name": "fix/private-ci-authorized-read-capability-20261103-gpt6",
+      "sha": "aaf74551dccf99f2d0d1525d02337cf804233817"
+    },
+    {
+      "name": "fix/private-ci-aws-p256-20261103-gpt6",
+      "sha": "d548852a3f7af29a9853d8acb0e6d457f8bb1a79"
+    },
+    {
+      "name": "fix/private-ci-core-fixture-metadata-20261104-gpt6",
+      "sha": "42a2cef49895a91ded17efbc02b7b51c4245cb68"
+    },
+    {
+      "name": "fix/private-ci-fleet-macos-20261103",
+      "sha": "158b844db94a99c7fcf7386efe6a207fdeb24db7"
+    },
+    {
+      "name": "fix/private-ci-i18n-parser-20261103",
+      "sha": "4b1a326ec50c28e8803d390e81d2f03457cc7499"
+    },
+    {
+      "name": "fix/private-ci-keyring-provider-20261103",
+      "sha": "2aea30d1e07288f059c9294f29a842c40b6c9416"
+    },
+    {
+      "name": "fix/private-ci-maintained-dylint-20261103-gpt6",
+      "sha": "30ad34c1895597a04dc42f0d233505aa7566a6b7"
+    },
+    {
+      "name": "fix/private-ci-matrix-security-20261103",
+      "sha": "9cfcb03e2205ae63032f5862962c6881d376bfd2"
+    },
+    {
+      "name": "fix/private-ci-memory-migration-ledger-20261103-gpt6",
+      "sha": "230d2d69a8c68ae6f8c502118fd9a8ee33027c37"
+    },
+    {
+      "name": "fix/private-ci-operator-native-execution-20261103-gpt6",
+      "sha": "b049d994619da7fe59896bce0dfd7eb850024c01"
+    },
+    {
+      "name": "fix/private-ci-robrix-runfiles-union-20261104-gpt6",
+      "sha": "767f069c96a6cd2735b3a4166799a1de79017d25"
+    },
+    {
+      "name": "fix/private-ci-scope-exact-inputs-20261103-gpt6",
+      "sha": "030670f74300e65777abc768c049b5140f9acd29"
+    },
+    {
+      "name": "fix/private-ci-tls-zstd-advisories-20261103",
+      "sha": "ad342f71c4cccdcc01f3d2c45a27e26f90df0592"
+    },
+    {
+      "name": "fix/private-ci-v8-allocator-initialization-20261103-gpt6",
+      "sha": "083116160fe81198ae0c441aad22224c0c8d2940"
+    },
+    {
+      "name": "fix/private-ci-v8-merge-base-20261103-gpt6",
+      "sha": "80de936f9b738179b87aee0a4d7066e6ca501c8e"
+    },
+    {
+      "name": "fix/private-ci-windows-memory-recovery-20261104",
+      "sha": "296e88630b132f05b623f4391c1bbbdeaf79449c"
+    },
+    {
+      "name": "fix/private-ci-windows-owner-local-20261103",
+      "sha": "9cf33449107981ee2ca4de486be8ffaaa37dfc61"
+    },
+    {
+      "name": "fix/private-ci-windows-private-state-20261103",
+      "sha": "052f4caa6c26396f37cecac6e133433d06a61eb2"
+    },
+    {
+      "name": "fix/private-ci-windows-process-env-union-20261103",
+      "sha": "00963996f16c067fbd04517d22d3d7e53d1d09a6"
+    },
+    {
+      "name": "fix/private-ci-windows-process-fixtures-20261104",
+      "sha": "f5bddc124052837befca7735b9e5a46ab708e5a5"
+    },
+    {
+      "name": "fix/private-ci-yaml-safe-compatibility-20261103-gpt6",
+      "sha": "9ae81201f2761e7217f019c40b40de952ca4579d"
+    },
+    {
+      "name": "fix/private-ci-zip-feature-isolation-20261103",
+      "sha": "6e552daa20614b128fe50cbcef253fc5c8e6e428"
+    },
+    {
+      "name": "fix/private-ci-zip-permissions-20261103",
+      "sha": "82943251870182af4dff666b30c65eb116b82892"
+    },
+    {
+      "name": "fix/pty-closed-receiver-drain-20261106",
+      "sha": "8075eb367b6e97546af206b27bbf4a3a867497c8"
+    },
+    {
+      "name": "fix/python-sdk-import-determinism-20261026",
+      "sha": "bc85ae402776cb0debe3a47b887f0aa60d361bde"
+    },
+    {
+      "name": "fix/python-sdk-zstd-cli-20261106-run9",
+      "sha": "9b2789c2634d489a4e3e7d66f1f7101b724793c8"
+    },
+    {
+      "name": "fix/python-sdk-zstd-cli-container-dependency-20261106-gpt6",
+      "sha": "9428ffb2c7d5a1a2a3ddb869098aade35fea8b4d"
+    },
+    {
+      "name": "fix/python-sdk-zstd-on-final-use-5162-20261106-gpt6",
+      "sha": "8063ea69530c082a5a814beb1a0aabdb7e008e53"
+    },
+    {
+      "name": "fix/python-sdk-zstd-test-image-20261106",
+      "sha": "1e6040304f95e3900e81f8f50a69a6e5a47f1313"
+    },
+    {
+      "name": "fix/q24-eval-readback-windows-cfg-20261112-130885",
+      "sha": "e74d0dacce46d7c38ddaa7e183471bb3e3fa30f3"
+    },
+    {
+      "name": "fix/r3-original-product-contracts-20261104",
+      "sha": "67cc5c28c4adf82f6ef97c34a18b8b13f3ac27ed"
+    },
+    {
+      "name": "fix/readiness-readme-discovery-link-20261107-gpt6",
+      "sha": "f8accb49b8ec366bb47e9df0966b8795b05a7636"
+    },
+    {
+      "name": "fix/registered-human-text-marker-20261106-run8",
+      "sha": "140814ac24dea0685b174afc89cf92e222bd68dd"
+    },
+    {
+      "name": "fix/research-material-temp-20261118-2e9b",
+      "sha": "9aaac03f5f6bcad3ff14ffe2ecfb11aa4299f16f"
+    },
+    {
+      "name": "fix/retrieval-assignment-bounds-20261004",
+      "sha": "a0b5700f93879d6e2509e714eda0f01d9e442767"
+    },
+    {
+      "name": "fix/rmcp-redirect-deadline-windows-20261022",
+      "sha": "f7929e84a61323285dbf481da714e3261186e807"
+    },
+    {
+      "name": "fix/rmcp-timeout-request-arrival-20261023",
+      "sha": "266ff14cc10f794b1cbffeb51bd813b7fabe9328"
+    },
+    {
+      "name": "fix/robrix-firefox-software-webgl2-20261105-gpt6",
+      "sha": "5a31290e5c0fb5c84248131625056fda6e229034"
+    },
+    {
+      "name": "fix/robrix-runfiles-unified-20261103",
+      "sha": "68efa4101917d40ab551610e44bf7f26663bd963"
+    },
+    {
+      "name": "fix/root-readme-readiness-discovery-link-20261106",
+      "sha": "b81ab6bad35304314fe2d9201004780a1bf2ecb6"
+    },
+    {
+      "name": "fix/runtime-codex-owner-recovery-20260928",
+      "sha": "7ba7c2f7c55b50d7fc9b873904ffe56dd121c50a"
+    },
+    {
+      "name": "fix/runtime-convergence-abc-20261105",
+      "sha": "14950087a3c5881b2f7f57ebfafe2825019fb74a"
+    },
+    {
+      "name": "fix/runtime-predecessor-handoff-20261005",
+      "sha": "b2f0952c3b2b8245998622da388e3a3d64746680"
+    },
+    {
+      "name": "fix/runtime-supervisor-control-recovery-20260928",
+      "sha": "933f35cfaa240d1365e561e0ea4519fe3e227edc"
+    },
+    {
+      "name": "fix/runtime-supervisor-remediation-20260927",
+      "sha": "4e81a1a072082209c3d749d17da375902e4a586f"
+    },
+    {
+      "name": "fix/runtime-supervisor-stage-bcd-20260927",
+      "sha": "e4f22243d65e1bcd6bb6788e2127afe7fcd4003e"
+    },
+    {
+      "name": "fix/rustsec3075-windows-git-child-20261021-1727",
+      "sha": "cfddcf2e5852d5213c6513a16e3bd9154c3ef8bb"
+    },
+    {
+      "name": "fix/rustsec-generated-lock-evidence-20261021",
+      "sha": "cfddcf2e5852d5213c6513a16e3bd9154c3ef8bb"
+    },
+    {
+      "name": "fix/rustsec-guard-literal-newlines-exact-525f054-20261019",
+      "sha": "525f054f4aed24b4cc92283b1573020ce628b8d0"
+    },
+    {
+      "name": "fix/rustsec-guard-newline-format-20261019",
+      "sha": "c14138828ead33601e6a02974c450f273e0146fe"
+    },
+    {
+      "name": "fix/rustsec-no-ignore-fixture-newlines-2910-20261019",
+      "sha": "525f054f4aed24b4cc92283b1573020ce628b8d0"
+    },
+    {
+      "name": "fix/rustsec-zbus-sync-keyring-20261019",
+      "sha": "9a9e3b2e9dabd6957594861208b49f275f273e84"
+    },
+    {
+      "name": "fix/s1-ctrl1-continuation-20261108-14afb",
+      "sha": "84f9473905b45f32b530d3122167d5512aefb057"
+    },
+    {
+      "name": "fix/s1-mem1-truth-20261108-14afb",
+      "sha": "88f4c0efba05ca48c9ff57b09ac3c838af4b4717"
+    },
+    {
+      "name": "fix/s1-verify1-decision-gate-20261108-14afb-r2",
+      "sha": "410afb60ca4ca91b7d77c7902510ee8ddf5f0339"
+    },
+    {
+      "name": "fix/safe-yaml-bazel-crate-alias-20261013",
+      "sha": "ce4a8dd5ba6b6314aaddd7ff4cb1c46c2370e52e"
+    },
+    {
+      "name": "fix/scope-lane-wal-qualification-coverage-20261018-cf8d552e",
+      "sha": "cf8d552e99067c30822d37a458e24160575dff7b"
+    },
+    {
+      "name": "fix/scope-wal-exact-rustfmt-20261018",
+      "sha": "faa3d1cbd0cd7d64da6f4a7b228daee99a4df29d"
+    },
+    {
+      "name": "fix/scope-wal-nofollow-20261018",
+      "sha": "39e3faa727d0ab4cfb4fb12636de841362466fa3"
+    },
+    {
+      "name": "fix/scope-wal-rebase-a70a79d-20261018",
+      "sha": "748b69b67b653abb6b0e8200bbebdba5931b09f3"
+    },
+    {
+      "name": "fix/scope-wal-rustfmt-2788-cc02dba4-20261018",
+      "sha": "bc1facac14bddae2ea83efa662d8200b8d56a080"
+    },
+    {
+      "name": "fix/scoped-learning-contract-v2-20261109-d9bb",
+      "sha": "eba4601966388af65f811d31077fabd00886e4e1"
+    },
+    {
+      "name": "fix/scoped-learning-maintenance-d9bbb5-20261109",
+      "sha": "342fb02346fb1a2f97d684fb1a3ef9042737401b"
+    },
+    {
+      "name": "fix/scoped-learning-v2-20261109-ac851",
+      "sha": "d81cb97c5b01aea0df03d84d40336b25576337de"
+    },
+    {
+      "name": "fix/scoped-native-build-storage-20261019",
+      "sha": "a8ce72907288d1836612446b87cb1d5c184993ac"
+    },
+    {
+      "name": "fix/scoped-native-ci-shards-20261013",
+      "sha": "92c24862c5d69bd7ef4bd5f89e77e135cd3c994a"
+    },
+    {
+      "name": "fix/sealed-qualification-ingress-20261105",
+      "sha": "9a624ce9b82bce419f78f7aace22a16eeb3d4a4c"
+    },
+    {
+      "name": "fix/security-2717-hepta-include-main-impl-20261019",
+      "sha": "1c9b1b079eedff01d2c2c41bee7f84604bcb7d04"
+    },
+    {
+      "name": "fix/security-2717-real-zip-symlink-fixture-20261019",
+      "sha": "f1a66c1453bfd2f13ab88c8068a728b4d7a1e538"
+    },
+    {
+      "name": "fix/security-2829-exact-cargo-resolver-20261018",
+      "sha": "3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03"
+    },
+    {
+      "name": "fix/security-2829-exact-resolved-lock-39136419982",
+      "sha": "dcd7dda3f1c605ba5fd0ed41ce4ba2220e64e6c2"
+    },
+    {
+      "name": "fix/security-2829-noyalib-yaml-alias-20261018",
+      "sha": "d536ecd8623e6d72f0b8f7b6f689fb52deaa16b8"
+    },
+    {
+      "name": "fix/security-2864-rustfmt-import-20261018",
+      "sha": "d536ecd8623e6d72f0b8f7b6f689fb52deaa16b8"
+    },
+    {
+      "name": "fix/security-2871-bazel-rename-alias-sourcehead-20261029",
+      "sha": "f22c1002ee32447127766d435defb53616b9a74d"
+    },
+    {
+      "name": "fix/security-2917-windows-ledger-dir-handle-20261019",
+      "sha": "5254edc006da9f4bd42af517a7648ed402925612"
+    },
+    {
+      "name": "fix/security-3075-native-sshsig-fixtures-20261021",
+      "sha": "d42c879b8f2a139c444de440ae28632406ff49ce"
+    },
+    {
+      "name": "fix/security-4238-native-msvc-cache-abi-20261029",
+      "sha": "0198bb58b2d6688bd185e7e1501c281aded181ea"
+    },
+    {
+      "name": "fix/security-4254-production-alias-dep-intersection-20261029",
+      "sha": "9205acd6de4da8262f0aee00750ae0570979c1c3"
+    },
+    {
+      "name": "fix/security-4257-alias-kind-diagnostic-20261029",
+      "sha": "1b073c7b78e7e2b2422fd9f801183eefeca27367"
+    },
+    {
+      "name": "fix/security-cargo-lock-accidental-prefix-20261018",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-header-20261018-0907",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-header-20261018-a7",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-header-watch-20261018",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-invalid-header-20261018-a6",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-invalid-toml-20261018-b8",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-prefix-20261018-c10",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargo-lock-stray-banner-20261018",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-cargolock-leading-diagnostic-20261018",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-current-head-rustfmt-20261018",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-keyring-secret-service-sync-20261018",
+      "sha": "6fe608300f0eb27d2a1e3f6a713997b54ee9de1d"
+    },
+    {
+      "name": "fix/security-keyring-sync-no-zbus-20261018",
+      "sha": "b8d94f455998078a70f1d6174d21f915dc5f8c52"
+    },
+    {
+      "name": "fix/security-keyring-vendored-dbus-20261018",
+      "sha": "6fe608300f0eb27d2a1e3f6a713997b54ee9de1d"
+    },
+    {
+      "name": "fix/security-keyring-vendored-dbus-exact-20261018",
+      "sha": "f1b128f888f021591fdb11b94e28cf467633d70f"
+    },
+    {
+      "name": "fix/security-lock-header-fmt-exact-head-20261018-a9",
+      "sha": "fae5c93df6326d6bc2376a06c5d9ac467d15d4ea"
+    },
+    {
+      "name": "fix/security-lock-header-format-exact-20261018-c9",
+      "sha": "1bd871a608055cbc59f25c0a216e834a1163377b"
+    },
+    {
+      "name": "fix/security-matrix-anymap-20261017",
+      "sha": "d6a5785debeb27610c39b43f9ba206d7359cb2d5"
+    },
+    {
+      "name": "fix/security-prost-toolchain-fmt-20261018",
+      "sha": "7e6664ace9298032e7e5778d57969e83f6b06407"
+    },
+    {
+      "name": "fix/security-rama-macros-lock-20261018",
+      "sha": "8c9cfafbd02d19750bc277bfbb3c9a67742c75ec"
+    },
+    {
+      "name": "fix/security-rmcp-client-sync-keyring-20261018",
+      "sha": "9a3b88e0dcb2532a9c4839890a2545d59c833b22"
+    },
+    {
+      "name": "fix/security-rmcp-keyring-sync-vendored-20261018",
+      "sha": "21eeda36754b523461464a423acfc0c5f6388a01"
+    },
+    {
+      "name": "fix/security-rustls-02346-shared-encoder-20261018",
+      "sha": "3283953a4e9f9b26c161482124b6f09e583112e4"
+    },
+    {
+      "name": "fix/security-rustls-20261017",
+      "sha": "5b943a0aeefdbfe7fff8d27a2d5060f4b47b2463"
+    },
+    {
+      "name": "fix/security-serde-yaml-20261017",
+      "sha": "b712447b7ffbd5725a9eed6f8c1adbf5ead9290b"
+    },
+    {
+      "name": "fix/security-sync-keyring-cargo-lock-exact-20261018-1009",
+      "sha": "3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03"
+    },
+    {
+      "name": "fix/security-zip-20261017-v2",
+      "sha": "b91ffb867df4c11e4932cd2b859cacee4c580c7b"
+    },
+    {
+      "name": "fix/security-zip-20261017-v3",
+      "sha": "b91ffb867df4c11e4932cd2b859cacee4c580c7b"
+    },
+    {
+      "name": "fix/security-zip-20261017-v4",
+      "sha": "a31fab76ddaa73df2c98a21709d3477747ac2fae"
+    },
+    {
+      "name": "fix/security-zip-20261017",
+      "sha": "030a9a833c5442bc87b3ee1ab1724798fa2e8f75"
+    },
+    {
+      "name": "fix/security-zip-lock-reconcile-20261018",
+      "sha": "c197d2925d99eb78de201d91477f18431a960971"
+    },
+    {
+      "name": "fix/security-zip-minimal-deflate-20261018",
+      "sha": "74bd720790d1030f7654e90b0aac2b4d3de9355f"
+    },
+    {
+      "name": "fix/security-zip-vendored-sync-integration-20261018",
+      "sha": "3f23b5e4c84003dd7b5c894a35156ffe5bf8ba03"
+    },
+    {
+      "name": "fix/shared-cell-matrix-ruff-exact-20261018-0913",
+      "sha": "7d0dc0de3226c12e2017ac4b36d23442816c0d63"
+    },
+    {
+      "name": "fix/shared-encoder-fleet-strict-clippy-20261018",
+      "sha": "7fd4b93c6fd917ad5e07115a6b2a929ea62b8964"
+    },
+    {
+      "name": "fix/shared-encoder-pool-invariants-20261017",
+      "sha": "b36e03842a7b09c83891eb6a0ac5725cecd344b6"
+    },
+    {
+      "name": "fix/shared-encoder-windows-v8-sandbox-20261018",
+      "sha": "1de8c3f6f6fbac0c5a3060bbbe1541e270285480"
+    },
+    {
+      "name": "fix/signed-intent-recovery-base-6fa-20261011",
+      "sha": "6fa7629f08d2d60a213bda24b2d34bd68685edef"
+    },
+    {
+      "name": "fix/signed-intent-recovery-base-65fd",
+      "sha": "65fda6872a93654d42aebd4d546dec80a5238773"
+    },
+    {
+      "name": "fix/signed-intent-recovery-base-3447-20261011",
+      "sha": "3447fbfeee660aa68e6eb6473e9caf4b08298946"
+    },
+    {
+      "name": "fix/signed-intent-recovery-base-05961-20261011",
+      "sha": "05961c1d42ca1dcd71bca66f424ecb7f438aa534"
+    },
+    {
+      "name": "fix/signed-intent-recovery-clippy-3447-20261011",
+      "sha": "a1674c2713a514114c7d348108d1b9825aec53dd"
+    },
+    {
+      "name": "fix/signed-intent-recovery-clippy-base-3447-20261011",
+      "sha": "5f22d5bf5cd534395977b8a88a0b9cfcaeea8dca"
+    },
+    {
+      "name": "fix/signed-intent-recovery-codespell-3447-20261011",
+      "sha": "1a8395e83435ae9b3c93cdf8521dc43089b858db"
+    },
+    {
+      "name": "fix/signed-intent-recovery-codespell-20261011",
+      "sha": "ddc2f3e61c225cfaa7badecdf05f676db0c46a80"
+    },
+    {
+      "name": "fix/signed-intent-recovery-codespell-base-3447-20261011",
+      "sha": "a1674c2713a514114c7d348108d1b9825aec53dd"
+    },
+    {
+      "name": "fix/signed-intent-recovery-ownership-6fa-20261011",
+      "sha": "84c6b79f784733edebebd3e78d60fb35ec40397a"
+    },
+    {
+      "name": "fix/signed-intent-recovery-ownership-3447-20261011",
+      "sha": "5f22d5bf5cd534395977b8a88a0b9cfcaeea8dca"
+    },
+    {
+      "name": "fix/signed-intent-recovery-ownership-05961-20261011",
+      "sha": "1ce6b5369cf68c20ee9a3dcc654d827ad17a154f"
+    },
+    {
+      "name": "fix/signed-intent-recovery-ownership-20261011",
+      "sha": "f068895fd55e59608725344736e3cc336b76cb72"
+    },
+    {
+      "name": "fix/sshsig-command-import-20261106-ef0cf55",
+      "sha": "92afaa8100b6a82fa6b6905b255de1cbdf56df34"
+    },
+    {
+      "name": "fix/state-immutable-image-fixtures-e516-20261104",
+      "sha": "e72081b5f211ee0ab25290c2261971fbc90de931"
+    },
+    {
+      "name": "fix/stem-global-macos-fleet-clippy-20261014",
+      "sha": "1f6cb42f2b038baf9c6d3e1795684c77ef23924e"
+    },
+    {
+      "name": "fix/stem-public-smoke-packaging-p0-20261013",
+      "sha": "e1a67ff53d4ea2a210fa2ace0f6d13db02d60b31"
+    },
+    {
+      "name": "fix/supervisor-3087-budget-receipt-disk-20261022",
+      "sha": "0a1c9f042a4feb4df2a00101e0bde0571ebf84a7"
+    },
+    {
+      "name": "fix/supervisor-3087-exhaustion-contract-20261022-1120",
+      "sha": "de0219714257e9134d304593bd5b05a53cb4c3c3"
+    },
+    {
+      "name": "fix/supervisor-adopted-pidfd-20261005",
+      "sha": "7f36cf017a2d3656246ce50969946b7120c6be9c"
+    },
+    {
+      "name": "fix/supervisor-budget-evidence-3087-20261022",
+      "sha": "de0219714257e9134d304593bd5b05a53cb4c3c3"
+    },
+    {
+      "name": "fix/supervisor-budget-exhaustion-evidence-20261022",
+      "sha": "0a1c9f042a4feb4df2a00101e0bde0571ebf84a7"
+    },
+    {
+      "name": "fix/supervisor-control-transport-deadline-20261005",
+      "sha": "e90c2b3ed040ee785cfb6abdb97c3f81809b22ea"
+    },
+    {
+      "name": "fix/supervisor-native-runfiles-20261104",
+      "sha": "c896807610b8031f893abd6fec4cfd83bf4f72ea"
+    },
+    {
+      "name": "fix/supervisor-pending-restart-replay-20261006",
+      "sha": "cdd5a2b455b992870c3d2e96e4811f7aea03c7ef"
+    },
+    {
+      "name": "fix/supervisor-required-feature-targets-20261004",
+      "sha": "a1f48e909dcf65740489e670c1751793b978e700"
+    },
+    {
+      "name": "fix/supervisor-restart-exhaustion-durable-20261022-1740",
+      "sha": "de0219714257e9134d304593bd5b05a53cb4c3c3"
+    },
+    {
+      "name": "fix/supervisor-signed-abort-reconcile-20261021",
+      "sha": "5805e37161390382d94de5012ebb58112a19cfae"
+    },
+    {
+      "name": "fix/supervisor-typed-durable-restart-events-20261018",
+      "sha": "56c622ead59a2504f78b52a2128b85d40fd4086d"
+    },
+    {
+      "name": "fix/taskflow-bazel-sensitive-scope-5215-20261107-gpt6",
+      "sha": "806d17a16624b90f8bd8955978296e128fa01432"
+    },
+    {
+      "name": "fix/taskflow-replay-diff-base-20261107-gpt6",
+      "sha": "8ac3e707f4522d951a159c54eaa356903cddf2f1"
+    },
+    {
+      "name": "fix/ui-common-clippy-20261103",
+      "sha": "fca22d0d1e19ba64a2502093d20774d41cc6377a"
+    },
+    {
+      "name": "fix/ui-gateway-neuron-trigger-20261021",
+      "sha": "be7950e4b0fdb6455afb252648f48d81bd252871"
+    },
+    {
+      "name": "fix/unified-dependency-closure-20261103",
+      "sha": "5c4851d50b578e0a5cc1883a98c6802cf934e066"
+    },
+    {
+      "name": "fix/unified-native-platform-20261104",
+      "sha": "b133bba3189cfd22ce35a890230cb410c1c2bbaf"
+    },
+    {
+      "name": "fix/v5-4145-terminal-assert-macro-e0659-20261028-v1",
+      "sha": "41ffb582306c953ae13945901342d72ee46f7d93"
+    },
+    {
+      "name": "fix/v8-canary-cargo-sandbox-feature-parity-20261029",
+      "sha": "151a44864e3114509d1be0eadf5bcd2442c22a0f"
+    },
+    {
+      "name": "fix/v8-canary-exact-feature-smoke-fixture-20261029",
+      "sha": "5b458152b6ffc4a774fd4b922f96fa930e027c75"
+    },
+    {
+      "name": "fix/v8-canary-unparseable-merge-base-20261018",
+      "sha": "35edda311360c60aab3ca7454ba036f2896f7392"
+    },
+    {
+      "name": "fix/v8-cold-build-budget-20261005",
+      "sha": "a3792e75089830ccca3e4a84c7650d0a7ffde467"
+    },
+    {
+      "name": "fix/v8-empty-transport-args-20261018",
+      "sha": "e867dea87e77b0e34591d0265756d64266d0f5fa"
+    },
+    {
+      "name": "fix/v8-empty-transport-neuron-exact-20261018-1330",
+      "sha": "dbf056aefad3425e466fbe9ab0e5a903bd8e7386"
+    },
+    {
+      "name": "fix/v8-poc-windows-sandbox-feature-20261013",
+      "sha": "83404d16c384f8d5eab94a3079e8aa3b15750d7c"
+    },
+    {
+      "name": "fix/verify3-common-automation-fixtures-20261110",
+      "sha": "a10d4dc85a6f814cf50c6099b8412c28b72ccc77"
+    },
+    {
+      "name": "fix/verify3-common-platform-fixtures-20261110",
+      "sha": "b1de4096caa908a7c60bca889a3d29c7eda54f2c"
+    },
+    {
+      "name": "fix/wal-owner-lock-local-test-runner-20261106",
+      "sha": "3c2aa27caebd0d0ca2a6b88eab5f9614c53fa3b3"
+    },
+    {
+      "name": "fix/websocket-client-metadata-fixture-20261104",
+      "sha": "a90bd4b9d18a9b28dff44f80753d2c49b14f6ee3"
+    },
+    {
+      "name": "fix/windows-acl-denial-root-cause-20261022",
+      "sha": "16b3fb6336111f3dbea36684dd7e6537fd00e542"
+    },
+    {
+      "name": "fix/windows-authenticated-uds-20261103",
+      "sha": "c6f98ff2b5d6ae9056cdfe100a4494b8dbee9899"
+    },
+    {
+      "name": "fix/windows-authority-owners-20261005",
+      "sha": "b53fd69fdb7e7d4f62d31bce5f617b18c84dedbf"
+    },
+    {
+      "name": "fix/windows-bazel-exact-qualification-20261012",
+      "sha": "2d1c59f02c426e6ad0509d23bc82ebed2649b4e4"
+    },
+    {
+      "name": "fix/windows-bazel-process-environment-20261103",
+      "sha": "112c05026a36a3555b01886c5bad9bb9f9c1d2e8"
+    },
+    {
+      "name": "fix/windows-cache-native-msvc-20261103",
+      "sha": "d0ac7098d29313376ebb1b60ed09e5ef5d1b5449"
+    },
+    {
+      "name": "fix/windows-checkout-longpaths-all-jobs-20261107-gpt6",
+      "sha": "c19c77a2d1ed477caffb0261bdd43a1f9918adff"
+    },
+    {
+      "name": "fix/windows-cmd-raw-quoted-tail-20261106-gpt6",
+      "sha": "d5df30da4c6d4340bdc046ca79b37368f767a73b"
+    },
+    {
+      "name": "fix/windows-codex-cli-doctor-snapshot-20261012",
+      "sha": "1fe2a337fea06b12b08ebea20199c7affb2a2c8b"
+    },
+    {
+      "name": "fix/windows-conpty-winapi-void-type-20261018",
+      "sha": "25c1bdd55f370722ea9d8d5daca8d015e3b53aae"
+    },
+    {
+      "name": "fix/windows-control-openssh-20261108-s1s2",
+      "sha": "62d0927e6f7079e5c138a4e16abdc467eeda03a9"
+    },
+    {
+      "name": "fix/windows-core-lifecycle-order-20261103",
+      "sha": "51fb58859a49500d56220dabd3924c23f1923c79"
+    },
+    {
+      "name": "fix/windows-core-websocket-fork-20261104",
+      "sha": "25f6744fc7b44b98b6d35295d94cb82edf3a2046"
+    },
+    {
+      "name": "fix/windows-current-timeout-20261110",
+      "sha": "92f888fc8dedaa96ca8cd7f3840e370b4a1ab4e3"
+    },
+    {
+      "name": "fix/windows-git-child-lifecycle-fixture-20261012",
+      "sha": "c41a3e3d1790a1de1301e519848cc4422e250301"
+    },
+    {
+      "name": "fix/windows-git-longpaths-checkout-20261107-gpt6",
+      "sha": "35ddf2e08233827f2bbe2a903815271c6d7d1988"
+    },
+    {
+      "name": "fix/windows-git-process-wrapper-file-test-v1",
+      "sha": "74784d6c5c288e70c2297fc1c28d4b0df3ade1a4"
+    },
+    {
+      "name": "fix/windows-git-wrapper-encoded-command-20261020",
+      "sha": "1eaa15f02b3d3c48904b2fb2f6c2835c31b82bff"
+    },
+    {
+      "name": "fix/windows-git-wrapper-test-bootstrap-20261021",
+      "sha": "b3696c438c3ee9827b0234fa5127371ea35ab132"
+    },
+    {
+      "name": "fix/windows-helper-manifest-runfiles-20261011",
+      "sha": "23b60df4ba4b0f8d92b4178187cc6aecf88604e2"
+    },
+    {
+      "name": "fix/windows-helper-manifest-runfiles-20261012",
+      "sha": "51c28aa828721e5a3e1c9a2a5f476de67c479c7f"
+    },
+    {
+      "name": "fix/windows-inherited-namespace-parser-20261103",
+      "sha": "19af2b4fb3dd84feb65c0271b07cf8026cab16b3"
+    },
+    {
+      "name": "fix/windows-ledger-directory-sync-20261020",
+      "sha": "a71759ca4d65bc015a2ddf182fce149af16c1e5a"
+    },
+    {
+      "name": "fix/windows-legacy-delete-admission-20261105",
+      "sha": "a55150f901bf27bea8a112e03a13bc88b71ba81e"
+    },
+    {
+      "name": "fix/windows-memory-native-clippy-20261019-0755",
+      "sha": "24ebb3e0ce001e384f28430619a2b5d6c4cf954e"
+    },
+    {
+      "name": "fix/windows-ordinary-consumers-20261104",
+      "sha": "44dc4a4b9ee3f3c0642a72e0bea47c3109acd914"
+    },
+    {
+      "name": "fix/windows-original-cmd-raw-arg-20261105-gpt6",
+      "sha": "7780289287c3d7658b72feed4d3791087d6931e7"
+    },
+    {
+      "name": "fix/windows-private-state-adapters-20261103",
+      "sha": "19af2b4fb3dd84feb65c0271b07cf8026cab16b3"
+    },
+    {
+      "name": "fix/windows-regression-fixtures-isolated-20261013",
+      "sha": "976cd244905fb4213cae5229ec369225f0752681"
+    },
+    {
+      "name": "fix/windows-retained-parent-rename-kernel-denial-20261026-1518",
+      "sha": "a87f64620d8f112f274f071c62ed4c7df6b7bb03"
+    },
+    {
+      "name": "fix/windows-retained-sqlite-recovery-20261103",
+      "sha": "eca650d221b58624d48f199b337cab2e01dac8ac"
+    },
+    {
+      "name": "fix/windows-scope-lane-wal-torn-tail-permission-20261018",
+      "sha": "e7da41baad32748e4d53638589301ec09d5b0e80"
+    },
+    {
+      "name": "fix/windows-scope-wal-exact-rustfmt-20261018-0921",
+      "sha": "b9028ae8674ec7a5eb68b62a7e48a2c1d0f6deea"
+    },
+    {
+      "name": "fix/windows-setup-error-causes-20261106",
+      "sha": "18bbef4f61c6086f145bdb6f7acbf82127741a14"
+    },
+    {
+      "name": "fix/windows-strict-read-plan-20261103",
+      "sha": "1d74edfa5779d4181e33e055aedeb8ef13fe0b92"
+    },
+    {
+      "name": "fix/windows-wal-truncate-rights-newest-encoder-20261018",
+      "sha": "864bbabdabb39ac7381ed684e14950c9741c0a29"
+    },
+    {
+      "name": "fix/windows-wrapper-archive-inputs-20261104-gpt6",
+      "sha": "9fd4fd6bf76449c75b6ead3ff78816b1077f3f11"
+    },
+    {
+      "name": "fix/zstd-sys-2-1-msvc-bazel-patch-20261103",
+      "sha": "fe861363415366dc763517f3e6dbdfcf5b989ef7"
+    },
+    {
+      "name": "fix/2688-authbus-global-capacity-20261019",
+      "sha": "bed75b66743dbd532b06d69892f21cadeeb6e01f"
+    },
+    {
+      "name": "fix/2695-lockfile-prettier-20261019-1335",
+      "sha": "ecc4f8c42035bf6fdec288137ddc822e619d5e59"
+    },
+    {
+      "name": "fix/2734-exact-ruff-closure-20261018",
+      "sha": "7d0dc0de3226c12e2017ac4b36d23442816c0d63"
+    },
+    {
+      "name": "fix/2768-fleet-clippy-admit-fixture-20261019",
+      "sha": "8219358eb1160c3ac464dbfcbc5128c5d2b2f9d5"
+    },
+    {
+      "name": "fix/2858-metrics-ci-identity-20261020-0855",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c"
+    },
+    {
+      "name": "fix/2858-metrics-wal-exact-identity-20261020-1355",
+      "sha": "3eefbc2f1d3994ba055268cef523fd0f1f84093c"
+    },
+    {
+      "name": "fix/2879-memory-schema-sqlite-shim-20261019-0208",
+      "sha": "a74c7df6d9fe7edcc7de7db68b2116b404fa5ed8"
+    },
+    {
+      "name": "fix/2904-scope-wal-rustfmt-20261019",
+      "sha": "5993cb909547070e4b56ca9465996a5a946fafca"
+    },
+    {
+      "name": "fix/2913-exact-bazel-sqlite-test-shim-20261019",
+      "sha": "26105daf252e2d6aa416b881c650d6db2c8a9e81"
+    },
+    {
+      "name": "fix/2917-zip-fixture-rustfmt-20261020-0331",
+      "sha": "9a9e3b2e9dabd6957594861208b49f275f273e84"
+    },
+    {
+      "name": "fix/2917-zip-startup-rustfmt-20261020-0730",
+      "sha": "9a9e3b2e9dabd6957594861208b49f275f273e84"
+    },
+    {
+      "name": "fix/2918-fleet-sweep-canonical-fixture-20261019-2108",
+      "sha": "ba31ed52ed6895f91ef669b9c437d6e3e73a7285"
+    },
+    {
+      "name": "fix/2918-fleet-workspace-sweep-canonical-20261019-1720",
+      "sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6"
+    },
+    {
+      "name": "fix/2918-win-fleet-sweep-canonical-fixture-20261019-1518",
+      "sha": "ca5b70d2684fb96063f5b70bb276525906dae7b6"
+    },
+    {
+      "name": "fix/2919-scoped-native-disk-bound-20261020",
+      "sha": "151a2c80f8fa549e5b7162eef3c846bf2fd90b5d"
+    },
+    {
+      "name": "fix/2921-memories-unit-codex-runfile-20261020",
+      "sha": "22293e588c95f4fcb5b45907eb4fed3b73fdb755"
+    },
+    {
+      "name": "fix/2924-win-zip-symlink-fixture-20261020",
+      "sha": "8d1c0f8603f988dfcef77e808183931f18c4aab8"
+    },
+    {
+      "name": "fix/2941-agentd-control-peer-rustfmt-20261020-0144",
+      "sha": "f3aadb5401265074428545c5ccf5e6e1b27941d4"
+    },
+    {
+      "name": "fix/2941-agentd-peer-rustfmt-20261020-0652",
+      "sha": "f3aadb5401265074428545c5ccf5e6e1b27941d4"
+    },
+    {
+      "name": "fix/2944-automation-v1-rewind-timer-lifecycle-20261021",
+      "sha": "d50f043a5017ff1315e8d40669c535fe89eb65bd"
+    },
+    {
+      "name": "fix/2944-buildifier-attrs-order-20261020-0810",
+      "sha": "2d586a74991ff0163b4e5368455f93406ae1ccad"
+    },
+    {
+      "name": "fix/2944-product-browser-identity-ci-contract-20261021",
+      "sha": "98b40cb04a23a36a07212ef7d826024f37536057"
+    },
+    {
+      "name": "fix/2945-contract-expected-sha-cli-20261020-0343",
+      "sha": "719243606f6e718ac64b4e4b28a4b3cb4e337c23"
+    },
+    {
+      "name": "fix/2959-ci-deadline-process-race-20261020-1133",
+      "sha": "7d7728a66a81ba8b30399c12ef9b2eda926e4766"
+    },
+    {
+      "name": "fix/2962-agentd-runner-impl-delimiter-20261020",
+      "sha": "1452cfaa30c9df1012088b6379dd790a909a722a"
+    },
+    {
+      "name": "fix/2963-adapter-status-test-scope-20261020-2023",
+      "sha": "1bc77df729081280a17284be3ff52f612f0bbd94"
+    },
+    {
+      "name": "fix/2963-fleet-clippy-host-fixture-20261020-1911",
+      "sha": "1bc77df729081280a17284be3ff52f612f0bbd94"
+    },
+    {
+      "name": "fix/2963-ndu-probabilityq32-20261021-0214",
+      "sha": "0d33278387a7a0f0a36572e30109895de57398da"
+    },
+    {
+      "name": "fix/2963-zip-duplicate-writer-finalize-20261021",
+      "sha": "ba20eab6ba9b3408135ebbfcbc3997e724f932b3"
+    },
+    {
+      "name": "fix/2976-exact-cargo-lock-resolver-20261021",
+      "sha": "ee446135a171031e0bcfa9516523a18cb05abaa1"
+    },
+    {
+      "name": "fix/2986-adapterstatus-compile-20261021-0703",
+      "sha": "1c3152844806500e507089f6621f87b04f3f3b85"
+    },
+    {
+      "name": "fix/3005-queue-rustfmt-exact-head-20261021-1140",
+      "sha": "5bd91d442f4cc89bc8eec09a37dd00eced82b705"
+    },
+    {
+      "name": "fix/3023-learning-artifacts-libc-lock-20261021",
+      "sha": "a956ba2191e4817cbdeaa4f6a959544b72305c06"
+    },
+    {
+      "name": "fix/3060-nextest-junit-store-20261021",
+      "sha": "655d4ecb21d5bbeaa92af8fbc1a8a1df33b9b433"
+    },
+    {
+      "name": "fix/3075-toml-lock-resolver-20261021",
+      "sha": "eb0361043e2c8e37d9e9af4924fa8dd6e522f00c"
+    },
+    {
+      "name": "fix/3076-windows-wal-rustfmt-20261021",
+      "sha": "c4108019d016dc29081ed9770ee22ad2d5577b84"
+    },
+    {
+      "name": "fix/3077-supervisor-exhaustion-evidence-20261021",
+      "sha": "499da5bcb375e52456d365e6848b62a9747454bb"
+    },
+    {
+      "name": "fix/3079-windows-matrixd-v8-native-20261021",
+      "sha": "89398f8d5fb500839f4d82ac925a7bc512085801"
+    },
+    {
+      "name": "fix/3080-signed-intent-abort-reconcile-20261021",
+      "sha": "329c819ba57a9c324b4834c3445dc55c42486343"
+    },
+    {
+      "name": "fix/3083-rustsec-tls-trust-20261021",
+      "sha": "57e3876ca313780639bcac46317eae73e227db7a"
+    },
+    {
+      "name": "fix/3084-keyring-zbus-sync-20261021",
+      "sha": "ac0d2369da5031ed8ea047dc65cec6fea119fa97"
+    },
+    {
+      "name": "fix/3086-authbus-capacity-fixture-20261022",
+      "sha": "ac0d2369da5031ed8ea047dc65cec6fea119fa97"
+    },
+    {
+      "name": "fix/3090-v8-cargo-smoke-rustc-195-20261022",
+      "sha": "157a06f55b5f80c2b2153b23867ce916035e0942"
+    },
+    {
+      "name": "fix/3132-native-toml-indexmap-lock-20261022",
+      "sha": "0ec19bf34a257f86a503e892180577722288bd3b"
+    },
+    {
+      "name": "fix/3293-i18n-config-target-alias-20261022-2315",
+      "sha": "14dba8f28a2a9465f41deb1862a9390488be33c3"
+    },
+    {
+      "name": "fix/3293-i18n-versioned-bazel-alias-20261022",
+      "sha": "14dba8f28a2a9465f41deb1862a9390488be33c3"
+    },
+    {
+      "name": "fix/3444-objective-qualification-20261103-product",
+      "sha": "ef22ab4f328e6c3f32836745d4c4c1f8dad29190"
+    },
+    {
+      "name": "fix/3499-native-junit-20261103-product",
+      "sha": "8d4d386536b383bb61051888bca0b1aa8ccbf703"
+    },
+    {
+      "name": "fix/4080-bazel-empty-compile-data-glob-20261028",
+      "sha": "ca6456363bb306ef4b1eba100739d17695fe7671"
+    },
+    {
+      "name": "fix/4156-fleet-authority-clippy-20261028-v1",
+      "sha": "ca61821adaacd614d395dc30823c364e0d8d833f"
+    },
+    {
+      "name": "fix/4156-terminal-abort-status-contract-20261028",
+      "sha": "6dba92e567c1b55f1906f2054337e40c5f90e66f"
+    },
+    {
+      "name": "fix/4158-queue-hook-rustfmt-20261028",
+      "sha": "9991245de3c0700771cfa9f81bda303bde7b3580"
+    },
+    {
+      "name": "fix/4165-signed-intent-e0382-compose-20261028",
+      "sha": "6c342f42d48901c7a48a5635f114597ddd5c78cb"
+    },
+    {
+      "name": "fix/4167-native-reverse-consumer-enospc-20261028",
+      "sha": "3c1408af15b5284c62869a6e8dfbd96d782a3daa"
+    },
+    {
+      "name": "fix/4169-windows-msys-verified-mktemp-20261028",
+      "sha": "5e5d4519949d1c936b03874a46cb4feae905e5ab"
+    },
+    {
+      "name": "fix/4170-fleet-authority-test-clippy-20261028",
+      "sha": "4c416149f96189b15744ed4c179a9e13e6e07e84"
+    },
+    {
+      "name": "fix/4172-verified-native-bazel-test-tmpdir-20261028",
+      "sha": "a0acd24063a38bdb39f6f2b3be41829848dd79a4"
+    },
+    {
+      "name": "fix/4187-scoped-native-full-test-timeout-20261028",
+      "sha": "5f8743d8ec4b478608d2539a8e7e2d78fd4cea53"
+    },
+    {
+      "name": "fix/4192-scoped-native-inner-timeout-20261028",
+      "sha": "15ce25881a9bcbe3cc71b289f291eb549c19f0b6"
+    },
+    {
+      "name": "fix/4194-verified-refs-devdrive-20261028",
+      "sha": "1482bc201f71c3463b5ec5b75ee350d693881122"
+    },
+    {
+      "name": "fix/4201-prioritize-restart-native-evidence-20261028",
+      "sha": "ade7720814bc9710ea2437957517bc168a48f3bc"
+    },
+    {
+      "name": "fix/4206-restart-budget-exact-sha-env-20261028",
+      "sha": "88358064d8bb3cad0a089cbac9826d2ad98cf352"
+    },
+    {
+      "name": "fix/4209-typed-restart-audit-receipts-20261028-v1",
+      "sha": "6f9608cca3913bef9b3ff737d4609664b27e0b3f"
+    },
+    {
+      "name": "fix/4210-agentd-bellman-cargo-shear-20261029",
+      "sha": "a35acfa220a11a179e3e3db4c30c3a8de5c1b4ff"
+    },
+    {
+      "name": "fix/4213-restore-native-bellman-owner-20261029",
+      "sha": "4090eca8015cbc14059482f28b0facc7b3948452"
+    },
+    {
+      "name": "fix/4220-exact-exclusion-blob-shards-20261029",
+      "sha": "94904213e2533c0d40a8ecf536c3f22594a7cc06"
+    },
+    {
+      "name": "fix/4253-scoped-bazel-crate-aliases-20261029",
+      "sha": "109097f029b79ed6bd6bc0cfb6ed9de6eae73e21"
+    },
+    {
+      "name": "fix/4257-cargo-label-alias-kind-20261029",
+      "sha": "f4a69e8078a4396483ef8116dce81f79221d7597"
+    },
+    {
+      "name": "fix/4257-normal-cargo-alias-kind-20261029-gpt6",
+      "sha": "8892896601243ab1b8751820a2bba042f6eb9966"
+    },
+    {
+      "name": "fix/4277-restart-budget-native-test-20261029",
+      "sha": "9f86c081ac2637989c20148ac45d34323667bab9"
+    },
+    {
+      "name": "fix/4300-cli-explicit-bin-root-20261029",
+      "sha": "6ae1ea622565c49ee32380b11bdcc97b7ec3fc8e"
+    },
+    {
+      "name": "fix/4314-supervisor-restart-audit-events-20261029",
+      "sha": "1486622b6c5e7354dc23aa5e9443539a2807c089"
+    },
+    {
+      "name": "fix/4316-plasticity-ledger-e2e-20261029",
+      "sha": "d22c9b906e1ce23f75bd0f20ee54a6c84c075647"
+    },
+    {
+      "name": "fix/4318-windows-canonical-fixtures-20261029",
+      "sha": "9d097413eb7a7b8af2cdceb34f6521c5e767d517"
+    },
+    {
+      "name": "fix/4321-scoped-rust-enospc-20261029",
+      "sha": "21906636481ff1c695308be47d884a1afc849065"
+    },
+    {
+      "name": "fix/4323-windows-federation-pathuri-20261029",
+      "sha": "f2e0636a9e98c1d86e6dfe3b4be93b5ce3fa78dc"
+    },
+    {
+      "name": "fix/4378-owner-assert-20261103-product",
+      "sha": "34983c09a5435d7d163071ff7bfa1cef86983584"
+    },
+    {
+      "name": "fix/4853-winchild-clone-e0277-20261105-gpt6",
+      "sha": "bbbb96e86009e53899de7a030b76c20d76c56a8c"
+    },
+    {
+      "name": "fix/4855-bazel-host-filelock-20261106",
+      "sha": "ab3fce2e1b44defe08987edd77fba579f0f87989"
+    },
+    {
+      "name": "fix/4928-robrix-ime-trace-rustfmt-20261106",
+      "sha": "74864c354e3c98ec1d93d368ee8bec7a850b5f40"
+    },
+    {
+      "name": "fix/5065-force-uncached-linux-wal-test-20261106-gpt6",
+      "sha": "56c74513f4202905314ecc8f9e4914b838371975"
+    },
+    {
+      "name": "fix/5155-ruff-scope-test-spacing-20261106-gpt6",
+      "sha": "a3db9a06be7ede6d0b9cda2305c898f830e53eb8"
+    },
+    {
+      "name": "fix/5191-taskflow-v1-fixture-rewind-20261106-gpt6",
+      "sha": "f915ee92fdce3d2c4fd8e39be92dd0db04555938"
+    },
+    {
+      "name": "freeze/ui-native-implementation-a417e575",
+      "sha": "a417e5756d4dba18737b9d3e6aa8b13016c23662"
+    },
+    {
+      "name": "handoff/v8-bazel-9-3-20261020",
+      "sha": "9efa85056170f7b96ea75b17139843d4e3e6500d"
+    },
+    {
+      "name": "hcsn-c2-exported-native-semantics-v5-20261111",
+      "sha": "2ba46c6867bbb7d26f02bd14bdb6370413fea269"
+    },
+    {
+      "name": "hpca-q24-owner-visible-zero-feedback-20261111",
+      "sha": "cbee4100df167c750060d4d074a7068516a34dbe"
+    },
+    {
+      "name": "inference-worker-full-remediation-20260927",
+      "sha": "39e0712fe3d3031eec715e4e46da9275d592abb6"
+    },
+    {
+      "name": "integration/agentd-control-peer-auth-v8-20261020",
+      "sha": "f3aadb5401265074428545c5ccf5e6e1b27941d4"
+    },
+    {
+      "name": "integration/agentd-raw-codespell-on-3769-20261024",
+      "sha": "d5a024d858a5d4ae5aa3abef4b6d1e02dc1ba1d2"
+    },
+    {
+      "name": "integration/caller-proof-test-only-on-git-fixture-20261026",
+      "sha": "9a3dcf51c82a4b88c21ecfda7cbfec47729e5ad9"
+    },
+    {
+      "name": "integration/cell-owner-clippy-sqlite-20261019",
+      "sha": "4ccbef2318c2ff965f2fd3494975ba793fefa876"
+    },
+    {
+      "name": "integration/cell-owner-wal-fleet-20261019",
+      "sha": "5d191d7443c7da095589a237ff137707823ac112"
+    },
+    {
+      "name": "integration/cell-receipt-worker-metrics-20261022",
+      "sha": "da0a1f538e4b98ad892f14d59a2c0376c23bdaa6"
+    },
+    {
+      "name": "integration/cell-split-matrix-signed-proof-20261018",
+      "sha": "8eea1451cba4e31eab69eac5a1444bcb44a7b7be"
+    },
+    {
+      "name": "integration/cell-split-p0-backlog-admission-20261014",
+      "sha": "488fb03405cd7a2f8502a9d1cb4d621df708f234"
+    },
+    {
+      "name": "integration/cell-split-p0-ratchet-uds-20261014",
+      "sha": "a902601ba5e46d52a7f040930a928824d3e52189"
+    },
+    {
+      "name": "integration/ci-portability-f9c80c0-20261011",
+      "sha": "55222a65cf11efe4e2791caf52ad64bddefc18ac"
+    },
+    {
+      "name": "integration/cli-recursion-root-windows-20261028",
+      "sha": "b47e157fcf3a92d12b2ed8c8125a235ab9c8cc75"
+    },
+    {
+      "name": "integration/fleet-clippy-on-cell-owner-20261019",
+      "sha": "e9ea0e992348c08efd9d2cc81aab7179e39a4dc3"
+    },
+    {
+      "name": "integration/hepta-2217-live-control-marker-fd-20261015",
+      "sha": "30deefa7215302ceef5bd4ca4884b8d421642839"
+    },
+    {
+      "name": "integration/hepta-2232-supervisor-original-control-deny-20261015",
+      "sha": "86a7a9523c57c2db77c0fabe16126d4944eeeb8d"
+    },
+    {
+      "name": "integration/hepta-2238-exact-hosted-fmt-convergence-20261015",
+      "sha": "35e48e170ecde4ab362868c1482a56727a38c9aa"
+    },
+    {
+      "name": "integration/hepta-2248-neuron-original-effect-deny-20261015",
+      "sha": "4d334872d463403101635ddfa025755d4b03c406"
+    },
+    {
+      "name": "integration/hepta-2251-evidence-supervisor-convergence-20261015",
+      "sha": "b21b9b7234adc79f7bd12fb4d4bb499fa68b39b7"
+    },
+    {
+      "name": "integration/hepta-2357-stack-marker-tail-control-20261015",
+      "sha": "4e75fc2a9fc3703150e83700dfee09179107428c"
+    },
+    {
+      "name": "integration/hepta-2412-2424-neuron-clippy-convergence-20261016",
+      "sha": "404d79d96f10ee09acaecc0229e40cec8924cf95"
+    },
+    {
+      "name": "integration/hepta-2412-clippy-full-fmt-convergence-20261016",
+      "sha": "234148c30ea9afb59dd36f6378cb284f5f502e18"
+    },
+    {
+      "name": "integration/hepta-2412-clippy-rustfmt-20261016",
+      "sha": "7e8c6f11f0f577165645e8df38ff3987992c151e"
+    },
+    {
+      "name": "integration/hepta-agentd-ndu-cas-port-20261014",
+      "sha": "57a58481bfbb73c13599c430e32883030be22d35"
+    },
+    {
+      "name": "integration/hepta-agentd-signed-neuron-metrics-bootstrap-20261014",
+      "sha": "a521c0dc031a6e0a4833524ff19fe94e88cc4e4e"
+    },
+    {
+      "name": "integration/hepta-cargo-locked-convergence-20261022",
+      "sha": "f85eec0b120895f2c4a9f48d49ec93e667d6a3d3"
+    },
+    {
+      "name": "integration/hepta-cell-ci-clippy-p0-20261018",
+      "sha": "72ea1527b8bf0af5d3d79fffc7bbfc24ac7fa788"
+    },
+    {
+      "name": "integration/hepta-cell-receipt-fence-batch-20261022",
+      "sha": "00297a2ff17958768f32c408434898317e14d7d0"
+    },
+    {
+      "name": "integration/hepta-cell-security-i18n-20261022",
+      "sha": "25a1457b9d8ab65a08c7419dc3f131dd3f39c379"
+    },
+    {
+      "name": "integration/hepta-cell-split-55-double-readback-current-p0-20261016",
+      "sha": "53ef5c8c9b09800ccd4815d40e95d9aa9f5a61da"
+    },
+    {
+      "name": "integration/hepta-cell-split-56-double-neg-late-owner-20261016",
+      "sha": "fac5dc8715d09b0824d6bb6f554d856ebaccbecb"
+    },
+    {
+      "name": "integration/hepta-cell-split-bounded-connect-lock-parity-20261014",
+      "sha": "6455e3821404fd0680831032d1a60c551ba822b0"
+    },
+    {
+      "name": "integration/hepta-cell-split-canonical-p0-cns-20261017",
+      "sha": "91a662a1921aaaef794c33df61442494bb9c0b32"
+    },
+    {
+      "name": "integration/hepta-cell-split-evidence-agentd-entry-20261014",
+      "sha": "c87c9ca06b0bd44b7843894f7b907426d62f8c1f"
+    },
+    {
+      "name": "integration/hepta-cell-split-owner-cns-convergence-20261017",
+      "sha": "117dc67e1cf6296a9074d7adaaa40df7e03ba433"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-57-stable-20261016",
+      "sha": "6dcc57e10e942d0e388b4466e1f131ebff480242"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-58-cas-frozen-20261016",
+      "sha": "28fd6249962d5ecec6621e7948900b17380f55c3"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-forensics-frozen-6527ffa-20261017",
+      "sha": "6527ffa450124b46c5e982457c00adf88fa8a4dc"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-frozen-base-20261016-3b3ababd",
+      "sha": "3b3ababd0aa1c18c591028bca95c5ac0a63d5637"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-only-cns-convergence-20261017",
+      "sha": "63bebd5bee6890553b9e904cd109523fe046bc5d"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-orphan-audit-frozen-3d3deddd-20261017",
+      "sha": "3d3deddd528164731bab0811264cef8016b30aea"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-orphan-inspector-draft-20261017",
+      "sha": "f4a688592a0102f82dfe086b2b2c9f7c5224e89f"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-pending-readback-20261016",
+      "sha": "89fe69c651cf9db09b5800da35d6fedc0aa1119e"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0-signed-orphan-readonly-20261017",
+      "sha": "0b54f34388169540c9702d9b83eae9e82c2ee77c"
+    },
+    {
+      "name": "integration/hepta-cell-split-p0p4-cohort-20261016",
+      "sha": "0f346ce2b471a40872c3bd4224fde14a4d0e7dfd"
+    },
+    {
+      "name": "integration/hepta-cell-split-p4-original-custody-on-p0-58-20261016",
+      "sha": "39018f7d82c4f09bd611e0d08d847a37cd4a94de"
+    },
+    {
+      "name": "integration/hepta-cell-split-signed-readback-ratchet-20261014",
+      "sha": "25593f972943f9150ca26f45a62cc14fc3270d73"
+    },
+    {
+      "name": "integration/hepta-cell-split-telemetry-fixture-20261014",
+      "sha": "992e9d9ac3a932b93ac9b9cde5dddc127336d253"
+    }
+  ]
+}
