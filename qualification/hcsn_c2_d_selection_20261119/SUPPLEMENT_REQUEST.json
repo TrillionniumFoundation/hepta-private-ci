@@ -1,0 +1,206 @@
+{
+  "E_payload_or_label_access": false,
+  "allowed_operations": [
+    "read exact selected checkpoint/logits/report bytes",
+    "weights_only deserialize stored tensors",
+    "hash model/config/order/source bytes",
+    "NumPy saved D logits arithmetic"
+  ],
+  "automatic_trigger": false,
+  "data_manifest_sha256": "0eb233da8d0b766c35356ba450d0572f1e6a87a47f1d8a17cd32c2ae6f25a1cb",
+  "first_attempt_retained": true,
+  "limits": {
+    "address_space_bytes": 4294967296,
+    "cpu_seconds": 150,
+    "memory_max_bytes": 2147483648,
+    "threads": 1,
+    "wall_seconds": 180
+  },
+  "model_backward": false,
+  "model_construction": false,
+  "model_forward": false,
+  "models": [
+    {
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/development_logits.pt",
+        "sha256": "b8628531ef192335bc08a0adb1946cb6d17cdee9d7f2f6dddcade9246957d3a5"
+      },
+      "D_macro_f1": 0.38783425965779483,
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450616,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0074.pt",
+        "sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8"
+      },
+      "learning_rate": 0.003,
+      "model_configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 101,
+        "width": 16
+      },
+      "name": "hcsn-s101-lr0.003",
+      "report": {
+        "archive_member": "fits/hcsn-s101-lr0.003/result.json",
+        "bytes": 578890,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/result.json",
+        "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+      },
+      "seed": 101,
+      "selected_epoch": 74
+    },
+    {
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/development_logits.pt",
+        "sha256": "266271d344df152a4aea33f2becfbad6d9b134fe6563a2e318c43e21427c61b0"
+      },
+      "D_macro_f1": 0.3910932361454862,
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/inherited-best.pt",
+        "sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c"
+      },
+      "learning_rate": 0.003,
+      "model_configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 211,
+        "width": 16
+      },
+      "name": "hcsn-s211-lr0.003",
+      "report": {
+        "archive_member": "fits/hcsn-s211-lr0.003/result.json",
+        "bytes": 360283,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/result.json",
+        "sha256": "c5c3f1f75a305fff6d97fdfd263ca8aac0c765698ba94c1debc17b01978b889d"
+      },
+      "seed": 211,
+      "selected_epoch": 40
+    },
+    {
+      "D_logits": {
+        "bytes": 3071141,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/development_logits.pt",
+        "sha256": "d46b6e8b2ea022235e6de33d1d14ad08ba37bef3be087a41a472370eb8363087"
+      },
+      "D_macro_f1": 0.3498305888641129,
+      "arm": "hcsn",
+      "checkpoint": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0062.pt",
+        "sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe"
+      },
+      "learning_rate": 0.003,
+      "model_configuration": {
+        "arm": "hcsn",
+        "cache_frozen_tables": true,
+        "freeze_shared": true,
+        "hcsn_grid": {
+          "active_cells": 256,
+          "endpoint": 4.8,
+          "initial_log_std": 0.08,
+          "phase_cells": 16,
+          "quadrature_order": 32,
+          "refractory": 0.2,
+          "tail_rate": 1.0
+        },
+        "learn_core_adapter": true,
+        "plif_configuration": null,
+        "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+        "seed": 307,
+        "width": 16
+      },
+      "name": "hcsn-s307-lr0.003",
+      "report": {
+        "archive_member": "fits/hcsn-s307-lr0.003/result.json",
+        "bytes": 436682,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/result.json",
+        "sha256": "720e09baa3bb77458c17af00025b53cfd93ee336ce6a4f6e23d7d776251bcd7a"
+      },
+      "seed": 307,
+      "selected_epoch": 62
+    }
+  ],
+  "optimizer_construct_restore_step": false,
+  "output_root": "/home/qian-qi/hepta-c2-D-selection-supplement-20261119-d741",
+  "reconciliation": [
+    {
+      "immutable_target": {
+        "bytes": 450616,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0074.pt",
+        "sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8"
+      },
+      "name": "hcsn-s101-lr0.003",
+      "original_alias": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/best.pt",
+      "resolved_from_authenticated_commit": {
+        "bytes": 3893,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/commits/epoch-0076.json",
+        "sha256": "c6c4c37f44b269c287c14e1b93c2f7759e4398fb8ced00f6eb76fb5e8e5af2aa"
+      }
+    },
+    {
+      "immutable_target": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/inherited-best.pt",
+        "sha256": "e04f89af1ee3e0e0d015217eb3737c8db980b96f3f93535f67134044622f191c"
+      },
+      "name": "hcsn-s211-lr0.003",
+      "original_alias": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/best.pt",
+      "resolved_from_authenticated_commit": {
+        "bytes": 3885,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/commits/epoch-0050.json",
+        "sha256": "103bc94a197e4dd2c653b883d29e233b321cf5eb10194ef46a0b85e14b07ff7d"
+      }
+    },
+    {
+      "immutable_target": {
+        "bytes": 450552,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/checkpoints/epoch-0062.pt",
+        "sha256": "a98c97740fe3eff04fd3f05f76aea3301e3e59b06ad0e68a094bd1d6161268fe"
+      },
+      "name": "hcsn-s307-lr0.003",
+      "original_alias": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/best.pt",
+      "resolved_from_authenticated_commit": {
+        "bytes": 3896,
+        "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/commits/epoch-0072.json",
+        "sha256": "bf0ed317c00f9453e75a7c11ea8fe0a0be20dc495d75170d0b3a5f54d2f5dc85"
+      }
+    }
+  ],
+  "schema": "hcsn-D-only-actual-artifact-inventory-request-v1",
+  "selection_sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b",
+  "source_files": {
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/commits/epoch-0076.json": "c6c4c37f44b269c287c14e1b93c2f7759e4398fb8ced00f6eb76fb5e8e5af2aa",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s211-lr0.003/commits/epoch-0050.json": "103bc94a197e4dd2c653b883d29e233b321cf5eb10194ef46a0b85e14b07ff7d",
+    "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s307-lr0.003/commits/epoch-0072.json": "bf0ed317c00f9453e75a7c11ea8fe0a0be20dc495d75170d0b3a5f54d2f5dc85"
+  }
+}

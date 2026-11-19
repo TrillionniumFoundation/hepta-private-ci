@@ -1,0 +1,19 @@
+{
+  "findings": [
+    "No blocking issue with the fixed actual ledger: 42 unique opportunities, common-LR three-seed arithmetic means, exact tie chooses .001, adequacy does not replace the selected winner.",
+    "All seven actual selections are .003 with 21 true recorded-adequacy values, and no actual history continues after its first recorded plateau.",
+    "Checkpoint/D-logit byte binding and exact missing-source alias closure preserve the selected models.",
+    "The scorer scope is metadata content binding only, without execution authority, label access, payload/custody or author-signature claims."
+  ],
+  "maintenance_finding": "Aggregate all_selected_recorded_adequacy was hardcoded True but true for all current inputs; derive it before future reuse.",
+  "mode": "read_only_no_execution",
+  "models_or_tests_executed_by_reviewer": false,
+  "resolution": "Unfrozen finalize.py now derives the field from all 21 selections and verifies native reader/request/source-record hashes. Exact existing LEDGER and SCORER_INPUT bytes were unchanged on read-only recomposition. The independently reviewed finalizer SHA is the pre-resolution version.",
+  "reviewed_sha256": {
+    "build_selection.py": "3a1544d8a64b25e8de55a20854bb5d8db45d750e247697e28a3142f9b847f19a",
+    "finalize.py": "24af0766b3034741d4ab504a38c5561ad1e55dbf3feb749440d00ac7ec32d2b2",
+    "scorer_contract.py": "01cb7debab530a2a08268b956cca1ad663e57bd85c1d512de13c4d59e19b03f4"
+  },
+  "reviewer": "/root/n256_finish",
+  "schema": "independent-readonly-source-review-v1"
+}

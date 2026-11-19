@@ -1,0 +1,301 @@
+{
+  "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+  "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+  "D_labels_dtype": "int64",
+  "D_logits": {
+    "bytes": 3071141,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/development_logits.pt",
+    "sha256": "b8628531ef192335bc08a0adb1946cb6d17cdee9d7f2f6dddcade9246957d3a5"
+  },
+  "D_logits_array_sha256": "8a90f5f1ebe3c3607c8461cd19e8634f35db67a1f2071172ef84fbcbc714e8dd",
+  "D_logits_dtype": "float64",
+  "D_logits_shape": [
+    31952,
+    11
+  ],
+  "D_macro_f1_absolute_difference": 1.1102230246251565e-16,
+  "D_macro_f1_recomputed": 0.38783425965779494,
+  "body_wall_seconds": 0.08017927402397618,
+  "checkpoint": {
+    "bytes": 450616,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0074.pt",
+    "sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8"
+  },
+  "checkpoint_schema_keys": [
+    "data_manifest_sha256",
+    "epochs_completed",
+    "main_updates",
+    "model",
+    "model_configuration",
+    "optimizer",
+    "order_rng",
+    "torch_rng"
+  ],
+  "configuration_canonical_sha256": "8a40d93f3f84abb399c69a9c2f83663f17f8131df679a73327d1b0f89826db31",
+  "expected": {
+    "D_logits": {
+      "bytes": 3071141,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/development_logits.pt",
+      "sha256": "b8628531ef192335bc08a0adb1946cb6d17cdee9d7f2f6dddcade9246957d3a5"
+    },
+    "D_macro_f1": 0.38783425965779483,
+    "arm": "hcsn",
+    "checkpoint": {
+      "bytes": 450616,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/checkpoints/epoch-0074.pt",
+      "sha256": "6855ea465862d256fc64808f64bee382ed2eea5e68367bc63025f3d238fc51f8"
+    },
+    "learning_rate": 0.003,
+    "model_configuration": {
+      "arm": "hcsn",
+      "cache_frozen_tables": true,
+      "freeze_shared": true,
+      "hcsn_grid": {
+        "active_cells": 256,
+        "endpoint": 4.8,
+        "initial_log_std": 0.08,
+        "phase_cells": 16,
+        "quadrature_order": 32,
+        "refractory": 0.2,
+        "tail_rate": 1.0
+      },
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 101,
+      "width": 16
+    },
+    "name": "hcsn-s101-lr0.003",
+    "report": {
+      "archive_member": "fits/hcsn-s101-lr0.003/result.json",
+      "bytes": 578890,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/result.json",
+      "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+    },
+    "seed": 101,
+    "selected_epoch": 74
+  },
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "model_tensor_manifest_sha256": "3bc8160f720195f3d76595a0033743551c289d234e9d83eac04559907fae6626",
+  "name": "hcsn-s101-lr0.003",
+  "optimizer_operations": 0,
+  "producer_runtime_fields": {},
+  "raw_runtime_field_absence_is_not_imputed": true,
+  "report": {
+    "bytes": 578890,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c2-native-execution-20261110-c385-v1/fits/hcsn-s101-lr0.003/result.json",
+    "sha256": "6bb4fd3fce8022816a605b0043925fa4a04c331f998582adefa11754d4792794"
+  },
+  "saved_epoch": 74,
+  "saved_main_updates": 888,
+  "saved_model_tensors": [
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "core.network.layers.0.content_proposal.bias",
+      "sha256": "8604c954f5658e5f9e8d1814b504044f4306431ecd6eaed168abb7c2b8ecc161",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 2688,
+      "dtype": "float64",
+      "name": "core.network.layers.0.content_proposal.weight",
+      "sha256": "0bdc3b2d3be0340411bdd84ea7914a8280de8f3e0257a0b93837893be24fe2b1",
+      "shape": [
+        16,
+        21
+      ]
+    },
+    {
+      "bytes": 2184,
+      "dtype": "float64",
+      "name": "core.network.layers.0.likelihood.bias",
+      "sha256": "dc791edcb19fb53334053c98bd70935456b96117fda6021e319df7a358fdf582",
+      "shape": [
+        273
+      ]
+    },
+    {
+      "bytes": 45864,
+      "dtype": "float64",
+      "name": "core.network.layers.0.likelihood.weight",
+      "sha256": "5f8d1dea286d621bfe97d17c354fefacf4e4e21caea84452c92e69b824967869",
+      "shape": [
+        273,
+        21
+      ]
+    },
+    {
+      "bytes": 2056,
+      "dtype": "float64",
+      "name": "core.network.layers.0.operator._active_edges",
+      "sha256": "3490e05437f86529773b84219d47928849c880d5bf9aeb42413e38c916d225ef",
+      "shape": [
+        257
+      ]
+    },
+    {
+      "bytes": 256,
+      "dtype": "float64",
+      "name": "core.network.layers.0.operator._nodes",
+      "sha256": "311d1003eaec4682d9f86c759b76c29ed99b1ae400724e07256762b0618946a8",
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 256,
+      "dtype": "float64",
+      "name": "core.network.layers.0.operator._weights",
+      "sha256": "46210941ac648283ee0cb5e12c2ea6135d4305d59456d5508d741153a5f4012e",
+      "shape": [
+        32
+      ]
+    },
+    {
+      "bytes": 8,
+      "dtype": "float64",
+      "name": "core.network.layers.0.physics.discount",
+      "sha256": "08b692737eb97187a7b002758702c69e0415b1b9055ead3800770dbdce5c1d78",
+      "shape": []
+    },
+    {
+      "bytes": 8,
+      "dtype": "float64",
+      "name": "core.network.layers.0.physics.raw_absolute_reset",
+      "sha256": "91080ec22d6d407a83bb0aa7a1ba0b34e5ada01ee9332f8877d43b88fe5aeaf5",
+      "shape": []
+    },
+    {
+      "bytes": 8,
+      "dtype": "float64",
+      "name": "core.network.layers.0.physics.raw_log_boundary",
+      "sha256": "af5570f5a1810b7af78caf4bc70a660f0df51e42baf91d4de5b2328de0e83dfc",
+      "shape": []
+    },
+    {
+      "bytes": 8,
+      "dtype": "float64",
+      "name": "core.network.layers.0.physics.raw_mu",
+      "sha256": "a1dce664769c76349a301e19abcda7d4732a4b880b0e4f52b54b7cbb039ab3f8",
+      "shape": []
+    },
+    {
+      "bytes": 8,
+      "dtype": "float64",
+      "name": "core.network.layers.0.physics.raw_sigma",
+      "sha256": "28d1282675b3e665b599a9e5785a6639302a541b88bcfa2171bfaf08372ab83b",
+      "shape": []
+    },
+    {
+      "bytes": 34944,
+      "dtype": "float64",
+      "name": "core.network.layers.0.state_embedding",
+      "sha256": "f28b6b46b22a27e6e91467a2959dfacdd78b21384a6d80d8af61bd98c5f33214",
+      "shape": [
+        273,
+        16
+      ]
+    },
+    {
+      "bytes": 2184,
+      "dtype": "float64",
+      "name": "core.network.layers.0.write_gate.bias",
+      "sha256": "3ca53b003193650ee4a49e1f77c009177e5da7bea04e20fc9ac43bcbaded2931",
+      "shape": [
+        273
+      ]
+    },
+    {
+      "bytes": 45864,
+      "dtype": "float64",
+      "name": "core.network.layers.0.write_gate.weight",
+      "sha256": "28a81380e595ac933e1eed15e16b563274a57cb566084823d4a020aab882fdb8",
+      "shape": [
+        273,
+        21
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "core.network.readout.bias",
+      "sha256": "22f121079a910810525a4de990a8045f42d9f483f7ae3ee9c50490a44f32d6c5",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 2688,
+      "dtype": "float64",
+      "name": "core.network.readout.weight",
+      "sha256": "4a9723e0617a2c3f199aba21307607f4087211e1dfaa81485fb88c29295be0c3",
+      "shape": [
+        16,
+        21
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "frontend.0.bias",
+      "sha256": "3d0a26a2576fb8b581accaa1c144d4536714727c1c475f60182dc9db75aabd4d",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 3200,
+      "dtype": "float64",
+      "name": "frontend.0.weight",
+      "sha256": "efd0b42cef67ab11b57ebb722996b52d72b6c65dfc24832f328d0dac724d7ab9",
+      "shape": [
+        16,
+        25
+      ]
+    },
+    {
+      "bytes": 88,
+      "dtype": "float64",
+      "name": "head.bias",
+      "sha256": "943fb934a7e709eb2dce92b38be49b18e398cb5ae9c68cc96ab70e45dc99bac7",
+      "shape": [
+        11
+      ]
+    },
+    {
+      "bytes": 1408,
+      "dtype": "float64",
+      "name": "head.weight",
+      "sha256": "e7d373bccdfa3311e42e683cdef7d1702009dc402949b00337d4e271aec84388",
+      "shape": [
+        11,
+        16
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "temporal_adapter.bias",
+      "sha256": "428c09d73882950812829b102084be934612ff6dc9d8dfe32863fa8cfb7c8fc8",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 2048,
+      "dtype": "float64",
+      "name": "temporal_adapter.weight",
+      "sha256": "25937d43c11df75389a8e68b03876e9e4bda681c4e1bea630ebe0071f671b548",
+      "shape": [
+        16,
+        16
+      ]
+    }
+  ],
+  "status": "MATCHED"
+}

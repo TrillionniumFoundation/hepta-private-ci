@@ -1,0 +1,41 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "import hashlib,json,pathlib,runpy,sys; p=json.load(sys.stdin); root=pathlib.Path(json.loads(p['request'])['output_root']); root.mkdir(mode=0o700,exist_ok=False); [(root/name).write_text(p[key]) for key,name in [('source','inventory.py'),('request','INVENTORY_REQUEST.json'),('freeze','SOURCE_FREEZE.json')]]; f=json.loads(p['freeze']); assert hashlib.sha256((root/'inventory.py').read_bytes()).hexdigest()==f['files']['inventory.py']; assert hashlib.sha256((root/'INVENTORY_REQUEST.json').read_bytes()).hexdigest()==f['files']['INVENTORY_REQUEST.json']; sys.argv=[str(root/'inventory.py'),str(root/'INVENTORY_REQUEST.json')]; runpy.run_path(sys.argv[0],run_name='__main__')"
+    ],
+    "created_unix_ms": 1795087232719,
+    "cwd": null,
+    "env_keys": [
+      "CUDA_VISIBLE_DEVICES",
+      "MKL_NUM_THREADS",
+      "NUMEXPR_NUM_THREADS",
+      "OMP_NUM_THREADS",
+      "OPENBLAS_NUM_THREADS",
+      "PYTHONNOUSERSITE"
+    ],
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1f3896ecf-ffbe-d85",
+    "idempotency_key": "hcsn-c2-D-selection-20261119-d741-inventory-001",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f3896ecf-ffbe-d85",
+    "request_digest": "65d071133a5dd672ab6452a1801c65caa2b888bfaf68cadd9a6959440b5aa798",
+    "request_fingerprint": 7336488120384084000,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1f3896ecf-ffbe-d85"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1f3896ecf-ffbe-d85"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

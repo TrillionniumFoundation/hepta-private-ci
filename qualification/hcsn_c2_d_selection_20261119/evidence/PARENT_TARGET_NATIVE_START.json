@@ -1,0 +1,41 @@
+{
+  "audit_recorded": true,
+  "job": {
+    "args": [
+      "-B",
+      "-c",
+      "import hashlib,json,pathlib,runpy,sys; p=json.load(sys.stdin); root=pathlib.Path(json.loads(p['request'])['output_root']); root.mkdir(mode=0o700,exist_ok=False); [(root/name).write_text(p[key]) for key,name in [('source','inventory_parent_target.py'),('request','PARENT_TARGET_REQUEST.json'),('freeze','PARENT_TARGET_FREEZE.json')]]; f=json.loads(p['freeze']); assert hashlib.sha256((root/'inventory_parent_target.py').read_bytes()).hexdigest()==f['files']['inventory_parent_target.py']; assert hashlib.sha256((root/'PARENT_TARGET_REQUEST.json').read_bytes()).hexdigest()==f['files']['PARENT_TARGET_REQUEST.json']; sys.argv=[str(root/'inventory_parent_target.py'),str(root/'PARENT_TARGET_REQUEST.json')]; runpy.run_path(sys.argv[0],run_name='__main__')"
+    ],
+    "created_unix_ms": 1795087673911,
+    "cwd": null,
+    "env_keys": [
+      "CUDA_VISIBLE_DEVICES",
+      "MKL_NUM_THREADS",
+      "NUMEXPR_NUM_THREADS",
+      "OMP_NUM_THREADS",
+      "OPENBLAS_NUM_THREADS",
+      "PYTHONNOUSERSITE"
+    ],
+    "executable": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+    "execution_mode": "operator",
+    "host": "desktop",
+    "id": "1a1f3902a37-ffbe-d94",
+    "idempotency_key": "hcsn-c2-D-selection-20261119-d741-original-parent-target-001",
+    "launch_error": null,
+    "launch_state": "launched",
+    "remote_job_dir": "/home/qian-qi/.local/state/hepta-runtime-mac-worker/jobs/1a1f3902a37-ffbe-d94",
+    "request_digest": "6c652f4533fa0865ec3e791d29bd4a08efd9257e67d89dd0121195f11e7cf72d",
+    "request_fingerprint": 7810701103015266000,
+    "ssh_target": "desktop-ts",
+    "system_jobctl": false,
+    "unit": "hepta-runtime-job-1a1f3902a37-ffbe-d94"
+  },
+  "launch": {
+    "backend": "systemd",
+    "launcher_pid": null,
+    "ok": true,
+    "unit": "hepta-runtime-job-1a1f3902a37-ffbe-d94"
+  },
+  "local_record_pending": false,
+  "reused": false
+}

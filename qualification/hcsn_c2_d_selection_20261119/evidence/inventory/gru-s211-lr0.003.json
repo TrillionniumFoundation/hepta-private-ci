@@ -1,0 +1,183 @@
+{
+  "D_episode_order_sha256": "9445b790a9ea587d1106d1d441c95eb09f83b67df0b22783ca7a376d285afc12",
+  "D_label_array_sha256": "f398ca1a7bec9ef032beba33312f419b9012c69f972fea006d7c334b40e4e984",
+  "D_labels_dtype": "int64",
+  "D_logits": {
+    "bytes": 3071293,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/development_logits.pt",
+    "sha256": "d3c0a83bcc74189ce641da2fe0a081c45cec9b3edefb8a9235ad2bad7bc5f5d8"
+  },
+  "D_logits_array_sha256": "e3b2df64d67e1062a15ec88d7acd794e05a38a4020c30e7d657893143d50688b",
+  "D_logits_dtype": "float64",
+  "D_logits_shape": [
+    31952,
+    11
+  ],
+  "D_macro_f1_absolute_difference": 0.0,
+  "D_macro_f1_recomputed": 0.4120451582007052,
+  "body_wall_seconds": 0.09328632202232257,
+  "checkpoint": {
+    "bytes": 68556,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/best.pt",
+    "sha256": "52ccfebae7af4a6f61e389bddda37e7b906c0450d6017e4e0c969630abd16747"
+  },
+  "checkpoint_schema_keys": [
+    "data_manifest_sha256",
+    "epochs_completed",
+    "main_updates",
+    "model",
+    "model_configuration",
+    "optimizer",
+    "order_rng",
+    "torch_rng"
+  ],
+  "configuration_canonical_sha256": "e0d77e182a4d09ef238759374e6daddad562b2e00258c8622f984e4074157e9a",
+  "expected": {
+    "D_logits": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/development_logits.pt",
+      "sha256": "d3c0a83bcc74189ce641da2fe0a081c45cec9b3edefb8a9235ad2bad7bc5f5d8"
+    },
+    "D_macro_f1": 0.4120451582007052,
+    "arm": "gru",
+    "checkpoint": {
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/best.pt",
+      "sha256": "52ccfebae7af4a6f61e389bddda37e7b906c0450d6017e4e0c969630abd16747"
+    },
+    "learning_rate": 0.003,
+    "model_configuration": {
+      "arm": "gru",
+      "cache_frozen_tables": false,
+      "freeze_shared": true,
+      "hcsn_grid": null,
+      "learn_core_adapter": true,
+      "plif_configuration": null,
+      "s4_repo": "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v3/s4",
+      "seed": 211,
+      "width": 16
+    },
+    "name": "gru-s211-lr0.003",
+    "report": {
+      "bytes": 195671,
+      "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/result.json",
+      "sha256": "6b24156ddbf4d5348769b58fd23df3e9edbf6adcd7cf6da728af764860a896f4"
+    },
+    "seed": 211,
+    "selected_epoch": 38
+  },
+  "model_backward_calls": 0,
+  "model_construction_calls": 0,
+  "model_forward_calls": 0,
+  "model_tensor_manifest_sha256": "0661137c6b2b63e67fef890cf5781dc075aa5a5cd27fda805397f20dacbc1094",
+  "name": "gru-s211-lr0.003",
+  "optimizer_operations": 0,
+  "producer_runtime_fields": {
+    "device": "cpu",
+    "dtype": "float64"
+  },
+  "raw_runtime_field_absence_is_not_imputed": true,
+  "report": {
+    "bytes": 195671,
+    "path": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/campaign-v2/gru-s211-lr0.003/result.json",
+    "sha256": "6b24156ddbf4d5348769b58fd23df3e9edbf6adcd7cf6da728af764860a896f4"
+  },
+  "saved_epoch": 38,
+  "saved_main_updates": 456,
+  "saved_model_tensors": [
+    {
+      "bytes": 384,
+      "dtype": "float64",
+      "name": "core.bias_hh_l0",
+      "sha256": "d3f4489f577530c3ba2eca539ffd8127a458f70d686d9e8b7b8208ded65fc191",
+      "shape": [
+        48
+      ]
+    },
+    {
+      "bytes": 384,
+      "dtype": "float64",
+      "name": "core.bias_ih_l0",
+      "sha256": "571b57d4c257202ad5cfa4088da2159ad5d54847b99b68581866ed42017385bc",
+      "shape": [
+        48
+      ]
+    },
+    {
+      "bytes": 6144,
+      "dtype": "float64",
+      "name": "core.weight_hh_l0",
+      "sha256": "ecffee5d39f10c3ab868bac34174e0707b907f19398f84d401129e9ba02f8b20",
+      "shape": [
+        48,
+        16
+      ]
+    },
+    {
+      "bytes": 6144,
+      "dtype": "float64",
+      "name": "core.weight_ih_l0",
+      "sha256": "49afe968358d68f0d2d1e0fb79c090d093972d4d3f0b1623d7d6e2a04a540541",
+      "shape": [
+        48,
+        16
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "frontend.0.bias",
+      "sha256": "5d7a8b568eb78069b77a37749b519cd3300fb29ae185317356f04cefd991e844",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 3200,
+      "dtype": "float64",
+      "name": "frontend.0.weight",
+      "sha256": "0739bec3d9b47ad43388e653c0af43d4576282eeb500f86322c6aa488a6ab3cd",
+      "shape": [
+        16,
+        25
+      ]
+    },
+    {
+      "bytes": 88,
+      "dtype": "float64",
+      "name": "head.bias",
+      "sha256": "e7680a93314ed7afc5b1baf5c901cd59bc9d3e60f9ae06c4d357761f0da5c8c2",
+      "shape": [
+        11
+      ]
+    },
+    {
+      "bytes": 1408,
+      "dtype": "float64",
+      "name": "head.weight",
+      "sha256": "11afdb3282f5d7fa342c372923fa11e7a189186b2e5ad3fda8b20d0db896e2e2",
+      "shape": [
+        11,
+        16
+      ]
+    },
+    {
+      "bytes": 128,
+      "dtype": "float64",
+      "name": "temporal_adapter.bias",
+      "sha256": "44dc6f2c45eab56c4bf17f339f4858c3357f1c22c9281d4de846b58bb643dcac",
+      "shape": [
+        16
+      ]
+    },
+    {
+      "bytes": 2048,
+      "dtype": "float64",
+      "name": "temporal_adapter.weight",
+      "sha256": "6a2ae11441377ed6892b2246f5e012f01da1a3cec6f3034842c55fa8ac1c27f9",
+      "shape": [
+        16,
+        16
+      ]
+    }
+  ],
+  "status": "MATCHED"
+}
