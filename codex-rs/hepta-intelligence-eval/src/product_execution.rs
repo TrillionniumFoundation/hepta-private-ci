@@ -116,7 +116,15 @@ impl fmt::Display for ProductEvaluationExecutionErrorV1 {
         write!(formatter, "{self:?}")
     }
 }
-impl StdError for ProductEvaluationExecutionErrorV1 {}
+impl StdError for ProductEvaluationExecutionErrorV1 {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Pending | Self::MissingExecution => None,
+            Self::Evaluation(error) => Some(error),
+            Self::Store(error) => Some(error),
+        }
+    }
+}
 
 impl From<ProductEvaluationError> for ProductEvaluationExecutionErrorV1 {
     fn from(error: ProductEvaluationError) -> Self {
