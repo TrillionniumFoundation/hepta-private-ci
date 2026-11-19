@@ -5,7 +5,7 @@
 #[cfg(windows)]
 use codex_uds::OwnerLocalStream as ControlStream;
 #[cfg(not(windows))]
-use codex_uds::UnixStream as ControlStream;
+use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -105,10 +105,18 @@ impl AgentdClient {
         end: Option<Instant>,
     ) -> Result<AgentdResponse, ControlCallError> {
         let expected_request_id = request.request_id;
-        let stream = timeout_at(
-            self.original_phase_end(end)?,
-            ControlStream::connect(&self.socket_path),
-        )
+        // Preserve the authenticated owner-local pipe on Windows and the
+        // original Unix socket on other platforms, under one read/write deadline.
+        let stream = timeout_at(self.original_phase_end(end)?, {
+            #[cfg(windows)]
+            {
+                ControlStream::connect(&self.socket_path)
+            }
+            #[cfg(not(windows))]
+            {
+                UnixStream::connect(&self.socket_path)
+            }
+        })
         .await
         .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))?
         .map_err(AgentdError::from)?;
