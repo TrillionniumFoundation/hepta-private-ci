@@ -102,17 +102,19 @@ impl CellQ24TrainingBatchV1 {
         receipt: DatasetSnapshotReceiptV3,
         evidence: SignedLearningEvidenceV1,
         projection: CellQ24DatasetProjectionV1,
+        operation: &OriginalDatasetOperationV1<'_>,
     ) -> Result<Self, Error> {
         let source = Arc::new(OriginalDataset {
             tasks: ledger.tasks.clone(),
-            ledger: OriginalDatasetLedgerV1::Historical(ledger),
+            ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger)),
             frozen,
             receipt,
             evidence,
             projection,
         });
-        let mut batch = source.materialize()?;
+        let mut batch = source.materialize_historical_in_operation(&ledger, operation)?;
         batch.source = Some(source);
+        operation.require_original_batch(&batch)?;
         Ok(batch)
     }
 }

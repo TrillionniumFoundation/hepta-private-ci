@@ -47,17 +47,25 @@ class HistoricalLearningDeliverySourceTests(unittest.TestCase):
 
     def test_original_root_assembly_and_new_journal_binding_are_mandatory(self):
         self.check_markers(SOURCE, "fn with_original_historical_source(", (
-            "self.require_identity(identity)?", 'source\n            .require_prepared_historical_source(prepared)\n            .inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut std::io::stderr(),\n                    b"daemon_stage=historical.source.bootstrap_prepared\\n",\n                );\n            })?',
+            "self.require_identity(identity)?", "original.prepared()",
+            "let (key, journal) = prepared",
+            ".with_original_prepared_operation(|read| -> Result<_, AgentdError>",
             "self.retained_source.is_some()", "self.historical_source.is_some()",
             "self.historical_delivery.is_some()", "!self.enforce_circuit_admission",
             "CircuitLearningSourceV1::OriginalQ24", "self.scope.as_ref() != Some(prepared.scope())",
             "self.owners != prepared.initial().owners",
             "registry.requests.as_slice() != std::slice::from_ref(source.request())",
             "crate::neuron_generation_process_identity_digest_v1(identity)?",
-            "prepared.initial().head_digest.as_array()", "prepared.scope().binding().as_array()"))
-        for occurrence in (0, 1):
+            "prepared.initial().head_digest.as_array()", "prepared.scope().binding().as_array()",
+            "LearningOwnerJournalV1::create(", "LearningOwnerJournalV1::recover(",
+            "Ok((key, journal))", ".map_err(refused)??",
+            "self.historical_source = Some(Arc::clone(&source))",
+            "self.historical_delivery = Some("))
+        # All three actual source checks remain mandatory inside one borrow;
+        # the enclosing post-read must finish before either owner is installed.
+        for occurrence in (0, 1, 2):
             self.reject_removal(SOURCE, "fn with_original_historical_source(",
-                                ('source\n            .require_current_historical_source(identity)\n            .inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut std::io::stderr(),\n                    b"daemon_stage=historical.source.bootstrap_before_journal\\n",\n                );\n            })?', 'source\n            .require_current_historical_source(identity)\n            .inspect_err(|_| {\n                let _ = std::io::Write::write_all(\n                    &mut std::io::stderr(),\n                    b"daemon_stage=historical.source.bootstrap_after_journal\\n",\n                );\n            })?')[occurrence], 0)
+                                ".require_original_stage_operation(identity, read)", occurrence)
 
     def test_queue_reservation_and_witnessed_claim_precede_actual_async_dispatch(self):
         self.check_markers(SOURCE, "fn run_delivery(", (

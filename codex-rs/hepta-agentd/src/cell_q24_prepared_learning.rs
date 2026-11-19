@@ -34,6 +34,7 @@ impl CellQ24PreparedLearningV1 {
         config: CellQ24LearningPreparationConfigV1,
         ledger: Arc<HistoricalDatasetLedgerV1>,
         frozen: CellQ24FrozenDatasetV1,
+        operation: &OriginalDatasetOperationV1<'_>,
     ) -> Result<Self, Error> {
         let publication =
             historical_preparation::require_historical_configuration(&config, &ledger)?;
@@ -48,8 +49,9 @@ impl CellQ24PreparedLearningV1 {
             frozen.receipt.clone(),
             frozen.authorization.clone(),
             config.projection.clone(),
+            operation,
         )?;
-        Self::finish_original(config, frozen, batch, publication)
+        Self::finish_original(config, frozen, batch, publication, operation)
     }
 
     pub(super) fn from_original(
@@ -65,14 +67,16 @@ impl CellQ24PreparedLearningV1 {
             return Err(Error::Binding("original frozen Dataset identity"));
         }
         let batch = CellQ24TrainingBatchV1::from_original_dataset(
-            ledger,
+            Arc::clone(&ledger),
             frozen.snapshot.clone(),
             frozen.receipt.clone(),
             frozen.authorization.clone(),
             config.projection.clone(),
             tasks,
         )?;
-        Self::finish_original(config, frozen, batch, publication)
+        OriginalDatasetLedgerV1::Live(ledger).with_original_ledger_operation(|operation| {
+            Self::finish_original(config, frozen, batch, publication, operation)
+        })?
     }
 
     fn finish_original(
@@ -80,8 +84,9 @@ impl CellQ24PreparedLearningV1 {
         frozen: CellQ24FrozenDatasetV1,
         batch: CellQ24TrainingBatchV1,
         publication: CircuitTaskSourcePublicationV1,
+        operation: &OriginalDatasetOperationV1<'_>,
     ) -> Result<Self, Error> {
-        batch.require_original_dataset_provenance()?;
+        operation.require_original_batch(&batch)?;
         if batch.rows() > config.request.budget.maximum_dataset_rows
             || batch.encoded().len() as u64 > config.request.budget.maximum_dataset_bytes
             || u64::from(batch.rows()) * u64::from(config.rule.epochs)
@@ -153,7 +158,7 @@ impl CellQ24PreparedLearningV1 {
             scope,
             facts,
         };
-        prepared.revalidate_source()?;
+        operation.require_original_batch(&prepared.batch)?;
         Ok(prepared)
     }
 

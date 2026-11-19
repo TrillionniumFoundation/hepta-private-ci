@@ -47,7 +47,7 @@ def require_structure(path, source):
                             r'historical-task-publication-data\.v1";', source)
         if (purpose is None or code[purpose.start():purpose.end()]
                 != PROOF._strip_rust_non_code(purpose.group())
-                or "const DATA_BOUND: usize = 16_384;" not in code):
+                or "pub(crate) const JSON_BOUND: usize = 16_384;" not in code):
             raise PROOF.VerificationFailure("original data purpose and bound must be actual code")
         if not re.search(r"#\[serde\(deny_unknown_fields\)\]\s*pub\(crate\) struct "
                          r"RootHistoricalTaskPublicationDataV1\b", code):
@@ -188,7 +188,7 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
 
     def test_request_and_input_canonical_checks_precede_data_construction(self):
         self.check(DATA, "decode_data", (
-            "self.schema != 1", "self.purpose != PURPOSE", "json(self)?.len() > DATA_BOUND",
+            "self.schema != 1", "self.purpose != PURPOSE", "json(self)?.len() > Self::JSON_BOUND",
             "binding.is_zero()", "binding.to_string() != self.source_configuration",
             "bounded(&request_bytes)?", "bounded(&result_bytes)?",
             "STANDARD.encode(&request_bytes) != self.request", "STANDARD.encode(&result_bytes) != self.result",
@@ -266,7 +266,7 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
             '        Err(Error::Binding(\n            "task is not held',
             '        return self.read();\n        Err(Error::Binding(\n            "task is not held', 1))
         self.check(CLIENT, "read_original_publication", (
-            "self.client.observe()?", "observed != self.data",
+            "self.client.observe()", "observed != self.data",
             "observed.publication.validate_against(&observed.ledger)", "self.client.fence()",
         ))
 
@@ -288,8 +288,8 @@ class OriginalTaskDataSourceTests(unittest.TestCase):
             '"runtime.learning.historical-task-publication-data.v1"',
             '"wrong" /* "runtime.learning.historical-task-publication-data.v1" */', 1))
         self.mutate(DATA, lambda source: source.replace(
-            "const DATA_BOUND: usize = 16_384;",
-            "const DATA_BOUND: usize = 32_768; /* DATA_BOUND: usize = 16_384 */", 1))
+            "pub(crate) const JSON_BOUND: usize = 16_384;",
+            "pub(crate) const JSON_BOUND: usize = 32_768; /* JSON_BOUND: usize = 16_384 */", 1))
         self.mutate(DECISION, lambda source: source.replace(
             'b"hepta.circuit.committed-cell-decision.v1\\0"',
             'b"wrong" /* .strip_prefix(b"hepta.circuit.committed-cell-decision.v1\\0") */', 1))

@@ -22,8 +22,11 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
 
     def test_view_and_batch_have_actual_preparation_consumers(self):
         rows = {row["id"]: row for row in self.manifest["boundary"]}
-        for key in ("q24_original_historical_dataset_ledger", "q24_original_historical_dataset_read"):
-            self.assertEqual(rows[key]["product_callers"], [HISTORY])
+        self.assertEqual(rows["q24_original_historical_dataset_ledger"]["product_callers"], [HISTORY])
+        # The standalone current read remains the ledger's internal capture
+        # path. Preparation now borrows the original operation instead.
+        self.assertEqual(rows["q24_original_historical_dataset_read"]["product_callers"], [])
+        self.assertIn(HISTORY, rows["q24_original_dataset_operation"]["product_callers"])
         self.assertEqual(rows["q24_original_historical_dataset_batch"]["product_callers"],
                          [AGENT + "cell_q24_prepared_learning.rs"])
         self.assertEqual(rows["q24_original_historical_preparation"]["product_callers"],
@@ -32,10 +35,16 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
     def test_capture_uses_original_current_cut_and_deadline(self):
         self.check_markers(HISTORY, "fn capture_historical(", (
             "HistoricalDatasetLedgerV1::capture_original(receipt, trust, vec![task])?",
-            "HistoricalDatasetLedgerV1::with_current(", "require_historical_configuration(&config, &ledger)",
+            "let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
+            "original.with_original_ledger_operation(|operation|",
+            "operation.read_historical(&ledger,", "require_historical_configuration(&config, &ledger)",
             "observed_at >= config.request.envelope.expiry_unix_seconds",
             "RootHistoricalLedgerReadDataV1::read_snapshot(data)?", "data.ledger_cut()?.frontier",
-            "ledger: OriginalDatasetLedgerV1::Historical(ledger)", "preparation.signing_payload()?"))
+            "ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
+            "preparation.with_historical_cut_in_operation(",
+            "dataset_freeze_signing_payload_v2(snapshot, &preparation.plan()?)?",
+            "Ok(preparation)", "})?"))
+        self.reject_removal(HISTORY, "fn capture_historical(", "})?", 1)
 
     def test_snapshot_and_whole_current_initial_are_rechecked_each_time(self):
         self.check_markers(HISTORY, "fn with_historical_cut_in_operation<T>(", (
@@ -69,13 +78,18 @@ class HistoricalPreparationSourceTests(unittest.TestCase):
     def test_historical_preparation_reuses_the_original_scope_algorithm(self):
         self.check_markers(HISTORY, "fn materialize_historical(", (
             "let OriginalDatasetLedgerV1::Historical(ledger) = &self.ledger else",
-            "self.validate_authorization_historical(ledger, &authorization)?",
-            "CellQ24PreparedLearningV1::from_historical(self.config, ledger, frozen)"))
+            "let ledger = Arc::clone(ledger)",
+            "let original = OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
+            "original.with_original_ledger_operation(|operation|",
+            "self.validate_authorization_historical_in_operation(",
+            "&authorization,", "CellQ24PreparedLearningV1::from_historical(",
+            "self.config,", "frozen,", "})?"))
         self.check_markers(AGENT + "cell_q24_prepared_learning.rs", "fn from_historical(", (
             "historical_preparation::require_historical_configuration(&config, &ledger)?",
             "frozen.receipt.snapshot.snapshot_id != config.snapshot_id",
+            "frozen.receipt.snapshot.objective_digest != config.request.envelope.objective_digest",
             "CellQ24TrainingBatchV1::from_original_historical_dataset(",
-            "Self::finish_original(config, frozen, batch, publication)"))
+            "operation,", "Self::finish_original(config, frozen, batch, publication, operation)"))
 
     def test_historical_variants_cannot_return_live_writer(self):
         for function in ("fn original_writer(", "fn into_original_writer("):

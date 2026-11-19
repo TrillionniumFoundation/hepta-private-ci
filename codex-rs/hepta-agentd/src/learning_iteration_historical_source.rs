@@ -137,68 +137,73 @@ impl LearningIterationRuntimeBootstrapV1 {
             .as_ref()
             .ok_or_else(|| refused("actual assembled Q24 owners absent"))?;
         let prepared = original.prepared();
-        source
-            .require_prepared_historical_source(prepared)
-            .inspect_err(|_| {
-                let _ = std::io::Write::write_all(
-                    &mut std::io::stderr(),
-                    b"daemon_stage=historical.source.bootstrap_prepared\n",
-                );
-            })?;
-        let registry = self
-            .circuit_delivery_registry
-            .as_ref()
-            .ok_or_else(|| refused("original source registry absent"))?;
-        if self.retained_source.is_some()
-            || self.historical_source.is_some()
-            || self.historical_delivery.is_some()
-            || !self.enforce_circuit_admission
-            || !matches!(
-                self.circuit_delivery_source,
-                CircuitLearningSourceV1::OriginalQ24
-            )
-            || self.scope.as_ref() != Some(prepared.scope())
-            || self.owners != prepared.initial().owners
-            || registry.requests.as_slice() != std::slice::from_ref(source.request())
-        {
-            return Err(refused(
-                "historical delivery differs from original Root assembly",
-            ));
-        }
-        source
-            .require_current_historical_source(identity)
-            .inspect_err(|_| {
-                let _ = std::io::Write::write_all(
-                    &mut std::io::stderr(),
-                    b"daemon_stage=historical.source.bootstrap_before_journal\n",
-                );
-            })?;
-        let key = ProductEvaluationExecutionKeyV1 {
-            plan_id: source.request().operation_id.clone(),
-            binding_digest: Digest32::of_parts(&[
-                b"hepta.agentd.original-historical-learning-delivery.v1\0",
-                crate::neuron_generation_process_identity_digest_v1(identity)?.as_array(),
-                prepared.initial().head_digest.as_array(),
-                prepared.scope().binding().as_array(),
-            ]),
-        };
-        let journal = match mode {
-            OriginalCellQ24LearningOpenV1::Create => {
-                LearningOwnerJournalV1::create(journal, witness, key.binding_digest)
-            }
-            OriginalCellQ24LearningOpenV1::Recover => {
-                LearningOwnerJournalV1::recover(journal, witness, key.binding_digest)
-            }
-        }
-        .map_err(refused)?;
-        source
-            .require_current_historical_source(identity)
-            .inspect_err(|_| {
-                let _ = std::io::Write::write_all(
-                    &mut std::io::stderr(),
-                    b"daemon_stage=historical.source.bootstrap_after_journal\n",
-                );
-            })?;
+        let (key, journal) = prepared
+            .with_original_prepared_operation(|read| -> Result<_, AgentdError> {
+                source
+                    .require_original_stage_operation(identity, read)
+                    .inspect_err(|_| {
+                        let _ = std::io::Write::write_all(
+                            &mut std::io::stderr(),
+                            b"daemon_stage=historical.source.bootstrap_prepared\n",
+                        );
+                    })?;
+                let registry = self
+                    .circuit_delivery_registry
+                    .as_ref()
+                    .ok_or_else(|| refused("original source registry absent"))?;
+                if self.retained_source.is_some()
+                    || self.historical_source.is_some()
+                    || self.historical_delivery.is_some()
+                    || !self.enforce_circuit_admission
+                    || !matches!(
+                        self.circuit_delivery_source,
+                        CircuitLearningSourceV1::OriginalQ24
+                    )
+                    || self.scope.as_ref() != Some(prepared.scope())
+                    || self.owners != prepared.initial().owners
+                    || registry.requests.as_slice() != std::slice::from_ref(source.request())
+                {
+                    return Err(refused(
+                        "historical delivery differs from original Root assembly",
+                    ));
+                }
+                source
+                    .require_original_stage_operation(identity, read)
+                    .inspect_err(|_| {
+                        let _ = std::io::Write::write_all(
+                            &mut std::io::stderr(),
+                            b"daemon_stage=historical.source.bootstrap_before_journal\n",
+                        );
+                    })?;
+                let key = ProductEvaluationExecutionKeyV1 {
+                    plan_id: source.request().operation_id.clone(),
+                    binding_digest: Digest32::of_parts(&[
+                        b"hepta.agentd.original-historical-learning-delivery.v1\0",
+                        crate::neuron_generation_process_identity_digest_v1(identity)?.as_array(),
+                        prepared.initial().head_digest.as_array(),
+                        prepared.scope().binding().as_array(),
+                    ]),
+                };
+                let journal = match mode {
+                    OriginalCellQ24LearningOpenV1::Create => {
+                        LearningOwnerJournalV1::create(journal, witness, key.binding_digest)
+                    }
+                    OriginalCellQ24LearningOpenV1::Recover => {
+                        LearningOwnerJournalV1::recover(journal, witness, key.binding_digest)
+                    }
+                }
+                .map_err(refused)?;
+                source
+                    .require_original_stage_operation(identity, read)
+                    .inspect_err(|_| {
+                        let _ = std::io::Write::write_all(
+                            &mut std::io::stderr(),
+                            b"daemon_stage=historical.source.bootstrap_after_journal\n",
+                        );
+                    })?;
+                Ok((key, journal))
+            })
+            .map_err(refused)??;
         self.historical_source = Some(Arc::clone(&source));
         self.historical_delivery = Some(OriginalHistoricalLearningDeliveryV1 {
             source,

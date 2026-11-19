@@ -58,8 +58,10 @@ class HistoricalDatasetCapabilitySourceTests(unittest.TestCase):
 
     def test_private_source_is_attached_only_after_full_materialization(self):
         self.check_markers(HISTORY, "fn from_original_historical_dataset(", (
-            "tasks: ledger.tasks.clone()", "ledger: OriginalDatasetLedgerV1::Historical(ledger)",
-            "source.materialize()?", "batch.source = Some(source)"))
+            "tasks: ledger.tasks.clone()",
+            "ledger: OriginalDatasetLedgerV1::Historical(Arc::clone(&ledger))",
+            "source.materialize_historical_in_operation(&ledger, operation)?",
+            "batch.source = Some(source)", "operation.require_original_batch(&batch)?"))
         self.check_markers(MATERIALIZER, "fn materialize(", (
             "match &self.ledger", "OriginalDatasetLedgerV1::Live(ledger) => self.materialize_live(ledger)",
             "OriginalDatasetLedgerV1::Historical(ledger) => self.materialize_historical(ledger)"))
