@@ -1,0 +1,46 @@
+{
+  "all_closed": false,
+  "archived_oracle_path": "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/evidence/attempt001-20261119/originals/N256_WARM1.bin",
+  "archived_oracle_sha256": "b2a6e204e613fead7c0735b12a335a88d2394c8f4da99cab798133443c55dc18",
+  "identity": "hcsn-n256-independent-warm1-sparse-20261119-001",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "maximum_attempts": 1,
+  "original_full_roster_admitted": false,
+  "policy": {
+    "child_rlimit_as_bytes": 4294967296,
+    "child_timeout_seconds": 600,
+    "concurrency": 1,
+    "job_timeout_minutes": 20,
+    "maximum_capture_age_ns": 30000000000,
+    "maximum_memory_pressure_avg10": 0.05,
+    "minimum_effective_cpus": 4,
+    "minimum_finite_cgroup_headroom_bytes": 6442450944,
+    "minimum_mem_available_kib": 10485760,
+    "minimum_swap_free_kib": 1048576,
+    "thread_count": 1
+  },
+  "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06",
+  "scope": {
+    "coordinates": 69728,
+    "dynamic_steps": 1,
+    "end": "1/1000",
+    "new_dense_actions": 0,
+    "sparse_exponential_actions": 2,
+    "start": "0/1"
+  },
+  "source_sha256": {
+    ".github/workflows/hcsn-currentstate-n256-warm1-sparse.yml": "4d8d853c5203906f21b66d7f74701eb922af9cf9cb51bb86cf81c9a8dd344431",
+    "qualification/hcsn_currentstate_n256_firststep_dense_oracle_hosted/launcher.py": "733d7c7eb6b34f5d02f8daad604c56e58960afeab1c8b61745e803e535cabb33",
+    "qualification/hcsn_currentstate_n256_firststep_hosted_admission_intent/policy.py": "4b14ce04195c5cb9a85250ecf9df8af5d2f122fd8401c68188bfe4962914e9c1",
+    "qualification/hcsn_currentstate_n256_firststep_resource_snapshot/snapshot_source.py": "22d3a8e6bf751c6f5e00fcdd72ab8771d4270024f3d66cd6ba4c3eb2f4e4c5e2",
+    "qualification/hcsn_currentstate_n256_firststep_serializer_v2/serializer.py": "dfa63cbfe7688e9c07cfff627cffd3d1e0352191e09f2be20ad53d1e310c1ab9",
+    "qualification/hcsn_currentstate_n256_independent_oracle_v2_intent/adapter.py": "311eeeb69ba5002171d3aa765610bc9caea1cb2942309ba6e67543297cb74084",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/__init__.py": "a16bf3bb7e5af5104218aa6a77b8bc57321d564397d2fae9cea17bc78562598f",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/candidate.py": "dcfbe2af7f76c675e2fd9c38a87dd7079c40dc54959b2f609cac5bdf6833e5a8",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/compare.py": "17c8a2dd389aa73122e7fec3e3b3bfae01a0e5a5cab4c1c3855a590426b18a12",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/requirements.txt": "1668a3152e33680d94637b13421c15e68bd97cd8701f7f555c691f5bc5c0b9f3",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/runner.py": "a84c8de145a99bf52de38ff2c756d8c7fdd136d8a4a610e2ecbf97fa16cf9b08",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/test_candidate.py": "8088be265b03286680bcd3c093ef9b1a4335dee94340c1aebb0e48570eb2c9a0",
+    "qualification/hcsn_currentstate_n256_warm1_sparse/test_runner.py": "fb65693c6619b138cbe61cd1689cf819ea47e0d26ba8a4a7ea6c313077c37346"
+  }
+}

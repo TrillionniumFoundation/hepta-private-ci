@@ -1,0 +1,11 @@
+{
+  "invalid_source_commit": "5a3b7efdc5556b53a04590790aa1b684943c43db",
+  "observed_local_parser": "yaml.safe_load",
+  "observed_error_type": "ScannerError",
+  "observed_error": "mapping values are not allowed here: line 38, column 54",
+  "cause": "unquoted plain run scalar contained --only-binary=:all: followed by a space",
+  "repair": "folded run scalar preserves the exact pip command",
+  "authentic_dynamic_steps_before_repair": 0,
+  "hosted_executions_before_repair": 0,
+  "old_source_commit_preserved": true
+}
