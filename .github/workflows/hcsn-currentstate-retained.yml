@@ -84,6 +84,13 @@ jobs:
             qualification.hcsn_network.test_benchmark_models \
             -v > "$RUNNER_TEMP/currentstate/ZERO_AGE_STDOUT.txt" \
             2> "$RUNNER_TEMP/currentstate/ZERO_AGE_STDERR.txt"
+      - name: Verify changing delay, reset, rewards and integrated discount
+        run: |
+          mkdir -p "$RUNNER_TEMP/currentstate/TIMEVARYING"
+          python -m qualification.hcsn_currentstate.study_timevarying \
+            "$RUNNER_TEMP/currentstate/TIMEVARYING" \
+            > "$RUNNER_TEMP/currentstate/TIMEVARYING/stdout" \
+            2> "$RUNNER_TEMP/currentstate/TIMEVARYING/stderr"
       - name: Check clean executing source
         run: git diff --exit-code
       - uses: actions/upload-artifact@v4
