@@ -1,0 +1,48 @@
+{
+  "schema": "hepta.replacement-execution-spec.v1",
+  "cpu_execution_source_commit": "8cd1a64a916a58deaf961c063efecfb82cee88f5",
+  "cpu_evidence_commit": "1411253ea33c259886b077714e65210066735923",
+  "protocol_sha256": "b195b818806bf1047589ef9d8b07057c63cc2f0f66de340a06a9c21a1fe7ac0b",
+  "candidate_files": {
+    "prepare.py": "460357e90f1d2017df7f994af86fee0c663dd6e8ac3fee34aaba9f59e920135a",
+    "replacement_codec.py": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3",
+    "owner.py": "2dcd2184d99926bff43ba490f570a8b5a70ace96c11c57f9509aad5aedf99e66",
+    "run_replacement.py": "71c2c1f8269d3c1f01a6218b581c61150dfa227c1b919061ad94b8f33f0ab56c"
+  },
+  "external_source_files": {
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/execution-code/native_sandbox.py": "49cced4d3eb61ee86b1f55a11ca097be7618a0fc9b59e515f1b1d7676bec671c",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/execution-code/owner.py": "fc9ec2aa4600b8d554f4a9ef9ee802bf196cc68e8fad890a4090538497bb0ac1",
+    "/home/qian-qi/work/hepta-upstream-current-policy-20261118-2e9b/execution-code/run_students.py": "68546d87c57c152c3f82fe058821907b479cb2d78ce7725818d28fff09642a4e",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/README.md": "79df490114dcf4333d248fa6b5cab0178ea0de2196a91586ee4990b3ba13a5ff",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/build_dataset.py": "912c53d6a6e484a44dd42601fde65f2a61984cc52d950c91516c5c6ef9a336da",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/checkpoint_softmax.py": "81ad33310f7bb427d01d25fd4ff696d281e6c53f3bba24cbc80667df63316aaa",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/freeze_training.py": "d807fa70a2758b99157c7d98a50ee9be0d3b7d065f4c8fcb9e69fc6624a696d9",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/layout_context.py": "6abc3a3b982854b1e9fd30177a936ae495b2fb09ba9f7da0978d4eb889179dc7",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py": "a3331738cf460f3e484d4d75c28fc78427b523bd27cbe5a2cbddfe792b282005",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/owner.py": "14d539ffa82795e527984095c63567acf5da2851c600f8ec7572949b1710dd7b",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/prepared/DATASET.json": "83d8e4c9294e9fd2250a9915db1c859acf607e053c29647bcf0dabcb94368bf3",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/prepared/ENCODING.json": "5a29cab202d9e5c231c87dbe8388465e32a7bffea0d311ce3399f0aa73bd95a3",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/prepared/INPUT_INDEX.json": "08a1e47306e72981cb0e92958d6a9cc12aa2b59dbd8065d506c78a0226d77f9d",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py": "268f2619925745c8d5e90dc4c823954e62e2e2fc39a5d1ac3a91301c72384b67",
+    "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/test_layout_sft.py": "33f3f6f433ad86770ddea150f1854ea3d6798b1a9ec47c99ded1fb4213173b4e"
+  },
+  "cpu_qualification_result_path": "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/cpu-attempt-1/cpu-controls-1/RESULT.json",
+  "cpu_qualification_result_sha256": "60c11251d7e7337d15f1a0c4d7ffa473fa50e0d0ec17293c3ccecd344bd36eb0",
+  "planned_model_order": [
+    "P",
+    "document_evidence",
+    "native_feedback"
+  ],
+  "planned_model_calls": 24,
+  "planned_model_calls_per_mode": 8,
+  "planned_training_updates": 0,
+  "B3_model_calls": 0,
+  "cuda_memory_fraction": 0.7,
+  "cuda_allocator": "expandable_segments:True",
+  "stage_timeout_seconds": 3600,
+  "energy_sample_interval_seconds": 20,
+  "unknown_requests_not_replayed": true,
+  "old_research_NoUpdate_unchanged": true,
+  "independent_confirmation_qualified": false,
+  "native_adoption": false
+}

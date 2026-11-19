@@ -1,0 +1,7 @@
+# Exact execution deployment
+
+Source 18b16357c9e1a6a437b418ebd7abdbfda17cbff7 passed repository just-fmt and the actual PR-base changed-blob checker (077b552e6265be1c00cd045506f00e2aa3082c2f → 18b16357); the checkout remained clean. Explicit Ruff formatting/lint also passed all four Python files. The original source gate RESULT SHA is 21d06b33bb7ea317d0820d20bd81962630d17fcbd5597b28a95e667a13cb3366.
+
+The first import-only preflight failed because an unqualified import of owner, after the ancestral modules adjusted sys.path, resolved to the older current-credit owner module. It loaded no model weights, performed no generation/native child, and its original durable PTY readback is retained. The production entry already executes the new owner.py by exact absolute path. The second preflight used an exact file spec for that same admitted owner; candidate source and protocol were unchanged. It verified the source paths and recorded cuda_initialized=false.
+
+DEPLOYMENT.json is the original pre-execution snapshot (SHA bb22610ab20d26073206a6d37e3e6a3464cb38f2037bc7b9dcf52231445cec21). Its gpu_execution_started=false describes the preparation instant, not future run status. The original corrected preflight RESULT SHA is cb557738f4ac6e8b1db3faaddac78090c022eabb906a9a8cf4f5660aa9df7fa3. The fixed bound is 24 new A generations and zero training/B3 calls. These records do not claim any model outcome.
