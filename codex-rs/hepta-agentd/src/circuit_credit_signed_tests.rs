@@ -50,6 +50,7 @@ async fn apply_run(
 
 async fn execute(owner: AgentId, run: &StableId, objective: Digest32) -> ExecutedCircuit {
     let directory = checked(tempfile::tempdir());
+    let canonical_directory = checked(directory.path().canonicalize());
     let fence = checked(TaskFlowFence::new(
         owner.clone(),
         "owner",

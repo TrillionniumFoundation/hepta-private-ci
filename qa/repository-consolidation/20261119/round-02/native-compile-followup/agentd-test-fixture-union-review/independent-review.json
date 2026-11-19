@@ -1,0 +1,38 @@
+{
+  "reviewer": "branch_scope",
+  "reviewed_change_report_sha256": "3cdefa5f3ee367d1a91facfece57af2b08583f7d16902a46c7c4f4a0508eefb8",
+  "source_review": "APPROVED; native compilation and execution remain pending",
+  "before_and_after_file_hashes_verified": true,
+  "decisions": [
+    {
+      "area": "canonical_directory",
+      "finding": "Both restored canonicalize bindings exactly match e344 original statements, precede fleet layout construction, propagate filesystem failure, and retain TempDir ownership."
+    },
+    {
+      "area": "LedgerFixture",
+      "finding": "Original independent observer full-byte comparisons remain full physical bytes, now from the existing durable writer and witness locked File descriptors. ProductionLedger::qualification_file_bytes requires durable backend; exclusive mutable borrow; each read bounded to 8 MiB; no reopen, clone, unlock or sync. Cursor is restored even on failed reads. Poison/read/restore errors remain test failures. Obsolete never-initialized observers field removed, leaving original File type import needed by directory_handle."
+    },
+    {
+      "area": "source_bytes",
+      "finding": "First four replacements borrow the live owner; last two borrow the recovered owner, after original owner drop and physical snapshot. Existing source_bytes locks that same owner and reads its existing journal; complete Vec byte equalities preserved. Original code for inference counts, altered credentials, recovered no-repeat behavior, and after-drop filesystem observations is untouched."
+    },
+    {
+      "area": "signer_bytes",
+      "finding": "First three replacements read current signer, last two recovered signer. Existing cfg(test) helper calls original journal require_current (witness/journal/witness read check), then bounded physical read. No cached logical snapshot substitutes for byte comparison; current-state or I/O error fails the test. All 17 original evaluator assertions and provider execution/release counts remain."
+    }
+  ],
+  "reviewed_api_sha256": {
+    "codex-rs/hepta-learning-ledger/src/production.rs": "a7851c89aae5ab6f113f3efeaec69f64c88b7252962d0f9dc64e164d687ce63a",
+    "codex-rs/hepta-learning-ledger/src/durable.rs": "498d1dd6d9b411dd4553354a9ef74548b21bb0b0f39c49b19604bd432a79d3d0",
+    "codex-rs/hepta-learning-ledger/src/witness.rs": "6b83e83f3e1d807aeac6d31710268e98331532859bf673f00d00977ea2ce44b3",
+    "codex-rs/hepta-learning-ledger/src/durable_lock.rs": "6642777340e2d947ceaf7064248bfd930fec004770ff5b5cb3a47eb483858239",
+    "codex-rs/hepta-agentd/src/circuit_task_source_tests.rs": "fdc8c1d74696418b884c07a06bd26ecfb56bcf875988e55dccdb0b0a218c773f",
+    "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs": "3a16abd53a7181e0a2e86b550e3979329b344f68b9b5991dae58a1b3b6cb8bc0",
+    "codex-rs/hepta-agentd/src/learning_owner_journal.rs": "7c71348c83249c9a125f61901d777a4b0d950f1b354dcad42a94693a8d4480d4",
+    "codex-rs/hepta-intelligence-eval/src/product_execution_file.rs": "560a5011df35e0ee685f8786c406ebda9ad059641d90bc8b636f4434f9826b6e",
+    "codex-rs/hepta-intelligence-eval/src/qualification_file_observation.rs": "ea2e622b9e44bee9aa9318d9e1389fdafdc76e12efa4a9cbbba95472990de652"
+  },
+  "changed_production_source": false,
+  "new_observation_capability": false,
+  "assertion_inventory_preserved": 115
+}

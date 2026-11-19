@@ -94,7 +94,11 @@ pub(super) fn install(root: &Path, input: &SupervisorInput) -> anyhow::Result<Tr
                     unix_ms: serde_json::from_slice(&fs::read(&clock_file)?)?,
                 },
                 PqTrustOperationV2::FrontierLoad { .. }
-                | PqTrustOperationV2::FrontierCompareAndSet { .. } => PqTrustOutcomeV2::Unavailable,
+                | PqTrustOperationV2::FrontierCompareAndSet { .. }
+                | PqTrustOperationV2::LearningFrontierLoad { .. }
+                | PqTrustOperationV2::LearningFrontierCompareAndSet { .. } => {
+                    PqTrustOutcomeV2::Unavailable
+                }
             })
         },
     )?;
