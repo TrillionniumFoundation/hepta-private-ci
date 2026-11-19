@@ -200,6 +200,11 @@ def validate_config(config):
     if "validation_interval" in config and (type(config["validation_interval"]) is not int
                                              or config["validation_interval"] <= 0):
         raise ValueError("validation_interval must be a positive integer")
+    if "training_wall_seconds" in config:
+        for key in ("training_wall_seconds", "validation_interval_seconds"):
+            value = config.get(key)
+            if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+                raise ValueError(f"{key} must be finite and positive")
     if any(not isinstance(config.get(key), (int, float)) or not math.isfinite(config[key]) or
            config[key] <= 0 for key in ("dt", "learning_rate")):
         raise ValueError("dt and learning_rate must be finite and positive")
@@ -254,6 +259,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         encoder = make_encoder(name, 2, config["hidden_size"], device=device, dt=config["dt"],
                                population_checkpoint_steps=policy["population_checkpoint_steps"])
         record["encoder_class"] = type(encoder).__name__
+        record["equity_evaluation"] = getattr(encoder, "equity_evaluation", None)
         record["implementation"] = implementation_record(encoder)
         if hasattr(encoder, "population"):
             from dataclasses import asdict
@@ -294,14 +300,50 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
         model.train()
         batch_rng = np.random.default_rng(seed+1729)
         losses, best_val, best_state = [], math.inf, None
+        best_step, best_wall = None, None
+        wall_budget = config.get("training_wall_seconds")
+        wall_interval = config.get("validation_interval_seconds")
+        next_validation = wall_interval
+        record["optimizer_steps_within_wall_budget"] = 0 if wall_budget is not None else None
         val_interval = config.get("validation_interval", max(1, config["train_steps"]//4))
         sync()
         meter = EnergyCounter(str(device))
         meter.start()
         energy_started = True
         start = time.perf_counter()
+        cpu_start = time.process_time()
         stage, record["training_status"] = "training", "running"
+
+        def observe_validation(step):
+            nonlocal best_val, best_state, best_step, best_wall
+            model.eval()
+            validation = evaluate_mse(val_x, val_y)
+            if not math.isfinite(validation):
+                raise FloatingPointError("nonfinite validation loss")
+            sync()
+            elapsed = time.perf_counter()-start
+            eligible = wall_budget is None or elapsed <= wall_budget
+            if eligible and validation < best_val:
+                candidate = {k: v.detach().clone() for k, v in model.state_dict().items()}
+                sync()
+                elapsed = time.perf_counter()-start
+                eligible = wall_budget is None or elapsed <= wall_budget
+                if eligible:
+                    best_val, best_state, best_step, best_wall = validation, candidate, step, elapsed
+            record["validation_curve"].append(dict(
+                step=step, training_tokens=record["training_tokens_seen"],
+                wall_seconds=elapsed, process_cpu_seconds=time.process_time()-cpu_start,
+                mse=validation, best_mse=best_val if best_state is not None else None,
+                eligible=eligible))
+            model.train()
+
+        if wall_budget is not None:
+            observe_validation(0)
+            if best_state is None:
+                raise TimeoutError("initial validation/checkpoint did not fit the declared wall budget")
         for step in range(config["train_steps"]):
+            if wall_budget is not None and time.perf_counter()-start >= wall_budget:
+                break
             indices = torch.as_tensor(batch_rng.integers(0, len(train_x), config["batch_size"]), device=device)
             optimizer.zero_grad(set_to_none=True)
             record["training_examples_seen"] += config["batch_size"]
@@ -329,21 +371,29 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             if any(not bool(torch.isfinite(p).all()) for p in model.parameters()):
                 raise FloatingPointError(f"nonfinite updated parameter at optimizer step {step}")
             losses.append(float(loss.detach()))
-            if (step+1) % val_interval == 0 or step+1 == config["train_steps"]:
-                model.eval()
-                validation = evaluate_mse(val_x, val_y)
-                if not math.isfinite(validation):
-                    raise FloatingPointError("nonfinite validation loss")
-                if validation < best_val:
-                    best_val = validation
-                    best_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+            if wall_budget is None:
+                if (step+1) % val_interval == 0 or step+1 == config["train_steps"]:
+                    observe_validation(step+1)
+            else:
                 sync()
-                record["validation_curve"].append(dict(
-                    step=step+1, training_tokens=record["training_tokens_seen"],
-                    wall_seconds=time.perf_counter()-start, mse=validation, best_mse=best_val))
-                model.train()
+                elapsed = time.perf_counter()-start
+                if elapsed <= wall_budget:
+                    record["optimizer_steps_within_wall_budget"] += 1
+                if elapsed >= wall_budget:
+                    break
+                if elapsed >= next_validation:
+                    observe_validation(step+1)
+                    next_validation = wall_interval*(math.floor((time.perf_counter()-start)/wall_interval)+1)
         sync()
         elapsed = time.perf_counter()-start
+        record["training_process_cpu_seconds_including_validation"] = time.process_time()-cpu_start
+        record["training_wall_budget"] = (dict(
+            seconds=wall_budget, filled=elapsed >= wall_budget,
+            overrun_seconds=max(0., elapsed-wall_budget),
+            scope="initial validation, training, periodic validation and checkpoint copies",
+            best_checkpoint_step=best_step, best_checkpoint_wall_seconds=best_wall,
+            best_checkpoint_eligible=best_wall is not None and best_wall <= wall_budget)
+            if wall_budget is not None else None)
         stage, record["training_status"] = "evaluation", "completed"
         record["energy"] = close_energy_interval(meter, torch, device, started=energy_started)
         meter = None
@@ -354,7 +404,7 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             record["peak_gpu_measurement_status"] == "measured" if device.type == "cuda" else None)
         peak_captured = True
         record["training_wall_seconds_including_validation"] = elapsed
-        record["training_examples_seen"] = config["train_steps"]*config["batch_size"]
+        record["training_examples_seen"] = len(losses)*config["batch_size"]
         record["training_tokens_seen"] = record["training_examples_seen"]*config["length"]
         record["training_examples_per_second"] = record["training_examples_seen"]/elapsed
         record["optimizer_tensor_bytes"] = tensor_bytes(optimizer.state_dict())
@@ -363,7 +413,8 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
             temporary = checkpoint_path.with_suffix(".tmp")
             torch.save({"state_dict": best_state, "best_validation_mse": best_val,
                         "config": config, "task": task, "model": name, "seed": seed,
-                        "training_steps_completed": len(losses)}, temporary)
+                        "training_steps_completed": len(losses), "selected_step": best_step,
+                        "selected_wall_seconds": best_wall}, temporary)
             os.replace(temporary, checkpoint_path)
             record["best_checkpoint"] = str(checkpoint_path)
             record["best_checkpoint_sha256"] = hashlib.sha256(checkpoint_path.read_bytes()).hexdigest()
@@ -386,7 +437,8 @@ def _run_one(config, task, name, seed, datasets, device, torch, checkpoint_path=
                 sync()
                 latencies.append(time.perf_counter()-start)
         record.update(status="completed", best_validation_mse=best_val,
-                      initial_training_mse=losses[0], final_training_mse=losses[-1],
+                      initial_training_mse=losses[0] if losses else None,
+                      final_training_mse=losses[-1] if losses else None,
                       inference_batch_size=len(batch), inference_examples_per_second=len(batch)/statistics.mean(latencies),
                       latency_p50_ms=float(np.percentile(latencies, 50)*1000),
                       latency_p95_ms=float(np.percentile(latencies, 95)*1000))
@@ -434,7 +486,9 @@ def run(config, checkpoint_dir=None):
               "source_sha256": source.hexdigest(), "source_files_sha256": source_files, "hardware": {"platform": platform.platform(),
               "machine": platform.machine(), "cpu_model": cpu_name, "logical_cpu_count": os.cpu_count(),
               "python": sys.version.split()[0], "numpy": np.__version__},
-              "protocol": {"data_budget": "same steps, batch size, length and splits for every model",
+              "protocol": {"data_budget": ("same training/validation wall budget; same splits and seeded minibatch prefixes"
+                                           if config.get("training_wall_seconds") else
+                                           "same steps, batch size, length and splits for every model"),
               "data_seed": config.get("data_seed", 271828), "selection": "validation only; one held-out test evaluation",
               "parameter_matching": "same hidden width; actual parameter counts reported, not parameter matched",
               "latency": "batch forward; two warmups; synchronize CUDA after each measurement",

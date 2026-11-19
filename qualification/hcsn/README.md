@@ -345,6 +345,31 @@ budgets and quality targets. Test data are evaluated once after validation
 selection. Fixed update counts describe a small-task comparison, not convergence
 or E07 qualification; unavailable and interrupted fits remain in the matrix.
 
+### Filled wall-budget comparison
+
+`configs/hx-wall-budget-small.json` runs the same two tasks and three seeds with
+the five controls plus `hx_dual_prepared`. The prepared evaluator retains the
+complete HX value and gradients; `hx_dual` still uses the original direct path.
+Each fresh CPU process fills **20 seconds** from before initial validation,
+including optimizer updates, periodic validation and candidate checkpoint
+copies. Only validation and checkpoint copying completed within the budget may
+select weights. Validation is scheduled every four elapsed seconds; the last
+in-flight operation can overrun and is charged, while its late checkpoint is
+ineligible. The initial untrained checkpoint must fit the same budget. The
+100,000-update guard is reported separately if it prevents filling the budget.
+
+Use the same `qualification.hcsn.ablation` command with that config, setting
+`OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1`. The fixed seed
+controls model initialization and minibatch prefixes; faster models can consume
+more minibatches. Test is evaluated once for the selected eligible checkpoint.
+Training wall/CPU time, in-budget and actual update counts, overrun, full child
+process wall time, state bytes and RSS are retained. Imports, construction,
+final test and latency measurements are outside the 20-second timer but inside
+the measured child process. The process cap is 90 seconds and the interleaved
+campaign cap is 1,500 seconds. Time-to-quality observations use validation only.
+This is a small synthetic feature-cell study, not a regenerative network, an
+E07 replacement, convergence evidence or a multimodal scaling result.
+
 ## Primary sources
 
 - He, Z. and Xiong, W. (2012), *Rollover Risk and Credit Risk*, Journal of Finance 67(2), equations (8), (9), (12), (A5), (A7): [author-hosted published paper](https://zhiguohe.net/wp-content/uploads/2023/12/The-Journal-of-Finance-2012-HE-Rollover-Risk-and-Credit-Risk.pdf), [DOI](https://doi.org/10.1111/j.1540-6261.2012.01721.x).

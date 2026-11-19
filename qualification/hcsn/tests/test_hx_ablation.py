@@ -10,7 +10,8 @@ class CostCurveTests(unittest.TestCase):
     def test_budget_censoring_and_quality_use_only_available_validation(self):
         first = dict(step=20, wall_seconds=5.0, mse=0.8, best_mse=0.8)
         second = dict(step=40, wall_seconds=12.0, mse=0.6, best_mse=0.6)
-        record = dict(validation_constant_mse=1.0, validation_curve=[first, second])
+        late = dict(step=45, wall_seconds=14.0, mse=0.1, best_mse=0.1, eligible=False)
+        record = dict(validation_constant_mse=1.0, validation_curve=[first, second, late])
         result = cost_comparison(record, [1, 7, 15], [0.9, 0.75, 0.5])
         self.assertEqual([row["observation"] for row in result["same_wall_validation"]],
                          [None, first, second])
