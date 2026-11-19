@@ -82,13 +82,16 @@ and a small causal Transformer. All use FP64, batch 64, Adam .003 and gradient
 norm cap 1. Parameter counts are measured, not assumed identical. No arm or seed
 is removed based on its result, and there is no test-driven tuning.
 
-Each fit has at most 60 seconds for construction, optimizer initialization,
-training, periodic validation, validation-original writes and in-memory
-checkpoint copies. Only validation plus snapshot completed within the limit
-can select a model. Imports/data setup, final publication and test/profile work
-are outside that scientific training interval but included in child and campaign
-costs. Late steps/validations are retained, cannot select a later model, and are
-not refunded. Validation is scheduled at roughly ten-second intervals; time to
+Each fit has a 60-second selection window covering construction, optimizer
+initialization, training, periodic validation, validation-original writes and
+in-memory checkpoint copies. Only validation plus snapshot completed within the
+limit can select a model. An atomic update started before the deadline can
+finish afterwards; actual training duration is not a strict 60-second cap.
+Imports/data setup, final publication and test/profile work are outside that
+selection interval but included in child and campaign costs. Late work is
+retained and charged and cannot select a later model. The selected checkpoint
+file is serialized after the loop; this is not a within-window disk-durability
+claim. Validation is scheduled at roughly ten-second intervals; time to
 80% validation accuracy is the first observed eligible check, with non-attainment
 censored. This is not an exact continuous crossing time or proof of convergence.
 
@@ -107,7 +110,10 @@ evaluation first replays the selected validation logits, then reads the full
 3,498-record test set once for that frozen model. Checkpoints, all validation
 logits, full test logits, loss/gradient journals, stdout/stderr and complete
 process costs are retained. An independent NumPy-only reader recomputes
-selection and metrics without creating a model or calling an optimizer.
+selection and metrics without creating a model or calling an optimizer. Use
+`evidence/benchmark-review/run_review.py` for that review: its separate complete
+roster, original-hash and finite-value gate closes checks absent from the
+standalone original reader. The frozen training/evaluation source is unchanged.
 
 Three seeds share one test set; their variation is initialization/training
 variation, not three independent datasets or 104,940 independent test cases.
@@ -127,10 +133,23 @@ process failures that must collect a surviving owned child.
 The additional frozen length profile uses one untrained source-bound model per
 arm (`flow`, `flow_erlang4`), B=1, and lengths 10/20/40/80. It retains full raw
 state/logits/gradients and measures forward/backward cost and approximation
-differences at matching weights. No optimizer is used. Conservation must remain
+differences under the same initialization/input seeds and shared source path.
+Actual weight/input values were not retained, so direct artifact-level bitwise
+equality cannot be checked. No optimizer is used. Conservation must remain
 within 2e-9; resource rejection is recorded rather than silently truncating
 pending state. Long-sequence classification generalization is not inferred from
 this numerical/state-cost profile.
+
+## Completed result
+
+All 30 training children and 30 post-seal evaluation children exited zero.
+The independent guarded reader completed all 30 fits and recomputed 175
+validation records. Exact-delay flow obtained 29.13% mean test accuracy;
+Erlang-4 57.72%; the ordinary gate 94.00%. These are three-seed observations
+under the fixed selection policy in a shared CPU environment, not an isolated
+architecture ranking. The current prototype demonstrated no task advantage.
+See [RESULTS.md](RESULTS.md) for all arms, complete costs, limitations and
+lossless original archives. No model was retrained after inspecting test results.
 
 Historical failed sparse bitwise gates, original C2 UNKNOWN intervals, six-fit
 full replay 0/6, HPCA external custody and prior negative task results remain
