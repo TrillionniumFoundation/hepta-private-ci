@@ -1,0 +1,235 @@
+{
+  "E_access": false,
+  "all_strict_bracket_signs": true,
+  "archive_sha256": "c0bd19d9ff00dcafb7da8700d54c3febf8d48af3fe5d1ccc34c96446028560ca",
+  "audit_body_cpu_seconds": 0.132040112,
+  "audit_body_wall_seconds": 0.13203454299946316,
+  "audit_peak_rss_kib": 17012,
+  "audit_scope": "Read-only original archive/source/identity/trajectory/cost reconciliation; no D logits, model inference, temperature refit or independent gradient recalculation.",
+  "bisection_updates": 980,
+  "completed_temperatures": 21,
+  "float64_longdouble_max_absolute_error": 1.4210854715202004e-14,
+  "historical_original_training_replays": "0/6",
+  "independent_arithmetic_evaluations": 126,
+  "model_forward_backward_optimizer_calls": 0,
+  "native_job": "1a1f3c89f0f-ffbe-e2d",
+  "original_controller_terminal": "UNKNOWN",
+  "scalar_objective_evaluations": 1064,
+  "schema": "D-calibration-archive-audit-v1",
+  "scientific_admission": "HOLD",
+  "source_commit": "a81f9e13cab9d27b0a59248e68dc11f32c61b652",
+  "status": "PASS",
+  "temperature_manifest_sha256": "033c394cfc63833e090a7a08dfe942911da2ecc44ff18e426082f404b08372b4",
+  "temperatures": [
+    {
+      "D_calibrated_nll": 0.9650575566200521,
+      "D_raw_nll": 0.9657895952648994,
+      "argmax_unchanged": true,
+      "beta": 1.0362201736840002,
+      "name": "gru-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.9650458709414726
+    },
+    {
+      "D_calibrated_nll": 0.7856286769981888,
+      "D_raw_nll": 0.8831680903083863,
+      "argmax_unchanged": true,
+      "beta": 1.5782034840997317,
+      "name": "gru-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.6336318542411777
+    },
+    {
+      "D_calibrated_nll": 1.0053378807201274,
+      "D_raw_nll": 1.0096325318686181,
+      "argmax_unchanged": true,
+      "beta": 0.9157485832679335,
+      "name": "gru-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.0920027814090714
+    },
+    {
+      "D_calibrated_nll": 1.1123164343023895,
+      "D_raw_nll": 1.1173123591139622,
+      "argmax_unchanged": true,
+      "beta": 1.0920212259959219,
+      "name": "cfc-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.9157331159822478
+    },
+    {
+      "D_calibrated_nll": 1.3262267257567713,
+      "D_raw_nll": 1.3447464608571642,
+      "argmax_unchanged": true,
+      "beta": 1.187220292774943,
+      "name": "cfc-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.8423036618272886
+    },
+    {
+      "D_calibrated_nll": 1.034492763723144,
+      "D_raw_nll": 1.0715792134049051,
+      "argmax_unchanged": true,
+      "beta": 1.2746492756606567,
+      "name": "cfc-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.7845295322367758
+    },
+    {
+      "D_calibrated_nll": 1.5237454646925206,
+      "D_raw_nll": 1.618912359015965,
+      "argmax_unchanged": true,
+      "beta": 1.5799180341734864,
+      "name": "snn_plif-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.6329442277194697
+    },
+    {
+      "D_calibrated_nll": 1.8334196225226953,
+      "D_raw_nll": 2.1284500570893967,
+      "argmax_unchanged": true,
+      "beta": 4.117907655515479,
+      "name": "snn_plif-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.24284177394328194
+    },
+    {
+      "D_calibrated_nll": 1.7230766263397348,
+      "D_raw_nll": 1.9822982061933967,
+      "argmax_unchanged": true,
+      "beta": 3.103025819940365,
+      "name": "snn_plif-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.32226609059257466
+    },
+    {
+      "D_calibrated_nll": 1.0895112606799593,
+      "D_raw_nll": 1.1160591716887343,
+      "argmax_unchanged": true,
+      "beta": 1.2913126038552698,
+      "name": "event_time_lif-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.7744058232022646
+    },
+    {
+      "D_calibrated_nll": 1.137660407795192,
+      "D_raw_nll": 1.2114952728202149,
+      "argmax_unchanged": true,
+      "beta": 1.517529343128706,
+      "name": "event_time_lif-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.6589658411074211
+    },
+    {
+      "D_calibrated_nll": 1.363064561951741,
+      "D_raw_nll": 1.3630809531342098,
+      "argmax_unchanged": true,
+      "beta": 1.005945148709614,
+      "name": "event_time_lif-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.9940899871953851
+    },
+    {
+      "D_calibrated_nll": 1.3133025476489768,
+      "D_raw_nll": 1.3142337461129359,
+      "argmax_unchanged": true,
+      "beta": 0.9545414618091865,
+      "name": "ssm_s4d-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.047623429688066
+    },
+    {
+      "D_calibrated_nll": 1.1898966900402144,
+      "D_raw_nll": 1.2029487212358942,
+      "argmax_unchanged": true,
+      "beta": 0.8433245985996982,
+      "name": "ssm_s4d-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.1857830326074374
+    },
+    {
+      "D_calibrated_nll": 1.3937355967693013,
+      "D_raw_nll": 1.4801787274690996,
+      "argmax_unchanged": true,
+      "beta": 0.6556778640338801,
+      "name": "ssm_s4d-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.5251391801574197
+    },
+    {
+      "D_calibrated_nll": 0.9891655534461153,
+      "D_raw_nll": 0.9908971044364322,
+      "argmax_unchanged": true,
+      "beta": 0.9445901741108174,
+      "name": "attention-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.0586601760296122
+    },
+    {
+      "D_calibrated_nll": 1.2532443776870288,
+      "D_raw_nll": 1.2539051499609697,
+      "argmax_unchanged": true,
+      "beta": 1.0352149554670937,
+      "name": "attention-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.9659829533169711
+    },
+    {
+      "D_calibrated_nll": 0.9650073426890923,
+      "D_raw_nll": 0.9719842857899413,
+      "argmax_unchanged": true,
+      "beta": 0.8957981756146149,
+      "name": "attention-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.1163228807804741
+    },
+    {
+      "D_calibrated_nll": 1.054932441064778,
+      "D_raw_nll": 1.0556253040124541,
+      "argmax_unchanged": true,
+      "beta": 1.0427561688164708,
+      "name": "hcsn-s101-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.9589969639163112
+    },
+    {
+      "D_calibrated_nll": 0.9703106479980995,
+      "D_raw_nll": 1.0173874314444635,
+      "argmax_unchanged": true,
+      "beta": 1.408868504750303,
+      "name": "hcsn-s211-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 0.7097894492128152
+    },
+    {
+      "D_calibrated_nll": 1.2135973803995017,
+      "D_raw_nll": 1.232970584396008,
+      "argmax_unchanged": true,
+      "beta": 0.807014131409926,
+      "name": "hcsn-s307-lr0.003",
+      "strict_bracket_signs": true,
+      "temperature": 1.2391356744310171
+    }
+  ],
+  "verified_members": 43,
+  "whole_native_child_cost": {
+    "child_peak_rss_kib": 231584,
+    "excludes": "Native service startup, supervisor setup/archive, controller transport and publication",
+    "exit_code": 0,
+    "full_child_cpu_seconds": 32.927284,
+    "full_child_wall_seconds": 33.64987031597411,
+    "includes": "Python child startup, imports, runtime/input verification, all attempted fits, independent arithmetic, receipts and child finalization",
+    "killed_at_phase_limit": false,
+    "schema": "full-D-calibration-child-cost-v1",
+    "stderr": {
+      "bytes": 0,
+      "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/child.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout": {
+      "bytes": 3212,
+      "path": "/home/qian-qi/hepta-c2-D-temperature-20261119-d741/child.stdout",
+      "sha256": "acf0c530f1db64cfff28b50038df474aee1bc55858e1ef9524d1587f2c01cfda"
+    }
+  }
+}

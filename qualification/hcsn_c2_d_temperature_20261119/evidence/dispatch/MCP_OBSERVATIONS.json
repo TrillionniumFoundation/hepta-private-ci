@@ -1,0 +1,134 @@
+{
+  "schema": "D-calibration-MCP-observations-v1",
+  "initial_native_inventory": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\"has_more\":true,\"inventory_complete\":false,\"jobs\":[],\"next_cursor\":\"pending:cb078043df9b55952ba1173c30f2fe2f039ee42e3f6e488054821a753411f7f1:0\",\"observation_atomic\":false,\"observation_deadline_seconds\":30,\"observation_started_unix_ms\":null,\"observer_mode\":\"continuous_background\",\"snapshot_semantics\":\"registry_metadata_at_observation\",\"snapshot_sha256\":null,\"status_authoritative\":false,\"total\":null,\"validation_pending\":true}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "native_inventory_continuation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "durable inventory source entry bound exceeded"
+      }
+    ],
+    "structuredContent": {
+      "error_code": "INVALID_ARGUMENT"
+    },
+    "isError": true
+  },
+  "initial_target_absent": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Path not found: ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741 (resolved to ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741)"
+        }
+      ],
+      "structuredContent": {
+        "error_code": "INVALID_ARGUMENT"
+      },
+      "isError": true
+    }
+  },
+  "first_process_start": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "identical_key_reconciliation": {
+    "content": [
+      {
+        "type": "text",
+        "text": "tool call error: tool call failed for `codex_apps/h.process_start`\n\nCaused by:\n    Mcp error: -32603: MCP request timed out"
+      }
+    ],
+    "isError": true
+  },
+  "readbacks_after_first_timeout": [
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Path not found: ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741/STAGE_TERMINAL.json (resolved to ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741/STAGE_TERMINAL.json)"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Path not found: ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741/RESULTS/TEMPERATURE_MANIFEST.json (resolved to ssh://desktop/home/qian-qi/hepta-c2-D-temperature-20261119-d741/RESULTS/TEMPERATURE_MANIFEST.json)"
+          }
+        ],
+        "structuredContent": {
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    }
+  ],
+  "original_controller_status": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"job_id\": \"1a1c74f3308-be2a-75\",\n  \"outcome\": \"unknown\",\n  \"reason\": \"supervisor disappeared without a confirmed terminal receipt\",\n  \"state\": \"finalizing\",\n  \"status_authoritative\": false,\n  \"terminal_publication_confirmed\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "final_target_listing": {
+    "status": "fulfilled",
+    "value": {
+      "content": [
+        {
+          "type": "text",
+          "text": "ARCHIVE.json\t11KB\nCHILD_COST.json\t871B\nDISPATCH.json\t686B\nINPUT_LEDGER.json\t54KB\nORIGINAL_E_PLAN.json\t19KB\nORIGINAL_FORMAL_PROTOCOL.json\t5KB\nREADME.md\t5KB\nREQUEST.json\t5KB\nRESULTS/RUNTIME_AFTER.json\t1KB\nRESULTS/RUNTIME_BEFORE.json\t2KB\nRESULTS/TEMPERATURE_MANIFEST.json\t13KB\nRESULTS/attention-s101-lr0.003.json\t26KB\nRESULTS/attention-s211-lr0.003.json\t26KB\nRESULTS/attention-s307-lr0.003.json\t26KB\nRESULTS/cfc-s101-lr0.003.json\t26KB\nRESULTS/cfc-s211-lr0.003.json\t26KB\nRESULTS/cfc-s307-lr0.003.json\t26KB\nRESULTS/event_time_lif-s101-lr0.003.json\t26KB\nRESULTS/event_time_lif-s211-lr0.003.json\t25KB\nRESULTS/event_time_lif-s307-lr0.003.json\t26KB\nRESULTS/events.jsonl\t728KB\nRESULTS/gru-s101-lr0.003.json\t26KB\nRESULTS/gru-s211-lr0.003.json\t25KB\nRESULTS/gru-s307-lr0.003.json\t26KB\nRESULTS/hcsn-s101-lr0.003.json\t26KB\nRESULTS/hcsn-s211-lr0.003.json\t26KB\nRESULTS/hcsn-s307-lr0.003.json\t26KB\nRESULTS/snn_plif-s101-lr0.003.json\t25KB\nRESULTS/snn_plif-s211-lr0.003.json\t25KB\nRESULTS/snn_plif-s307-lr0.003.json\t25KB\nRESULTS/ssm_s4d-s101-lr0.003.json\t26KB\nRESULTS/ssm_s4d-s211-lr0.003.json\t26KB\nRESULTS/ssm_s4d-s307-lr0.003.json\t26KB\nSOURCE_FREEZE.json\t1KB\nSTAGE_TERMINAL.json\t1KB\narchive-part-000.b64\t58KB\narchive-part-001.b64\t58KB\narchive-part-002.b64\t58KB\narchive-part-003.b64\t58KB\narchive-part-004.b64\t58KB\narchive-part-005.b64\t58KB\narchive-part-006.b64\t6KB\ncalibration-originals.zip\t268KB\nchild.stderr\t0B\nchild.stdout\t3KB\ncontrols.py\t4KB\nevidence/preparation/CONTROLS.json\t2KB\nevidence/preparation/HARDWARE.json\t5KB\nio_contract.py\t1KB\nreference.py\t5KB\nrunner.py\t9KB\nsolver.py\t4KB\nsupervisor.py\t4KB"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    }
+  },
+  "dispatch": {
+    "schema": "fixed-D-temperature-dispatch-v1",
+    "source_commit": "a81f9e13cab9d27b0a59248e68dc11f32c61b652",
+    "source_tree": "0e68b16b22e2040e5245b81f514d7ece107b0849",
+    "source_freeze_sha256": "86d02f22e45b60c39cfeb59167153f287a10ff0bca1bb9b0c61b73a052c5d3f5",
+    "wrapper_sha256": "2de413cb8d996a580510ecbc23cb4713079acd064f4f344897e3f862135085e4",
+    "native_idempotency_key": "hcsn-c2-D-temperature-20261119-d741-001",
+    "host": "desktop",
+    "E_payload_or_labels_accessed": false,
+    "E_execution_authorized": false,
+    "scientific_admission": "HOLD",
+    "inherited_preparation_local_commit": "c01ecf683d9c97686b35725ee6202437ee7a9f00",
+    "continuation_workspace": "2f21518ff984"
+  },
+  "scope": "Tool errors retained. Identical-key reconciliation is not a new numerical attempt; create-only output directory and receipts prevent overwrites. Full controller/API elapsed time was not measured."
+}
