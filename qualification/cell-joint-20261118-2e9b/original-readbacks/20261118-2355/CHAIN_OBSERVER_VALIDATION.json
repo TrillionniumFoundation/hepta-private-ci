@@ -1,0 +1,109 @@
+{
+  "schema": "chain-snapshot-lock-native-validation-v1",
+  "stages": [
+    {
+      "name": "preflight",
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.029248295817524195,
+      "child_user_cpu_seconds": 0.019767999999999997,
+      "child_system_cpu_seconds": 0.004484999999999999
+    },
+    {
+      "name": "original-observer-suite",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "test",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--release",
+        "--locked",
+        "--offline",
+        "--lib",
+        "ingress::public_v3::request_observation::",
+        "--",
+        "--nocapture",
+        "--test-threads=1"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.17615565308369696,
+      "child_user_cpu_seconds": 0.046904,
+      "child_system_cpu_seconds": 0.046957
+    },
+    {
+      "name": "strict-clippy",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "clippy",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--release",
+        "--locked",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 30.53135017887689,
+      "child_user_cpu_seconds": 76.394036,
+      "child_system_cpu_seconds": 7.84145
+    },
+    {
+      "name": "format-check",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "fmt",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 7.318111236905679,
+      "child_user_cpu_seconds": 7.225684999999999,
+      "child_system_cpu_seconds": 0.08681699999999992
+    },
+    {
+      "name": "locked-linux-graph",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "metadata",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--filter-platform",
+        "x86_64-unknown-linux-gnu",
+        "--format-version",
+        "1"
+      ],
+      "exit_code": 101,
+      "wall_seconds": 0.06946941907517612,
+      "child_user_cpu_seconds": 0.03993599999999731,
+      "child_system_cpu_seconds": 0.027419999999999334
+    }
+  ],
+  "complete": false,
+  "retained_prior_cli_invocation_error": "snapshot-lock-fix-1/original-observer-suite.stderr",
+  "production_patch": {
+    "bytes": 2373,
+    "sha256": "140769b857f5c74965621367890870b717d149d8862b0ec4642e9cd71e8a01c9"
+  },
+  "production_file_sha256": "6761f548af3551f383f2c6f6ed973e2b14daf01deeec102c00cac9341785a9ab",
+  "test_file": {
+    "path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/source/trillionnium/crates/trnm-pon-node/src/ingress/public_v3/request_observation_snapshot_tests.rs",
+    "bytes": 2884,
+    "sha256": "755238ecceba52fd6b5724d456d54262920d166ee5d519bf06607bca12b0e2e5"
+  },
+  "error": "AssertionError()"
+}

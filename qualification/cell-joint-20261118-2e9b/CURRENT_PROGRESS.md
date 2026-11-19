@@ -1,102 +1,94 @@
 # E1–E6 current progress
 
-Observed 2026-11-19T04:04:58Z (2026-11-18T23:04:58-05:00, America/New_York). The historical joint source remains `2b3642214ba5ff4aaac27de13322a354a69507e7`; the original freeze is unchanged. Every later candidate retains its own execution source, model, protocol and original receipts.
+Observed 2026-11-19T04:55:19Z (2026-11-18T23:55:19-05:00, America/New_York). The historical joint source remains `2b3642214ba5ff4aaac27de13322a354a69507e7`; its freeze is unchanged. Later source, model, protocol and evidence identities remain separate.
 
 ## Current result
 
-E6 source `4adb42883bf29357105de078359fdb44c28b2f0b` now passes the complete original caller verifier and all 11 original native component cases. The unique complete NoUpdate5 owner has started fresh helper/product/library preparation under the prospectively published original command contract. It has not yet passed the complete lifecycle.
+**The complete original E6 NoUpdate5 parent failed at historical request 65 against the unchanged limit 64.** Experience and Dataset were retained; Training journals contain only their headers. No new C or cold D was established. The original collector accepted and retained the failed result. The next source adds actual caller/read/stage diagnostics; it has passed the original source gates and is undergoing fresh native validation.
 
-The original 56-call learning experiment remains **NoUpdate**. A subsequent 24-call exposed-A diagnostic reached 23 actual native children, but P and both updated models still scored 0/4 for first response, final response and recovery. A new matched raw-function learning candidate is training with actual semantic feedback. Its future task selection was frozen prospectively and begins only after both weights freeze.
+Both matched raw-function learning arms completed and their weights are independently verified and frozen. Fixed-order future task selection is executing original BEFORE/AFTER tests; zero new model generations have occurred.
 
-Chain source `3db79eb2682ba3bcbbf33557c5eee3b67731028f` still fails the original F0: 1/6 confirmations in the original 30-second phases, 0/6 within the scheduled four-second targets. Numeric depletion was not established.
+Chain's original F0 remains failed: **1/6 confirmations within 30 seconds and 0/6 scheduled four-second targets**. New controls reproduce an observer lock-order defect, and its repair passes the observer suite. An append-only optimization is still a separate candidate awaiting full gates and a new original F0.
 
-All ten joint qualification flags remain false. Complete evidence and component success do not establish independent learning, original owner adoption, cold fresh D, FinalUse, settlement, production eligibility or complete physical costs.
+All ten joint qualification flags remain false. Component passes do not establish independent learning, native owner adoption, fresh C/D, FinalUse, settlement, production eligibility or complete physical costs.
 
-## Actual student execution
+## E6: complete original lifecycle and honest failure
 
-[Original learning candidate #6722](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6722) retains its completed 56 new A/B3 calls at `077b552e6265be1c00cd045506f00e2aa3082c2f`. Both training arms executed their original budgets. P, document-evidence and native-feedback first/final/common-prefix scores remained 0/4 on both panels; no new model patch reached a native child and 24 calls hit their output cap. The original decision remains NoUpdate.
+[Operation scopes #6726](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6726) retains source `4adb42883bf29357105de078359fdb44c28b2f0b` and all previous failures. Its source verifier and eleven native component cases passed, but its complete NoUpdate5 parent did not.
 
-[Common raw-function interface #6735](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6735) subsequently completed 24 new diagnostic calls on exposed A, execution source `18b16357c9e1a6a437b418ebd7abdbfda17cbff7`, final evidence `dd1f4978b4927a74c75483994bc8fb4b155e653c`.
-
-| New diagnostic evidence | Actual outcome |
+| NoUpdate5 original evidence | Actual result |
 | --- | --- |
-| P / document / native calls | 8 / 8 / 8 |
-| Actual native children | 8 / 8 / 7; one admission refusal |
-| First, final and recovery scores | 0/4 for every model |
-| Original pytest case executions | 660, including 83 failed cases |
-| Output-cap hits | 0 |
-| Admitted patches with unchanged BEFORE AST | 22/23 |
-| Second responses repeating the first | 11/12 |
-| Decision | Diagnostic only; retain prior NoUpdate |
+| Original parent cases | 1 failed; 0 passed or skipped |
+| Native test time | 67.948 seconds |
+| Native command time | 69.163959612 seconds |
+| Owner wall | 338.265419864 seconds |
+| Refusal | Historical request 65 exceeds original maximum 64 |
+| Original recorder/collector | Accepted the unchanged original command; retained-failed |
+| Source, compiler, pinned artifacts | Unchanged during the owner |
+| Mount cleanup | Passed |
+| Original journal progress | Experience/Dataset present; Training header only; selection/next-use empty |
 
-The interface can now reach the original native oracle. The unchanged function outputs and repeated second responses identify a learning problem that remains after the transport repair. The document model produced the same outputs as P. The old training feedback consisted of admission failures, without semantic native feedback.
+[Original NoUpdate5 result](original-readbacks/20261118-2355/E6_NOUPDATE5_RESULT.json) records preparation, failures and costs. The complete retained archive has 1,202 regular original files, 122,069,486 original bytes, and a 59,040,488-byte archive with SHA256 `33b9191d52c59bcd57185e46d756299bb0aec92fb094ab0306b3e6153cf08bf0`. All members were checked against source originals; root's version-pinned whole-archive transfer remains in progress. The first failed derived manifest is retained.
 
-These 24 calls consumed 38,669 input and 4,373 output tokens. Owner wall was 594.454376972 seconds; observed child CPU including energy reads was 449.919131 seconds. The whole-host CPU-package sample windows total 37,546.518016 joules and include unrelated activity. GPU/network energy and monetary charges remain unknown. Original 56-call costs remain separate and retained. The complete new diagnostic archive contains 783 original files, 179,156 bytes, SHA256 `585d2993f48a8f962d60cccbca41ae1cd729ec2e4cf94520eccf843645bbc083`.
+### Diagnostic source, unchanged original limits
 
-[New matched learning #6737](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6737) executes source `2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82` under protocol SHA256 `e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5`. Both arms start from identical frozen P parameters and empty AdamW state. Each has 32 updates, 56 outer forward/backward passes, 10,256 supervised target tokens and 200,704 padded positions at full length 3,584. No truncation is allowed. Failed actions and actual native feedback are masked; both layouts receive the same information and verified target.
+Execution source `bc16f808000d797accafca1c29206d4bce5249e0`, tree `995b4741d017d39b8f6b6148696b72403c817be4`, adds caller locations, actual sequence numbers and stage names. It does not change the original read limit, guards, fences, verifier, evaluation or deadlines.
 
-The latest original-owner observation reports document training complete at 32/32 and 56/56 forward/backward passes, with native-feedback training active. Root independently read the protocol and CPU controls; final dual-weight manifests have not yet been independently verified. Physical wall/energy equality is not claimed.
+The [complete source result](original-readbacks/20261118-2355/E6_TRACE_SOURCE_QA.json) passes 196 source tests with zero failure/error/skip, 892 protected rows, 182 affected boundaries and the unchanged complete 1,124-boundary CLI. The full CLI took 462.930197945 seconds. The [freeze](original-readbacks/20261118-2355/E6_TRACE_FREEZE.json) independently verifies all 15,656 tracked physical files against their Git blobs.
 
-The future selection appendix was published before candidate content was opened at `807695d60d83ebc8593fe1b069d072da2de89ed1`. It fixes project order, HEAD freezing, bounded original history, first eligible task per project, four projects, license/input/original-test checks and exclusion of all old A/B/B2/B3 sources and ASTs. Every rejection is retained. Selection starts after both weights freeze and finishes before inspecting new A outputs. The predeclared generation budget is 56 new calls plus eight retained common P calls on A; no added retries or early exit after first success.
+Native5 then failed compilation with zero native cases: the completed NoUpdate5 owner had pinned its own test ELF to mode 0555, and the compiler could not overwrite it. Its [original result](original-readbacks/20261118-2355/E6_NATIVE5_RESULT.json) retains 97.369105491 seconds of command time and 99.074737579 seconds of owner time.
 
-## E6 original lifecycle
+The old 1,203,546,456-byte ELF was retained under exclusive owned locks with the same bytes, inode, mode and mtime; the rename's ctime is explicitly recorded in the [retirement receipt](original-readbacks/20261118-2355/E6_PRIOR_ELF_RETAINED.json). No source or other executor's target was changed. Native6 is one fresh prospectively published owner at `53e1c5d90d82d71ae04af8b9ec5ecb7cd4f9bdf0`, session `dpty-5919274bcb6874ef6117604c7bc431cdfb3f455ba49539463f16b8886030bf78`. It has no pass claim at this snapshot.
 
-[Operation scopes #6726](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6726) now retains source `4adb42883bf29357105de078359fdb44c28b2f0b`, tree `5d75a506b215b9457ef435857cbc004e446c364c`, separately from the earlier ab12 executions.
+### Cold new D
 
-| Frozen source4adb gate | Actual result |
+The separate cold-D candidate now uses the original artifact owner, original cold preparation/issue/publish transaction and ordinary task channel. Root reviewed the product diff, actual identity binding, one-use durable states, physical files and old-C signature handling. The current component suite reports 20 passed cases and zero D/FinalUse issuance.
+
+Stage13 source `086579ca5e1978547c2fb870bbdefcda083a07cf` passes the explicitly selected original CaptureRetired or ReadFinalized mode into the original completed-history routine. CaptureRetired still performs its one-shot capture followed by an independent read and equality check. Missing mode and learning-owner handoffs remain refused. Real Root-store controls are running in an independent target. New authenticated D execution remains required.
+
+## E1–E3: actual updated student, then future tasks
+
+[Matched raw-function learning #6737](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6737) executed source `2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82` under the unchanged prospective protocol `e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5`.
+
+Each arm completed 32 optimizer updates, 56 outer forward/backward passes, 10,256 supervised target tokens and 200,704 padded positions. Both start from the same frozen P parameters and empty AdamW state. Inputs and target identities match per step; actual semantic feedback and failed actions remain masked in both layouts. Root checked all 32 shapes and both final manifests in the [weight freeze](original-readbacks/20261118-2355/RAW_FUNCTION_WEIGHTS_FROZEN.json).
+
+The [training completion](original-readbacks/20261118-2355/RAW_FUNCTION_TRAINING_COMPLETE.json) records document/native child walls of 535.389624489 and 526.740916986 seconds, a 31.646297654-second weight audit, and 1,094.120634794 seconds of owner wall. These nested intervals are not additive. Whole-host CPU-package windows total 66,006.712614 joules and include background activity; GPU/network energy, storage and monetary costs remain unknown.
+
+The complete training archive contains 195 members including actual adapter binaries, 4,129,292 bytes, SHA256 `daa140fae78792cd6b05d60a5a5ee1c5c21bd6e662bef8d267674085445fa9a6`. Its exact path/SHA exception does not change the original 512,000-byte general blob limit.
+
+Future selection follows the previously published project order, frozen HEADs, first 50 non-merge commits, first eligible task per project and original BEFORE-fail/AFTER-pass gates. Outcome and sniffio candidates were rejected; jmespath had no eligible function. Mistune's first actual BEFORE/AFTER pair both failed because the parent code lacks another API in the full original tests; later fixed-order candidates are being checked. Parso collection proceeds without changing order. No model output guides selection; no new A or future generation has run. The original 56-call and later 24-call diagnostic NoUpdate results remain unchanged.
+
+## Chain: actual service goals and cost integrity
+
+[Original operation-graph evidence #969](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/969) preserves F0 run `44451798839` on source `3db79eb2682ba3bcbbf33557c5eee3b67731028f`: 1/6 confirmations at 30 seconds, 0/6 at scheduled four-second targets, 17/42 ACKs and 24 unattempted exposures. Numeric depletion remains unestablished.
+
+Root record 392 / connection 393 has incomplete cancellation, timing and reactor-I/O measurement. It remains incomplete. The new deterministic controls establish a concrete observer defect; they do not retroactively establish the cause or cost of that old record.
+
+| Observer control | Actual result |
 | --- | --- |
-| Original source tests | 143 passed, no failures/errors/skips |
-| Original protected entries | All 892 retained and passed |
-| Affected boundary/symbol checks | 107 passed |
-| Complete unchanged caller CLI | Exit0, all 1,124 boundaries, 6,900 Rust files, 469.234 seconds |
-| Original native component roster | 11/11, zero failure/error/skip |
-| Native command including compilation | 440.018 seconds |
-| Full tracked source before/after | Same 15,643 files and inventory digest |
-| Original compiler environment before/after | Same |
-| Original historical read maximum | 64, unchanged |
+| Original production plus test hook | All 3 new controls fail |
+| Release row lock only | 2 pass, 1 fails with stale false-complete snapshot |
+| Acquire closure flags before row copy, then release row before blocking | All 3 pass |
+| Complete observer suite | 39 passed, as reported by the original owner |
+| Strict all-target Clippy / fmt | Exit 0 / 0 |
+| Workspace offline metadata | Exit 101: missing socket2 0.6.1; retained |
+| Actual node's locked Linux dependency tree | Exit 0 |
 
-The four-file repair groups historical authorization, projection and immutable Prepared construction inside the same actual borrowed dataset operation, and likewise groups original historical delivery initialization. Mandatory pre/post Root observations, current/expiry checks, exact prepared/batch identities and error fencing remain. CALLERS now lists two actual same-batch guards previously missing from its inventory; the verifier and original protected set were not weakened.
+[Observer validation](original-readbacks/20261118-2355/CHAIN_OBSERVER_VALIDATION.json) and the [actual-node Linux graph](original-readbacks/20261118-2355/CHAIN_NODE_LINUX_GRAPH.json) keep these scopes separate.
 
-All failed source attempts remain retained, including full-verifier failures that exposed missing typed receivers and missing real caller registrations. A complete closed-source archive contains 190 originals and is 3,006,828 bytes, SHA256 `b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee`. The archiver verified every member and unchanged original; root full binary readback/publication is still pending at this snapshot.
+The new native-owned append candidate has passed the original postwrite filter plus six new adversarial controls: 55 passed, zero ignored, according to the owner. The [actual command result](original-readbacks/20261118-2355/CHAIN_NATIVE_APPEND_CONTROLS.json) is retained. This candidate is not frozen and has no new F0 result. Parent proof, actual SQL transaction identity, full State/Record/Delta checks and failure/extra-write fallback remain required; root's full diff review is in progress.
 
-The old private native target was observed physically absent; its cause is unknown. A new private target was restored by a read-only copy of an independently owned stable cache, with all 23,085 files hash matched and all inodes different. Only a foreign absolute CMake cache inside the new owned target was quarantined. Source4adb then actually compiled and ran; no other source's test qualification was transferred.
+## Remaining joint gates
 
-Earlier complete attempts remain failed evidence:
-
-| Attempt | Retained actual outcome |
+| Experiment / system | Still required |
 | --- | --- |
-| NoUpdate1 | Dedicated execution refused with Permission denied |
-| NoUpdate2 | Public binaries admitted; original 0700 test ELF still refused through the dedicated UID's FD |
-| Preparation3 | Exact immutable public copy executed; nextest refused incompatible build flags with reused metadata; zero business cases |
-| NoUpdate4 | Independent B actually started; historical request65 exceeded the original64 maximum; original collector separately refused the adapted command |
-| Native3 preflight | Initial driver syntax error, then corrected driver found the old target absent; zero native cases |
+| E1 | Independent future-task evidence across frozen, retrieval, answer SFT and trajectory SFT under matched information and cost |
+| E2 | Updated student execution and deviation recovery on the frozen future panel |
+| E3 | Authorized genuinely distinct teachers and measured complementarity/negative transfer |
+| E4 | Fresh interactive Circuit gains against equally budgeted strong single-model repair/retrieval/verifier opportunities |
+| E5 | Deduplicated authenticated real sources and both budget curves; authenticated users currently zero |
+| E6 | Complete original NoUpdate or justified adoption, original-owner decision, new C and cold new D |
+| Chain | Original honest-service targets, actual depletion contract and complete physical costs |
+| Joint runtime | Exact integrated candidate, outstanding full dependency/platform gates and HIA numerical execution |
 
-NoUpdate5 is prospectively published at `f2c6677c30f437edfd3b875e5c738f1137736d73`, with protocol SHA256 `dfaaa51f6fb68f98569d44ef40fed1d52ae08d7f2c19477c2e8dde10f3aac3a9`. Its original harness test function and JUnit collector are unchanged. It actually rebuilds exact-source helpers/products/libraries and uses `just test --locked --offline`. Only its newly owned exact test ELF receives 0555 mode; every private ancestor retains its mode. A fully capless UID60002 probe must still fail through the private path while succeeding through the original opened descriptor. The complete parent must actually finish independent B, retain a genuine NoUpdate bundle and execute original new C. Preparation passes cannot satisfy that gate.
-
-The cold fresh-D implementation remains separate. Root reviewed the complete finalized-C factual bridge, durable one-use attempt/grant state, same actual context/store/request/issuer checks, new Root enrollment and sealed lane. A review found that a shutdown flag could swallow a real operation error; the agent removed that branch and is adding actual interleaving controls. The actual client/CURRENT bridge has compiled, with further product integration and native qualification pending. No D has been issued. Old C authority and engineering journals do not authorize a new D.
-
-## Chain original pressure test
-
-[Candidate #968](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/968) passed its original local scope controls, including 127 authenticated cases, 25 detached cases and 56 History cases, with their original ignored cases retained. The same-transaction repeated graph control changed from 44 checks to 5 while its complete first graph remained 140/44. Actual graph-scope identity and invalidation remain enforced.
-
-[Complete F0 evidence #969](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/969), head `f0a8364118df01113c14d6a81fbb6fdb6210e4ff`, preserves the unique original run [44451798839](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44451798839).
-
-The original result is 1/6 confirmations at 30 seconds, 0/6 at scheduled four seconds, 17/42 timely ACK exposures and 24 unattempted exposures. Native exit was101. All seven preparation controls passed and services were known empty after cleanup. The original business and numeric-depletion refusals remain unchanged. The first confirmation required 21.612150435 seconds from its scheduled start.
-
-The baseline's ten imports still performed 80,709 Host checks, compared with 81,454 previously. Nested Host CPU was 4.517504795 seconds. This modest reduction did not close the service objective. Remaining activation/reorg steps use separate original SQL transactions; their results cannot be reused across those authority boundaries. Work now targets first full graph and physical Host-check costs.
-
-Actual ROOT paid CPU was6.352965233 seconds, credited refill6.344940903 seconds and remaining paid credit1.991975670 seconds from initial2 seconds. The aggregate identity reconciles, but this does not prove depletion or complete per-request observation. The agent reports one ROOT observer measurement failure; the baseline observer was complete. Full raw readback of that failure remains pending.
-
-Root read the original quota, scalar meter and depletion-reader sources. Original depletion requires initial2 seconds, remaining paid credit below0.1 seconds, paid debit above1.9 seconds and known valid accounting. Equal average CPU quota and refill are insufficient by themselves to prove impossibility: refill clipping before delayed debit and the maximum unobserved CPU gap still require exact analysis.
-
-The complete original ZIP is17,640,478 bytes, SHA256 `744a0d353fb5055fd111cb5acae33259c0e526a8e4240a8f33752d01bfac5ccd`. It is persisted in two exact Git parts after retained upload/transport failures. A separate 338-member original evidence archive retains the26-run/199-job snapshot and24 failed-job logs. Four original automatic workflows were still active at that snapshot; final collection continues without rerunning them. The denominator is25 automatic runs plus the one F0.
-
-Physical energy, network bytes, storage byte-seconds, concurrent system RSS and provider charges remain unknown. Provider zero billable fields do not mean zero cost. Original local compile failures, quota assertions, source-lock inconsistencies, failed transfers and all prior F0 failures remain retained.
-
-## Other retained boundaries and continuing work
-
-Time/cloud45/45, agent-identity61/61, git-utils38/38 and otel/codec70/70 remain separately qualified dependency slices. The old RMCP/SQLite and Mac results retain their original sources; the original Windows positive business case and full joint gates remain open.
-
-E1's external B still has0/6 in each original four-arm comparison. Prior E2 seen-A retention is not future generalization. E3 has not shown teacher complementarity. E4's tested Circuit and matched strong single-model arms both scored5/6. E5 has licensed source projects but zero authenticated users; its fixed-total and fixed-per-source growth curves remain unexecuted.
-
-Continue the unique original NoUpdate5 owner, finish real cold fresh D and its native refusal controls, finish dual training and the frozen future task evaluation, and repair Chain under its unchanged original pressure windows. Preserve all NoUpdate results, failures, costs, authority boundaries and exact execution identities. Do not combine separate local successes into joint qualification.
+Evidence is kept per execution source. No branch-local pass is promoted into the historical joint candidate or native owner/FinalUse/settlement authority.

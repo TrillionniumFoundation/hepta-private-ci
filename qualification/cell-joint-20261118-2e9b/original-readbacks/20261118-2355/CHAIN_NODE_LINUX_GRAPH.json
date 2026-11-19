@@ -1,0 +1,54 @@
+{
+  "schema": "chain-locked-actual-node-linux-dependency-graph-v1",
+  "complete": true,
+  "stages": [
+    {
+      "name": "preflight",
+      "command": [
+        "bash",
+        "scripts/project-preflight.sh"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.0311644091270864,
+      "child_user_cpu_seconds": 0.019627,
+      "child_system_cpu_seconds": 0.006457,
+      "stdout_sha256": "b9a436136d61674ca986d2e8629cbaa6635c198e13dc196949d810275cd38d80",
+      "stdout_bytes": 178
+    },
+    {
+      "name": "actual-node-linux-graph",
+      "command": [
+        "/home/qq/.cargo/bin/cargo",
+        "tree",
+        "--manifest-path",
+        "trillionnium/Cargo.toml",
+        "-p",
+        "trnm-pon-node",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.12043458712287247,
+      "child_user_cpu_seconds": 0.033868999999999996,
+      "child_system_cpu_seconds": 0.019500999999999998,
+      "stdout_sha256": "f471fbaaf2efcd84823e1a8f61f6fa48d619e9799c4da4fd9af82173fbd892b5",
+      "stdout_bytes": 10923
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "wall_seconds": 0.046636792132630944,
+      "child_user_cpu_seconds": 0.027705,
+      "child_system_cpu_seconds": 0.027703999999999996,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0
+    }
+  ]
+}

@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-19T04:04:58Z",
+  "observed_at_utc": "2026-11-19T04:55:19Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T23:04:58-05:00",
+  "observed_at_user_timezone": "2026-11-18T23:55:19-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -1513,7 +1513,7 @@
       "execution_tree": "e0e9e3494ab8560259ff4bb50668d3f287612b73",
       "prospective_protocol_sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
       "root": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b",
-      "status": "Original uniquely owned training active; no future candidates opened and no new model gain measured",
+      "status": "Both32-step training arms and original weight audit completed; fixed-order future candidate native BEFORE/AFTER selection active; zero new model generations",
       "owner_session": "dpty-6c6be2c6d50ab70f860e9a0dc5c285905b2d01c74724fab4cc931d70fa5910b4",
       "idempotency_key": "e123-raw-function-matched-training-2b85ea-2e9b-001",
       "exclusive_owner": "e123_learning",
@@ -1530,11 +1530,10 @@
       "physical_wall_energy_equality_claim": false,
       "latest_agent_observation": {
         "document_updates": 32,
-        "document_forward_backward": 56,
-        "native_feedback_updates": 1,
-        "dual_weights_frozen": false,
-        "FAILED_observed": false,
-        "scope": "Agent original-owner observation; root read protocol/CPU controls, not yet both final manifests"
+        "native_feedback_updates": 32,
+        "forward_backward_per_arm": 56,
+        "dual_weights_frozen": true,
+        "root_final_manifests_and_all32_matched_shapes_verified": true
       },
       "cpu_control_result_sha256": "4d6d7d0fedb54ab58d85e7daf15f1e4a6dd53a9a073f3d1680b3df4e1c204e8c",
       "future_selection": {
@@ -1558,7 +1557,20 @@
         "freeze_before_new_A_output_inspection": true,
         "excluded": "All old A/B/B2/B3 source/maintainer/before-after blob/function-test AST; retain all rejections in original order",
         "max_per_project": 1,
-        "first_eligible_projects": 4
+        "first_eligible_projects": 4,
+        "current_agent_report": {
+          "outcome_first50_rejected": true,
+          "sniffio_first50_rejected": true,
+          "jmespath_first50_no_eligible_function": true,
+          "mistune_first50_collected": true,
+          "mistune_original_native_pairs_in_progress": true,
+          "mistune_first_before_and_after_both_exit2_api_mismatch": true,
+          "parso_fixed_order_collection_in_progress": true,
+          "qualified_future_tasks": 0,
+          "new_model_generations": 0,
+          "reference_candidate_outputs_not_model_outputs": true
+        },
+        "original_native_helper_publication_commit": "2642840600615a61f8064232247badbb39b87321"
       },
       "inference_budget": {
         "new_generations": 56,
@@ -1571,7 +1583,155 @@
       },
       "original_NoUpdate_unchanged": true,
       "independent_confirmation_qualified": false,
-      "authenticated_users": 0
+      "authenticated_users": 0,
+      "dual_weight_audit": {
+        "original_sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6",
+        "owner_sha256": "02e5dfde2b76c1873292e405aa8b894321eee5aca838fe787414ed1d9381a6b3",
+        "actual_source": "2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82",
+        "created_at_ns": "1795061266637054725",
+        "all32_shapes_matched": true,
+        "both_start_parameter": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+        "models": {
+          "document_evidence": {
+            "parameter_after": "a4f553815fbe76ab872522d7f8c9059dc470ec91919c3521dfc8ce17a37cfb1b",
+            "manifest_sha256": "7d9cf090092088ada0659d30007a032bc6a5d4ba9af7ea6a057cdf1cf6bddde1",
+            "model_digest": "ad688745ac96b2f82f0515248bfb44a9b771a9568a8599f9bd2ccc56b9845bb2",
+            "cost": {
+              "cuda_peak_allocated_bytes": 4805570048,
+              "cuda_peak_reserved_bytes": 5135925248,
+              "energy_joules": null,
+              "full_system_cost_known": false,
+              "head_positions": 10256,
+              "inner_checkpoint_counts": {
+                "backward:attention_function_completed": 1568,
+                "backward:attention_function_started": 1568,
+                "backward:softmax_function_completed": 43904,
+                "backward:softmax_function_started": 87808,
+                "backward:softmax_original_entered": 43904,
+                "backward:softmax_original_exited": 43904,
+                "backward:softmax_recompute_entered": 43904,
+                "backward:softmax_recompute_exited": 43904,
+                "forward:attention_function_completed": 1568,
+                "forward:attention_function_started": 1568,
+                "forward:softmax_function_completed": 43904,
+                "forward:softmax_function_started": 43904,
+                "forward:softmax_original_entered": 43904,
+                "forward:softmax_original_exited": 43904
+              },
+              "input_tokens": 133288,
+              "model_F_B_counts_are_outer_calls_not_total_recomputed_work": true,
+              "model_backwards": 56,
+              "model_forwards": 56,
+              "nested_scopes_are_not_additive": true,
+              "padded_positions": 200704,
+              "self_cpu_seconds": 521.344277241,
+              "supervised_positions": 10256,
+              "wall_seconds": 511.1806536099757
+            }
+          },
+          "native_feedback": {
+            "parameter_after": "75cf3aeb09dce01e9ae7dbca94abbd2662db80c9e88a720a646ee75db990ad18",
+            "manifest_sha256": "d086a973be78b8b4ac4ede5dfe4e3fdeeb8ceeb4fe94fcc790f36ab36196bb5e",
+            "model_digest": "b1a30e89e1efa24a4e079939806619af1caa92d0c96c4c2e0da7b6a1e20df69f",
+            "cost": {
+              "cuda_peak_allocated_bytes": 4805570048,
+              "cuda_peak_reserved_bytes": 5135925248,
+              "energy_joules": null,
+              "full_system_cost_known": false,
+              "head_positions": 10256,
+              "inner_checkpoint_counts": {
+                "backward:attention_function_completed": 1568,
+                "backward:attention_function_started": 1568,
+                "backward:softmax_function_completed": 43904,
+                "backward:softmax_function_started": 87808,
+                "backward:softmax_original_entered": 43904,
+                "backward:softmax_original_exited": 43904,
+                "backward:softmax_recompute_entered": 43904,
+                "backward:softmax_recompute_exited": 43904,
+                "forward:attention_function_completed": 1568,
+                "forward:attention_function_started": 1568,
+                "forward:softmax_function_completed": 43904,
+                "forward:softmax_function_started": 43904,
+                "forward:softmax_original_entered": 43904,
+                "forward:softmax_original_exited": 43904
+              },
+              "input_tokens": 133480,
+              "model_F_B_counts_are_outer_calls_not_total_recomputed_work": true,
+              "model_backwards": 56,
+              "model_forwards": 56,
+              "nested_scopes_are_not_additive": true,
+              "padded_positions": 200704,
+              "self_cpu_seconds": 512.5653227910001,
+              "supervised_positions": 10256,
+              "wall_seconds": 502.9867704359931
+            }
+          }
+        }
+      },
+      "training_completion": {
+        "result_sha256": "02e5dfde2b76c1873292e405aa8b894321eee5aca838fe787414ed1d9381a6b3",
+        "owner_wall_seconds": 1094.1206347940024,
+        "stage_exits": [
+          {
+            "exit_source": "subprocess.Popen.wait",
+            "finished_at_ns": "1795060708939005971",
+            "full_system_cost_known": false,
+            "mode": "document_evidence",
+            "observed_child_cpu_seconds_including_energy_reads": 544.5853269999999,
+            "phase": "train",
+            "pid": 439234,
+            "stderr_sha256": "71ec458bdcacddcc29ad2628d6cf85bb13eb04f6343c6a87df5092d28e6211cd",
+            "stdout_sha256": "a057171247b1bba22584b699c4543196d0fa4d4111a5da75a125f012c5db4c12",
+            "timed_out": false,
+            "wait_returncode": 0,
+            "wall_seconds": 535.3896244890057
+          },
+          {
+            "exit_source": "subprocess.Popen.wait",
+            "finished_at_ns": "1795061235843753834",
+            "full_system_cost_known": false,
+            "mode": "native_feedback",
+            "observed_child_cpu_seconds_including_energy_reads": 535.5794890000002,
+            "phase": "train",
+            "pid": 509641,
+            "stderr_sha256": "57ec36043582a786423c4572ea9ba3a1e9f45c191cbaae5744491337c517acb1",
+            "stdout_sha256": "d8d7a2d220142bffe9eba1f2ec981b1e9a179d1ec8836ee0f97c36565627f063",
+            "timed_out": false,
+            "wait_returncode": 0,
+            "wall_seconds": 526.7409169860184
+          },
+          {
+            "exit_source": "subprocess.Popen.wait",
+            "finished_at_ns": "1795061267561971844",
+            "full_system_cost_known": false,
+            "mode": null,
+            "observed_child_cpu_seconds_including_energy_reads": 31.650091999999916,
+            "phase": "audit_weights",
+            "pid": 535927,
+            "stderr_sha256": "92dfececb15c518930eabeb8e299558c3697f320e932ff27f0d9ee7bdf998ada",
+            "stdout_sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6",
+            "timed_out": false,
+            "wait_returncode": 0,
+            "wall_seconds": 31.6462976540206
+          }
+        ],
+        "actual_optimizer_updates": 64,
+        "actual_new_generations": 0,
+        "whole_host_cpu_package_joules": 66006.712614,
+        "whole_host_energy_includes_background": true,
+        "full_system_cost_known": false
+      },
+      "complete_training_archive": {
+        "commit": "ccfe6ea5c8d14da7c7c714237947b7e84c346c9e",
+        "bytes": 4129292,
+        "members": 195,
+        "sha256": "daa140fae78792cd6b05d60a5a5ee1c5c21bd6e662bef8d267674085445fa9a6",
+        "policy_tested_commit": "ccfe6ea5c8d14da7c7c714237947b7e84c346c9e",
+        "policy_result_sha256": "daa55b548cc3a90c7728dd110bbfd41893e8328a06cd5bb0f655d3efd03549a5",
+        "policy_result_root_readback_pending": true,
+        "original_blob_limit_unchanged": 512000,
+        "exception_exact_path_and_sha_only": true
+      }
     }
   },
   "E3": {
@@ -2843,7 +3003,7 @@
       "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
       "original_executor_mutated": false,
       "original_target_used": false,
-      "status": "Frozen read64 repair4adb passed full original caller CLI and11 native components; original complete NoUpdate5 running fresh preparation",
+      "status": "NoUpdate5 failed at historical request65/64; diagnostic bc16 passed all source gates; native6 executes after preserving prior readonly ELF",
       "source_changes": [
         "cell_q24_prepared_learning.rs",
         "production_post_a_q24_owners.rs"
@@ -3030,7 +3190,7 @@
         "complete_archive_originals": 64,
         "complete_archive_sha256": "dbf7024cf6d280922607f56e520be365d86760112d2f31ff30891c2d66c28444"
       },
-      "evidence_commit": "f2c6677c30f437edfd3b875e5c738f1137736d73",
+      "evidence_commit": "53e1c5d90d82d71ae04af8b9ec5ecb7cd4f9bdf0",
       "complete_NoUpdate_attempt_3": {
         "prospective_commit": "645ea8809818ca39b60fad034c9a6df65780e143",
         "status": "preparation failed; actual capless dedicated-UID descriptor execution of new exact binary passed; nextest rejected metadata combined with build flags",
@@ -3078,7 +3238,7 @@
         }
       },
       "read_budget_repair": {
-        "status": "Complete source/native component gates passed; complete lifecycle executing",
+        "status": "Source and 11 component gates passed, but complete original NoUpdate5 failed at request65; not a completed repair",
         "source": "4adb42883bf29357105de078359fdb44c28b2f0b",
         "tree": "5d75a506b215b9457ef435857cbc004e446c364c",
         "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
@@ -3147,7 +3307,10 @@
           "sha256": "b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee",
           "index_sha256": "2c7f117ebb8b45bcda8aa8b4a146dd2f120d0ba0f08564f991159033e9070f21",
           "all_members_verified_by_original_archiver": true,
-          "root_full_binary_readback_pending": true
+          "root_full_binary_readback_pending": false,
+          "root_full_binary_readback_complete": true,
+          "git_blob": "017a521f67ae66f304a329acbc9189a7ff633b96",
+          "git_tree_publication_pending": true
         },
         "target_restoration": {
           "new_owned_target": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1",
@@ -3163,7 +3326,7 @@
         "complete_parent_has_passed": false
       },
       "complete_NoUpdate_attempt_5": {
-        "status": "Unique owner running original fresh helper/product/library preparation",
+        "status": "Completed original parent failed before Training with historical request65 exceeding original64; original collector accepted and retained failure",
         "source": "4adb42883bf29357105de078359fdb44c28b2f0b",
         "prospective_commit": "f2c6677c30f437edfd3b875e5c738f1137736d73",
         "protocol_sha256": "dfaaa51f6fb68f98569d44ef40fed1d52ae08d7f2c19477c2e8dde10f3aac3a9",
@@ -3176,11 +3339,93 @@
         "max_reads": 64,
         "original_deadlines_unchanged": true,
         "automatic_retry": false,
-        "complete_native_NoUpdate": false
+        "complete_native_NoUpdate": false,
+        "result_sha256": "c141a77cb825e0b4d542c1d629160440df52773a2a1f84cffba50c4b7edc195a",
+        "raw_native_junit_sha256": "81f3ac7a58f954f29bbf4fa5580296470d27b049c3b7a09750fdb13d33bd9d52",
+        "native_cases": 1,
+        "native_passed": 0,
+        "native_failed": 1,
+        "native_skipped": 0,
+        "native_case_seconds": 67.948,
+        "native_command_seconds": 69.163959612,
+        "owner_wall_seconds": 338.2654198638629,
+        "owner_self_cpu_user_seconds": 7.663627999999999,
+        "owner_self_cpu_system_seconds": 2.772612,
+        "owner_child_user_cpu_seconds": 405.324821,
+        "owner_child_system_cpu_seconds": 33.903164,
+        "original_collector_passed": true,
+        "collector_result": "retained-failed",
+        "source_unchanged": true,
+        "compiler_unchanged": true,
+        "mount_cleanup_successful": true,
+        "original_runtime_journal_readback": "Experience/Dataset checkpoint present; training and training-receipt contain only headers; selection/next-use empty",
+        "training_completed": false,
+        "independent_B_completed": false,
+        "archive": {
+          "path": "noupdate5-retained-originals-2/complete-native4-noupdate5-originals.tar.xz",
+          "bytes": 59040488,
+          "original_files": 1202,
+          "sha256": "33b9191d52c59bcd57185e46d756299bb0aec92fb094ab0306b3e6153cf08bf0",
+          "index_sha256": "8c1a9511a53704bad95d1f33c5a1bb3e5d09d546ebfa038bb5f8350cb0932168",
+          "all_members_verified_on_source": true,
+          "root_full_binary_readback_complete": false,
+          "archive1_failed_manifest_retained": true
+        }
+      },
+      "read64_diagnostic_successor": {
+        "source": "bc16f808000d797accafca1c29206d4bce5249e0",
+        "tree": "995b4741d017d39b8f6b6148696b72403c817be4",
+        "scope": "Diagnostic caller locations and actual read sequence/stage names only; original64, fences, verifiers, deadlines and decisions unchanged",
+        "source_files": 15656,
+        "source_inventory_sha256": "4f291f3f0378f4566b06e95b41b1f94d6ac05d4f83349efd9c1b52db0dc1fc58",
+        "freeze_sha256": "17ef0ae11e8e99c7133dcdf231c27226e7977df139acd3311441db2c8a575831",
+        "source_qa": {
+          "tests": 196,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "protected_rows": 892,
+          "targeted_boundaries": 182,
+          "all_boundaries": 1124,
+          "original_cli_exit": 0,
+          "original_cli_wall_seconds": 462.93019794486463,
+          "owner_wall_seconds": 518.7710323289502,
+          "result_sha256": "153a94675b1a172d4ff65695084b9b4561f73adcdfbef498f1549dc331782853",
+          "verifier_and_manifest_unchanged": true
+        },
+        "native5": {
+          "command_exit": 101,
+          "native_cases": 0,
+          "result_sha256": "c9531935ad7be389af21f342478756b5d2c0f20fb07d5f613d330f0c518249e3",
+          "stderr_sha256": "d3d00112100a5b281907b7ff3ae8a8f1a215a2d57eac8f287bfc448c3956605f",
+          "command_wall_seconds": 97.36910549085587,
+          "owner_wall_seconds": 99.07473757909611,
+          "reason": "NoUpdate5 owned ELF was pinned0555 and compiler could not overwrite it; source and compiler inputs unchanged"
+        },
+        "output_retirement": {
+          "result_sha256": "612c4fbb02dc8dcf633627068ce7807aeb78104dd76210d6af56f682b0f85a64",
+          "original_elf_sha256": "94c954c87bcdf334b85bb9731153adc822410e45af25aec1ca9af3e5fbaffd0c",
+          "same_inode_bytes_mode_and_mtime_retained": true,
+          "renamed_ctime_recorded": true,
+          "wall_seconds": 2.2476158579811454,
+          "source_mutation": false,
+          "initial_wrong_case_path_failure_retained_sha256": "3ada2927271b5634457025b8c4e5e880d2b62f89d373d295adc00e2c6c986e11"
+        },
+        "native6": {
+          "status": "One fresh owner active, no pass claimed",
+          "prospective_commit": "53e1c5d90d82d71ae04af8b9ec5ecb7cd4f9bdf0",
+          "protocol_sha256": "530c22bff4d82cd3ba93b8e34d4fdcc8add996263d7700fa0705f48cb06b67c9",
+          "driver_sha256": "44a62381c685d986ca5806bde9a96ee0f7d30ab3667036153319c0ca3d0047dd",
+          "session_id": "dpty-5919274bcb6874ef6117604c7bc431cdfb3f455ba49539463f16b8886030bf78",
+          "idempotency_key": "e6-native11-frozen-bc16-retained-elf-owner6-20261119-2e9b-001",
+          "same_source_gates_used": true,
+          "automatic_retry": false,
+          "complete_NoUpdate": false
+        }
       }
     },
     "cold_fresh_D_implementation": {
-      "status": "Original cold finalized-C bridge, closed durable one-use grant, fresh Root enrollment and sealed lane compiled; actual client/CURRENT bridge integrating; zero D issuance",
+      "status": "Original cold D product transaction integrated; current native component controls passed; actual Root-store controls running; zero D/FinalUse",
       "root": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/source",
       "base": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
       "stage1_local_commit": "9d3fbbcfa717e511ada483acba195faa899f3b0e",
@@ -3221,8 +3466,40 @@
         "actual_cargo_check_exit": 0,
         "cargo_check_wall_seconds": 19.894943417,
         "result_sha256": "6f8a166ea07b7bd10fe7f02cf116839c83500f03065db7dc772e7640728dc8ea",
-        "root_readback_pending": true,
+        "root_readback_pending": false,
         "actual_D_issued": 0
+      },
+      "stage8_to_10_root_review": {
+        "all_full_diffs_reviewed": true,
+        "bounded_first_response": true,
+        "old_C_signature_verified_without_requiring_new_D_issuer_or_epoch": true,
+        "current_original_retained_use_checks_preserved": true,
+        "original_artifact_owner_reopened": true,
+        "original_prepare_issue_publish_and_ordinary_task_channel": true,
+        "stage10_commit": "6da0e0c78fd47401186e885c194f80f4bd8ed28b",
+        "stage10_diff_sha256": "1bbe476b9572c32cbe6961f757928f56012e7bb8e8d1b188e7f66d51bbe169bb",
+        "stage10_result_sha256": "7493bbae02e78930df1249d882e7f99610157cf3caf95eddcad14486d13d1eca"
+      },
+      "stage12": {
+        "commit": "5bbb024b4d3a7677f5a0cdb612fcbf68b3666806",
+        "tree": "98a01a1cc641c4b2723d6ab9c0ce3c210c1c1cc5",
+        "diff_sha256": "b40722153bbb8e9744c7be0d029218a9e3b8c3859af333831306566a1583a6d0",
+        "result_sha256": "6fe4c685c009c340aaf15e64e21e8e78f99b9f05e01a5b43b38d5e8d124c26d5",
+        "native_passed_agent_report": 20,
+        "native_failed_agent_report": 0,
+        "native_D_executions": 0,
+        "FinalUse_issuances": 0,
+        "root_full_diff_review_pending": true
+      },
+      "stage13": {
+        "commit": "086579ca5e1978547c2fb870bbdefcda083a07cf",
+        "tree": "85bb8f3ff62f8b02a4a307546cbabd686ebbf2a0",
+        "diff_sha256": "c9d7e97a2eaf1c142de40cb98da8621728866e649d39d8456b467d0ddfe80f8e",
+        "result_sha256": "eec6b0e4bc948ac4e31c3157ecdb50cc1f49126b22e1a989a41cbd1713d35880",
+        "root_full_diff_reviewed": true,
+        "scope": "Pass explicit original CaptureRetired or ReadFinalized mode into the existing original capture-plus-independent-read comparison; no absent mode or learning handoff admitted",
+        "cargo_check_exit_agent_report": 0,
+        "actual_D_executions": 0
       }
     }
   },
@@ -4051,7 +4328,7 @@
       }
     },
     "native_operation_graph_followup": {
-      "status": "3db same-operation graph passed local source/native gates; original F0 failed; first complete graph/Host checks investigation continues",
+      "status": "Original3db F0 failed; own next candidate reproduces and repairs cost-observer lock-loss; native owned-append controls passed but no new F0 executed",
       "root": "/home/qq/work/chain-native-operation-readback-20261119-2e9b/source",
       "base": "f088f1d4f8a50aff0c5ecd465480b2aeee6e5e94",
       "original_baseline_imports": 10,
@@ -4115,7 +4392,19 @@
           "root_complete": false,
           "root_measurement_failures": 1,
           "records_not_retained_both": 0,
-          "root_full_raw_readback_pending": true
+          "root_full_raw_readback_pending": false,
+          "root_failing_record": {
+            "phase_index": 1,
+            "record_index": 392,
+            "connection_id": 393,
+            "operation": 1,
+            "connection_closed": true,
+            "observer_complete": false,
+            "error_timing_failed": true,
+            "reactor_io_failed": true,
+            "cancellation_failed": true,
+            "cause": "Original record alone does not establish the cause; subsequent observer controls reproduce a separate concrete lock-order defect"
+          }
         }
       },
       "baseline_cost": {
@@ -4141,11 +4430,51 @@
         "unique_F0_runs": 1,
         "snapshot_jobs": 199,
         "snapshot_failed_logs": 24,
-        "snapshot_original_automatic_runs_still_active": 4,
-        "terminal_collection_continues": true
+        "snapshot_original_automatic_runs_still_active": 1,
+        "terminal_collection_continues": true,
+        "active_count_agent_report": true
       },
       "next_work": "Preserve separate actual SQL transactions/frontiers; investigate first full graph and per-operation Host physical checks; repair current exact source-lock. Equal average CPU cap/refill alone is not an impossibility proof: cap-before-debit, actual initial2s, reservations and maximum unobserved debit need exact analysis. Original depletion excludes initial-zero credit.",
-      "full_physical_cost_closed": false
+      "full_physical_cost_closed": false,
+      "observer_successor": {
+        "root": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b",
+        "production_patch_sha256": "140769b857f5c74965621367890870b717d149d8862b0ec4642e9cd71e8a01c9",
+        "root_full_production_and_tests_reviewed": true,
+        "original_three_controls_failed": 3,
+        "drop_row_only_passed": 2,
+        "drop_row_only_failed": 1,
+        "preload_closure_and_drop_row_passed": 3,
+        "whole_suite_agent_report_passed": 39,
+        "strict_all_target_clippy_exit": 0,
+        "fmt_exit": 0,
+        "validation_result_sha256": "f3f799d0cd0942730e3ba5a925ae7f3bbe1380a20f9a958966ed661e55f56e07",
+        "workspace_metadata_offline_exit": 101,
+        "workspace_missing_package": "socket2 0.6.1",
+        "actual_node_linux_cargo_tree_exit": 0,
+        "actual_node_linux_result_sha256": "e94da87702ec7940293ce1075eaac6543f815e34192cfd1a5c1c2b0adf46ba6d",
+        "full_cost_claim": false
+      },
+      "current_source_lock_repair": {
+        "result_sha256": "6ad6480b2469de42853c8346c3aa7aeaad9a717628559d70fac9ac70775a3af3",
+        "patch_sha256": "513d2c4f77af4423d0faf74c75192a461a6ba3b11a48f84c142e48a5c42d47cf",
+        "root_full_reviewed": true,
+        "reader_exit": 0,
+        "adversarial_passed": 18,
+        "old_sources_and_false_HOLD_qualification_retained": true
+      },
+      "native_append_candidate": {
+        "base": "f0a8364118df01113c14d6a81fbb6fdb6210e4ff",
+        "frozen_source": null,
+        "production_patch_sha256": "80a4dd5bd62a7e6c01be72988b40ba1d57518979e55eacbf841d5a271f4601dc",
+        "native_append_source_sha256": "26c6cfdf3646f88d4f79c7705fb611bcb0273bc5396e04a4b89ede2b36a1abb0",
+        "result_sha256": "1ad1995c16c7f89bbf870a792b5e148092e1b47fec34a191c02b39437257fbd0",
+        "actual_original_postwrite_command_exit": 0,
+        "original49_plus_new6_cases_passed_agent_report": 55,
+        "ignored_agent_report": 0,
+        "root_full_diff_review_pending": true,
+        "no_cross_SQL_transaction_frontier": true,
+        "no_new_F0": true
+      }
     }
   },
   "CI": {
@@ -4955,7 +5284,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "e43de393facc73b0207a754f30c90d3d4247425b",
+  "previous_evidence_commit": "6a8d0ca8b0859db6560075ccbeeb08500ba6c6c8",
   "next_actual_student_collection": {
     "status": "Finish both raw-function weights; freeze four unseen projects before reading new A outputs; execute predeclared current-policy/common-prefix comparisons",
     "new_candidate_pr": 6737,
@@ -5192,6 +5521,76 @@
       "original_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/publication-2/cost-summary.json",
       "sha256": "92cf0238c36b6a5e7715a61adf4ed7490e85fae54f8be4e1db58567f9b52f1bf",
       "bytes": 11900,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/E6_NOUPDATE5_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-5/result.json",
+      "sha256": "c141a77cb825e0b4d542c1d629160440df52773a2a1f84cffba50c4b7edc195a",
+      "bytes": 32357,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/E6_TRACE_SOURCE_QA.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-trace-source-closure-1/RESULT.json",
+      "sha256": "153a94675b1a172d4ff65695084b9b4561f73adcdfbef498f1549dc331782853",
+      "bytes": 80642,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/E6_TRACE_FREEZE.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read64-trace-frozen-source-1/RESULT.json",
+      "sha256": "17ef0ae11e8e99c7133dcdf231c27226e7977df139acd3311441db2c8a575831",
+      "bytes": 1650,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/E6_NATIVE5_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-5/RESULT.json",
+      "sha256": "c9531935ad7be389af21f342478756b5d2c0f20fb07d5f613d330f0c518249e3",
+      "bytes": 6889,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/E6_PRIOR_ELF_RETAINED.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/retired-build-output-native5-2/RESULT.json",
+      "sha256": "612c4fbb02dc8dcf633627068ce7807aeb78104dd76210d6af56f682b0f85a64",
+      "bytes": 2928,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/RAW_FUNCTION_WEIGHTS_FROZEN.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/WEIGHTS_FROZEN.json",
+      "sha256": "237ae92fc94d6ae411671c671190314049ded5cdc0d5dae254d57c9d8bb67be6",
+      "bytes": 65190,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/RAW_FUNCTION_TRAINING_COMPLETE.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/owned-training-1/COMPLETE.json",
+      "sha256": "02e5dfde2b76c1873292e405aa8b894321eee5aca838fe787414ed1d9381a6b3",
+      "bytes": 3538,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/CHAIN_OBSERVER_VALIDATION.json",
+      "original_path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/snapshot-lock-validation-2/RESULT.json",
+      "sha256": "f3f799d0cd0942730e3ba5a925ae7f3bbe1380a20f9a958966ed661e55f56e07",
+      "bytes": 3054,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/CHAIN_NODE_LINUX_GRAPH.json",
+      "original_path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/snapshot-lock-linux-graph-3/RESULT.json",
+      "sha256": "e94da87702ec7940293ce1075eaac6543f815e34192cfd1a5c1c2b0adf46ba6d",
+      "bytes": 1520,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2355/CHAIN_NATIVE_APPEND_CONTROLS.json",
+      "original_path": "/home/qq/work/chain-native-first-graph-host-20261119-2e9b/native-append-controls-4/RESULT.json",
+      "sha256": "1ad1995c16c7f89bbf870a792b5e148092e1b47fec34a191c02b39437257fbd0",
+      "bytes": 2076,
       "root_full_original_read_and_hash_checked": true
     }
   ]
