@@ -145,7 +145,9 @@ pub(crate) async fn submit(
     }
     let message = SignedMessage {
         claims: authbus_text_claims(&state.identity().agent_id, &request)?,
-        signature: hex_bytes(&request.signature_hex)?,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(hex_bytes(
+            &request.signature_hex,
+        )?),
     };
     let body = payload(&request.body)?;
     let result = host

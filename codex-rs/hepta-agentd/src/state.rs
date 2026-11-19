@@ -879,7 +879,7 @@ impl AgentdState {
                 sequence: authentication.sequence,
                 expires_at_ms: authentication.expires_at_ms,
             },
-            signature: authentication.signature,
+            signature: codex_hepta_authbus::AuthBusSignature::Ed25519(authentication.signature),
         };
         message
             .authenticate(

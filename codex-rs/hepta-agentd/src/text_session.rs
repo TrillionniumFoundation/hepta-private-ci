@@ -317,7 +317,9 @@ fn prepare(
     }
     let message = SignedMessage {
         claims: crate::authbus_text_claims(&config.agent_id, &envelope).map_err(unavailable)?,
-        signature: crate::authbus_trust::hex_bytes(&envelope.signature_hex).map_err(unavailable)?,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(
+            crate::authbus_trust::hex_bytes(&envelope.signature_hex).map_err(unavailable)?,
+        ),
     };
     let delivery_id = message.delivery_id().to_string();
     let input = vec![UserInput::Text {

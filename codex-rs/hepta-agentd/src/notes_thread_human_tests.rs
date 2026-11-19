@@ -38,7 +38,10 @@ fn fixture() -> (AgentdTextSessionConfig, ThreadItem, AuthBusRetainedDelivery) {
         expires_at_ms: u64::MAX,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    let message = SignedMessage { claims, signature };
+    let message = SignedMessage {
+        claims,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(signature),
+    };
     let delivery_id = message.delivery_id();
     let original = ThreadItem::UserMessage {
         id: "original-user-item".into(),

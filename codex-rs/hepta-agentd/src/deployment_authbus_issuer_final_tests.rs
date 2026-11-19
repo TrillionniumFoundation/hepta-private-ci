@@ -106,7 +106,9 @@ fn sign(f: &WriterFixture, route: u8, request: &str) -> io::Result<u64> {
                 &IssuerRegistration {
                     issuer_id: message.claims.issuer_id.clone(),
                     key_epoch: message.claims.key_epoch,
-                    verifying_key: VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                    verifying_key: codex_hepta_authbus::AuthBusVerifyingKey::Ed25519(
+                        VerifyingKey::from_bytes(&trust.verifying_key).unwrap(),
+                    ),
                     revoked: false,
                 },
                 objective_scope(f.base.config.identity()),

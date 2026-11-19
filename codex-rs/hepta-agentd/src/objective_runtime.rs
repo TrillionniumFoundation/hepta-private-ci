@@ -464,7 +464,7 @@ pub(crate) fn authentication_is_current(
             sequence: auth.sequence,
             expires_at_ms: auth.expires_at_ms,
         },
-        signature: auth.signature,
+        signature: codex_hepta_authbus::AuthBusSignature::Ed25519(auth.signature),
     };
     match message.authenticate(
         &issuer,
