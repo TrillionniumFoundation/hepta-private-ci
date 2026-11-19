@@ -1,0 +1,1698 @@
+{
+  "schema": "hcsn-campaign-static-metadata-review-v1",
+  "observation": "initial",
+  "observed_utc": "2026-11-19T11:34:03.763454+00:00",
+  "campaign": "/workspace/scratch/d741f7769aeb/network-benchmark-attempt001",
+  "protocol_sha256": "9601216e77b3dc5b3b41f77d7df8f124b7ab176692b0a0b66f24773b95eec9e0",
+  "declared_roster": 30,
+  "terminated_fit_count": 30,
+  "pending_fits": [],
+  "all_frozen_source_hashes_match": true,
+  "frozen_source_checks": {
+    "qualification/hcsn_currentstate/differentiable.py": true,
+    "qualification/hcsn_differentiable/__init__.py": true,
+    "qualification/hcsn_differentiable/contract.py": true,
+    "qualification/hcsn_differentiable/neural_control.py": true,
+    "qualification/hcsn_differentiable/operator.py": true,
+    "qualification/hcsn_differentiable/regenerative.py": true,
+    "qualification/hcsn_network/__init__.py": true,
+    "qualification/hcsn_network/benchmark_campaign.py": true,
+    "qualification/hcsn_network/benchmark_data.py": true,
+    "qualification/hcsn_network/benchmark_evaluate.py": true,
+    "qualification/hcsn_network/benchmark_models.py": true,
+    "qualification/hcsn_network/benchmark_review.py": true,
+    "qualification/hcsn_network/benchmark_train.py": true,
+    "qualification/hcsn_network/checkpoint.py": true,
+    "qualification/hcsn_network/network.py": true,
+    "qualification/hcsn_network/phase_approximation.py": true,
+    "qualification/hcsn_network/profile_dynamics.py": true,
+    "qualification/hcsn_network/review.py": true,
+    "qualification/hcsn_network/run_study.py": true,
+    "qualification/hcsn_network/study.py": true,
+    "qualification/hcsn_network/task_physics.py": true,
+    "qualification/hcsn_network/test_benchmark_models.py": true,
+    "qualification/hcsn_network/test_campaign.py": true,
+    "qualification/hcsn_network/test_network.py": true,
+    "qualification/hcsn_network/test_phase_state.py": true,
+    "qualification/hcsn_network/test_task_physics.py": true
+  },
+  "metadata_violations": [],
+  "fit_rows": [
+    {
+      "fit": "flow_no_return-s101",
+      "arm": "flow_no_return",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795086972.973719,
+      "updates": 625,
+      "selected_updates": 518,
+      "train_wall_seconds": 60.05857245700463,
+      "train_cpu_seconds": 59.995600073,
+      "training_cpu_wall_ratio": 0.998951483836055,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0959929601168,
+      "whole_child_wall_seconds": 65.01694680599758,
+      "whole_child_cpu_seconds": 64.87421,
+      "whole_child_maxrss_kib": 288084,
+      "first_validation_completed_seconds": 1.427121556000202,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.3242455590007,
+      "selected_validation_accuracy": 0.4786666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 625,
+          "completed_seconds": 60.058493349002674,
+          "excess_over_60_seconds": 0.05849334900267422
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_no_return-s101/COST.json": "8e3abebde2bc02fe7e2d728457f4c12931ff57da6d087781f90407b3795b898c",
+        "fits/flow_no_return-s101/RESULT.json": "6dbbb5b7c7f99fb2f0605cf666e207123fee9509cce046969ab0786df6af19b6",
+        "fits/flow_no_return-s101/training.jsonl": "029a31ff343853ab180f77d116ade6fddb93d1a4a088602250ff59085bc64170",
+        "fit-processes/flow_no_return-s101/process/REQUEST.json": "c1155d325fa97f6cfe600c90709047b3d391b389c0978032fd064bb6d8f0bcb0"
+      }
+    },
+    {
+      "fit": "transformer-s307",
+      "arm": "transformer",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795086972.9780955,
+      "updates": 12075,
+      "selected_updates": 10000,
+      "train_wall_seconds": 60.00210792099824,
+      "train_cpu_seconds": 59.696118423,
+      "training_cpu_wall_ratio": 0.994900354194204,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.004943777923229814,
+      "whole_child_wall_seconds": 64.79846157699649,
+      "whole_child_cpu_seconds": 64.307054,
+      "whole_child_maxrss_kib": 284028,
+      "first_validation_completed_seconds": 2.4986925479970523,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.10844716599968,
+      "selected_validation_accuracy": 0.716,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 12075,
+          "completed_seconds": 60.00200240100094,
+          "excess_over_60_seconds": 0.0020024010009365156
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/transformer-s307/COST.json": "4b40a02b8aab788c8e10d279a561dca61c161e5dcbceb9cc674169c64864db01",
+        "fits/transformer-s307/RESULT.json": "1399168a49e67d1d40a086985628e1c561b9ce72fd1f26bed0c321d910733f1e",
+        "fits/transformer-s307/training.jsonl": "707c86886825392606af9057f2bc501ce1ce156067566f2a0904285ac1f54494",
+        "fit-processes/transformer-s307/process/REQUEST.json": "b348d573be96d5b3bda7284f6d7b5ae1cecc32300c54457f1d2d9218aa923dcc"
+      }
+    },
+    {
+      "fit": "snn-s307",
+      "arm": "snn",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087037.8326602,
+      "updates": 601,
+      "selected_updates": 483,
+      "train_wall_seconds": 60.02696549900429,
+      "train_cpu_seconds": 43.408238669,
+      "training_cpu_wall_ratio": 0.723145644763936,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.07222668663727122,
+      "whole_child_wall_seconds": 72.78748745300254,
+      "whole_child_cpu_seconds": 53.573038000000004,
+      "whole_child_maxrss_kib": 282004,
+      "first_validation_completed_seconds": 9.635604016999423,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.32454256400524,
+      "selected_validation_accuracy": 0.544,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 601,
+          "completed_seconds": 60.01604016300553,
+          "excess_over_60_seconds": 0.016040163005527575
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/snn-s307/COST.json": "119056b8c8d0d9de5ca969c796c8c98058f25783abafa672e5c5fab138ce46ea",
+        "fits/snn-s307/RESULT.json": "280db5bb5851a974a5644ed00f6082c62da0ff3740540ed789bb4c6693966775",
+        "fits/snn-s307/training.jsonl": "af0c7013edfc9abfb2f84d3ed9d814c8362037ff37cb5d2dbe8e218c3fe5d38e",
+        "fit-processes/snn-s307/process/REQUEST.json": "a1c82e7154dc2696eeace098e99e7bbcdfcb30aa04a32db955931d413e813175"
+      }
+    },
+    {
+      "fit": "gru-s307",
+      "arm": "gru",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087038.0426624,
+      "updates": 1411,
+      "selected_updates": 553,
+      "train_wall_seconds": 60.12364891800098,
+      "train_cpu_seconds": 46.399974615000005,
+      "training_cpu_wall_ratio": 0.7717424915158115,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.032884461102055285,
+      "whole_child_wall_seconds": 73.75045124399912,
+      "whole_child_cpu_seconds": 57.219219,
+      "whole_child_maxrss_kib": 282824,
+      "first_validation_completed_seconds": 33.81294976799836,
+      "validation_count": 3,
+      "selected_completed_seconds": 50.02253276999545,
+      "selected_validation_accuracy": 0.78,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 1411,
+          "completed_seconds": 60.12337080200086,
+          "excess_over_60_seconds": 0.12337080200086348
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gru-s307/COST.json": "d8cf22dfbb6ec52c7d21aea8d3c03b21a0007a90e55b75973278f77cf32bab07",
+        "fits/gru-s307/RESULT.json": "bda14baca0a9400e095a3ffda2d13a377ab78fb236d4ec625c8bd310a5950564",
+        "fits/gru-s307/training.jsonl": "de173ce2367f734ab238d13397647acff3917ec76188cc2b280626b92380e62e",
+        "fit-processes/gru-s307/process/REQUEST.json": "78e95ae5efd2fcd506da00ffa11b46452fe86823def4a8b6ea7226b3886ac161"
+      }
+    },
+    {
+      "fit": "gate-s101",
+      "arm": "gate",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087110.674927,
+      "updates": 7838,
+      "selected_updates": 5552,
+      "train_wall_seconds": 60.00088052399951,
+      "train_cpu_seconds": 56.034592008000004,
+      "training_cpu_wall_ratio": 0.9338961615002792,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.007149093137024751,
+      "whole_child_wall_seconds": 68.41010347599513,
+      "whole_child_cpu_seconds": 63.044835,
+      "whole_child_maxrss_kib": 282416,
+      "first_validation_completed_seconds": 8.142445550001867,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.029143927000405,
+      "selected_validation_accuracy": 0.9626666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 7838,
+          "completed_seconds": 60.00083424199693,
+          "excess_over_60_seconds": 0.0008342419969267212
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gate-s101/COST.json": "265bcc119ab1ea83d17395afcf899e2c27c38230485f3e1954f76483f2995437",
+        "fits/gate-s101/RESULT.json": "f9885f9e84a06e60aac89d28cc951deb1bde0e5055736da84e27a8458091ae88",
+        "fits/gate-s101/training.jsonl": "42771890e28f294903195ab799f79514e8f4c47bb98cdaafcad9c3eadf2faeb9",
+        "fit-processes/gate-s101/process/REQUEST.json": "90a59e494fe76ca952f4b2bbcaff3a9dc579d05ca055c7f4bbcddef1e936af9c"
+      }
+    },
+    {
+      "fit": "cfc-s211",
+      "arm": "cfc",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087111.8461616,
+      "updates": 9388,
+      "selected_updates": 7143,
+      "train_wall_seconds": 60.001984351998544,
+      "train_cpu_seconds": 58.460641775000006,
+      "training_cpu_wall_ratio": 0.9743118066236555,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.006227166784725182,
+      "whole_child_wall_seconds": 75.2868421230014,
+      "whole_child_cpu_seconds": 70.864405,
+      "whole_child_maxrss_kib": 282400,
+      "first_validation_completed_seconds": 0.9500253079968388,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.010237980000966,
+      "selected_validation_accuracy": 0.9493333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 9388,
+          "completed_seconds": 60.001322632000665,
+          "excess_over_60_seconds": 0.0013226320006651804
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/cfc-s211/COST.json": "be93814b554ada1843e58816bd12fb609f23509c8aec797fabc9a8f09fbb7cea",
+        "fits/cfc-s211/RESULT.json": "52a568593601ed6fe16970740034c7537852e6909109b5d18bcc06d056afc7f8",
+        "fits/cfc-s211/training.jsonl": "4264eb041f22058308aa4ff28f6fc28b93a665b18118037e3ee3854431ab771b",
+        "fit-processes/cfc-s211/process/REQUEST.json": "ea78c29df8a08271d57060323987ec2a374f021f1cc187fdfbcaf544b1ae7957"
+      }
+    },
+    {
+      "fit": "flow_no_return-s307",
+      "arm": "flow_no_return",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087179.1385264,
+      "updates": 415,
+      "selected_updates": 337,
+      "train_wall_seconds": 60.04007036500116,
+      "train_cpu_seconds": 59.880859232999995,
+      "training_cpu_wall_ratio": 0.9973482520751014,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.14429122706746986,
+      "whole_child_wall_seconds": 62.52540026699717,
+      "whole_child_cpu_seconds": 62.319136,
+      "whole_child_maxrss_kib": 288008,
+      "first_validation_completed_seconds": 0.9244218349995208,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.59286513100233,
+      "selected_validation_accuracy": 0.37733333333333335,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 415,
+          "completed_seconds": 60.039972033002414,
+          "excess_over_60_seconds": 0.03997203300241381
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_no_return-s307/COST.json": "ba8c55e02905cefb506adecadef630a848df28b2aa76b3c93d4988399e08496a",
+        "fits/flow_no_return-s307/RESULT.json": "b510a6892fb3984b6932206b1b928ef48d3680ed87e58ac4ae0decacfbcfd4e8",
+        "fits/flow_no_return-s307/training.jsonl": "fa5928d993f51c9e72f26d1d8ee3a6485bf45c26bda4627d6406045e7dc8648c",
+        "fit-processes/flow_no_return-s307/process/REQUEST.json": "171a86cd004143d9fd52b47ed83c28019307fd0a5280740430ac8a4db87827e9"
+      }
+    },
+    {
+      "fit": "cfc-s101",
+      "arm": "cfc",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087187.1864393,
+      "updates": 10701,
+      "selected_updates": 8662,
+      "train_wall_seconds": 60.001295294001466,
+      "train_cpu_seconds": 59.526227536,
+      "training_cpu_wall_ratio": 0.992082374960846,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.005562678958602,
+      "whole_child_wall_seconds": 63.42915443899983,
+      "whole_child_cpu_seconds": 62.904155,
+      "whole_child_maxrss_kib": 282648,
+      "first_validation_completed_seconds": 0.8916387360004592,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.017941541002074,
+      "selected_validation_accuracy": 0.9413333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 10701,
+          "completed_seconds": 60.00118928200391,
+          "excess_over_60_seconds": 0.0011892820039065555
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/cfc-s101/COST.json": "61c232299c8e6ecc0e084baba1f29d9b5c7424d7ea5817fe37e059c2e565c63a",
+        "fits/cfc-s101/RESULT.json": "94fb618581fb9dbc2b83217b0b286e2bbdf53a13582d7223e5a1b5961d43f9f7",
+        "fits/cfc-s101/training.jsonl": "adf1e7e8baff00a3d0855d3246270e7ca4a612420d75ba81afcaf2b0644b51c5",
+        "fit-processes/cfc-s101/process/REQUEST.json": "0340e8900b64bcef76898e9ff869f9edab6a25eaadcc5623d0ebcea9d0447062"
+      }
+    },
+    {
+      "fit": "flow_no_return-s211",
+      "arm": "flow_no_return",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087241.7233815,
+      "updates": 428,
+      "selected_updates": 358,
+      "train_wall_seconds": 66.9371545699978,
+      "train_cpu_seconds": 59.655699663,
+      "training_cpu_wall_ratio": 0.891219533400043,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.13938247584813085,
+      "whole_child_wall_seconds": 70.46396537300461,
+      "whole_child_cpu_seconds": 62.934658,
+      "whole_child_maxrss_kib": 288004,
+      "first_validation_completed_seconds": 1.3989200700016227,
+      "validation_count": 5,
+      "selected_completed_seconds": 40.33039451899822,
+      "selected_validation_accuracy": 0.41333333333333333,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 428,
+          "completed_seconds": 66.93676478899579,
+          "excess_over_60_seconds": 6.936764788995788
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_no_return-s211/COST.json": "60dc748273af9c0c97b9e439a260c956b9178b2128068849ad0376c02133446c",
+        "fits/flow_no_return-s211/RESULT.json": "04d642046fcfcb0fd2648ff369dfc2a47f55110d7b0caa2bb1683dd9a998409e",
+        "fits/flow_no_return-s211/training.jsonl": "70914af0008f53c2cc239f676cc94914a4afdb777ec21dc815bad387620ce737",
+        "fit-processes/flow_no_return-s211/process/REQUEST.json": "3968705e7648c55fbd325d127f20438e103afb6a351ac63ebb028bc4d1cfd95a"
+      }
+    },
+    {
+      "fit": "flow_erlang4-s101",
+      "arm": "flow_erlang4",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087250.668966,
+      "updates": 1063,
+      "selected_updates": 1013,
+      "train_wall_seconds": 60.01429367100354,
+      "train_cpu_seconds": 51.315118676,
+      "training_cpu_wall_ratio": 0.8550482816195064,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.04827386517027281,
+      "whole_child_wall_seconds": 64.05922258899955,
+      "whole_child_cpu_seconds": 55.270461999999995,
+      "whole_child_maxrss_kib": 288696,
+      "first_validation_completed_seconds": 1.0206485059970873,
+      "validation_count": 6,
+      "selected_completed_seconds": 57.60600026299653,
+      "selected_validation_accuracy": 0.58,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 1063,
+          "completed_seconds": 60.0142010740019,
+          "excess_over_60_seconds": 0.01420107400190318
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_erlang4-s101/COST.json": "2cc807b37c9b5be595a23208e61988f7e4166eed5815c5db62b7a954800d4556",
+        "fits/flow_erlang4-s101/RESULT.json": "c06bcb504e6f6749b2e316d2cf6c90116f378ca832e1914cff98a9b7aadcf8ad",
+        "fits/flow_erlang4-s101/training.jsonl": "2d377f81b98fc3dccabce67e23facb2fa526c1bc4f2594565a4593a9ee81fe44",
+        "fit-processes/flow_erlang4-s101/process/REQUEST.json": "eaa5f82d0da743413b8ab0848c2b22ebe552fa153739cc8757b7dbf4c6e63ec5"
+      }
+    },
+    {
+      "fit": "flow_mass-s101",
+      "arm": "flow_mass",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087312.2606506,
+      "updates": 672,
+      "selected_updates": 576,
+      "train_wall_seconds": 60.07179089199781,
+      "train_cpu_seconds": 59.836501541,
+      "training_cpu_wall_ratio": 0.9960831973293283,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.08904241300744047,
+      "whole_child_wall_seconds": 63.38380760199652,
+      "whole_child_cpu_seconds": 63.023661,
+      "whole_child_maxrss_kib": 290900,
+      "first_validation_completed_seconds": 1.375311874995532,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.26333551499556,
+      "selected_validation_accuracy": 0.1,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 672,
+          "completed_seconds": 60.071177482001076,
+          "excess_over_60_seconds": 0.07117748200107599
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_mass-s101/COST.json": "743623c52f862a6b5c670602445377c8b62f7105f75aaa0c6875dc546caa776b",
+        "fits/flow_mass-s101/RESULT.json": "8e09224ef8d4af62b03c8d87f2a12d67c9ed7a7f0cd7a70f5906559b488a0971",
+        "fits/flow_mass-s101/training.jsonl": "b1d5be54e3c9362ec8d16b1591d096f3d7c39f58c754229f66657e7593a45597",
+        "fit-processes/flow_mass-s101/process/REQUEST.json": "66001b408d463ad09cb4a3b3b31331916ea3e820cadd77d8147d67c3409443d8"
+      }
+    },
+    {
+      "fit": "flow_mass-s211",
+      "arm": "flow_mass",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087314.7833753,
+      "updates": 556,
+      "selected_updates": 188,
+      "train_wall_seconds": 60.01704738699482,
+      "train_cpu_seconds": 59.71557676,
+      "training_cpu_wall_ratio": 0.9949769167241614,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.10740211647482013,
+      "whole_child_wall_seconds": 62.69721654999739,
+      "whole_child_cpu_seconds": 62.291748000000005,
+      "whole_child_maxrss_kib": 290624,
+      "first_validation_completed_seconds": 1.328034640995611,
+      "validation_count": 6,
+      "selected_completed_seconds": 20.39617415599787,
+      "selected_validation_accuracy": 0.1,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 556,
+          "completed_seconds": 60.01584029699734,
+          "excess_over_60_seconds": 0.015840296997339465
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_mass-s211/COST.json": "e5bc600a5a0851d8ed292c0159a6c70248768e346768d76867cb2cdadfe36279",
+        "fits/flow_mass-s211/RESULT.json": "b80b96b482e04d9408ce9885ede29a4c8213435e198fffb0adc0cbdcaa1b4a15",
+        "fits/flow_mass-s211/training.jsonl": "b3ad75f607856753533081db141ec3b56898c55cf075d7f891f97fc5865481ac",
+        "fit-processes/flow_mass-s211/process/REQUEST.json": "15526abdac45c185a6de71d3b6f19ce35c1bc15d6a7311a52d084597c62ba521"
+      }
+    },
+    {
+      "fit": "flow-s211",
+      "arm": "flow",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087375.6978822,
+      "updates": 162,
+      "selected_updates": 142,
+      "train_wall_seconds": 60.130621858996165,
+      "train_cpu_seconds": 50.12601651,
+      "training_cpu_wall_ratio": 0.8336187945560158,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.309419855,
+      "whole_child_wall_seconds": 72.44610242600174,
+      "whole_child_cpu_seconds": 61.274693,
+      "whole_child_maxrss_kib": 290732,
+      "first_validation_completed_seconds": 2.326152773996,
+      "validation_count": 6,
+      "selected_completed_seconds": 51.16964030000236,
+      "selected_validation_accuracy": 0.248,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 162,
+          "completed_seconds": 60.13039651999861,
+          "excess_over_60_seconds": 0.13039651999861235
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow-s211/COST.json": "256fafc317517ca110319558c4e968887e1a1e63c47902baff0f57ba62f7862d",
+        "fits/flow-s211/RESULT.json": "53d76e8046f9445aa02c09f65fbfe55af66d1abf2bf54d7d4ca2b73eec67a65f",
+        "fits/flow-s211/training.jsonl": "a063013e8272a1aaa2b5c1b798674fce789f6873c564889f93a298ccef675690",
+        "fit-processes/flow-s211/process/REQUEST.json": "89f2eab1c60eeacd12c10fc6c1f46e64dcf9b8e1a0a99ad11b62b07427c2c640"
+      }
+    },
+    {
+      "fit": "flow_fixed-s307",
+      "arm": "flow_fixed",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087377.5335739,
+      "updates": 368,
+      "selected_updates": 240,
+      "train_wall_seconds": 60.05365738100227,
+      "train_cpu_seconds": 50.997249935999996,
+      "training_cpu_wall_ratio": 0.8491947395052873,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.13857948352173913,
+      "whole_child_wall_seconds": 69.84106251300545,
+      "whole_child_cpu_seconds": 60.648235,
+      "whole_child_maxrss_kib": 288880,
+      "first_validation_completed_seconds": 18.587005697998393,
+      "validation_count": 5,
+      "selected_completed_seconds": 50.35679527799948,
+      "selected_validation_accuracy": 0.30133333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 368,
+          "completed_seconds": 60.053556430000754,
+          "excess_over_60_seconds": 0.05355643000075361
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_fixed-s307/COST.json": "495ce2da212f37ebcf2f707409246d1f98de06eeceb4522ba1af8e7a78e2ba74",
+        "fits/flow_fixed-s307/RESULT.json": "1cbb9d1f49058b07d085a868d0a3ad50acc17d27b9f1186e175105974ebfde03",
+        "fits/flow_fixed-s307/training.jsonl": "a33b735d8b33687f57baca85731f288213a4771d353cc27bc5c81db0845f2fdd",
+        "fit-processes/flow_fixed-s307/process/REQUEST.json": "cc0d176ce65c004ca52a377b125793cf70ec7753c264a4b10c9f0e3f2ae7556d"
+      }
+    },
+    {
+      "fit": "transformer-s101",
+      "arm": "transformer",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087447.4341283,
+      "updates": 12204,
+      "selected_updates": 6954,
+      "train_wall_seconds": 60.00097950100462,
+      "train_cpu_seconds": 59.067666355,
+      "training_cpu_wall_ratio": 0.9844450348349897,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.004840025102835136,
+      "whole_child_wall_seconds": 62.71529047299555,
+      "whole_child_cpu_seconds": 61.73767,
+      "whole_child_maxrss_kib": 284096,
+      "first_validation_completed_seconds": 1.0893873370005167,
+      "validation_count": 6,
+      "selected_completed_seconds": 40.0428704320002,
+      "selected_validation_accuracy": 0.7653333333333333,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 12204,
+          "completed_seconds": 60.000937985001656,
+          "excess_over_60_seconds": 0.0009379850016557612
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/transformer-s101/COST.json": "ca7c579eecd4b05a7a41ba4a22a7ce171b570d712b34c747c6cf6deee2d78138",
+        "fits/transformer-s101/RESULT.json": "2443f9e775a4f2cd77d627dd2df0e1164ea018ce6d6c86639480519904420574",
+        "fits/transformer-s101/training.jsonl": "080cec34de5eb1651cd71e2edf4a5a562c3eaa8bfaec6de5883f7b2ea3681848",
+        "fit-processes/transformer-s101/process/REQUEST.json": "0b06c9243483d7243f982ab446235c73c15b9040be0682b90d8c67fc97eb1a6a"
+      }
+    },
+    {
+      "fit": "flow-s307",
+      "arm": "flow",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087448.1967115,
+      "updates": 269,
+      "selected_updates": 188,
+      "train_wall_seconds": 60.00108116999763,
+      "train_cpu_seconds": 59.88696847199999,
+      "training_cpu_wall_ratio": 0.9980981559703177,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.22262813558364308,
+      "whole_child_wall_seconds": 68.88599126799818,
+      "whole_child_cpu_seconds": 68.59049,
+      "whole_child_maxrss_kib": 290480,
+      "first_validation_completed_seconds": 3.8477812919954886,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.291395786000066,
+      "selected_validation_accuracy": 0.2786666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 269,
+          "completed_seconds": 60.00101574699511,
+          "excess_over_60_seconds": 0.001015746995108202
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow-s307/COST.json": "7e930d82d395fa0d3f98a27147462d9e00179ca82a4658a2e8cc95e0f20a7703",
+        "fits/flow-s307/RESULT.json": "d67fcd65341e101bf3ac0320400b8e12256641ab4418c2acd29515d22bcd7135",
+        "fits/flow-s307/training.jsonl": "48942438ac03ce4f01ea042de3cf3a34a20c185e18b681957b53184741895857",
+        "fit-processes/flow-s307/process/REQUEST.json": "6a9a4d22698156d7e28c11d80b3f18db8e92c3656602655e775b4d5cfffde990"
+      }
+    },
+    {
+      "fit": "flow_fixed-s101",
+      "arm": "flow_fixed",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087510.2027676,
+      "updates": 624,
+      "selected_updates": 491,
+      "train_wall_seconds": 60.090766984001675,
+      "train_cpu_seconds": 57.449922677,
+      "training_cpu_wall_ratio": 0.9560524113845184,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0920671837772436,
+      "whole_child_wall_seconds": 62.18186565599899,
+      "whole_child_cpu_seconds": 59.508552,
+      "whole_child_maxrss_kib": 289008,
+      "first_validation_completed_seconds": 1.1795366540027317,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.31939396599773,
+      "selected_validation_accuracy": 0.45466666666666666,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 624,
+          "completed_seconds": 60.09063370899821,
+          "excess_over_60_seconds": 0.09063370899821166
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_fixed-s101/COST.json": "ea6858509ece53e43528a90ab2516ffed4e94c3af2f136cdbd80435a23a2be0e",
+        "fits/flow_fixed-s101/RESULT.json": "591333564c4d0e4dd34b1ace65c7080136846facb00945c972935471d6ec740c",
+        "fits/flow_fixed-s101/training.jsonl": "4b5d7080ffadeefa72fa527eebabc025d43761c7f7adde39d6aae7dc3d6d9f49",
+        "fit-processes/flow_fixed-s101/process/REQUEST.json": "57a7d699aab48fdbb58bd804f30365273ef2feb135f5ec6a0e5e917542ecef57"
+      }
+    },
+    {
+      "fit": "flow_fixed-s211",
+      "arm": "flow_fixed",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087517.136128,
+      "updates": 444,
+      "selected_updates": 403,
+      "train_wall_seconds": 60.12884414000291,
+      "train_cpu_seconds": 58.667375623,
+      "training_cpu_wall_ratio": 0.9756943853169694,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.13213372888063063,
+      "whole_child_wall_seconds": 67.90610462600307,
+      "whole_child_cpu_seconds": 66.329638,
+      "whole_child_maxrss_kib": 289232,
+      "first_validation_completed_seconds": 1.9034904970030766,
+      "validation_count": 6,
+      "selected_completed_seconds": 51.04712425999605,
+      "selected_validation_accuracy": 0.4146666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 444,
+          "completed_seconds": 60.123881503997836,
+          "excess_over_60_seconds": 0.12388150399783626
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_fixed-s211/COST.json": "0647a300c1ac6f04b47fe2761fc3921db24458e65c32c87a8f340397ead2618c",
+        "fits/flow_fixed-s211/RESULT.json": "4faca2fc405f06f10cf129f2ca44bd2683beb31f062e47826145721214272d92",
+        "fits/flow_fixed-s211/training.jsonl": "fe9db93d8ac6eda6125cf4334cfaf8d2ae6ec137c49b914c7011f05c6e6bf0ac",
+        "fit-processes/flow_fixed-s211/process/REQUEST.json": "6882daa1606276a873617af98699b9303aeb1fad1b497c3eb772dee2cb843d70"
+      }
+    },
+    {
+      "fit": "flow_erlang4-s211",
+      "arm": "flow_erlang4",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087572.4382684,
+      "updates": 1612,
+      "selected_updates": 1360,
+      "train_wall_seconds": 60.00342296400049,
+      "train_cpu_seconds": 58.585443153,
+      "training_cpu_wall_ratio": 0.9763683513213701,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.036343327017990076,
+      "whole_child_wall_seconds": 64.03989943000488,
+      "whole_child_cpu_seconds": 62.54078,
+      "whole_child_maxrss_kib": 288448,
+      "first_validation_completed_seconds": 0.9224401140018017,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.125635249998595,
+      "selected_validation_accuracy": 0.5893333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 1612,
+          "completed_seconds": 60.003332803004014,
+          "excess_over_60_seconds": 0.00333280300401384
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_erlang4-s211/COST.json": "63524f506782584e5ef71dccce071a6a2db68c96dcc1c17f9c8a865cc7eb6a61",
+        "fits/flow_erlang4-s211/RESULT.json": "ba1fcd7d1c7f51526c84188a70a991788f19de22c7844252c5e639e0369ad2e0",
+        "fits/flow_erlang4-s211/training.jsonl": "6d669d378c411379c5c528c5b366e8a02a59e63b2ed7464f494b5b9366cb676a",
+        "fit-processes/flow_erlang4-s211/process/REQUEST.json": "33e89e50426a44b534c99886ec42ccdcbe649bf85104e8006309d8a4d831be40"
+      }
+    },
+    {
+      "fit": "snn-s211",
+      "arm": "snn",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087585.096182,
+      "updates": 6298,
+      "selected_updates": 4371,
+      "train_wall_seconds": 60.00465098299901,
+      "train_cpu_seconds": 58.79653618900001,
+      "training_cpu_wall_ratio": 0.9798663141238619,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.009335747251349636,
+      "whole_child_wall_seconds": 75.61582383199857,
+      "whole_child_cpu_seconds": 73.99014700000001,
+      "whole_child_maxrss_kib": 281904,
+      "first_validation_completed_seconds": 5.738050020001538,
+      "validation_count": 6,
+      "selected_completed_seconds": 40.04313404200366,
+      "selected_validation_accuracy": 0.7786666666666666,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 6298,
+          "completed_seconds": 60.002583394001704,
+          "excess_over_60_seconds": 0.0025833940017037094
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/snn-s211/COST.json": "805e0f541897d4b050a86c8f8ff25bcfab6785147789f0b8c285d0d055e40dde",
+        "fits/snn-s211/RESULT.json": "01c2600c8e7e53b3e79eccc43178d36fa8b06bdad5ff3895b0412ad05475fd7e",
+        "fits/snn-s211/training.jsonl": "94f30291b24e0bd891ad37796a33637d8d6d4bd3e3225a9206b41f7bbabf2595",
+        "fit-processes/snn-s211/process/REQUEST.json": "f147367fb2dee64d9303100f7eb9030ab533eacf006e89a838765c6a49a1209f"
+      }
+    },
+    {
+      "fit": "snn-s101",
+      "arm": "snn",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087636.535254,
+      "updates": 16955,
+      "selected_updates": 8518,
+      "train_wall_seconds": 60.00051232599799,
+      "train_cpu_seconds": 59.554163057,
+      "training_cpu_wall_ratio": 0.9925609090373618,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0035124838134473605,
+      "whole_child_wall_seconds": 62.839787142002024,
+      "whole_child_cpu_seconds": 62.299192999999995,
+      "whole_child_maxrss_kib": 281912,
+      "first_validation_completed_seconds": 1.2810787350026658,
+      "validation_count": 6,
+      "selected_completed_seconds": 30.00857944600284,
+      "selected_validation_accuracy": 0.8586666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 16955,
+          "completed_seconds": 60.00043107000238,
+          "excess_over_60_seconds": 0.00043107000237796456
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/snn-s101/COST.json": "6fca1b0c4d603b16817419351194f988d23ae08e8b415acd6e0fe1a19e41c1d8",
+        "fits/snn-s101/RESULT.json": "d4a4f20da3bb357249a865a289d0c19a8c2dbca42bfd4673cb60d17d64a1a029",
+        "fits/snn-s101/training.jsonl": "91509ae80c3bb9d571c6e914cc175ae791829679da1382e9915e0f1d286ecfaa",
+        "fit-processes/snn-s101/process/REQUEST.json": "8ada195bf2afe36cf5bf789dfdfe90094ce4c04f4ca4a714cdb678da4030fcb7"
+      }
+    },
+    {
+      "fit": "flow-s101",
+      "arm": "flow",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087660.7903767,
+      "updates": 319,
+      "selected_updates": 287,
+      "train_wall_seconds": 60.10345859300287,
+      "train_cpu_seconds": 60.059992242,
+      "training_cpu_wall_ratio": 0.9992768078240354,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.1882758377492163,
+      "whole_child_wall_seconds": 62.893218029996206,
+      "whole_child_cpu_seconds": 62.789501,
+      "whole_child_maxrss_kib": 290684,
+      "first_validation_completed_seconds": 1.1140954560032696,
+      "validation_count": 6,
+      "selected_completed_seconds": 51.11571774700133,
+      "selected_validation_accuracy": 0.39066666666666666,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 319,
+          "completed_seconds": 60.103377949002606,
+          "excess_over_60_seconds": 0.10337794900260633
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow-s101/COST.json": "0aa06c6ef0bddf418165782ac2870573871d7f56365f007ddf594bc5b92e84ec",
+        "fits/flow-s101/RESULT.json": "8bc4eb7906e3a789b8e26bb7fd0bfd84e4b4b943175f3dd1c152bc66e9a5dba4",
+        "fits/flow-s101/training.jsonl": "952ab484abbc0719ff4d9e92ed3b372611216b219f24965e00fca7abbbe14d4b",
+        "fit-processes/flow-s101/process/REQUEST.json": "679f251c77dcec1694f2b9edbe17b4fb5cf9cf315902a92fbfadcaa5d63b389c"
+      }
+    },
+    {
+      "fit": "gru-s101",
+      "arm": "gru",
+      "seed": 101,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087699.4278305,
+      "updates": 13987,
+      "selected_updates": 11371,
+      "train_wall_seconds": 60.00079370500316,
+      "train_cpu_seconds": 59.586823837,
+      "training_cpu_wall_ratio": 0.993100593468172,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0042601575632372915,
+      "whole_child_wall_seconds": 62.20792024399998,
+      "whole_child_cpu_seconds": 61.759272,
+      "whole_child_maxrss_kib": 282824,
+      "first_validation_completed_seconds": 0.9860310500007472,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.02579113400134,
+      "selected_validation_accuracy": 0.9573333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 13987,
+          "completed_seconds": 60.00069072200131,
+          "excess_over_60_seconds": 0.0006907220013090409
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gru-s101/COST.json": "ea1ad000a2b290081479e45c3eafd1a6db526fd47b0f485a84f1919fa8be6ef9",
+        "fits/gru-s101/RESULT.json": "c98d500ce1b15a45c5e8f4563907204eeaf312bd7987a6e9661b9839792532f9",
+        "fits/gru-s101/training.jsonl": "6f587b53fe53f7757f0baa0c6583632c7baea138a21f09c4898d410a5fd0d656",
+        "fit-processes/gru-s101/process/REQUEST.json": "d8b6763836938073bbaac035f1548369d95df1aa68dd43c1c0cd53786b86082c"
+      }
+    },
+    {
+      "fit": "transformer-s211",
+      "arm": "transformer",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087723.7407973,
+      "updates": 12985,
+      "selected_updates": 10579,
+      "train_wall_seconds": 60.01664169099968,
+      "train_cpu_seconds": 60.000938243,
+      "training_cpu_wall_ratio": 0.9997383484387459,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.004620788466923373,
+      "whole_child_wall_seconds": 64.64503226500528,
+      "whole_child_cpu_seconds": 64.582887,
+      "whole_child_maxrss_kib": 284088,
+      "first_validation_completed_seconds": 0.7580616410050425,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.012528791005025,
+      "selected_validation_accuracy": 0.796,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 12985,
+          "completed_seconds": 60.016546696999285,
+          "excess_over_60_seconds": 0.016546696999284904
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/transformer-s211/COST.json": "30aec0ad3794520381e4e5d0e842dc4c527db657d5d8db9e5ff814630e64a79f",
+        "fits/transformer-s211/RESULT.json": "c3d62ec0e7e76b970818d93d7c616888d7f85e7d66c6585ab838a070c484a8ed",
+        "fits/transformer-s211/training.jsonl": "a627b5508d7e43bebc39c5a17806de6bf51a86c5a3d06c73fa7b3025de5218d4",
+        "fit-processes/transformer-s211/process/REQUEST.json": "050f3880a51ae4a64dd21bd02cdd2db0bbcdc48563dc57336cf202e27b912f73"
+      }
+    },
+    {
+      "fit": "flow_erlang4-s307",
+      "arm": "flow_erlang4",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087761.741897,
+      "updates": 2147,
+      "selected_updates": 1717,
+      "train_wall_seconds": 60.01033386699419,
+      "train_cpu_seconds": 59.554482695,
+      "training_cpu_wall_ratio": 0.9924037887707052,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.02773846422682813,
+      "whole_child_wall_seconds": 62.78243363799993,
+      "whole_child_cpu_seconds": 62.301415999999996,
+      "whole_child_maxrss_kib": 288848,
+      "first_validation_completed_seconds": 1.0085406899961527,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.05798393299483,
+      "selected_validation_accuracy": 0.6813333333333333,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 2147,
+          "completed_seconds": 60.01022428899887,
+          "excess_over_60_seconds": 0.010224288998870179
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_erlang4-s307/COST.json": "854de0590183005c8db942a4580921f1a10bd9736f46551f6fcaa3887ee91c86",
+        "fits/flow_erlang4-s307/RESULT.json": "a8ffface83b735eadbada311b1cacf8cb2afd7bd55716f91d04429b7cded4fe1",
+        "fits/flow_erlang4-s307/training.jsonl": "c1384440aa822509cc95753dfe3d556d0327f8e07daee461d530601a5ee56510",
+        "fit-processes/flow_erlang4-s307/process/REQUEST.json": "80af1c616c7632daa5965b93bfb053c28a9fbe1169cabaad33d5cba37e5aa01e"
+      }
+    },
+    {
+      "fit": "cfc-s307",
+      "arm": "cfc",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087788.4440546,
+      "updates": 5091,
+      "selected_updates": 2875,
+      "train_wall_seconds": 60.002921664003225,
+      "train_cpu_seconds": 59.722372969999995,
+      "training_cpu_wall_ratio": 0.995324416108032,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0117309709231978,
+      "whole_child_wall_seconds": 67.45509601100639,
+      "whole_child_cpu_seconds": 67.118224,
+      "whole_child_maxrss_kib": 282644,
+      "first_validation_completed_seconds": 5.907217418003711,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.03948186400521,
+      "selected_validation_accuracy": 0.9013333333333333,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 5091,
+          "completed_seconds": 60.00280303400359,
+          "excess_over_60_seconds": 0.002803034003591165
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/cfc-s307/COST.json": "c254e48beb3801c49870ad489dc0f01e8ad5ea4f58dbbe121cdf5aafaea2f881",
+        "fits/cfc-s307/RESULT.json": "fff84609538638364cbf2d321b23d60ce9455b299c8ef765f1fceb6a7f010865",
+        "fits/cfc-s307/training.jsonl": "eff41bf849a64097ea8105dee39b4e709c276cca6113cad54ce0b3309b4f5c0c",
+        "fit-processes/cfc-s307/process/REQUEST.json": "2e632dc0bef4f06821a3536c31272d785be8f523e24d0e0039c3aaa2629733c3"
+      }
+    },
+    {
+      "fit": "gru-s211",
+      "arm": "gru",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087824.5804167,
+      "updates": 13106,
+      "selected_updates": 11627,
+      "train_wall_seconds": 60.00225666199549,
+      "train_cpu_seconds": 59.325980183000006,
+      "training_cpu_wall_ratio": 0.9887291492584174,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.004526627512818557,
+      "whole_child_wall_seconds": 63.205824847005715,
+      "whole_child_cpu_seconds": 62.468534,
+      "whole_child_maxrss_kib": 282820,
+      "first_validation_completed_seconds": 1.180241746995307,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.051249256997835,
+      "selected_validation_accuracy": 0.944,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 13106,
+          "completed_seconds": 60.001198590995045,
+          "excess_over_60_seconds": 0.0011985909950453788
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gru-s211/COST.json": "e633fc0fa91abb05849b06655c4df486572e469043fefbd967f5899a63bfb223",
+        "fits/gru-s211/RESULT.json": "207be7fe59c93d52c00d9b0e5e29bbe254896e221f721baff0ee1ed9cedcc131",
+        "fits/gru-s211/training.jsonl": "7a61ca7b992e666b3e49d380da787b67ea3e9d8cdc15d426cc3af6969a77e420",
+        "fit-processes/gru-s211/process/REQUEST.json": "786e99947b676eaabf59f66fa0f941f8b629b1b0482ac49fbe06436d99873763"
+      }
+    },
+    {
+      "fit": "flow_mass-s307",
+      "arm": "flow_mass",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087855.9530642,
+      "updates": 356,
+      "selected_updates": 300,
+      "train_wall_seconds": 60.04994180399808,
+      "train_cpu_seconds": 57.936216234,
+      "training_cpu_wall_ratio": 0.9648005392428648,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.16274218043258426,
+      "whole_child_wall_seconds": 61.88341912100441,
+      "whole_child_cpu_seconds": 59.743164,
+      "whole_child_maxrss_kib": 290968,
+      "first_validation_completed_seconds": 1.058704883995233,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.848129425998195,
+      "selected_validation_accuracy": 0.1,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 356,
+          "completed_seconds": 60.04988820899598,
+          "excess_over_60_seconds": 0.049888208995980676
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/flow_mass-s307/COST.json": "e314808f613b145c121ea61e510873127587a525d03a6b9a743defd6e8966d66",
+        "fits/flow_mass-s307/RESULT.json": "3ca1ca78d66d0e7f8772557f6859631b5197279d1c085af7b422c23ea32ee0fe",
+        "fits/flow_mass-s307/training.jsonl": "8662ba2c1968c40d5467b125336f4ff7f6e84920eb95cd14d40b66bde65fceac",
+        "fit-processes/flow_mass-s307/process/REQUEST.json": "534090584d871b854ff2bc86137a52f7f34092dc68440548be7b7535a4804d15"
+      }
+    },
+    {
+      "fit": "gate-s211",
+      "arm": "gate",
+      "seed": 211,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        0
+      ],
+      "started_unix": 1795087887.8391235,
+      "updates": 17119,
+      "selected_updates": 13659,
+      "train_wall_seconds": 60.00123142800294,
+      "train_cpu_seconds": 59.607235567000004,
+      "training_cpu_wall_ratio": 0.9934335370853896,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.0034819344334949473,
+      "whole_child_wall_seconds": 62.3334460440019,
+      "whole_child_cpu_seconds": 61.88268,
+      "whole_child_maxrss_kib": 282244,
+      "first_validation_completed_seconds": 1.0232179840022582,
+      "validation_count": 6,
+      "selected_completed_seconds": 50.00750505200267,
+      "selected_validation_accuracy": 0.9866666666666667,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 17119,
+          "completed_seconds": 60.001047743004165,
+          "excess_over_60_seconds": 0.0010477430041646585
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gate-s211/COST.json": "45a57dfe0448a65115b2548427c7fc34ec8ef1171749a0cbacf8baa56a4c3715",
+        "fits/gate-s211/RESULT.json": "e2c3dd2b6f3d92b08ed3f9b380ab6603aeeb17904d5dfefcff57d444d81be44e",
+        "fits/gate-s211/training.jsonl": "8dc95dee5ea456a62fcd4a070b291387757e80a188ff8a31b7293dabbfedc5bb",
+        "fit-processes/gate-s211/process/REQUEST.json": "39862dbb92102ca1abb099866c4f7f52c579565af1fab81cfae4042e8f7e1450"
+      }
+    },
+    {
+      "fit": "gate-s307",
+      "arm": "gate",
+      "seed": 307,
+      "status": "COMPLETED_WALL_BUDGET",
+      "exit_code": 0,
+      "cpu_affinity": [
+        1
+      ],
+      "started_unix": 1795087917.8888404,
+      "updates": 7645,
+      "selected_updates": 7382,
+      "train_wall_seconds": 60.2180006530034,
+      "train_cpu_seconds": 45.095010005,
+      "training_cpu_wall_ratio": 0.7488626243978571,
+      "training_cpu_seconds_per_update_including_setup_validation": 0.005898627862001308,
+      "whole_child_wall_seconds": 74.72495938000066,
+      "whole_child_cpu_seconds": 52.420023,
+      "whole_child_maxrss_kib": 282392,
+      "first_validation_completed_seconds": 0.7306440320026013,
+      "validation_count": 6,
+      "selected_completed_seconds": 40.03029974499805,
+      "selected_validation_accuracy": 0.9733333333333334,
+      "late_update_count": 1,
+      "late_updates": [
+        {
+          "update": 7645,
+          "completed_seconds": 60.21777724599815,
+          "excess_over_60_seconds": 0.21777724599814974
+        }
+      ],
+      "late_validation_count": 0,
+      "checks": {
+        "source_bound_protocol": true,
+        "completed_status": true,
+        "identity": true,
+        "no_declared_training_test_reads": true,
+        "trace_update_ordinals": true,
+        "trace_validations_equal_result": true,
+        "finite_update_records": true,
+        "finite_validation_records": true,
+        "deadline_flags": true,
+        "selected_best_eligible": true,
+        "selected_update_binding": true,
+        "selected_snapshot_within_deadline": true,
+        "selected_no_late_updates": true,
+        "whole_process_charges_training": true
+      },
+      "evidence": {
+        "fit-processes/gate-s307/COST.json": "a254b780b1b59707ce80ee7d1a68f30b7dd6db2c892aea553c0b526b9c9db11e",
+        "fits/gate-s307/RESULT.json": "388263a0ac5e603a69c544dcd76d3e1ae6910023bfb40d164f9e449aba5bc0c2",
+        "fits/gate-s307/training.jsonl": "315aba47172a8681e06dae0ac2a9b8132e3548468917508d40a29252530f6c0b",
+        "fit-processes/gate-s307/process/REQUEST.json": "825d684b4cdec4356b4d850d7ecc53caa8db6c7e5186912e9096b72b62f6fe78"
+      }
+    }
+  ],
+  "evaluation_seal_exists": true,
+  "test_or_evaluation_files_opened": false,
+  "new_model_calls": 0,
+  "new_optimizer_calls": 0,
+  "new_matrix_actions": 0,
+  "scope": "Only frozen source and terminated-fit COST/RESULT/training journal/process request; no checkpoint tensor deserialization or dataset loading"
+}
