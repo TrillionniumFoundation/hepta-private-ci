@@ -1,0 +1,791 @@
+{
+  "source_commit_after_fix": "74b4d37db870120b3795d849734d9b4e811d46e4",
+  "source_tree_after_fix": "c9dd5dcf42c96f34fa8846690a562a4b3aad41e9",
+  "source_commit_before_fix": "83154c9ff185a4c2e6e41de4a23c3ac6acfb62a8",
+  "exactly_five_final_use_clone_removals": true,
+  "all_other_bytes_and_assertions_unchanged": true,
+  "contexts": [
+    {
+      "path": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "sha256": "dc028189e8da2aad97b65f3795eae65e83d6e25295fa5fa2e799be50b134057d",
+      "sections": [
+        {
+          "start_line": 440,
+          "end_line": 494,
+          "text": "#[test]\nfn budget_preflight_rejects_forged_selection_and_mismatched_trace() {\n    let subject = subject();\n    let candidates = candidate_fixtures();\n    let trace = make_trace(&subject, &candidates);\n    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));\n\n    let mut forged = decision.clone();\n    forged.selected_candidate_id = \"abstain\".to_owned();\n    assert_eq!(\n        preflight_group_future_cost_v1(&subject, &trace, &candidates, &forged, 1),\n        Err(GroupSystem2Error::DecisionMismatch)\n    );\n\n    let mut altered = trace;\n    altered.behavior_digest = digest(\"new-behavior\");\n    assert_eq!(\n        preflight_group_future_cost_v1(&subject, &altered, &candidates, &decision, 1),\n        Err(GroupSystem2Error::DecisionMismatch)\n    );\n}\n\n#[test]\nfn budget_preflight_denies_zero_and_over_remaining_future_cost() {\n    let subject = subject();\n    let candidates = candidate_fixtures();\n    let trace = make_trace(&subject, &candidates);\n    let decision = must(decide_group_continuation_v1(&subject, &trace, &candidates));\n    assert_eq!(\n        preflight_group_future_cost_v1(&subject, &trace, &candidates, &decision, 0),\n        Err(GroupSystem2Error::ZeroFutureCost)\n    );\n    assert_eq!(\n        preflight_group_future_cost_v1(&subject, &trace, &candidates, &decision, 96),\n        Err(GroupSystem2Error::FutureCostExceedsRemaining {\n            requested: 96,\n            remaining: 95,\n        })\n    );\n\n    let mut nearly_exhausted = trace;\n    nearly_exhausted.cells[0].cost_micros = 99;\n    let decision = must(decide_group_continuation_v1(\n        &subject,\n        &nearly_exhausted,\n        &candidates,\n    ));\n    assert_eq!(\n        preflight_group_future_cost_v1(&subject, &nearly_exhausted, &candidates, &decision, 2,),\n        Err(GroupSystem2Error::FutureCostExceedsRemaining {\n            requested: 2,\n            remaining: 1,\n        })\n    );\n}"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+      "sha256": "29de06c7b787e91f46ba9ace7e21f5ccb2cd38634d2d5cfc936cc78f2f387969",
+      "sections": [
+        {
+          "start_line": 806,
+          "end_line": 853,
+          "text": "#[test]\nfn portfolio_receipt_replay_rejects_mutated_allocation_and_digest() {\n    let original = [\n        candidate(\"baseline\", 0, 0, true),\n        candidate(\"direction\", 80, 0, false),\n    ];\n    let ctx = context(2);\n    let limits = budget(2);\n    let receipt = select_output_portfolio_v1(&ctx, &limits, &original)\n        .expect(\"canonical portfolio selection\");\n\n    verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &receipt)\n        .expect(\"exact receipt is replayable\");\n    // Input ordering is not authority: the binding must survive the same\n    // canonical permutation used by the selection digest.\n    let reordered = [original[1].clone(), original[0].clone()];\n    verify_output_portfolio_receipt_v1(&ctx, &limits, &reordered, &receipt)\n        .expect(\"canonical inputs replay identically\");\n\n    let mut altered_weight = receipt.clone();\n    altered_weight.allocations[0].weight = FixedQ32::ZERO;\n    assert_eq!(\n        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_weight),\n        Err(NduError::InvalidSolverReceipt(\"portfolio receipt replay\"))\n    );\n\n    let mut altered_digest = receipt.clone();\n    altered_digest.selection_digest = Digest32::of_bytes(b\"forged-digest\");\n    assert_eq!(\n        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_digest),\n        Err(NduError::InvalidSolverReceipt(\"portfolio receipt replay\"))\n    );\n\n    let mut altered_generation = receipt.clone();\n    altered_generation.generation = Generation::new(2).expect(\"nonzero generation\");\n    assert_eq!(\n        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_generation),\n        Err(NduError::InvalidSolverReceipt(\"portfolio receipt replay\"))\n    );\n\n    assert_eq!(receipt.future_window_digest, ctx.future_window_digest);\n    let mut altered_window = receipt;\n    altered_window.future_window_digest = Digest32::of_bytes(b\"forged-future-window\");\n    assert_eq!(\n        verify_output_portfolio_receipt_v1(&ctx, &limits, &original, &altered_window),\n        Err(NduError::InvalidSolverReceipt(\"portfolio receipt replay\"))\n    );\n}"
+        },
+        {
+          "start_line": 1209,
+          "end_line": 1253,
+          "text": "#[test]\nfn receipt_integrity_replay_rejects_tampered_fields() {\n    let source = [\n        candidate(\"baseline\", 0, 0, true),\n        candidate(\"direction\", 80, 1, false),\n    ];\n    let state = context(source.len());\n    let limits = budget(2);\n    let receipt = select_output_portfolio_v1(&state, &limits, &source)\n        .expect(\"deterministic advisory receipt\");\n    assert_eq!(\n        receipt.disposition,\n        OutputPortfolioDispositionV1::AdvisorySelection\n    );\n    verify_output_portfolio_receipt_v1(&state, &limits, &source, &receipt)\n        .expect(\"untampered receipt must replay exactly\");\n\n    let mut tampered_resource = receipt.clone();\n    tampered_resource.total_resource = FixedQ32::ZERO;\n    let mut tampered_latency = receipt.clone();\n    tampered_latency.total_latency = FixedQ32::ZERO;\n    let mut tampered_disposition = receipt.clone();\n    tampered_disposition.disposition = OutputPortfolioDispositionV1::NoChange;\n    let mut tampered_frontier = receipt.clone();\n    tampered_frontier.frontier.clear();\n    let mut tampered_allocation = receipt.clone();\n    tampered_allocation.allocations[0].weight = FixedQ32::ZERO;\n    let mut tampered_digest = receipt;\n    tampered_digest.selection_digest = Digest32::ZERO;\n\n    for forged in [\n        tampered_resource,\n        tampered_latency,\n        tampered_disposition,\n        tampered_frontier,\n        tampered_allocation,\n        tampered_digest,\n    ] {\n        assert_eq!(\n            verify_output_portfolio_receipt_v1(&state, &limits, &source, &forged)\n                .expect_err(\"a forged advisory receipt must fail closed\"),\n            NduError::InvalidSolverReceipt(\"portfolio receipt replay\")\n        );\n    }\n}"
+        },
+        {
+          "start_line": 1540,
+          "end_line": 1566,
+          "text": "#[test]\nfn selection_digest_rejects_forged_candidate_snapshot_without_full_replay() {\n    let candidates = [\n        candidate(\"baseline\", 0, 0, true),\n        candidate(\"private-head\", 60, 10, false),\n    ];\n    let context = context(candidates.len());\n    let budget = budget(2);\n    let receipt =\n        select_output_portfolio_v1(&context, &budget, &candidates).expect(\"advisory receipt\");\n    let canonical = canonical_candidates(&context, &candidates).expect(\"canonical candidates\");\n    let covariance =\n        canonical_covariance(&context, &candidates, &canonical).expect(\"canonical covariance\");\n    assert_eq!(\n        digest_selection(&context, &budget, &canonical, &covariance, &receipt),\n        receipt.selection_digest\n    );\n    // This is an intentionally invalid input for digest-only consumers:\n    // complete replay would reject it, but the advertised selection hash\n    // must also change to prevent acceptance without full replay.\n    let mut foreign = canonical;\n    foreign[0].snapshot_digest = Digest32::of_bytes(b\"foreign-candidate-snapshot\");\n    assert_ne!(\n        digest_selection(&context, &budget, &foreign, &covariance, &receipt),\n        receipt.selection_digest\n    );\n}"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/group.rs",
+      "sha256": "4b9f5519112137cbf881f2d9d8cb2036d4bdd35087e9c953b5472f485a22d04a",
+      "sections": [
+        {
+          "start_line": 35,
+          "end_line": 73,
+          "text": "    pub generation: u64,\n    pub objective_digest: Digest32,\n    pub encoder_digest: Digest32,\n    pub utility_profile_digest: Digest32,\n    pub resource_ceiling_micros: u64,\n}\n\n/// One cell's local evidence supplied to the group owner.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct GroupCellObservationV1 {\n    pub cell_id: String,\n    pub head_digest: Digest32,\n    pub action_digest: Digest32,\n    pub evidence_digest: Digest32,\n    pub value_q32: i64,\n    pub cost_micros: u64,\n    pub uncertainty_q32: i64,\n    pub abstain: bool,\n}\n\n/// Complete evidence binding for one owner-local decision run.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct GroupDecisionTraceV1 {\n    pub run_id: String,\n    pub subject_id: String,\n    /// Canonical full-owner binding; this digest is not an authorization signature.\n    pub subject_binding_digest: Digest32,\n    pub input_digest: Digest32,\n    pub generation: u64,\n    pub route_digest: Digest32,\n    pub complete_candidate_set_digest: Digest32,\n    pub behavior_digest: Digest32,\n    pub terminal_outcome_digest: Digest32,\n    pub cells: Vec<GroupCellObservationV1>,\n}\n\n/// A candidate continuation proposed to the group owner.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct GroupContinuationCandidateV1 {"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
+      "sha256": "2fc6c68fa59325f3df8a88811c369d1625b841391187e12265a657641d429ccd",
+      "sections": [
+        {
+          "start_line": 38,
+          "end_line": 150,
+          "text": "    }\n}\n/// Semantic loss estimates collected over a frozen future window.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct SemanticRiskEstimateV1 {\n    /// Digest of the independently observed future-window evidence used to\n    /// estimate this risk.  The selector only checks binding; it does not\n    /// authenticate or manufacture the external observation.\n    pub future_window_digest: Digest32,\n    pub mean_loss: FixedQ32,\n    pub cvar_loss: FixedQ32,\n    pub failure_probability: ProbabilityQ32,\n    pub cross_modal_inconsistency: FixedQ32,\n}\n/// Candidate direction emitted by a Cell head from one immutable snapshot.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioCandidateV1 {\n    pub candidate_id: StableId,\n    pub candidate_digest: Digest32,\n    /// Objective-specific utility/risk cannot be reused just because an\n    /// encoder produced the same immutable feature bytes.\n    pub objective_digest: Digest32,\n    pub snapshot_digest: Digest32,\n    /// Source fence of the Cell proposal. Matching feature bytes do not\n    /// authorize reusing a proposal across generations.\n    pub generation: Generation,\n    /// Exact encoder artifact that produced this Cell proposal.\n    pub encoder_digest: Digest32,\n    /// Exact codec/vocabulary/latent geometry, phase and denoising schedule\n    /// contract for composing directions. Distinct heads may share a snapshot\n    /// without sharing a valid output coordinate space.\n    pub composition_domain_digest: Digest32,\n    pub protocol: OutputProtocolV1,\n    pub utility_delta: FixedQ32,\n    pub risk: SemanticRiskEstimateV1,\n    pub resource_cost: FixedQ32,\n    pub latency_cost: FixedQ32,\n    pub weight_cap: FixedQ32,\n    pub is_no_change: bool,\n}\n/// Shared context proving that all candidates came from the same encoder\n/// output and generation. This is an immutable FeatureSnapshot boundary.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioContextV1 {\n    pub objective_digest: Digest32,\n    pub generation: Generation,\n    pub encoder_digest: Digest32,\n    pub snapshot_digest: Digest32,\n    /// All candidate risks must come from this exact externally observed\n    /// future window.  A window name or local timestamp is not sufficient.\n    pub future_window_digest: Digest32,\n    /// Row-major covariance of candidate semantic losses.\n    pub semantic_covariance: Vec<FixedQ32>,\n}\n/// Deterministic budget and risk aversion parameters for one MPC step.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioBudgetV1 {\n    pub max_selected: usize,\n    pub risk_budget: FixedQ32,\n    pub resource_budget: FixedQ32,\n    pub latency_budget: FixedQ32,\n    pub risk_aversion: FixedQ32,\n    pub cvar_aversion: FixedQ32,\n    pub failure_aversion: FixedQ32,\n    pub inconsistency_aversion: FixedQ32,\n    pub resource_price: FixedQ32,\n    pub latency_price: FixedQ32,\n    pub switch_penalty: FixedQ32,\n}\n/// A weight assigned to one output direction. Weights are advisory and sum to\n/// one; a caller must still apply protocol-specific composition rules.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioAllocationV1 {\n    pub candidate_id: StableId,\n    pub protocol: OutputProtocolV1,\n    pub weight: FixedQ32,\n    pub adjusted_score: FixedQ32,\n}\n/// A point on the single-step semantic efficient frontier.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioFrontierPointV1 {\n    pub candidate_id: StableId,\n    pub utility_delta: FixedQ32,\n    pub semantic_risk: FixedQ32,\n    pub resource_cost: FixedQ32,\n}\n#[derive(Clone, Copy, Debug, Eq, PartialEq)]\npub enum OutputPortfolioDispositionV1 {\n    NoChange,\n    AdvisorySelection,\n}\n/// Replayable advisory receipt. The selection digest binds all displayed\n/// fields, but does not establish external future-window evidence, execution\n/// authority or a signature. Consumers must independently replay/verify it.\n/// It deliberately contains no execution token.\n#[derive(Clone, Debug, Eq, PartialEq)]\npub struct OutputPortfolioSelectionReceiptV1 {\n    pub objective_digest: Digest32,\n    pub generation: Generation,\n    pub encoder_digest: Digest32,\n    pub snapshot_digest: Digest32,\n    /// Frozen evaluation-window binding carried in the public advisory receipt.\n    /// This is not an independent signature or a proof of real observations.\n    pub future_window_digest: Digest32,\n    pub disposition: OutputPortfolioDispositionV1,\n    pub allocations: Vec<OutputPortfolioAllocationV1>,\n    pub frontier: Vec<OutputPortfolioFrontierPointV1>,\n    pub total_utility: FixedQ32,\n    pub total_risk: FixedQ32,\n    pub total_resource: FixedQ32,\n    pub total_latency: FixedQ32,\n    pub selection_digest: Digest32,\n}"
+        }
+      ]
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio.rs",
+      "sha256": "4e275b5586d27ac159f2b63f7b397985ba6871c3adfc9e0599e26adf152819ff",
+      "sections": [
+        {
+          "start_line": 267,
+          "end_line": 286,
+          "text": "fn canonical_candidates(\n    context: &OutputPortfolioContextV1,\n    candidates: &[OutputPortfolioCandidateV1],\n) -> Result<Vec<OutputPortfolioCandidateV1>, NduError> {\n    if context.objective_digest.is_zero()\n        || context.encoder_digest.is_zero()\n        || context.snapshot_digest.is_zero()\n        || context.future_window_digest.is_zero()\n    {\n        return Err(NduError::InvalidSolverReceipt(\"portfolio context digest\"));\n    }\n    if candidates.is_empty() || candidates.len() > MAX_PORTFOLIO_CANDIDATES {\n        return Err(NduError::CandidateLimitExceeded);\n    }\n    let mut canonical = candidates.to_vec();\n    canonical.sort_by(|left, right| left.candidate_id.cmp(&right.candidate_id));\n    for window in canonical.windows(2) {\n        if window[0].candidate_id == window[1].candidate_id {\n            return Err(NduError::InvalidSolverReceipt(\n                \"duplicate portfolio candidate\","
+        }
+      ]
+    }
+  ],
+  "primitive_type_declarations": [
+    {
+      "path": "codex-rs/hepta-types/src/digest.rs",
+      "start_line": 7,
+      "text": "use sha2::Digest;\nuse sha2::Sha256;\n\n/// A content digest whose display and parse forms are exactly 64 lowercase hex\n/// characters.\n#[derive(Clone, Copy, Eq, Hash, Ord, PartialEq, PartialOrd)]\npub struct Digest32([u8; 32]);\n\nimpl Digest32 {\n    pub const ZERO: Self = Self([0; 32]);\n\n    pub const fn from_array(bytes: [u8; 32]) -> Self {\n        Self(bytes)\n    }\n\n    pub fn of_bytes(bytes: &[u8]) -> Self {\n        let digest = Sha256::digest(bytes);\n        let mut value = [0; 32];\n        value.copy_from_slice(&digest);\n        Self(value)\n    }\n\n    /// Hash an already-authorized reader with fixed scratch space. Read at\n    /// most `maximum_bytes + 1` bytes; excess input and I/O errors never return"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "start_line": 7,
+      "text": "/// from signed-q32-nearest-ties-even-v1: the raw scale matches, the arithmetic\n/// rounding rule does not.\npub const FIXED_Q32_ARITHMETIC_PROFILE_V1: &str = \"fixed-q32-toward-zero-v1\";\n\n/// Signed Q32 fixed-point value with checked deterministic arithmetic.\n#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]\npub struct FixedQ32(i64);\n\nimpl FixedQ32 {\n    pub const ZERO: Self = Self(0);\n    pub const ONE: Self = Self(1_i64 << 32);\n\n    pub const fn from_raw(raw: i64) -> Self {\n        Self(raw)\n    }\n\n    pub const fn raw(self) -> i64 {\n        self.0\n    }\n\n    pub const fn arithmetic_profile_id() -> &'static str {\n        FIXED_Q32_ARITHMETIC_PROFILE_V1\n    }\n"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "start_line": 76,
+      "text": "        Ok(Self(self.0.clamp(minimum.0, maximum.0)))\n    }\n}\n\n/// Unsigned Q32 probability in the closed interval `[0, 1]`.\n#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]\npub struct ProbabilityQ32(u64);\n\nimpl ProbabilityQ32 {\n    pub const ZERO: Self = Self(0);\n    pub const ONE: Self = Self(1_u64 << 32);\n\n    pub fn from_raw(raw: u64) -> Result<Self, FixedQ32Error> {\n        if raw > Self::ONE.0 {\n            return Err(FixedQ32Error::ProbabilityOutOfRange(raw));\n        }\n        Ok(Self(raw))\n    }\n\n    pub const fn raw(self) -> u64 {\n        self.0\n    }\n}\n"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "start_line": 48,
+      "text": "        }\n    }\n}\n\n/// Stable, bounded identifier suitable for content and protocol records.\n#[derive(Clone, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]\npub struct StableId(BoundedText<MAX_STABLE_ID_BYTES>);\n\nimpl StableId {\n    /// Backward-compatible constructor using the original stable V1 grammar.\n    pub fn new(value: impl Into<String>) -> Result<Self, IdentityError> {\n        let value = value.into();\n        validate_id_profile_raw(&value, IdProfileV1::Stable)?;\n        let value = BoundedText::new(value).map_err(IdentityError::Bounded)?;\n        Ok(Self(value))\n    }\n\n    /// Validates a borrowed identifier under an explicit profile before the\n    /// single bounded allocation used to own the accepted value.\n    pub fn with_profile(value: &str, profile: IdProfileV1) -> Result<Self, IdentityError> {\n        validate_id(value, profile)\n    }\n\n    pub fn as_str(&self) -> &str {"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded.rs",
+      "start_line": 1,
+      "sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9",
+      "text": "use std::error::Error;\nuse std::fmt;\n\n/// UTF-8 text whose encoded byte length is bounded at construction.\n#[derive(Clone, Eq, Hash, Ord, PartialEq, PartialOrd)]\npub struct BoundedText<const MAX_BYTES: usize>(String);\n\nimpl<const MAX_BYTES: usize> BoundedText<MAX_BYTES> {\n    pub fn new(value: impl Into<String>) -> Result<Self, BoundedValueError> {\n        let value = value.into();\n        validate_text(&value, MAX_BYTES)?;\n        Ok(Self(value))\n    }\n\n    /// Validates the borrowed input before allocating the owned bounded value.\n    pub fn try_from_str(value: &str) -> Result<Self, BoundedValueError> {\n        validate_text(value, MAX_BYTES)?;\n        Ok(Self(value.to_owned()))\n    }\n\n    pub fn as_str(&self) -> &str {\n        &self.0\n    }\n\n    pub fn into_inner(self) -> String {\n        self.0\n    }\n}\n\nimpl<const MAX_BYTES: usize> fmt::Debug for BoundedText<MAX_BYTES> {\n    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "start_line": 228,
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3",
+      "text": "macro_rules! monotonic_identity {\n    ($name:ident) => {\n        #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]\n        pub struct $name(u64);\n\n        impl $name {\n            pub fn new(value: u64) -> Result<Self, IdentityError> {\n                if value == 0 {\n                    return Err(IdentityError::Zero);\n                }\n                Ok(Self(value))\n            }\n\n            pub const fn get(self) -> u64 {\n                self.0\n            }\n\n            pub fn next(self) -> Result<Self, IdentityError> {\n                self.0\n                    .checked_add(1)\n                    .map(Self)\n                    .ok_or(IdentityError::Overflow)\n            }\n        }\n    };\n}\n\nmonotonic_identity!(Generation);"
+    }
+  ],
+  "explicit_drop_or_clone_implementations_in_full_two_crate_source": [
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "implementation": "impl Drop for NduProjectionStoreV1"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "implementation": "impl Drop for ScopedChild"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "implementation": "impl Drop for TempRoot"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+      "implementation": "impl Drop for TempRoot"
+    }
+  ],
+  "searched_source_file_count": 132,
+  "searched_source_hashes": [
+    {
+      "path": "codex-rs/hepta-ndu/src/authenticity/locator.rs",
+      "blob": "2b052bb7441ad2d32c9832831513a32b86efbbdd",
+      "sha256": "76f7c72defc65d36270a69bed3b14ecfacbc4e6f9e80493703ba87bb787f31ee"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/authenticity/mod.rs",
+      "blob": "b0fc07def650d15caee289793c03e3d3f92df9ea",
+      "sha256": "56bf0123f5bbbbb4c089694fae25535d7fd129db134f59e3c1a63de241e0eed2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/authenticity/signature.rs",
+      "blob": "ca3e2f76418e5bc2679c4862a052bc735cd538bf",
+      "sha256": "4cdef9c71ff37d56db68837f9218c6e57b1cc1e740eddffd8c08b8ba04b213ac"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-feedback-generation.rs",
+      "blob": "e1999faac139dee3d3ca8a44a218250fe7a767e9",
+      "sha256": "206117e7ab1f6c721aae9d14950f0036d6ca3e30e86844bd5b5feb430a3df1e1"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-generation-rollout.rs",
+      "blob": "f5fbd8fe58dfffe71ba82fe955117d1d11f39476",
+      "sha256": "8931035195eb25aa3e7b22302fccf7051809b471d4b57d73ea6037a4e35c6b28"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-group-control.rs",
+      "blob": "5131aa8155846acaa848fadbb985afeddaf9216a",
+      "sha256": "8cc8cf199cba3004c52aa156138f4b3d9c85b025b0b6d29b078d145940a674e7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-group-replay.rs",
+      "blob": "2a4eb100ac0b362735e20f1afac3dbea98be55b2",
+      "sha256": "4936dd8d2cda927500d43b3280a799faddb8feb34c6c63d06a3be48f6d7877bd"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/bin/ndu-named-host-qualification.rs",
+      "blob": "4c3bd68de097911f41689a253cab1bae4c8e956f",
+      "sha256": "8a12d68158061e40aad1f6dc2fd4d6cba4abda7d2d2bbf764dd923d8ff551b1c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/candidate_quarantine.rs",
+      "blob": "4a0ac0ff1eea1ca220f39631c41341be11fa24f3",
+      "sha256": "ee2bd89cf1c1694fd656d64ba1f576ab3ba452b9f36f5bd049962b2f295bc072"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+      "blob": "66adac86a57121508793f8445d1690aa8deba1f0",
+      "sha256": "5e34949a6076b01f90d838faa9b7f066d3cb156ed2fb1ea3877e9c5db6c54c24"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+      "blob": "22244485f836294eff42b885be6e7a4728c687a2",
+      "sha256": "eb7f9248ac1b8e1dd1fae4bbe333b5fe3e95983d568c2e95b6750693f2d9d0d6"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/conditional_moments.rs",
+      "blob": "b0ab72d328508013f07aa915e7ab258924d43d7e",
+      "sha256": "ce48afe1ce6bfc0e5cea2f0fe7c93c1a8bba55c2918a5ff6c75bc05638fa734a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/covariance.rs",
+      "blob": "985df3333fc8b7664ac867c53a9f7111e6dd999f",
+      "sha256": "0a21f79764ffa6d6d7f4ed5f16fb092b7f4f189145ed7e6fd0c1e11fa32eb150"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/covariance_profile.rs",
+      "blob": "4c288a14e6f1763515a325d9d7bf21deb7a0c12a",
+      "sha256": "ca81bae981a10f60c61c98b4b8a4324f26e88130fde8f1ac4da04188b48fa6fe"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+      "blob": "a0288c9c1f732b51b0f8594c15679cf7d2e532cb",
+      "sha256": "b4eb83f3a3acd7e9de165fc864355e6f1a2cde3abeaee0a8618fe6833249386a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/current_use.rs",
+      "blob": "bd6d2da7de69c35962d8bb609ceca275f3b2369c",
+      "sha256": "e8c912ace1e2e07578d6b6772b59387fc583a1100c3ba7497ecc34f09434849b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/error.rs",
+      "blob": "4bbfd280d1e686cc153e528caac6bbc95df9531f",
+      "sha256": "9d5f4518d2506bfad811a8d7196d6ccc024a2f9174f1e1acc682883b2ac424e7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evaluation_digest.rs",
+      "blob": "ac945746587aa1afa97957ed2f4d44ce3270204c",
+      "sha256": "9c22395f12e5882be7107a5ac21fd6356a7165ea825373819007e020db065d10"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "blob": "e92db87f4b0275f5597ffe31834ea1760e1833e3",
+      "sha256": "580b704d58676f029b2720d65cda527b6cfa286b652092c4a3201a315e2ae3ff"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+      "blob": "18ebb7a356a79a11284fcc398418d2b924491a56",
+      "sha256": "ca420d61465dc3ee1b7d964ade6a4fe39bfb72ff016148dbd8c3e9e505034e24"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/iteration.rs",
+      "blob": "f8114bda9d77bcc6ffd055780d871d25958c3097",
+      "sha256": "fe2e8326123b635b0e9d9719657a110a159bb8ad3f43a100315e425310383b56"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/mod.rs",
+      "blob": "1ab9a5259b9cc25508533c377cd1ebbeb138bf59",
+      "sha256": "a5b93b08cc66ea223f10fdd5f89b0461aead4d25b65aee2dc6c5cb3bd30878e2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/evidence_v2/z.rs",
+      "blob": "12b85aaa9e7bfef554257dd3ec19423984d48877",
+      "sha256": "7bc55f1860c67e362aaad09b96ff3981a6038fee96cd1a8c218ea7ef0f6af2f5"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_evidence.rs",
+      "blob": "694a9f9aa0109c6e13c783ce09f032b2169efb53",
+      "sha256": "e7aa48c81a6adc7c08aa5e0021d6918545e1328db803bae7bdf969338dc88246"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_evidence_binding_tests.rs",
+      "blob": "96d37cd85b7667822888bd5c4f504d9f38be5e81",
+      "sha256": "1c05494e4b2a2e7a51eb26e370fc3a2a85e3ea1b31783939a9bcb54aa97d8612"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/api.rs",
+      "blob": "ad5fff9c83e29cfed24b054aed4ed305c7ed6fe4",
+      "sha256": "31386a3aff081813161a040abb1b6117e18a030f92c7ecbd538fb4a80c0f91d6"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/codec.rs",
+      "blob": "18fbc58fdff517b34c72f01d571473f1a3e0f0e1",
+      "sha256": "1fef9423cba5db0138eba82a368a1be545ae93c58a26285e859b44944599bf6e"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/math.rs",
+      "blob": "b26d222bbd0fa2c39f01200fa76b88346dce52e4",
+      "sha256": "9ab11ac042412456637896e9975750db16064715ee70a91bba723430aff867c2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/mod.rs",
+      "blob": "f22f56d52882fe3ae12338f393fc274e62486fb9",
+      "sha256": "a951cebb7ed16263b70bd4ade5136ef7f48e1362bd0bc07e9ae7b99dd1c34258"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/tests.rs",
+      "blob": "ebcab9a048199852361246215d612579ebd9d2d9",
+      "sha256": "bbbd021f88622318425ab1f4f90c69b24a5ded3e019ced8799499a824e43c367"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/types.rs",
+      "blob": "240ff0842daa662dadfe64b0f15e557100b4622d",
+      "sha256": "d907b1a0b92f0710d81dafd1296107ff3fb92fc1f2c31d441ed220eea79ae22c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fbsde_training/validation.rs",
+      "blob": "1c8615c35ca0814197d9f3f300284dcc4a7fec47",
+      "sha256": "ef815674b89c8cd98b469901ca2058da664481fdf0b6ccb638466aeba44d5f3d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feature_evidence.rs",
+      "blob": "f8fd20c38eeecbe5023c2e25c6648b6e6a58c74b",
+      "sha256": "6e0515275c7ce914a49b4046156650ebf7edf081b5290ac0bcc64502e81b862f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation.rs",
+      "blob": "bcd8beeacbada65810c9d2addbf37dcac64e1449",
+      "sha256": "520f53dcbf8abf015602f0eaeb2835b5a300787b815716e33ba340e8c4fa5e47"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_protocol.rs",
+      "blob": "1be2be0b3df960012025d8f7871afa2631d977c9",
+      "sha256": "40ef09bcc845c94b5be0112d8af0fbdbf1049aa7392603c9cc6c521f94b025b0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/feedback_generation_tests.rs",
+      "blob": "6a6d653afb660d48dd4e89dee78c326c66486bdf",
+      "sha256": "3ae374998d29f2ec876b1506ea764f5a66f28eaccfdeb656cce62bc75938f376"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/finite_entropic.rs",
+      "blob": "8f09f2eb9a2b3fb230d684eb5446b8c21db939a1",
+      "sha256": "ffef52707f8a6df0021fd3b735e347c82fa1efcdce9a37922003fd00a937f668"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/finite_entropic_tests.rs",
+      "blob": "4fdfef7fe50b3fe4ca876a083f221288899a6dae",
+      "sha256": "13f47dac94941bed406fbc7d67b0bc51f1866208059dab071e05facac0028b63"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed.rs",
+      "blob": "eb6b1fe339c7ebdfc2d647cebebd899e7a0a507a",
+      "sha256": "f400db811f757422339f5800de2451a7250bc582726c70c617138461ea52ead2"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/fixed_tests.rs",
+      "blob": "210f0e22ba7164de8752bcfd5973aad5cddb25cc",
+      "sha256": "1b11f4d8a78a4472c21b5f16bef5018f7f69474e78b14cb2d8015cff164da66c"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/generation_rollout.rs",
+      "blob": "e07cef49740a6cef8fc6fade837b373609b2e78e",
+      "sha256": "800e967d4f472915c2061c6005226d7184cb3aed24e37d89c714e87c2e13fe3b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/generation_rollout_tests.rs",
+      "blob": "3573a3563a4d01de6092816b9402c446bb48f23c",
+      "sha256": "812f745043f3e6eb08265884a555f29324501c18760e234068cfb34bc46655a9"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/group.rs",
+      "blob": "c91fc5356334b15163c5dcdc7b6110f43cd0d28e",
+      "sha256": "4b9f5519112137cbf881f2d9d8cb2036d4bdd35087e9c953b5472f485a22d04a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/group_tests.rs",
+      "blob": "47a1865c8b329dfeb2daee3a855aa6de386ad362",
+      "sha256": "dc028189e8da2aad97b65f3795eae65e83d6e25295fa5fa2e799be50b134057d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/hardening.rs",
+      "blob": "068f12021287a324b17f1bf195091c909b34571a",
+      "sha256": "f4c11531cb76291845d9cb06d9c06d4bd517a78bca38c44ce0ba7f710f369c03"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/hierarchy.rs",
+      "blob": "cf60aa619406cd56f91f2b42f3885fe41d02bbf0",
+      "sha256": "ee1e0eada8e3cad61a02912f43854e1c5d0b7024ec03e1fe501ae00ffb0a6f26"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/legacy_protocol.rs",
+      "blob": "20210ade31901b5603dc6e1a65cd0fb44970361c",
+      "sha256": "6cc0035cca4554f5f3cca60f5e7e86fe580aae291bf3894c6000f549f1077d2b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/lib.rs",
+      "blob": "fb26ee7594dc958477424571338df2331acb9d1e",
+      "sha256": "ee837939bd14509175d9b68926dd6830f5ef7c91b2474e1450783a1cc28e2fad"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/model.rs",
+      "blob": "aa09d1b00bd62f484f95a464f1523edb009fa9a2",
+      "sha256": "591fffc141af50e5a4e7a184484603545c0208f2f075277b5ce204244f333cd8"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "blob": "c8c1eaa1adfc05c0f3cfc8488dd03495e6897fc0",
+      "sha256": "6b0777f49769b6337cf0090637a2d9a08873c9fb2bdbf153aa9c391de5296f6e"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+      "blob": "3524dad0fcfd333336b385c6b4c0726d9b119f77",
+      "sha256": "81dfff0263725f0a7bbfa791ebd5ac4d3326d562a930a03cf72946e7c7b3d7bc"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/observation_adapter.rs",
+      "blob": "80a72cabbc13ebfa39013596d80ffe3c203b988e",
+      "sha256": "d29f21609976b5a573b90b9d5ef2e0a4901680e9f6a285fc62377adc7b2c5096"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/observation_adapter_tests.rs",
+      "blob": "b282505a72919e655f3d19963590eecbf104853e",
+      "sha256": "07825849ef75576b0b43fcc87542b3ca6bc9569a8fa57735b48d9b71b2e40c0b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/operational_metrics.rs",
+      "blob": "25f5fd509f973203a86581c01c01d26aeea40c6c",
+      "sha256": "5a3d68193d5e55fc2418832770c017d37cf5e49d7a8fcf7c497cc26f203975a4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio.rs",
+      "blob": "2cc9c8dc5a2bf08bcdb3a9233bd58d6b0c3651e4",
+      "sha256": "4e275b5586d27ac159f2b63f7b397985ba6871c3adfc9e0599e26adf152819ff"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_tests.rs",
+      "blob": "916688a276b53c26efb68bf504f66dee0a982e08",
+      "sha256": "29de06c7b787e91f46ba9ace7e21f5ccb2cd38634d2d5cfc936cc78f2f387969"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/output_portfolio_types.rs",
+      "blob": "5a6a6a3529e25a7fa293a5914bd77853bde04581",
+      "sha256": "2fc6c68fa59325f3df8a88811c369d1625b841391187e12265a657641d429ccd"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
+      "blob": "0120d87769597db0b68358125507113db4c4f7d9",
+      "sha256": "0cb8f4f4483379fca308ec04a53ebfa5de8712d8b4b71a49c1da3cd2944eb386"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_binding.rs",
+      "blob": "9ded2734c6e254095cbed939feb8f5e7cb5cf69c",
+      "sha256": "1f4f74ae0a6acb2c7c7a42feeab1d933b0f3773f71755616c2c36b203d96cfaa"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current.rs",
+      "blob": "fb55163e360ddc5800cd9aaa6665c4ae68168a70",
+      "sha256": "cff2e3427eefe42d6fd270dcbc03a9df3f030464e4310bcf5b02b3d3aca1bbc5"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_current_tests.rs",
+      "blob": "f7b5453b824276f280bd0a46de07962c034f7f91",
+      "sha256": "ff8d5eee0a85667d8bc76738f42e10de839e9ab7eae69006c506b9f85717f3b3"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_digests.rs",
+      "blob": "7855df58a296d5936299b3356abf654b063ced83",
+      "sha256": "17318d8f2a2f23ee50cdcdb0e5671be2efb27e9d524374f2e2e329e248e13c51"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+      "blob": "f65edb7814224bbe1b46adb05725827c1e0ff5ed",
+      "sha256": "c25fe9cff65c75328a4e1de6a42fc7dbe293512ec9a12469428ff9346785f74d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs",
+      "blob": "de0d6afdb74b8fc1ef2c1a0fe79574c89660c336",
+      "sha256": "9897973d700c5ed8ebdcfc1102c9d80bf01616058c1a299ab3a4efe443e04a02"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_selection_compatibility_tests.rs",
+      "blob": "674a397e4f897caf572dadfd171e81dda50ebd68",
+      "sha256": "b110c4142ad595e6b3700b75d133d9eee39ae1cc98f9b2191f9c4321533808e7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+      "blob": "67a3d49b42bd8d7e823124490a6107942bcf8469",
+      "sha256": "b5599af923953a0b0f55aef4017e4e55cc35eb6b79630cb94e5393fa2bf93e62"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference.rs",
+      "blob": "40d3de97bc321afb1bdc0fc5793935516aee114a",
+      "sha256": "59ade43a8045790e653207ac0ee6949cf3f199ec7675b7576840f3686dac423d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference_receipts.rs",
+      "blob": "e471600cd4f0062e2ef39de5c72c57396d171e98",
+      "sha256": "51bf16da00b4d45d890c2d1833ef179c2b3bada8a5e5d9642d46a8a09f44f146"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+      "blob": "decd9f4a1e80a00c5a9553af222405a7cc9e7acf",
+      "sha256": "fc31c708018580f5cfee55fe1ec1a0a59d9550c355adba437467e9f582aa981b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/production_composition.rs",
+      "blob": "16f1808ce5e5e202aedca937d317a0cd1c6bf6d4",
+      "sha256": "a19d314dad99408da519324b79f684e958ece28d842d43f4d8ef53e1ad389d23"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_epoch.rs",
+      "blob": "9243a4007fda533fddcce84404a5c0917f70c0d4",
+      "sha256": "1adf062d77b451915f4915c151fde258717df1d25d89fc55e4becf0c1d8603cb"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
+      "blob": "e6bef8ee87e6eace839f9e3f448ada55883e3087",
+      "sha256": "95631ba1470a2de6925d0970134102014fc417c4627eb778b64a34627f0c85d0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_journal_legacy_replay_tests.rs",
+      "blob": "32d88076e6468d7bc04179d65ca1fe881aa492e3",
+      "sha256": "ffbeec07d6fdd5a4a6e980cadcbda10e8440539687d0eb8fba636ece4fbf55d0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+      "blob": "52c1eee88d3bd15a8be95be04d972de723ea335e",
+      "sha256": "167ca4bbb9d9669ec19b683f9ddb1d4934424dde13306b16fe2efd1675c72eb7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "blob": "525ead489b49b9642b2a4b1ab49c462abccb44bb",
+      "sha256": "f0b0b02405981b5647f3475b1dc3b2ee77bc96c20c2e9cc31edb4da06aa12a85"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_process_kill_tests.rs",
+      "blob": "456d75eb49fe210cd7bb2999ab19c8bb30fb120e",
+      "sha256": "1595d9e49275c5382abaaa70dbe01fcf9f099dcb0dfd32e54da57603566f3d34"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_recovery_tests.rs",
+      "blob": "565f3b80818b80b9ae38910b1526b7abb8c9f453",
+      "sha256": "d411f0753872049dde22ae8ef4a4b9ff095f877119176e34bca3756ca56a4b6a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+      "blob": "5445bda8e83739928287b7b0cafdf30cfefe41c4",
+      "sha256": "cf73f9f014159a1888451306a6529c29a5e1538d7178b7903f0a8a7e482d0764"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/projection_store_unsupported_tests.rs",
+      "blob": "08ed68e418632da9a50ebac1b2ceff9bce5c847d",
+      "sha256": "4c39e468fe42050c321e0f12fc5a5e808714da095cea2cc1cbe3a779e42efedf"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol.rs",
+      "blob": "3e677ec6b3c1434d2590ce5cb9c29490bc3df1f3",
+      "sha256": "a19056037d1d38a7e17676638e312bb23ea4aba7005630d59444aec8c46c4b1a"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+      "blob": "23930af9569ad497d76434c840494aef4e54c823",
+      "sha256": "517be98fc891ed5a7a5b5af5c31d99d9a6c48fa4381c94594d5bf99e94b7bc28"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_v2.rs",
+      "blob": "dbba6c4615ec6282d823e4215efe3af9629d9d7f",
+      "sha256": "941b8d00f9bfd86558aaeaac44c424680d255caa58c2b6a24aed02dd684f75c4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/protocol_v2_tests.rs",
+      "blob": "ede18f4b0510f9ae7c18366c11cb3b2a8da58f3c",
+      "sha256": "03393214694d841fbeecf68241012ece908530038bcda55ce10d3eb191eeae3d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
+      "blob": "adf8b05980bbddacc9433d8dca7ab51a87443659",
+      "sha256": "f4d96a53eaab68058431adc5ded767c70b3a00f4ccd0496f5cc1c973958da44f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/recursive.rs",
+      "blob": "e471d92e69c160f9f5c82727e1ce6b7a1be0ed2d",
+      "sha256": "8f5b71cbbc217d4b07a0d4797944eedf5d3c3bd3884cd6fbcb304a48318102fb"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/recursive_tests.rs",
+      "blob": "e16311c89ed05083a4d477d8fe8f88ecd4a3ac18",
+      "sha256": "485d0ffd50141e69e656d584270a626a562c876e9e1d52e22f98be8a1df73187"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring.rs",
+      "blob": "f47a251bdfc46bf2294bc18049c73b322f47808c",
+      "sha256": "84b3d8c6ba7daefd67b6676ffebe5234a125c5bdbc38def9e38a7d175202d9a7"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/scoring_tests.rs",
+      "blob": "a4ffc2107eed0402ac36954888b9b58a85ded558",
+      "sha256": "0f68f0ccc793c12a5e69403cf953bb02924cfe85ebed3ac2eace03a51bac12cb"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/shadow_system2.rs",
+      "blob": "fb7e06385a5113566d31f2c4dd1d9bbfba956795",
+      "sha256": "d8e1e5639d6e08e2f6561273e64476e77dd60b0cbb767da21ccaca15c50213d3"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/shadow_system2_tests.rs",
+      "blob": "610959d2f83986ec036d667aad1da814437a15f6",
+      "sha256": "1f0784beb1ebbede3f8a300a656c6e1c5a8cd18c3e5f5318b413588a9e192bbd"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/snapshot_ref.rs",
+      "blob": "1a6f2242df36980c643dfef3be1d789c0974a1c9",
+      "sha256": "97bef876c54c96a458838cd445fcbaf5e80cb5ff99af54046426ac1d4e9a9865"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/sngr_affine_shadow.rs",
+      "blob": "f11a4c05f73442d59bb4dea8857adb7a92839851",
+      "sha256": "8ef1fced7b6bb98fc8257745847519faa1ee0b5a27c1cfdf48a48241407c702f"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/sngr_affine_shadow_tests.rs",
+      "blob": "0b84ac0eac2871d9fc404200479271de01f90241",
+      "sha256": "861b2333a39d29105f9eaf7a13bd0f1376d2266011c9f6e7ac0926a3284c4cf9"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/sngr_graph_shadow.rs",
+      "blob": "5ac80d54dc33bd56bb41ff5e0574040241ea2416",
+      "sha256": "c0c4334df0050ee1a84f7d9a12b2a88b7569f84ee6e4b5b11b1f3a8f60b38628"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/sngr_graph_shadow_tests.rs",
+      "blob": "c01067116b87a16b086766a113f74081f57c791b",
+      "sha256": "2155a2ff062b4749def87faac47e8b6dfa2b90cd85a46d6953a69dfb658e5de4"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/validated_scalarization.rs",
+      "blob": "99dfe4edb837e17aa04114f77df1ed2e7de87dc4",
+      "sha256": "9bfe570f2e6c1640d64609ec24ddb7d47b11304716dd0146cb72f701c516f719"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/z_conversion.rs",
+      "blob": "91e51909b9231686e8218e1f5564c3025859418b",
+      "sha256": "03b6b6b1ee5fca121dd9697f2712f8bb4c587eb5107cbe8afca96255d1e8ec5b"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+      "blob": "69664c267c19eb7c0204367a949e45e66b033f1b",
+      "sha256": "e7b016e37ffa4fcf9e7760f21eb5e680a48457b286c1b82ba3e1b248076dbc65"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/tests/public_api_compat.rs",
+      "blob": "d69de34a7e97ca8dd3418298610f342ebe9aff04",
+      "sha256": "825208c765c4d14d3d6e5fbd68e38721c47eac21ec2ddc9e50c90c43e1ec11c7"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded.rs",
+      "blob": "5b8afd7be362d5383283d03b785b57b6128fa28d",
+      "sha256": "5907602ef8128b3237991e737e2fc687eb5ac9c716505cc7d884eed9523ea2a9"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded_tests.rs",
+      "blob": "b82714a659ef1bc0505a9aa2fb1ebd2f443a9589",
+      "sha256": "3145c56c2882e91420bc994dd93f3375e1b532b03331826868d0ecfc019077bc"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "blob": "c9859f5407ed28c0933ee4a377629a242e75aa9c",
+      "sha256": "3dacce0bd2c79d9bc0d26b7159dc67d49c74ac664673256f2b46f24ca3aecf0d"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "blob": "3f85f0d52ad0198b83476d051d36f0992ac6c106",
+      "sha256": "9985f3ac27b0f357653206f4788cb366b623548c53502d277cd81f1a0f3d8fbe"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_sink.rs",
+      "blob": "c53c36ceb93d00381bc0dd499affefedc7fb9b73",
+      "sha256": "e1e9eafc72e18a006005be4bb6e12e86cc4b0260003529eeedf49b347025651e"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/cell_role.rs",
+      "blob": "c7b9eda8f4396bd00eae678382db783664116447",
+      "sha256": "1cd6012462b3db51e208d62a03dc47b7e9160c4712d9ef1939ace0d01998047f"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/cell_split.rs",
+      "blob": "37957f44b39194122c14d5d3f0255bba413f5ecd",
+      "sha256": "fc86aad037bc4ed2beea848304621ace1269007af8c7078523972d189f0ea908"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/cell_split_tests.rs",
+      "blob": "6c3afea0120945ba2c6e495f657140b41636e4d8",
+      "sha256": "facf53bf409f2c019dc33fa245f84a98b6c11208fa9a017255421dc534abbaba"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/digest.rs",
+      "blob": "4b6fe231f9faa717067818f509ebb4b150dbfbce",
+      "sha256": "8bfa9aa8424a4a60d4f2f7044099a080a07e9bf3cff958690c3a4e9046a4b4e2"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/digest_stream_tests.rs",
+      "blob": "b38ebda455df98d1380f0bae0a8e094630341217",
+      "sha256": "9ff87ab6ffb17f27c2a23762893f641bb55edaff33f8bfb307729d9be8295a6c"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/digest_tests.rs",
+      "blob": "9479823a601803f9c43c4e9a465907f4d466fc2b",
+      "sha256": "838dc12e305735321c1028dabb7c5dd4e363f1bced8126d2c50eb7527febe37c"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "blob": "3c2674dce405fd20f254f5f1816654aae99d7c13",
+      "sha256": "38de891c6a9dd6a2889c0d6a83fd0bcecf6ed17e2b7090739df8d2effe0b2cff"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed_tests.rs",
+      "blob": "0b6194dd7ec6f14c966faa951abbbc8289e3ffdb",
+      "sha256": "cfa86da0bc63fa273c3124bbd0988fd6bd22383a0338b15ac2a944c80aa5544b"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "blob": "d57e5c9d0ebe8dced59c096a3586830d52e3df4f",
+      "sha256": "5e73c7848a46cd72f22fed856890ff4978204a6a0d2a0088dfe4a974796515f3"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "blob": "a51092759c8ac8da9d494f920637a291ef1a38a1",
+      "sha256": "c3bba7041a11ead1ccb655fb6491c5835a3020c3f26d4deb22edc94a4f8e34be"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/latency.rs",
+      "blob": "a621cdbcd9f9e7acef66cac7b7a80b004d0eac5c",
+      "sha256": "37a3698e0cdc220d55b3d22af473684a4a12a6df7a1951c9974c12cdfbc176de"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/latency_tests.rs",
+      "blob": "63633510bbdf3df265b72545808281a564ba9c2a",
+      "sha256": "48bee388ee7db5139ba5e6d7ad7ee541c6ec7548b4f17017134e4b7bc35c656d"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/lib.rs",
+      "blob": "b8cf542ec4c5528450bc6b7df97866f9f6b6d51d",
+      "sha256": "9965c2a5483ff98904e26335115b48b7a4d140e9c5f1b8853410491a1b68d942"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/manifests.rs",
+      "blob": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900",
+      "sha256": "f5cb88caa08444af0cf381667a15cf5f64a0aa23b563a75fdd0b199cc0088138"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/manifests_tests.rs",
+      "blob": "ada9e10ac1f42a7d9b1c4ed915cf749ca814dc23",
+      "sha256": "11a49c75997d45bd6a7c4f2932fd0f52f4a135bba46f245bc0cccd215b0cab17"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/metric_sink.rs",
+      "blob": "72d4cd15b0c4acda0f80e93707af1fccc6d06255",
+      "sha256": "c7ae8600918549544c8c56087f7884e897972e04893b1e1b85741d08bad142a0"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/ndu_snapshot_ref.rs",
+      "blob": "00cd1a8a5db0df6dafaf3d13d9427434ae8be8d8",
+      "sha256": "46e810eef4486d160336dc5e529c47b344ff122de531b44174c78f51549a6e00"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/ndu_snapshot_ref_tests.rs",
+      "blob": "b30f8da73e06c376ebf42ec6deae2e23b68357f5",
+      "sha256": "dda1534e51ef02f3114a6c366d880e1314316bf536a2ffb55612a9b2f8005a41"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "blob": "a515b8c0b793d15a98ffb933dcacced3993f44e1",
+      "sha256": "442d083dbf9bb403541fa0612d3b1825a50619a5473972784f84b6f913ff8082"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "blob": "dcd4612c57c5ba101fc6990ccd4fc35e8f4ebbd0",
+      "sha256": "d0f76e6e5ae11c09fea47af9b5e7eb9c8af28628b7447963cbb5f600f751bf88"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "blob": "383ef3eb7a62873b74faa50f097f7aa11130b18a",
+      "sha256": "d656fa38fea5a18105da911107caae4d326a653854df0c5baed10d4ab3c6bbe9"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "blob": "87f2a3388516610ac96da38fb2e1c36feba41a72",
+      "sha256": "fab0d6bd469412e77191e43cb17dde7f9638b07292ea5e2df5ad242cf616ea1a"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+      "blob": "4c36a154be0c6890d23b7215a376b58fbafa02a1",
+      "sha256": "5cce1418f5be892bc910d24319a1c01b8c7bf09c25a0f7224e6b7bab3d7718ec"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "blob": "11494905ff09b30a51e0131d81364df87cd41475",
+      "sha256": "f01b741add536a597bf9c87664f83909fd77989d19ff4e2fc2c752d98cfbf593"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+      "blob": "a87cfe27c12292278e4db2a7b3fc13c860255cf9",
+      "sha256": "1ad1075b9433c1a31629ba3df0509ce16ae7c70060797d2ea08f21b5a2c63f1a"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry.rs",
+      "blob": "88526505a75f1c072ea12dcf29c535e80f276187",
+      "sha256": "3826dcd9f447130e10ea5ac5af2caa76633acd49d10eae97e796e0ab61f7c0b3"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry_tests.rs",
+      "blob": "4bd055615e91f665ecc599ce9e7e344c0a88fccb",
+      "sha256": "6beb0420fc29975a5d19e6df780d184cfcccd79a94cdf6dcdf8cbf7e9b5e4658"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/topology.rs",
+      "blob": "0089680a88f93b1b9245a6077cb95eaa14e6affe",
+      "sha256": "e1888c64c8682491837c907a91a960327530251450ecb38e70a60df792adba22"
+    }
+  ],
+  "reasoning": "GroupDecisionTraceV1 and GroupCellObservationV1 derive Clone and own Strings, scalar digests/numbers, and Vec elements. Portfolio receipt owns its Vec allocations/frontier; canonical_candidates returns an owned Vec<OutputPortfolioCandidateV1> made with to_vec. Their leaf identity/numeric wrappers derive Clone or Copy. None of these types has a custom Clone or Drop implementation, shared mutable alias, or subsequent original-variable use in the edited tests. Removing final-use clones preserves owned contents, all mutations and all assertions, while avoiding a redundant allocation/drop. Clippy --fix --tests compiled the resulting source. The 318 unrelated tests remain unexecuted in the filtered test run, and no tests followed final fix/fmt.",
+  "explicit_custom_implementations_relevance": "The four explicit Drop implementations found belong only to projection-store ownership and process-test cleanup helpers; none is a field or type in these five edited fixtures. There is no explicit Clone implementation anywhere in the two reviewed crate sources."
+}

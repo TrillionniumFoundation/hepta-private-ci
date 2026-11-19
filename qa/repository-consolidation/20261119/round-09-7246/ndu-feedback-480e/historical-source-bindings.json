@@ -1,0 +1,171 @@
+[
+  {
+    "receipt": "natural_io/evidence/ingestion-001.json",
+    "source": "natural_io/ingest.py",
+    "expected": "495f1236942d26bc4ad3575d171da4d27f6d1c911e6a97e7ea239f9faad5b86d",
+    "actual": "495f1236942d26bc4ad3575d171da4d27f6d1c911e6a97e7ea239f9faad5b86d",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/codec-001.json",
+    "source": "natural_io/codec_smoke.py",
+    "expected": "0558110a88c41f045fc8d12e49a86635b894512355148ce4e218edb7f42c6eef",
+    "actual": "0558110a88c41f045fc8d12e49a86635b894512355148ce4e218edb7f42c6eef",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/text-interface-001.json",
+    "source": "natural_io/text_model_smoke.py",
+    "expected": "73da9ab4639e05e6023f26b6c1a11beb79836137440ec5f8978416fb2215adac",
+    "actual": "73da9ab4639e05e6023f26b6c1a11beb79836137440ec5f8978416fb2215adac",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/audio-codec-independent-verification.json",
+    "source": "natural_io/evidence/verify_audio_codec.py",
+    "expected": "bafb3623bc87dc1730a2d3ef909fd0c936fba180a1c8f3d5c9c1285c0ca7e541",
+    "actual": "bafb3623bc87dc1730a2d3ef909fd0c936fba180a1c8f3d5c9c1285c0ca7e541",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/audio-codec-001.json",
+    "source": "natural_io/evidence/audio-codec-001-source.py",
+    "expected": "50d18d043a337fdef0d9cd2c327568c6d63c31ad82c664d4494ba61c6b2dff7c",
+    "actual": "50d18d043a337fdef0d9cd2c327568c6d63c31ad82c664d4494ba61c6b2dff7c",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/audio-codec-002.json",
+    "source": "natural_io/evidence/audio-codec-002-source.py",
+    "expected": "43710a2aa2268d90fd6a31d8df04457d4d11d4cd391963c3903b7b75b9cc0b50",
+    "actual": "43710a2aa2268d90fd6a31d8df04457d4d11d4cd391963c3903b7b75b9cc0b50",
+    "matches": true
+  },
+  {
+    "receipt": "natural_io/evidence/audio-codec-003.json",
+    "source": "natural_io/evidence/audio-codec-003-source.py",
+    "expected": "85ead4026bf7121d657fdb51e04bc963668b29acbd51694d341562d2d17279a7",
+    "actual": "85ead4026bf7121d657fdb51e04bc963668b29acbd51694d341562d2d17279a7",
+    "matches": true
+  },
+  {
+    "receipt": "evidence/local_preflight_v1_summary.json",
+    "source_bindings": [
+      {
+        "source": "audit.py",
+        "historical_sha256": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+        "incoming_sha256": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+        "same": true
+      },
+      {
+        "source": "control.py",
+        "historical_sha256": "4ab406d53bb34982b6944a51523b3a253ae522fb83b80129ab0778799f060111",
+        "incoming_sha256": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+        "same": false
+      },
+      {
+        "source": "evaluate.py",
+        "historical_sha256": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+        "incoming_sha256": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+        "same": true
+      },
+      {
+        "source": "metrics.py",
+        "historical_sha256": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+        "incoming_sha256": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+        "same": true
+      },
+      {
+        "source": "model.py",
+        "historical_sha256": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+        "incoming_sha256": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+        "same": true
+      },
+      {
+        "source": "protocol.json",
+        "historical_sha256": "ba9cf193cff6ba0b313b33d8bacffe8869f750db0ff06eb98ae30b927a469ee0",
+        "incoming_sha256": "1e952ed793c2da0ca65ad702156ba0d2d9c4af69a7de94f9cf436cb59de97f58",
+        "same": false
+      },
+      {
+        "source": "run_cloud.sh",
+        "historical_sha256": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+        "incoming_sha256": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+        "same": true
+      },
+      {
+        "source": "run_experiment.py",
+        "historical_sha256": "d9c3035fcd67cf77d3630e5506a4426671ff7db3dae012d1742845f6b632b86a",
+        "incoming_sha256": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+        "same": false
+      },
+      {
+        "source": "world.py",
+        "historical_sha256": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c",
+        "incoming_sha256": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c",
+        "same": true
+      }
+    ],
+    "scope": "Historical receipt has its original source pin; any later source drift is retained explicitly, not claimed as current qualification."
+  },
+  {
+    "receipt": "evidence/local_preflight_v1_1_summary.json",
+    "source_bindings": [
+      {
+        "source": "audit.py",
+        "historical_sha256": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+        "incoming_sha256": "c068b1dcd73d115e9dddf5df53d932ad1b0101c17913dbdf26ced504078d05a3",
+        "same": true
+      },
+      {
+        "source": "control.py",
+        "historical_sha256": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+        "incoming_sha256": "dab085eb23a504a9ff30d8a40805ddb505b30f6af7dc19d80511199d20a2db46",
+        "same": true
+      },
+      {
+        "source": "evaluate.py",
+        "historical_sha256": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+        "incoming_sha256": "112eac9d29c088018a246867521e4b35786bc59135c550ac02cc6e2a5449e922",
+        "same": true
+      },
+      {
+        "source": "metrics.py",
+        "historical_sha256": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+        "incoming_sha256": "bf7661391fe133b1b97bfcac515cafe893dbc8fb4ff2ce00b37457c6611f87bd",
+        "same": true
+      },
+      {
+        "source": "model.py",
+        "historical_sha256": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+        "incoming_sha256": "345c17f472758db755dad0c262bd40bc6fdcf5652f7e94ac34f1d84c06c6b748",
+        "same": true
+      },
+      {
+        "source": "protocol.json",
+        "historical_sha256": "1e952ed793c2da0ca65ad702156ba0d2d9c4af69a7de94f9cf436cb59de97f58",
+        "incoming_sha256": "1e952ed793c2da0ca65ad702156ba0d2d9c4af69a7de94f9cf436cb59de97f58",
+        "same": true
+      },
+      {
+        "source": "run_cloud.sh",
+        "historical_sha256": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+        "incoming_sha256": "cd738a3836b862cbd76d9073a690ab14ac8438142cedc5785696f4794730838a",
+        "same": true
+      },
+      {
+        "source": "run_experiment.py",
+        "historical_sha256": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+        "incoming_sha256": "2ee9b0046d0525931d0a9599bfbd08e4644dcfe9050b4c06ae16a8ee27de9ba9",
+        "same": true
+      },
+      {
+        "source": "world.py",
+        "historical_sha256": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c",
+        "incoming_sha256": "8231e81ff2eda916f46503ad1f97824ffef5237c2114e76c257c5dde8dda9c9c",
+        "same": true
+      }
+    ],
+    "scope": "Historical receipt has its original source pin; any later source drift is retained explicitly, not claimed as current qualification."
+  }
+]
