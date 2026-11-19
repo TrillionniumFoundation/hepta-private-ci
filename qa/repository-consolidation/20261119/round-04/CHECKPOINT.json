@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.rust-consolidation-continuation.v4",
+  "date_utc": "2026-11-19",
+  "base_sha": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+  "main_sha_at_read": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "census": {
+    "source": "GitHub REST /branches pages 1..78, 100 refs/page",
+    "non_atomic": true,
+    "complete_paged_read": true,
+    "rows": 7646,
+    "distinct_branch_names": 7646,
+    "page_77_rows": 46,
+    "page_78_rows": 0,
+    "previous_round_02_rows": 7643,
+    "added": [
+      {
+        "name": "codex/hia-example-continuation-locked-native-20261119-a11",
+        "sha": "ffd678caa8d5fee7ba461557cf7a42bcbc7a5caa",
+        "classification": "PROTECTED_HIA_ANCESTRY"
+      },
+      {
+        "name": "fix/hcsn-smallnorm-exponential-20261119-2f215",
+        "sha": "1aabc1f81ffa23a8b1589647c4f952e90b0c8a66",
+        "classification": "UNRESOLVED_HISTORICAL_PINS"
+      },
+      {
+        "name": "research/hcsn-campaign-report-20261119-2f215",
+        "sha": "71e4af1ef4c59029a39e8143879eeb9055f51788",
+        "classification": "UNRESOLVED_HISTORICAL_PINS"
+      }
+    ],
+    "changed": [
+      {
+        "name": "integration/hepta-single-main-20261113-ab5b",
+        "old_sha": "21a0697fb3bc47392116f2d85696bdc2a6d084c0",
+        "new_sha": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+        "classification": "OWN_REVIEWED_INTEGRATION_FAST_FORWARDS"
+      },
+      {
+        "name": "research/hcsn-c2-original-runtime-recovery-20261119-2f215",
+        "old_sha": "12641597631d84d292ae35133540d7abe58b171d",
+        "new_sha": "f6d86a585b35040320c1097d443f22fcea9935d8",
+        "classification": "UNRESOLVED_HISTORICAL_PINS"
+      }
+    ],
+    "missing": [],
+    "source_blobs": [
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-001-010.json",
+        "sha": "4a3d5390678b227f4687bd174e76a3b3112f7de4"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-011-020.json",
+        "sha": "81b6db81c0b2b4b185fabf7beb9ca9c7271f5642"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-021-030.json",
+        "sha": "4af1df27ac0e7c3d63110bab2661b8db4f452380"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-031-040.json",
+        "sha": "ec9689d817cb2935e0147addd490e89bd1e6234f"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-041-050.json",
+        "sha": "f0feafd57e62900858c07797ba8d9801e7a49df1"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-051-060.json",
+        "sha": "5aa800b2af277545dc888c1caa96ec185e9e2abe"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-061-070.json",
+        "sha": "4b523cb963f3f84dc7818bd5f03d8197e58a3be0"
+      },
+      {
+        "path": "qa/repository-consolidation/20261119/round-04/live-refs-pages-071-077.json",
+        "sha": "b6ab6c392e7ed0861d19fdf43174198dab482e9a"
+      }
+    ]
+  },
+  "hia_protection": {
+    "round03_explicit_named": 395,
+    "round02_existing_protected_names_not_moved_by_census": true,
+    "unwritten": true,
+    "root_test": [
+      {
+        "name": "codex/hia-example-continuation-locked-native-20261119-a11",
+        "sha": "ffd678caa8d5fee7ba461557cf7a42bcbc7a5caa",
+        "ancestors": [
+          {
+            "sha": "ca80ff9feef37fc6d03afdc593ddd7da243f4be7",
+            "behind": 0
+          },
+          {
+            "sha": "f02bb9f3344cdff4e361cca4353540ca0193bd21",
+            "behind": 0
+          }
+        ]
+      }
+    ],
+    "unnamed_ancestor_check_pending": true,
+    "hidden_chrono_otel_joint_protected": true,
+    "unresolved_hcsn_heads_not_merged_or_deleted": true
+  },
+  "progress": {
+    "last_fully_classified_snapshot": {
+      "branch_count": 7615,
+      "ordinary": 7225,
+      "hia_protected": 389,
+      "ordinary_covered": 2083,
+      "ordinary_pending": 5142
+    },
+    "current_full_graph_coverage": "NOT_VERIFIED",
+    "new_ordinary_heads_merged": 0,
+    "main_updates": 0,
+    "refs_deleted": 0
+  },
+  "checks": {
+    "architecture_required": {
+      "conclusion": "success",
+      "job_id": 135625426554
+    },
+    "ci_required": {
+      "conclusion": "failure",
+      "job_id": 135614255376
+    },
+    "blocking_ci_run_id": 44535243751,
+    "win_shards": {
+      "shard1": "success",
+      "shard2": "failure",
+      "shard3": "success",
+      "shard4": "failure"
+    },
+    "jobs": {
+      "win2": 135599682082,
+      "win4": 135599682281,
+      "linux_musl": 135599682076,
+      "win_aggregate": 135613141387
+    },
+    "roots": [
+      "shard2: Windows sandbox FILE_DELETE_CHILD fail-closed and app-server test config.toml persist error",
+      "shard4: Windows elevated sandbox FILE_DELETE_CHILD fail-closed",
+      "linux musl: Core CodeMode event-budget deadline errors and failing tests",
+      "CI required: invalid or absent bazel result"
+    ],
+    "security": "Fail closed preserved; no required gate bypass, test exclusion or negative-statistic manipulation",
+    "native_windows_qualified_fix": "NOT_YET"
+  },
+  "publishing": {
+    "intent": "only archive census/diagnostics on integration",
+    "force": false,
+    "lease_sha": "b51d9ca526fe06447e6bc58227b615b68df09ba0",
+    "ref_deletions_possible_via_plugin": false
+  }
+}
