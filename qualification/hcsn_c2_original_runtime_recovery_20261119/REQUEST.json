@@ -1,0 +1,76 @@
+{
+  "schema": "restore-original-C2-runtime-from-cached-wheels-v1",
+  "root": "/home/qian-qi/hepta-c2-original-runtime-20261119-2f215",
+  "python_sha256": "e50d468e8b0adfb05733f5b87b3cff34829c4a8c1aea50c865aa8bdfe4bb150f",
+  "whole_seconds": 600,
+  "address_space_bytes": 8589934592,
+  "memory_max_bytes": 2147483648,
+  "workers": 1,
+  "numerical_threads": 1,
+  "original_records": "/home/qian-qi/hepta-hcsn-core-study-20261110-c385-training/c1-evidence-archive-v1",
+  "pip_interpreter": "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/bin/python",
+  "wheel_roots": [
+    "/data/hcsn-cuda-170run-20261105-r1/envsetup/wheelhouse",
+    "/data/hcsn-cuda-170run-20261105-r1/envsetup/numeric-rebuild-wheelhouse",
+    "/data/hcsn-cuda-170run-20261105-r1/envsetup/mamba-cache/wheelhouse"
+  ],
+  "wheel_patterns": [
+    "torch-2.8.0+cu128-*.whl",
+    "nvidia_cuda_nvrtc_cu12-12.8.93-*.whl",
+    "nvidia_cuda_runtime_cu12-12.8.90-*.whl",
+    "nvidia_cuda_cupti_cu12-12.8.90-*.whl",
+    "nvidia_cudnn_cu12-9.10.2.21-*.whl",
+    "nvidia_cublas_cu12-12.8.4.1-*.whl",
+    "nvidia_cufft_cu12-11.3.3.83-*.whl",
+    "nvidia_curand_cu12-10.3.9.90-*.whl",
+    "nvidia_cusolver_cu12-11.7.3.90-*.whl",
+    "nvidia_cusparse_cu12-12.5.8.93-*.whl",
+    "nvidia_cusparselt_cu12-0.7.1-*.whl",
+    "nvidia_nccl_cu12-2.27.3-*.whl",
+    "nvidia_nvtx_cu12-12.8.90-*.whl",
+    "nvidia_nvjitlink_cu12-12.8.93-*.whl",
+    "nvidia_cufile_cu12-1.13.1.3-*.whl",
+    "triton-3.4.0-*.whl",
+    "setuptools-78.1.0-*.whl",
+    "markupsafe-3.0.3-*.whl",
+    "typing_extensions-4.16.0-*.whl",
+    "numpy-2.3.5-*.whl",
+    "einops-0.8.1-*.whl",
+    "future-1.0.0-*.whl"
+  ],
+  "copy_distribution_sources": {
+    "/home/qian-qi/hepta-c2-cold-resume-20261119-d741/venv/lib/python3.12/site-packages": [
+      "filelock",
+      "sympy",
+      "networkx",
+      "jinja2",
+      "fsspec",
+      "mpmath"
+    ],
+    "/home/qian-qi/hepta-hcsn-trainer-20261108-s3-v1/dependency-recovery-v2/venv/lib/python3.12/site-packages": [
+      "ncps",
+      "spikingjelly"
+    ]
+  },
+  "records": {
+    "einops": "3a0b1f4a09e62ccd31ace7a8259757bb1867b0331cafdcaf8c60fce7137bda82",
+    "mpmath": "48540170966784df57db05f90d9a0fb0510949a1f7588e67bd108a4952340eb7",
+    "ncps": "b08082fabf2cc7ac97810403efc061e8aa5923e66709e331f6093cebbcaf65f6",
+    "numpy": "5e4b7bfd5fba56f4d9f34e3c0e804fd5db9941ee69478a31d6dfda65bc2ff469",
+    "spikingjelly": "5e09308995e059329db7ce6bd406aa960c059eb91a9d8d2f9284a254abda4974",
+    "torch": "337fee4593cd0d959073f54a35fa53247c9dced4d91392df352f362be7d7e1f9"
+  },
+  "versions": {
+    "einops": "0.8.1",
+    "mpmath": "1.3.0",
+    "ncps": "1.0.1",
+    "numpy": "2.3.5",
+    "spikingjelly": "0.0.0.0.14",
+    "torch": "2.8.0+cu128"
+  },
+  "E_access": false,
+  "model_operations": 0,
+  "network_downloads": false,
+  "old_runtime_mutation": false,
+  "scope": "Isolated cached-wheel preparation and exact archived scientific payload verification. Original C2/E scientific budgets and negative/unknown outcomes remain unchanged."
+}
