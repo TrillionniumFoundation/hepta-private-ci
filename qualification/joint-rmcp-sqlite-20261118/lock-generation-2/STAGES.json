@@ -1,0 +1,47 @@
+[
+  {
+    "label": "rust-version",
+    "command": [
+      "rustc",
+      "-Vv"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 0.03252742195036262
+  },
+  {
+    "label": "bazel-lock-update",
+    "command": [
+      "just",
+      "bazel-lock-update"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 122.24844888201915
+  },
+  {
+    "label": "bazel-lock-check",
+    "command": [
+      "just",
+      "bazel-lock-check"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 1.1686798890004866
+  },
+  {
+    "label": "cargo-metadata",
+    "command": [
+      "cargo",
+      "metadata",
+      "--locked",
+      "--manifest-path",
+      "codex-rs/Cargo.toml",
+      "--format-version",
+      "1"
+    ],
+    "exit_code": 0,
+    "timed_out": false,
+    "wall_seconds": 53.500337074976414
+  }
+]

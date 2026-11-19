@@ -1,0 +1,1056 @@
+{
+  "affected_candidate_roots": 121,
+  "chrono_versions": [
+    "0.4.45"
+  ],
+  "direct_candidate_roots": 28,
+  "external_direct_importer_witnesses": [
+    {
+      "importer": "oauth2@5.0.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-rmcp-client@0.0.0",
+        "oauth2@5.0.0"
+      ]
+    },
+    {
+      "importer": "rmcp@3.9.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-app-server@0.0.0",
+        "rmcp@3.9.0"
+      ]
+    },
+    {
+      "importer": "schemars@1.2.3",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-app-server@0.0.0",
+        "rmcp@3.9.0",
+        "schemars@1.2.3"
+      ]
+    },
+    {
+      "importer": "serde_with@3.24.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-app-server-protocol@0.0.0",
+        "serde_with@3.24.0"
+      ]
+    },
+    {
+      "importer": "sqlx-core@0.9.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-cli@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-core@0.9.0"
+      ]
+    },
+    {
+      "importer": "sqlx-mysql@0.9.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-cli@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-mysql@0.9.0"
+      ]
+    },
+    {
+      "importer": "sqlx-postgres@0.9.0",
+      "kind": "registry_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-cli@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-postgres@0.9.0"
+      ]
+    },
+    {
+      "importer": "sqlx-sqlite@0.9.0",
+      "kind": "vendored_external",
+      "reachable_from_source_less_root": true,
+      "root_to_importer_path": [
+        "codex-cli@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-sqlite@0.9.0"
+      ]
+    }
+  ],
+  "graph_complete": true,
+  "indirect_only_candidate_roots": 93,
+  "lock_git_blob": "5865797f1fb4032637a8dffbac9a216e851fa5f7",
+  "no_chrono_package_or_edge": false,
+  "package_count": 1523,
+  "root_witnesses": [
+    {
+      "path": [
+        "app_test_support@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "app_test_support@0.0.0"
+    },
+    {
+      "path": [
+        "codex-agent-extension@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-agent-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-agent-graph-store@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-agent-graph-store@0.0.0"
+    },
+    {
+      "path": [
+        "codex-agent-identity@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-agent-identity@0.0.0"
+    },
+    {
+      "path": [
+        "codex-analytics@0.0.0",
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-analytics@0.0.0"
+    },
+    {
+      "path": [
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-api@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server-client@0.0.0",
+        "codex-app-server@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server-daemon@0.0.0",
+        "codex-app-server-transport@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server-daemon@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server-protocol@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server-protocol@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server-test-client@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server-test-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-app-server-transport@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-app-server-transport@0.0.0"
+    },
+    {
+      "path": [
+        "codex-apply-patch@0.0.0",
+        "codex-exec-server@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-apply-patch@0.0.0"
+    },
+    {
+      "path": [
+        "codex-arg0@0.0.0",
+        "codex-windows-sandbox@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-arg0@0.0.0"
+    },
+    {
+      "path": [
+        "codex-backend-client@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-backend-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-backend-openapi-models@0.0.0",
+        "serde_with@3.24.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-backend-openapi-models@0.0.0"
+    },
+    {
+      "path": [
+        "codex-chatgpt@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-chatgpt@0.0.0"
+    },
+    {
+      "path": [
+        "codex-cli@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cli@0.0.0"
+    },
+    {
+      "path": [
+        "codex-cloud-config@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cloud-config@0.0.0"
+    },
+    {
+      "path": [
+        "codex-cloud-tasks@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cloud-tasks@0.0.0"
+    },
+    {
+      "path": [
+        "codex-cloud-tasks-client@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cloud-tasks-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-cloud-tasks-mock-client@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-cloud-tasks-mock-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-code-mode@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-code-mode@0.0.0"
+    },
+    {
+      "path": [
+        "codex-code-mode-host@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-code-mode-host@0.0.0"
+    },
+    {
+      "path": [
+        "codex-code-mode-protocol@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-code-mode-protocol@0.0.0"
+    },
+    {
+      "path": [
+        "codex-code-mode-runtime@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-code-mode-runtime@0.0.0"
+    },
+    {
+      "path": [
+        "codex-config@0.0.0",
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-config@0.0.0"
+    },
+    {
+      "path": [
+        "codex-connectors@0.0.0",
+        "codex-login@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-connectors@0.0.0"
+    },
+    {
+      "path": [
+        "codex-connectors-extension@0.0.0",
+        "codex-core-plugins@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-connectors-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-context-fragments@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-context-fragments@0.0.0"
+    },
+    {
+      "path": [
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-core@0.0.0"
+    },
+    {
+      "path": [
+        "codex-core-api@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-core-api@0.0.0"
+    },
+    {
+      "path": [
+        "codex-core-plugins@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-core-plugins@0.0.0"
+    },
+    {
+      "path": [
+        "codex-exec@0.0.0",
+        "codex-cloud-config@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-exec@0.0.0"
+    },
+    {
+      "path": [
+        "codex-exec-server@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-exec-server@0.0.0"
+    },
+    {
+      "path": [
+        "codex-exec-server-protocol@0.0.0",
+        "codex-network-proxy@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-exec-server-protocol@0.0.0"
+    },
+    {
+      "path": [
+        "codex-exec-server-test-support@0.0.0",
+        "codex-exec-server@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-exec-server-test-support@0.0.0"
+    },
+    {
+      "path": [
+        "codex-extension-api@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-extension-api@0.0.0"
+    },
+    {
+      "path": [
+        "codex-external-agent-migration@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-external-agent-migration@0.0.0"
+    },
+    {
+      "path": [
+        "codex-features@0.0.0",
+        "codex-otel@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-features@0.0.0"
+    },
+    {
+      "path": [
+        "codex-feedback@0.0.0",
+        "codex-login@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-feedback@0.0.0"
+    },
+    {
+      "path": [
+        "codex-file-system@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-file-system@0.0.0"
+    },
+    {
+      "path": [
+        "codex-git-attribution@0.0.0",
+        "codex-login@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-git-attribution@0.0.0"
+    },
+    {
+      "path": [
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-git-utils@0.0.0"
+    },
+    {
+      "path": [
+        "codex-goal-extension@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-goal-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-guardian-v2@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-guardian-v2@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-agent-protocol@0.0.0",
+        "codex-hepta-automation@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-agent-protocol@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-agentd@0.0.0",
+        "app_test_support@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-agentd@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-authbus@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-authbus@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-authbus-p1-3-qualification@0.0.0",
+        "codex-hepta-authbus@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-authbus-p1-3-qualification@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-automation@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-automation@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-bao-adapter@0.0.0",
+        "codex-hepta-authbus@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-bao-adapter@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-codex-adapter@0.0.0",
+        "codex-app-server-client@0.0.0",
+        "codex-app-server@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-codex-adapter@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-cognitive-store@0.0.0",
+        "codex-hepta-memory@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-cognitive-store@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-control-plane@0.0.0",
+        "codex-hepta-operations@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-control-plane@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-evidence@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-evidence@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-governance@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-governance@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-infer-worker-host@0.0.0",
+        "codex-app-server-client@0.0.0",
+        "codex-app-server@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-infer-worker-host@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-matrix-sdk@0.0.0",
+        "codex-hepta-matrix-store@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-matrix-sdk@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-matrix-store@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-matrix-store@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-matrixd@0.0.0",
+        "app_test_support@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-matrixd@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-memory@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-memory@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-memory-extension@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-memory-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-native-gateway@0.0.0",
+        "codex-hepta-runtime@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-core@0.9.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-native-gateway@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-operations@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-operations@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-prompt-extension@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-prompt-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-runtime@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-core@0.9.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-runtime@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-shadow-qualification@0.0.0",
+        "sqlx@0.9.0",
+        "sqlx-core@0.9.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-shadow-qualification@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hepta-supervisor@0.0.0",
+        "codex-hepta-memory@0.0.0",
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hepta-supervisor@0.0.0"
+    },
+    {
+      "path": [
+        "codex-history@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-history@0.0.0"
+    },
+    {
+      "path": [
+        "codex-history-notes-extension@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-history-notes-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-home@0.0.0",
+        "codex-extension-api@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-home@0.0.0"
+    },
+    {
+      "path": [
+        "codex-hooks@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-hooks@0.0.0"
+    },
+    {
+      "path": [
+        "codex-image-generation-extension@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-image-generation-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-linux-sandbox@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-linux-sandbox@0.0.0"
+    },
+    {
+      "path": [
+        "codex-lmstudio@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-lmstudio@0.0.0"
+    },
+    {
+      "path": [
+        "codex-login@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-login@0.0.0"
+    },
+    {
+      "path": [
+        "codex-mcp@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-mcp@0.0.0"
+    },
+    {
+      "path": [
+        "codex-mcp-extension@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-mcp-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-mcp-server@0.0.0",
+        "app_test_support@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-mcp-server@0.0.0"
+    },
+    {
+      "path": [
+        "codex-memories-extension@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-memories-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-memories-read@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-memories-read@0.0.0"
+    },
+    {
+      "path": [
+        "codex-memories-write@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-memories-write@0.0.0"
+    },
+    {
+      "path": [
+        "codex-message-history@0.0.0",
+        "codex-config@0.0.0",
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-message-history@0.0.0"
+    },
+    {
+      "path": [
+        "codex-model-provider@0.0.0",
+        "codex-agent-identity@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-model-provider@0.0.0"
+    },
+    {
+      "path": [
+        "codex-model-provider-info@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-model-provider-info@0.0.0"
+    },
+    {
+      "path": [
+        "codex-models-manager@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-models-manager@0.0.0"
+    },
+    {
+      "path": [
+        "codex-network-proxy@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-network-proxy@0.0.0"
+    },
+    {
+      "path": [
+        "codex-ollama@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-ollama@0.0.0"
+    },
+    {
+      "path": [
+        "codex-otel@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-otel@0.0.0"
+    },
+    {
+      "path": [
+        "codex-plugin@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-plugin@0.0.0"
+    },
+    {
+      "path": [
+        "codex-prompts@0.0.0",
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-prompts@0.0.0"
+    },
+    {
+      "path": [
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-protocol@0.0.0"
+    },
+    {
+      "path": [
+        "codex-queue-extension@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-queue-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-response-debug-context@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-response-debug-context@0.0.0"
+    },
+    {
+      "path": [
+        "codex-rmcp-client@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-rmcp-client@0.0.0"
+    },
+    {
+      "path": [
+        "codex-rollout@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-rollout@0.0.0"
+    },
+    {
+      "path": [
+        "codex-rollout-trace@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-rollout-trace@0.0.0"
+    },
+    {
+      "path": [
+        "codex-sandboxing@0.0.0",
+        "codex-network-proxy@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-sandboxing@0.0.0"
+    },
+    {
+      "path": [
+        "codex-secrets@0.0.0",
+        "codex-git-utils@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-secrets@0.0.0"
+    },
+    {
+      "path": [
+        "codex-shell-command@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-shell-command@0.0.0"
+    },
+    {
+      "path": [
+        "codex-shell-escalation@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-shell-escalation@0.0.0"
+    },
+    {
+      "path": [
+        "codex-skills@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-skills@0.0.0"
+    },
+    {
+      "path": [
+        "codex-skills-extension@0.0.0",
+        "codex-models-manager@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-skills-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-state@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-state@0.0.0"
+    },
+    {
+      "path": [
+        "codex-test-binary-support@0.0.0",
+        "codex-arg0@0.0.0",
+        "codex-windows-sandbox@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-test-binary-support@0.0.0"
+    },
+    {
+      "path": [
+        "codex-thread-manager-sample@0.0.0",
+        "codex-core-api@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-thread-manager-sample@0.0.0"
+    },
+    {
+      "path": [
+        "codex-thread-store@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-thread-store@0.0.0"
+    },
+    {
+      "path": [
+        "codex-tools@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-tools@0.0.0"
+    },
+    {
+      "path": [
+        "codex-tui@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-tui@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-approval-presets@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-approval-presets@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-audio@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-audio@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-cli@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-cli@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-oss@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-oss@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-output-truncation@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-output-truncation@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-plugins@0.0.0",
+        "codex-exec-server@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-plugins@0.0.0"
+    },
+    {
+      "path": [
+        "codex-utils-sandbox-summary@0.0.0",
+        "codex-protocol@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-utils-sandbox-summary@0.0.0"
+    },
+    {
+      "path": [
+        "codex-web-search-extension@0.0.0",
+        "codex-api@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-web-search-extension@0.0.0"
+    },
+    {
+      "path": [
+        "codex-windows-sandbox@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "codex-windows-sandbox@0.0.0"
+    },
+    {
+      "path": [
+        "core_test_support@0.0.0",
+        "codex-core@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "core_test_support@0.0.0"
+    },
+    {
+      "path": [
+        "mcp_test_support@0.0.0",
+        "codex-login@0.0.0",
+        "chrono@0.4.45"
+      ],
+      "root": "mcp_test_support@0.0.0"
+    }
+  ],
+  "schema": "codex.hia.chrono_reachability.v1",
+  "scope": "resolved Cargo.lock paths, not feature-enabled/runtime evidence",
+  "source_less_candidate_roots": 193
+}

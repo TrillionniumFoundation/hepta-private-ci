@@ -1,0 +1,92 @@
+[
+  {
+    "label": "fetch",
+    "command": [
+      "git",
+      "fetch",
+      "--depth=1",
+      "--filter=blob:none",
+      "origin",
+      "2b3642214ba5ff4aaac27de13322a354a69507e7",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 5.228643338952679
+  },
+  {
+    "label": "worktree",
+    "command": [
+      "git",
+      "worktree",
+      "add",
+      "--detach",
+      "--no-checkout",
+      "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/candidate-2b364221",
+      "2b3642214ba5ff4aaac27de13322a354a69507e7"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/source",
+    "exit_code": 0,
+    "wall_seconds": 0.017126423015724868
+  },
+  {
+    "label": "sparse",
+    "command": [
+      "git",
+      "sparse-checkout",
+      "set",
+      "--no-cone",
+      "--stdin"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/candidate-2b364221",
+    "exit_code": 0,
+    "wall_seconds": 0.005257207027170807
+  },
+  {
+    "label": "materialize",
+    "command": [
+      "git",
+      "read-tree",
+      "-mu",
+      "HEAD"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/candidate-2b364221",
+    "exit_code": 0,
+    "wall_seconds": 4.979473741026595
+  },
+  {
+    "label": "policy-tests",
+    "command": [
+      "python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "scripts/tests",
+      "-p",
+      "test_blob_size_policy.py"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/candidate-2b364221",
+    "exit_code": 0,
+    "wall_seconds": 1.9700985869858414
+  },
+  {
+    "label": "changed-blob-gate",
+    "command": [
+      "python3",
+      "scripts/check_blob_size.py",
+      "--base",
+      "80cb4dc2da01e100d8f68384cd12a9d6bb752eed",
+      "--head",
+      "2b3642214ba5ff4aaac27de13322a354a69507e7",
+      "--max-bytes",
+      "512000",
+      "--allowlist",
+      ".github/blob-size-allowlist.txt"
+    ],
+    "cwd": "/home/qian-qi/work/hepta-e1e6-dependency-joint-20261118-2e9b/candidate-2b364221",
+    "exit_code": 0,
+    "wall_seconds": 0.8674739260459319
+  }
+]
