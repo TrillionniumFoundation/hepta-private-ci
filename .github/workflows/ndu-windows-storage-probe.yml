@@ -8,6 +8,8 @@ on:
       - ".github/scripts/test_windows_mic_observation.py"
       - ".github/scripts/windows-appcontainer-probe/probe.py"
       - ".github/scripts/windows-appcontainer-probe/win32_api.py"
+      - ".github/scripts/windows-appcontainer-probe/child_trace.c"
+      - ".github/scripts/windows-appcontainer-probe/child_trace.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_storage_probe.py"
       - "experiments/multimodal_output_portfolio/closure_20261028/ops_windows_acl_probe*"
       - "codex-rs/windows-sandbox-rs/src/token.rs"
@@ -872,6 +874,60 @@ jobs:
           raise SystemExit(0 if state["status"] == "PASS" else 1)
           '@ | python -B -
           exit $LASTEXITCODE
+      - name: Trace actual primary-token Win32 errors in separate owned fixtures
+        if: always()
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $out = Join-Path $env:RUNNER_TEMP 'hepta-appcontainer-child-trace'
+          New-Item -ItemType Directory -Path $out -ErrorAction Stop | Out-Null
+          @'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          expected = os.environ['EXPECTED_HEAD']
+          actual = subprocess.check_output(['git', '-C', str(root), 'rev-parse', 'HEAD'], text=True).strip()
+          if actual != expected:
+              raise RuntimeError('diagnostic checkout differs from original PR head')
+          pins = {
+              '.github/scripts/windows-appcontainer-probe/probe.py': 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192',
+              '.github/scripts/windows-appcontainer-probe/win32_api.py': '9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10',
+              '.github/scripts/windows-appcontainer-probe/child_trace.c': '717521474cef3d5f49cb6170bfb9ab6cc6fd96430cccbf69263bed0f59bc22a8',
+              '.github/scripts/windows-appcontainer-probe/child_trace.py': 'f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8',
+          }
+          observed = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in pins}
+          if observed != pins:
+              raise RuntimeError('reviewed native trace source bytes differ')
+          out = Path(os.environ['RUNNER_TEMP']) / 'hepta-appcontainer-child-trace'
+          (out / 'source-before.json').write_text(json.dumps({'head': actual, 'sha256': observed}, indent=2))
+          '@ | python -B -
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
+          $install = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          if ($LASTEXITCODE -ne 0 -or -not $install) { throw 'MSVC x64 installation missing' }
+          $devcmd = Join-Path $install 'Common7/Tools/VsDevCmd.bat'
+          $source = Join-Path $env:GITHUB_WORKSPACE '.github/scripts/windows-appcontainer-probe/child_trace.c'
+          $exe = Join-Path $out 'child-trace.exe'
+          $obj = Join-Path $out 'child-trace.obj'
+          $build = Join-Path $out 'build.cmd'
+          @"
+          @echo off
+          call "$devcmd" -no_logo -arch=x64 -host_arch=x64
+          if errorlevel 1 exit /b %errorlevel%
+          cl.exe /nologo /std:c17 /O2 /Oi /GS- /Zl /W4 /WX /Fo"$obj" /Fe"$exe" "$source" /link /NODEFAULTLIB /ENTRY:entry /SUBSYSTEM:CONSOLE kernel32.lib advapi32.lib
+          exit /b %errorlevel%
+          "@ | Set-Content -Encoding ascii -Path $build
+          & $env:ComSpec /d /c "`"$build`"" 1> (Join-Path $out 'compile.stdout') 2> (Join-Path $out 'compile.stderr')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -B .github/scripts/windows-appcontainer-probe/child_trace.py --repo "$env:GITHUB_WORKSPACE" --source-head "$env:EXPECTED_HEAD" --executable "$exe" --output (Join-Path $out 'observation.json') 1> (Join-Path $out 'trace.stdout') 2> (Join-Path $out 'trace.stderr')
+          exit $LASTEXITCODE
+      - name: Preserve independent native child diagnostic logs
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: ndu-appcontainer-child-trace-${{ github.event.pull_request.head.sha }}
+          path: ${{ runner.temp }}/hepta-appcontainer-child-trace
+          if-no-files-found: error
       - name: Preserve native mechanism observations and complete process logs
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
