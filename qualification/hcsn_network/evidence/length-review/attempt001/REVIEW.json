@@ -1,0 +1,5030 @@
+{
+  "schema": "hcsn-network-length-independent-read-v1",
+  "reader_freeze": {
+    "schema": "hcsn-network-length-review-freeze-v1",
+    "frozen_utc": "2026-11-19T11:26:27.189560+00:00",
+    "source_commit": "8fe7bc209803659cc3f4780be0940c5183ca6e9b",
+    "protocol_sha256": "9601216e77b3dc5b3b41f77d7df8f124b7ab176692b0a0b66f24773b95eec9e0",
+    "reader_local_commit": "84255edacfebf0c5f8c5645b99c9a5ef9743439f",
+    "reader_path": "qualification/hcsn_network/evidence/length-review/review.py",
+    "reader_sha256": "edbbba83a7c131617d3d81180acdacc0f3881060756cad8e2116562359639632",
+    "raw_root": "/workspace/scratch/d741f7769aeb/network-length-profile-attempt001",
+    "input_file_count": 67,
+    "input_total_bytes": 1297344,
+    "inputs": {
+      "COMPLETE.json": {
+        "bytes": 74,
+        "sha256": "ab409d3742cc00d8792ecedaed49c4da69f16387768d40bc7cde57615240de39"
+      },
+      "COSTS.json": {
+        "bytes": 2200,
+        "sha256": "d314a26d37ce258d26b1121ced56edf72ae63f4218fbb277a7e5a713dab1bdc0"
+      },
+      "REQUEST.json": {
+        "bytes": 478,
+        "sha256": "e5ef1e91500722b352923e0371e5db21bee1da6f98f239c559c5939f1edb5c09"
+      },
+      "outputs/flow-T10/RAW.npz": {
+        "bytes": 22087,
+        "sha256": "b94647564b137db40d27ec4adb8ff89fab56c6fe896a21ad46c86dd11080adfa"
+      },
+      "outputs/flow-T10/RESULT.json": {
+        "bytes": 783,
+        "sha256": "8a375b87cc2bab33f79ab76589da05caf4469060f04bd83a020018ba57b452a8"
+      },
+      "outputs/flow-T10/state.pt": {
+        "bytes": 34311,
+        "sha256": "a26c70fb1d66ad7bad580995f9858423bc1e2253291d46149e1f269305cdd7a0"
+      },
+      "outputs/flow-T20/RAW.npz": {
+        "bytes": 29447,
+        "sha256": "af6939664ccafd7fae175c5a79c25186bbb41455d982f071ec76480dad1d3395"
+      },
+      "outputs/flow-T20/RESULT.json": {
+        "bytes": 784,
+        "sha256": "24dfe01d23d278bc8fa4cd688d457995c7dd31c3aebfea6bbaa582f5a362b94c"
+      },
+      "outputs/flow-T20/state.pt": {
+        "bytes": 72455,
+        "sha256": "d165939318046aa005f596d745f9be1ce3639e2fa1728cd2dbbfa0ecac5346e3"
+      },
+      "outputs/flow-T40/RAW.npz": {
+        "bytes": 44284,
+        "sha256": "ed5ba62471931b19652f4614afa331dadfb9e108ab31579dd3fd396890d6b155"
+      },
+      "outputs/flow-T40/RESULT.json": {
+        "bytes": 784,
+        "sha256": "662f69e1f76bd03e5eff34f1142a04fdfb4c3e9f95444437fe65d06dd3440236"
+      },
+      "outputs/flow-T40/state.pt": {
+        "bytes": 208135,
+        "sha256": "a66f066f612e7ccc37d4c204dcf88f8407f614aad3368150fdb53b1b0ab1b60f"
+      },
+      "outputs/flow-T80/RAW.npz": {
+        "bytes": 73605,
+        "sha256": "1353ba628d80b03eee5930f32581724513b495b4d8945f17ae18c7632eeb9188"
+      },
+      "outputs/flow-T80/RESULT.json": {
+        "bytes": 786,
+        "sha256": "eb737de8591933fa834d0d7629fc3ebfcc8955b9c069c4abf2fd57a699a85449"
+      },
+      "outputs/flow-T80/state.pt": {
+        "bytes": 720071,
+        "sha256": "9357dee60524ba90c2178b35d6d7eaee12111a076106a2bb8a57ead983a61d5d"
+      },
+      "outputs/flow_erlang4-T10/RAW.npz": {
+        "bytes": 8597,
+        "sha256": "a559406e8c58dddc62a229fee40e0e9f30610c6f4794ac0d37691eaf841be9e2"
+      },
+      "outputs/flow_erlang4-T10/RESULT.json": {
+        "bytes": 796,
+        "sha256": "6d53344e2ea3e03244a04dd9c42565faad69847686dd9b293711c786ce510f5c"
+      },
+      "outputs/flow_erlang4-T10/state.pt": {
+        "bytes": 8493,
+        "sha256": "0c3d29f05182434c2d0b4943b41e7347d871e02b419b937f19b279d4128747c3"
+      },
+      "outputs/flow_erlang4-T20/RAW.npz": {
+        "bytes": 8769,
+        "sha256": "371b726b7ff5085466b09bebf7a5b92c3a2595180f501fafd1dc46094108c8aa"
+      },
+      "outputs/flow_erlang4-T20/RESULT.json": {
+        "bytes": 797,
+        "sha256": "bd250f0066a9eb3c45e6ba57ae7451285bb56eba24f1bf7cf047832769415ae0"
+      },
+      "outputs/flow_erlang4-T20/state.pt": {
+        "bytes": 8493,
+        "sha256": "1cd869d67ca9aa30092833d6086657bdf716b916b246ead1cba1dc22c497b171"
+      },
+      "outputs/flow_erlang4-T40/RAW.npz": {
+        "bytes": 9094,
+        "sha256": "335439f3708ecbf2a95e25a6ba7327f10e0efc7bd7717083fe7f56f0c262e642"
+      },
+      "outputs/flow_erlang4-T40/RESULT.json": {
+        "bytes": 795,
+        "sha256": "6cd90aa782c19a4aa156e1b11d6944d8c75244ffc3f9c1b7d0885e0e5582068b"
+      },
+      "outputs/flow_erlang4-T40/state.pt": {
+        "bytes": 8493,
+        "sha256": "5345d3fb74dcde9d5d7037ca302df86da245777d3b0c947267c8c708ad39446d"
+      },
+      "outputs/flow_erlang4-T80/RAW.npz": {
+        "bytes": 9704,
+        "sha256": "2453a4372306216f420846663b88f15bb4da2eb978f8c2444cb1f839ccbfd3b2"
+      },
+      "outputs/flow_erlang4-T80/RESULT.json": {
+        "bytes": 795,
+        "sha256": "43545e9ce2d6bd68e0ce1eadbcf3c4c4226672616197b3fdbd876db54aa09d3e"
+      },
+      "outputs/flow_erlang4-T80/state.pt": {
+        "bytes": 8493,
+        "sha256": "3bab4b83f83db7a1ed17038b15271d31b83fbe6f729a038668eddaf77c0308a7"
+      },
+      "processes/flow-T10/COST.json": {
+        "bytes": 215,
+        "sha256": "ddfbbef4768769f0688d955d90a8d54257cfd5ea53f4a790da2e7ea29d364151"
+      },
+      "processes/flow-T10/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "cdcdfa655a6c074745cdb3c60e7f599296fe8d75efb976e04d73e8221fd2e2c0"
+      },
+      "processes/flow-T10/process/REQUEST.json": {
+        "bytes": 539,
+        "sha256": "6ad485b8d6c5ba8d27cd758c84071bd8aceeb650f6c39334c88b73b2c0ce3da9"
+      },
+      "processes/flow-T10/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow-T10/process/stdout": {
+        "bytes": 737,
+        "sha256": "5b3cf697e7bed2b31af428c48fea3930b78f2b3ebd0012a7d4cd52b58a5d87db"
+      },
+      "processes/flow-T20/COST.json": {
+        "bytes": 216,
+        "sha256": "7effc592d8f1c40d5f3cda91a725dc4584d49bc70e19fb88074722a0d5183e30"
+      },
+      "processes/flow-T20/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "a8beaf4fcfc9b652e82f3e0fb452892e207c6a7d0b37f13e43765062141cbba9"
+      },
+      "processes/flow-T20/process/REQUEST.json": {
+        "bytes": 539,
+        "sha256": "aaefca6863aa6271924f1693db35fafab9b573ac9f2386eed0c2dabe23688fe8"
+      },
+      "processes/flow-T20/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow-T20/process/stdout": {
+        "bytes": 738,
+        "sha256": "b13cd78f3a08ebce4520816c75339ec1bef66684ac39b15ecc446978d1ed943c"
+      },
+      "processes/flow-T40/COST.json": {
+        "bytes": 215,
+        "sha256": "f5e61ab4f72fa2fffa40603588dacddd880bb53ad0d04c9245969a01dd4159aa"
+      },
+      "processes/flow-T40/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "23bd87a691a9ad88b9dd512d209aca10fccf65d34c2d320f0dba95545b434404"
+      },
+      "processes/flow-T40/process/REQUEST.json": {
+        "bytes": 538,
+        "sha256": "4a5adccd6f125f1e5518bfbe1bcd7cdc41b8533774503248a66b3c0cd8c50728"
+      },
+      "processes/flow-T40/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow-T40/process/stdout": {
+        "bytes": 738,
+        "sha256": "1b50caaf23821f76bdb03ba438fc0d56b4132bf7b264ab29e65a65777fd0a413"
+      },
+      "processes/flow-T80/COST.json": {
+        "bytes": 215,
+        "sha256": "e79eef1e064f4b6fb27594cd874bbbde573239f6f77b76ca1f5f52faf200a6e6"
+      },
+      "processes/flow-T80/OBSERVATION.json": {
+        "bytes": 209,
+        "sha256": "fc17227dba192c19e31e02c775b7268a1a5509ba3d13a26e34e75eadbe3420fb"
+      },
+      "processes/flow-T80/process/REQUEST.json": {
+        "bytes": 540,
+        "sha256": "dd365a6e28ddc07a34a707108872fe50c2d348415ca0fbcd993818e623145976"
+      },
+      "processes/flow-T80/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow-T80/process/stdout": {
+        "bytes": 740,
+        "sha256": "332ab542939343da7fe8c28e13a2ed48a75a859333bdcc177ecc30c376c3901a"
+      },
+      "processes/flow_erlang4-T10/COST.json": {
+        "bytes": 226,
+        "sha256": "a601397dc0054d1c60dc8ac7a7546d97b42db76f73c64397e55005ad31a9ea92"
+      },
+      "processes/flow_erlang4-T10/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "b3c4c17eb6cf7a690bb5cf4224904716c5ea26b6b50d4ea185dfa7a80106c934"
+      },
+      "processes/flow_erlang4-T10/process/REQUEST.json": {
+        "bytes": 556,
+        "sha256": "7a396195a064972a6d967cc02e2c8ba6636b69357e33949e3e90a90f96db42d5"
+      },
+      "processes/flow_erlang4-T10/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow_erlang4-T10/process/stdout": {
+        "bytes": 750,
+        "sha256": "baecd12028f3280bff4bfdc9f67258459b3236f63d0dc55cb55ed7a99913f27a"
+      },
+      "processes/flow_erlang4-T20/COST.json": {
+        "bytes": 216,
+        "sha256": "e8d807e077a7aa29e2c3887085c0d8ea2208e687e4bcb7f3ee013c5f6e535dc6"
+      },
+      "processes/flow_erlang4-T20/OBSERVATION.json": {
+        "bytes": 209,
+        "sha256": "7736f4a7eda394f306cb50fb153e06ac51d0cb6778b2221008501fb37edd8c48"
+      },
+      "processes/flow_erlang4-T20/process/REQUEST.json": {
+        "bytes": 556,
+        "sha256": "d2af88db3c4be400c9581edd5e090dbe80d6e68e9802394192eee2294c4291c7"
+      },
+      "processes/flow_erlang4-T20/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow_erlang4-T20/process/stdout": {
+        "bytes": 751,
+        "sha256": "9fb9701244f59150359436e21dc09617a6d4ec4dac36236260130fab728383b6"
+      },
+      "processes/flow_erlang4-T40/COST.json": {
+        "bytes": 215,
+        "sha256": "92fdc36df8c33820c0ea4f98bdcdb8c9823abcfbb947e8076bc512e13a6ae7e2"
+      },
+      "processes/flow_erlang4-T40/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "30207fc4ade647dd242899b4dd56f1c19aed8be7c19154565e9e94e6e4cd4c24"
+      },
+      "processes/flow_erlang4-T40/process/REQUEST.json": {
+        "bytes": 556,
+        "sha256": "c54bd27695c8d5c357f829cee0287c21194e1399909544e662afc3273ac88ce5"
+      },
+      "processes/flow_erlang4-T40/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow_erlang4-T40/process/stdout": {
+        "bytes": 749,
+        "sha256": "eab53139e53417022fa41f4132a839f3bc46414fa683c09d5a31a00c18c123b4"
+      },
+      "processes/flow_erlang4-T80/COST.json": {
+        "bytes": 215,
+        "sha256": "326269431a5b7b1c425acbb4c19593ef6dda7ea5dcf14f49840204bf65650d06"
+      },
+      "processes/flow_erlang4-T80/OBSERVATION.json": {
+        "bytes": 210,
+        "sha256": "bf4f1bab7d16151a8b73ca30eff3804cfd0dcb3d1b2416e276021b8e1e45a62e"
+      },
+      "processes/flow_erlang4-T80/process/REQUEST.json": {
+        "bytes": 554,
+        "sha256": "6a53e82437d7e2d5e1cf3bbaa51f9f5656f27c5c33a78ec5e49834687f4c0631"
+      },
+      "processes/flow_erlang4-T80/process/stderr": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "processes/flow_erlang4-T80/process/stdout": {
+        "bytes": 749,
+        "sha256": "772716239feda65afdebfe5a4429283830ec27df235739b1276a1b96e23ac36f"
+      }
+    },
+    "numerical_calls_before_this_freeze": 0,
+    "model_calls_permitted": 0,
+    "planned_single_execution": "attempt001",
+    "independent_matrix_integrals_permitted": true,
+    "results_gate_scope": "full-state custody, exact bytes and original 2e-9 balance; no approximation-error performance threshold"
+  },
+  "status": "PASS",
+  "status_scope": "artifact completeness, tensor/shape/byte custody and finite-grid balance only; no approximation accuracy gate",
+  "profile_source_commit": "8fe7bc209803659cc3f4780be0940c5183ca6e9b",
+  "protocol_sha256": "9601216e77b3dc5b3b41f77d7df8f124b7ab176692b0a0b66f24773b95eec9e0",
+  "runtime": {
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "torch": "2.8.0+cpu"
+  },
+  "cases": {
+    "flow-T10": {
+      "inventory": [
+        {
+          "path": "/cells/0/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "ab0564107b285bfafe038c902bfea782eed608b76de6bac096adac79c8fe1022"
+        },
+        {
+          "path": "/cells/0/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "4514afabd0650f5fe39d0b1393821e68178c745cd0e0fe139b0009b59926d0ef"
+        },
+        {
+          "path": "/cells/0/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "f80b4821ed675d79bfeb3d139473b9a3a339495ff5c184f6adeb733808fe87a8"
+        },
+        {
+          "path": "/cells/0/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "893cdda8fade454a62d1792836f5d9e8d358ac824f1cc7ffe267d488e52ca581"
+        },
+        {
+          "path": "/cells/0/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "b0b95db11e5da2cefd458cc87348ae371cc7e115c14c16e5281e9a8ddcdfa9b2"
+        },
+        {
+          "path": "/cells/0/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "32f6904666457be21a223ec9d17d9540a64c5cc8fb7b5c951a276a193b5abdbe"
+        },
+        {
+          "path": "/cells/0/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "2a6cc2e7edd4dbcf9439422dfda8375d71109609c266210921065ae51faf75ca"
+        },
+        {
+          "path": "/cells/0/pending/0/alpha",
+          "shape": [
+            9,
+            10
+          ],
+          "coordinates": 90,
+          "bytes": 720,
+          "sha256": "09cbb4a742d0db06da2b5c71fc6fff7d555034feb1e57c6071aafe64dd9d71d0"
+        },
+        {
+          "path": "/cells/0/pending/0/generator",
+          "shape": [
+            10,
+            10
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "a1ebed24174655d181382437cc3eec9604d57afda1d1b1c621d7c467fc10b46c"
+        },
+        {
+          "path": "/cells/0/pending/0/output",
+          "shape": [
+            10
+          ],
+          "coordinates": 10,
+          "bytes": 80,
+          "sha256": "5ff2d79987a6d69db2146b4b13d18c8cda6de4ec3ff15e56a81a7bc49f87f9f9"
+        },
+        {
+          "path": "/cells/0/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/1/alpha",
+          "shape": [
+            9,
+            10
+          ],
+          "coordinates": 90,
+          "bytes": 720,
+          "sha256": "557c24cc4a542c69044b5076991dca30137d96372b09a1b1855e8267204bdf35"
+        },
+        {
+          "path": "/cells/0/pending/1/generator",
+          "shape": [
+            10,
+            10
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "a1ebed24174655d181382437cc3eec9604d57afda1d1b1c621d7c467fc10b46c"
+        },
+        {
+          "path": "/cells/0/pending/1/output",
+          "shape": [
+            10
+          ],
+          "coordinates": 10,
+          "bytes": 80,
+          "sha256": "5ff2d79987a6d69db2146b4b13d18c8cda6de4ec3ff15e56a81a7bc49f87f9f9"
+        },
+        {
+          "path": "/cells/0/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/2/alpha",
+          "shape": [
+            9,
+            15
+          ],
+          "coordinates": 135,
+          "bytes": 1080,
+          "sha256": "9ee47525a0c6162f8728f4d97116bc89d13ccd3edf05730ca1c233e7abdc7a9f"
+        },
+        {
+          "path": "/cells/0/pending/2/generator",
+          "shape": [
+            15,
+            15
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "9996c81d84f339464a455eebab0555258ef7bf31cb9c5c71b9b709a99e2bd750"
+        },
+        {
+          "path": "/cells/0/pending/2/output",
+          "shape": [
+            15
+          ],
+          "coordinates": 15,
+          "bytes": 120,
+          "sha256": "7b3aa7a34e97d6e7edbbe316f34774bf922ae12618105f508faa6f61efab33d2"
+        },
+        {
+          "path": "/cells/0/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/3/alpha",
+          "shape": [
+            9,
+            15
+          ],
+          "coordinates": 135,
+          "bytes": 1080,
+          "sha256": "3ca52085712deccc2f283f51028a5a10b3cee5b0193455759c343daec5ed9d4c"
+        },
+        {
+          "path": "/cells/0/pending/3/generator",
+          "shape": [
+            15,
+            15
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "9996c81d84f339464a455eebab0555258ef7bf31cb9c5c71b9b709a99e2bd750"
+        },
+        {
+          "path": "/cells/0/pending/3/output",
+          "shape": [
+            15
+          ],
+          "coordinates": 15,
+          "bytes": 120,
+          "sha256": "7b3aa7a34e97d6e7edbbe316f34774bf922ae12618105f508faa6f61efab33d2"
+        },
+        {
+          "path": "/cells/0/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "d81b2734e1a1a5ddc5d6ddfb989a474fe35bbf19e5930fa5012d896ad71120f4"
+        },
+        {
+          "path": "/cells/1/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "597f165c2d86c37e8f236aa10cc26ff1baf4aba4fb2c6d5262adba4a6d1dc016"
+        },
+        {
+          "path": "/cells/1/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "6976c8f50a27ce99bc32d0376d70854c9d20c49d43e0da25802dbcc5606b1229"
+        },
+        {
+          "path": "/cells/1/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "f15b8ff90a0f2f5ed6f18c489b9d62208651a30c304c5f39da153241c1a672f5"
+        },
+        {
+          "path": "/cells/1/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "05a2a38bfe7e05f27f49801b332e3278a64d9dbe9f3197bcf8f06d2c04a32d5f"
+        },
+        {
+          "path": "/cells/1/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "719b462372d64794670c71d7f66ca0aea6c72427caa0967b6f2b7e5451b59bbb"
+        },
+        {
+          "path": "/cells/1/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "2a6cc2e7edd4dbcf9439422dfda8375d71109609c266210921065ae51faf75ca"
+        },
+        {
+          "path": "/cells/1/pending/0/alpha",
+          "shape": [
+            9,
+            10
+          ],
+          "coordinates": 90,
+          "bytes": 720,
+          "sha256": "7047f6889a44c42ab35731316667e115fddacc940cf1cf667b6605fb79d87e96"
+        },
+        {
+          "path": "/cells/1/pending/0/generator",
+          "shape": [
+            10,
+            10
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "a1ebed24174655d181382437cc3eec9604d57afda1d1b1c621d7c467fc10b46c"
+        },
+        {
+          "path": "/cells/1/pending/0/output",
+          "shape": [
+            10
+          ],
+          "coordinates": 10,
+          "bytes": 80,
+          "sha256": "5ff2d79987a6d69db2146b4b13d18c8cda6de4ec3ff15e56a81a7bc49f87f9f9"
+        },
+        {
+          "path": "/cells/1/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/1/alpha",
+          "shape": [
+            9,
+            10
+          ],
+          "coordinates": 90,
+          "bytes": 720,
+          "sha256": "082d557dcbf9f414076f4345e7d334d3b459c0b3261fb1a166f5bd12e6bec5ff"
+        },
+        {
+          "path": "/cells/1/pending/1/generator",
+          "shape": [
+            10,
+            10
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "a1ebed24174655d181382437cc3eec9604d57afda1d1b1c621d7c467fc10b46c"
+        },
+        {
+          "path": "/cells/1/pending/1/output",
+          "shape": [
+            10
+          ],
+          "coordinates": 10,
+          "bytes": 80,
+          "sha256": "5ff2d79987a6d69db2146b4b13d18c8cda6de4ec3ff15e56a81a7bc49f87f9f9"
+        },
+        {
+          "path": "/cells/1/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/2/alpha",
+          "shape": [
+            9,
+            15
+          ],
+          "coordinates": 135,
+          "bytes": 1080,
+          "sha256": "f4ccc9e1ed2f18accc8bb50e23d2e92a51b4713b8eedf0beb2c8fa5c59fd85ff"
+        },
+        {
+          "path": "/cells/1/pending/2/generator",
+          "shape": [
+            15,
+            15
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "9996c81d84f339464a455eebab0555258ef7bf31cb9c5c71b9b709a99e2bd750"
+        },
+        {
+          "path": "/cells/1/pending/2/output",
+          "shape": [
+            15
+          ],
+          "coordinates": 15,
+          "bytes": 120,
+          "sha256": "7b3aa7a34e97d6e7edbbe316f34774bf922ae12618105f508faa6f61efab33d2"
+        },
+        {
+          "path": "/cells/1/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/3/alpha",
+          "shape": [
+            9,
+            15
+          ],
+          "coordinates": 135,
+          "bytes": 1080,
+          "sha256": "66d8d292e349757b0f2ab2fbad59bf342a7d94ca6ccb6d792b9084fb7bc96087"
+        },
+        {
+          "path": "/cells/1/pending/3/generator",
+          "shape": [
+            15,
+            15
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "9996c81d84f339464a455eebab0555258ef7bf31cb9c5c71b9b709a99e2bd750"
+        },
+        {
+          "path": "/cells/1/pending/3/output",
+          "shape": [
+            15
+          ],
+          "coordinates": 15,
+          "bytes": 120,
+          "sha256": "7b3aa7a34e97d6e7edbbe316f34774bf922ae12618105f508faa6f61efab33d2"
+        },
+        {
+          "path": "/cells/1/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ca701e30f0daeb0bfbdffb92bcd72bec6e38cc77826326d05258241324363cdf"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "f33fd684580ce04dd9357b4d48e56692f205645b6508478eb0b1a09ccc354c80"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "73f9e4ffe280d4c3d96a49dc0fdbd1a59e65d1d72ea3327a78b207f118b11c4d"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "95f6a9c894072a05957832d377b83cccfd16db06045a252fe2f05dc9c9232a2c"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 52,
+      "tensor_coordinates": 2548,
+      "tensor_bytes": 20384,
+      "balance": [
+        {
+          "active_total": [
+            0.8704869190478396,
+            -0.33155236138692484,
+            -0.3902393849171392,
+            -0.27448154601235863,
+            0.42235943667247944,
+            -0.04896182377138114,
+            -0.07050489404806695,
+            0.11713009084783359,
+            0.24298101135236735
+          ],
+          "upper": [
+            0.013745638751855358,
+            -0.00414510275545698,
+            -0.003669465923014782,
+            -0.004672353823236318,
+            0.004676952459152017,
+            7.634810644045201e-05,
+            -0.0020831805436778397,
+            0.0021377245727580052,
+            0.0019373383275269657
+          ],
+          "waiting_total": [
+            0.11576744220030324,
+            -0.0390393562093064,
+            -0.02856104618316707,
+            -0.04973459757181392,
+            0.04105349318756503,
+            0.003976666215405686,
+            -0.025214184832874076,
+            0.02330481487779763,
+            0.012943155983936049
+          ],
+          "pending_contributions": [
+            [
+              0.029140791322638387,
+              -0.008004907165478335,
+              -0.004114292457204824,
+              -0.011889504270610342,
+              0.007560168890591578,
+              0.0017843065135505097,
+              -0.006843379622643802,
+              0.005718843914719295,
+              0.001086600658342621
+            ],
+            [
+              0.029061709419319823,
+              -0.013030940770583891,
+              -0.00763008372389982,
+              -0.018596456432540032,
+              0.012720462546760852,
+              0.002417265878767559,
+              -0.010330513354609112,
+              0.008863844085401872,
+              0.0026007934914155507
+            ],
+            [
+              0.028893790135665228,
+              -0.006901386216039449,
+              -0.00385783235843357,
+              -0.009955591091995687,
+              0.006684272732355381,
+              0.0013563208445058648,
+              -0.005579809102142244,
+              0.004743315788651394,
+              0.0012146948769795783
+            ],
+            [
+              0.028671151322679812,
+              -0.011102122057204728,
+              -0.01295883764362886,
+              -0.00929304577666786,
+              0.014088589017857225,
+              -0.0015812270214182482,
+              -0.0024604827534789172,
+              0.0039788110890250665,
+              0.0080410669571983
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.3747368203516884,
+            -0.42246989702332133,
+            -0.3288884974074094,
+            0.46808988231919696,
+            -0.04490880944953504,
+            -0.09780225942461886,
+            0.1425726302983894,
+            0.2578615056638306
+          ],
+          "residual": [
+            -1.887379141862766e-15,
+            2.220446049250313e-16,
+            2.7755575615628914e-16,
+            4.996003610813204e-16,
+            -4.996003610813204e-16,
+            3.469446951953614e-17,
+            -1.3877787807814457e-17,
+            -1.942890293094024e-16,
+            -2.220446049250313e-16
+          ],
+          "probability_min_active_upper": 0.013745638751855358
+        },
+        {
+          "active_total": [
+            0.8704869190478396,
+            0.05274019771414612,
+            0.04228992529103749,
+            0.015923222755648322,
+            0.030298342623722666,
+            -0.01579863339669544,
+            0.03214780783433869,
+            0.05213167807272399,
+            0.07803396113307522
+          ],
+          "upper": [
+            0.013745638751855358,
+            0.0006057199337680019,
+            0.0004963286018205623,
+            0.00018117435415868896,
+            0.000318936332998378,
+            -0.00019438946577863167,
+            0.00033567271738486545,
+            0.0006287159057234872,
+            0.0009045674847978662
+          ],
+          "waiting_total": [
+            0.11576744220030324,
+            0.005740302284832058,
+            0.004687504616298634,
+            0.0017161918196638131,
+            0.0030509119220821987,
+            -0.0018390320248326945,
+            0.0032052796268338384,
+            0.005944531190972111,
+            0.008568482985424394
+          ],
+          "pending_contributions": [
+            [
+              0.029140791322638387,
+              0.0010849507949850156,
+              0.0009131273643660019,
+              0.00031745662855708884,
+              0.000492008916423218,
+              -0.00039168075292178426,
+              0.0005017617187330666,
+              0.0012222005334013525,
+              0.0016470575523275513
+            ],
+            [
+              0.029061709419319823,
+              0.001303038919366967,
+              0.001058224966148446,
+              0.00038105190409312803,
+              0.0006709264969054393,
+              -0.00044927504806002694,
+              0.0006807303442438182,
+              0.0014128819870833419,
+              0.00196396711891003
+            ],
+            [
+              0.028893790135665228,
+              0.0015851930201288885,
+              0.0013001562402399558,
+              0.00048414330089676646,
+              0.0008707310101778526,
+              -0.000469294898160469,
+              0.0009435825312138466,
+              0.001564228283890241,
+              0.00234324830583083
+            ],
+            [
+              0.028671151322679812,
+              0.0017671195503511873,
+              0.00141599604554423,
+              0.0005335399861168297,
+              0.0010172454985756887,
+              -0.0005287813256904142,
+              0.001079205032643107,
+              0.001745220386597176,
+              0.002614210008355982
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.059086219932746195,
+            0.04747375850915673,
+            0.017820588929470835,
+            0.03366819087880327,
+            -0.017832054887306784,
+            0.03568876017855742,
+            0.058704925169419636,
+            0.08750701160329755
+          ],
+          "residual": [
+            -1.887379141862766e-15,
+            -1.3877787807814457e-17,
+            -4.163336342344337e-17,
+            -1.0408340855860843e-17,
+            -2.7755575615628914e-17,
+            1.734723475976807e-17,
+            -2.7755575615628914e-17,
+            -5.551115123125783e-17,
+            -6.938893903907228e-17
+          ],
+          "probability_min_active_upper": 0.013745638751855358
+        }
+      ],
+      "balance_max_abs": 1.887379141862766e-15,
+      "new_reference_matrix_integral_actions": 8,
+      "pending_packets": 8,
+      "pending_generator_dimensions": [
+        10,
+        10,
+        15,
+        15,
+        10,
+        10,
+        15,
+        15
+      ],
+      "encoded_law_hashes": [
+        "959da7f87b5b56d043abddd5ffaa55c852de92510a808a8b425078127f7278dc"
+      ],
+      "result": {
+        "arm": "flow",
+        "steps": 10,
+        "horizon": 0.5,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.19493173400405794,
+        "forward_and_conservation_cpu_seconds": 0.19562062099999977,
+        "backward_wall_seconds": 0.04005828699882841,
+        "backward_cpu_seconds": 0.03902782500000024,
+        "logical_state_bytes": 20384,
+        "serialized_state_bytes": 34311,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": null,
+        "autograd_saved_payload_bytes_with_repeats": 721897,
+        "balance_max_abs": 1.887379141862766e-15,
+        "exact_forward_exponentials": 52,
+        "exact_forward_largest_dimension": 17,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 4.380546314998355,
+        "cpu_seconds": 4.283023,
+        "maxrss_kib": 225764,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 737,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 20384,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow_erlang4-T10": {
+      "inventory": [
+        {
+          "path": "/density/0",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "233a7dac051ccba02035fbfa3db2421827749a72467145d2865ea8d7a67d909d"
+        },
+        {
+          "path": "/density/1",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "997d9c617b4f1a8a8a85e3e69ec10da4474dffb78f4a690c6a01d9e09a4c0cc2"
+        },
+        {
+          "path": "/hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "431549a8c7641b4cf0727fb76c85c334c60a43f3cd3dc89c83bdcbb26cbd98f8"
+        },
+        {
+          "path": "/hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "bec993179b38196d07d1db5868859163f0669f8d6368669f7b4417cb2dc5cf43"
+        },
+        {
+          "path": "/discounted_hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "4fda1927d6ca33c1d64fc95695979ef8fe5bcfbb4852a55c04a265435ba477fb"
+        },
+        {
+          "path": "/discounted_hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ea1c7adaae883018d2eae957a35f4d89672692e100bd9de627e6b8d1d56bf4b4"
+        },
+        {
+          "path": "/occupation/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "44636ee1c0f3bbb20d4c00ebade06cb30f849a6c5919d4be33422cc6b93cfa78"
+        },
+        {
+          "path": "/occupation/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ee52dc0dbae4a6317cc603cd7b85990e07190ac5b7253877cb4c50aa52879376"
+        },
+        {
+          "path": "/value/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "7d1d19fde8cd0181f03ea4d20dbfe2c9532cd6da49eab19fe48c0e15c0b07b64"
+        },
+        {
+          "path": "/value/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "5b4688dda931bb17ac7fdb51f82f0c7c3f09790c54a8d2ad8e375d2b497f5659"
+        },
+        {
+          "path": "/discount_factor/0",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "2a6cc2e7edd4dbcf9439422dfda8375d71109609c266210921065ae51faf75ca"
+        },
+        {
+          "path": "/discount_factor/1",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "2a6cc2e7edd4dbcf9439422dfda8375d71109609c266210921065ae51faf75ca"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "e73cc2af1d8e99c60b467912818b0649d6bb9a594e61cc556035ffed66339607"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "3f5b86c7b07ab2ffa11707713bd98a754e4378d240cfe1089bbf3a14d018b6ae"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "8d1868b43d8a52c8c97c04544bf8f7aac315b67f7e1ad506f4621c48415582e4"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "502e220dd86451b80382bd2e366ae41511405f36e7a90d8fa5542d5cb5f67133"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 18,
+      "tensor_coordinates": 288,
+      "tensor_bytes": 2304,
+      "balance": [
+        {
+          "active_total": [
+            0.8705436920879859,
+            -0.33399913449797963,
+            -0.38670390718117575,
+            -0.28266944125928745,
+            0.42229525650910493,
+            -0.04581000983856293,
+            -0.07707907388898345,
+            0.12141073010522542,
+            0.23906531162558042
+          ],
+          "waiting_total": [
+            0.11562896047891821,
+            -0.03598093617496609,
+            -0.03027673176133006,
+            -0.042028748169129666,
+            0.03981427325623227,
+            0.0015038911779537592,
+            -0.019519908242885995,
+            0.01937199022686806,
+            0.015435898478626161
+          ],
+          "upper": [
+            0.013827347433097792,
+            -0.004164752688697272,
+            -0.003682612593835311,
+            -0.004698372208113917,
+            0.004697083998071907,
+            7.899437039840618e-05,
+            -0.0020969795083669667,
+            0.0021500529890728973,
+            0.0019427537045298552
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.37414482336164245,
+            -0.42066325153634077,
+            -0.32939656163653064,
+            0.46680661376340854,
+            -0.04422712429021078,
+            -0.09869596164023621,
+            0.14293277332116622,
+            0.25644396380873613
+          ],
+          "residual": [
+            1.9984014443252818e-15,
+            -4.996003610813204e-16,
+            -3.3306690738754696e-16,
+            -3.885780586188048e-16,
+            5.551115123125783e-16,
+            0.0,
+            -2.0816681711721685e-16,
+            1.6653345369377348e-16,
+            2.7755575615628914e-16
+          ],
+          "probability_min_complete_density": 0.013827347433097792
+        },
+        {
+          "active_total": [
+            0.8705436920879859,
+            0.053707006395509155,
+            0.04308516957173682,
+            0.01620457747398148,
+            0.030762837616913886,
+            -0.016151462006632547,
+            0.03261140450514698,
+            0.0532173029178546,
+            0.07949946738657834
+          ],
+          "waiting_total": [
+            0.11562896047891821,
+            0.005468511589566511,
+            0.004473761906344958,
+            0.0016392251856745545,
+            0.002906989156241107,
+            -0.0017381639290821502,
+            0.0030672071501902437,
+            0.005638060775417322,
+            0.008155213316430208
+          ],
+          "upper": [
+            0.013827347433097792,
+            0.0006137199243334863,
+            0.000502922875694641,
+            0.00018351074717015654,
+            0.00032280242218745206,
+            -0.00019725974024593495,
+            0.0003395682652922792,
+            0.0006376209066356035,
+            0.0009166765043439793
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.05978923790940908,
+            0.04806185435377637,
+            0.018027313406826173,
+            0.03399262919534242,
+            -0.018086885675960614,
+            0.03601817992062947,
+            0.059492984599907456,
+            0.08857135720735246
+          ],
+          "residual": [
+            1.9984014443252818e-15,
+            6.938893903907228e-17,
+            4.163336342344337e-17,
+            1.734723475976807e-17,
+            2.0816681711721685e-17,
+            -1.734723475976807e-17,
+            2.7755575615628914e-17,
+            6.938893903907228e-17,
+            6.938893903907228e-17
+          ],
+          "probability_min_complete_density": 0.013827347433097792
+        }
+      ],
+      "balance_max_abs": 1.9984014443252818e-15,
+      "new_reference_matrix_integral_actions": 0,
+      "pending_packets": 0,
+      "pending_generator_dimensions": [],
+      "encoded_law_hashes": [
+        "5a4d5cc8abc5392e197eb49eb8d5b38ba5ddbd4a2cbf02e514b6d18bf89d407d"
+      ],
+      "result": {
+        "arm": "flow_erlang4",
+        "steps": 10,
+        "horizon": 0.5,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.03872090199729428,
+        "forward_and_conservation_cpu_seconds": 0.039969987999999734,
+        "backward_wall_seconds": 0.011141875002067536,
+        "backward_cpu_seconds": 0.008003683000000095,
+        "logical_state_bytes": 2304,
+        "serialized_state_bytes": 8493,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": 3168,
+        "autograd_saved_payload_bytes_with_repeats": 88537,
+        "balance_max_abs": 1.9984014443252818e-15,
+        "exact_forward_exponentials": null,
+        "exact_forward_largest_dimension": null,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 3.9238451369965333,
+        "cpu_seconds": 3.8560399999999997,
+        "maxrss_kib": 224496,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 750,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 2304,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow-T20": {
+      "inventory": [
+        {
+          "path": "/cells/0/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "7439e76eb05ccab8f3b39be15de32b9af0591f320f22ef04618f24f30b8b744f"
+        },
+        {
+          "path": "/cells/0/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "6feb55c48ead5fd82bc3d01736282acd47501bf8a288f05ed3b8eb990607a0b0"
+        },
+        {
+          "path": "/cells/0/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "6151139d3ab42453fc737d6ea72e75141eeaa735826d5381a13314df163ec3d6"
+        },
+        {
+          "path": "/cells/0/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "05dff29cef71359608e53818de67a1e6dea7071c313d641eded4449048660538"
+        },
+        {
+          "path": "/cells/0/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "1ce0fd280ca2228c2d2456c20f467559cd18285d75a4392f567e8ef536411d62"
+        },
+        {
+          "path": "/cells/0/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "acd73457b5cfc313f66d595aa9ad4bb9a58b1d10a6430976c05c117001e4d28f"
+        },
+        {
+          "path": "/cells/0/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "5ece23dea14c9819cf409704043530275a48850e0b4d5867e1206c23e82dab27"
+        },
+        {
+          "path": "/cells/0/pending/0/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "337b99bea30ca9215ead2256e3adef1b725c61c6ba65398d51e01c96e0bf3dfb"
+        },
+        {
+          "path": "/cells/0/pending/0/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/0/pending/0/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/0/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/1/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "b6ca2799aa0ac76eb78fc6f3db6e75e0f018f65c3d0b1f2a22edba9972892cf9"
+        },
+        {
+          "path": "/cells/0/pending/1/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/0/pending/1/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/0/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/2/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "31b639a987901d460e89de101a8f29ea32dc82330e65a06252df02a6e18a69ab"
+        },
+        {
+          "path": "/cells/0/pending/2/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/0/pending/2/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/0/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/3/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "c08340bccb03e188eb968e3ccbc1ecf6016c17e2970d4d1bb960408e00a0d980"
+        },
+        {
+          "path": "/cells/0/pending/3/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/0/pending/3/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/0/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "d9fb59676e417ff6444b6030fa02d01ac0e82a0128ed5b09651e28108ec555cb"
+        },
+        {
+          "path": "/cells/1/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d46c423ddc41eed1e711e1059144bd3131bf983699f1bff646a04c639cd480ec"
+        },
+        {
+          "path": "/cells/1/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "077ec51a0437095ab46403ee553f2b446f2f3f9b5f4ef409f368282f7e470acb"
+        },
+        {
+          "path": "/cells/1/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "feab93cf48b9c43aa21a1b848d3ef04ba1bf3931071ad24c948ba9afa037fdb6"
+        },
+        {
+          "path": "/cells/1/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "3f09490019fc7359bb13cd0dad84cafdf52be97ffdbeb56dbf3bce037a4adf4f"
+        },
+        {
+          "path": "/cells/1/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "729211655dd8544da77e8f03f2a32f948e0cffdaf8e4b43208b601a809a26f80"
+        },
+        {
+          "path": "/cells/1/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "5ece23dea14c9819cf409704043530275a48850e0b4d5867e1206c23e82dab27"
+        },
+        {
+          "path": "/cells/1/pending/0/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "56e15cfed35430988dc393f472a5620687286c953b8dcfe89a594492a3cc641b"
+        },
+        {
+          "path": "/cells/1/pending/0/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/1/pending/0/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/1/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/1/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "e59f401a9912c4363e55c40a928578e563dda8c6a384c4cca97cd7616e0a4d17"
+        },
+        {
+          "path": "/cells/1/pending/1/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/1/pending/1/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/1/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/2/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "97a32010499010da994e5966a6cb05f6c934a85e54a6c7285ad897c11ff6e83d"
+        },
+        {
+          "path": "/cells/1/pending/2/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/1/pending/2/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/1/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/3/alpha",
+          "shape": [
+            9,
+            25
+          ],
+          "coordinates": 225,
+          "bytes": 1800,
+          "sha256": "ed4e08a55b317604db9837f7891e9a780ecc922a815ca4b213344d79d522bbb5"
+        },
+        {
+          "path": "/cells/1/pending/3/generator",
+          "shape": [
+            25,
+            25
+          ],
+          "coordinates": 625,
+          "bytes": 5000,
+          "sha256": "861ca0b93d9373a2988e8bca3d35efc567fbbae48333f259265555e7ca624748"
+        },
+        {
+          "path": "/cells/1/pending/3/output",
+          "shape": [
+            25
+          ],
+          "coordinates": 25,
+          "bytes": 200,
+          "sha256": "e039543a8e3684f17b7f287f5175079063a6177bcdf0328398337cdd84b181bd"
+        },
+        {
+          "path": "/cells/1/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "9d7da692b3e4cde1b0ce95306652820829d71433abfba7499ba57ea9c70ae814"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "b6761b4df393f41b0f4c1d22cfc27b3a2d205d8e888d04d66ed693d5027cca7d"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "7be939cb8cda3c3e351d2a4c28f04dda2b330711e6d69c41883a226078367233"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "cd0d910f78df2fe6fd1efa291a2b975a02bae88bb308d10c6ec20aa796ec5e45"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 52,
+      "tensor_coordinates": 7248,
+      "tensor_bytes": 57984,
+      "balance": [
+        {
+          "active_total": [
+            0.8433548367727449,
+            -0.040139112903169114,
+            0.2700886692789953,
+            -0.3435896162920136,
+            -0.10640073894655125,
+            0.16717356372950287,
+            -0.3082435972797801,
+            0.1826830446021497,
+            -0.25252444656683665
+          ],
+          "upper": [
+            0.05112646474553781,
+            -0.006420299669529238,
+            0.009447800151138474,
+            -0.021832569438204514,
+            -0.00028757167348595616,
+            0.008289912070413,
+            -0.017317386105793104,
+            0.011261487957876598,
+            -0.010354457093950834
+          ],
+          "waiting_total": [
+            0.10551869848171344,
+            -0.005584363003274354,
+            0.04823939061879922,
+            -0.05824936034727521,
+            -0.020281480864320744,
+            0.02908086601658291,
+            -0.05281312573121123,
+            0.031116559384133685,
+            -0.044530391681838075
+          ],
+          "pending_contributions": [
+            [
+              0.02675974843444696,
+              -0.0009951974560703488,
+              0.015847665918514362,
+              -0.017514199139040003,
+              -0.007258451594044331,
+              0.009134934834016971,
+              -0.0162380477253631,
+              0.009405120155356887,
+              -0.014356030626306963
+            ],
+            [
+              0.026500684681928212,
+              -0.00093716649545223,
+              0.009903309594601813,
+              -0.011555293745081213,
+              -0.004299334888572509,
+              0.005882814471145175,
+              -0.010595234490186733,
+              0.00619603446924814,
+              -0.009095758929356304
+            ],
+            [
+              0.02625011924956203,
+              -0.0023209890668601063,
+              0.014426894356837408,
+              -0.01865500088578988,
+              -0.005639937384617594,
+              0.00900490940229685,
+              -0.016597249357053798,
+              0.00992989356765504,
+              -0.013496906516658748
+            ],
+            [
+              0.026008146115776253,
+              -0.0013310099848916686,
+              0.008061520748845632,
+              -0.010524866577364112,
+              -0.003083756997086311,
+              0.005058207309123912,
+              -0.009382594158607602,
+              0.005585511191873619,
+              -0.007581695609516063
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.05214377557597307,
+            0.3277758600489331,
+            -0.42367154607749424,
+            -0.12696979148435766,
+            0.20454434181649914,
+            -0.3783741091167849,
+            0.22506109194416038,
+            -0.3074092953426256
+          ],
+          "residual": [
+            -3.774758283725532e-15,
+            3.677613769070831e-16,
+            -1.1102230246251565e-16,
+            8.881784197001252e-16,
+            -2.7755575615628914e-16,
+            -3.608224830031759e-16,
+            4.440892098500626e-16,
+            -3.885780586188048e-16,
+            5.551115123125783e-17
+          ],
+          "probability_min_active_upper": 0.05112646474553781
+        },
+        {
+          "active_total": [
+            0.8433548367727449,
+            0.09929530215666697,
+            0.04527968235431309,
+            0.02216107215681686,
+            0.09933112638814302,
+            -0.040821600058097054,
+            0.07943670579354466,
+            0.11125297053912103,
+            0.1527315497669809
+          ],
+          "upper": [
+            0.05112646474553781,
+            0.00438809675732271,
+            0.002920617386919271,
+            0.0011831793275588775,
+            0.003226085963073857,
+            -0.0015429228291265241,
+            0.002943590509651701,
+            0.004631614972859291,
+            0.006606989414019022
+          ],
+          "waiting_total": [
+            0.10551869848171344,
+            0.011514790961764857,
+            0.005894829569069839,
+            0.0027031467348581665,
+            0.010658543150888752,
+            -0.004599570643187365,
+            0.008733383936333501,
+            0.012795263136917236,
+            0.01763481077347433
+          ],
+          "pending_contributions": [
+            [
+              0.02675974843444696,
+              0.002699536030445864,
+              0.0015894184410298728,
+              0.0006784456120105035,
+              0.0022286764462080178,
+              -0.0010281088742731164,
+              0.0019050301471907258,
+              0.002951321000159862,
+              0.004105293311133802
+            ],
+            [
+              0.026500684681928212,
+              0.002825638289261673,
+              0.001490743887995,
+              0.0006736326873358452,
+              0.0025614477090086826,
+              -0.001114236738386188,
+              0.002118810965541643,
+              0.003122070712937996,
+              0.004319127602634012
+            ],
+            [
+              0.02625011924956203,
+              0.0029272282334200208,
+              0.001438587172333677,
+              0.0006722194355325489,
+              0.0027793501365515404,
+              -0.0011922585833766442,
+              0.002247357701738113,
+              0.0032838536304170968,
+              0.004496540989447053
+            ],
+            [
+              0.026008146115776253,
+              0.003062388408637298,
+              0.0013760800677112893,
+              0.0006788489999792687,
+              0.0030890688591205116,
+              -0.0012649664471514166,
+              0.0024621851218630184,
+              0.0034380177934022803,
+              0.004713848870259464
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.11519818987575468,
+            0.05409512931030229,
+            0.026047398219233943,
+            0.11321575550210573,
+            -0.046964093530411,
+            0.09111368023952997,
+            0.12867984864889775,
+            0.1769733499544745
+          ],
+          "residual": [
+            -3.774758283725532e-15,
+            -1.3877787807814457e-16,
+            -9.71445146547012e-17,
+            -3.8163916471489756e-17,
+            -9.71445146547012e-17,
+            4.85722573273506e-17,
+            -9.71445146547012e-17,
+            -1.942890293094024e-16,
+            -2.498001805406602e-16
+          ],
+          "probability_min_active_upper": 0.05112646474553781
+        }
+      ],
+      "balance_max_abs": 3.774758283725532e-15,
+      "new_reference_matrix_integral_actions": 8,
+      "pending_packets": 8,
+      "pending_generator_dimensions": [
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25
+      ],
+      "encoded_law_hashes": [
+        "959da7f87b5b56d043abddd5ffaa55c852de92510a808a8b425078127f7278dc"
+      ],
+      "result": {
+        "arm": "flow",
+        "steps": 20,
+        "horizon": 1.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.2404074229998514,
+        "forward_and_conservation_cpu_seconds": 0.24085407400000003,
+        "backward_wall_seconds": 0.08809632000338752,
+        "backward_cpu_seconds": 0.08693664499999976,
+        "logical_state_bytes": 57984,
+        "serialized_state_bytes": 72455,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": null,
+        "autograd_saved_payload_bytes_with_repeats": 3503177,
+        "balance_max_abs": 3.774758283725532e-15,
+        "exact_forward_exponentials": 112,
+        "exact_forward_largest_dimension": 27,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 4.5505955970002105,
+        "cpu_seconds": 4.419713,
+        "maxrss_kib": 228032,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 738,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 57984,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow_erlang4-T20": {
+      "inventory": [
+        {
+          "path": "/density/0",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "19c14fc7eb4a70c9fe7f0af194d554e37cc459c258773c9a40d7ec7b88a5fd65"
+        },
+        {
+          "path": "/density/1",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "2b55085cf502e396b4f7da8608fa300d13abc2ffcd4eb9f7f80198b17740c6f9"
+        },
+        {
+          "path": "/hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "8283f0cc314ae58f27fe9ea12bb8f3569bb9d8c32ad39a4e239988116db8ecf1"
+        },
+        {
+          "path": "/hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "8e781e215868fc77e81d0d685e7fd732582f5c7e246b1ef01bff91e10ed0351f"
+        },
+        {
+          "path": "/discounted_hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "7bd8d21fd80a4f9659e472e1f2e94e87dfadbdf4c324114ee883e7a46e8f84ad"
+        },
+        {
+          "path": "/discounted_hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "715588063f7dac667c3832d0fd5e690f6bbf848b07027a985f255dee815c4955"
+        },
+        {
+          "path": "/occupation/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ffdafc30f8645afa5fb7049530d4fa80d4e192ee521d386951977d8d735e4be3"
+        },
+        {
+          "path": "/occupation/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ea34278cfaaa17f251eb4e0eddf8b058036980346c36b7825a6acfd9483e1cdc"
+        },
+        {
+          "path": "/value/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "540a9b1b58fc8af76e8075fc1cd294b58d2595bbec6652e5d475e45ab9031f09"
+        },
+        {
+          "path": "/value/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "34980970a17eb9e0243a795cd30dfdb9f09e34f538a09cc92a7c19de65298687"
+        },
+        {
+          "path": "/discount_factor/0",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "5ece23dea14c9819cf409704043530275a48850e0b4d5867e1206c23e82dab27"
+        },
+        {
+          "path": "/discount_factor/1",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "5ece23dea14c9819cf409704043530275a48850e0b4d5867e1206c23e82dab27"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "70e12463e8b92d7f42da90fd2e67b23c091b28754476b85d83d7ab52b218e86f"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "2fa4960c76347066b0225fd3d625653ba73af7be80dfd88462cb87642e62d9e2"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "8061ae503194efefaa3dddd172cd926818c0ae1851f752090e501904bb6128e5"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "73e65664de97bc1fc28bd3e3159e49fcdbf4f3af49a055afbfcf49e740c71eb9"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 18,
+      "tensor_coordinates": 288,
+      "tensor_bytes": 2304,
+      "balance": [
+        {
+          "active_total": [
+            0.8427206868511222,
+            -0.04024620770598448,
+            0.27226007947689124,
+            -0.34598887373225196,
+            -0.10741350833916365,
+            0.16845598510500107,
+            -0.3105086830720766,
+            0.18398587688837179,
+            -0.2545263070674233
+          ],
+          "waiting_total": [
+            0.10593622891709467,
+            -0.004981898604110126,
+            0.04745763267388294,
+            -0.056142474758099664,
+            -0.020278356205152812,
+            0.028300063982223456,
+            -0.05117573873106252,
+            0.030046721394782136,
+            -0.04360549305152037
+          ],
+          "upper": [
+            0.05134308423178691,
+            -0.006426594529849306,
+            0.00954779936767965,
+            -0.021937943069465293,
+            -0.0003319801670786368,
+            0.008346564143359382,
+            -0.017417787905809546,
+            0.011319340562583304,
+            -0.010444641881894014
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.051654700839943224,
+            0.32926551151845374,
+            -0.42406929155981565,
+            -0.12802384471139555,
+            0.20510261323058354,
+            -0.3791022097089478,
+            0.22535193884573662,
+            -0.3085764420008376
+          ],
+          "residual": [
+            3.774758283725532e-15,
+            -6.800116025829084e-16,
+            5.551115123125783e-17,
+            -1.2212453270876722e-15,
+            4.440892098500626e-16,
+            3.3306690738754696e-16,
+            -8.326672684688674e-16,
+            5.828670879282072e-16,
+            -1.1102230246251565e-16
+          ],
+          "probability_min_complete_density": 0.026099982453148287
+        },
+        {
+          "active_total": [
+            0.8427206868511222,
+            0.09998439227701435,
+            0.04510376356222536,
+            0.022196006869651494,
+            0.10058757483614114,
+            -0.041300326188093504,
+            0.0801999744016152,
+            0.1122826359530896,
+            0.15389513501862265
+          ],
+          "waiting_total": [
+            0.10593622891709467,
+            0.011369843489700302,
+            0.006114793032940463,
+            0.0027359610595207996,
+            0.010156258677957393,
+            -0.004454700154830336,
+            0.008448510795261443,
+            0.01253403826519726,
+            0.01736349276483286
+          ],
+          "upper": [
+            0.05134308423178691,
+            0.004440038563776189,
+            0.0029534096242438404,
+            0.0011966360408781048,
+            0.0032654067975378806,
+            -0.0015629312504701928,
+            0.0029776265218847122,
+            0.004689133252437969,
+            0.0066859501056580695
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.11579427433049057,
+            0.0541719662194095,
+            0.026128603970050335,
+            0.11400924031163626,
+            -0.04731795759339397,
+            0.09162611171876119,
+            0.12950580747072454,
+            0.1779445778891132
+          ],
+          "residual": [
+            3.774758283725532e-15,
+            2.636779683484747e-16,
+            1.6653345369377348e-16,
+            6.245004513516506e-17,
+            1.5265566588595902e-16,
+            -6.245004513516506e-17,
+            1.8041124150158794e-16,
+            2.7755575615628914e-16,
+            3.608224830031759e-16
+          ],
+          "probability_min_complete_density": 0.026099982453148287
+        }
+      ],
+      "balance_max_abs": 3.774758283725532e-15,
+      "new_reference_matrix_integral_actions": 0,
+      "pending_packets": 0,
+      "pending_generator_dimensions": [],
+      "encoded_law_hashes": [
+        "5a4d5cc8abc5392e197eb49eb8d5b38ba5ddbd4a2cbf02e514b6d18bf89d407d"
+      ],
+      "result": {
+        "arm": "flow_erlang4",
+        "steps": 20,
+        "horizon": 1.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.042205684003420174,
+        "forward_and_conservation_cpu_seconds": 0.043970476999999786,
+        "backward_wall_seconds": 0.020304755002143793,
+        "backward_cpu_seconds": 0.020000828000000137,
+        "logical_state_bytes": 2304,
+        "serialized_state_bytes": 8493,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": 3168,
+        "autograd_saved_payload_bytes_with_repeats": 163977,
+        "balance_max_abs": 3.774758283725532e-15,
+        "exact_forward_exponentials": null,
+        "exact_forward_largest_dimension": null,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 3.6762879470043117,
+        "cpu_seconds": 3.613201,
+        "maxrss_kib": 225404,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 751,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 2304,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow-T40": {
+      "inventory": [
+        {
+          "path": "/cells/0/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "1556a8b467b6d5d49671d88c0a6fcd4cc4a333d09cbc9f8dccef0643de851964"
+        },
+        {
+          "path": "/cells/0/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "5a08df075eaae2002e9d970e052b781cca455a2a3390b403af647cf7cbd4a7d4"
+        },
+        {
+          "path": "/cells/0/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "869bae72a9fc936162176afc0f1e81cb03fb34f04775a6a5c9638b7c5821d659"
+        },
+        {
+          "path": "/cells/0/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "21e25d597b22f7e78d9b83247e778aacbd70bf55db951ab04051c686f2398dc9"
+        },
+        {
+          "path": "/cells/0/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "bae4555b0f1c25e3704072b1e598947ed18ea08b5b3803918c1f268b4ccfad22"
+        },
+        {
+          "path": "/cells/0/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "17ed887668ea7692c0126582b6d68444c74adde5876ea7caeb5746afb19bf530"
+        },
+        {
+          "path": "/cells/0/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "7c884bb04b304acc8e0817a87b115cb03929b1bef2b641ee1fde4fd5f1370fa4"
+        },
+        {
+          "path": "/cells/0/pending/0/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "b67a03cf3192b503d7c47ce9207ed3d4caad5643d9234f1300ac86e1f3c59226"
+        },
+        {
+          "path": "/cells/0/pending/0/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/0/pending/0/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/0/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/1/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "9f74fe61e238ad1b6c18425d9377a4f8136af8c6a32dfb170e81af73d480efad"
+        },
+        {
+          "path": "/cells/0/pending/1/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/0/pending/1/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/0/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/2/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "276538882ffb512f60087ad90ad486fcfb7a7c978463179efd31b1648fec55c3"
+        },
+        {
+          "path": "/cells/0/pending/2/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/0/pending/2/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/0/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/3/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "626328c340399bda9e4650751897de83919076745527f9ac5a9a677503335bdb"
+        },
+        {
+          "path": "/cells/0/pending/3/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/0/pending/3/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/0/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "3da2a2510430255476cd6208bdbb6eb34b34fff5de5700e543f0f4ebac8a10c9"
+        },
+        {
+          "path": "/cells/1/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "c5d99a8566e5b448211334489c66e78437971a60d527cce6ef4e5c9a3f6f6de3"
+        },
+        {
+          "path": "/cells/1/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ebe14740a9b6014f1642ea70d8aa0b2ee1e7cbdb698e4eec393b89f935a2e670"
+        },
+        {
+          "path": "/cells/1/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "cc2be4368c0b6736cee2d8d5c18dad47585de55750b168568fb0fd70443ff86e"
+        },
+        {
+          "path": "/cells/1/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "c7dd8809dd8f382674b943e46f240ec73ca813281176a00ade68879a328d7697"
+        },
+        {
+          "path": "/cells/1/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "b018ed1f9391cdbf852f37e9277b345eb7844f05f3cc467779b51f891b2dc002"
+        },
+        {
+          "path": "/cells/1/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "7c884bb04b304acc8e0817a87b115cb03929b1bef2b641ee1fde4fd5f1370fa4"
+        },
+        {
+          "path": "/cells/1/pending/0/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "983a3487927f3a1bebdd40e93239db5d129cbdfc0ce91a453d101c4f970ffb97"
+        },
+        {
+          "path": "/cells/1/pending/0/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/1/pending/0/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/1/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/1/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "927a7b425dd0dd005cb632f2d10ed144427fadcb4fb21b4b4124d05f52be888c"
+        },
+        {
+          "path": "/cells/1/pending/1/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/1/pending/1/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/1/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/2/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "932772a5069663c678fb155a0b071e19c75f1ae5ae58a068f1ee59dfa115ad47"
+        },
+        {
+          "path": "/cells/1/pending/2/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/1/pending/2/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/1/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/3/alpha",
+          "shape": [
+            9,
+            50
+          ],
+          "coordinates": 450,
+          "bytes": 3600,
+          "sha256": "b1d49461cf3fb000615a896560a1d2551e39f75567db89c1c14a86391ae8cd0c"
+        },
+        {
+          "path": "/cells/1/pending/3/generator",
+          "shape": [
+            50,
+            50
+          ],
+          "coordinates": 2500,
+          "bytes": 20000,
+          "sha256": "2e49d7dc1a4183aa81224906eaad8cb70cff2bf264feed3c2a6c33a2025d57f1"
+        },
+        {
+          "path": "/cells/1/pending/3/output",
+          "shape": [
+            50
+          ],
+          "coordinates": 50,
+          "bytes": 400,
+          "sha256": "96e92bc71b2e4844b7eebe6b20c0ac5772d4a137ed170d83b8b29c1bf65afa47"
+        },
+        {
+          "path": "/cells/1/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "99f98b6098e3d1b9bf3fc79d076c0d0a0c4425bb28fc3f3aef6559392b671e3e"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "0e414ca678914e51bb89208aa9062917391f278a77660e34ddb6eacb9f8d8e8e"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "6f21fc8eb1093f05c1a03cf1483882556b992e0c5afd721f752334866c781e60"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "420de9e1712b873c6bc8b9a0d041d4b29777c6ddbc14c306647694aa6c81a644"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 52,
+      "tensor_coordinates": 24248,
+      "tensor_bytes": 193984,
+      "balance": [
+        {
+          "active_total": [
+            0.76639582181176,
+            -0.18354627594116782,
+            -0.41724368099699616,
+            0.025241404646961785,
+            0.3302297703898212,
+            -0.14359002636568122,
+            0.15682267579168682,
+            -0.046595302403642916,
+            0.32013830459052434
+          ],
+          "upper": [
+            0.14295118072447724,
+            -0.027815181376960773,
+            -0.007548091844441495,
+            -0.04883456397881869,
+            0.02258459693676769,
+            0.009235852092819494,
+            -0.029349236626838582,
+            0.022996774894985028,
+            -0.001513206591418331
+          ],
+          "waiting_total": [
+            0.0906529974637556,
+            -0.012272486887686129,
+            -0.03818742509068215,
+            0.01092163496999073,
+            0.027127719282357316,
+            -0.01547965536137589,
+            0.020440772011206167,
+            -0.008809786838705752,
+            0.030763949206830198
+          ],
+          "pending_contributions": [
+            [
+              0.022880036350973434,
+              -0.0005286917510633577,
+              -0.006617742068212391,
+              0.004923114859079263,
+              0.0036067311988447256,
+              -0.003512243092685316,
+              0.0056956463164735995,
+              -0.0031347694696474003,
+              0.005852145813114519
+            ],
+            [
+              0.022733844378301223,
+              -0.0008473053382292231,
+              -0.0061003065899774295,
+              0.0037772660331603265,
+              0.0035656154904210296,
+              -0.003074289058657139,
+              0.004784922665697806,
+              -0.0025476762086244394,
+              0.005296398049587975
+            ],
+            [
+              0.022590195290113704,
+              -0.005426833636834928,
+              -0.013206208522443582,
+              0.0016171568211800652,
+              0.010197835024811764,
+              -0.00471264517912204,
+              0.005452526180478818,
+              -0.0018340128199224796,
+              0.010231360052618252
+            ],
+            [
+              0.022448921444367245,
+              -0.0054696561615586205,
+              -0.012263167910048752,
+              0.000604097256571076,
+              0.009757537568279798,
+              -0.0041804780309113955,
+              0.004507676848555944,
+              -0.001293328340511433,
+              0.009384045291509454
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.22363394420581564,
+            -0.46297919793212006,
+            -0.012671524361868185,
+            0.3799420866089474,
+            -0.1498338296342372,
+            0.14791421117605358,
+            -0.032408314347362854,
+            0.3493890472059364
+          ],
+          "residual": [
+            -7.105427357601002e-15,
+            9.43689570931383e-16,
+            2.220446049250313e-16,
+            2.0088097851811426e-15,
+            -1.2212453270876722e-15,
+            -4.163336342344337e-16,
+            8.326672684688674e-16,
+            -7.840950111415168e-16,
+            -2.220446049250313e-16
+          ],
+          "probability_min_active_upper": 0.06859208584515442
+        },
+        {
+          "active_total": [
+            0.76639582181176,
+            0.17369609886679432,
+            0.09569110367211243,
+            0.042212053367453185,
+            0.15393176457064014,
+            -0.06523111092701396,
+            0.12993937139092862,
+            0.18728764439119236,
+            0.26389452148114145
+          ],
+          "upper": [
+            0.14295118072447724,
+            0.02154136756388316,
+            0.010953796114864878,
+            0.005102702406703757,
+            0.020334249105164015,
+            -0.008286851440093675,
+            0.016905443720089376,
+            0.02330696558379331,
+            0.03281632580666329
+          ],
+          "waiting_total": [
+            0.0906529974637556,
+            0.019958604207627417,
+            0.010669635757453833,
+            0.0048180234328361144,
+            0.018228486714155955,
+            -0.007457062588004223,
+            0.015369989960505634,
+            0.021342791332827547,
+            0.03029406249959814
+          ],
+          "pending_contributions": [
+            [
+              0.022880036350973434,
+              0.004946332343900389,
+              0.0025934241986922592,
+              0.001197927254341968,
+              0.004633877233079581,
+              -0.0018092004738638698,
+              0.003934543814432301,
+              0.005193445659234406,
+              0.007483337341564685
+            ],
+            [
+              0.022733844378301223,
+              0.00496514653379346,
+              0.0026264076595349122,
+              0.0011958417210353482,
+              0.004580965067852619,
+              -0.0018519496046598256,
+              0.003861130128688538,
+              0.005294505839103818,
+              0.007533919378747677
+            ],
+            [
+              0.022590195290113704,
+              0.004991004729318072,
+              0.0026602873218039523,
+              0.0011961964301234443,
+              0.0045436783435919845,
+              -0.0018923181741835114,
+              0.0038046225713746495,
+              0.005392071744557912,
+              0.007592160299829162
+            ],
+            [
+              0.022448921444367245,
+              0.005056120600615495,
+              0.0027895165774227083,
+              0.0012280580273353538,
+              0.004469966069631772,
+              -0.0019035943352970163,
+              0.0037696934460101457,
+              0.005462768089931412,
+              0.007684645479456618
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.21519607063830565,
+            0.11731453554443147,
+            0.052132779206993246,
+            0.19249450038996077,
+            -0.08097502495511213,
+            0.16221480507152414,
+            0.23193740130781437,
+            0.32700490978740393
+          ],
+          "residual": [
+            -7.105427357601002e-15,
+            -7.494005416219807e-16,
+            -3.191891195797325e-16,
+            -1.942890293094024e-16,
+            -6.661338147750939e-16,
+            2.636779683484747e-16,
+            -4.996003610813204e-16,
+            -1.1657341758564144e-15,
+            -1.0547118733938987e-15
+          ],
+          "probability_min_active_upper": 0.06859208584515442
+        }
+      ],
+      "balance_max_abs": 7.105427357601002e-15,
+      "new_reference_matrix_integral_actions": 8,
+      "pending_packets": 8,
+      "pending_generator_dimensions": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50
+      ],
+      "encoded_law_hashes": [
+        "959da7f87b5b56d043abddd5ffaa55c852de92510a808a8b425078127f7278dc"
+      ],
+      "result": {
+        "arm": "flow",
+        "steps": 40,
+        "horizon": 2.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.7911413729962078,
+        "forward_and_conservation_cpu_seconds": 0.7635666409999997,
+        "backward_wall_seconds": 0.3018286119986442,
+        "backward_cpu_seconds": 0.3003475790000003,
+        "logical_state_bytes": 193984,
+        "serialized_state_bytes": 208135,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": null,
+        "autograd_saved_payload_bytes_with_repeats": 21145097,
+        "balance_max_abs": 7.105427357601002e-15,
+        "exact_forward_exponentials": 232,
+        "exact_forward_largest_dimension": 52,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 8.444598668000253,
+        "cpu_seconds": 8.090767,
+        "maxrss_kib": 235824,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 738,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 193984,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow_erlang4-T40": {
+      "inventory": [
+        {
+          "path": "/density/0",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "f4d745802d47f4983e15da6373a6153dce5d07b53d122c8b8c95b447ec015a2c"
+        },
+        {
+          "path": "/density/1",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "d58b6da9459f010e713b3767ecf3c5f99b1615e6b510066c85de9ee76c3a745e"
+        },
+        {
+          "path": "/hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "c7f74a252a551eefcae3bd5cfeaaa8ab873f9905312c806824c5f6b584186658"
+        },
+        {
+          "path": "/hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "11cc74cab82dd28f3d5545dbea67c2271a6d0e1c58564977db482a0d7c6fcc1e"
+        },
+        {
+          "path": "/discounted_hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "67d918326bf1217c37ed9d032c9f6ae9dd6ff156e00a5c34f379f810a369fa14"
+        },
+        {
+          "path": "/discounted_hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "291cae52e1cfa18d880921b9bfe2f6ce8c406782d8acc02661b633ffc372cc02"
+        },
+        {
+          "path": "/occupation/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "bd1b20b50c2d737623dcf0c031e6a7caed09acb8d0cadf47c29aa045125ce412"
+        },
+        {
+          "path": "/occupation/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "783609fb50ec1a97af7894395ccb98bc82c545e426518442ffa4cebba7b9e743"
+        },
+        {
+          "path": "/value/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "5eb2a8b846bf9e6a2bba92a28d4c7bfc139ff45b2147ac58db0adce995e3838d"
+        },
+        {
+          "path": "/value/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d1652bde7adc0c5504c47b83bf6fb9d81bee57771008c708294398e16069203c"
+        },
+        {
+          "path": "/discount_factor/0",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "7c884bb04b304acc8e0817a87b115cb03929b1bef2b641ee1fde4fd5f1370fa4"
+        },
+        {
+          "path": "/discount_factor/1",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "7c884bb04b304acc8e0817a87b115cb03929b1bef2b641ee1fde4fd5f1370fa4"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "5db7ab2cb87fa1463d0f88e6c19ed9c08f1efa08349dc43413b7b5a273b224b9"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ad558f18a1659514a61a03dc03b121dfec285305400b0c8d83a2a208ecb6b1f4"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "8d8347527224b0e52b6cbe0128e6ec074974f7ca0abc55063cd11d4ce02823ac"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "68d8b5ad2a7e134e57a1c0236985572462a227b57e6030455e66bda505524eea"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 18,
+      "tensor_coordinates": 288,
+      "tensor_bytes": 2304,
+      "balance": [
+        {
+          "active_total": [
+            0.7659295294273262,
+            -0.18215062034107485,
+            -0.41694356440246,
+            0.027851530952704456,
+            0.3291491207255438,
+            -0.14411496479424177,
+            0.1584070998977638,
+            -0.04781306184483238,
+            0.3202978758937637
+          ],
+          "waiting_total": [
+            0.09088890760886276,
+            -0.013091964387787322,
+            -0.036753824828701764,
+            0.007850699733638734,
+            0.026973631382535362,
+            -0.014298550372652756,
+            0.01800302525863252,
+            -0.007249876964967162,
+            0.029240558140465566
+          ],
+          "upper": [
+            0.14318156296381826,
+            -0.027773314087537675,
+            -0.0072497346546569474,
+            -0.0490314777862494,
+            0.022409827802551092,
+            0.00937519490494812,
+            -0.029569712779249295,
+            0.023110698452411725,
+            -0.0017633899150581419
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.22301589881639822,
+            -0.4609471238858182,
+            -0.01332924709990363,
+            0.378532579910629,
+            -0.1490383202619468,
+            0.14684041237714857,
+            -0.03195224035738875,
+            0.34777504411917093
+          ],
+          "residual": [
+            7.105427357601002e-15,
+            -1.609823385706477e-15,
+            -4.440892098500626e-16,
+            -2.581268532253489e-15,
+            1.27675647831893e-15,
+            3.885780586188048e-16,
+            -1.5543122344752192e-15,
+            9.298117831235686e-16,
+            2.220446049250313e-16
+          ],
+          "probability_min_complete_density": 0.022504550769190213
+        },
+        {
+          "active_total": [
+            0.7659295294273262,
+            0.17397332895956627,
+            0.09567779144635521,
+            0.042206812332639385,
+            0.15424333859164358,
+            -0.06553408939067233,
+            0.12999250636115645,
+            0.1879358055411592,
+            0.2644216718742041
+          ],
+          "waiting_total": [
+            0.09088890760886276,
+            0.01992283832388376,
+            0.010590588266784945,
+            0.004813727747019079,
+            0.01832763592895445,
+            -0.007403942756456627,
+            0.015481563100103447,
+            0.021201592250958433,
+            0.030213042877500762
+          ],
+          "upper": [
+            0.14318156296381826,
+            0.021674031729989322,
+            0.010998962123731571,
+            0.005128696179632412,
+            0.020482996875753265,
+            -0.008349496002317172,
+            0.017015454777049126,
+            0.02346608004929973,
+            0.033023666747993174
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.2155701990134385,
+            0.11726734183687126,
+            0.05214923625929069,
+            0.19305397139635058,
+            -0.08128752814944584,
+            0.1624895242383083,
+            0.23260347784141652,
+            0.3276583814996968
+          ],
+          "residual": [
+            7.105427357601002e-15,
+            8.604228440844963e-16,
+            4.579669976578771e-16,
+            1.8041124150158794e-16,
+            6.938893903907228e-16,
+            -2.7755575615628914e-16,
+            7.216449660063518e-16,
+            8.604228440844963e-16,
+            1.27675647831893e-15
+          ],
+          "probability_min_complete_density": 0.022504550769190213
+        }
+      ],
+      "balance_max_abs": 7.105427357601002e-15,
+      "new_reference_matrix_integral_actions": 0,
+      "pending_packets": 0,
+      "pending_generator_dimensions": [],
+      "encoded_law_hashes": [
+        "5a4d5cc8abc5392e197eb49eb8d5b38ba5ddbd4a2cbf02e514b6d18bf89d407d"
+      ],
+      "result": {
+        "arm": "flow_erlang4",
+        "steps": 40,
+        "horizon": 2.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.07170699199923547,
+        "forward_and_conservation_cpu_seconds": 0.07339188399999985,
+        "backward_wall_seconds": 0.028745078001520596,
+        "backward_cpu_seconds": 0.026774146000000165,
+        "logical_state_bytes": 2304,
+        "serialized_state_bytes": 8493,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": 3168,
+        "autograd_saved_payload_bytes_with_repeats": 314857,
+        "balance_max_abs": 7.105427357601002e-15,
+        "exact_forward_exponentials": null,
+        "exact_forward_largest_dimension": null,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 3.7809740509983385,
+        "cpu_seconds": 3.72998,
+        "maxrss_kib": 227176,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 749,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 2304,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow-T80": {
+      "inventory": [
+        {
+          "path": "/cells/0/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "d993e5bded4436b27498cced1c3ee07485c9d5fdfc0f03b1282ef466bdecef0a"
+        },
+        {
+          "path": "/cells/0/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "5e1253d3288d5d801ab01da055ef37aba5d1430a8aa3ca5a3e5d9df2d514ee6c"
+        },
+        {
+          "path": "/cells/0/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d8b3a86d98e69cb3ccb02ba25144eedd83303c1ed0f4bcf0f37be442d2f016d2"
+        },
+        {
+          "path": "/cells/0/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "dd5d50a3cd582da0ae6e470ecb24778221284a53953cf60bb4ae52c181a5a498"
+        },
+        {
+          "path": "/cells/0/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "770933a93959f2f0c6cd5b61f6ec56a17f5193d268fab9316d5244a62b129ee5"
+        },
+        {
+          "path": "/cells/0/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "3a552ac6a348ece83840ff942fdf7601f668f75290bf369c50dc1cbbdfa07e27"
+        },
+        {
+          "path": "/cells/0/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "030ac3d8c610d1bf31eb49f30294e61e867d04e6f5c18f2257bcab6d8bf3abcd"
+        },
+        {
+          "path": "/cells/0/pending/0/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "446916be8bcc564724a970d3073da06d61c4abe80f588ef806bf7cca052f5427"
+        },
+        {
+          "path": "/cells/0/pending/0/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/0/pending/0/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/0/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/1/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "7969808a0a522d10196e84d4f82378a16f38c4cf67d2f8ceb28602c8f012afc4"
+        },
+        {
+          "path": "/cells/0/pending/1/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/0/pending/1/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/0/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/2/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "e03f3ef3fa13f60fb9c3c7ec619f24279926a5d992107f9b5dcb759d62c5c149"
+        },
+        {
+          "path": "/cells/0/pending/2/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/0/pending/2/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/0/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/0/pending/3/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "38a8212a46b79a346f0ddc4802da069b16f0e4c8c19ca1efe86824c3716ecd1a"
+        },
+        {
+          "path": "/cells/0/pending/3/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/0/pending/3/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/0/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/active",
+          "shape": [
+            9,
+            4
+          ],
+          "coordinates": 36,
+          "bytes": 288,
+          "sha256": "708404d66721069e8081152ca2a117582d2f025801dbf1cc71189118785d2f21"
+        },
+        {
+          "path": "/cells/1/upper",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "67dbb54644c1d4894f0bc15a0cc329219c0aca6d6026217e7b59b1f383a63a17"
+        },
+        {
+          "path": "/cells/1/hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "542118633ac07c97fc6a6d2bce3371bc73cf833e0d2d3cea98e3dedbe7997539"
+        },
+        {
+          "path": "/cells/1/discounted_hits",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "6cf29e954266af278b023cd6f45272bbdb8a0b1751c53483fa4ea1816a28cb72"
+        },
+        {
+          "path": "/cells/1/occupation",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "82016689a581cb89d3b68d398819cc36d51e3305d9e9c1abbb66c30450a96d83"
+        },
+        {
+          "path": "/cells/1/value",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "a668b6e861326040bffd72e61c883a6f7bac20394cc0588d2a05736f4d00b763"
+        },
+        {
+          "path": "/cells/1/discount_factor",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "030ac3d8c610d1bf31eb49f30294e61e867d04e6f5c18f2257bcab6d8bf3abcd"
+        },
+        {
+          "path": "/cells/1/pending/0/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "a737a13075c0ac7e950f8d238466e255e553dbb20b738554dfd6574116fd6cc7"
+        },
+        {
+          "path": "/cells/1/pending/0/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/1/pending/0/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/1/pending/0/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/1/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "751d6ea09729b3ac2641245ed82e327b78017da1d603e987571a925512a27309"
+        },
+        {
+          "path": "/cells/1/pending/1/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/1/pending/1/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/1/pending/1/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/2/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "e8a7d0e21183e75d186fb26b933749b8c39c4523cc409558e3dae33418dd04b5"
+        },
+        {
+          "path": "/cells/1/pending/2/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/1/pending/2/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/1/pending/2/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/cells/1/pending/3/alpha",
+          "shape": [
+            9,
+            100
+          ],
+          "coordinates": 900,
+          "bytes": 7200,
+          "sha256": "bd7e6e9651c23d55d6c8bf5a9dd7e17afbd3d6805e86560607b9d03f2004f8b7"
+        },
+        {
+          "path": "/cells/1/pending/3/generator",
+          "shape": [
+            100,
+            100
+          ],
+          "coordinates": 10000,
+          "bytes": 80000,
+          "sha256": "6ccf3add143d94fce4ed2ab177ab32379c06e22fdf4c87c2e852cf3e033ac615"
+        },
+        {
+          "path": "/cells/1/pending/3/output",
+          "shape": [
+            100
+          ],
+          "coordinates": 100,
+          "bytes": 800,
+          "sha256": "aa2f0e17ca2a6fc9b39fca925638a0e0f83e26f48637c5673ec6758ed3786c9e"
+        },
+        {
+          "path": "/cells/1/pending/3/reset",
+          "shape": [
+            4
+          ],
+          "coordinates": 4,
+          "bytes": 32,
+          "sha256": "8e4b2d28fa29b52ab2f978f9ebccfdf2d677aa3f47d5a20b43efe962276ee848"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "324e02d2bec0f330b145beb5031f1c69fd166bf1cb0d0c50273b7f7ab4b8ae8d"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "28df76718abcf6db0d401398f80a156314489954588282851e7c5f8bad1fefa1"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "8edd332a5b2b652925cea26d7281c43f7fb9315e407d23fc47ec2b08dbc258aa"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "443eba7802f5425811d3b1acae1dce528a9182311a968fcb1cf5cedd8fc3e3e5"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 52,
+      "tensor_coordinates": 88248,
+      "tensor_bytes": 705984,
+      "balance": [
+        {
+          "active_total": [
+            0.6154858996204967,
+            -0.4708449527105479,
+            -0.9291436979887506,
+            -0.0697357156630163,
+            0.7785776737616874,
+            -0.2725832452466849,
+            0.24150477051490032,
+            -0.02702742067131849,
+            0.6788576381324014
+          ],
+          "upper": [
+            0.3125577889853166,
+            -0.1211983667507191,
+            -0.2428467522352668,
+            -0.011866962940682365,
+            0.20281365774531473,
+            -0.07354018898935555,
+            0.06813737622889583,
+            -0.010531444406092666,
+            0.17899965995729264
+          ],
+          "waiting_total": [
+            0.07195631139417469,
+            -0.05362730887144183,
+            -0.10744216795576948,
+            -0.006222112049810734,
+            0.08952677482540547,
+            -0.03206839888154324,
+            0.029217073508792366,
+            -0.004078026080902789,
+            0.07886449665085163
+          ],
+          "pending_contributions": [
+            [
+              0.018139979869984307,
+              -0.013303229002993439,
+              -0.030477867840016715,
+              0.00228263419459474,
+              0.024148553385103404,
+              -0.01007485031749732,
+              0.010900135824292145,
+              -0.003085922098687058,
+              0.0229754247147473
+            ],
+            [
+              0.018038979648026088,
+              -0.014168883026205984,
+              -0.02859405742688621,
+              -0.0012800408862973529,
+              0.02379681122884694,
+              -0.008631422438250503,
+              0.007997049765958063,
+              -0.0012459805291568087,
+              0.021048249600987858
+            ],
+            [
+              0.01793857947373361,
+              -0.012680449980981815,
+              -0.02175009025203795,
+              -0.005247616936670976,
+              0.019287377637606108,
+              -0.0055452950784175715,
+              0.0033811723579617757,
+              0.0010423459432087083,
+              0.015386396505162405
+            ],
+            [
+              0.017838772402430682,
+              -0.013474746861260595,
+              -0.026620152436828606,
+              -0.0019770884214371444,
+              0.022294032573849015,
+              -0.007816831047377848,
+              0.006938715560580384,
+              -0.000788469396267631,
+              0.019454425829954058
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.6456706283327132,
+            -1.2794326181797948,
+            -0.0878247906535103,
+            1.0709181063324147,
+            -0.37819183311758586,
+            0.33885922025259013,
+            -0.041636891158313954,
+            0.9367217947405507
+          ],
+          "residual": [
+            -1.199040866595169e-14,
+            4.3298697960381105e-15,
+            7.771561172376096e-15,
+            9.020562075079397e-16,
+            -7.105427357601002e-15,
+            2.1649348980190553e-15,
+            -1.609823385706477e-15,
+            6.938893903907228e-18,
+            -5.10702591327572e-15
+          ],
+          "probability_min_active_upper": 0.05667903212460771
+        },
+        {
+          "active_total": [
+            0.6154858996204967,
+            0.26174750733226937,
+            0.36024478346794897,
+            0.10909929395331351,
+            -0.04308419652674313,
+            -0.03786826004719213,
+            0.0568722072030374,
+            0.22043753076097394,
+            0.3658632238440064
+          ],
+          "upper": [
+            0.3125577889853166,
+            0.07600815464989877,
+            0.07024557942504633,
+            0.024116508740370742,
+            0.029725147810541586,
+            -0.022236326611873615,
+            0.035959481444502304,
+            0.07707738798190987,
+            0.11219900729400252
+          ],
+          "waiting_total": [
+            0.07195631139417469,
+            0.029836053939348232,
+            0.04059382550120621,
+            0.012309521051527885,
+            -0.004435889547904078,
+            -0.004580540496271268,
+            0.006565069593610841,
+            0.025523117373000684,
+            0.04184312728436893
+          ],
+          "pending_contributions": [
+            [
+              0.018139979869984307,
+              0.007358951412333596,
+              0.009875706156527348,
+              0.0030013768058623973,
+              -0.0009449664130851535,
+              -0.001194763599853035,
+              0.0016623449369306499,
+              0.006387883392650085,
+              0.010355241779272942
+            ],
+            [
+              0.018038979648026088,
+              0.007419266149217977,
+              0.010066979349748767,
+              0.003052146243713181,
+              -0.0010816903545322572,
+              -0.0011611893032907137,
+              0.001626182967418112,
+              0.006383351110143214,
+              0.010416922396719402
+            ],
+            [
+              0.01793857947373361,
+              0.007492510227995002,
+              0.01025547969295006,
+              0.003106170818517693,
+              -0.0011850279059872374,
+              -0.0011255196719996247,
+              0.00162202954901637,
+              0.006375881080974948,
+              0.010493911163009746
+            ],
+            [
+              0.017838772402430682,
+              0.007565326149801657,
+              0.010395660301980034,
+              0.0031498271834346134,
+              -0.00122420487429943,
+              -0.0010990679211278951,
+              0.0016545121402457088,
+              0.006376001789232437,
+              0.010577051945366837
+            ]
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.3675917159215189,
+            0.47108418839420363,
+            0.14552532374521296,
+            -0.01779493826410452,
+            -0.0646851271553378,
+            0.09939675824115189,
+            0.3230380361158873,
+            0.5199053584223822
+          ],
+          "residual": [
+            -1.199040866595169e-14,
+            -2.55351295663786e-15,
+            -2.1094237467877974e-15,
+            -8.326672684688674e-16,
+            -1.106753577673203e-15,
+            7.771561172376096e-16,
+            -1.3461454173580023e-15,
+            -2.7755575615628914e-15,
+            -4.3298697960381105e-15
+          ],
+          "probability_min_active_upper": 0.05667903212460771
+        }
+      ],
+      "balance_max_abs": 1.199040866595169e-14,
+      "new_reference_matrix_integral_actions": 8,
+      "pending_packets": 8,
+      "pending_generator_dimensions": [
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100,
+        100
+      ],
+      "encoded_law_hashes": [
+        "959da7f87b5b56d043abddd5ffaa55c852de92510a808a8b425078127f7278dc"
+      ],
+      "result": {
+        "arm": "flow",
+        "steps": 80,
+        "horizon": 4.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 1.4212150319945067,
+        "forward_and_conservation_cpu_seconds": 1.4245750849999999,
+        "backward_wall_seconds": 1.4289208199988934,
+        "backward_cpu_seconds": 1.4100672520000002,
+        "logical_state_bytes": 705984,
+        "serialized_state_bytes": 720071,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": null,
+        "autograd_saved_payload_bytes_with_repeats": 145236937,
+        "balance_max_abs": 1.199040866595169e-14,
+        "exact_forward_exponentials": 472,
+        "exact_forward_largest_dimension": 102,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 7.031876469998679,
+        "cpu_seconds": 6.938344,
+        "maxrss_kib": 277448,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 740,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 705984,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    },
+    "flow_erlang4-T80": {
+      "inventory": [
+        {
+          "path": "/density/0",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "1c1ab4ed0ee5b0ef475a148c58a6cf7125a04dc0aa1f0f7abdb8c81b6c339d27"
+        },
+        {
+          "path": "/density/1",
+          "shape": [
+            9,
+            9
+          ],
+          "coordinates": 81,
+          "bytes": 648,
+          "sha256": "db9d02af135ddb5a672836ffa84ba5dde82367a342753a41762c2c6d8ab955d6"
+        },
+        {
+          "path": "/hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d8e06b2c6f46fec1c0874f0d187a64d21c91a36dd199cf4a6fa0c4eb6549b1a8"
+        },
+        {
+          "path": "/hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "0e426e299dbe15a9db49dde4fe6782ff1b4f8e1b6998c1ba956dc7bc912617dc"
+        },
+        {
+          "path": "/discounted_hits/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "57925baf2dd5f3806396e0ee2aa24966559680acf550b4f73ca30fb81ffd9359"
+        },
+        {
+          "path": "/discounted_hits/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "8a32acaecfb461e949e360eadf7f58b3411d31e488f54c42dd621e3648ceb643"
+        },
+        {
+          "path": "/occupation/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "ce85c3a033330ab61ad86e51b2db95b1a610f542193050d638ada682fd395038"
+        },
+        {
+          "path": "/occupation/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d58c5299f79a31fc00e4d88dd5c71d37ade842057d6c4385a67c2f2ae7881837"
+        },
+        {
+          "path": "/value/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "204053c564cd2f23752577c6c3f5a002605978ae5acf63b691704cdbe46ce3fe"
+        },
+        {
+          "path": "/value/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "fe9e50c70bc0e2ecb827229c95e931f397b4acb5283fee4c3dd5b010d18a36a8"
+        },
+        {
+          "path": "/discount_factor/0",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "030ac3d8c610d1bf31eb49f30294e61e867d04e6f5c18f2257bcab6d8bf3abcd"
+        },
+        {
+          "path": "/discount_factor/1",
+          "shape": [],
+          "coordinates": 1,
+          "bytes": 8,
+          "sha256": "030ac3d8c610d1bf31eb49f30294e61e867d04e6f5c18f2257bcab6d8bf3abcd"
+        },
+        {
+          "path": "/messages/0",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "c127c0d700dd4cce7b333a1eb6203f6bf32fa5cd12afe0a9dcc933c764da3f88"
+        },
+        {
+          "path": "/messages/1",
+          "shape": [
+            1,
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "6a4f3c91ca94ab73d27d1ddd968c36a00ba34dc90bae00af505eb9b4a9b0eaba"
+        },
+        {
+          "path": "/written/0",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "098a6d5ebb4f41e807566663c3792b2623fcac0032cd60e653b5a60081a9caae"
+        },
+        {
+          "path": "/written/1",
+          "shape": [
+            1,
+            8
+          ],
+          "coordinates": 8,
+          "bytes": 64,
+          "sha256": "13d86abf5ee36f8ed627d50771991e463b85c0e067cc5a91896a2a416eadb8fe"
+        },
+        {
+          "path": "/initial_totals/0",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        },
+        {
+          "path": "/initial_totals/1",
+          "shape": [
+            9
+          ],
+          "coordinates": 9,
+          "bytes": 72,
+          "sha256": "d12aeae94aacf42beb35a5fb53626edf372564db271e49281a888dcee1148561"
+        }
+      ],
+      "tensor_count": 18,
+      "tensor_coordinates": 288,
+      "tensor_bytes": 2304,
+      "balance": [
+        {
+          "active_total": [
+            0.6151777424974993,
+            -0.4687189052978313,
+            -0.9253267721925215,
+            -0.06912431549730412,
+            0.7752364390433669,
+            -0.27158067715540746,
+            0.24079155776176128,
+            -0.027120440454773576,
+            0.6761518651761089
+          ],
+          "waiting_total": [
+            0.07212415985796154,
+            -0.05502402021653958,
+            -0.10922172800640073,
+            -0.0072800661055157255,
+            0.09137543879159689,
+            -0.032327963718348285,
+            0.029001002055422928,
+            -0.0036344184559600223,
+            0.07998831242027984
+          ],
+          "upper": [
+            0.31269809764455286,
+            -0.12107411582578988,
+            -0.24237246930348802,
+            -0.012060125471863267,
+            0.20249896896493674,
+            -0.07334709700287616,
+            0.0678635023427668,
+            -0.010407908401632474,
+            0.17861860193168363
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            -0.6448170413401564,
+            -1.276920969502401,
+            -0.0884645070746817,
+            1.0691108467998935,
+            -0.37725573787662936,
+            0.3376560621599494,
+            -0.04116276731236579,
+            0.9347587795280662
+          ],
+          "residual": [
+            1.3766765505351941e-14,
+            -4.3298697960381105e-15,
+            -9.325873406851315e-15,
+            -1.3877787807814457e-15,
+            7.105427357601002e-15,
+            -2.55351295663786e-15,
+            1.5543122344752192e-15,
+            -2.7755575615628914e-16,
+            6.217248937900877e-15
+          ],
+          "probability_min_complete_density": 0.017879954811027
+        },
+        {
+          "active_total": [
+            0.6151777424974993,
+            0.2619915320628663,
+            0.3602421747385222,
+            0.10914138320067847,
+            -0.04267080169258988,
+            -0.03797671792196696,
+            0.05718678784523941,
+            0.2206738539874019,
+            0.36622741793980773
+          ],
+          "waiting_total": [
+            0.07212415985796154,
+            0.02969650171363907,
+            0.0401406795478164,
+            0.01218661735336291,
+            -0.004121404584168477,
+            -0.004677488295423587,
+            0.00662867315702659,
+            0.025567365689224467,
+            0.0417097367124062
+          ],
+          "upper": [
+            0.31269809764455286,
+            0.07620397122234145,
+            0.07029988935485659,
+            0.024149154616043247,
+            0.029944771469659643,
+            -0.022349245992852547,
+            0.036101927823551885,
+            0.07734667453024689,
+            0.11251407743046979
+          ],
+          "initial_total": [
+            1.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          "written": [
+            0.36789200499884406,
+            0.4706827436411928,
+            0.14547715517008375,
+            -0.01684743480709981,
+            -0.06500345221024226,
+            0.0999173888258164,
+            0.3235878942068705,
+            0.5204512320826797
+          ],
+          "residual": [
+            1.3766765505351941e-14,
+            2.7755575615628914e-15,
+            2.4424906541753444e-15,
+            8.881784197001252e-16,
+            1.0894063429134349e-15,
+            -8.326672684688674e-16,
+            1.4849232954361469e-15,
+            2.7755575615628914e-15,
+            3.9968028886505635e-15
+          ],
+          "probability_min_complete_density": 0.017879954811027
+        }
+      ],
+      "balance_max_abs": 1.3766765505351941e-14,
+      "new_reference_matrix_integral_actions": 0,
+      "pending_packets": 0,
+      "pending_generator_dimensions": [],
+      "encoded_law_hashes": [
+        "5a4d5cc8abc5392e197eb49eb8d5b38ba5ddbd4a2cbf02e514b6d18bf89d407d"
+      ],
+      "result": {
+        "arm": "flow_erlang4",
+        "steps": 80,
+        "horizon": 4.0,
+        "batch": 1,
+        "content_channels": 8,
+        "layers": 2,
+        "spatial_nodes": 4,
+        "forward_and_conservation_wall_seconds": 0.12443071600137046,
+        "forward_and_conservation_cpu_seconds": 0.12426582799999997,
+        "backward_wall_seconds": 0.06236550999892643,
+        "backward_cpu_seconds": 0.059473281999999905,
+        "logical_state_bytes": 2304,
+        "serialized_state_bytes": 8493,
+        "physics_tensor_bytes": 560,
+        "transition_view_bytes": 3168,
+        "autograd_saved_payload_bytes_with_repeats": 616617,
+        "balance_max_abs": 1.3766765505351941e-14,
+        "exact_forward_exponentials": null,
+        "exact_forward_largest_dimension": null,
+        "optimizer_calls": 0,
+        "finite_complete_state_test": true,
+        "sample_writes_do_not_define_arbitrary_dt_refinement": true
+      },
+      "full_process_cost": {
+        "exit_code": 0,
+        "wall_seconds": 4.333639898999536,
+        "cpu_seconds": 4.236433,
+        "maxrss_kib": 230884,
+        "deadline_kill_sent": false,
+        "cpu_affinity": [
+          2
+        ],
+        "stdout_bytes": 749,
+        "stderr_bytes": 0
+      },
+      "tensor_payload_matches_RAW_bitwise": true,
+      "serialized_storage_payload_bytes": 2304,
+      "reported_balance_difference": 0.0,
+      "independent_balance_within_original_gate": true
+    }
+  },
+  "comparisons_erlang_minus_flow": {
+    "10": {
+      "logits": {
+        "coordinates_not_independent_samples": 10,
+        "max_abs": 0.0005744149435589485,
+        "mean_abs": 0.0002943552912320742,
+        "rmse": 0.00032863642081644044,
+        "l2_abs": 0.0010392396118655241,
+        "flow_linf_denominator": 0.2436900659501329,
+        "flow_l2_denominator": 0.5346123834747833,
+        "relative_linf": 0.0023571537121110753,
+        "relative_l2": 0.0019439123446988824,
+        "zero_denominator_returns_null": true
+      },
+      "parameter_gradient": {
+        "coordinates_not_independent_samples": 259,
+        "max_abs": 0.001148829887117897,
+        "mean_abs": 0.00015865244545431938,
+        "rmse": 0.00025188193104663326,
+        "l2_abs": 0.004053656048758362,
+        "flow_linf_denominator": 0.4873801319002658,
+        "flow_l2_denominator": 1.0831290043737898,
+        "relative_linf": 0.0023571537121110753,
+        "relative_l2": 0.0037425422386338737,
+        "zero_denominator_returns_null": true
+      },
+      "input_gradient": {
+        "coordinates_not_independent_samples": 20,
+        "max_abs": 0.0005297137388709204,
+        "mean_abs": 0.00022566931626877225,
+        "rmse": 0.0002883452254139977,
+        "l2_abs": 0.0012895190500263976,
+        "flow_linf_denominator": 0.020729935112446193,
+        "flow_l2_denominator": 0.043087859428550444,
+        "relative_linf": 0.025553082341916344,
+        "relative_l2": 0.029927665637804912,
+        "zero_denominator_returns_null": true
+      }
+    },
+    "20": {
+      "logits": {
+        "coordinates_not_independent_samples": 10,
+        "max_abs": 0.000578778148677267,
+        "mean_abs": 0.00032518383177522204,
+        "rmse": 0.0003605315607526675,
+        "l2_abs": 0.0011401009003537993,
+        "flow_linf_denominator": 0.27484273053507885,
+        "flow_l2_denominator": 0.5629534033821146,
+        "relative_linf": 0.0021058521269617355,
+        "relative_l2": 0.0020252136207087384,
+        "zero_denominator_returns_null": true
+      },
+      "parameter_gradient": {
+        "coordinates_not_independent_samples": 259,
+        "max_abs": 0.001157556297354534,
+        "mean_abs": 0.00020273065669905953,
+        "rmse": 0.00028731871101482303,
+        "l2_abs": 0.004623957049984119,
+        "flow_linf_denominator": 0.5496854610701577,
+        "flow_l2_denominator": 1.186812401104855,
+        "relative_linf": 0.0021058521269617355,
+        "relative_l2": 0.003896114538135494,
+        "zero_denominator_returns_null": true
+      },
+      "input_gradient": {
+        "coordinates_not_independent_samples": 40,
+        "max_abs": 0.0012568037822852374,
+        "mean_abs": 0.0003087029353464986,
+        "rmse": 0.0004161004561301104,
+        "l2_abs": 0.0026316503536122416,
+        "flow_linf_denominator": 0.05181951657954905,
+        "flow_l2_denominator": 0.14200169834074697,
+        "relative_linf": 0.02425348334455988,
+        "relative_l2": 0.018532527317365877,
+        "zero_denominator_returns_null": true
+      }
+    },
+    "40": {
+      "logits": {
+        "coordinates_not_independent_samples": 10,
+        "max_abs": 0.0005583156705523673,
+        "mean_abs": 0.0002062631486359337,
+        "rmse": 0.0002744884425251985,
+        "l2_abs": 0.0008680086697718472,
+        "flow_linf_denominator": 0.34326748400618345,
+        "flow_l2_denominator": 0.6066146930512376,
+        "relative_linf": 0.0016264740954675162,
+        "relative_l2": 0.0014309061084653467,
+        "zero_denominator_returns_null": true
+      },
+      "parameter_gradient": {
+        "coordinates_not_independent_samples": 259,
+        "max_abs": 0.0012497115408181825,
+        "mean_abs": 0.00016514579716806914,
+        "rmse": 0.0002583163994834615,
+        "l2_abs": 0.004157209018163956,
+        "flow_linf_denominator": 0.6865349680123669,
+        "flow_l2_denominator": 1.4451626078942617,
+        "relative_linf": 0.0018203173895661943,
+        "relative_l2": 0.0028766375461522645,
+        "zero_denominator_returns_null": true
+      },
+      "input_gradient": {
+        "coordinates_not_independent_samples": 80,
+        "max_abs": 0.002172665225781592,
+        "mean_abs": 0.0002959863641922374,
+        "rmse": 0.00047984475543848824,
+        "l2_abs": 0.0042918619672288865,
+        "flow_linf_denominator": 0.10867371037363957,
+        "flow_l2_denominator": 0.4321227377141435,
+        "relative_linf": 0.01999255586573406,
+        "relative_l2": 0.009932043821466358,
+        "zero_denominator_returns_null": true
+      }
+    },
+    "80": {
+      "logits": {
+        "coordinates_not_independent_samples": 10,
+        "max_abs": 0.0007432445262808285,
+        "mean_abs": 0.00029879930299068493,
+        "rmse": 0.000366102334221274,
+        "l2_abs": 0.0011577172328434322,
+        "flow_linf_denominator": 0.5088366057716966,
+        "flow_l2_denominator": 0.7253051774032813,
+        "relative_linf": 0.0014606742475880465,
+        "relative_l2": 0.0015961794688799291,
+        "zero_denominator_returns_null": true
+      },
+      "parameter_gradient": {
+        "coordinates_not_independent_samples": 259,
+        "max_abs": 0.0026991519460447533,
+        "mean_abs": 0.00031664829416952115,
+        "rmse": 0.0005084740852098619,
+        "l2_abs": 0.008183115964623228,
+        "flow_linf_denominator": 1.0176732115433933,
+        "flow_l2_denominator": 2.7301575158034472,
+        "relative_linf": 0.002652277681507648,
+        "relative_l2": 0.002997305436501546,
+        "zero_denominator_returns_null": true
+      },
+      "input_gradient": {
+        "coordinates_not_independent_samples": 160,
+        "max_abs": 0.009435892999174633,
+        "mean_abs": 0.0004001752090133881,
+        "rmse": 0.001082819728962329,
+        "l2_abs": 0.013696706555548607,
+        "flow_linf_denominator": 0.4704336733759134,
+        "flow_l2_denominator": 1.752543966492175,
+        "relative_linf": 0.020057860508711108,
+        "relative_l2": 0.007815328355478244,
+        "zero_denominator_returns_null": true
+      }
+    }
+  },
+  "normalization": {
+    "relative_linf": "max(abs(Erlang-flow))/max(abs(flow))",
+    "relative_l2": "norm(Erlang-flow,2)/norm(flow,2)",
+    "floor": null
+  },
+  "same_weight_evidence": {
+    "model_seed": 101,
+    "input_seed": 123,
+    "source_reasoning": "Both arms run the same FlowClassifier constructor and float64 conversion after torch.manual_seed(101); the arm branch changes forward dynamics, not initialization. Inputs come from a distinct generator seeded 123 and slice the same generated [1,80,2] prefix. No optimizer calls occur.",
+    "saved_parameter_values_or_hash": false,
+    "saved_input_values_or_hash": false,
+    "direct_bitwise_same_weights_or_inputs_verified": false,
+    "conclusion": "Matched initialization and input-prefix provenance is supported by frozen source plus successful process records; original parameter/input bytes were not retained, so direct artifact equality cannot be established."
+  },
+  "limitations": [
+    "One model seed and one synthetic input sequence; coordinate/tensor counts are not independent samples.",
+    "Erlang4 changes the waiting-time law; these differences are model-approximation deviations, not floating-point solver error.",
+    "T10/T20/T40/T80 are longer prefixes at fixed dt=1/20, not a time-refinement or continuum study.",
+    "state.pt contains complete dynamic forward state only, not model weights, supplied physics, optimizer, or the past AD graph.",
+    "Saved-tensor payload counts hook traffic with repeats; it is not peak live tensor allocation or peak process memory.",
+    "Physics/operator view bytes and logical state payload count views/repeats, not unique allocated storage in the executed model.",
+    "Profile body forward includes conservation reads; its exact_forward_exponentials counter is captured before separate balance integrals, so excludes those actions.",
+    "Profile full-process costs include imports/checks/serialization; no repeated timings or speedup significance are inferred."
+  ],
+  "model_forward_calls": 0,
+  "model_backward_calls": 0,
+  "optimizer_calls": 0,
+  "new_trajectories": 0,
+  "new_reference_matrix_integral_actions": 32,
+  "all_closed": false,
+  "reader_body_cost": {
+    "wall_seconds": 0.07590338599402457,
+    "cpu_seconds": 0.07532501899999966,
+    "scope": "After NumPy/SciPy/Torch imports and thread setup, through source/input checks and all tensor/numerical reading; excludes result/CSV writing. Full process measured by parent wait4 in COST.json."
+  }
+}

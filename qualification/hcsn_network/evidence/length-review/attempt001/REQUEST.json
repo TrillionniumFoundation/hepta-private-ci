@@ -1,0 +1,27 @@
+{
+  "command": [
+    "/workspace/scratch/d741f7769aeb/hcsn-venv/bin/python",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/evidence/length-review/review.py",
+    "--raw",
+    "/workspace/scratch/d741f7769aeb/network-length-profile-attempt001",
+    "--repo",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling",
+    "--freeze",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/evidence/length-review/SOURCE.json",
+    "--output",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/evidence/length-review/attempt001",
+    "--worker"
+  ],
+  "reader_sha256": "edbbba83a7c131617d3d81180acdacc0f3881060756cad8e2116562359639632",
+  "cpu_affinity": [
+    8
+  ],
+  "numerical_threads": 1,
+  "address_space_bytes": 4294967296,
+  "cpu_soft_hard_seconds": [
+    60,
+    65
+  ],
+  "wall_deadline_seconds": 90,
+  "identity": "hcsn-network-length-independent-read-20261119-d741-attempt001"
+}
