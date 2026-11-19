@@ -1,0 +1,47 @@
+{
+  "schema": "hcsn-upstream-t8-exact-algebra-v1",
+  "sympy_version": "1.14.0",
+  "source_url": "https://github.com/pytorch/pytorch/blob/v2.8.0/aten/src/ATen/native/LinearAlgebra.cpp",
+  "source_git_blob": "2d7c2ff067c69a813588a1bd0e072ea763de8ef0",
+  "function": "compute_T8",
+  "arithmetic": "exact Q(sqrt(177)) polynomial coefficients",
+  "outcomes": {
+    "upstream": {
+      "coefficient_errors": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "1/15120 - sqrt(177)/15120",
+        "-sqrt(177)/60480 - 1/8640",
+        "-1/15120",
+        "-1/120960"
+      ],
+      "mismatched_degrees": [
+        5,
+        6,
+        7,
+        8
+      ]
+    },
+    "squared_denominator": {
+      "coefficient_errors": [
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0",
+        "0"
+      ],
+      "mismatched_degrees": []
+    }
+  },
+  "body_wall_seconds": 0.3610586009963299,
+  "model_calls": 0,
+  "matrix_exponential_calls": 0,
+  "scope": "The modified coefficient proves the polynomial identity, not a floating-point or gradient qualification."
+}

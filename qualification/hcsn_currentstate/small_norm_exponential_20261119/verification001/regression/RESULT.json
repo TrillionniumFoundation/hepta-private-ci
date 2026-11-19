@@ -1,0 +1,42 @@
+{
+  "tests_run": 34,
+  "all_passed": true,
+  "original_strict_limits": {
+    "atol": 3e-13,
+    "rtol": 3e-12
+  },
+  "gamma61_max_abs_value_error": 4.440892098500626e-16,
+  "gamma61_rate_gradient_error": 0.0,
+  "gamma61_content_gradient_error": 5.828670879282072e-16,
+  "gamma61_rate_second_derivative_error": 4.163336342344337e-17,
+  "observed": [
+    0.7462699714165291,
+    -0.29850798856661165,
+    0.22388099142495874,
+    0.8060622610485095,
+    -0.32242490441940375,
+    0.24181867831455284,
+    0.2537300285834711,
+    -0.10149201143338843,
+    0.07611900857504134
+  ],
+  "analytic": [
+    0.7462699714165293,
+    -0.2985079885666117,
+    0.2238809914249588,
+    0.8060622610485091,
+    -0.32242490441940364,
+    0.24181867831455273,
+    0.2537300285834707,
+    -0.10149201143338829,
+    0.07611900857504121
+  ],
+  "gamma61_work": {
+    "logical_exponentials": 11,
+    "small_norm_horner": 4,
+    "native_matrix_exp": 7
+  },
+  "optimizer_calls": 0,
+  "training_grids_rerun": 0,
+  "body_wall_seconds": 8.980252704997838
+}
