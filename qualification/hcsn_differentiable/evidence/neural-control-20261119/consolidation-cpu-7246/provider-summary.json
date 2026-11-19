@@ -1,0 +1,51 @@
+{
+  "schema": "hepta-consolidation-cpu-qualification-v1",
+  "original_branch_tip": "0ca096781651508250c950829c347a38edcfede4",
+  "tested_source_base": "adc66e6407f83bbc191648ec1784b351541df4bb",
+  "local_reviewed_merge": "16bac96402900dccfb7f9559e6adae327bad1054",
+  "request_id": "hepta-rust-0ca0967-20261119-7246",
+  "provider": "kaggle",
+  "kernel_id": 146029242,
+  "notebook_version": 1,
+  "provider_terminal_state": "COMPLETE",
+  "collection_state": "COLLECTED",
+  "accelerator_requested": "cpu",
+  "actual_runtime": {
+    "python": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cpu",
+    "numpy": "2.1.3",
+    "scipy": "1.16.3",
+    "cuda_build": null,
+    "cuda_available": false
+  },
+  "tests_run": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "source_driver_bytes": 44456,
+  "source_driver_sha256": "4e880343506d9f3cb6791363e5b56eecaacee2e762c803af72d736d5c56c6913",
+  "source_blob_manifest_file": "result.json",
+  "frozen_source_manifest_verified_before_and_after": true,
+  "retained_artifacts": {
+    "result.json": {
+      "bytes": 3914,
+      "sha256": "9986c185508d9e80bc4b1d5d7b70aaf8f8df609aba0a7ba2a2032d538f3c0521"
+    },
+    "hepta-execution-manifest.json": {
+      "bytes": 221,
+      "sha256": "6f258d479f6318cf3f0c50a0d742ea33ed2d7c61a4e1244803f51679c5ab6358"
+    },
+    "tests.log": {
+      "bytes": 814,
+      "sha256": "f443d080f31021992e14f5900c1480d1fb65deddceffe7bb39795ab701ec4c4f"
+    }
+  },
+  "tests_log_provenance": "Verbatim UTF-8 contents of the collected result.json test_log field; no separate provider test-log artifact was claimed.",
+  "resources_reconciled": {
+    "event": "complete_and_resources_reconciled",
+    "observed_at": "2026-11-19T16:20:43.223746+00:00",
+    "scope": "Original completed private CPU batch and its scheduler reservation; no GPU resource requested."
+  },
+  "qualification_limits": "This verifies the four unchanged original tests and their exact source blobs on the recorded cloud CPU image. The workflow-pinned Python3.12.3/Torch2.8.0+cpu/NumPy2.5.4/SciPy1.17.0 image and full repository CI remain separate required checks."
+}

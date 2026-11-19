@@ -893,7 +893,7 @@ jobs:
               '.github/scripts/windows-appcontainer-probe/probe.py': 'd73d8d51a6121efe0463304ece9832d9ba121a8cb5b4dc1fd71f706cdb5bd192',
               '.github/scripts/windows-appcontainer-probe/win32_api.py': '9ff96eaba8f298b7024ad3815d089069ca174f8880748e48d7c8fe7996feba10',
               '.github/scripts/windows-appcontainer-probe/child_trace.c': '717521474cef3d5f49cb6170bfb9ab6cc6fd96430cccbf69263bed0f59bc22a8',
-              '.github/scripts/windows-appcontainer-probe/child_trace.py': 'd942c027629a051216a2c9ccc31de8b994ec75aa68682b8ea345132d5065f093',
+              '.github/scripts/windows-appcontainer-probe/child_trace.py': 'f370bf331f1277afa1168ff27c2fe852e5ff11188d3b206ce884585f1ca2cbe8',
           }
           observed = {name: hashlib.sha256((root / name).read_bytes()).hexdigest() for name in pins}
           if observed != pins:

@@ -14,7 +14,6 @@ from pathlib import Path
 import platform
 import shutil
 import subprocess
-import sys
 import tempfile
 import traceback
 import uuid
@@ -102,9 +101,17 @@ def create_suspended(api, package_sid, binary, workspace, lpac, handles):
         system = C.create_unicode_buffer(32768)
         length = api.GetSystemDirectoryW(system, len(system))
         require(0 < length < len(system), "system directory")
+        local_app_data = os.environ.get("LOCALAPPDATA", "")
+        require(
+            local_app_data
+            and "\0" not in local_app_data
+            and Path(local_app_data).is_absolute(),
+            "LOCALAPPDATA must identify an absolute profile path",
+        )
         environment = C.create_unicode_buffer(
             "\0".join(
                 [
+                    f"LOCALAPPDATA={local_app_data}",
                     f"SystemRoot={Path(system.value).parent}",
                     f"TEMP={workspace}",
                     f"TMP={workspace}",
