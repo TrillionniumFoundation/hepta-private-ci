@@ -1,0 +1,54 @@
+{
+  "schema": "hepta.upstream-layout-outage-recovery-state.v1",
+  "state": "UNKNOWN_AFTER_ENVIRONMENT_UNAVAILABLE",
+  "source_commit": "02b3fb49ac00ccb7ad28e5d803af5675fbd28e26",
+  "source_tree": "40524a58f0458fb2261523ae0fe800e174507cb9",
+  "protocol_sha256": "c71f8348977e955b1d5b6b98e8780ff13188b88b141fad683efb6f08bb03814f",
+  "deployment_sha256": "46518e755127e165ae93f4f2c378878df4c71a8a97123efee85570f2b0e8009a",
+  "actual_attention_function_sha256": "68ca2df87451ac0f3a38b318c6714914638dd2195a1585f43828a5f614095d4f",
+  "mathematical_engine_module_sha256": "81ad33310f7bb427d01d25fd4ff696d281e6c53f3bba24cbc80667df63316aaa",
+  "submitted_request": {
+    "host": "desktop",
+    "cwd": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2",
+    "command": "/usr/bin/python3 -B /home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/source/qualification/cell-upstream-layout-learning-20261118/owner.py --phase calibration_only",
+    "idempotency_key": "e123-checkpoint2-full-gate-02b3fb-2e9b-001",
+    "timeout_seconds": 1900
+  },
+  "job_id": null,
+  "rpc_outcome": "MCP request timed out; launch status and execution outcome cannot be inferred.",
+  "later_read_outcome": "Three existing-owner/artifact reads returned INVALID_ARGUMENT while the environment became unavailable; missing receipts are not evidence of process failure.",
+  "no_duplicate_request_or_new_key_after_uncertainty": true,
+  "new_remote_actions_stopped_after_environment_unavailable": true,
+  "last_confirmed": {
+    "short_A_source": "2776b2e7e6464ce57014f2ed755a965b35037ec5",
+    "short_A_result_sha256": "22e9642729084223acf0058606ef01132c7e8b5f707eafb8e37c3002eb87586a",
+    "short_A_status": "PASS: 4 real F/B; both layouts zero observed logit/LoRA-gradient differences; actual recomputation counters retained.",
+    "prior_full_gate_source": "96990368541053f982bec074fda36e5d0ae2f1d7",
+    "prior_full_gate_status": "FAILED: original eager due omitted calibrate installation; 1 completed forward, attempted incomplete backward, OOM. Not an inner-checkpoint full-length result.",
+    "new_preparation_status": "PREPARED, original build wait exit0 before unavailable; dataset and encoding unchanged.",
+    "new_preparation_exit_sha256": "3fe199ce5b973df5f24b5b1b64297b5ed9b5f425d235a2cc2ebd57865cbe03a7",
+    "fit_requests_submitted": 0,
+    "optimizer_updates_in_confirmed_executions": 0,
+    "generation_calls_in_this_layout_candidate": 0
+  },
+  "expected_paths": {
+    "work": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2",
+    "owner": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-calibration_only-1",
+    "calibration_temporary": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-upstream-layout-learning-20261118-2e9b-checkpoint2/calibration",
+    "calibration_retained": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/retained/calibration",
+    "lock": "/dev/shm/hepta-cell-experiments-v3-20261116-0c078a/research-round03-20261118-392934-b/WORKER.lock"
+  },
+  "GPU_release_confirmed": false,
+  "B3_released": false,
+  "B3_material_read": false,
+  "old_NoUpdate_decisions_unchanged": true,
+  "recovery_order": [
+    "Restore environment/access first. Do not infer remote termination or release the shared GPU from this outage.",
+    "Recover the exact original request with identical args/idempotency key or read its existing owner; never create a replacement owner/new key while state is unknown.",
+    "Read original model/owner receipts, verify hashes, source and actual engine identity; classify the original full gate from real evidence.",
+    "Only if the predeclared full gate passed, create and prospectively publish TRAINING_ADMISSION.json with the existing helper and exact source, then TRAINING_DEPLOYMENT.json.",
+    "Run each fixed 32-step arm in a new child process with cold same P and fresh empty AdamW, preserving full input and cap; do not repeat any already completed stage.",
+    "After both manifests/actual parameter digests and WEIGHTS_FROZEN exist, notify root to release the unchanged sealed B3, then execute the original bounded evaluation.",
+    "Preserve every failed/partial computation, all raw receipts and all old NoUpdate conclusions."
+  ]
+}

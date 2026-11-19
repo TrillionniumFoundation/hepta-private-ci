@@ -1,0 +1,60 @@
+{
+  "actual_transformers_modeling_utils_sha256": "bf1c6b2a43cf7c36fb79f37c981424dd6ae78eb863fcaa5d2a37e76c9828611d",
+  "format_AST_unchanged": true,
+  "new_model_calls": 0,
+  "new_training_updates": 0,
+  "no_B3_materials_read": true,
+  "source_sha256": "7ebdcb9527c771ed4a1dc781ab273be3edee50fb7c40d84a139ae5261d6e0494",
+  "stages": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-sdpa/probe/sdpa_probe.py"
+      ],
+      "exit_code": 0,
+      "name": "format",
+      "wall_seconds": 0.04547262698179111
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-sdpa/probe/sdpa_probe.py"
+      ],
+      "exit_code": 0,
+      "name": "format-check",
+      "wall_seconds": 0.03181229502661154
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-sdpa/probe/sdpa_probe.py"
+      ],
+      "exit_code": 0,
+      "name": "lint",
+      "wall_seconds": 0.03070601000217721
+    }
+  ],
+  "status": "PASS"
+}

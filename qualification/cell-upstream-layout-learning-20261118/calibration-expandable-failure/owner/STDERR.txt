@@ -1,0 +1,19 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-expandable/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py", line 368, in <module>
+    result = layout.calibrate(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-expandable/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py", line 751, in calibrate
+    measured = backward_group(
+               ^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-expandable/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py", line 215, in backward_group
+    weighted.backward()
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/_tensor.py", line 625, in backward
+    torch.autograd.backward(
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/autograd/__init__.py", line 354, in backward
+    _engine_run_backward(
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/autograd/graph.py", line 841, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 588.00 MiB. GPU 0 has a total capacity of 7.62 GiB of which 1.40 GiB is free. Process 9243 has 319.78 MiB memory in use. Process 2477729 has 23.32 MiB memory in use. Including non-PyTorch memory, this process has 5.20 GiB memory in use. 5.34 GiB allowed; Of the allocated memory 5.03 GiB is allocated by PyTorch, and 35.79 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[W1118 14:30:28.942889324 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())

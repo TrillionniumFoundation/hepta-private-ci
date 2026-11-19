@@ -1,0 +1,96 @@
+`torch_dtype` is deprecated! Use `dtype` instead!
+Traceback (most recent call last):
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b/source/qualification/cell-upstream-layout-learning-20261118/run_layout.py", line 368, in <module>
+    result = layout.calibrate(
+             ^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py", line 620, in calibrate
+    measured = backward_group(
+               ^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b/source/qualification/cell-upstream-layout-learning-20261118/layout_sft.py", line 128, in backward_group
+    return matched.backward_group(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-e1-matched-info-20261118-2e9b/source/scripts/cell_experiments/matched_info_sft_v4.py", line 88, in backward_group
+    loss, actual_count = numeric.selected_token_loss(model, ids, mask, labels)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/work/hepta-e1-matched-info-20261118-2e9b/source/scripts/cell_experiments/causal_train_v3.py", line 38, in selected_token_loss
+    logits = model(
+             ^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/peft/peft_model.py", line 1923, in forward
+    return self.base_model(
+           ^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/peft/tuners/tuners_utils.py", line 308, in forward
+    return self.model.forward(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/utils/generic.py", line 918, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py", line 449, in forward
+    outputs: BaseModelOutputWithPast = self.model(
+                                       ^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/utils/generic.py", line 1072, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py", line 384, in forward
+    hidden_states = decoder_layer(
+                    ^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/modeling_layers.py", line 93, in __call__
+    return self._gradient_checkpointing_func(partial(super().__call__, **kwargs), *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/_compile.py", line 53, in inner
+    return disable_fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/_dynamo/eval_frame.py", line 1044, in _fn
+    return fn(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/utils/checkpoint.py", line 503, in checkpoint
+    ret = function(*args, **kwargs)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py", line 234, in forward
+    hidden_states, _ = self.self_attn(
+                       ^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/utils/deprecation.py", line 172, in wrapped_func
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py", line 169, in forward
+    attn_output, attn_weights = attention_interface(
+                                ^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/transformers/models/qwen2/modeling_qwen2.py", line 114, in eager_attention_forward
+    attn_weights = nn.functional.softmax(attn_weights, dim=-1, dtype=torch.float32).to(query.dtype)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/qian-qi/hepta-cell-experiments-v3-20261116-0c078a/venv/lib/python3.12/site-packages/torch/nn/functional.py", line 2135, in softmax
+    ret = input.softmax(dim, dtype=dtype)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 768.00 MiB. GPU 0 has a total capacity of 7.62 GiB of which 1.43 GiB is free. Process 9243 has 315.09 MiB memory in use. Process 2477729 has 23.32 MiB memory in use. Including non-PyTorch memory, this process has 5.16 GiB memory in use. 5.34 GiB allowed; Of the allocated memory 4.12 GiB is allocated by PyTorch, and 947.39 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

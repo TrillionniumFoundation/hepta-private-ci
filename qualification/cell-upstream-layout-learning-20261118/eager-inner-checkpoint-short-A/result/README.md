@@ -1,0 +1,9 @@
+# Actual short-A numerical pass
+
+Original source `2776b2e7e6464ce57014f2ed755a965b35037ec5`, durable job `1a1f04812c9-ffbe-765`, real owner exit 0/no timeout. All four actual forward/backward pairs completed with zero optimizer updates and zero generations. In both document and native layouts, every selected logit and every LoRA gradient matched the original eager values exactly in this finite test: maximum and relative differences zero, cosine and argmax agreement one. This observed short-A result does not assert universal bitwise equivalence or full-length memory feasibility.
+
+For each new-engine run, actual forward attention started/completed 28, original softmax contexts 224; backward attention 28, original softmax 224 plus recompute 224. Backward softmax function starts 448 and completions 224 reflect actual non-reentrant early stopping and are preserved. Original eager runs have empty custom-engine counters. COUNT_AUDIT checks those observations using existing receipts only. Peak new-engine allocated memory was 3,450,394,112 bytes on this short case; the 70% cap was unchanged.
+
+Original owner wall 41.817791156994645 s and observed child CPU 38.921826 s include cold load and raw tensor persistence. Four whole-host RAPL observations are retained; they do not identify model-only energy. Full monetary/GPU energy costs remain unknown. The original full 84,613-byte RESULT, all per-parameter statistics and all small originals are in the 20,772-byte archive. Four raw full logits/gradient .pt payloads remain at the exact remote paths and hashes in INDEX, explicitly not embedded. Previous OOMs, SDPA NUMERICAL_REJECT and all NoUpdate decisions remain unchanged. B3 remains sealed.
+
+The accompanying main source is preparation for a separate full-length calibration; no fit or full-length success is claimed by this commit.

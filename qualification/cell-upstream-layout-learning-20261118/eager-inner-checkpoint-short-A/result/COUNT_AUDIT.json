@@ -1,0 +1,57 @@
+{
+  "actual_counter_checks": [
+    {
+      "counts": {},
+      "engine": "eager",
+      "mode": "document_evidence"
+    },
+    {
+      "counts": {
+        "backward:attention_function_completed": 28,
+        "backward:attention_function_started": 28,
+        "backward:softmax_function_completed": 224,
+        "backward:softmax_function_started": 448,
+        "backward:softmax_original_entered": 224,
+        "backward:softmax_original_exited": 224,
+        "backward:softmax_recompute_entered": 224,
+        "backward:softmax_recompute_exited": 224,
+        "forward:attention_function_completed": 28,
+        "forward:attention_function_started": 28,
+        "forward:softmax_function_completed": 224,
+        "forward:softmax_function_started": 224,
+        "forward:softmax_original_entered": 224,
+        "forward:softmax_original_exited": 224
+      },
+      "engine": "eager_checkpointed_softmax",
+      "mode": "document_evidence"
+    },
+    {
+      "counts": {},
+      "engine": "eager",
+      "mode": "native_feedback"
+    },
+    {
+      "counts": {
+        "backward:attention_function_completed": 28,
+        "backward:attention_function_started": 28,
+        "backward:softmax_function_completed": 224,
+        "backward:softmax_function_started": 448,
+        "backward:softmax_original_entered": 224,
+        "backward:softmax_original_exited": 224,
+        "backward:softmax_recompute_entered": 224,
+        "backward:softmax_recompute_exited": 224,
+        "forward:attention_function_completed": 28,
+        "forward:attention_function_started": 28,
+        "forward:softmax_function_completed": 224,
+        "forward:softmax_function_started": 224,
+        "forward:softmax_original_entered": 224,
+        "forward:softmax_original_exited": 224
+      },
+      "engine": "eager_checkpointed_softmax",
+      "mode": "native_feedback"
+    }
+  ],
+  "new_model_calls": 0,
+  "no_early_stop_counts_rewritten": true,
+  "status": "PASS"
+}
