@@ -5,12 +5,14 @@ on:
     paths:
       - '.github/workflows/hia-example-validation-source.yml'
       - 'hia/example_validation_continuation.hepta'
+      - 'hia/EXAMPLE_VALIDATION_SOURCE_CONTRACT.md'
       - 'hia/tests/example_validation_source_vm.py'
       - 'hia/tests/test_example_validation_*.py'
   pull_request:
     paths:
       - '.github/workflows/hia-example-validation-source.yml'
       - 'hia/example_validation_continuation.hepta'
+      - 'hia/EXAMPLE_VALIDATION_SOURCE_CONTRACT.md'
       - 'hia/tests/example_validation_source_vm.py'
       - 'hia/tests/test_example_validation_*.py'
 

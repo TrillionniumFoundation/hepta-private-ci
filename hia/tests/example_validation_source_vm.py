@@ -17,6 +17,15 @@ RET_RE = re.compile(r'^ret\((\w+)\)$')
 MAX_U64 = (1 << 64) - 1
 
 
+def _no_duplicate_json_fields(pairs):
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError('duplicate constant field')
+        obj[key] = value
+    return obj
+
+
 def _args(s):
     return [x.strip() for x in s.split(',')] if s.strip() else []
 
@@ -59,6 +68,10 @@ class Program:
             self.blocks[current][1].append(op)
         if 'entry' not in self.blocks:
             raise ValueError('no entry block')
+        if self.blocks['entry'][0] != [
+            ('source', 'readbuf'), ('output', 'mutbuf'), ('workspace', 'mutbuf')
+        ]:
+            raise ValueError('entry block ABI mismatch')
         for name, (params, operations) in self.blocks.items():
             if not operations or not any(x.startswith(('branch ', 'jump ', 'ret(')) for x in operations[-1:]):
                 raise ValueError('missing terminator: ' + name)
@@ -97,8 +110,8 @@ class Program:
                     if operator == 'const':
                         if literal is None or result_type not in ('u32', 'u64', 'usize'):
                             raise ValueError('invalid constant type')
-                        value = json.loads(literal)
-                        if set(value) != {'value'} or type(value['value']) is not int:
+                        value = json.loads(literal, object_pairs_hook=_no_duplicate_json_fields)
+                        if not isinstance(value, dict) or set(value) != {'value'} or type(value['value']) is not int:
                             raise ValueError('non-integer constant')
                         limit = (1 << (32 if result_type == 'u32' else 64)) - 1
                         if not 0 <= value['value'] <= limit:
@@ -126,8 +139,8 @@ class Program:
                         if result_type != produced:
                             raise ValueError('wrong SSA result type')
                     if operator == 'buffer.store.u64.le':
-                        if dest != '_':
-                            raise ValueError('store must discard result')
+                        if dest != '_' or result_type is not None:
+                            raise ValueError('store must discard result without type annotation')
                     elif dest == '_' or dest in types:
                         raise ValueError('discarded or redefined SSA result')
                     else:

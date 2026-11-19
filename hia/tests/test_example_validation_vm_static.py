@@ -70,5 +70,37 @@ class VmStaticScreen(unittest.TestCase):
             Program(source)
 
 
+    def test_reject_extra_unused_entry_parameter(self):
+        source = SOURCE.replace(
+            'block entry(source:readbuf,output:mutbuf,workspace:mutbuf)',
+            'block entry(source:readbuf,output:mutbuf,workspace:mutbuf,unused:u64)', 1,
+        )
+        with self.assertRaisesRegex(ValueError, 'entry block ABI mismatch'):
+            Program(source)
+
+    def test_reject_typed_discard_on_store(self):
+        source = SOURCE.replace(
+            '_ = buffer.store.u64.le(e23_output,e23_zero,e23_event)',
+            '_:u64 = buffer.store.u64.le(e23_output,e23_zero,e23_event)', 1,
+        )
+        with self.assertRaisesRegex(ValueError, 'store must discard result'):
+            Program(source)
+
+    def test_reject_duplicate_constant_json_member(self):
+        source = SOURCE.replace(
+            'e00_required_size:usize = const() {"value":48}',
+            'e00_required_size:usize = const() {"value":48,"value":49}', 1,
+        )
+        with self.assertRaisesRegex(ValueError, 'duplicate constant field'):
+            Program(source)
+
+    def test_reject_noninteger_constant_json(self):
+        source = SOURCE.replace(
+            'e00_required_size:usize = const() {"value":48}',
+            'e00_required_size:usize = const() {"value":[48]}', 1,
+        )
+        with self.assertRaisesRegex(ValueError, 'non-integer constant'):
+            Program(source)
+
 if __name__ == '__main__':
     unittest.main()
