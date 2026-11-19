@@ -1,0 +1,30 @@
+{
+  "candidate_and_shared_context_selection_rules_unchanged": true,
+  "changes": [
+    "Wrap the unchanged isolated Python entry with actual RUSAGE_SELF and separately RUSAGE_CHILDREN start/final observations, including failure paths when finally executes.",
+    "Preserve the original outer completed_child_cpu_seconds numeric field while explicitly labeling its unestablished namespace-descendant completeness.",
+    "Attach raw inner CPU receipt hash and values to the result only after the original success expression has been evaluated unchanged."
+  ],
+  "kernel_kill_or_early_runtime_failure_can_leave_final_inner_CPU_unknown": true,
+  "new_model_calls": 0,
+  "new_native_children": 0,
+  "old_pair_results_not_rewritten_or_reexecuted": true,
+  "original_AST_admission_pytest_command_limits_expected_cases_and_success_conditions_unchanged": true,
+  "original_inside_AST_unchanged_after_rename": true,
+  "parent_native_sha256": "76951164a8c899d11a8c18ae1aafa7eb04a1d80083c2dbd6dfd3ceb21fdfa171",
+  "parent_source_commit": "dd4c83f05172e0c13b7ba6ff08daadf2a943cadc",
+  "schema": "hepta.future-native-cost-observation.v1",
+  "scope": "Inner Python self lifetime and entry-window deltas overlap. Completed children are separate observations. Neither is added to outer RUSAGE_CHILDREN or whole-host CPU windows.",
+  "unchanged_function_AST": [
+    "sha",
+    "canonical",
+    "write",
+    "load_module",
+    "bound",
+    "before_oracle",
+    "convert",
+    "attest",
+    "verify",
+    "feedback"
+  ]
+}
