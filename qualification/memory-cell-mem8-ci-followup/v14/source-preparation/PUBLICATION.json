@@ -1,0 +1,180 @@
+{
+  "schema": "hepta.mem8.source-preparation-recovered.publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "published_at_utc": "2026-11-11T12:21:48.297Z",
+  "archive": {
+    "bytes": 728468,
+    "git_blob": "66aa4904ad6c24db7c54d4376bb1045c676a0081",
+    "name": "mem8-source-preparation-recovered-v4-v5.tar.xz",
+    "sha256": "1d96a60b0d5e7bec25a80f97d3a8ed128df9e3c2f6c5a6fcd9738d8e301a2284"
+  },
+  "regular_member_count": 28,
+  "logical_embedded_member_count": 1,
+  "parts": [
+    {
+      "bytes": 460800,
+      "git_blob": "3d1983e460959d292c652cd4812f8ec2f1525ee8",
+      "name": "mem8-source-preparation-recovered-v4-v5.tar.xz.part-01",
+      "number": 1,
+      "offset": 0,
+      "sha256": "947d664ee1095ce0ce037ea7223d2506fd2cc7f7f20e7dd939d5cfa173c75d9e",
+      "actual_git_create": true,
+      "create_response_sha": "3d1983e460959d292c652cd4812f8ec2f1525ee8",
+      "binary_full_readback": "PENDING_ROOT_AFTER_TREE_ATTACHMENT"
+    },
+    {
+      "bytes": 267668,
+      "git_blob": "caad2770270e7bafbb74829ad9dea7f02bb1ffca",
+      "name": "mem8-source-preparation-recovered-v4-v5.tar.xz.part-02",
+      "number": 2,
+      "offset": 460800,
+      "sha256": "c4405718d11f7355db28e5c386cbb32f8d7ed72c0fcf9dfad6d101e6ed53af25",
+      "actual_git_create": true,
+      "create_response_sha": "caad2770270e7bafbb74829ad9dea7f02bb1ffca",
+      "binary_full_readback": "PENDING_ROOT_AFTER_TREE_ATTACHMENT"
+    }
+  ],
+  "member_manifest": {
+    "bytes": 17332,
+    "git_blob": "719c8b6e758a4b9634d280945ac03d6b20eda14f",
+    "sha256": "3c9d367268b8ae27357dfa497cd4631f7b7d564dc6eacfab0d1111dc2c3041c4",
+    "actual_git_create": true,
+    "full_utf8_readback": true
+  },
+  "local_complete_tar_and_all_member_readback": true,
+  "frozen_V4_input_embedded_losslessly": {
+    "bytes": 328808,
+    "encoding": "base64",
+    "git_blob": "0f510d74f2b351033f7b5cff49b43f5dd766b0d4",
+    "json_pointer": "/binary_write/request/data_base64",
+    "name": "v4/INPUT_SOURCE_GATES.json.xz",
+    "scope": "Exact original complete binary; losslessly embedded in unchanged original request receipt",
+    "sha256": "320e3ee8ac8dc90a25f3b85ef0ceda7c1fe8af8fb27446ebc73e0afb1aae3938",
+    "source_member": "v4/REMOTE_UPLOAD_OBSERVATIONS.json"
+  },
+  "original_artifact_recovery_complete": false,
+  "missing_requested_original_files": [
+    {
+      "bytes": 11765,
+      "computed_blob_not_published": "5b84d90833a7b24330809d31164b461f3e77f478",
+      "path": "v4/assemble_inputs.py",
+      "sha256": "d030b1104865fa8d4d17e6c43c42cdf85db6547e648a3a1855f160a8064aafa1",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "available_equivalent": "All frozen input metadata and postimage contents remain in the complete embedded V4 input; this does not restore the original index bytes.",
+      "bytes": 52460,
+      "path": "v4/SOURCE_GATE_INDEX.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 595,
+      "complete_object_preserved_at": "v4/EXPERIMENT_BYTE_AUDIT.json#/assembly_history_preserved",
+      "original_file_bytes_not_claimed": true,
+      "path": "v4/ASSEMBLY_HISTORY.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 3100,
+      "path": "v4/DRIVER_CHANGE.patch",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "available_raw_evidence": "v4/REMOTE_UPLOAD_OBSERVATIONS.json",
+      "bytes": 785,
+      "path": "v4/INPUT_UPLOAD_OBSERVATION.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 15217,
+      "path": "v5/assemble_inputs.py",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 8587,
+      "computed_blob_not_published": "67dad2fc0566d7854b2bd49fe93a3eb8f800e96d",
+      "path": "v5/BYTE_AUDIT.json",
+      "sha256": "0fb25da575064ab8980be3e50992a8b9b531e5124ec211dd2d41178a7d3b5629",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 754,
+      "new_audit": "new-audits/DRIVER_DERIVATION_RECHECK.json",
+      "path": "ci/driver-v5/DRIVER_DERIVATION.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 5184,
+      "new_diff": "new-audits/DRIVER_IDENTITY_CHANGE.reconstructed.patch",
+      "path": "ci/driver-v5/DRIVER_IDENTITY_CHANGE.patch",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "author_confirmed_original_bytes_lost": true,
+      "bytes": 12117,
+      "computed_blob_not_published": "f249a318215023780bed842282510e331c122ad5",
+      "historical_static_conclusion_only": "STATIC_NO_REMAINING_MUST_FIX; author confirmed this conclusion and the V4/V5 driver binding, not recovered full original text.",
+      "path": "ci/driver-v5/MEM_REMOTE_DRIVER_PEER_REVIEW.json",
+      "sha256": "9d858a2b83953662cc4e8be3cffdf641fc735403f882b789084fa34ef3f79ff2",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 2192,
+      "path": "ci/workflow-v5-original/STATIC_VALIDATION.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 3978,
+      "path": "ci/workflow-v5-original/DRIVER_WORKFLOW_PEER_REVIEW.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 6248,
+      "path": "ci/workflow-v5-original/WORKFLOW_V4_TO_V5.patch",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 1266,
+      "computed_blob_not_published": "3914d079be733478feb19d4e1c59b696d53dbdb5",
+      "new_diff": "new-audits/WORKFLOW_REVISION2.reconstructed.patch",
+      "path": "ci/workflow-v5-revision2/WORKFLOW.patch",
+      "sha256": "4e6aacb4ffff26fecaeab63f9501e1d200c7e5a7997a9a952b41a161b9140b36",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    },
+    {
+      "bytes": 2147,
+      "path": "ci/workflow-v5-revision2/VALIDATION_AND_ERRATUM.json",
+      "status": "ORIGINAL_FILE_NOT_RECOVERED_AFTER_WORKSPACE_RESET"
+    }
+  ],
+  "source_files_before_after_unchanged": true,
+  "source_gate_history": "Original harness 803e failed with zero jobs. Correction 720f retains the same c842 source/e9ba tree, frozen input and driver. Separate root terminal audit recorded SOURCE_GATES_PASSED_AND_FORMAT_DELTA_REVIEWED; this preparation package did not independently reexecute or re-audit that CI.",
+  "later_separate_root_source_ci_audit": {
+    "formatted_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "job_id": 130507034042,
+    "packager_reran_or_independently_reaudited_that_ci": false,
+    "pure_formatted_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "root_report_scope": "SOURCE_GATES_PASSED_AND_FORMAT_DELTA_REVIEWED; 393.996016 seconds within 600; no native/model tests",
+    "root_report_sha256": "d5cb21e504018b5838e91c7d2bec49c89579f33ce7a90330672be329c1ffbff2",
+    "run_id": 43015979473,
+    "source_head": "c842e995b047eb2ee7d81c073f14fb2fcaa6bff2",
+    "source_tree": "e9ba2746237562d68b1c732bee0f86df9e352cde",
+    "terminal_archive_included_here": false
+  },
+  "no_original_lost_review_text_fabricated": true,
+  "publication_actions": {
+    "payload_immutable_blob_creates": 3,
+    "publication_index_created_separately": true,
+    "commits_created": 0,
+    "refs_modified": 0,
+    "host_requests": 0,
+    "native_runs": 0,
+    "model_requests": 0
+  },
+  "archive_scope": "Full frozen postimages and retained exact execution drivers, original upload/publication records and both workflow versions; explicit lost original preparation notes and separately named new recovery-time audits.",
+  "parent_existing_checkpoint_stage": "7ff40ff10a2714d3a2796c7c95bed8b1961c7d08",
+  "supersedes_preliminary_index": {
+    "git_blob": "1d254993650ed65849437f34259a296781efa195",
+    "reason": "Metadata-only clarification: the two binary parts and member manifest are three payload creates; the index itself is a separate immutable create. Archive bytes and all evidence are unchanged."
+  }
+}

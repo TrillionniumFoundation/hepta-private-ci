@@ -1,0 +1,231 @@
+{
+  "schema": "mem-mac-c895-memory-code-readonly-v1",
+  "status": "CAUSE_NOT_UNIQUELY_DETERMINED_NO_SOURCE_PATCH_NO_NATIVE_RUN",
+  "source": {
+    "head": "c89540598693697577cda8cba31cb07f6ce65317",
+    "tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+    "tested_merge": "f0a379f3ae78e6cb01abcc6ac6458bacef23997b",
+    "source_index": "SOURCE_INDEX.json"
+  },
+  "original": {
+    "run_id": 43048568477,
+    "run_attempt": 1,
+    "job_id": 130619380498,
+    "raw_path": "../mem-ci-c895-original/job-130619380498.log",
+    "raw_bytes": 2677695,
+    "raw_sha256": "27e26dcd3c2a81f11b08ac00717f0e2b9533f6cba67d1426625f132a223a53ce",
+    "raw_git_blob": "e2754bf690fd742978fe0a2505699a6f1ae635d1",
+    "job_conclusion": "failure"
+  },
+  "memory": {
+    "case": "cognitive_runtime_tests::product_v2_reports_peer_truncation_before_aggregation",
+    "target": "//codex-rs/hepta-memory:hepta-memory-unit-tests",
+    "original_observation": {
+      "case_failed_row": 8830,
+      "target_final_row": 12989,
+      "target_outcome": "TIMEOUT",
+      "target_seconds": 300.5,
+      "block_lines": [
+        8758,
+        9137
+      ],
+      "advertised_tests": 429,
+      "visible_rows": {
+        "ok": 364,
+        "failed": 1,
+        "ignored": 9
+      },
+      "complete_libtest_summary": false,
+      "panic_details_present": false,
+      "timeout_marker_utc": "2026-11-11 15:41:35 UTC"
+    },
+    "not_proved": [
+      "The current c895 trace does not reveal which expect/assertion failed.",
+      "The prior b054 completed_peers=0/expected16 assertion is not transferred to c895.",
+      "The target-wide 300.5-second timeout is not the duration of this particular retrieval.",
+      "GitHub delayed-output timestamps cannot establish the start, finish or elapsed time of an individual peer operation."
+    ],
+    "verified_source_chain": [
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
+        "lines": [
+          422,
+          470
+        ],
+        "finding": "The fixture awaits creation of seventeen distinct owner stores and one grant per owner; it adds no memory rows. Logical request time150 lies within grants effective100/expires1000. It then requires empty candidates, requested16, completed16, failed0, truncated1, omitted0."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+        "lines": [
+          18,
+          27
+        ],
+        "finding": "The fleet root is explicitly canonicalized before constructing each owner layout; no static lexical-versus-physical path mismatch was found in this fixture."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "lines": [
+          480,
+          608
+        ],
+        "finding": "The global two-second deadline begins after fixture setup. Discovery runs owner readers via join_all; all peer attempts share the same deadline. Individual discovery errors become failure slots, and requested_peers includes those slots. requested16 therefore does not prove sixteen successfully discovered readers."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "lines": [
+          529,
+          594
+        ],
+        "finding": "Whole-discovery timeout returns Unavailable; successful discovery may consume the shared deadline, and a later attempt can return DeadlineExpired. These are separate paths from transport, authority and integrity rejection."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_federation.rs",
+        "lines": [
+          561,
+          668
+        ],
+        "finding": "Each discovery opens a query-only pool, validates database identity/integrity and loads live grants. Retrieval checks the capability both before and after candidate I/O."
+      },
+      {
+        "path": "codex-rs/hepta-memory-federation/src/v2.rs",
+        "lines": [
+          593,
+          858
+        ],
+        "finding": "execute_once performs preflight authority, exactly one transport attempt and post-I/O authority under stop-prioritized control. An empty valid terminal response still contributes completed_peers1. Empty memory alone does not imply a failed peer."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "lines": [
+          694,
+          776
+        ],
+        "finding": "Only Valid attempt coverage increments completed_peers. Failure counters distinguish discovery_unavailable, deadline_or_cancelled, authority_rejected, integrity_rejected and transport_unavailable, but the original assertion does not print them."
+      },
+      {
+        "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
+        "lines": [
+          423,
+          440
+        ],
+        "finding": "An explicit async close() exists and documents that plain Drop is not a SQLx/WAL shutdown barrier. This fixture drops each owner at the end of its loop iteration and drops runtime/readers/temp storage on return or unwind; it does not await close(). No current trace proves cleanup contention, failure or leakage, so this is a lifecycle observation, not an established cause."
+      }
+    ],
+    "conclusion": "No uniquely established deterministic implementation error can be derived from the current original evidence. In particular, neither deadline exhaustion, individual SQLite discovery/transport failure, authority rejection nor shutdown activity is uniquely selected by the available c895 FAILED row.",
+    "narrow_future_observation_if_separately_authorized": "Keep all existing assertions and the two-second product deadline. On failure only, expose existing typed coverage counters and fixed-stage elapsed durations, without SQL, paths, memory content or a new attempt. Current evidence does not justify pool changes, retries, timeout extensions or assertion changes."
+  },
+  "code_mode": {
+    "case": "remote_session::connection::driver::tests::concurrent_large_delegate_results_do_not_disconnect_a_backpressured_bulk_lane",
+    "target": "//codex-rs/code-mode:code-mode-unit-tests",
+    "original_observation": {
+      "case_failed_row": 2414,
+      "panic_rows": [
+        2421,
+        2422
+      ],
+      "source_line": 762,
+      "message": "concurrent large results should queue behind the blocked bulk writer: Elapsed(())",
+      "summary_row": 2428,
+      "summary": {
+        "passed": 69,
+        "failed": 1,
+        "ignored": 0,
+        "filtered": 0,
+        "seconds": 25.41
+      },
+      "target_final_row": 12993,
+      "target_outcome": "FAILED",
+      "target_seconds": 27.1
+    },
+    "verified_source_chain": [
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver_tests.rs",
+        "lines": [
+          696,
+          783
+        ],
+        "finding": "The fixture starts129 delegates, separately waits up to10seconds for started>=129, releases them, then waits up to10seconds for bulk_rx.len()>=129 without consuming bulk frames. The actual panic is the second wait, so the first start barrier was reached. The later unrelated-cell start, per-frame decode/size checks and final alive assertion were not reached."
+      },
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver_tests.rs",
+        "lines": [
+          345,
+          373
+        ],
+        "finding": "Each started delegate returns a256KiB string after the same release token is cancelled. This is129 payloads,33,816,576bytes (32.25MiB) before framing, on an in-process channel fixture; no real provider or network host is used."
+      },
+      {
+        "path": "codex-rs/code-mode-protocol/src/host/mod.rs",
+        "lines": [
+          13,
+          14
+        ],
+        "finding": "MAX_PENDING_DELEGATE_CALLS is1024; the bulk mpsc capacity is that constant. The intended129 queued responses do not statically fill this queue. It is not a128-slot overflow."
+      },
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver/delegate_runtime.rs",
+        "lines": [
+          145,
+          193
+        ],
+        "finding": "Each callback task is awaited by a completion forwarder, which sends DelegateCompleted through the16-slot event channel. The driver drains this channel and processes results; senders do not need bulk_rx to consume before the129 expected frames fit."
+      },
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver/delegate_runtime.rs",
+        "lines": [
+          283,
+          332
+        ],
+        "finding": "The driver synchronously encodes each completed result and try_sends it on the selected lane. Full/closed bulk queues cause fail(), rather than an asynchronous wait on bulk capacity."
+      },
+      {
+        "path": "codex-rs/code-mode-protocol/src/host/message.rs",
+        "lines": [
+          159,
+          173
+        ],
+        "finding": "Tool-result DelegateResponse messages select Bulk; only notification acknowledgements and control requests use Control."
+      },
+      {
+        "path": "codex-rs/code-mode-protocol/src/host/codec.rs",
+        "lines": [
+          11,
+          40
+        ],
+        "finding": "The encoded per-frame limit is64MiB. The intended256KiB result is not statically beyond this limit. This source check is not an observed serialization-time measurement."
+      },
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver.rs",
+        "lines": [
+          88,
+          188
+        ],
+        "finding": "The driver selects cancellation first, drains events and forwards result frames; fail marks alive=false, records the first reason, fails requests, cancels delegates and cancels the lifecycle."
+      },
+      {
+        "path": "codex-rs/code-mode/src/remote_session/connection/driver_tests.rs",
+        "lines": [
+          192,
+          196
+        ],
+        "finding": "DriverHarness Drop requests cancellation; it does not await driver_task. On this panic the fixture unwinds. The raw does not record joined cleanup or active-task counts."
+      }
+    ],
+    "not_proved": [
+      "The timeout does not record final bulk queue length, completed-event count, encoder elapsed time, final alive flag or the driver's first failure reason.",
+      "The observed panic is not the fixture's early queue-disconnected assertion. That does not independently establish alive=true at the precise timeout boundary.",
+      "No original evidence isolates scheduler delay, encoding cost, missed completion or a driver failure as the root cause.",
+      "The existing channels and capacities do not demonstrate a deterministic circular wait in the reviewed path."
+    ],
+    "conclusion": "The failure is localized to admission of all129 released results into the blocked-writer bulk queue within the original second10-second interval. Exact source rules out the simple128-slot-capacity explanation. It does not establish a deterministic implementation defect or justify larger waits, retries or changed assertions.",
+    "narrow_future_observation_if_separately_authorized": "Keep both original10-second waits, capacities and all assertions. Capture only already available started/queued counts, alive/finished state and a fixed classified failure reason at the existing failure boundary; no new I/O, model request or attempt."
+  },
+  "execution_scope": {
+    "new_native_commands": 0,
+    "new_model_requests": 0,
+    "new_host_commands": 0,
+    "source_changes": 0,
+    "offline_source_and_log_hash_checks": true
+  },
+  "review_limit": "This report is read-only diagnosis, not a native qualification result or a repaired gate. The original failures and partial target termination remain authoritative."
+}

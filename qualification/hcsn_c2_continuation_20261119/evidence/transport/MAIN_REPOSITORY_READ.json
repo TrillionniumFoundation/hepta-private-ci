@@ -1,0 +1,59 @@
+{
+  "read": {
+    "audit_recorded": true,
+    "job_id": "1a1f2becec2-ffbe-bd9",
+    "stderr": {
+      "bytes_hex": "",
+      "eof": true,
+      "next_offset": 0,
+      "offset": 0,
+      "size": 0,
+      "text": ""
+    },
+    "stdout": {
+      "bytes_hex": "7b2266756c6c5f6e616d65223a225472696c6c696f6e6e69756d466f756e646174696f6e2f68657074612d707269766174652d6369222c2270726976617465223a66616c73657d0a",
+      "eof": true,
+      "next_offset": 72,
+      "offset": 0,
+      "size": 72,
+      "text": "{\"full_name\":\"TrillionniumFoundation/hepta-private-ci\",\"private\":false}\n"
+    }
+  },
+  "status": {
+    "at_unix_ms": 1795073956164,
+    "audit_recorded": true,
+    "automatic_retry": false,
+    "cancelled": false,
+    "exit_code": 0,
+    "job_id": "1a1f2becec2-ffbe-bd9",
+    "launch_nonce": "0a08aca085e51ea56f5dfb1f31c68b75",
+    "log_bytes": {
+      "stderr": {
+        "seen": 0,
+        "stored": 0
+      },
+      "stdout": {
+        "seen": 72,
+        "stored": 72
+      }
+    },
+    "log_errors": {
+      "stderr": null,
+      "stdout": null
+    },
+    "log_synced": {
+      "stderr": true,
+      "stdout": true
+    },
+    "log_truncated": {
+      "stderr": false,
+      "stdout": false
+    },
+    "output_complete": true,
+    "output_durable": true,
+    "state": "succeeded",
+    "terminal_publication_confirmed": true,
+    "terminal_publication_protocol": 1,
+    "timed_out": false
+  }
+}

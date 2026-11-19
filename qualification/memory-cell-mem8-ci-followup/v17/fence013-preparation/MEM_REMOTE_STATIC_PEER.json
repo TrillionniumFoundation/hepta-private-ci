@@ -1,0 +1,50 @@
+{
+  "checks": {
+    "bash_n_blocks": 6,
+    "branch_push_only_and_source_before_anchor": true,
+    "embedded_capture_exact_and_ast": true,
+    "no_continue_on_error": true,
+    "original_job_platform_permissions_and_30_minutes": true,
+    "original_six_steps_equal_except_action_pin_and_observation_ids": true,
+    "single_pinned_action_audit_inputs_preserved": true
+  },
+  "embedded_capture": {
+    "bytes": 11520,
+    "git_blob": "9a976f1d3bc1ff22fec4c2475f4425e08ee89d62",
+    "sha256": "dcfeedbd7c96bab509c0cb38e43824c57fae8651cf84fafd020b10c5fde21f13"
+  },
+  "executed_by_peer": {
+    "bash_syntax_only": true,
+    "fence": false,
+    "models": false,
+    "native": false,
+    "offline_identity_and_yaml_ast_checks": true,
+    "refs": false,
+    "workflow": false
+  },
+  "frozen_files_independently_hash_checked": 12,
+  "limits": [
+    "A pinned action binary and manifest establish the observed artifact identities, not successful policy installation or complete runtime behavior before execution.",
+    "No native tests, model calls, host operations, GitHub Actions or refs were executed or changed by this peer."
+  ],
+  "preparation_manifest": {
+    "bytes": 3181,
+    "git_blob": "65123165af46518d6cd2567ed97fc0c535e29614",
+    "sha256": "751195d903377b6986649aa8c95641b9baf389e0eacd74a1394aa7417d51b5ff"
+  },
+  "reasoning": [
+    "Runner action checkout is prepared during job setup; preflight reads the exact seven Action files before the pinned Fence step. Missing files or any identity mismatch fail preflight; ordinary subsequent steps are not continued on error.",
+    "The new branch must first point at c895 and then advance to its single-workflow child; HARNESS_BEFORE equality, GITHUB_SHA, one parent, original source tree and exact one-path diff all reject an unrelated admission.",
+    "After checkout, all five policy source files are compared to the original source commit; whole worktree cleanliness and full Git source identity are retained before and after checks. The original threshold, allowlist, test selection, clean gate and Fence audit input remain unchanged.",
+    "The after capture always records available step outcomes; source/action mismatch or incomplete evidence returns failure. Its capture_status complete only describes capture and does not claim policy or Fence success. Earlier step failure still fails the overall job.",
+    "The artifact is uploaded before action post hooks. The explicit NOT_FINAL result and original full terminal job log are mandatory; a successful archive/capture is insufficient to accept the Fence post result."
+  ],
+  "review_scope": "Frozen candidate workflow and exact embedded capture code; no execution or upstream runtime semantics claim",
+  "schema": "mem-fence013-independent-static-peer-v1",
+  "status": "NO_STATIC_MUST_FIX",
+  "workflow": {
+    "bytes": 17930,
+    "git_blob": "3e302bd517fcf58eafd314c65afdb864a7d82b06",
+    "sha256": "7174a2c51e265731df14838bc52ddde4986bbbcf8a1290fa769ba1eb6a68b91c"
+  }
+}

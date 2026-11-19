@@ -1,0 +1,70 @@
+name: hcsn-currentstate-n256-corrected-t0-contract
+
+on:
+  pull_request:
+    paths:
+      - "qualification/hcsn_currentstate_n256_corrected_t0_contract/**"
+      - ".github/workflows/hcsn-currentstate-n256-corrected-t0-contract.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-corrected-t0-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify source-only corrected t0 contract
+        run: |
+          set -euo pipefail
+          package=qualification/hcsn_currentstate_n256_corrected_t0_contract
+          mkdir -p "$package/ci-artifact"
+          /usr/bin/time -v python -m unittest "$package/test_contract.py" -v \
+            > "$package/ci-artifact/TEST_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_STDERR.txt"
+          /usr/bin/time -v python -O -m unittest "$package/test_contract.py" -v \
+            > "$package/ci-artifact/TEST_OPT_STDOUT.txt" \
+            2> "$package/ci-artifact/TEST_OPT_STDERR.txt"
+          python "$package/static_inspector.py" \
+            --source "$package/contract.py" \
+            --request "$package/REQUEST.json" \
+            > "$package/ci-artifact/REPORT.json"
+          python "$package/verify_source.py" > "$package/ci-artifact/VERIFY.txt"
+          python -m compileall -q "$package"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          package = Path("qualification/hcsn_currentstate_n256_corrected_t0_contract")
+          report = json.loads((package / "ci-artifact/REPORT.json").read_text())
+          if report["status"] != "PASS_CORRECTED_T0_CONTRACT_SOURCE_ONLY_HOLD":
+              raise SystemExit("unexpected source-only status")
+          counts = {
+              "authentic_capsules": 0,
+              "authentic_coordinates": 0,
+              "authentic_serializer_calls": 0,
+              "dynamic_runs": 0,
+              "matrix_exponential_actions": 0,
+              "provider_calls": 0,
+              "torch_calls": 0,
+              "optimizer_steps": 0,
+              "largegrid_qualification": False,
+              "all_closed": False,
+          }
+          (package / "ci-artifact/COUNTS.json").write_text(
+              json.dumps(counts, indent=2, sort_keys=True) + "\n"
+          )
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hcsn-n256-corrected-t0-contract-${{ github.sha }}
+          path: qualification/hcsn_currentstate_n256_corrected_t0_contract/ci-artifact
+          if-no-files-found: error
+          retention-days: 30

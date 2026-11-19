@@ -1,0 +1,46 @@
+{
+  "actions": [
+    {
+      "cpu_seconds": 0.08520047899999994,
+      "csr_bytes": 10240,
+      "nnz": 767,
+      "order": 258,
+      "wall_seconds": 0.08520208999999568
+    },
+    {
+      "cpu_seconds": 0.08702970300000001,
+      "csr_bytes": 13340,
+      "nnz": 1025,
+      "order": 259,
+      "wall_seconds": 0.08704805900000423
+    }
+  ],
+  "all_closed": false,
+  "authentic_input_loads": 1,
+  "channel_balance_residuals": [
+    4.1204514877413254e-15,
+    2.598661480322629e-16,
+    -6.995801283072917e-17,
+    -2.9101950367157385e-16,
+    -2.096665418898898e-16
+  ],
+  "coordinate_counts": {
+    "packet": 67128,
+    "packet_alpha": 1320,
+    "packet_generator": 65544,
+    "packet_output": 264,
+    "state": 2600,
+    "total": 69728
+  },
+  "dense_expm_actions": 0,
+  "dynamic_steps": 1,
+  "full_roster_qualification": false,
+  "largegrid_qualification": false,
+  "optimizer_steps": 0,
+  "packet_count": 9,
+  "payload_sha256": "248cfc56d575b15d4a8340267e8b668fd0b6dc94be71b61e2b0cec8b913981b1",
+  "probability_active_minimum": 0.0,
+  "serialized_bytes": 560358,
+  "sparse_exponential_actions": 2,
+  "torch_calls": 0
+}

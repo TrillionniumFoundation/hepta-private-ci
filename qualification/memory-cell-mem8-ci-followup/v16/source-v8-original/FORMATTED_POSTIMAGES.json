@@ -1,0 +1,40 @@
+{
+  "source": "1c063ba9e934f060181d4fc17d724361ba2a37fd",
+  "initial_tree": "4e702e173439f422a7d00917d3c94064e42d45aa",
+  "formatted_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "run_id": 43046107709,
+  "job_id": 130610340916,
+  "attempt": 1,
+  "all_114_retained_paths_unchanged": true,
+  "actual_formatter_changes": [
+    {
+      "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+      "preimage": {
+        "bytes": 11145,
+        "sha256": "d8d4561eafefa4cd63f4b26eaf921097f23e696c494a9d930221599269b294d2",
+        "git_blob": "7f4c84e566250831293392d6b85f6e0a3b236a23"
+      },
+      "postimage": {
+        "bytes": 11142,
+        "sha256": "dab92a6a3283564c9f2ca10bae5255873bd3a54902f0236127831ddde4cd47a6",
+        "git_blob": "7dcfa0c3268af5720c27fe283a351db9de0f2e30"
+      },
+      "local": "/workspace/scratch/ed3538174819/mem8-source-v8-original-run/canonical-original/records/post-format/codex-rs/windows-sandbox-rs/src/elevated_impl.rs"
+    },
+    {
+      "path": "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs",
+      "preimage": {
+        "bytes": 6817,
+        "sha256": "f4035ccd79119eb328c800bfd6c3b541225e7d909cab659a5dc6a714a645c6b6",
+        "git_blob": "3f8a8f401b71b72c274daae62f744060b4d58cbf"
+      },
+      "postimage": {
+        "bytes": 6813,
+        "sha256": "6ecb06e2b478a45764833917aa4600b3361a4c2d2a3ddcd6231eba00db61ec16",
+        "git_blob": "ee46d664d9abd0f085958d1cb333baa155aceb5b"
+      },
+      "local": "/workspace/scratch/ed3538174819/mem8-source-v8-original-run/canonical-original/records/post-format/codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+    }
+  ],
+  "scope": "Source-only formatter, Python regression, caller and tree proof; no native compile, new Bazel graph solution or provider qualification."
+}

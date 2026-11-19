@@ -1,0 +1,57 @@
+{
+  "schema": "mem-code-mode-startup-peer-readback-supplement-v1",
+  "created_utc": "2026-11-11T10:10:05.350Z",
+  "prior_review_blob": "6bb26191410fc4af9796e976b54b554bf3b2163d",
+  "resolved_prior_unknowns": {
+    "original_local_read_completed": true,
+    "original_patch_bytes": 5965,
+    "original_patch_sha256": "08271b200f4fde0a1e09faaa8f7035249d2bb658885d4c6810f2c3a4fab1a225",
+    "immutable_patch_matches_original_local_bytes": true
+  },
+  "actual_full_git_readbacks": [
+    {
+      "name": "host",
+      "blob": "395bb83307ed0503da6f7a456d5615489a87353d",
+      "bytes": 5682,
+      "sha256": "206d5601e87d64ca858c3ac567850b07233894bf27a836f5776e906d84db6162",
+      "full_readback": true
+    },
+    {
+      "name": "grpc_tcp",
+      "blob": "1ae86e08f5268ff9dcf4f24764009a2c5b0ba0cb",
+      "bytes": 5809,
+      "sha256": "6bb8d2617b93643fd1e5e7c6b5f696415bd1d5cb048bdd313a625ba38fb2e4a2",
+      "full_readback": true
+    },
+    {
+      "name": "original_patch",
+      "blob": "17285619dee1fac7a1e959e9c84a321214d44d38",
+      "bytes": 5965,
+      "sha256": "08271b200f4fde0a1e09faaa8f7035249d2bb658885d4c6810f2c3a4fab1a225",
+      "full_readback": true
+    }
+  ],
+  "replay": [
+    {
+      "path": "codex-rs/code-mode-host/tests/support/host.rs",
+      "base_blob": "ed2a8cfdd082c4a2564e3ac4d8824a81cccf0ab4",
+      "post_blob": "395bb83307ed0503da6f7a456d5615489a87353d",
+      "full_patch_replay_matches": true
+    },
+    {
+      "path": "codex-rs/code-mode-host/tests/grpc_tcp.rs",
+      "base_blob": "b15699b9447a733989567daf593230cf0ad4c007",
+      "post_blob": "1ae86e08f5268ff9dcf4f24764009a2c5b0ba0cb",
+      "full_patch_replay_matches": true
+    }
+  ],
+  "static_conclusion": "No static must-fix remains after exact two-postimage full readback and complete patch replay against exact2ae preimages.",
+  "not_performed": [
+    "Rustfmt",
+    "Rust compilation",
+    "native tests",
+    "model calls",
+    "host execution",
+    "repository ref change"
+  ]
+}

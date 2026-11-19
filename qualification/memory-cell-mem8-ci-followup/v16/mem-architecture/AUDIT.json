@@ -1,0 +1,924 @@
+{
+  "schema": "mem8.b054.mem-architecture.original-audit.v1",
+  "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "artifacts": [
+    {
+      "artifact_id": 13864355906,
+      "archive": {
+        "bytes": 1279062,
+        "sha256": "d87eabc4a324bf44fcd6b3f7408e5bd4c9420a3175301402b1876243f716de0c"
+      },
+      "members": 19
+    },
+    {
+      "artifact_id": 13863093381,
+      "archive": {
+        "bytes": 50552,
+        "sha256": "ce0395fb24e373089da742017b08773bf114a7f0acedde24fc442a96bb7eefd5"
+      },
+      "members": 6
+    },
+    {
+      "artifact_id": 13861644625,
+      "archive": {
+        "bytes": 51482,
+        "sha256": "da383b3e701d89a46f0cc779ed910d6b4573f29591b7d09af68061068c5394cb"
+      },
+      "members": 78
+    },
+    {
+      "artifact_id": 13862932588,
+      "archive": {
+        "bytes": 14008,
+        "sha256": "a54fb9508736e0d1d43c2154da36f338d89fc84f8dd31d4964b07f592a9eaea9"
+      },
+      "members": 20
+    },
+    {
+      "artifact_id": 13862859146,
+      "archive": {
+        "bytes": 125271736,
+        "sha256": "41e2d94ddefe3926649e8af46dcaf3551b35649d987ece4385ce80bbc2bfb61b"
+      },
+      "members": 10
+    }
+  ],
+  "MEM_python_integrity": {
+    "passed": 35,
+    "failed": 0
+  },
+  "MEM_CPU_contract_tests_executed": 0,
+  "MEM_native_tests_executed": 0,
+  "MEM_format_on_exact_source": "passed_without_rewrites",
+  "Architecture_source_python": {
+    "passed": 136,
+    "failed": 0
+  },
+  "Architecture_base_merge_python": {
+    "passed": 136,
+    "failed": 0,
+    "merge_commit": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41"
+  },
+  "Architecture_python_observations": 272,
+  "Architecture_unique_python_ids": 136,
+  "Architecture_native_tests_executed": 0,
+  "Architecture_source_derived_check_executed": false,
+  "synthetic_campaign": {
+    "reader_processes": 14,
+    "writer_processes": 3,
+    "scenario_ids": [
+      "live_updated_fact",
+      "snapshot_current_fact",
+      "snapshot_active_chain",
+      "restricted_dependency_closure",
+      "snapshot_off",
+      "snapshot_retrieval_off",
+      "snapshot_delivery_off",
+      "revoked_live_fact",
+      "revoked_snapshot_fact",
+      "revoked_snapshot_bm25",
+      "revoked_snapshot_uniform",
+      "revoked_snapshot_icl",
+      "unrelated_snapshot_fact",
+      "unrelated_live_fact"
+    ],
+    "request_response_context_hashes_checked": true,
+    "model_calls": 0,
+    "deletion_scope": "logical read exclusion; snapshot bytes remain",
+    "real_task_benefit": false,
+    "independent_trust_domain": false,
+    "full_owner_cold_recovery": false
+  },
+  "source_archive": {
+    "source_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+    "source_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+    "archive": {
+      "bytes": 125284646,
+      "sha256": "ad8929b86f82639830dda8b7c0cc517d1be5089090aa176be7e0f944a8f902aa",
+      "git_blob": "e7c85804812d7f87574fc96b9e511b24e72dc2eb"
+    },
+    "tar_global_pax": {
+      "comment": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b"
+    },
+    "all_14050_source_entries_match_immutable_git_tree": true
+  },
+  "historical_counts_not_transferred": true,
+  "archived_tests_executed_during_audit": 0,
+  "groups": [
+    {
+      "artifact_id": 13861644625,
+      "receipt": "tests.json",
+      "receipt_identity": {
+        "bytes": 1655,
+        "sha256": "e8d4740c4c9b84e076b30bdf9c9c8e0f164e920e843b376ca528ca06955b0e77",
+        "git_blob": "409836b334047ab2a2b101a0b91052c6834471d9"
+      },
+      "log": "tests.json.74e18f91cb8e47d7ad865198220d4f5f.log",
+      "log_identity": {
+        "bytes": 7097,
+        "sha256": "16741b87fb4bf037941a230bf70ebf33b6fbdb1c057e8db55d9007b52e2053f6",
+        "git_blob": "794192acd201ddbd8067adcfdf685ec324299183"
+      },
+      "command": [
+        "python",
+        "-B",
+        "-m",
+        "unittest",
+        "-v",
+        "ndu_real_runtime.test_episodic_memory",
+        "ndu_real_runtime.test_episodic_retrieval",
+        "ndu_real_runtime.test_episodic_qualification",
+        "ndu_real_runtime.test_revocation_qualification"
+      ],
+      "case_ids": [
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_bounded_tombstones_prevent_replay_and_admission_rolls_back",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_byte_admission_failure_preserves_existing_data_and_generation",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_caller_cannot_mutate_stored_provenance_or_returned_record",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_current_authority_is_required_and_snapshot_has_its_identity",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_empty_snapshot_and_valid_old_dependency_chain_remain_readable",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_namespace_isolation_and_foreign_dependency_rejection",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_cannot_move_records_before_their_write",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_redigested_snapshot_requires_a_consistent_historical_roster",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_reverse_key_order_chain_revokes_entire_dependency_closure",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_revoke_removes_payload_and_old_snapshot_never_reactivates_it",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_corruption_and_forged_record_are_rejected",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_snapshot_rejects_fifo_directory_and_symlink_before_read",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_cannot_create_an_indirect_dependency_cycle",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_update_revokes_transitive_dependencies_and_filters_old_snapshot",
+        "ndu_real_runtime.test_episodic_memory.EpisodicMemoryTests.test_working_state_is_copied_bounded_and_cleared_on_new_session",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_callback_cannot_change_original_source_allowlist",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_exact_kv_and_bm25_only_read_approved_sources",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_foreign_dependency_and_transitive_summary_are_not_retrieved",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_namespace_or_authority_replacement_aborts_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_inflight_revocation_of_a_dependency_aborts_summary_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_modes_separate_store_read_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_new_process_cli_reads_then_rejects_revoked_snapshot",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_ranking_cannot_deliver_a_fact_revoked_or_updated_during_the_read",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_real_callback_and_its_ablation_do_not_mutate_evidence",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipt_rejects_changed_context_records_or_audit_fields",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_receipts_allow_actual_empty_partial_and_disabled_callback_paths",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_contradictory_interventions",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_digest_does_not_hide_roster_loss_duplication_or_reordering",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_receipts_reject_malformed_schema_bounds_and_authority",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_recomputed_record_and_receipt_reject_impossible_chronology",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_separate_writer_process_cannot_revoke_between_retrieval_and_delivery",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_suppressed_delivery_does_not_revalidate_or_emit_revoked_content",
+        "ndu_real_runtime.test_episodic_retrieval.EpisodicRetrievalTests.test_uniform_replay_and_icl_are_bounded_deterministic_baselines",
+        "ndu_real_runtime.test_episodic_qualification.FreshProcessQualificationTests.test_exited_writers_new_readers_and_actual_deliveries",
+        "ndu_real_runtime.test_revocation_qualification.RevocationQualificationTests.test_active_post_update_snapshot_and_chain_are_revoked_in_new_readers"
+      ],
+      "passed": 35,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:36.505825+00:00",
+      "finished_at": "2026-11-11T14:08:40.238899+00:00"
+    },
+    {
+      "artifact_id": 13864355906,
+      "receipt": "format.json",
+      "receipt_identity": {
+        "bytes": 1471,
+        "sha256": "9cda6c932a94e223ca6a16c43d3fff665f4306196f69306e35c6d10bd1a6cb9f",
+        "git_blob": "cb67193ef1780b41098d5acab831e913feeaed35"
+      },
+      "log": "format.json.bb9268b127c740bab8320f210b7d5085.log",
+      "log_identity": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "git_blob": "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391"
+      },
+      "command": [
+        "just",
+        "fmt",
+        "--base",
+        "96038ccf0660154fac143ba6cbe4be81e00813e8"
+      ],
+      "case_ids": [],
+      "passed": 0,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:55.232837+00:00",
+      "finished_at": "2026-11-11T14:09:01.662127+00:00"
+    },
+    {
+      "artifact_id": 13862859146,
+      "receipt": "repository-controls.json",
+      "receipt_identity": {
+        "bytes": 1656,
+        "sha256": "554b39321ccf09e56a61ea20293e2c0be4c0d61793c6744bc32eb53b688a7fed",
+        "git_blob": "781c8c6bb69617160366f373463f40165999aea8"
+      },
+      "log": "repository-controls.json.3933752fc2c442b781f80b3d243743a8.log",
+      "log_identity": {
+        "bytes": 12097,
+        "sha256": "7a69aff8cc78da5aa5bf7815e09fb04045faa3e30d269c13710daab710a33333",
+        "git_blob": "e495b7c637b19a407549fdf6334999f075de09f0"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_repository_controls",
+        "scripts.test_hepta_control_hardening",
+        "scripts.test_hepta_candidate_transport_workflow",
+        "scripts.test_hepta_merge_identity_records"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_activation_is_not_self_authorized",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_admin_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_any_app_cannot_sign_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_api_denial_cannot_be_replaced_with_source_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_app_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_boolean_does_not_count_as_one_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_context_name_alone_is_not_an_independent_identity",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_explicit_disabled_reviews_do_not_replace_independent_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_force_push_enabled",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_unprotected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_codeowner_review_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_extra_required_gate_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_review_policy_is_not_observed_disabled_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_neutral_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_new_pending_invalidates_old_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_no_reviews_required",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_old_main_head",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_codeowner_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_last_push_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_stale_review_dismissal",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_pagination_reads_beyond_first_page",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_policy_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_shared_actions_identity_is_not_independent",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_skipped_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_stale_base_allowed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_strict_observed_profile",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unbounded_pagination_fails_instead_of_certifying_prefix",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_admin_enforcement",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_codeowner_policy_is_rejected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_force_push_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_owner_policy_rejects_before_loading_check_history",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_untrusted_success_cannot_replace_trusted_failure",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_user_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_sha_check_not_reused",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_trusted_app",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_has_a_request_timeout",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_timeout_never_emits_success",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_boolean_observed_identity_is_not_app_one",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_evaluator_cannot_also_publish_blocking_check",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_extra_required_context_must_pin_its_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_oversized_check_page_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_and_conversation_controls_cannot_be_inferred_from_fixture",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_can_disable_review_without_substituting_check_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_unpinned_blocking_context_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_valid_distinct_pinned_sources",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_wrong_branch_fails_before_collecting_checks",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_failure_is_retained_and_not_swallowed",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_success_does_not_become_failure",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_auth_network_policy_and_success_remain_unknown_observations",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_preserves_verified_controls_and_reports_transport_unknown",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_transport_denial_cannot_replace_failed_live_protection",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_explicit_authenticated_write_denial_is_narrow_observation",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_missing_token_and_bad_repository_never_access_network",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_read_api_failure_does_not_probe_or_pass",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_repository_identity_mismatch_rejected",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_response_size_is_bounded",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_timeout_is_not_denial_and_closes_connection",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_advisory_observation_follows_behavior_and_does_not_replace_required_native_result",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_explicit_denial_is_retained_without_claiming_other_permissions",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_prerequisites_and_lock_check_precede_native_builds",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_timeout_is_unknown_not_a_permission_denial",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_unknown_transport_is_retained_without_claiming_write_denial",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_commit_api_failure_retains_ref_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_different_tree_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_exact_parents_and_tree_succeed_with_observations",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_merge_conflict_is_refused_and_git_output_is_retained",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_ref_api_failure_retains_expected_identity_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_single_parent_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_base_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_source_is_refused_and_observed"
+      ],
+      "passed": 73,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:54.296448+00:00",
+      "finished_at": "2026-11-11T14:08:55.928373+00:00"
+    },
+    {
+      "artifact_id": 13862859146,
+      "receipt": "runner-tests.json",
+      "receipt_identity": {
+        "bytes": 1522,
+        "sha256": "d21138f60adf9899ce7e656784f80030a0eda848729935ac5d1a5a8515364f2f",
+        "git_blob": "874f0a68e17f30cba2cf51c25b41987ac777ac88"
+      },
+      "log": "runner-tests.json.f6d594fc1a0a45629f9eea5daca7e5d2.log",
+      "log_identity": {
+        "bytes": 7126,
+        "sha256": "6718b1edb85d15b60ab545ea3e473501274fdbe736f51f258209378eefb1d864",
+        "git_blob": "58ca9f5f56c928d18dcee325c0cf0eb611e139b7"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_exec*.py"
+      ],
+      "case_ids": [
+        "test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_cli_retains_failed_receipt_instead_of_successful_parent_exit",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_detached_pipe_holder_does_not_deadlock_stream_close",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_diagnostics_before_timeout_survive",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_eof_is_not_completion",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_invalid_bounds_dispatch_nothing",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_normal_exit_is_not_a_timeout",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_output_cap_remains_independent_of_deadline",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_silent_process_times_out",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_bounded_output_kills_command_and_preserves_bounded_prefix",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_compile_only_success_does_not_satisfy_test_gate",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_deleted_receipt_does_not_allow_overwriting_an_earlier_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_empty_other_test_binaries_do_not_invalidate_real_selected_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_existing_log_cannot_be_reused",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_ignored_tests_are_not_executed_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_nextest_summary_does_not_double_count_nested_libtest",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_no_test_requirement_keeps_existing_non_test_commands_compatible",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_failure_output_and_digest_are_retained",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_empty_suite_fails_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_partial_skip_counts_only_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_skip_and_expected_failure_do_not_count_as_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_success_satisfies_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_unexpected_success_is_failure",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_successful_source_mutation_is_still_rejected",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_nextest_timeout_is_not_a_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_unittest_failure_cannot_become_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unfinished_unittest_footer_is_not_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success"
+      ],
+      "passed": 45,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:45.581268+00:00",
+      "finished_at": "2026-11-11T14:08:54.239399+00:00"
+    },
+    {
+      "artifact_id": 13862859146,
+      "receipt": "scope-tests.json",
+      "receipt_identity": {
+        "bytes": 1488,
+        "sha256": "87221ca6a94de49c8254db399d27283a5edad837f9e93b0b93e95a9b96f27748",
+        "git_blob": "7258c1bf09bf84e6696603f55591e28005e017a8"
+      },
+      "log": "scope-tests.json.8c6a9fba0e084d3ea7745f0c2707aa30.log",
+      "log_identity": {
+        "bytes": 3009,
+        "sha256": "ada4a59eca84ee595eca191a65f9d5962b18bbef98b22c8b3a30aa1b97ccf27f",
+        "git_blob": "35aea07deaa7eeb25532f78aacafcb5a40551e86"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_bad_paths_fail_instead_of_selecting_nothing",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_code_owned_markdown_is_not_assumed_pure_prose",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_commit_id_validation_precedes_subprocess",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_effectful_retirement_keeps_lifecycle_and_effect_tests",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_module_projections_do_not_force_native_builds",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_projection_is_derived_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_git_diff_covers_real_rename_and_deleted_path",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_inference_local_change_does_not_run_browser_learning_or_objective",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_manual_full_keeps_all_groups_even_with_no_paths",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_plasticity_change_runs_learning_and_lifecycle_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_readme_and_ordinary_prose_do_not_prepare_native_dependencies",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_registry_is_runtime_consumed_lifecycle_input",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_rename_keeps_source_and_destination_groups",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_repository_policy_regressions_keep_their_python_scope",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_runtime_module_abi_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_shared_types_and_agentd_keep_cross_domain_coverage",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_topology_contract_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_unknown_or_executable_document_selects_full"
+      ],
+      "passed": 18,
+      "failed": 0,
+      "lane": "source-head",
+      "tested_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:44.972687+00:00",
+      "finished_at": "2026-11-11T14:08:45.480707+00:00"
+    },
+    {
+      "artifact_id": 13862932588,
+      "receipt": "derived.json",
+      "receipt_identity": {
+        "bytes": 1649,
+        "sha256": "2a5c267015c19553c57b63cfc7f15ab44ab24c7199022aa6db20731be0f09be1",
+        "git_blob": "9e72ab04b5c4f8b68b443de3a5beefb476e84ec0"
+      },
+      "log": "derived.json.b76faaefc72b468daab825fbd2b12ad5.log",
+      "log_identity": {
+        "bytes": 42,
+        "sha256": "dd338ae2d65000941c4a2c3afe356096d35c98d69ca23ec86c7b98ba0490ab1f",
+        "git_blob": "ca053c29c2105cdcfb3f441d667da91fc01b0a9f"
+      },
+      "command": [
+        "python3",
+        "scripts/hepta-module-docs.py",
+        "refresh-derived",
+        "--check"
+      ],
+      "case_ids": [],
+      "passed": 0,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:58.642948+00:00",
+      "finished_at": "2026-11-11T14:08:58.764676+00:00"
+    },
+    {
+      "artifact_id": 13862932588,
+      "receipt": "repository-controls.json",
+      "receipt_identity": {
+        "bytes": 1826,
+        "sha256": "5e6d4951374032711d883037495a491890c7656fd7c1c5a468108b4453b05d1f",
+        "git_blob": "b9c4d2f37a193957bd3a6e29533f467b0aa3c5c6"
+      },
+      "log": "repository-controls.json.e19c24f2ab7f4256b3805b131111d50b.log",
+      "log_identity": {
+        "bytes": 12097,
+        "sha256": "f9bbc60939b2f1a3fc3739edc0e30b752d3370323aeec0c54865d483eb9face5",
+        "git_blob": "9f8de117f6c0a627b743ac85130cb3e2b3f9f46c"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_repository_controls",
+        "scripts.test_hepta_control_hardening",
+        "scripts.test_hepta_candidate_transport_workflow",
+        "scripts.test_hepta_merge_identity_records"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_activation_is_not_self_authorized",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_admin_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_any_app_cannot_sign_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_api_denial_cannot_be_replaced_with_source_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_app_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_boolean_does_not_count_as_one_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_context_name_alone_is_not_an_independent_identity",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_explicit_disabled_reviews_do_not_replace_independent_evaluation",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_force_push_enabled",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_main_unprotected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_codeowner_review_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_extra_required_gate_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_missing_review_policy_is_not_observed_disabled_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_neutral_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_new_pending_invalidates_old_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_no_reviews_required",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_old_main_head",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_codeowner_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_last_push_review",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_owner_may_disable_stale_review_dismissal",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_pagination_reads_beyond_first_page",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_policy_drift_during_observation_fails",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_shared_actions_identity_is_not_independent",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_skipped_is_not_success",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_stale_base_allowed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_strict_observed_profile",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unbounded_pagination_fails_instead_of_certifying_prefix",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_admin_enforcement",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_codeowner_policy_is_rejected",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_conversation_policy_fails_closed",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_force_push_policy",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_unknown_owner_policy_rejects_before_loading_check_history",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_untrusted_success_cannot_replace_trusted_failure",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_user_review_bypass",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_sha_check_not_reused",
+        "scripts.tests.test_hepta_repository_controls.RepositoryControlTests.test_wrong_trusted_app",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_has_a_request_timeout",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_api_timeout_never_emits_success",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_boolean_observed_identity_is_not_app_one",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_evaluator_cannot_also_publish_blocking_check",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_extra_required_context_must_pin_its_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_oversized_check_page_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_and_conversation_controls_cannot_be_inferred_from_fixture",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_owner_can_disable_review_without_substituting_check_source",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_unpinned_blocking_context_rejected",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_valid_distinct_pinned_sources",
+        "scripts.test_hepta_control_hardening.CheckSourceTests.test_wrong_branch_fails_before_collecting_checks",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_failure_is_retained_and_not_swallowed",
+        "scripts.test_hepta_control_hardening.FormattingCommandTests.test_format_success_does_not_become_failure",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_auth_network_policy_and_success_remain_unknown_observations",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_preserves_verified_controls_and_reports_transport_unknown",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_cli_transport_denial_cannot_replace_failed_live_protection",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_explicit_authenticated_write_denial_is_narrow_observation",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_missing_token_and_bad_repository_never_access_network",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_read_api_failure_does_not_probe_or_pass",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_repository_identity_mismatch_rejected",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_response_size_is_bounded",
+        "scripts.test_hepta_control_hardening.TransportObservationTests.test_timeout_is_not_denial_and_closes_connection",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_advisory_observation_follows_behavior_and_does_not_replace_required_native_result",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_explicit_denial_is_retained_without_claiming_other_permissions",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_prerequisites_and_lock_check_precede_native_builds",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_timeout_is_unknown_not_a_permission_denial",
+        "scripts.test_hepta_candidate_transport_workflow.CandidateTransportWorkflowTests.test_unknown_transport_is_retained_without_claiming_write_denial",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_commit_api_failure_retains_ref_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_different_tree_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_exact_parents_and_tree_succeed_with_observations",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_merge_conflict_is_refused_and_git_output_is_retained",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_ref_api_failure_retains_expected_identity_and_failure",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_single_parent_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_base_is_refused_and_observed",
+        "scripts.test_hepta_merge_identity_records.MergeIdentityRecordTests.test_stale_source_is_refused_and_observed"
+      ],
+      "passed": 73,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:57.061259+00:00",
+      "finished_at": "2026-11-11T14:08:58.580038+00:00"
+    },
+    {
+      "artifact_id": 13862932588,
+      "receipt": "runner-tests.json",
+      "receipt_identity": {
+        "bytes": 1698,
+        "sha256": "ff6fcbe184bea9a619b0b8aa3eb3166543027d0dbc9a6a27ad7a39e629768ff7",
+        "git_blob": "88a11be1efabda94796b51b0ab07bb7823b0aaad"
+      },
+      "log": "runner-tests.json.aa03c3875f1e44b3987afda19ff45c85.log",
+      "log_identity": {
+        "bytes": 7126,
+        "sha256": "cf94baf05ada19051d5370bd8b60373e845f549be66fb86e4a5600c9e89ccd0a",
+        "git_blob": "029e8c6523dd69d0b8a0627778800f90ecd44f32"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "scripts",
+        "-p",
+        "test_hepta_ci_exec*.py"
+      ],
+      "case_ids": [
+        "test_hepta_ci_exec.ExecutionRecordTests.test_actual_command_success_binds_source_tree_parents_and_argv",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_conflicting_merge_never_dispatches_an_arbitrary_resolution",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_divergent_clean_merge_records_recomputed_tree",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_existing_receipt_cannot_be_overwritten_or_reused",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_killed_command_is_failed_not_passed",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_matching_parents_with_wrong_tree_reject_before_command",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_merge_lane_rejects_symbolic_base_identity",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_nonzero_command_is_retained_and_not_converted_to_pass",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_shallow_checkout_records_real_commit_parents_not_traversal_grafts",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_source_lane_cannot_relabel_another_commit",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_successful_command_mutating_source_still_fails",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_synthetic_merge_accepts_only_exact_ordered_parents",
+        "test_hepta_ci_exec.ExecutionRecordTests.test_wrong_checkout_and_dirty_inputs_never_dispatch",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_preserves_test_targets_and_strict_lint_arguments",
+        "test_hepta_ci_exec.WorkflowCommandBindingTests.test_shell_test_failure_has_no_lint_pass_receipt",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_cli_retains_failed_receipt_instead_of_successful_parent_exit",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_detached_pipe_holder_does_not_deadlock_stream_close",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_diagnostics_before_timeout_survive",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_eof_is_not_completion",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_invalid_bounds_dispatch_nothing",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_normal_exit_is_not_a_timeout",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_output_cap_remains_independent_of_deadline",
+        "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_silent_process_times_out",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_bounded_output_kills_command_and_preserves_bounded_prefix",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_compile_only_success_does_not_satisfy_test_gate",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_deleted_receipt_does_not_allow_overwriting_an_earlier_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_empty_other_test_binaries_do_not_invalidate_real_selected_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_existing_log_cannot_be_reused",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_ignored_tests_are_not_executed_tests",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_nextest_summary_does_not_double_count_nested_libtest",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_no_test_requirement_keeps_existing_non_test_commands_compatible",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_failure_output_and_digest_are_retained",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_empty_suite_fails_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_partial_skip_counts_only_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_skip_and_expected_failure_do_not_count_as_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_success_satisfies_minimum",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_real_unittest_unexpected_success_is_failure",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_successful_source_mutation_is_still_rejected",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_nextest_timeout_is_not_a_pass",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_swallowed_unittest_failure_cannot_become_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unfinished_unittest_footer_is_not_success",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_unittest_footer_at_eof_is_counted",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_wrong_source_never_creates_a_command_log",
+        "test_hepta_ci_exec_output.CommandOutputTests.test_zero_tests_is_failure_even_with_process_success"
+      ],
+      "passed": 45,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:48.590380+00:00",
+      "finished_at": "2026-11-11T14:08:57.004755+00:00"
+    },
+    {
+      "artifact_id": 13862932588,
+      "receipt": "scope-tests.json",
+      "receipt_identity": {
+        "bytes": 1659,
+        "sha256": "42913e3be1fb76429b6c4105a8d2c8d335353a21a2358bdb5f7924d41d50c751",
+        "git_blob": "a1aef7221f144bfeb086bc8548de38ba013ce788"
+      },
+      "log": "scope-tests.json.bfc2ac93ac4a46ac8d80ae8b1a7c15b7.log",
+      "log_identity": {
+        "bytes": 3009,
+        "sha256": "ea7292538f55609833aa8b49df7e6a7243471197661ac22378a54281273504e4",
+        "git_blob": "58d8d3f3ec115aa9120939bf633ca207d7177261"
+      },
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.tests.test_hepta_ci_scope"
+      ],
+      "case_ids": [
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_bad_paths_fail_instead_of_selecting_nothing",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_code_owned_markdown_is_not_assumed_pure_prose",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_commit_id_validation_precedes_subprocess",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_effectful_retirement_keeps_lifecycle_and_effect_tests",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_module_projections_do_not_force_native_builds",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_generated_projection_is_derived_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_git_diff_covers_real_rename_and_deleted_path",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_inference_local_change_does_not_run_browser_learning_or_objective",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_manual_full_keeps_all_groups_even_with_no_paths",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_plasticity_change_runs_learning_and_lifecycle_only",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_readme_and_ordinary_prose_do_not_prepare_native_dependencies",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_registry_is_runtime_consumed_lifecycle_input",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_rename_keeps_source_and_destination_groups",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_repository_policy_regressions_keep_their_python_scope",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_runtime_module_abi_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_shared_types_and_agentd_keep_cross_domain_coverage",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_topology_contract_stays_on_lifecycle_boundary",
+        "scripts.tests.test_hepta_ci_scope.ScopeTests.test_unknown_or_executable_document_selects_full"
+      ],
+      "passed": 18,
+      "failed": 0,
+      "lane": "base-merge",
+      "tested_sha": "52c1eb3eba7e58a09f262bd2bfec5440fa3e3d41",
+      "source_sha": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+      "tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+      "source_before_after_clean": true,
+      "started_at": "2026-11-11T14:08:48.319858+00:00",
+      "finished_at": "2026-11-11T14:08:48.493825+00:00"
+    }
+  ],
+  "skipped_steps": [
+    {
+      "job_id": 130573423007,
+      "step": "Check real actor and independent candidate evidence"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check identical-support selectors and bound action receipts"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check replay matching and incomplete-run accounting"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check full-trajectory replay matching and failure accounting"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check prospective selector plans, failures and independent scoring"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check frozen cohort and failed-attempt accounting"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check composition paths and partial native failure costs"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Check fixed-public retention attribution and fresh-session memory"
+    },
+    {
+      "job_id": 130573423007,
+      "step": "Post Run actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Resolve repository-verified V8 inputs for the control stage"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Test staged memory owner contracts on unchanged source"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Build and bind the exact Codex executable for real App Server drain"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Test staged Agentd control contracts on unchanged source"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Test the qualification feature preserves explicit memory isolation"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Test protocol package after the control stage is present"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Run scoped fixes after tests and reject any source rewrite"
+    },
+    {
+      "job_id": 130573423206,
+      "step": "Post Run astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Verify GitHub prospective merge ref matches this exact candidate"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Construct the canonical prospective merge"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Expose DotSlash for existing integration tests"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Resolve verified V8 artifacts"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Verify Cargo lock resolution and print exact resolver drift"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Inference owner regressions and streaming digest"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Durable operation and external-effect recovery"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Module lifecycle generations and migration rollback"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Objective and prompt policy convergence"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Converged authority and browser semantics"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Selected-artifact adoption and explicit rollback"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Compiled service lifecycle and actual process restart"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Derived-view drift"
+    },
+    {
+      "job_id": 130573424803,
+      "step": "Verify unchanged reviewed source"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Prepare native prerequisites"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Run facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Expose DotSlash for existing integration tests"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Run taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Resolve verified V8 artifacts"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Verify Cargo lock resolution and print exact resolver drift"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Inference owner regressions and streaming digest"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Durable operation and external-effect recovery"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Module lifecycle generations and migration rollback"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Objective and prompt policy convergence"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Converged authority and browser semantics"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Selected-artifact adoption and explicit rollback"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Compiled service lifecycle and actual process restart"
+    },
+    {
+      "job_id": 130573424857,
+      "step": "Retain exact source input on failure for reproducible diagnosis"
+    }
+  ],
+  "limits": [
+    "Three original jobs failed dependency installation with DNS resolution errors.",
+    "Artifact event-name merge SHA does not override exact source receipt identities.",
+    "The 125 MB Architecture failure ZIP/source tar is fully read and checked locally; all source bytes match existing immutable Git blobs. Its compressed wrapper has not been duplicated into evidence Git.",
+    "Python and synthetic process tests do not qualify unseen-task benefit, deployed owner, independent trust, effect recovery or complete cost."
+  ]
+}

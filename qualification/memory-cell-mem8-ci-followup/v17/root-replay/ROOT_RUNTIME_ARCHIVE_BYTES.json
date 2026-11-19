@@ -1,0 +1,85 @@
+{
+  "schema": "mem8.runtime-outage.original-evidence-full-byte-recovery.v1",
+  "commit": "1fcbe2b3e8ed53ce04f523ed40b48e1c471b1ab3",
+  "tree": "5df479758c151a562df4c98792c1bdea0015e5d9",
+  "parent": "738ea351c69d14ca6bbd177644575deaafeee7e3",
+  "objects": [
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-fix-v11-original/OFFLINE_AUDIT.json",
+      "bytes": 3312,
+      "sha256": "6aae65dfa1d6c97e135f86adcd443fe7498c08e7e03e37c73d1e1fa1b721d144",
+      "git_blob": "962e0681b1ff010b0c8c51ebea1c3644214cee41",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-fix-v11-original/ROOT_ORIGINAL_API.json",
+      "bytes": 6012,
+      "sha256": "46ee8dfe9ec2adbe0bd481713836808c875b78ef0f6f9e324e4fccbeed175163",
+      "git_blob": "275a4fcdcf35a8114e6461c6bf2c0a11d60f7d46",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/ROOT_SUPPORT_REMOTE_READBACK.json",
+      "bytes": 6988,
+      "sha256": "38b8d699649cdc1b40236f3b5506803eb3a1749500a34fa3c871ca0c23a3af76",
+      "git_blob": "3805177fe6744b260f05d8766cab27ff994b0103",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/verify_remote_bytes_v17.js",
+      "bytes": 4385,
+      "sha256": "2f653d6975bb58d7895738673f85f1e02a81e8347a272b5182d847514a482dbc",
+      "git_blob": "378f4a781b9392bb1f57aa2cc8eb70b14e9a1b2e",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/root-replay/REMOTE_BYTE_SUPPORT_SELF_CHECK.json",
+      "bytes": 111,
+      "sha256": "a2339ce48fb06bf4773a6d7031447ccd522e1a3460e00cbe1176da99e19664e7",
+      "git_blob": "a77ff28cc53c98526310fe7a202b8b04b9519533",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/windows-fix-v11-original/WINDOWS_SANDBOX_FIX_CEAD_ORIGINAL.tar.xz",
+      "bytes": 111528,
+      "sha256": "c45b67d48ff66f5dc0f03999d6d83410551df6bc0c89c74c76f83f3944b20207",
+      "git_blob": "7f2edf1941e1249d487cb3127da9cee23590f492",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/h-original-readonly/H_ORIGINAL_IDENTITY_READONLY.tar.xz",
+      "bytes": 11640,
+      "sha256": "8ac84c847b710fe672e66b9e55ae9f331079252b859d18e98e00fdebdee9269b",
+      "git_blob": "3289e0c6be676998cae01c28f3d34b7b43381ac3",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/h-original-readonly/PUBLICATION_MANIFEST.json",
+      "bytes": 4963,
+      "sha256": "a28f367a68fced2592249658dbc25432191b06fccb21e53ccc187e494dbccd29",
+      "git_blob": "a6cd62285d5cc57eb7b776a89ce8427fb4ec2246",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/h-original-readonly/READONLY_SETTLEMENT_AUDIT.json",
+      "bytes": 4997,
+      "sha256": "7733bc0546a1a44b44c858398932e91130cc55cc9c6ac5dd4a7252b1ce6cf58e",
+      "git_blob": "6d0c197e46399d7bd7c4d2e5d9a1b1fa1d38e14a",
+      "full_remote_readback": true
+    },
+    {
+      "path": "qualification/memory-cell-mem8-ci-followup/v17/h-original-readonly/READONLY_SCOPE_ADDENDUM.json",
+      "bytes": 1830,
+      "sha256": "5bee2b69733681f9a05ed9160114e8e24349776564ac9e1d0d98a584713038c2",
+      "git_blob": "df983c76341a6e00f475ea0d0abb31530e95117a",
+      "full_remote_readback": true
+    }
+  ],
+  "full_remote_bytes_sha256_git_blob_verified": true,
+  "root_repeated_XZ_decompression_or_original_Python_readers": false,
+  "reason": "The shared execution environment became unavailable after the agents completed their original audits. This read independently verifies complete remote archive bytes against the pre-outage recorded pins, and preserves previously completed audit claims separately.",
+  "original_V11_agent_audit_passed": true,
+  "original_H_agent_reader_passed": true,
+  "all_adoption_gates_remain_open": true,
+  "source_or_harness_refs_changed": false
+}

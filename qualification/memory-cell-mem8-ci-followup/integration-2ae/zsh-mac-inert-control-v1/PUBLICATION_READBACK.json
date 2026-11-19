@@ -1,0 +1,24 @@
+{
+  "schema": "mem-zsh-mac-publication-readback-v1",
+  "archive_name": "MAC_ZSH_READONLY_EVIDENCE.tar.xz",
+  "archive": {
+    "bytes": 39596,
+    "sha256": "f5aa46ce6be114b516887ffb7bc3c1330d7a55d9ebef647871456fe1b2953f11",
+    "git_blob": "47c6a9493a279242fd893a752ef215a276301d08"
+  },
+  "archive_member_count": 32,
+  "raw_blob_create_ack": "47c6a9493a279242fd893a752ef215a276301d08",
+  "envelope": {
+    "bytes": 53256,
+    "sha256": "331fdfdfcf5d8e495e1af147878019a5d2fa9bb112c8d58528f7d444cb0b8b3d",
+    "git_blob": "3242ae6889759a419100d9345724b26aba7a985f"
+  },
+  "envelope_create_ack": "3242ae6889759a419100d9345724b26aba7a985f",
+  "readback": {
+    "mode": "Complete UTF-8 envelope fetched from immutable Git blob; decoded archive bytes matched full SHA256/Git blob/bytes.",
+    "envelope_bytes": 53256,
+    "archive_bytes": 39596,
+    "all_equal": true
+  },
+  "scope": "Original failed Mac fetch/preflights; zero zsh controls executed, not original CI reproduction."
+}

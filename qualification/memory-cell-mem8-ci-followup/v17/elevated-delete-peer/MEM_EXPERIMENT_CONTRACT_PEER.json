@@ -1,0 +1,581 @@
+{
+  "schema": "mem.elevated-contract-independent-peer.v1",
+  "created_at_utc": "2026-11-11T17:00:26.086720+00:00",
+  "reviewer": "/root/mem_experiment_review",
+  "reviewed_source": {
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "tree": "c77785ecb368c44ea699769001a47402c9f50591",
+    "complete_files_bytes_sha256_git_blob_verified": 23
+  },
+  "reviewed_reports": {
+    "PRODUCT_REPAIR_FEASIBILITY.json": {
+      "bytes": 23004,
+      "sha256": "ef0793aea95e1f00fc5fd564202330d28d37da13356e5622894b84cf21240527",
+      "git_blob": "9924dec0b112134eb8d712222298cc884183cddb"
+    },
+    "REPORT.md": {
+      "bytes": 8079,
+      "sha256": "e74ac7a5ad6bdf6bac9f7e7b2e7d8e46e5a3310cb18899c373d442f4ecab2aca",
+      "git_blob": "d6df4eed0b72ecf1bf1a9db12191bb76cc352efb"
+    },
+    "SOURCE_INDEX.json": {
+      "bytes": 9529,
+      "sha256": "2e3c83fcec04640d8c798cad37a3071136831c72612c04e0c977acc23ca2c051",
+      "git_blob": "9e471c77d11e958660486ee453d3699f41006044"
+    },
+    "CURRENT_ORIGINAL_ACL_AUDIT.json": {
+      "bytes": 6231,
+      "sha256": "3833fd62d7d9cad11544708c9d88e1d6aead86993bba32dd27ce26de5f052c7e",
+      "git_blob": "54c6dc5ed37f688ac8003699fa39a7dd1984ccd0"
+    }
+  },
+  "result": "EXISTING_READ_CONTRACT_AND_INTERFACES_DO_NOT_YET_JUSTIFY_A_COMPLETE_FULL_RESTRICTION_REPAIR",
+  "conclusion": "Typed role separation and an acknowledgement tied to the current setup request are necessary design changes, but the existing enumerated read-root list cannot by itself preserve the ambient/read-root contract after removing WRITE_RESTRICTED. No safely complete narrow source candidate is established by these 23 files. This is a concrete implementation and coverage gap, not a request to invent an owner, grant, credential, sample, or new acceptance threshold.",
+  "original_failure_independently_rechecked": {
+    "head": "9bd2f589debdba4a93baa363817c3669cb103721",
+    "run_id": 43021840561,
+    "job_id": 130526720080,
+    "raw": {
+      "bytes": 27138,
+      "sha256": "0f4357942bd12783593f3d0a817d97db7ac3d26395a0bee30f5951ac5672976a",
+      "git_blob": "2d2465332af91231b8c4792b31ee4eab79193d3a"
+    },
+    "elevated_after_release_line": 232,
+    "outcomes": [
+      {
+        "route": "Neither",
+        "file_deleted": false,
+        "directory_deleted": false
+      },
+      {
+        "route": "TargetOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "ParentOnly",
+        "file_deleted": true,
+        "directory_deleted": true
+      },
+      {
+        "route": "Both",
+        "file_deleted": true,
+        "directory_deleted": true
+      }
+    ],
+    "independent_acl_decode": [
+      {
+        "line": 220,
+        "acl_sha256": "65828216259fad11d87a893598fb178cf7034914d78b4b3d8673400f3d1634e2",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 65536,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 1966591,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 221,
+        "acl_sha256": "65828216259fad11d87a893598fb178cf7034914d78b4b3d8673400f3d1634e2",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 65536,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 1966591,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 222,
+        "acl_sha256": "f111e7e30c46180b3ad5b76b23ec3900d51fcd2760c4eb3d859ae3f359cabd2b",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 64,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032063,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 223,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 224,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 225,
+        "acl_sha256": "f111e7e30c46180b3ad5b76b23ec3900d51fcd2760c4eb3d859ae3f359cabd2b",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 64,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032063,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 226,
+        "acl_sha256": "65828216259fad11d87a893598fb178cf7034914d78b4b3d8673400f3d1634e2",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 65536,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 1966591,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 227,
+        "acl_sha256": "65828216259fad11d87a893598fb178cf7034914d78b4b3d8673400f3d1634e2",
+        "aces": [
+          {
+            "type": "deny",
+            "flags": 0,
+            "mask": 65536,
+            "sid": "S-1-1-0"
+          },
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 1966591,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 228,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 229,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 230,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      },
+      {
+        "line": 231,
+        "acl_sha256": "b4dbd4c8316625b73a083e70cfd3dd22ba8c8c5b95d7dfac44c27abef228533b",
+        "aces": [
+          {
+            "type": "allow",
+            "flags": 0,
+            "mask": 2032127,
+            "sid": "S-1-1-0"
+          }
+        ]
+      }
+    ],
+    "original_actual_child_token_dump": "NOT_OBSERVED",
+    "causal_boundary": "The repeated outside deletion and broad Everyone ACEs are observed. Which access-check path and actual child token fields authorized each operation were not captured; do not uniquely attribute them to a new proposed token or treat parent-process token diagnostics as the child token."
+  },
+  "minimal_required_cross_module_changes": [
+    {
+      "area": "Represent the full authorized read contract before materializing grants",
+      "source": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+          "git_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+          "lines": "106-129"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+          "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+          "lines": "556-611"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+          "git_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+          "lines": "1-6"
+        }
+      ],
+      "fact": "The typed profile can express symbolic Root/readable roots. The full-read setup collector deliberately filters the ancestor filesystem root, then supplies existing helper/platform/profile/cwd/writable roots. canonical_existing drops missing paths. That list is an ACL refresh worklist, not an exhaustive proof of every ambient normal-token-readable object.",
+      "change_needed": "Keep symbolic all-read versus explicit read roots distinct in a trusted grant plan, preserve deny-read semantics and missing/future-path behavior, and supply an implementable normal-read-equivalent rule for platform, volume, protected-inheritance and non-filesystem startup objects before selecting a fully restricted token.",
+      "current_gap": "Neither an exhaustive materialization/verification interface nor an already authorized and completed broader host-ACL grant set is present. Narrowing to today's worklist would silently change reads; treating symbolic Root as an instruction to relax all host ACLs is not established by this review."
+    },
+    {
+      "area": "Separate SID roles and current-request selection",
+      "source": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/cap.rs",
+          "git_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+          "lines": "15-32,88-125"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+          "git_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723",
+          "lines": "421-464"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs",
+          "git_blob": "fca07f73c3501cc034e969f71d870ff1b31aff90",
+          "lines": "57-76"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+          "git_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+          "lines": "234-287"
+        }
+      ],
+      "fact": "Current write-root selection already omits stale root capabilities. SpawnRequest carries one cap_sids vector plus a network marker; runner validates syntax/nonempty and derives token mode from the profile, but no typed current-read-grant acknowledgement is represented.",
+      "change_needed": "Derive read, write, child-object, desktop and network roles from the existing trusted profile/root inputs; carry or independently reconstruct the same request-bound plan through setup/parent/runner. Select only current roots and preserve the existing protocol-version and authentication boundary. A caller-provided SID or digest is not proof that its ACL grant succeeded.",
+      "current_gap": "A reusable persisted readonly SID and a flat capability vector do not represent per-root read scope, withdrawal or role-specific rights. Role labels alone do not change the kernel's alternative-SID access check."
+    },
+    {
+      "area": "Acknowledge actual required grants before child admission",
+      "source": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+          "git_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+          "lines": "322-416,420-430"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+          "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+          "lines": "166-181,189-259,792-841,1027-1035"
+        }
+      ],
+      "fact": "The original parent can wait for the exact main helper and singleflight by payload, but the main helper detaches read grants. An existing read-helper mutex skips spawning the new payload. Existing builtin or sandbox-group readability skips an ACE write. Main helper exit/SetupMarker therefore cannot acknowledge current restricting-read-SID grants.",
+      "change_needed": "For any new full-restriction mode, have the existing authorized setup path apply and verify each required role/mask for the same request and report completion through its retained process/channel before allowing spawn. Mutex contention must join or perform the exact needed work rather than count another payload as success. Preserve deny-read ordering and propagate errors; no unrestricted or stale-success fallback.",
+      "current_gap": "No acknowledgement contains the required current roots, roles, masks or successful grant/readback state. Adding a wait alone is insufficient, and must consume the original caller/test envelope rather than add a new timeout or retry. Existing request timings do not establish that a new exhaustive grant operation fits."
+    },
+    {
+      "area": "Keep read/network identities out of object and desktop write authority",
+      "source": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+          "git_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc",
+          "lines": "55-75,455-543"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+          "git_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+          "lines": "70-91,146-252"
+        }
+      ],
+      "fact": "The default DACL grants GENERIC_ALL to every supplied capability SID. With Logon removed from the restricting set, the existing desktop selector copies every restricting SID and grants DESKTOP_ALL_ACCESS, including the route marker. private=false currently refuses that capability-only path.",
+      "change_needed": "Pass a deliberately selected child-object/desktop capability set separately; do not append read SIDs to the old cap vector and do not infer desktop authority from all restricting SIDs. Preserve private=false refusal and the real private-desktop/WinSta0 launch contract, without forcing a different profile.",
+      "current_gap": "Current constructor and desktop API only receive a token/flat vector, so there is no verified mapping that excludes read/network identities while retaining the exact authorized desktop/object principals."
+    },
+    {
+      "area": "Retain the established write grants, denial and runtime boundaries",
+      "source": [
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+          "git_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+          "lines": "851-1004"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+          "git_blob": "71cdde8fff5622ad77888f6ebe865c2169fe8a89",
+          "lines": "343-347,494-501,800-844"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+          "git_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+          "lines": "269-362"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+          "git_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+          "lines": "1-320"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+          "git_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb",
+          "lines": "1-190"
+        },
+        {
+          "path": "codex-rs/windows-sandbox-rs/src/wfp.rs",
+          "git_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+          "lines": "169-211,315-322"
+        }
+      ],
+      "fact": "Active write-root capability grants and denial carveouts are reusable; existing IPC is established by the runner before child-token construction and stdio uses retained handles. Null-device access is explicitly granted to cap_sids. Network filtering uses a separate route marker but existing tests do not prove the final new token's ALE match.",
+      "change_needed": "Retain original target/parent delete refusal, inside writes, denied reads, request authentication and inherited-handle isolation. Select the appropriate role for null/stdio/child-created objects and validate final-token read/startup/desktop/network behavior. Do not change WFP or normal token privileges solely to get the four-cell test green.",
+      "current_gap": "These are dependencies of the same product contract, not authority supplied by the successful setup-handle lifecycle case. No new token has been executed, and no WFP or full-restriction compatibility success follows from this static peer."
+    }
+  ],
+  "bounded_candidate_assessment": {
+    "cap_only_with_write_restricted": "A narrower constructor could remove User/Logon/Everyone only from restricting identities while preserving normal identity reads. It is an independently reviewable partial tightening, but legacy_admission explicitly retains the separate parent FILE_DELETE_CHILD counterexample. Desktop role handling also needs repair. Do not present this as complete product qualification.",
+    "full_restriction_with_existing_roots_only": "Not a valid complete candidate: it silently loses ambient/read-root behavior and has no completed current read grants.",
+    "single_flag_or_test_bypass": "Rejected; not prepared.",
+    "safe_next_code_scope": "First make a reviewable typed grant-plan and exact helper-ack design for the existing permission profile, including the symbolic-root/ambient-read case. Keep it unselected until coverage and authorization are explicit. The available sources do not establish a complete source-local production replacement that can now be safely enabled under unchanged reads and budgets.",
+    "new_source_candidate_written": false
+  },
+  "current_d0f_comparison": {
+    "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "complete_tree_identity": {
+      "bytes": 1659663,
+      "sha256": "3ff62a7457e2a5cb9ca7098dbe39eb0be1652b60a98d2a735502540b56a36890",
+      "git_blob": "cd59d3e7f16e1299f643000c31254253e6101e9d"
+    },
+    "leaf_count": 14053,
+    "rows": [
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token.rs",
+        "reviewed_9bd2_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc",
+        "current_d0f_blob": "dbf1460422b93823d1e2fe7ad763be448a97bcbc",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/legacy_admission.rs",
+        "reviewed_9bd2_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+        "current_d0f_blob": "f1fc37fc9ef53244773504746482a0a77027daaf",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/cap.rs",
+        "reviewed_9bd2_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+        "current_d0f_blob": "41b33b63fda6f9bbc648fef98e5c9065f8f17b5e",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/spawn_prep.rs",
+        "reviewed_9bd2_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723",
+        "current_d0f_blob": "dff24c7c51d46b7f64d00b49dc2d0271a3ebb723",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/setup.rs",
+        "reviewed_9bd2_blob": "890755d01ca24f5ede1960582eacb9714633a0db",
+        "current_d0f_blob": "58685b28175bf75fc78f94c13b744781199c55d4",
+        "same_blob": false
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/setup_main/win.rs",
+        "reviewed_9bd2_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "current_d0f_blob": "1d9340c6db26d6d10c1b3edecb1c9fecc908ef1d",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/bin/command_runner/win.rs",
+        "reviewed_9bd2_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+        "current_d0f_blob": "146d5290e35bfb3b926a1e7a53c7345c5598b0b9",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/resolved_permissions.rs",
+        "reviewed_9bd2_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+        "current_d0f_blob": "0e28b9d3dc169a61e8c00c9ae63cecef7afd3e06",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/desktop.rs",
+        "reviewed_9bd2_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+        "current_d0f_blob": "0b01f011119bef623bc9e46e710caa371520380d",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/wfp.rs",
+        "reviewed_9bd2_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+        "current_d0f_blob": "9291b6eb994d640828a16493e5b558339ed73156",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/token_tests.rs",
+        "reviewed_9bd2_blob": "1f16623dbea1b021a6b67d5e52ff9f90973d5d26",
+        "current_d0f_blob": "dc0727567a8321afcd7920db2f3087c2328695cc",
+        "same_blob": false
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/desktop_tests.rs",
+        "reviewed_9bd2_blob": "4bfb9de1c6a1012ce9b86534a3f7352eb2018197",
+        "current_d0f_blob": "4bfb9de1c6a1012ce9b86534a3f7352eb2018197",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/tests.rs",
+        "reviewed_9bd2_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+        "current_d0f_blob": "913096ca90dced2efa4aa4e3366193e3a6761b50",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/core/src/windows_sandbox.rs",
+        "reviewed_9bd2_blob": "be380a8b2c9fd2501564bcf162e4e417fc4f5c3a",
+        "current_d0f_blob": "be380a8b2c9fd2501564bcf162e4e417fc4f5c3a",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/acl.rs",
+        "reviewed_9bd2_blob": "71cdde8fff5622ad77888f6ebe865c2169fe8a89",
+        "current_d0f_blob": "71cdde8fff5622ad77888f6ebe865c2169fe8a89",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated/ipc_framed.rs",
+        "reviewed_9bd2_blob": "fca07f73c3501cc034e969f71d870ff1b31aff90",
+        "current_d0f_blob": "fca07f73c3501cc034e969f71d870ff1b31aff90",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/process.rs",
+        "reviewed_9bd2_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+        "current_d0f_blob": "4d4f1d9435aad3cf9cd27a82d51b2be5b7659a4c",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_pipe.rs",
+        "reviewed_9bd2_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+        "current_d0f_blob": "c8ae092c4a00fc3e029be48cb77cc78db4580d87",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/conpty/mod.rs",
+        "reviewed_9bd2_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb",
+        "current_d0f_blob": "c09e8fe656f0322d82bd47248a24583518b9c6bb",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated_impl.rs",
+        "reviewed_9bd2_blob": "a8cc511dfd6f876e94da04f7413f0a26d42d4e18",
+        "current_d0f_blob": "7dcfa0c3268af5720c27fe283a351db9de0f2e30",
+        "same_blob": false
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/backends/elevated.rs",
+        "reviewed_9bd2_blob": "bc1ab54debdfce028751e869fea6d047604873cd",
+        "current_d0f_blob": "bc1ab54debdfce028751e869fea6d047604873cd",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/elevated/runner_client.rs",
+        "reviewed_9bd2_blob": "ec52ca708354d9d1aa3abfdc1755c90033cde8c7",
+        "current_d0f_blob": "ec52ca708354d9d1aa3abfdc1755c90033cde8c7",
+        "same_blob": true
+      },
+      {
+        "path": "codex-rs/windows-sandbox-rs/src/unified_exec/delete_permission_tests.rs",
+        "reviewed_9bd2_blob": "5e33c4fbea42cf69fcd5e8da2bbbef0943fdd31f",
+        "current_d0f_blob": "27ce698e8b13eede4325a769164a2e6bdcba3271",
+        "same_blob": false
+      }
+    ],
+    "production_delta_full": {
+      "codex-rs/windows-sandbox-rs/src/setup.rs": {
+        "current_identity": {
+          "bytes": 83555,
+          "sha256": "60478c6a71edaceb0e79b60bf348ade1de9417d1c36cb944b275f271874587b0",
+          "git_blob": "58685b28175bf75fc78f94c13b744781199c55d4"
+        },
+        "full_diff": "--- 9bd2/codex-rs/windows-sandbox-rs/src/setup.rs\n+++ d0f/codex-rs/windows-sandbox-rs/src/setup.rs\n@@ -4,11 +4,8 @@\n use std::collections::HashMap;\n use std::collections::HashSet;\n use std::ffi::c_void;\n-use std::os::windows::process::CommandExt;\n use std::path::Path;\n use std::path::PathBuf;\n-use std::process::Command;\n-use std::process::Stdio;\n use std::sync::Arc;\n use std::sync::Condvar;\n use std::sync::Mutex;\n@@ -45,6 +42,12 @@\n use windows_sys::Win32::Security::CheckTokenMembership;\n use windows_sys::Win32::Security::FreeSid;\n use windows_sys::Win32::Security::SECURITY_NT_AUTHORITY;\n+\n+#[path = \"setup_process.rs\"]\n+mod isolated_process;\n+\n+use isolated_process::SetupHelperWindow;\n+use isolated_process::run_setup_helper;\n \n pub const SETUP_VERSION: u32 = 5;\n pub const OFFLINE_USERNAME: &str = \"CodexSandboxOffline\";\n@@ -371,11 +374,6 @@\n         }\n     };\n     // Refresh should never request elevation; ensure verb isn't set and we don't trigger UAC.\n-    let mut cmd = Command::new(&exe);\n-    cmd.arg(b64)\n-        .stdin(Stdio::null())\n-        .stdout(Stdio::null())\n-        .stderr(Stdio::null());\n     let cwd = std::env::current_dir().unwrap_or_else(|_| codex_home.to_path_buf());\n     log_note(\n         &format!(\n@@ -386,7 +384,7 @@\n         ),\n         Some(&sbx_dir),\n     );\n-    let status = cmd.status().map_err(|err| {\n+    let status = run_setup_helper(&exe, b64, SetupHelperWindow::Default).map_err(|err| {\n         let message = format!(\n             \"setup refresh failed to launch helper: helper={}, cwd={}, log={}, error={err}\",\n             exe.display(),\n@@ -936,14 +934,8 @@\n     };\n \n     if !needs_elevation {\n-        let status = Command::new(&exe)\n-            .arg(payload_b64)\n-            .creation_flags(0x08000000) // CREATE_NO_WINDOW\n-            .stdin(Stdio::null())\n-            .stdout(Stdio::null())\n-            .stderr(Stdio::null())\n-            .status()\n-            .map_err(|err| {\n+        let status =\n+            run_setup_helper(&exe, payload_b64, SetupHelperWindow::Hidden).map_err(|err| {\n                 failure(\n                     SetupErrorCode::OrchestratorHelperLaunchFailed,\n                     format!(\"failed to launch setup helper (non-elevated): {err}\"),\n"
+      },
+      "codex-rs/windows-sandbox-rs/src/elevated_impl.rs": {
+        "current_identity": {
+          "bytes": 11142,
+          "sha256": "dab92a6a3283564c9f2ca10bae5255873bd3a54902f0236127831ddde4cd47a6",
+          "git_blob": "7dcfa0c3268af5720c27fe283a351db9de0f2e30"
+        },
+        "full_diff": "--- 9bd2/codex-rs/windows-sandbox-rs/src/elevated_impl.rs\n+++ d0f/codex-rs/windows-sandbox-rs/src/elevated_impl.rs\n@@ -194,7 +194,7 @@\n                 let msg = match runner_process.read_frame(&mut pipe_read, || {\n                     cancellation\n                         .as_ref()\n-                        .is_some_and(|token| token.is_cancelled())\n+                        .is_some_and(super::super::WindowsSandboxCancellationToken::is_cancelled)\n                 }) {\n                     Ok(Some(msg)) => msg,\n                     Ok(None) => break Err(anyhow::anyhow!(\"runner pipe closed before exit\")),\n@@ -225,9 +225,9 @@\n             let result = result\n                 .and_then(|(exit_code, timed_out)| {\n                     runner_process.wait_for_exit(exit_code, || {\n-                        cancellation\n-                            .as_ref()\n-                            .is_some_and(|token| token.is_cancelled())\n+                        cancellation.as_ref().is_some_and(\n+                            super::super::WindowsSandboxCancellationToken::is_cancelled,\n+                        )\n                     })?;\n                     Ok((exit_code, timed_out))\n                 })\n"
+      }
+    },
+    "unchanged_critical_setup_sections": [
+      "gather_full_read_roots_for_permissions + gather_read_roots",
+      "run_setup_refresh_inner payload construction",
+      "SetupMarker fields"
+    ],
+    "boundary": "19 of the 23 source blobs are identical. The two changed production files contain the separately reviewed setup handle-isolation launch and equivalent cancellation-method-pointer edits; complete diffs are retained above. The other two changed files are tests. This does not transfer any 9bd2 native result to d0f."
+  },
+  "historical_report_clarifications": [
+    "The report's 'smallest complete alternative identified' is a proposed architectural direction with unresolved read-scope and grant-ack interfaces, not a proven complete or immediately runnable repair.",
+    "The report's 'current LEAK' refers to the frozen 9bd2 original. A later source-c895 five-case run 43047914262 independently passed the original elevated env/output/exit case with 0 LEAK, while its whole job was interrupted during independent core lint. That lifecycle result does not repair or qualify the outside-delete boundary."
+  ],
+  "primary_api_contracts": [
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-createrestrictedtoken",
+      "use": "WRITE_RESTRICTED makes restricting-SID checks write-only; the ordinary full restricted-token contract requires enabled and restricting checks."
+    },
+    {
+      "url": "https://learn.microsoft.com/en-us/windows/win32/secauthz/restricted-tokens",
+      "use": "Restricting identities participate in a separate access check; desktop and other secured-object compatibility are part of the runtime boundary."
+    }
+  ],
+  "actions": {
+    "local_readonly_byte_and_acl_audit": true,
+    "new_native_tests": 0,
+    "new_host_requests": 0,
+    "model_requests": 0,
+    "source_or_ref_mutations": 0,
+    "original_deadline_or_assertion_changes": 0
+  }
+}

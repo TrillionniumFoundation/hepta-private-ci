@@ -1,0 +1,169 @@
+{
+  "historical_missing_external_readback_inputs": "mem8-readback-replay.json",
+  "historical_missing_external_readback_readers_changed": false,
+  "packages": [
+    {
+      "all_member_bytes_sha256_git_blob_match": true,
+      "archive_bytes": 2105848,
+      "archive_sha256": "7983d5d4719732e206ab29785e23c1c58d7a97ae435d80bcf856c6959c89dd7e",
+      "archived_commands_executed": 0,
+      "manifest_exact_coverage": true,
+      "manifest_sha256": "439597f0db4023f00ba51f5c67b64ed0dfe2771bfe0e9bbb06802d12c34861c3",
+      "member_bytes": 5532237,
+      "members": 31,
+      "nested_zip_checks": [
+        {
+          "crc": "PASS",
+          "members": 25,
+          "path": "artifacts/13873374531/original.zip",
+          "uncompressed_bytes": 199377
+        },
+        {
+          "crc": "PASS",
+          "members": 78,
+          "path": "artifacts/13874211716/original.zip",
+          "uncompressed_bytes": 139610
+        },
+        {
+          "crc": "PASS",
+          "members": 42,
+          "path": "artifacts/13874919829/original.zip",
+          "uncompressed_bytes": 2725568
+        }
+      ],
+      "original_claims_unchanged": true,
+      "package": "mem-d0f",
+      "parts": [
+        {
+          "bytes": 460800,
+          "git_blob": "0659d70b45ba367f435a1acc6cfce3a3ce860526",
+          "path": "MEM_D0F_ORIGINAL.part-001.xz.part",
+          "sha256": "b8fa7a030b3d8b22b8b6f1333b3484b844c7c59d44ad8567cf38d2a0825881e0"
+        },
+        {
+          "bytes": 460800,
+          "git_blob": "0005dd916582146830c47441e4c70bb47aff474d",
+          "path": "MEM_D0F_ORIGINAL.part-002.xz.part",
+          "sha256": "a241b78724eb4927df6c2a72e55fa4f0db7322c542977caec916950c37e13929"
+        },
+        {
+          "bytes": 460800,
+          "git_blob": "302276eee9e3427a24e8c00fd47e29ad37fc45e4",
+          "path": "MEM_D0F_ORIGINAL.part-003.xz.part",
+          "sha256": "fcaaa03a6d51315ee639cce7b9e829c62e4e0565a05372b7dca7fef03f7b48e5"
+        },
+        {
+          "bytes": 460800,
+          "git_blob": "f205ed9579889820e973b23b44f8ec794af51087",
+          "path": "MEM_D0F_ORIGINAL.part-004.xz.part",
+          "sha256": "ba9db772506363b88c0db6ca40b081f106804b756ae35ac92e434b4efa1f4720"
+        },
+        {
+          "bytes": 262648,
+          "git_blob": "efc46d45793d43f0acc1ecd0ce2e5b5596d8a3ab",
+          "path": "MEM_D0F_ORIGINAL.part-005.xz.part",
+          "sha256": "5385ad36f06b5706d331e3fddd38b868825f65d5c500db329949bcb03dd2188f"
+        }
+      ],
+      "publication_sha256": "3f375e6a6ee6b02c6745c043a4b70bac97af44ed7cc4e0065c81ae1e79b506cc",
+      "remote_readback_claim_updated": false
+    },
+    {
+      "all_member_bytes_sha256_git_blob_match": true,
+      "archive_bytes": 702616,
+      "archive_sha256": "44c090bb96f72f431de52fbc15cf82b70c2ef13358fe21ab6d542f9b2115fe8e",
+      "archived_commands_executed": 0,
+      "manifest_exact_coverage": true,
+      "manifest_sha256": "bce65ba2624ae906ae135bed1baae8955e04a32f0114688a92abaa39b90a04c3",
+      "member_bytes": 4539262,
+      "members": 28,
+      "nested_zip_checks": [
+        {
+          "crc": "PASS",
+          "members": 20,
+          "path": "artifacts/13873952864/original.zip",
+          "uncompressed_bytes": 46398
+        },
+        {
+          "crc": "PASS",
+          "members": 65,
+          "path": "artifacts/13877116867/original.zip",
+          "uncompressed_bytes": 491030
+        }
+      ],
+      "original_claims_unchanged": true,
+      "package": "architecture-d0f",
+      "parts": [
+        {
+          "bytes": 460800,
+          "git_blob": "e146598558e3713c6f023cc1d03f926c925453ab",
+          "path": "ARCH_D0F_ORIGINAL.part-001.xz.part",
+          "sha256": "a31071b663ea63019a72cffbac6766e60a6e2e248b9db2bf740d2750673b349b"
+        },
+        {
+          "bytes": 241816,
+          "git_blob": "393bd0ff7dd493df132d7f7fbb2bbe3fd64ad437",
+          "path": "ARCH_D0F_ORIGINAL.part-002.xz.part",
+          "sha256": "fd4e16d0bf750570dfa615b8b2e778e35686d50e1532cd6e5d542bf12fb54554"
+        }
+      ],
+      "publication_sha256": "23482c48b6fc7417e8d3112697d1e5d8c55f73b4c738a42bdbdd0e0db8d5641a",
+      "remote_readback_claim_updated": false
+    },
+    {
+      "all_member_bytes_sha256_git_blob_match": true,
+      "archive_bytes": 119480,
+      "archive_sha256": "74d6699892d290d8e1542f5ebb31c7774f467d04b0bc50c401ebd73193db3a20",
+      "archived_commands_executed": 0,
+      "manifest_exact_coverage": true,
+      "manifest_sha256": "433d9368c645589a4c11d32b054f90e135953e26ee81335264b6ab7dee343238",
+      "member_bytes": 487150,
+      "members": 30,
+      "nested_zip_checks": [
+        {
+          "crc": "PASS",
+          "members": 153,
+          "path": "ORIGINAL_ARTIFACT.zip",
+          "uncompressed_bytes": 774476
+        }
+      ],
+      "original_claims_unchanged": true,
+      "package": "windows-fix-d0f-original",
+      "parts": [],
+      "publication_sha256": "3fc3d81b3f7e5e9381e3f4455ea0ea31806ebe6d00e9a768a4ba724dc785faa7",
+      "remote_readback_claim_updated": false
+    },
+    {
+      "all_member_bytes_sha256_git_blob_match": true,
+      "archive_bytes": 717176,
+      "archive_sha256": "930a0b2e2598f00e7fb113b4bb89d3d863b1db7cc7fcfd7fb0d45643c3edad48",
+      "archived_commands_executed": 0,
+      "manifest_exact_coverage": true,
+      "manifest_sha256": "1a50afb0e8f3fe9299d343a8e21bfd99ed711582e259b49c569e085a3557eb94",
+      "member_bytes": 6119545,
+      "members": 67,
+      "nested_zip_checks": [],
+      "original_claims_unchanged": true,
+      "package": "windows-fix-v11-preparation",
+      "parts": [
+        {
+          "bytes": 460800,
+          "git_blob": "138008ff7d07bbabcdbd82557d3e450cc8911b00",
+          "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-001.bin",
+          "sha256": "1bdd00f84673d2cf70163f5f63e165f07d056be8273896d72e947707287b58a9"
+        },
+        {
+          "bytes": 256376,
+          "git_blob": "8a6f00b33d69d2b0bb23630261f8d240540b1271",
+          "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-002.bin",
+          "sha256": "14f4d51498012b6bd0f19105f46e896e01531ba7baa876ef38eed53bdb15fe0d"
+        }
+      ],
+      "publication_sha256": "d7f7e7e9fe92fe924ec4719145241645fe0fe7fcb8fefba1567ce641c80cc381",
+      "remote_readback_claim_updated": false
+    }
+  ],
+  "scope": "Local immutable blob/archive custody only; no current native, scientific, or adoption qualification.",
+  "source_branch": "codex/mem8-ci-evidence-20261111-ed353817",
+  "source_tip": "21df04700aa885aef72b70962f270b966a112de6"
+}

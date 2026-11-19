@@ -1,0 +1,475 @@
+{
+  "schema": "mem8.9bd2.architecture.raw-preflight-count-addendum.v1",
+  "source_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+  "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+  "run_id": 43021840388,
+  "attempt": 1,
+  "correction": "The historical Python138/source and136/base figures count qualification command receipts. Both original complete logs additionally contain eight CandidatePlanTests with a single literal invocation, eight actual ok outcomes, one eight-test footer and OK, and the exact candidate source binding. These are not echo/reprint duplicates.",
+  "source_head_python": {
+    "qualification_receipted": 138,
+    "additional_raw_only": 8,
+    "total": 146
+  },
+  "base_merge_python": {
+    "qualification_receipted": 136,
+    "additional_raw_only": 8,
+    "total": 144
+  },
+  "combined_python": {
+    "qualification_receipted_executions": 274,
+    "additional_raw_only_executions": 16,
+    "all_python_executions": 290,
+    "distinct_python_case_ids": 146
+  },
+  "source_only_two_objective_contract_ids": [
+    "scripts.test_hepta_objective_contracts.ObjectiveContractAlignmentTests.test_objective_semantics_do_not_redefine_wire_fields",
+    "scripts.test_hepta_objective_contracts.ObjectiveContractAlignmentTests.test_source_envelope_capacity_matches_native_lowering"
+  ],
+  "existing_rust_receipt_execution_observations_unchanged": 526,
+  "existing_qualification_receipted_all_language_observations_unchanged": 800,
+  "all_language_execution_observations_including_16_raw_only": 816,
+  "all_language_distinct_case_count_claimed": false,
+  "historical_audit_identity": {
+    "bytes": 208695,
+    "sha256": "7686ff3e461b1f8dfe0e1092699bcb7fc086ccfd26a49bc087143dc660fda8ea",
+    "git_blob": "59d0cc628ca11dfba7b5f8025fa7743d2c1b1836"
+  },
+  "old_raw_and_audit_bytes_modified": false,
+  "new_tests_models_or_CI_runs": 0,
+  "limits": "This scope correction does not produce missing structured command receipts or transfer results to b054/c895; Rust execution observations remain the historical separately audited count, not a newly recounted unique-case claim.",
+  "jobs": [
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-9bd2-mem-architecture/raw/job-130526675565-decoded.log",
+      "full_raw": {
+        "bytes": 878529,
+        "sha256": "88517e9c20e25d951fb2bbfae2fc5f4d1e9ed23270e72799bd3eaf57d044a20c",
+        "git_blob": "b4b3e4955b64a3ba229e675601d20a0718c99faa"
+      },
+      "job_id": 130526675565,
+      "lane": "source-head",
+      "source_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+      "tested_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "literal_invocation": {
+        "line": 209,
+        "text": "2026-11-11T12:37:05.7030615Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "9175b47e56dd78e69b816fb3dab3c0aec3f86a7814c160eedd6fd580be01f32c"
+      },
+      "case_results": [
+        {
+          "line": 224,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:05.9185028Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "14f4b10f582877cb72f3b893625635f3106319b09971760140f7cf7d5958b75f"
+        },
+        {
+          "line": 225,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:05.9577172Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "ee92fd42d498eac4bbbbc9abc0bf6907113b8171d4ed305ed66f9c260cf9a68a"
+        },
+        {
+          "line": 226,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:05.9841190Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "77afe391895947e2cae9a49a42206d58c31686df53509b07cd982cdf4f0efdda"
+        },
+        {
+          "line": 227,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.0196974Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "0cd00a493a495184b8845091d16cd0d1f12143935c192cb4522a03d53cb74b71"
+        },
+        {
+          "line": 228,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.0508857Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "db2bfd61616f5796bdb95a1b8db4ef005b881e3c748d1d8085cef2c8d95839be"
+        },
+        {
+          "line": 229,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.0842908Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "490ef97a82ed4da49a38d336f3a07632522e44a23531bbd310587d3a0de684cf"
+        },
+        {
+          "line": 230,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.1230727Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "11f8c984c6a90ee258d4316096272809ab4914fbc562d57447ac093a13d2e587"
+        },
+        {
+          "line": 231,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.1620576Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "6830c80874d63299dbdc882263d3df2799a73c7a7cc0d5ddf53127483d84fa8f"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 224,
+        "last_line": 236,
+        "bytes": 1853,
+        "sha256": "665bc4a974021098b8ea4abcb0aae6e16da36c2aa2b85feb855e5445d80f504e",
+        "git_blob": "f8ac162b2f0e3aee9d00ac25f1326eec9bfbec0b",
+        "text": "2026-11-11T12:37:05.9185028Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T12:37:05.9577172Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T12:37:05.9841190Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T12:37:06.0196974Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T12:37:06.0508857Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T12:37:06.0842908Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T12:37:06.1230727Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T12:37:06.1620576Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T12:37:06.1621453Z \n2026-11-11T12:37:06.1621643Z ----------------------------------------------------------------------\n2026-11-11T12:37:06.1622020Z Ran 8 tests in 0.302s\n2026-11-11T12:37:06.1622682Z \n2026-11-11T12:37:06.1622749Z OK\n"
+      },
+      "summary": {
+        "line": 234,
+        "text": "2026-11-11T12:37:06.1622020Z Ran 8 tests in 0.302s"
+      },
+      "source_binding": {
+        "line": 237,
+        "text": "2026-11-11T12:37:06.2111879Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"source-head\", \"native_execution_required\": true, \"requires_source_head_success\": false, \"schema_version\": 1, \"source_sha\": \"9bd2f589debdba4a93baa363817c3669cb103721\", \"source_tree\": \"c77785ecb368c44ea699769001a47402c9f50591\", \"tested_sha\": \"9bd2f589debdba4a93baa363817c3669cb103721\", \"tested_tree\": \"c77785ecb368c44ea699769001a47402c9f50591\"}",
+        "sha256_including_line_ending": "4371d5ea38f1f9229b193507f0a2b33ec52c67aceb9f400418e688f31662efd6",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "source-head",
+          "native_execution_required": true,
+          "requires_source_head_success": false,
+          "schema_version": 1,
+          "source_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+          "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+          "tested_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+          "tested_tree": "c77785ecb368c44ea699769001a47402c9f50591"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 138,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 146,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_sha256": "30a1acc91eee77dc1b6b000b16b96c72b8b3cca3ffb71d1722f09535f660c5e5",
+      "qualification_receipts": [
+        {
+          "artifact_id": 13857194575,
+          "receipt": "objective-contract.json",
+          "receipt_identity": {
+            "bytes": 1499,
+            "sha256": "06f4f3017d9c500c19d991d788edcbdaf7c4aa8fa593a6c6fa834b8f9677922e",
+            "git_blob": "5db7e8576c7ec24c8ed9b673905d0805c95c5456"
+          },
+          "raw_log": "objective-contract.json.c25e6095fc9e4fd1afcdfb1ec29a70f4.log",
+          "raw_identity": {
+            "bytes": 472,
+            "sha256": "07b8a240c6e7078c270ef26db5b3fe11b6cab789704e7da772b8e932e7a0a8ab",
+            "git_blob": "011e741f3212a042132a2ba242f302336e2cf0b6"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.test_hepta_objective_contracts"
+          ],
+          "passed": 2,
+          "case_ids_canonical_sha256": "154273af28e9e155fe8afc4bbe51bb8271e26c529ae2ac6b9329e694bc51d9d0",
+          "source_before_after_equal_clean": true
+        },
+        {
+          "artifact_id": 13857194575,
+          "receipt": "repository-controls.json",
+          "receipt_identity": {
+            "bytes": 1656,
+            "sha256": "544b80621fba285875abbdcf080214d5980fb7d8d9e86dac6260462570b9c6de",
+            "git_blob": "38dde702d78a01dc6d1a0043dd39ad91d5a548a0"
+          },
+          "raw_log": "repository-controls.json.e5ead77c1946460d9f843e110f96b584.log",
+          "raw_identity": {
+            "bytes": 12097,
+            "sha256": "7ab58347684e58653311b26a0099ec20a765c3a000c87430d71c50ba10c2efc5",
+            "git_blob": "778cc5bdd72e3fdd2bd8e55580a214655666ec2a"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.tests.test_hepta_repository_controls",
+            "scripts.test_hepta_control_hardening",
+            "scripts.test_hepta_candidate_transport_workflow",
+            "scripts.test_hepta_merge_identity_records"
+          ],
+          "passed": 73,
+          "case_ids_canonical_sha256": "42b67f0b531f1e555d3758bfc1e2854c8e38c5e628b558fcd60d4adecfde0805",
+          "source_before_after_equal_clean": true
+        },
+        {
+          "artifact_id": 13857194575,
+          "receipt": "runner-tests.json",
+          "receipt_identity": {
+            "bytes": 1528,
+            "sha256": "ff6eed11a4bd8a07ec889d07625b23724d3f4661ece164d4cbc1fe708955d2d3",
+            "git_blob": "70a1ba9fa1a6842516b76bbd76ba3af5a39dfa65"
+          },
+          "raw_log": "runner-tests.json.0b3fc1f153ae4c6e81876b734ae4721c.log",
+          "raw_identity": {
+            "bytes": 7126,
+            "sha256": "d727414b012eaad7d837695a17111d0a217b9e2d9eb12d9cc6fe89fa03920fa0",
+            "git_blob": "34b098278fde16c60c4aee3a905ac95c494c6d44"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ci_exec*.py"
+          ],
+          "passed": 45,
+          "case_ids_canonical_sha256": "6ca953d545f7341871d387b53cab52ad5503687c7dddf93457fce301b227e267",
+          "source_before_after_equal_clean": true
+        },
+        {
+          "artifact_id": 13857194575,
+          "receipt": "scope-tests.json",
+          "receipt_identity": {
+            "bytes": 1488,
+            "sha256": "5eb1b3ed60932d1e75d18b5221d3f28d1dddc0069c964216a72014e891db7b44",
+            "git_blob": "97fe51dde75aa23e4e5cb434a3566d02420f655f"
+          },
+          "raw_log": "scope-tests.json.2bfd828a20044cc0a9acc227d13095e7.log",
+          "raw_identity": {
+            "bytes": 3009,
+            "sha256": "9f8a6a3c44a314421a64c474274762f1b0a4683267698a35275223e007304ff5",
+            "git_blob": "a1ab1c68c6daf053dc0e85b8feebf4f734236b9c"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.tests.test_hepta_ci_scope"
+          ],
+          "passed": 18,
+          "case_ids_canonical_sha256": "1a4ff87338ce38175a1f70641ba2052587f98786298ce478d7bb709263947a53",
+          "source_before_after_equal_clean": true
+        }
+      ]
+    },
+    {
+      "raw_file": "/workspace/scratch/ed3538174819/mem-ci-9bd2-mem-architecture/raw/job-130526675057-decoded.log",
+      "full_raw": {
+        "bytes": 92041,
+        "sha256": "dedb8a7be2076df292790c56ab6058b26c21977db58af9bba5a7c688f21a7b88",
+        "git_blob": "bdd507eea054c8c7ef3e9e8595a74c25e5467cb7"
+      },
+      "job_id": 130526675057,
+      "lane": "base-merge",
+      "source_commit": "9bd2f589debdba4a93baa363817c3669cb103721",
+      "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+      "tested_commit": "6032d1f09f2b2e70c6be42336b6922fdade5f60c",
+      "literal_invocation": {
+        "line": 350,
+        "text": "2026-11-11T12:37:06.6174270Z \u001b[36;1mpython3 -m unittest -v scripts.tests.test_hepta_ci_candidate\u001b[0m",
+        "sha256_including_line_ending": "5a044bd98bd43ca4a4c6c9d33daea5d08dbe396bd4bed2864b934eb4060ae776"
+      },
+      "case_results": [
+        {
+          "line": 367,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.7604229Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok",
+          "sha256_including_line_ending": "4a94ae7a9d187f37d495d641e2f0ee5d45938ef1d96baf4ef8ca8eb02e3cb0ed"
+        },
+        {
+          "line": 368,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.7937669Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok",
+          "sha256_including_line_ending": "41f1778b486e5423cace34a478d67dc8600fb82889e2702bc25fc9062e0828a1"
+        },
+        {
+          "line": 369,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.8158080Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok",
+          "sha256_including_line_ending": "a3eb7b788f2b27cbb316f2f11fccb563006fb438df625146f063f9241660a37a"
+        },
+        {
+          "line": 370,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.8468497Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok",
+          "sha256_including_line_ending": "af3410f9e70392a0f5e8ffb7325ab2bb30f66eef69a295ea5ee91a50ca0b6ee7"
+        },
+        {
+          "line": 371,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.8729645Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok",
+          "sha256_including_line_ending": "d4221fa501c975fce7f95002d961728814d116ee70f86edb142f65b2b95b5fd0"
+        },
+        {
+          "line": 372,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.9021141Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok",
+          "sha256_including_line_ending": "b6777a91e94ce02baa33a7bc43f46147bf020081b19f3e85ee7782abc0e8f19a"
+        },
+        {
+          "line": 373,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.9353900Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok",
+          "sha256_including_line_ending": "5ebd26631c28a1e30a8cd26b686963f85871b684bc83afe187e63806cf802ba3"
+        },
+        {
+          "line": 374,
+          "case_id": "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt",
+          "status": "PASS",
+          "text": "2026-11-11T12:37:06.9635530Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok",
+          "sha256_including_line_ending": "358fe04bf6b991c82a487181b8fd7e9ec45afdaddceab6f0f3c687c68a4a524e"
+        }
+      ],
+      "original_result_block": {
+        "first_line": 367,
+        "last_line": 379,
+        "bytes": 1853,
+        "sha256": "a142f20a735a6ca2eec640abc016f6bac6eed37708573f2f4c886a0b03870473",
+        "git_blob": "dacc5b869eac7082b9a3e15aa3d42226b159026f",
+        "text": "2026-11-11T12:37:06.7604229Z test_different_merge_tree_requires_real_tests_not_only_compile (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile) ... ok\n2026-11-11T12:37:06.7937669Z test_identical_merge_reuses_tree_only_with_required_source_success (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success) ... ok\n2026-11-11T12:37:06.8158080Z test_invalid_identity_and_unknown_lane_fail_before_git (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git) ... ok\n2026-11-11T12:37:06.8468497Z test_parent_order_is_part_of_exact_merge_identity (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity) ... ok\n2026-11-11T12:37:06.8729645Z test_source_always_executes_native_checks (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks) ... ok\n2026-11-11T12:37:06.9021141Z test_source_lane_cannot_test_a_different_commit (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit) ... ok\n2026-11-11T12:37:06.9353900Z test_synthetic_merge_alias_has_same_exact_tree_semantics (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics) ... ok\n2026-11-11T12:37:06.9635530Z test_wrong_checkout_cannot_reuse_a_receipt (scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt) ... ok\n2026-11-11T12:37:06.9636173Z \n2026-11-11T12:37:06.9636318Z ----------------------------------------------------------------------\n2026-11-11T12:37:06.9636655Z Ran 8 tests in 0.240s\n2026-11-11T12:37:06.9636775Z \n2026-11-11T12:37:06.9636842Z OK\n"
+      },
+      "summary": {
+        "line": 377,
+        "text": "2026-11-11T12:37:06.9636655Z Ran 8 tests in 0.240s"
+      },
+      "source_binding": {
+        "line": 380,
+        "text": "2026-11-11T12:37:07.0148132Z {\"base_sha\": \"96038ccf0660154fac143ba6cbe4be81e00813e8\", \"lane\": \"base-merge\", \"native_execution_required\": false, \"requires_source_head_success\": true, \"schema_version\": 1, \"source_sha\": \"9bd2f589debdba4a93baa363817c3669cb103721\", \"source_tree\": \"c77785ecb368c44ea699769001a47402c9f50591\", \"tested_sha\": \"6032d1f09f2b2e70c6be42336b6922fdade5f60c\", \"tested_tree\": \"c77785ecb368c44ea699769001a47402c9f50591\"}",
+        "sha256_including_line_ending": "2f238edb937b9c9f6bca677b8dca6033b8f4357b996a803b8eb6318586d79d26",
+        "parsed": {
+          "base_sha": "96038ccf0660154fac143ba6cbe4be81e00813e8",
+          "lane": "base-merge",
+          "native_execution_required": false,
+          "requires_source_head_success": true,
+          "schema_version": 1,
+          "source_sha": "9bd2f589debdba4a93baa363817c3669cb103721",
+          "source_tree": "c77785ecb368c44ea699769001a47402c9f50591",
+          "tested_sha": "6032d1f09f2b2e70c6be42336b6922fdade5f60c",
+          "tested_tree": "c77785ecb368c44ea699769001a47402c9f50591"
+        }
+      },
+      "raw_only_case_ids": [
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_different_merge_tree_requires_real_tests_not_only_compile",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_identical_merge_reuses_tree_only_with_required_source_success",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_invalid_identity_and_unknown_lane_fail_before_git",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_parent_order_is_part_of_exact_merge_identity",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_always_executes_native_checks",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_source_lane_cannot_test_a_different_commit",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_synthetic_merge_alias_has_same_exact_tree_semantics",
+        "scripts.tests.test_hepta_ci_candidate.CandidatePlanTests.test_wrong_checkout_cannot_reuse_a_receipt"
+      ],
+      "raw_only_passed": 8,
+      "qualification_receipt_unique_ids": 136,
+      "raw_only_ids_disjoint_from_qualification_receipt_ids": true,
+      "all_python_executions_in_this_lane": 144,
+      "structured_command_receipt_for_this_preflight": false,
+      "all_python_case_ids_canonical_sha256": "7b157dd7424962d72364b7a4b03aa2f91133b5af174239037fde47ec4b99f0b6",
+      "qualification_receipts": [
+        {
+          "artifact_id": 13855890256,
+          "receipt": "repository-controls.json",
+          "receipt_identity": {
+            "bytes": 1826,
+            "sha256": "70823a71ca364c39fd08583b8f12de1edc114d2e53bc5eecb469484e251a0343",
+            "git_blob": "14877e09a48b859de8090716b6bbe57e7b16b2e3"
+          },
+          "raw_log": "repository-controls.json.e22279557e174fe2890bda61f84a52ad.log",
+          "raw_identity": {
+            "bytes": 12097,
+            "sha256": "41c5011b11b3ad74e8738082c10d1b260f00846257a358524194c6b5de7691bf",
+            "git_blob": "06d321477cbb4f53af5c0a3e04593fe5cec87b08"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.tests.test_hepta_repository_controls",
+            "scripts.test_hepta_control_hardening",
+            "scripts.test_hepta_candidate_transport_workflow",
+            "scripts.test_hepta_merge_identity_records"
+          ],
+          "passed": 73,
+          "case_ids_canonical_sha256": "42b67f0b531f1e555d3758bfc1e2854c8e38c5e628b558fcd60d4adecfde0805",
+          "source_before_after_equal_clean": true
+        },
+        {
+          "artifact_id": 13855890256,
+          "receipt": "runner-tests.json",
+          "receipt_identity": {
+            "bytes": 1698,
+            "sha256": "5a21b50dd3555c6ceb0c5ab8a6e6a240876871340300496bc392bc21d6763458",
+            "git_blob": "1147a5b320b69bf8dbe125b327a4cc67462ca09f"
+          },
+          "raw_log": "runner-tests.json.ff0d560c603a47ccb784a58638db53cc.log",
+          "raw_identity": {
+            "bytes": 7126,
+            "sha256": "85ca26a3f2535a772fe9f77d2c5ccdb016138501c981d607c8db830d32ef90ed",
+            "git_blob": "9ab275f30c008dfdb19bd26c635653dac7c77460"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-v",
+            "-s",
+            "scripts",
+            "-p",
+            "test_hepta_ci_exec*.py"
+          ],
+          "passed": 45,
+          "case_ids_canonical_sha256": "6ca953d545f7341871d387b53cab52ad5503687c7dddf93457fce301b227e267",
+          "source_before_after_equal_clean": true
+        },
+        {
+          "artifact_id": 13855890256,
+          "receipt": "scope-tests.json",
+          "receipt_identity": {
+            "bytes": 1658,
+            "sha256": "2969bb6ba46a166ddb8ff1bb5edfbdc724f7472692fda3c1717ffa6044330638",
+            "git_blob": "d691f7488ed56c5fe09db43e6eb7a34393963215"
+          },
+          "raw_log": "scope-tests.json.88299a59e967494cb7f186270cd6d5e5.log",
+          "raw_identity": {
+            "bytes": 3009,
+            "sha256": "c24ae56ff35a86fd07341a4fc2538b7bca05173f6bf757f5de28eabfd07af3f4",
+            "git_blob": "a7d23d472836d0bd2715ebfb81db857aba8cfc20"
+          },
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.tests.test_hepta_ci_scope"
+          ],
+          "passed": 18,
+          "case_ids_canonical_sha256": "1a4ff87338ce38175a1f70641ba2052587f98786298ce478d7bb709263947a53",
+          "source_before_after_equal_clean": true
+        }
+      ]
+    }
+  ]
+}

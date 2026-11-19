@@ -1,0 +1,223 @@
+{
+  "schema_version": 1,
+  "status": "PASS_RETAINED_NATIVE_FIXTURE_EVIDENCE",
+  "run_id": 43062473099,
+  "job_id": 130668437204,
+  "attempt": 1,
+  "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "artifact": {
+    "artifact_id": 13874919829,
+    "archive": {
+      "bytes": 1413095,
+      "sha256": "b1787753805af121986af7e99be7c09e99aea1ef613ddb8c965de2bdd9a355ff",
+      "git_blob": "796c09643d1f4d1ab0fb70664f67baa5a3c6621b"
+    },
+    "members": 42
+  },
+  "fulljob": {
+    "bytes": 819097,
+    "sha256": "90f130bc1b4f8b3f09ba4a0444c834b306a6ab20b3fa990ce1e590698fa957bc",
+    "git_blob": "d401ae45b764df3d2eeb84119aa6ea4de9f890a8"
+  },
+  "command_receipts": 10,
+  "all_known_exit_zero_clean": true,
+  "tests": [
+    {
+      "receipt": "memory-tests.json",
+      "passed": 11,
+      "failed": 0,
+      "skipped": 422,
+      "exact_ids": [
+        "episodic_source::tests::a_valid_digest_cannot_replace_missing_or_different_source_admission",
+        "episodic_source::tests::admits_actual_python_unicode_export_with_exact_original_observations",
+        "episodic_source::tests::final_source_check_detects_changed_observation_metadata",
+        "episodic_source::tests::provisional_admission_remains_distinct_from_verified_source_admission",
+        "production_writer::episodic::regression_tests::actual_python_unicode_export_preserves_exact_observed_fact_bytes",
+        "production_writer::episodic::regression_tests::changed_source_admission_cannot_reuse_an_old_canonical_binding",
+        "production_writer::episodic::regression_tests::custody_preserves_provisional_state_and_cannot_upgrade_it_on_replay",
+        "production_writer::episodic::regression_tests::historical_or_incoherent_source_states_cannot_overwrite_native_heads",
+        "production_writer::episodic::regression_tests::source_and_writer_revocation_roll_back_all_native_changes",
+        "production_writer::episodic::regression_tests::update_withdraws_dependent_memory_and_preserves_unrelated_source",
+        "production_writer::episodic::tests::committed_import_reopens_and_reconciles_lost_response_without_rewriting"
+      ],
+      "selected_counts": [
+        11
+      ],
+      "raw": {
+        "bytes": 87925,
+        "sha256": "e8e9a5cdae4f25369104b98440097e69883245236449c2183a4dfb768e128bc0",
+        "git_blob": "c2e081e7cceff7a1861e15c2ebb36fa87f792a50"
+      },
+      "observed_retries": 0,
+      "junit": null,
+      "junit_boundary": "Memory JUnit was replaced by later nextest runs; the exact case proof is its retained raw log and command receipt."
+    },
+    {
+      "receipt": "agentd-tests.json",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 782,
+      "exact_ids": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths",
+        "episodic_import::source_read::tests::episodic_source_observation_follows_commit_generation_not_ack_order",
+        "production_composition::tests::episodic_control::drain::episodic_import_cancellation_cannot_overtake_owner_settlement",
+        "production_composition::tests::episodic_control::episodic_config_cannot_create_a_missing_production_writer",
+        "production_composition::tests::episodic_control::episodic_control_replays_original_commit_then_rejects_revoked_context",
+        "production_composition::tests::episodic_control::episodic_wire_without_configured_source_cannot_mutate_original_owner"
+      ],
+      "selected_counts": [
+        6
+      ],
+      "raw": {
+        "bytes": 68528,
+        "sha256": "3bdcb26b8e776a93595dcf83fb41a3f1d7a351c2271dc4a34744fe9615a45621",
+        "git_blob": "01f9d1b55c04a899faf028ada0114112b94705ad"
+      },
+      "observed_retries": 0,
+      "junit": {
+        "file": "agentd-nextest.junit.xml",
+        "bytes": 1772,
+        "sha256": "3bb5b3ca722124d8deb94590865208419c1408ea37ab064f93f814901ff79b5a",
+        "git_blob": "5017788321c335f478f29b398ac62d78215f1c7c",
+        "uuid": "d6856e10-c1a3-4b05-a39f-f2f0e9dacd18",
+        "timestamp": "2026-11-11T17:13:26.916+00:00",
+        "within_own_command_window": true,
+        "matches_raw_case_ids": true
+      }
+    },
+    {
+      "receipt": "agentd-qualification-profile-tests.json",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 790,
+      "exact_ids": [
+        "app_runtime::tests::episodic_embedding_keeps_the_store_but_removes_implicit_memory_paths"
+      ],
+      "selected_counts": [
+        1
+      ],
+      "raw": {
+        "bytes": 38294,
+        "sha256": "83020893d23926f2b8544320bcf460faba95b94b7227bb6f29f03d63a5b01e38",
+        "git_blob": "1c79932f4438f566f248a6646d473c305eeec416"
+      },
+      "observed_retries": 0,
+      "junit": {
+        "file": "agentd-qualification-profile.junit.xml",
+        "bytes": 545,
+        "sha256": "98827dbe8c0b05dac3cce25ded98518498733728a6a9daf9b776b874c66c13e1",
+        "git_blob": "e124f60797eaceebb374bdb281c892069bf6faa6",
+        "uuid": "f10e548d-a4e0-4d1c-a28d-a33546209109",
+        "timestamp": "2026-11-11T17:14:43.660+00:00",
+        "within_own_command_window": true,
+        "matches_raw_case_ids": true
+      }
+    },
+    {
+      "receipt": "protocol-tests.json",
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "exact_ids": [
+        "capabilities::tests::duplicate_and_invalid_ids_are_rejected",
+        "capabilities::tests::negotiation_is_intersection_with_minor_downgrade",
+        "generation::tests::generation_wire_rejects_unknown_fields_and_unbounded_byte_values",
+        "generation::tests::maximum_generation_pages_and_inputs_roundtrip_within_existing_frame",
+        "objective_tests::history::history_query_preserves_historical_body_and_current_outer_generation",
+        "objective_tests::history::history_unknown_is_nested_and_cannot_decode_as_non_admission",
+        "objective_tests::objective_start_outcomes_are_strict_wire_types",
+        "objective_tests::signed_objective_control_request_round_trips_inside_frame_bound",
+        "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+        "tests::automation_wire_round_trip_is_strict_and_bounded",
+        "tests::capabilities_endpoint_is_additive_and_bounded",
+        "tests::cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive",
+        "tests::health_wire_round_trip_is_strict_and_bounded",
+        "tests::host_turn_authority_binding_is_strict_and_fail_closed",
+        "tests::memory_federation_control_is_typed_strict_and_bounded",
+        "tests::run_lifecycle_wire_round_trip_is_strict_and_bounded"
+      ],
+      "selected_counts": [
+        16
+      ],
+      "raw": {
+        "bytes": 31846,
+        "sha256": "79018ac2f4f609af00f9ad5cb13c3ac54da98cd95d5c4fa718c8efe1739f9fcc",
+        "git_blob": "ad67cc4e8aca815fb7463940b1a14848b51c85a5"
+      },
+      "observed_retries": 0,
+      "junit": {
+        "file": "last-nextest.junit.xml",
+        "bytes": 3690,
+        "sha256": "341d3708772b5f051c8e74fd2f2e8beb95a258390666d3e2141cdc1830ee3be4",
+        "git_blob": "24161865f2e80a5190f15e134ca57d380748bfee",
+        "uuid": "6ff55758-d384-4bf7-98c7-e88fa35b3743",
+        "timestamp": "2026-11-11T17:14:54.863+00:00",
+        "within_own_command_window": true,
+        "matches_raw_case_ids": true
+      }
+    }
+  ],
+  "test_executions": 34,
+  "distinct_case_names": 33,
+  "feature_distinction": "The same Agentd profile case passed once in ordinary compilation and once with qualification-cognitive-write; these are two executions, one case name.",
+  "drain_completion_markers": [
+    "episodic-drain-case-complete:commit",
+    "episodic-drain-case-complete:revoke",
+    "episodic-drain-case-complete:panic"
+  ],
+  "cli_observation": {
+    "source_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "path": "/home/runner/.cache/codex-ci/cargo-target/debug/codex",
+    "bytes": 560467888,
+    "sha256": "c290f7c8e1651d20751228db14ecf2acfa0e0ed7b7b95d7318de25225bd2f5bb"
+  },
+  "cli_before_after_identical": true,
+  "cli_boundary": "Original build receipt and observed binary byte/hash bindings are retained; the 560 MB executable itself is not in the evidence archive.",
+  "scoped_lint_packages": [
+    "codex-hepta-memory",
+    "codex-hepta-agentd",
+    "codex-hepta-agent-protocol"
+  ],
+  "format_and_all_scoped_lints": "passed_without_rewrite",
+  "source": {
+    "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+    "complete_tree_entries": 14053,
+    "before_files": 224,
+    "after_files": 0,
+    "all_before_members_match_exact_git_blobs_and_modes": true,
+    "source_identity_and_worktree_clean_before_after": true,
+    "source_archives": [
+      {
+        "path": "changed-source-before.tar.gz",
+        "archive": {
+          "bytes": 1095905,
+          "sha256": "08c2494f40c4730d7be303615fc069963bd8da78a19dd931ce429b1c515fe5c8",
+          "git_blob": "de194930424bd1af716079bf0dbec8db8bb365be"
+        }
+      },
+      {
+        "path": "changed-source-after.tar.gz",
+        "archive": {
+          "bytes": 45,
+          "sha256": "85cea451eec057fa7e734548ca3ba6d779ed5836a3f9de14b8394575ef0d7d8e",
+          "git_blob": "872c01559ea7ac2302b7d73ae653f7ad29f8981d"
+        }
+      }
+    ],
+    "ignored_provider_source": {
+      "path": "codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs",
+      "bytes": 19820,
+      "sha256": "0e18d2aabe9cef603a2cad8768c6d34903c3c3162ef8b7ef1ae0dfa04e1df085",
+      "git_blob": "aa0e8fd90b112fe0a4f5eab18bf5dacb76d3a8a7"
+    }
+  },
+  "ignored_provider_test_executed": false,
+  "boundaries": [
+    "Software fixture qualification is not memory successor-task benefit.",
+    "No new scored actor episode or recovered original-owner/trust-domain/effect capability is established by this run.",
+    "The ignored real-provider test was not selected.",
+    "Three drain child markers are nested in one selected test, not three additional selected tests."
+  ]
+}

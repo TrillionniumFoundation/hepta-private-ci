@@ -1,0 +1,26 @@
+{
+  "schema": "hcsn-n256-firststep-dense-oracle-hosted-request-v1",
+  "identity": "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001",
+  "unique_execution_key": "hcsn-n256-firststep-dense-oracle-hosted-20261118-c06d-001",
+  "base_commit": "4fd5333e01b6e5e28f5fe7975db8279d0184c7ff",
+  "oracle_source_sha256": "a3aa6a95cd55d254d9fa911d10768d1ec827e2374265a5b0474e0d6243929bfa",
+  "input_bundle_sha256": "17086fb6ba83211e8626c7ac9c22183f6c9c9a7dc615772b5a32d2c14ecb8e95",
+  "admission_intent_request_sha256": "54192afb8283e580d9528c9599d4587625960a5c8158cf70a08c88c706a47c06",
+  "admission_policy_sha256": "68c2ca49c19dc0708d26eb69aef5777f2346cfa4b2091c1cd422b5c67e338217",
+  "runtime_sha256": "0625973f64197245273674586e60ce187571ef1f9d01bc52ea83a30beaa0ad06",
+  "target": {
+    "lane": "warm",
+    "lane_order": 1,
+    "time_fraction": [1, 1000],
+    "dynamic_steps": 1,
+    "dense_expm_actions": 2,
+    "expm_orders": [258, 259],
+    "coordinate_denominator": 69728
+  },
+  "n256_numerical_execution_allowed": true,
+  "maximum_attempts": 1,
+  "historical_negative_and_unknown_preserved": true,
+  "largegrid_qualification": false,
+  "production_adoption": false,
+  "all_closed": false
+}

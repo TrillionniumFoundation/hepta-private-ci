@@ -1,0 +1,65 @@
+{
+  "schema": "mem8.v9.root-source-candidate-review.v1",
+  "source_parent": "c89540598693697577cda8cba31cb07f6ce65317",
+  "actual_candidate_commit": "408226fc670bfa8c1736e2b264750b549237b7c4",
+  "actual_tree": "112fe78dedd76b258b17976cff14693c52897c8d",
+  "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+  "postimage": {
+    "bytes": 106424,
+    "git_blob": "cd297f2835fa66832bbbef810ed724fcdfc2284f",
+    "sha256": "5f5b71e7231846fac3236c816774abe61a3a032f4bfe8290b3cb1ce763ca0d0c"
+  },
+  "full_remote_source_bytes_equal": true,
+  "prior_six_fixture_edits_exactly_reconstructed": true,
+  "incremental_comment_replacement_exactly_reconstructed": true,
+  "original_deadlines_assertions_retries_shared_recorder_and_runtime_unchanged": true,
+  "source_route_full_readbacks": [
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_spec.rs",
+      "sha": "ac1b79e50116fb47384f779425f9cc77ed8e3189",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_v2/spawn.rs",
+      "sha": "394d0a57e99ef68bfa7d2161183a59bc53376893",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/tools/handlers/multi_agents_v2.rs",
+      "sha": "ad9f38927d1639fcc3c3e261daad4ce957712893",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/src/tools/spec_plan.rs",
+      "sha": "7ed58cec717f3ecf531a8b79c32c3604ede30b4a",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/tests/common/responses.rs",
+      "sha": "2285b1427a7ee93190d7b1f2f8c5fdb1d4ccabe6",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+      "sha": "3b429cac96b5f0bc21dc2121ae65de5477020e07",
+      "candidate": false,
+      "full_content_equal": true
+    },
+    {
+      "path": "codex-rs/core/tests/suite/subagent_notifications.rs",
+      "sha": "06411243f4efe30051d04cc560bb6c5721749ee5",
+      "candidate": true,
+      "full_content_equal": true
+    }
+  ],
+  "source_gates_executed": false,
+  "native_tests_executed": false,
+  "new_real_model_requests": 0,
+  "source_PR_ref_changed": false,
+  "original_c895_native_runs_untouched": true
+}

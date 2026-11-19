@@ -1,0 +1,223 @@
+{
+  "schema": "mem-c895-blocking-actual-publication-v1",
+  "archive": {
+    "bytes": 1188896,
+    "git_blob": "0fb8e1e98ca22a49d0614172f8b99a75c0b85c47",
+    "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz",
+    "regular_members": 76,
+    "sha256": "2051f3661c4db6dd127071085d31edfe7452f2003fd02b99bb4a6e60bf858ec1"
+  },
+  "parts": [
+    {
+      "bytes": 450000,
+      "git_blob": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7",
+      "offset": 0,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-01",
+      "sha256": "e53446930b120d309622835fb4eea571e05d627c7e64df604c07b1fd6deda0c0"
+    },
+    {
+      "bytes": 450000,
+      "git_blob": "268259c31ef8ef13e03031213b5034fe107f17fb",
+      "offset": 450000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-02",
+      "sha256": "adb76a492bad50050d7e9ead50416a42238925c92aaa7fe93da6b712302b0d73"
+    },
+    {
+      "bytes": 288896,
+      "git_blob": "6fc30219ea21a6192d82184e274847c667250fec",
+      "offset": 900000,
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-03",
+      "sha256": "404f8b7315ac8eb1cdb5c9fdf3b38f53776fe73a3481fde92ffb305f3ade96df"
+    }
+  ],
+  "texts": [
+    {
+      "bytes": 17357,
+      "git_blob": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+      "path": "FILE_MANIFEST.json",
+      "sha256": "d23235c039d759d5a729f9c5ac9687146fc55465b5f96d1c1ef0eeb7fbac5d22"
+    },
+    {
+      "bytes": 25384,
+      "git_blob": "5a32193771276259cdc71da092af73479c1da1b0",
+      "path": "QUALIFICATION_SUMMARY.json",
+      "sha256": "d5531100ca60d1cb9eb72eddcfd68ef99ba7515c8f9279dc93f0080c3208c1d0"
+    },
+    {
+      "bytes": 6909,
+      "git_blob": "9f9743f8e19c0fcce759ac9743bec023e05075e7",
+      "path": "verify_package.py",
+      "sha256": "5018e493780424d048ea6cf4215edac75d892e8fbeb3554a88537b4827647eef"
+    },
+    {
+      "bytes": 6582,
+      "git_blob": "27e0fcfb00d6a9ede672a0307a93abd24b167899",
+      "path": "README.md",
+      "sha256": "a78228514781a1676c6e6540190bdb56d65fb347655ddf7509420210eae59712"
+    }
+  ],
+  "actual_created": [
+    {
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-01",
+      "actual": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7",
+      "expected": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "960e75abca2e6b1efcfed2ee15b46dff9a5b32b7"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-02",
+      "actual": "268259c31ef8ef13e03031213b5034fe107f17fb",
+      "expected": "268259c31ef8ef13e03031213b5034fe107f17fb",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "268259c31ef8ef13e03031213b5034fe107f17fb"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "MEM_C895_BLOCKING_TERMINAL_ORIGINALS.tar.xz.part-03",
+      "actual": "6fc30219ea21a6192d82184e274847c667250fec",
+      "expected": "6fc30219ea21a6192d82184e274847c667250fec",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "6fc30219ea21a6192d82184e274847c667250fec"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "FILE_MANIFEST.json",
+      "actual": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+      "expected": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "QUALIFICATION_SUMMARY.json",
+      "actual": "5a32193771276259cdc71da092af73479c1da1b0",
+      "expected": "5a32193771276259cdc71da092af73479c1da1b0",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "5a32193771276259cdc71da092af73479c1da1b0"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "verify_package.py",
+      "actual": "9f9743f8e19c0fcce759ac9743bec023e05075e7",
+      "expected": "9f9743f8e19c0fcce759ac9743bec023e05075e7",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "9f9743f8e19c0fcce759ac9743bec023e05075e7"
+        },
+        "isError": false
+      }
+    },
+    {
+      "path": "README.md",
+      "actual": "27e0fcfb00d6a9ede672a0307a93abd24b167899",
+      "expected": "27e0fcfb00d6a9ede672a0307a93abd24b167899",
+      "receipt": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "27e0fcfb00d6a9ede672a0307a93abd24b167899"
+        },
+        "isError": false
+      }
+    }
+  ],
+  "text_readbacks": [
+    {
+      "path": "FILE_MANIFEST.json",
+      "git_blob": "a1fa0e7c08def8b9bcab98b0dfa4b27e4b2e042b",
+      "full_utf8_equal": true
+    },
+    {
+      "path": "QUALIFICATION_SUMMARY.json",
+      "git_blob": "5a32193771276259cdc71da092af73479c1da1b0",
+      "full_utf8_equal": true
+    },
+    {
+      "path": "verify_package.py",
+      "git_blob": "9f9743f8e19c0fcce759ac9743bec023e05075e7",
+      "full_utf8_equal": true
+    },
+    {
+      "path": "README.md",
+      "git_blob": "27e0fcfb00d6a9ede672a0307a93abd24b167899",
+      "full_utf8_equal": true
+    },
+    {
+      "path": "ARCHIVE_INFO.json",
+      "git_blob": "290313badaa4e94497b504d38cf7c612b39b6c4b",
+      "full_utf8_equal": true
+    }
+  ],
+  "refs_changed": false,
+  "archive_info": {
+    "actual_git_blob": "290313badaa4e94497b504d38cf7c612b39b6c4b",
+    "receipt": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Action completed."
+        }
+      ],
+      "structuredContent": {
+        "sha": "290313badaa4e94497b504d38cf7c612b39b6c4b"
+      },
+      "isError": false
+    }
+  }
+}

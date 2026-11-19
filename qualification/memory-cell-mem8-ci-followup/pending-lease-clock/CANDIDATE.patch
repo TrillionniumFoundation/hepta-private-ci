@@ -1,0 +1,865 @@
+--- a/bazel/rules/testing/qualification_lease_clock.bzl
++++ b/bazel/rules/testing/qualification_lease_clock.bzl
+@@ -0,0 +1,51 @@
++"""One test-only CognitiveStore identity for the lease-expiry qualifications."""
++
++load("@crates//:data.bzl", "DEP_DATA")
++load("@crates//:defs.bzl", "aliases")
++load("@rules_rust//rust:defs.bzl", "rust_library")
++load(":rust_test_dependencies.bzl", "rust_test_dependencies")
++
++# This is the normal dependency closure from the two qualification roots,
++# including Agentd's infer-worker-host dev dependency. Product targets keep
++# their original dependencies and features; existing test-lib names stay intact.
++LEASE_CLOCK_TEST_DEPENDENCIES = {
++    "//codex-rs/app-server": "//codex-rs/app-server:app-server-qualification-clock-lib",
++    "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-qualification-clock-lib",
++    "//codex-rs/ext/hepta-memory": "//codex-rs/ext/hepta-memory:hepta-memory-qualification-clock-lib",
++    "//codex-rs/hepta-agentd": "//codex-rs/hepta-agentd:hepta-agentd-qualification-clock-lib",
++    "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-qualification-clock-lib",
++    "//codex-rs/hepta-cognitive-store": "//codex-rs/hepta-cognitive-store:hepta-cognitive-store-qualification-clock-lib",
++    "//codex-rs/hepta-infer-worker-host": "//codex-rs/hepta-infer-worker-host:hepta-infer-worker-host-qualification-clock-lib",
++    "//codex-rs/hepta-memory": "//codex-rs/hepta-memory:hepta-memory-qualification-clock-lib",
++    "//codex-rs/hepta-supervisor": "//codex-rs/hepta-supervisor:hepta-supervisor-qualification-clock-lib",
++}
++
++def qualification_lease_clock_library(
++        name,
++        crate_name,
++        compile_data = [],
++        crate_features = [],
++        extra_srcs = [],
++        base_replacements = {}):
++    """Add a distinct qualification library without mutating the normal graph."""
++    if "//" + native.package_name() not in LEASE_CLOCK_TEST_DEPENDENCIES:
++        fail("lease-clock variant is outside the reviewed type closure")
++    if native.glob(["build.rs"], allow_empty = True):
++        fail("lease-clock variant requires an explicit build-script review")
++    rust_library(
++        name = name + "-qualification-clock-lib",
++        testonly = True,
++        srcs = native.glob(
++            ["src/**/*.rs"],
++            exclude = DEP_DATA[native.package_name()]["binaries"].values(),
++        ) + extra_srcs,
++        aliases = {dep: alias for dep, alias in aliases().items() if alias == "serde_yaml"},
++        compile_data = compile_data,
++        crate_features = crate_features,
++        crate_name = crate_name,
++        crate_root = "src/lib.rs",
++        edition = "2024",
++        rustc_env = {"BAZEL_PACKAGE": native.package_name()},
++        deps = rust_test_dependencies(base_replacements | LEASE_CLOCK_TEST_DEPENDENCIES),
++        visibility = ["//visibility:public"],
++    )
+--- a/codex-rs/app-server/BUILD.bazel
++++ b/codex-rs/app-server/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+@@ -46,3 +47,8 @@
+     ],
+     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+ )
++
++qualification_lease_clock_library(
++    name = "app-server",
++    crate_name = "codex_app_server",
++)
+--- a/codex-rs/app-server-client/BUILD.bazel
++++ b/codex-rs/app-server-client/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+@@ -5,3 +6,9 @@
+     crate_name = "codex_app_server_client",
+     unit_test_features = ["test-support"],
+ )
++
++qualification_lease_clock_library(
++    name = "app-server-client",
++    crate_name = "codex_app_server_client",
++    crate_features = ["test-support"],
++)
+--- a/codex-rs/ext/hepta-memory/BUILD.bazel
++++ b/codex-rs/ext/hepta-memory/BUILD.bazel
+@@ -1,6 +1,13 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+     name = "hepta-memory",
+     crate_name = "codex_hepta_memory_extension",
++    unit_test_dependency_replacements = LEASE_CLOCK_TEST_DEPENDENCIES,
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-memory",
++    crate_name = "codex_hepta_memory_extension",
++)
+--- a/codex-rs/ext/hepta-memory/Cargo.toml
++++ b/codex-rs/ext/hepta-memory/Cargo.toml
+@@ -28,6 +28,7 @@
+ tokio = { workspace = true, features = ["time"] }
+ 
+ [dev-dependencies]
++codex-hepta-memory = { workspace = true, features = ["qualification-lease-clock"] }
+ chrono = { workspace = true }
+ codex-hepta-paths = { workspace = true }
+ codex-utils-absolute-path = { workspace = true }
+--- a/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs
++++ b/codex-rs/ext/hepta-memory/src/local_development_owner_tests.rs
+@@ -222,16 +222,14 @@
+     let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet root"))
+         .expect("fleet");
+     let owner_id = AgentId::parse("00000000-0000-4000-8000-000000000920").expect("owner id");
+-    let store = CognitiveStore::open(&fleet.layout().agent(&owner_id))
+-        .await
+-        .expect("store");
++    let (store, clock) = CognitiveStore::open_new_with_qualification_lease_clock(
++        &fleet.layout().agent(&owner_id),
++    )
++    .await
++    .expect("fresh qualification store");
+     let current_fence = CompactFence::new(7, 8, 1, "e21-owner-fence").expect("fence");
+     let checkpoint = checkpoint(current_fence.clone());
+-    let expires_at = SystemTime::now()
+-        .duration_since(UNIX_EPOCH)
+-        .expect("clock")
+-        .as_secs()
+-        + 1;
++    let expires_at = clock.now_unix_seconds().expect("clock") + 1;
+     let lease = match store
+         .acquire_local_lease_bound(
+             "lease:e21-owner",
+@@ -276,23 +274,17 @@
+         Err(HeptaLocalDevelopmentLifecycleOwnerError::StoreBindingMismatch)
+     ));
+ 
++    // Advance only after the live lease, executor and wrong-store checks pass.
++    clock.advance_to(expires_at).expect("advance to lease expiry");
+     for _ in 0..120 {
+-        if SystemTime::now()
+-            .duration_since(UNIX_EPOCH)
+-            .expect("clock")
+-            .as_secs()
+-            >= expires_at
++        if clock.now_unix_seconds().expect("clock") >= expires_at
+         {
+             break;
+         }
+         tokio::time::sleep(Duration::from_millis(25)).await;
+     }
+     assert!(
+-        SystemTime::now()
+-            .duration_since(UNIX_EPOCH)
+-            .expect("clock")
+-            .as_secs()
+-            >= expires_at,
++        clock.now_unix_seconds().expect("clock") >= expires_at,
+         "test lease did not expire"
+     );
+ 
+@@ -322,11 +314,7 @@
+         Err(codex_hepta_memory::LocalLeaseOutboxError::StaleFence(_))
+     ));
+ 
+-    let next_expires_at = SystemTime::now()
+-        .duration_since(UNIX_EPOCH)
+-        .expect("clock")
+-        .as_secs()
+-        + 3_600;
++    let next_expires_at = clock.now_unix_seconds().expect("clock") + 3_600;
+     let next = match store
+         .acquire_local_lease_after_head_bound(
+             "lease:e21-owner",
+--- a/codex-rs/hepta-agentd/BUILD.bazel
++++ b/codex-rs/hepta-agentd/BUILD.bazel
+@@ -1,4 +1,4 @@
+-load("@crates//:defs.bzl", "all_crate_deps")
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "LEASE_CLOCK_TEST_DEPENDENCIES", "qualification_lease_clock_library")
+ load("@rules_rust//rust:defs.bzl", "rust_binary", "rust_library", "rust_test")
+ load("//:defs.bzl", "WINDOWS_RUSTC_LINK_FLAGS", "codex_rust_crate", "workspace_root_test")
+ load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
+@@ -14,6 +14,8 @@
+     "//codex-rs/hepta-neuron": "//codex-rs/hepta-neuron:hepta-neuron-test-lib",
+     "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
+ }
++
++_QUALIFICATION_CLOCK_DEPENDENCIES = _UNIT_TEST_DEPENDENCIES | LEASE_CLOCK_TEST_DEPENDENCIES
+ 
+ _GENERATION_TEST_FIXTURE = [
+     "tests/support/neuron_generation.rs",
+@@ -83,7 +85,7 @@
+     crate_root = "src/lib.rs",
+     edition = "2024",
+     visibility = ["//visibility:private"],
+-    deps = rust_test_dependencies(_UNIT_TEST_DEPENDENCIES),
++    deps = rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
+ )
+ 
+ rust_test(
+@@ -109,7 +111,7 @@
+     tags = ["manual"],
+     visibility = ["//visibility:private"],
+     deps = rust_test_dependencies(
+-        _UNIT_TEST_DEPENDENCIES,
++        _QUALIFICATION_CLOCK_DEPENDENCIES,
+         normal_dev = True,
+     ),
+ )
+@@ -150,7 +152,7 @@
+     tags = ["manual"],
+     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+     visibility = ["//visibility:private"],
+-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(),
++    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(_QUALIFICATION_CLOCK_DEPENDENCIES),
+ )
+ 
+ rust_test(
+@@ -171,8 +173,8 @@
+     tags = ["manual"],
+     target_compatible_with = _COGNITIVE_E2E_COMPATIBILITY,
+     visibility = ["//visibility:private"],
+-    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + all_crate_deps(
+-        normal = True,
++    deps = [":hepta-agentd-cognitive-write-qualification-lib"] + rust_test_dependencies(
++        _QUALIFICATION_CLOCK_DEPENDENCIES,
+         normal_dev = True,
+     ),
+ )
+@@ -203,3 +205,20 @@
+     ],
+     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-agentd",
++    crate_name = "codex_hepta_agentd",
++    compile_data = [
++        "tests/fixtures/android-bound-text-v1.json",
++        "tests/fixtures/hos2_production_owner.json",
++        "tests/fixtures/notes-bootstrap-v2.json",
++        "tests/fixtures/notes-document-observation-v1.json",
++        "tests/fixtures/notes-objective-literal-v1.json",
++        "tests/fixtures/notes-target-v1.json",
++        "tests/fixtures/notes-model-v1.json",
++    ] + _GENERATION_TEST_FIXTURE,
++    crate_features = ["production-cognitive-write"],
++    extra_srcs = ["tests/support/terminal_cell_owner.rs"],
++    base_replacements = _UNIT_TEST_DEPENDENCIES,
++)
+--- a/codex-rs/hepta-agentd/Cargo.toml
++++ b/codex-rs/hepta-agentd/Cargo.toml
+@@ -121,6 +121,7 @@
+ libc = { workspace = true }
+ 
+ [dev-dependencies]
++codex-hepta-memory = { workspace = true, features = ["qualification-lease-clock"] }
+ codex-hepta-neuron = { path = "../hepta-neuron", features = ["qualification-owned-file-read"] }
+ codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval", features = ["qualification-owned-file-read"] }
+ codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
+--- a/codex-rs/hepta-agentd/src/runtime_tests.rs
++++ b/codex-rs/hepta-agentd/src/runtime_tests.rs
+@@ -609,7 +609,19 @@
+ #[tokio::test]
+ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evidence() {
+     let fixture = runtime_fixture();
+-    attach_runtime_prerequisites(&fixture).await;
++    let (store, clock) =
++        CognitiveStore::open_new_with_qualification_lease_clock(&fixture.identity.layout)
++            .await
++            .expect("fresh qualification store");
++    let store = Arc::new(store);
++    fixture
++        .state
++        .attach_cognitive_store(Arc::clone(&store))
++        .expect("owner attachment");
++    fixture
++        .state
++        .mark_runtime_prerequisites_ready()
++        .expect("owner prerequisites");
+     fixture
+         .registry
+         .compare_and_transition(
+@@ -624,11 +636,6 @@
+         .mark_app_server_ready()
+         .expect("mark App Server ready");
+ 
+-    let store = Arc::new(
+-        CognitiveStore::open(&fixture.identity.layout)
+-            .await
+-            .expect("open cognitive store"),
+-    );
+     let fleet_generation = fixture
+         .state
+         .qualification_turn_authority()
+@@ -642,17 +649,18 @@
+     )
+     .expect("logical request");
+     let fixture_started = std::time::Instant::now();
+-    let minted_at = SystemTime::now().duration_since(UNIX_EPOCH).expect("clock");
++    let minted_at = Duration::from_secs(clock.now_unix_seconds().expect("clock"));
+     let expires_at = minted_at.as_secs() + 1;
+     let expiry_stage = |stage: &str| {
+         let observed_at = SystemTime::now()
+             .duration_since(UNIX_EPOCH)
+             .map(|duration| duration.as_millis());
+         format!(
+-            "expired-registry fixture stage={stage}, minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_at_unix_ms={observed_at:?}",
++            "expired-registry fixture stage={stage}, qualification_minted_at_unix_ms={}, expires_at_unix_seconds={expires_at}, remaining_ms_at_mint={}, elapsed_ms={}, observed_wall_unix_ms={observed_at:?}, observed_lease_clock_seconds={:?}",
+             minted_at.as_millis(),
+             (u128::from(expires_at) * 1_000).saturating_sub(minted_at.as_millis()),
+             fixture_started.elapsed().as_millis(),
++            clock.now_unix_seconds(),
+         )
+     };
+     let old = LogicalTurnAttemptRequest::new(
+@@ -769,6 +777,8 @@
+     drop(executor);
+     drop(lease);
+     tokio::time::sleep(Duration::from_secs(2)).await;
++    // Both H7 writes completed while live; now cross the original +1 deadline.
++    clock.advance_to(expires_at).expect("advance to lease expiry");
+ 
+     let result = prepare_qualification_turn_writer_input(
+         Arc::clone(&fixture.state),
+--- a/codex-rs/hepta-codex-adapter/BUILD.bazel
++++ b/codex-rs/hepta-codex-adapter/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+@@ -7,3 +8,8 @@
+         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
+     },
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-codex-adapter",
++    crate_name = "codex_hepta_codex_adapter",
++)
+--- a/codex-rs/hepta-cognitive-store/BUILD.bazel
++++ b/codex-rs/hepta-cognitive-store/BUILD.bazel
+@@ -1,6 +1,12 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+     name = "hepta-cognitive-store",
+     crate_name = "codex_hepta_cognitive_store",
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-cognitive-store",
++    crate_name = "codex_hepta_cognitive_store",
++)
+--- a/codex-rs/hepta-infer-worker-host/BUILD.bazel
++++ b/codex-rs/hepta-infer-worker-host/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ load(":joint_generation.bzl", "joint_generation_binary")
+ 
+@@ -12,3 +13,11 @@
+ )
+ 
+ joint_generation_binary()
++
++qualification_lease_clock_library(
++    name = "hepta-infer-worker-host",
++    crate_name = "codex_hepta_infer_worker_host",
++    base_replacements = {
++        "//codex-rs/hepta-infer-core": "//codex-rs/hepta-infer-core:hepta-infer-core-test-lib",
++    },
++)
+--- a/codex-rs/hepta-memory/BUILD.bazel
++++ b/codex-rs/hepta-memory/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+@@ -20,3 +21,17 @@
+     ],
+     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-memory",
++    crate_name = "codex_hepta_memory",
++    compile_data = glob(["migrations/**"]) + [
++        "tests/fixtures/android-bound-text-v1.json",
++        "tests/fixtures/notes-target-v1.json",
++        "tests/fixtures/notes-model-v1.json",
++        "tests/fixtures/notes-recovery-v1.json",
++        "tests/fixtures/notes-document-state-v1.json",
++        "tests/fixtures/notes-previous-receipt-v1.json",
++    ],
++    crate_features = ["qualification-lease-clock"],
++)
+--- a/codex-rs/hepta-memory/Cargo.toml
++++ b/codex-rs/hepta-memory/Cargo.toml
+@@ -11,6 +11,9 @@
+ 
+ [lints]
+ workspace = true
++
++[features]
++qualification-lease-clock = []
+ 
+ [dependencies]
+ base64 = { workspace = true }
+--- a/codex-rs/hepta-memory/src/cognitive_lease_clock.rs
++++ b/codex-rs/hepta-memory/src/cognitive_lease_clock.rs
+@@ -0,0 +1,119 @@
++//! Per-owner time for local lease checks; persisted audit timestamps stay real.
++
++use std::time::SystemTime;
++use std::time::UNIX_EPOCH;
++
++use super::CognitiveStore;
++
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++use std::sync::Arc;
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++use std::sync::Weak;
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++use std::sync::atomic::AtomicU64;
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++use std::sync::atomic::Ordering;
++
++#[derive(Clone, Default)]
++pub(super) enum LocalLeaseClock {
++    #[default]
++    Real,
++    #[cfg(any(test, feature = "qualification-lease-clock"))]
++    Qualification(Arc<AtomicU64>),
++}
++
++impl CognitiveStore {
++    pub(crate) fn local_lease_now_unix_i64(&self) -> Result<i64, String> {
++        i64::try_from(self.local_lease_now_unix_seconds()?)
++            .map_err(|_| "timestamp overflow".to_string())
++    }
++
++    pub(crate) fn local_lease_now_unix_seconds(&self) -> Result<u64, String> {
++        match &self.local_lease_clock {
++            LocalLeaseClock::Real => SystemTime::now()
++                .duration_since(UNIX_EPOCH)
++                .map(|duration| duration.as_secs())
++                .map_err(|error| error.to_string()),
++            #[cfg(any(test, feature = "qualification-lease-clock"))]
++            LocalLeaseClock::Qualification(now) => Ok(now.load(Ordering::Acquire)),
++        }
++    }
++}
++
++/// Advances only the fresh qualification owner's lease checks. It cannot
++/// replace an existing owner's clock, move backwards, or retain the owner.
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++pub struct QualificationLeaseClock {
++    now: Weak<AtomicU64>,
++}
++
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++impl QualificationLeaseClock {
++    pub fn now_unix_seconds(&self) -> Result<u64, super::CognitiveStoreError> {
++        Ok(self.owner_clock()?.load(Ordering::Acquire))
++    }
++
++    pub fn advance_to(&self, target: u64) -> Result<(), super::CognitiveStoreError> {
++        if i64::try_from(target).is_err() {
++            return Err(super::CognitiveStoreError::Invalid(
++                "qualification lease time overflows SQLite INTEGER".to_string(),
++            ));
++        }
++        self.owner_clock()?
++            .fetch_update(Ordering::AcqRel, Ordering::Acquire, |current| {
++                (target >= current).then_some(target)
++            })
++            .map(|_| ())
++            .map_err(|_| {
++                super::CognitiveStoreError::Invalid(
++                    "qualification lease time cannot move backwards".to_string(),
++                )
++            })
++    }
++
++    fn owner_clock(&self) -> Result<Arc<AtomicU64>, super::CognitiveStoreError> {
++        self.now.upgrade().ok_or_else(|| {
++            super::CognitiveStoreError::Unavailable(
++                "qualification clock owner has been dropped".to_string(),
++            )
++        })
++    }
++}
++
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++impl CognitiveStore {
++    /// Create an empty qualification owner under the original exclusive store
++    /// fence. Existing databases, recovery pointers and live owners are refused.
++    /// Ordinary open, recovery and read-only construction always use real time.
++    pub async fn open_new_with_qualification_lease_clock(
++        layout: &codex_hepta_paths::HeptaAgentLayout,
++    ) -> Result<(Self, QualificationLeaseClock), super::CognitiveStoreError> {
++        let root = super::create_private_directory(layout.cognitive_root())?;
++        let guard = super::CognitiveStoreOpenGuard::acquire_exclusive(&root)?;
++        for entry in std::fs::read_dir(&root).map_err(super::unavailable)? {
++            if entry.map_err(super::unavailable)?.file_name()
++                != std::ffi::OsStr::new(super::COGNITIVE_STORE_LOCK_FILENAME)
++            {
++                return Err(super::CognitiveStoreError::Invalid(
++                    "qualification clock requires a new empty cognitive store".to_string(),
++                ));
++            }
++        }
++        let mut store = Self::open_guarded(layout, root, Arc::new(guard)).await?;
++        let initial = store
++            .local_lease_now_unix_seconds()
++            .map_err(super::CognitiveStoreError::Unavailable)?;
++        i64::try_from(initial).map_err(super::unavailable)?;
++        let now = Arc::new(AtomicU64::new(initial));
++        let control = QualificationLeaseClock {
++            now: Arc::downgrade(&now),
++        };
++        // Bind before any store, clone, lease or executor escapes this constructor.
++        store.local_lease_clock = LocalLeaseClock::Qualification(now);
++        Ok((store, control))
++    }
++}
++
++#[cfg(test)]
++#[path = "cognitive_lease_clock_tests.rs"]
++mod tests;
+--- a/codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs
++++ b/codex-rs/hepta-memory/src/cognitive_lease_clock_tests.rs
+@@ -0,0 +1,91 @@
++use codex_hepta_contracts::AgentId;
++use codex_hepta_paths::HeptaFleetRoot;
++use tempfile::TempDir;
++
++use crate::CognitiveStore;
++use crate::CognitiveStoreError;
++use crate::LocalLeaseAcquire;
++use crate::LocalLeaseHeadDisposition;
++use crate::LocalLeaseOutboxError;
++
++fn fixture() -> (TempDir, HeptaFleetRoot) {
++    let temp = TempDir::new().expect("temporary fleet");
++    let root = temp.path().join("fleet");
++    std::fs::create_dir(&root).expect("fleet directory");
++    let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical fleet"))
++        .expect("fleet root");
++    (temp, fleet)
++}
++
++#[tokio::test]
++async fn qualification_clock_is_monotonic_and_bound_to_one_owner() {
++    let (_temp, fleet) = fixture();
++    let first = AgentId::parse("00000000-0000-4000-8000-000000000961").expect("first owner");
++    let second = AgentId::parse("00000000-0000-4000-8000-000000000962").expect("second owner");
++    let (store, clock) = CognitiveStore::open_new_with_qualification_lease_clock(
++        &fleet.layout().agent(&first),
++    )
++    .await
++    .expect("first new owner");
++    let (other, other_clock) = CognitiveStore::open_new_with_qualification_lease_clock(
++        &fleet.layout().agent(&second),
++    )
++    .await
++    .expect("second new owner");
++    let expires_at = clock.now_unix_seconds().expect("first clock") + 1;
++    let other_expires_at = other_clock.now_unix_seconds().expect("second clock") + 1;
++    let LocalLeaseAcquire::Acquired(lease) = store
++        .acquire_local_lease_bound("lease:clock", 1, 1, 1, "clock-fence", expires_at)
++        .await
++        .expect("first live lease")
++    else {
++        panic!("new owner must acquire a lease")
++    };
++    let LocalLeaseAcquire::Acquired(other_lease) = other
++        .acquire_local_lease_bound("lease:clock", 1, 1, 1, "clock-fence", other_expires_at)
++        .await
++        .expect("second live lease")
++    else {
++        panic!("new owner must acquire a lease")
++    };
++    lease.admit("live", "topic", "payload").await.expect("live admission");
++    let clone = store.clone();
++    clock.advance_to(expires_at).expect("expiry boundary");
++    assert!(clock.advance_to(expires_at - 1).is_err());
++    assert_eq!(clock.now_unix_seconds().expect("clock"), expires_at);
++    assert_eq!(
++        clone.inspect_local_lease_head("lease:clock").await.expect("shared clock").disposition,
++        LocalLeaseHeadDisposition::ExpiredActive,
++    );
++    assert!(matches!(
++        lease.admit("expired", "topic", "payload").await,
++        Err(LocalLeaseOutboxError::StaleFence(_))
++    ));
++    other_lease.admit("still-live", "topic", "payload").await.expect("independent owner");
++    assert_eq!(
++        other.inspect_local_lease_head("lease:clock").await.expect("other clock").disposition,
++        LocalLeaseHeadDisposition::Active,
++    );
++    drop(lease);
++    drop(clone);
++    store.close().await;
++    assert!(clock.now_unix_seconds().is_err(), "controller must not retain the owner");
++    assert!(other_clock.now_unix_seconds().is_ok());
++}
++
++#[tokio::test]
++async fn qualification_clock_refuses_existing_or_active_store() {
++    let (_temp, fleet) = fixture();
++    let owner = AgentId::parse("00000000-0000-4000-8000-000000000963").expect("owner");
++    let layout = fleet.layout().agent(&owner);
++    let store = CognitiveStore::open(&layout).await.expect("ordinary owner");
++    assert!(matches!(
++        CognitiveStore::open_new_with_qualification_lease_clock(&layout).await,
++        Err(CognitiveStoreError::Unavailable(_))
++    ));
++    store.close().await;
++    assert!(matches!(
++        CognitiveStore::open_new_with_qualification_lease_clock(&layout).await,
++        Err(CognitiveStoreError::Invalid(_))
++    ));
++}
+--- a/codex-rs/hepta-memory/src/cognitive_store.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store.rs
+@@ -57,6 +57,11 @@
+ mod gate;
+ pub(crate) use gate::CheckpointAttempt;
+ pub(crate) use gate::CognitiveCommitGate;
++
++#[path = "cognitive_lease_clock.rs"]
++mod lease_clock;
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++pub use lease_clock::QualificationLeaseClock;
+ 
+ #[path = "cognitive_checkpoint_bind.rs"]
+ mod checkpoint_bind;
+@@ -264,6 +269,7 @@
+     path: PathBuf,
+     pub(crate) commit_gate: CognitiveCommitGate,
+     _open_guard: Option<Arc<CognitiveStoreOpenGuard>>,
++    local_lease_clock: lease_clock::LocalLeaseClock,
+ }
+ 
+ #[derive(Debug)]
+@@ -361,6 +367,7 @@
+             path,
+             commit_gate: CognitiveCommitGate::default(),
+             _open_guard: None,
++            local_lease_clock: lease_clock::LocalLeaseClock::default(),
+         }
+     }
+ 
+@@ -371,6 +378,14 @@
+     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
+         let root = create_private_directory(layout.cognitive_root())?;
+         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
++        Self::open_guarded(layout, root, open_guard).await
++    }
++
++    async fn open_guarded(
++        layout: &HeptaAgentLayout,
++        root: PathBuf,
++        open_guard: Arc<CognitiveStoreOpenGuard>,
++    ) -> Result<Self, CognitiveStoreError> {
+         let path = resolve_active_database_path(&root)?;
+         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
+             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+@@ -401,6 +416,7 @@
+             path,
+             commit_gate,
+             _open_guard: Some(open_guard),
++            local_lease_clock: lease_clock::LocalLeaseClock::default(),
+         })
+     }
+ 
+--- a/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
++++ b/codex-rs/hepta-memory/src/cognitive_store_recovery.rs
+@@ -316,6 +316,7 @@
+                 path: candidate.clone(),
+                 commit_gate,
+                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
++                local_lease_clock: super::lease_clock::LocalLeaseClock::default(),
+             })
+         }
+         .await;
+--- a/codex-rs/hepta-memory/src/h7_trajectory_store.rs
++++ b/codex-rs/hepta-memory/src/h7_trajectory_store.rs
+@@ -671,9 +671,12 @@
+     .await?;
+     let lease_expired = match current.lease_expires_at_unix_seconds {
+         Some(expiry) => {
+-            let now = u64::try_from(now_unix_seconds()?).map_err(|_| {
+-                H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string())
+-            })?;
++            let now = u64::try_from(
++                store
++                    .local_lease_now_unix_i64()
++                    .map_err(H7TrajectoryStoreError::Clock)?,
++            )
++            .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
+             now >= expiry
+         }
+         None => false,
+@@ -722,8 +725,12 @@
+             "expired H7 recovery requires an explicit lease expiry".to_string(),
+         ));
+     };
+-    let now = u64::try_from(now_unix_seconds()?)
+-        .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
++    let now = u64::try_from(
++        store
++            .local_lease_now_unix_i64()
++            .map_err(H7TrajectoryStoreError::Clock)?,
++    )
++    .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
+     if now < expiry {
+         return Err(H7TrajectoryStoreError::StaleFence(
+             "lease has not expired; ordinary lifecycle verification is required".to_string(),
+@@ -765,8 +772,12 @@
+                 "expired H7 recovery head lost its explicit expiry".to_string(),
+             )
+         })?;
+-    let current_now = u64::try_from(now_unix_seconds()?)
+-        .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
++    let current_now = u64::try_from(
++        store
++            .local_lease_now_unix_i64()
++            .map_err(H7TrajectoryStoreError::Clock)?,
++    )
++    .map_err(|_| H7TrajectoryStoreError::Clock("clock before Unix epoch".to_string()))?;
+     if current_now < current_expiry {
+         return Err(H7TrajectoryStoreError::StaleFence(
+             "lease became live before expired H7 recovery gate".to_string(),
+--- a/codex-rs/hepta-memory/src/lib.rs
++++ b/codex-rs/hepta-memory/src/lib.rs
+@@ -243,6 +243,8 @@
+ pub use cognitive_store::CognitiveRecoveryRequirement;
+ pub use cognitive_store::CognitiveStore;
+ pub use cognitive_store::CognitiveStoreError;
++#[cfg(any(test, feature = "qualification-lease-clock"))]
++pub use cognitive_store::QualificationLeaseClock;
+ #[cfg(target_os = "linux")]
+ pub use cognitive_store::InstalledRootCheckpointImage;
+ pub use cognitive_store::RecoveredCognitiveReadOnly;
+--- a/codex-rs/hepta-memory/src/local_lease_outbox.rs
++++ b/codex-rs/hepta-memory/src/local_lease_outbox.rs
+@@ -1261,8 +1261,12 @@
+ 
+         let now = match now_override {
+             Some(now) => now,
+-            None => u64::try_from(now_unix_seconds()?)
+-                .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?,
++            None => u64::try_from(
++                self.store
++                    .local_lease_now_unix_i64()
++                    .map_err(LocalLeaseOutboxError::Clock)?,
++            )
++            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?,
+         };
+         if now < persisted_binding.lease_expires_at_unix_seconds {
+             return Err(LocalLeaseOutboxError::StaleFence(format!(
+@@ -3425,7 +3429,10 @@
+                             let expiry = i64::try_from(expiry).map_err(|_| {
+                                 LocalLeaseOutboxError::Clock("lease expiry overflow".to_string())
+                             })?;
+-                            expiry <= now_unix_seconds()?
++                            expiry
++                                <= self
++                                    .local_lease_now_unix_i64()
++                                    .map_err(LocalLeaseOutboxError::Clock)?
+                         }
+                         None => false,
+                     };
+@@ -5338,8 +5345,13 @@
+ ) -> Result<(), LocalLeaseOutboxError> {
+     ensure_current_identity(lease, handle)?;
+     if let Some(expires_at) = lease.lease_expires_at_unix_seconds {
+-        let now = u64::try_from(now_unix_seconds()?)
+-            .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?;
++        let now = u64::try_from(
++            handle
++                .store
++                .local_lease_now_unix_i64()
++                .map_err(LocalLeaseOutboxError::Clock)?,
++        )
++        .map_err(|_| LocalLeaseOutboxError::Clock("clock before Unix epoch".to_string()))?;
+         if now >= expires_at {
+             return Err(LocalLeaseOutboxError::StaleFence(
+                 "local lease has expired".to_string(),
+--- a/codex-rs/hepta-memory/src/logical_turn_registry.rs
++++ b/codex-rs/hepta-memory/src/logical_turn_registry.rs
+@@ -424,7 +424,9 @@
+             ));
+         }
+         let head = rows.last().cloned();
+-        let now = now_unix_seconds()?;
++        let now = self
++            .local_lease_now_unix_seconds()
++            .map_err(LogicalTurnRegistryError::Clock)?;
+ 
+         if let Some(head) = head.as_ref() {
+             if head.matches_request(&request, &attempt) {
+@@ -727,7 +729,9 @@
+         .fetch_optional(&mut *transaction)
+         .await
+         .map_err(crate::cognitive_store::unavailable)?;
+-        let observed_at_unix_seconds = now_unix_seconds()?;
++        let observed_at_unix_seconds = self
++            .local_lease_now_unix_seconds()
++            .map_err(LogicalTurnRegistryError::Clock)?;
+         let Some(identity) = identity else {
+             transaction
+                 .commit()
+@@ -975,7 +979,9 @@
+                 && previous.lease_expires_at_unix_seconds
+                     == Some(request.lease_expires_at_unix_seconds)
+             {
+-                let now = now_unix_seconds()?;
++                let now = store
++                    .local_lease_now_unix_seconds()
++                    .map_err(LogicalTurnRegistryError::Clock)?;
+                 if previous
+                     .lease_expires_at_unix_seconds
+                     .is_some_and(|expiry| expiry <= now)
+@@ -1129,7 +1135,12 @@
+     {
+         return Ok(None);
+     }
+-    if !allow_expired && lease.lease_expires_at_unix_seconds.unwrap_or(0) <= now_unix_seconds()? {
++    if !allow_expired
++        && lease.lease_expires_at_unix_seconds.unwrap_or(0)
++            <= store
++                .local_lease_now_unix_seconds()
++                .map_err(LogicalTurnRegistryError::Clock)?
++    {
+         return Ok(None);
+     }
+     Ok(Some(lease))
+--- a/codex-rs/hepta-supervisor/BUILD.bazel
++++ b/codex-rs/hepta-supervisor/BUILD.bazel
+@@ -1,3 +1,4 @@
++load("//bazel/rules/testing:qualification_lease_clock.bzl", "qualification_lease_clock_library")
+ load("//:defs.bzl", "codex_rust_crate")
+ 
+ codex_rust_crate(
+@@ -17,3 +18,8 @@
+     ],
+     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+ )
++
++qualification_lease_clock_library(
++    name = "hepta-supervisor",
++    crate_name = "codex_hepta_supervisor",
++)

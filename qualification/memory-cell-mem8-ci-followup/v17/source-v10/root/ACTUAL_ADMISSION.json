@@ -1,0 +1,50 @@
+{
+  "schema": "mem8.v10.actual-source-gate-admission.v1",
+  "at": "2026-11-11 16:38:09 UTC",
+  "branch": "codex/mem8-source-gates-v10-20261111-ed353817",
+  "source": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "harness": "be4b90394bc69170f8e67aee5a4a6d3e361f9cbc",
+  "harness_tree": "0cf9d6962eb90f60840b3b660b8e2e8bf5eb23fd",
+  "preexisting_ref_absent_404": true,
+  "created_at_pure_source_acknowledged": true,
+  "full_raw_before_ref": {
+    "ref": "refs/heads/codex/mem8-source-gates-v10-20261111-ed353817",
+    "node_id": "REF_kwDOTrgxoNoAOHJlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjEwLTIwMjYxMTExLWVkMzUzODE3",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v10-20261111-ed353817",
+    "object": {
+      "sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/d0f6507e08f7f5c5855f5164d07c049a34d1a6d9"
+    }
+  },
+  "single_expected_head_update": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Action completed."
+      }
+    ],
+    "structuredContent": {
+      "success": true
+    },
+    "isError": false
+  },
+  "full_raw_after_ref": {
+    "ref": "refs/heads/codex/mem8-source-gates-v10-20261111-ed353817",
+    "node_id": "REF_kwDOTrgxoNoAOHJlZnMvaGVhZHMvY29kZXgvbWVtOC1zb3VyY2UtZ2F0ZXMtdjEwLTIwMjYxMTExLWVkMzUzODE3",
+    "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/refs/heads/codex/mem8-source-gates-v10-20261111-ed353817",
+    "object": {
+      "sha": "be4b90394bc69170f8e67aee5a4a6d3e361f9cbc",
+      "type": "commit",
+      "url": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/commits/be4b90394bc69170f8e67aee5a4a6d3e361f9cbc"
+    }
+  },
+  "static_review": "root + experiment + independent remote; exact four complete remote byte readbacks",
+  "budget_seconds": 600,
+  "job_timeout_minutes": 20,
+  "real_model_requests": 0,
+  "native_tests": 0,
+  "source_PR_changed": false,
+  "original_runs_untouched": true
+}

@@ -1,0 +1,11 @@
+--- unexecuted-depth0/.github/workflows/hepta-mem8-source-gates-v6.yml
++++ final-depth6/.github/workflows/hepta-mem8-source-gates-v6.yml
+@@ -66,7 +66,7 @@
+         with:
+           ref: 421d15080b3cb942be8ac51bbe443e268d124a9e
+           path: source
+-          fetch-depth: 0
++          fetch-depth: 6
+           persist-credentials: false
+ 
+       - name: Install the pinned formatting toolchain

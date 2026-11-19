@@ -49,6 +49,60 @@ VERBATIM_FIXTURES = {
 }
 
 
+# These two exact original Rust source records are retained evidence. Their
+# containing publication packages and original Git identities are recorded in
+# HEPTA_VERBATIM_SOURCE_RECORDS.json. Neighboring Rust files remain source inputs.
+ORIGINAL_EVIDENCE_PREFIX = "qualification/memory-cell-mem8-ci-followup"
+ORIGINAL_EVIDENCE_FILES = {
+    "qualification/memory-cell-mem8-ci-followup/pending-model-wire-cache/model_list.rs": (
+        "1136589db852ba45ce9bee975dd10fcf7a48a24c832aca5c0b8019db5a987177",
+        14469,
+    ),
+    "qualification/memory-cell-mem8-ci-followup/v17/memory-coverage-diagnostic-preparation/cognitive_runtime_tests.rs": (
+        "5ecb8bce0adb6d0151eb1ed23405489757354482f70b1b33d1232b35afc85d3c",
+        17873,
+    ),
+}
+
+
+def verified_original_evidence_paths() -> frozenset[str]:
+    """Validate exact archived source bytes before any full or scoped format."""
+    root = REPO_ROOT.resolve()
+    prefix = Path(ORIGINAL_EVIDENCE_PREFIX)
+    for relative, (expected_sha256, expected_size) in ORIGINAL_EVIDENCE_FILES.items():
+        path = Path(relative)
+        if (
+            path.is_absolute()
+            or ".." in path.parts
+            or "\\" in relative
+            or path.as_posix() != relative
+            or not path.is_relative_to(prefix)
+        ):
+            raise ValueError(
+                f"original evidence path escapes its fixed prefix: {relative!r}"
+            )
+        source = root / path
+        try:
+            resolved = source.resolve(strict=True)
+            if not resolved.is_relative_to(root / prefix) or any(
+                parent.is_symlink()
+                for parent in (source, *source.parents)
+                if parent.is_relative_to(root)
+            ):
+                raise ValueError(
+                    f"original evidence path escapes or aliases: {relative!r}"
+                )
+            if not source.is_file() or source.stat().st_size != expected_size:
+                raise ValueError(f"original evidence bytes changed: {relative!r}")
+            if hashlib.sha256(source.read_bytes()).hexdigest() != expected_sha256:
+                raise ValueError(f"original evidence bytes changed: {relative!r}")
+        except OSError as error:
+            raise ValueError(
+                f"cannot verify original evidence {relative!r}: {error}"
+            ) from error
+    return frozenset(ORIGINAL_EVIDENCE_FILES)
+
+
 def verified_verbatim_fixture_paths() -> frozenset[str]:
     """Identify exact test-input bytes, rejecting drift before any formatter runs."""
     root = REPO_ROOT.resolve()
@@ -84,7 +138,7 @@ def verified_verbatim_fixture_paths() -> frozenset[str]:
             raise ValueError(
                 f"cannot verify verbatim fixture {relative!r}: {error}"
             ) from error
-    return frozenset(VERBATIM_FIXTURES)
+    return frozenset(VERBATIM_FIXTURES) | verified_original_evidence_paths()
 
 
 @dataclass(frozen=True)

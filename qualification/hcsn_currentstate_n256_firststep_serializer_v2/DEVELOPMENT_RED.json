@@ -1,0 +1,18 @@
+{
+  "schema": "hcsn-n256-firststep-output-serializer-development-red-v1",
+  "identity": "hcsn-n256-firststep-output-serializer-20261117-c06d-local001",
+  "command": "python -O -m unittest qualification.hcsn_currentstate_n256_firststep_serializer_v2.test_serializer -v",
+  "tests_run": 7,
+  "passed": 6,
+  "failed": 1,
+  "failed_test": "test_atomic_publish_is_exact",
+  "failure": "decoded metadata contains canonical schema while the source fixture metadata does not",
+  "serializer_byte_mismatch_observed": false,
+  "coordinate_row_mismatch_observed": false,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "preserved": true
+}
