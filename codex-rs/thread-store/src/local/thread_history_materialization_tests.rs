@@ -4,7 +4,6 @@ use std::path::Path;
 use std::time::Duration;
 
 use crate::local::test_support::private_home;
-use chrono::Utc;
 use codex_app_server_protocol::ThreadItem;
 use codex_protocol::ThreadId;
 use codex_protocol::items::AgentMessageContent;
@@ -1264,7 +1263,7 @@ async fn summary_items_use_final_answers_and_ignore_commentary() {
     let mut builder = codex_state::ThreadMetadataBuilder::new(
         thread_id,
         home.path().join("missing-rollout.jsonl"),
-        Utc::now(),
+        codex_utils_time::Timestamp::now(),
         SessionSource::Cli,
     );
     builder.history_mode = ThreadHistoryMode::Paginated;

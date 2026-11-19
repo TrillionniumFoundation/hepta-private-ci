@@ -58,7 +58,7 @@ url = { workspace = true }
 uuid = { workspace = true, features = ["serde", "v7"] }
 
 [dev-dependencies]
-chrono = { workspace = true }
+codex-utils-time = { workspace = true }
 codex-config = { workspace = true }
 codex-protocol = { workspace = true }
 pretty_assertions = { workspace = true }

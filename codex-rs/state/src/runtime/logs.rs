@@ -294,8 +294,8 @@ WHERE id IN (
     }
 
     pub(crate) async fn run_logs_startup_maintenance(&self) -> anyhow::Result<()> {
-        let Some(cutoff) =
-            Utc::now().checked_sub_signed(chrono::Duration::days(LOG_RETENTION_DAYS))
+        let Some(cutoff) = codex_utils_time::Timestamp::now()
+            .checked_sub(time::Duration::days(LOG_RETENTION_DAYS))
         else {
             return Ok(());
         };
@@ -461,8 +461,10 @@ fn format_feedback_log_line(
     feedback_log_body: &str,
 ) -> String {
     let nanos = u32::try_from(ts_nanos).unwrap_or(0);
-    let timestamp = match DateTime::<Utc>::from_timestamp(ts, nanos) {
-        Some(dt) => dt.to_rfc3339_opts(chrono::SecondsFormat::Micros, true),
+    let timestamp = match codex_utils_time::Timestamp::from_timestamp(ts, nanos) {
+        Some(dt) => {
+            dt.to_rfc3339_opts(codex_utils_time::SecondsFormat::Micros, /*use_z*/ true)
+        }
         None => format!("{ts}.{ts_nanos:09}Z"),
     };
     let mut line = format!("{timestamp} {level:>5} {feedback_log_body}");
@@ -547,7 +549,6 @@ mod tests {
     use crate::LogEntry;
     use crate::LogQuery;
     use crate::migrations::LOGS_MIGRATOR;
-    use chrono::Utc;
     use codex_utils_absolute_path::test_support::PathExt;
     use pretty_assertions::assert_eq;
     use sqlx::SqlitePool;
@@ -633,7 +634,7 @@ mod tests {
         sqlx::query(
             "INSERT INTO logs (ts, ts_nanos, level, target, message, module_path, file, line, thread_id, process_uuid, estimated_bytes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
-        .bind(Utc::now().timestamp())
+        .bind(codex_utils_time::Timestamp::now().timestamp())
         .bind(0_i64)
         .bind("INFO")
         .bind("cli")

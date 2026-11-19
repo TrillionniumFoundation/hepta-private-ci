@@ -1,15 +1,3 @@
-use std::collections::HashMap;
-use std::collections::HashSet;
-use std::path::PathBuf;
-use std::sync::Arc;
-use std::sync::Mutex;
-use std::sync::MutexGuard;
-use std::sync::OnceLock;
-use std::sync::atomic::AtomicBool;
-use std::sync::atomic::Ordering;
-
-use chrono::DateTime;
-use chrono::Utc;
 use codex_protocol::ThreadId;
 use codex_protocol::models::PermissionProfile;
 use codex_protocol::protocol::AskForApproval;
@@ -20,6 +8,15 @@ use codex_protocol::protocol::ThreadHistoryMode;
 use codex_protocol::protocol::ThreadMemoryMode;
 use codex_rollout::RolloutItem;
 use codex_rollout::persisted_rollout_items;
+use std::collections::HashMap;
+use std::collections::HashSet;
+use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::MutexGuard;
+use std::sync::OnceLock;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use crate::AppendThreadItemsParams;
 use crate::ArchiveThreadParams;
@@ -507,7 +504,7 @@ struct InMemoryThreadStoreState {
     metadata_updates: HashMap<ThreadId, ThreadMetadataPatch>,
     sections: HashMap<ThreadId, String>,
     section_positions: HashMap<ThreadId, i64>,
-    section_entered_at: HashMap<ThreadId, DateTime<Utc>>,
+    section_entered_at: HashMap<ThreadId, codex_utils_time::Timestamp>,
     names: HashMap<ThreadId, Option<String>>,
     rollout_paths: HashMap<PathBuf, ThreadId>,
 }
@@ -816,7 +813,7 @@ impl InMemoryThreadStore {
         if previous_section.as_deref() != Some(section) {
             state
                 .section_entered_at
-                .insert(params.thread_id, Utc::now());
+                .insert(params.thread_id, codex_utils_time::Timestamp::now());
             state.sections.insert(params.thread_id, section.to_owned());
         }
         Ok(())
@@ -1057,13 +1054,13 @@ fn stored_thread_from_state(
             .flatten(),
         created_at: metadata
             .and_then(|metadata| metadata.created_at)
-            .unwrap_or_else(Utc::now),
+            .unwrap_or_else(codex_utils_time::Timestamp::now),
         updated_at: metadata
             .and_then(|metadata| metadata.updated_at)
-            .unwrap_or_else(Utc::now),
+            .unwrap_or_else(codex_utils_time::Timestamp::now),
         recency_at: metadata
             .and_then(|metadata| metadata.advance_recency_at.or(metadata.updated_at))
-            .unwrap_or_else(Utc::now),
+            .unwrap_or_else(codex_utils_time::Timestamp::now),
         archived_at: None,
         section: state
             .sections

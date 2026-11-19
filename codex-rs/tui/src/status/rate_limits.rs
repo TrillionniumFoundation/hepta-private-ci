@@ -10,15 +10,12 @@ use crate::chatwidget::limit_label_for_window;
 use crate::text_formatting::capitalize_first;
 
 use super::helpers::format_reset_timestamp;
-use chrono::DateTime;
-use chrono::Duration as ChronoDuration;
-use chrono::Local;
-use chrono::Utc;
 use codex_app_server_protocol::CreditsSnapshot as CoreCreditsSnapshot;
 use codex_app_server_protocol::RateLimitSnapshot;
 use codex_app_server_protocol::RateLimitWindow;
 use codex_app_server_protocol::SpendControlLimitSnapshot as CoreSpendControlLimitSnapshot;
 use codex_protocol::num_format::format_with_separators;
+use time::Duration as TimeDuration;
 
 const STATUS_LIMIT_BAR_SEGMENTS: usize = 20;
 const STATUS_LIMIT_BAR_FILLED: &str = "█";
@@ -76,11 +73,10 @@ pub(crate) struct RateLimitWindowDisplay {
 }
 
 impl RateLimitWindowDisplay {
-    fn from_window(window: &RateLimitWindow, captured_at: DateTime<Local>) -> Self {
-        let resets_at_utc = window
-            .resets_at
-            .and_then(|seconds| DateTime::<Utc>::from_timestamp(seconds, 0))
-            .map(|dt| dt.with_timezone(&Local));
+    fn from_window(window: &RateLimitWindow, captured_at: codex_utils_time::Timestamp) -> Self {
+        let resets_at_utc = window.resets_at.and_then(|seconds| {
+            codex_utils_time::Timestamp::from_timestamp(seconds, /*nanoseconds*/ 0)
+        });
         let resets_at = resets_at_utc.map(|dt| format_reset_timestamp(dt, captured_at));
 
         Self {
@@ -96,7 +92,7 @@ pub(crate) struct RateLimitSnapshotDisplay {
     /// Canonical limit identifier (for example: `codex` or `codex_other`).
     pub limit_name: String,
     /// Local timestamp representing when this display snapshot was captured.
-    pub captured_at: DateTime<Local>,
+    pub captured_at: codex_utils_time::Timestamp,
     /// Primary usage window.
     pub primary: Option<RateLimitWindowDisplay>,
     /// Secondary usage window.
@@ -122,7 +118,7 @@ pub(crate) struct CreditsSnapshotDisplay {
 #[derive(Debug, Clone)]
 pub(crate) struct SpendControlLimitSnapshotDisplay {
     /// Local timestamp representing when this monthly usage value was captured.
-    pub captured_at: DateTime<Local>,
+    pub captured_at: codex_utils_time::Timestamp,
     pub percent_remaining: f64,
     pub used: String,
     pub limit: String,
@@ -136,7 +132,7 @@ pub(crate) struct SpendControlLimitSnapshotDisplay {
 #[cfg(test)]
 pub(crate) fn rate_limit_snapshot_display(
     snapshot: &RateLimitSnapshot,
-    captured_at: DateTime<Local>,
+    captured_at: codex_utils_time::Timestamp,
 ) -> RateLimitSnapshotDisplay {
     rate_limit_snapshot_display_for_limit(snapshot, "codex".to_string(), captured_at)
 }
@@ -144,7 +140,7 @@ pub(crate) fn rate_limit_snapshot_display(
 pub(crate) fn rate_limit_snapshot_display_for_limit(
     snapshot: &RateLimitSnapshot,
     limit_name: String,
-    captured_at: DateTime<Local>,
+    captured_at: codex_utils_time::Timestamp,
 ) -> RateLimitSnapshotDisplay {
     RateLimitSnapshotDisplay {
         limit_name,
@@ -178,26 +174,29 @@ impl From<&CoreCreditsSnapshot> for CreditsSnapshotDisplay {
 impl SpendControlLimitSnapshotDisplay {
     fn from_limit(
         value: &CoreSpendControlLimitSnapshot,
-        captured_at: DateTime<Local>,
+        captured_at: codex_utils_time::Timestamp,
     ) -> Option<Self> {
         Some(Self {
             captured_at,
             percent_remaining: f64::from(value.remaining_percent.clamp(0, 100)),
             used: format_credit_amount(&value.used)?,
             limit: format_credit_amount(&value.limit)?,
-            resets_at: DateTime::<Utc>::from_timestamp(value.resets_at, 0)
-                .map(|dt| format_reset_timestamp(dt.with_timezone(&Local), captured_at)),
+            resets_at: codex_utils_time::Timestamp::from_timestamp(
+                value.resets_at,
+                /*nanoseconds*/ 0,
+            )
+            .map(|dt| format_reset_timestamp(dt, captured_at)),
         })
     }
 }
 
 /// Builds display rows from a snapshot and marks stale data by capture age.
 ///
-/// Callers should pass `Local::now()` for `now` at render time; using a cached timestamp can make
+/// Callers should pass `codex_utils_time::Timestamp::now()` for `now` at render time; using a cached timestamp can make
 /// fresh data appear stale or prevent stale warnings from appearing.
 pub(crate) fn compose_rate_limit_data(
     snapshot: Option<&RateLimitSnapshotDisplay>,
-    now: DateTime<Local>,
+    now: codex_utils_time::Timestamp,
 ) -> StatusRateLimitData {
     match snapshot {
         Some(snapshot) => compose_rate_limit_data_many(std::slice::from_ref(snapshot), now),
@@ -207,7 +206,7 @@ pub(crate) fn compose_rate_limit_data(
 
 pub(crate) fn compose_rate_limit_data_many(
     snapshots: &[RateLimitSnapshotDisplay],
-    now: DateTime<Local>,
+    now: codex_utils_time::Timestamp,
 ) -> StatusRateLimitData {
     if snapshots.is_empty() {
         return StatusRateLimitData::Missing;
@@ -218,13 +217,13 @@ pub(crate) fn compose_rate_limit_data_many(
 
     for snapshot in snapshots {
         stale |= now.signed_duration_since(snapshot.captured_at)
-            > ChronoDuration::minutes(RATE_LIMIT_STALE_THRESHOLD_MINUTES);
+            > TimeDuration::minutes(RATE_LIMIT_STALE_THRESHOLD_MINUTES);
         stale |= snapshot
             .individual_limit
             .as_ref()
             .map(|limit| {
                 now.signed_duration_since(limit.captured_at)
-                    > ChronoDuration::minutes(RATE_LIMIT_STALE_THRESHOLD_MINUTES)
+                    > TimeDuration::minutes(RATE_LIMIT_STALE_THRESHOLD_MINUTES)
             })
             .unwrap_or(false);
 
@@ -422,7 +421,6 @@ mod tests {
     use super::RateLimitWindowDisplay;
     use super::StatusRateLimitData;
     use super::compose_rate_limit_data_many;
-    use chrono::Local;
     use pretty_assertions::assert_eq;
 
     fn window(used_percent: f64) -> RateLimitWindowDisplay {
@@ -435,7 +433,7 @@ mod tests {
 
     #[test]
     fn non_codex_single_limit_renders_combined_row() {
-        let now = Local::now();
+        let now = codex_utils_time::Timestamp::now();
         let codex = RateLimitSnapshotDisplay {
             limit_name: "codex".to_string(),
             captured_at: now,
@@ -481,7 +479,7 @@ mod tests {
 
     #[test]
     fn non_codex_multi_limit_keeps_group_row() {
-        let now = Local::now();
+        let now = codex_utils_time::Timestamp::now();
         let other = RateLimitSnapshotDisplay {
             limit_name: "codex-other".to_string(),
             captured_at: now,

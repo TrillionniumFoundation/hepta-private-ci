@@ -1,8 +1,6 @@
 use anyhow::Context;
 use anyhow::Result;
 use base64::Engine;
-use chrono::Duration;
-use chrono::Utc;
 use codex_config::types::AuthCredentialsStoreMode;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
@@ -29,6 +27,7 @@ use std::process::Command;
 use std::sync::Arc;
 use std::time::Duration as StdDuration;
 use tempfile::TempDir;
+use time::Duration;
 use wiremock::Mock;
 use wiremock::MockServer;
 use wiremock::ResponseTemplate;
@@ -150,7 +149,7 @@ async fn refresh_token_honors_respect_system_proxy() -> Result<()> {
         auth_mode: Some(AuthMode::Chatgpt),
         openai_api_key: None,
         tokens: Some(initial_tokens.clone()),
-        last_refresh: Some(Utc::now() - Duration::days(1)),
+        last_refresh: Some(codex_utils_time::Timestamp::now() - Duration::days(1)),
         agent_identity: None,
         personal_access_token: None,
         bedrock_api_key: None,
@@ -198,7 +197,7 @@ async fn refresh_token_succeeds_updates_storage() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -275,7 +274,7 @@ async fn refresh_token_refreshes_when_auth_is_unchanged() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -342,8 +341,9 @@ async fn auth_refreshes_when_access_token_is_near_expiry() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now();
-    let near_expiry_access_token = access_token_with_expiration(Utc::now() + Duration::minutes(4));
+    let initial_last_refresh = codex_utils_time::Timestamp::now();
+    let near_expiry_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(4));
     let initial_tokens = build_tokens(&near_expiry_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -395,8 +395,9 @@ async fn auth_skips_access_token_outside_refresh_window() -> Result<()> {
 
     let server = MockServer::start().await;
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now();
-    let fresh_access_token = access_token_with_expiration(Utc::now() + Duration::minutes(6));
+    let initial_last_refresh = codex_utils_time::Timestamp::now();
+    let fresh_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::minutes(6));
     let initial_tokens = build_tokens(&fresh_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -435,7 +436,7 @@ async fn refresh_token_skips_refresh_when_auth_changed() -> Result<()> {
     let server = MockServer::start().await;
     let ctx = RefreshTokenTestContext::new(&server).await?;
 
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -507,7 +508,7 @@ async fn refresh_token_errors_on_account_mismatch() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -583,8 +584,9 @@ async fn returns_fresh_tokens_as_is() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let stale_refresh = Utc::now() - Duration::days(9);
-    let fresh_access_token = access_token_with_expiration(Utc::now() + Duration::hours(1));
+    let stale_refresh = codex_utils_time::Timestamp::now() - Duration::days(9);
+    let fresh_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() + Duration::hours(1));
     let initial_tokens = build_tokens(&fresh_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -634,8 +636,9 @@ async fn refreshes_token_when_access_token_is_expired() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let fresh_refresh = Utc::now() - Duration::days(1);
-    let expired_access_token = access_token_with_expiration(Utc::now() - Duration::hours(1));
+    let fresh_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
+    let expired_access_token =
+        access_token_with_expiration(codex_utils_time::Timestamp::now() - Duration::hours(1));
     let initial_tokens = build_tokens(&expired_access_token, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -688,7 +691,7 @@ async fn auth_reloads_disk_auth_when_cached_auth_is_stale() -> Result<()> {
     let server = MockServer::start().await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let stale_refresh = Utc::now() - Duration::days(9);
+    let stale_refresh = codex_utils_time::Timestamp::now() - Duration::days(9);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -702,7 +705,7 @@ async fn auth_reloads_disk_auth_when_cached_auth_is_stale() -> Result<()> {
     };
     ctx.write_auth(&initial_auth).await?;
 
-    let fresh_refresh = Utc::now() - Duration::days(1);
+    let fresh_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let disk_tokens = build_tokens("disk-access-token", "disk-refresh-token");
     let disk_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -758,7 +761,7 @@ async fn auth_reloads_disk_auth_without_calling_expired_refresh_token() -> Resul
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let stale_refresh = Utc::now() - Duration::days(9);
+    let stale_refresh = codex_utils_time::Timestamp::now() - Duration::days(9);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -772,7 +775,7 @@ async fn auth_reloads_disk_auth_without_calling_expired_refresh_token() -> Resul
     };
     ctx.write_auth(&initial_auth).await?;
 
-    let fresh_refresh = Utc::now() - Duration::days(1);
+    let fresh_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let disk_tokens = build_tokens("disk-access-token", "disk-refresh-token");
     let disk_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -826,7 +829,7 @@ async fn refresh_token_returns_permanent_error_for_expired_refresh_token() -> Re
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -882,7 +885,7 @@ async fn refresh_token_does_not_retry_after_permanent_failure() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -952,7 +955,7 @@ async fn refresh_token_does_not_retry_after_bad_request_reused_failure() -> Resu
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1020,7 +1023,7 @@ async fn refresh_token_does_not_retry_after_standard_invalid_grant_failure() -> 
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1088,7 +1091,7 @@ async fn refresh_token_does_not_cache_other_bad_request_failure() -> Result<()> 
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1154,7 +1157,7 @@ async fn refresh_token_reloads_changed_auth_after_permanent_failure() -> Result<
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1179,7 +1182,7 @@ async fn refresh_token_reloads_changed_auth_after_permanent_failure() -> Result<
         Some(RefreshTokenFailedReason::Exhausted)
     );
 
-    let fresh_refresh = Utc::now() - Duration::hours(1);
+    let fresh_refresh = codex_utils_time::Timestamp::now() - Duration::hours(1);
     let disk_tokens = build_tokens("disk-access-token", "disk-refresh-token");
     let disk_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1242,7 +1245,7 @@ async fn refresh_token_returns_transient_error_on_server_failure() -> Result<()>
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1298,7 +1301,7 @@ async fn unauthorized_recovery_reloads_then_refreshes_tokens() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1399,7 +1402,7 @@ async fn unauthorized_recovery_errors_on_account_mismatch() -> Result<()> {
         .await;
 
     let ctx = RefreshTokenTestContext::new(&server).await?;
-    let initial_last_refresh = Utc::now() - Duration::days(1);
+    let initial_last_refresh = codex_utils_time::Timestamp::now() - Duration::days(1);
     let initial_tokens = build_tokens(INITIAL_ACCESS_TOKEN, INITIAL_REFRESH_TOKEN);
     let initial_auth = AuthDotJson {
         auth_mode: Some(AuthMode::Chatgpt),
@@ -1614,7 +1617,7 @@ fn minimal_jwt() -> String {
     jwt_with_payload(json!({ "sub": "user-123" }))
 }
 
-fn access_token_with_expiration(expires_at: chrono::DateTime<Utc>) -> String {
+fn access_token_with_expiration(expires_at: codex_utils_time::Timestamp) -> String {
     jwt_with_payload(json!({ "sub": "user-123", "exp": expires_at.timestamp() }))
 }
 

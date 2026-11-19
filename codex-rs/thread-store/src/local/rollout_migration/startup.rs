@@ -13,7 +13,6 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::time::SystemTime;
 
-use chrono::NaiveDateTime;
 use codex_protocol::ThreadId;
 use codex_protocol::protocol::ThreadHistoryMode;
 use codex_rollout::StateDbHandle;
@@ -294,9 +293,8 @@ fn thread_creation_cursor(path: &Path) -> Option<RolloutMigrationCursor> {
     let separator = stem.len().checked_sub(37)?;
     let thread_id = stem.get(separator + 1..)?;
     ThreadId::from_string(thread_id).ok()?;
-    let timestamp = NaiveDateTime::parse_from_str(stem.get(..separator)?, "%Y-%m-%dT%H-%M-%S")
+    let timestamp = codex_utils_time::Timestamp::parse_filename_timestamp(stem.get(..separator)?)
         .ok()?
-        .and_utc()
         .timestamp();
     Some(RolloutMigrationCursor {
         thread_created_at: timestamp,
