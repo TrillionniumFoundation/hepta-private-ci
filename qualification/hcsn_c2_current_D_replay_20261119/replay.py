@@ -176,15 +176,20 @@ def controller():
     save(output / "POSTMORTEM_PROCESS_OBSERVATION.json", observation)
     require(not observation["matches"] and not observation["permission_errors"], "live/unknown original writer")
     costs = []
-    for fit in request["fits"]:
+    stages = [{"name": "partial-chain", "script": "partial_chain.py", "ceiling": 360}]
+    stages += [{"name": row["name"], "script": "replay.py", "ceiling": request["limits"]["per_fit_wall_seconds"]} for row in request["fits"]]
+    for fit in stages:
         remaining = request["limits"]["whole_wall_seconds"] - (time.monotonic() - started) - 60
-        timeout = min(request["limits"]["per_fit_wall_seconds"], remaining)
+        timeout = min(fit["ceiling"], remaining)
         if timeout <= 0:
             costs.append({"name": fit["name"], "status": "UNRUN_WITHIN_BUDGET"})
             continue
         begin = time.monotonic()
         with (output / (fit["name"] + ".stdout")).open("xb") as stdout, (output / (fit["name"] + ".stderr")).open("xb") as stderr:
-            process = subprocess.Popen([request["runtime"]["python"], "-B", str(HERE / "replay.py"), "--fit", fit["name"]],
+            argv = [request["runtime"]["python"], "-B", str(HERE / fit["script"])]
+            if fit["name"] != "partial-chain":
+                argv += ["--fit", fit["name"]]
+            process = subprocess.Popen(argv,
                                        stdout=stdout, stderr=stderr, start_new_session=True)
             timed_out = False
             while True:
@@ -204,7 +209,7 @@ def controller():
                 "peak_rss_kib": usage.ru_maxrss, "scope": "exact child wait4 through exit"}
         costs.append(item)
         save(output / (fit["name"] + ".COST.json"), item)
-    passed = sum(c.get("returncode") == 0 for c in costs)
+    passed = sum(c.get("returncode") == 0 and c["name"] != "partial-chain" for c in costs)
     summary = {"schema": "six-current-C2-best-D-replay-v1", "passed": passed, "denominator": 6,
                "costs": costs, "wall_seconds": time.monotonic() - started, "E_access": False,
                "original_controller_terminal": "UNKNOWN", "original_full_training_replays": "0/6",

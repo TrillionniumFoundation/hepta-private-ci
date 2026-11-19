@@ -1453,6 +1453,7 @@
   "ledger_sha256": "5e3e64f332d9a03389c8ac0e4f3de478e9f7c612124e9bec2b4d82c21d3f263b",
   "limits": {
     "address_space_bytes": 8589934592,
+    "metadata_total_soft_wall_seconds": 360,
     "per_fit_wall_seconds": 210,
     "retries": 0,
     "rss_bytes": 2147483648,
@@ -1481,7 +1482,7 @@
     "torch_git": "a1cb3cc05d46d198467bebbb6e8fba50a325d4e7"
   },
   "schema": "current-six-best-full-D-replay-request-v1",
-  "scope": "Actual current six best D reproducibility under original replay limits. Chain/partial-cost/trace auditor completeness remains separate; no old controller receipt or missing training history is synthesized.",
+  "scope": "Within one 1800-second ceiling: up to 360 seconds auditing surviving original C2 witness/commit/model-optimizer-RNG/journal/cost evidence, then six current-best full-D replays at up to 210 seconds each. Original controller, complete chain/trace auditor and full training replay remain separately HOLD/UNKNOWN.",
   "selection_sha256": "ed5380b6489fbfb9445ff19075a34cb9a903c7546720d7afda9cce4d7144e71b",
   "source_aliases": {
     "/data/hcsn-cuda-170run-20261105-r1/.venv/lib/python3.12/site-packages/torch/nn/modules/activation.py": "/home/qian-qi/hepta-c2-original-runtime-20261119-2f215/venv/lib/python3.12/site-packages/torch/nn/modules/activation.py",
