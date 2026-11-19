@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-18T20:45:27Z",
+  "observed_at_utc": "2026-11-19T01:40:51Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18 15:45:27 America/New_York",
+  "observed_at_user_timezone": "2026-11-18T20:40:51.000-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -185,7 +185,7 @@
     "generalizable_gain_established": false,
     "next_independent_task_material": {
       "pr": 6720,
-      "commit": "be30b06e13c11c44fb2821edfbd0383a8e28eb05",
+      "commit": "b6ffc41158ac3357b28c6d681f460331a55b819f",
       "tasks": 4,
       "tasks_sha256": "8ac4ecffb705f819b57b6d03aa1faff7808d9bb9f8eaff97006800cfc5861a15",
       "preparation_protocol_sha256": "95f3e4d82ea78721e360d9928530c9c60b841a1976cb4a6bc817d514aeb13225",
@@ -195,7 +195,7 @@
       "shared_workspace_operational_holdout_only": true,
       "independent_controller_authenticated": false,
       "pretraining_contamination_excluded": false,
-      "task_release_to_training_owner": false,
+      "task_release_to_training_owner": true,
       "release_condition": "Both new weights and exact training manifests, parameter digests and completion timestamps must be frozen first.",
       "model_calls": 0,
       "training_updates": 0,
@@ -238,11 +238,18 @@
         "sha256": "a181be245a9f907e533d359dbfd715d6fbde36e9f790311ab9dd6d63da574d26",
         "original_files": 854,
         "index_sha256": "a200da2372c2b405a68458eb53c3090e68599b230ae101f25f304026991c1524",
-        "publicly_released": false,
+        "publicly_released": true,
         "local_policy_commit": "a27709051d9743434163509f92aeee96e31b8276",
-        "local_policy_only": true
+        "local_policy_only": false,
+        "publication_commit": "b6ffc41158ac3357b28c6d681f460331a55b819f"
       },
-      "limits": "Selected original tests, not full repository suites. Common pytest 9.2 exceeds semver upstream 9.1.1 test-extra ceiling. Four source projects are not authenticated users."
+      "limits": "Selected original tests, not full repository suites. Common pytest 9.2 exceeds semver upstream 9.1.1 test-extra ceiling. Four source projects are not authenticated users.",
+      "release_commit": "928dcad44d049ae0b229f0b5bbe37d0f23de1f96",
+      "release_sha256": "82dc86a58a51a33a5115439cbe1ad975bff79a5d2c85e60259ca881a927b7420",
+      "released_at_ns": "1795052080045352852",
+      "weights_frozen_created_at_ns": "1795035781626593132",
+      "release_condition_satisfied_by_root_original_readback": true,
+      "model_calls_scope": "Preparation remains zero model calls. The new research B3 evaluation is a separate 32-call budget under E2.current_student_layout_followup."
     }
   },
   "E2": {
@@ -620,13 +627,13 @@
     },
     "current_student_layout_followup": {
       "pr": 6722,
-      "source": "d5f52660f37d3fc46b2cdb17560691cca4ab332d",
-      "status": "actual full-3584 gate passed; both fresh-parent 32-update arms are now running under the published training admission; B3 remains sealed",
+      "source": "78099aa6af4c70c00f26cb11888e20aa59510014",
+      "status": "both fresh-parent arms actually completed 32 updates; A24 completed with no accepted patch; B3 released after root verification and original 32-call evaluation running",
       "primary_arm": "native_feedback",
       "control_arm": "document_evidence",
       "parent_model_digest": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
       "parent_parameter_digest": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
-      "protocol_sha256": "2bce7b3d98e46e17969aca953fa6cefed54c0300ef712e9682b36135423ba34f",
+      "protocol_sha256": "c71f8348977e955b1d5b6b98e8780ff13188b88b141fad683efb6f08bb03814f",
       "dataset_sha256": "83d8e4c9294e9fd2250a9915db1c859acf607e053c29647bcf0dabcb94368bf3",
       "train_record_count": 8,
       "original_A_input_files": 52,
@@ -664,11 +671,11 @@
         "full_padded_forwards_backwards": 72,
         "padded_positions": 258048,
         "target_positions": 14304,
-        "budget_status": "Frozen intended budget, not completed computation"
+        "budget_status": "The intended budget was subsequently completed for each arm; see actual_training."
       },
       "information_match": "same original task, actual first P/C answer, exact actual feedback, identical verified maintainer target",
       "new_generation_call_cap": 56,
-      "actual_completed_optimizer_updates": null,
+      "actual_completed_optimizer_updates": 64,
       "B3_read_before_weights_frozen": false,
       "decision_rule": {
         "A": "strictly more final successes than original P; no lost P final successes; preserve all successful original P second calls on identical first prefixes",
@@ -706,7 +713,7 @@
         "cpu_energy_samples": 3,
         "model_net_energy_claim": false
       },
-      "successor_scope": "The 3584 candidate retains the complete longest 3471-token record and all eight original records. The expandable allocator candidate changed only allocator behavior and completed one forward before backward OOM. A proposed new training SDPA engine must pass actual logits/gradient calibration and be prospectively frozen for both arms; its kernel/compute cost is not presumed equal to eager. No B3 model data released.",
+      "successor_scope": "The original eager attention arithmetic passed short-A and full-length calibration with explicit inner-checkpoint recomputation costs, then both complete 3584-token arms trained. No B3 data was read before both weights froze. Current diagnosis reads failed A outputs only.",
       "complete_E1_four_arm_controls": false,
       "E5_growth_curves": false,
       "independent_confirmation_qualified": false,
@@ -864,7 +871,7 @@
       },
       "last_confirmed_optimizer_updates_before_training_launch": 0,
       "training_execution": {
-        "status": "running; no completed weight manifests yet",
+        "status": "completed; original PTY exited 0/output complete; both frozen manifests and training records independently verified",
         "source": "78099aa6af4c70c00f26cb11888e20aa59510014",
         "mathematical_execution_source_unchanged_from": "02b3fb49ac00ccb7ad28e5d803af5675fbd28e26",
         "training_admission_sha256": "6e17e6b1fcc13cfad448448c871c9c15f09bb970334bfc060d47e24cd746a04d",
@@ -879,8 +886,222 @@
           "actual audit"
         ],
         "fresh_P_and_empty_AdamW_each_arm": true,
-        "current_completed_update_count": null,
-        "B3_opened": false
+        "current_completed_update_count": 64,
+        "B3_opened": false,
+        "B3_opened_during_training": false
+      },
+      "scientific_gain_claim": false,
+      "original_A_advancement_criterion_met": false,
+      "research_decision": "NoUpdate required by already failed A rule; complete originally registered B3 evaluation and preserve all costs.",
+      "actual_training": {
+        "weights_evidence_commit": "48c5b1f3c201d29aad408b526bb97c5c46be0699",
+        "weights_frozen_sha256": "2ab883c01843a4f29875f00b209ee9cc6ed7d4040fddd5ee297723bb5b276e63",
+        "weights_frozen_created_at_ns": "1795035781626593132",
+        "freeze_digest": "57f01733c0bab47a4d8851e536e469d8d5c41badb21f20fb8433e9c58f23b79c",
+        "each_arm_updates": 32,
+        "total_updates": 64,
+        "each_arm_outer_forwards": 72,
+        "each_arm_outer_backwards": 72,
+        "each_arm_padded_positions": 258048,
+        "each_arm_target_positions": 14304,
+        "extra_recomputations_counted": true,
+        "physical_wall_energy_equality_claim": false,
+        "root_read_and_sha256_verified_original_files": 5,
+        "arms": {
+          "document_evidence": {
+            "cost": {
+              "cuda_peak_allocated_bytes": 4805570048,
+              "cuda_peak_reserved_bytes": 5135925248,
+              "energy_joules": null,
+              "full_system_cost_known": false,
+              "head_positions": 14304,
+              "inner_checkpoint_counts": {
+                "backward:attention_function_completed": 2016,
+                "backward:attention_function_started": 2016,
+                "backward:softmax_function_completed": 56448,
+                "backward:softmax_function_started": 112896,
+                "backward:softmax_original_entered": 56448,
+                "backward:softmax_original_exited": 56448,
+                "backward:softmax_recompute_entered": 56448,
+                "backward:softmax_recompute_exited": 56448,
+                "forward:attention_function_completed": 2016,
+                "forward:attention_function_started": 2016,
+                "forward:softmax_function_completed": 56448,
+                "forward:softmax_function_started": 56448,
+                "forward:softmax_original_entered": 56448,
+                "forward:softmax_original_exited": 56448
+              },
+              "input_tokens": 184112,
+              "model_F_B_counts_are_outer_calls_not_total_recomputed_work": true,
+              "model_backwards": 72,
+              "model_forwards": 72,
+              "nested_scopes_are_not_additive": true,
+              "padded_positions": 258048,
+              "self_cpu_seconds": 639.1281169660001,
+              "supervised_positions": 14304,
+              "wall_seconds": 630.2134442990064
+            },
+            "manifest_sha256": "82e4f88d542333b25d50f3bd71636b43103638a48d477542aa1e496519314251",
+            "model_digest": "1e74285f0f59e0c61ae5061b2f7b9ba069c023b7e89a28f92f149fbca7a9dd5f",
+            "parameter_after": "f4f4e8f02a3f4756188b32d633b7a0bab849d4767ef85eb934b7e025761baf36",
+            "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+            "training_sha256": "d68531606453038d2f8949284d46a1fecc65471fbbb5036d28172460c04b579c"
+          },
+          "native_feedback": {
+            "cost": {
+              "cuda_peak_allocated_bytes": 4805570048,
+              "cuda_peak_reserved_bytes": 5135925248,
+              "energy_joules": null,
+              "full_system_cost_known": false,
+              "head_positions": 14304,
+              "inner_checkpoint_counts": {
+                "backward:attention_function_completed": 2016,
+                "backward:attention_function_started": 2016,
+                "backward:softmax_function_completed": 56448,
+                "backward:softmax_function_started": 112896,
+                "backward:softmax_original_entered": 56448,
+                "backward:softmax_original_exited": 56448,
+                "backward:softmax_recompute_entered": 56448,
+                "backward:softmax_recompute_exited": 56448,
+                "forward:attention_function_completed": 2016,
+                "forward:attention_function_started": 2016,
+                "forward:softmax_function_completed": 56448,
+                "forward:softmax_function_started": 56448,
+                "forward:softmax_original_entered": 56448,
+                "forward:softmax_original_exited": 56448
+              },
+              "input_tokens": 184352,
+              "model_F_B_counts_are_outer_calls_not_total_recomputed_work": true,
+              "model_backwards": 72,
+              "model_forwards": 72,
+              "nested_scopes_are_not_additive": true,
+              "padded_positions": 258048,
+              "self_cpu_seconds": 638.037071609,
+              "supervised_positions": 14304,
+              "wall_seconds": 629.2105983819929
+            },
+            "manifest_sha256": "a040d38216cff4a6bbde77cdf5e8f0d899e82407ced43f83002335914315dd3e",
+            "model_digest": "498020ac229789ec780e68e654728909e7b5637814f93370ef6d2d70552e165e",
+            "parameter_after": "dacbd8c9c59eb9f541858c0ed77c5ec67e3a8e8e8c6bf869836cd6f2907d3adc",
+            "parameter_before": "e5da16c3256c27f06f42ecac69880ce8802a0eb3a87c05830d11c09477aa817f",
+            "training_sha256": "d9199d71de2b0960915edf772c4eec1f803777c003a2dc1e22f25e9f5d2e2e8b"
+          }
+        },
+        "complete_archive_reported": {
+          "bytes": 4080060,
+          "sha256": "be146f6ad22f52c0b9c9f949e57a079f40a446635a33f6dc82e1b773ef588109",
+          "publication_root_readback_pending": true
+        }
+      },
+      "actual_A_evaluation": {
+        "status": "completed; root independently read exact two RESULT files and owner COMPLETE and verified all SHA256 digests",
+        "session_id": "dpty-0fbb3f468c0137386392046705b2cb3ce46757b22c717842a1a174cd06bebf8b",
+        "owner": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-evaluation_A-1",
+        "new_calls": 24,
+        "each_arm_calls": 12,
+        "each_arm_current_first_passed": 0,
+        "each_arm_current_final_passed": 0,
+        "each_arm_common_parent_prefix_passed": 0,
+        "tasks": 4,
+        "patch_admission_refusals": 24,
+        "native_children": 0,
+        "document_output_tokens": 17551,
+        "native_output_tokens": 17618,
+        "document_output_cap_hits": 7,
+        "native_output_cap_hits": 8,
+        "document_generation_seconds": 1210.1503845878178,
+        "native_generation_seconds": 1258.7972708621528,
+        "document_result_sha256": "2812be2feaf9526be114b2e7664fdca7f837b54db09241219cfc4dae5be91c32",
+        "native_result_sha256": "7845bb0f338d087c091bc8b46f412235046cd02558bcb867a953e2e805553191",
+        "complete_sha256": "94d57d3338f096fc3b99295372686f68f52b18a98ae218936a7374708bd86746",
+        "original_advancement_criterion_met": false,
+        "retries": 0,
+        "root_independent_original_readback": true,
+        "document_cost": {
+          "child_cpu_scope_complete": false,
+          "full_system_cost_known": false,
+          "generation_wall_seconds": 1210.1503845878178,
+          "input_tokens": 26338,
+          "nested_windows_are_not_additive": true,
+          "observed_completed_children_cpu_seconds": 0,
+          "output_tokens": 17551,
+          "self_cpu_seconds": 1257.91850698,
+          "verification_wall_seconds": 0.04947103705490008,
+          "wall_seconds": 1242.7909520909889
+        },
+        "native_cost": {
+          "child_cpu_scope_complete": false,
+          "full_system_cost_known": false,
+          "generation_wall_seconds": 1258.7972708621528,
+          "input_tokens": 25844,
+          "nested_windows_are_not_additive": true,
+          "observed_completed_children_cpu_seconds": 0,
+          "output_tokens": 17618,
+          "self_cpu_seconds": 1306.2462581690002,
+          "verification_wall_seconds": 0.05076918704435229,
+          "wall_seconds": 1290.1659219560097
+        },
+        "whole_owner_wall_seconds": 2536.2499862650293,
+        "whole_owner_finished_at_ns": 1795038459288825483,
+        "whole_host_cpu_energy_samples": 130,
+        "whole_host_cpu_package_energy": [
+          {
+            "domain_name": "package-0",
+            "host_window_joules": 66502.160443,
+            "samples": 130,
+            "no_multiple_wraps_between_samples_assumption": true
+          },
+          {
+            "domain_name": "package-1",
+            "host_window_joules": 66432.666114,
+            "samples": 130,
+            "no_multiple_wraps_between_samples_assumption": true
+          }
+        ],
+        "energy_attribution": "whole host packages; no idle subtraction or model-only claim",
+        "full_system_cost_known": false,
+        "stage_exits": [
+          {
+            "exit_source": "subprocess.Popen.wait",
+            "finished_at_ns": 1795037167435820881,
+            "full_system_cost_known": false,
+            "observed_child_cpu_seconds_including_energy_reads": 1260.917404,
+            "stage": "document_evidence",
+            "stderr_sha256": "e8385a13a639883ce894c42dbdef0340b8ed63d178db1bdcecd509c9e67833e4",
+            "stdout_sha256": "030e52a97a9b6c25aea9d803bb9150e6d6076f04a0839e1ba10af83cd01d3b23",
+            "timed_out": false,
+            "wait_returncode": 0,
+            "wall_seconds": 1244.3348464629962
+          },
+          {
+            "exit_source": "subprocess.Popen.wait",
+            "finished_at_ns": 1795038459287517373,
+            "full_system_cost_known": false,
+            "observed_child_cpu_seconds_including_energy_reads": 1309.3540799999998,
+            "stage": "native_feedback",
+            "stderr_sha256": "541bc1c5750f6cd4509a157fc3458a10529dbb8f2502bd7d162906b4dab2b18b",
+            "stdout_sha256": "8d0b0c866ca8068a4c82d14191648143d4b91eeb78648caedef77db92050fff5",
+            "timed_out": false,
+            "wait_returncode": 0,
+            "wall_seconds": 1291.786328548973
+          }
+        ]
+      },
+      "actual_B3_evaluation": {
+        "status": "running; no outcome asserted",
+        "source": "78099aa6af4c70c00f26cb11888e20aa59510014",
+        "release_commit": "928dcad44d049ae0b229f0b5bbe37d0f23de1f96",
+        "release_sha256": "82dc86a58a51a33a5115439cbe1ad975bff79a5d2c85e60259ca881a927b7420",
+        "binding_sha256": "a09ff79cd2a6a8dad77be3a1b765dfa2c080bdd4a5739bf629af9167b0603fcd",
+        "session_id": "dpty-1d99d9214c6f77a4d6234c0d77a9f33b2e43f60de1135fd1157b346ca82f0f59",
+        "idempotency_key": "e123-layout-released-B3-32-928dca-2e9b-001",
+        "owner": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-evaluation_B3-1",
+        "calls_cap": 32,
+        "global_new_A_plus_B3_calls_cap": 56,
+        "primary_arm": "native_feedback",
+        "control_arm": "document_evidence",
+        "retraining": false,
+        "A_replayed": false
       }
     }
   },
@@ -2153,7 +2374,7 @@
       "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
       "original_executor_mutated": false,
       "original_target_used": false,
-      "status": "reviewed source gates and 11 native cases pass; complete NoUpdate owner has built/verified helpers and pinned real products and is building the selected native test binaries",
+      "status": "component gates remain passed; first complete original NoUpdate actually failed with Permission denied; fresh executable installation protocol frozen and second original owner running",
       "source_changes": [
         "cell_q24_prepared_learning.rs",
         "production_post_a_q24_owners.rs"
@@ -2166,7 +2387,7 @@
       "original_source_qa_passed": false,
       "source_qa_result_sha256": "fe957d6efe658a407646362aa757c131056e39b6c1c0b22778a504ce3f3888df",
       "native_tests": 11,
-      "business_execution": 0,
+      "business_execution": 1,
       "claim": "Within existing synchronous Prepared operations, share pure profile checks and read-only pre-witness handle construction. The complete physical postread and both Result layers finish before witness opening; the standalone check after witnesses remains. The native component result does not prove the complete 64-read lifecycle, adoption or fresh D.",
       "preliminary_source_contract_refusal": {
         "source_qa_cases_attempted": 79,
@@ -2181,7 +2402,7 @@
       "pr": 6726,
       "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
       "tree": "d0b851b201a8e1559e354b94a8909a146e340542",
-      "protocol_publication_commit": "407e49e200ee87be06ae7d81d003eb1909d796ba",
+      "protocol_publication_commit": "2755b3bbea4a2b563649f3d27e14608e5e62f6a4",
       "source_freeze_sha256": "9b41815f698cef5c80e76b41c8a9b26a6174155be9b9aca83ef9fccedbd28043",
       "final_production_sha256": {
         "cell_q24_prepared_learning.rs": "5579c6782997fdc3261d69a8861bb891c45da3f93b59579bf41afadd4f5f55ec",
@@ -2261,7 +2482,7 @@
         "request_sha256": "60599ea878beb7015c66959ee347e0405feb4043dd96cb45535f6c20c756c84a",
         "request_command_exact_match_count": 1,
         "delayed_actual_started_at_utc": "2026-11-18T20:33:42.708452+00:00",
-        "status": "preparing selected library test binaries; original helper build/verify and product build/pin passed; no complete parent result yet",
+        "status": "completed, unsuccessful; one actual complete original parent failed Permission denied before independent B execution",
         "owner_result": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-1/result.json",
         "observed_intermediate_result_sha256": "67d78c2bc6b01ad5c96a6dee87a0efd37fee776fc908e6e0f0850778cec56e7c",
         "root_read_limit": 64,
@@ -2270,14 +2491,60 @@
         "source_worktree_remains_ab12": true,
         "complete_native_NoUpdate": false,
         "restarted": false,
-        "observation_at_utc": "2026-11-18T20:44:18Z",
+        "observation_at_utc": "2026-11-19T01:40:51Z",
         "completed_preparations": [
           "helper-build",
           "helper-verify-and-load",
           "product-build-and-pin"
         ],
         "helper_build_command_wall_seconds": 375.99163139704615,
-        "product_build_command_wall_seconds": 12.741243019001558
+        "product_build_command_wall_seconds": 12.741243019001558,
+        "result_sha256": "2a33bd0236ff63efdb5a8174e4840927bf60763fe2db1cbd02a85c5b358786b9",
+        "junit_sha256": "970f5a7036d6ab23b61a7cecd05308f64172416f6724e97a0c1a8cdb26a699d5",
+        "execution_receipt_sha256": "d1a733af2763f53f98ef03396bad1f777ac61462cc55dfe4f5ff43983eeb91b2",
+        "native_cases": 1,
+        "native_passed": 0,
+        "native_failed": 1,
+        "native_skipped": 0,
+        "native_case_wall_seconds": 60.055,
+        "owner_wall_seconds": 831.029797027,
+        "source_unchanged": true,
+        "tracked_bytes_unchanged": true,
+        "compiler_inputs_unchanged": true,
+        "mount_cleanup_successful": true,
+        "read_budget_exhaustion_observed_this_attempt": false,
+        "root_exact_originals_read_and_sha256_checked": true
+      },
+      "public_executable_permission_diagnosis": {
+        "readback_sha256": "42f6570f8d103df7b92771d3ec0365dc2ebc5056bf2bf7f6cc7cebaadc2c29bf",
+        "old_public_root_and_product_bin_mode": "0700",
+        "old_pinned_helper_mode": "0500",
+        "owner_uid": 1000,
+        "dedicated_child_uids": [
+          60001,
+          60002
+        ],
+        "private_data_modes_unchanged": true,
+        "old_failed_attempt_unchanged": true,
+        "global_umask_unchanged": true,
+        "new_public_directory_mode": "0755",
+        "new_immutable_executable_mode": "0555",
+        "actual_new_and_old_access_control_preflight_required": true
+      },
+      "complete_NoUpdate_attempt_2": {
+        "status": "running helper preparation; second native parent outcome not yet known",
+        "source": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+        "source_tree": "d0b851b201a8e1559e354b94a8909a146e340542",
+        "prospective_commit": "2755b3bbea4a2b563649f3d27e14608e5e62f6a4",
+        "protocol_sha256": "b44852bf140f0647659fba4c7e1d470ff492652491165044ca3e8d154986c911",
+        "driver_sha256": "1d860358d449291492386e8f5aa922726ce966801cff3b2a1acdd39294911dc2",
+        "deployment_sha256": "c8ccdb61fe5f068a6af14eb55f4b19a3547e662a1cfedabf84ac07c36be921dc",
+        "session_id": "dpty-7cc4cd4ef457f4c273f7e380bda1ef76adaf396bd9c58ed5b37ef49368271716",
+        "idempotency_key": "root-e6-complete-noupdate2-ab12-2755b3-2e9b-001",
+        "owner_result": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate-2/result.json",
+        "actual_started_at_utc": "2026-11-19T01:37:10.915Z",
+        "source_and_original_deadlines_and_64_read_cap_unchanged": true,
+        "automatic_retry": false
       }
     }
   },
@@ -2965,7 +3232,7 @@
       "next_work": "Publish full original negative evidence and diagnose ROOT first-batch Submit/receiver observation costs using actual request digests. Do not change the original pressure window, security fences, or count ACK as confirmation."
     },
     "native_root_body_delay_followup": {
-      "status": "actual TCP positive control exposed digest-domain mismatch; correcting exact protocol-framed body hash and then complete-write publication; no new F0",
+      "status": "complete-write correction passed real TCP and focused controls; full public_v3 original suite retained 287 passed/5 failed/2 old ignored; r22 fixed-vector review and isolated original-source prepaid control running before freeze/F0",
       "previous_f0_evidence_pr": 965,
       "previous_f0_evidence": "8d8e50e4256c1f4a5e0bcaa6dfb4d0e19eb5510f",
       "previous_f0_run": 44376853052,
@@ -2984,7 +3251,7 @@
       "original_delay_ms": 500,
       "extra_workers_or_cpu_credit": false,
       "root_static_review_completed_for_provisional_patch": "9eb2477bf5ff65569d43961035d64bc3b2580ab02a1144ac84381ebdda49419c",
-      "publication_completion_fix_pending": true,
+      "publication_completion_fix_pending": false,
       "actual_next_f0_run": null,
       "original_repeat_gap_readback_sha256": "4126ed0f993308244b7243bfaf0f15ee924cf989877bf55f29fd0a98325586db",
       "original_repeat_gap_records_sha256": "91be694c88d5150d94eef92e8fd64584906c4ff0bf9abc57d0c1d3d07f6ea628",
@@ -3005,8 +3272,45 @@
         "root_cause": "new proof used plain SHA256; original Cookie uses pon_wire::hash(public-request-body-v3, raw canonical body)",
         "socket_write_negative_reached": false
       },
-      "digest_correction": "Reuse the original TRNM-PON1 domain/tag/body-length framing with a 512-byte streaming buffer; no new full-body copy. Actual TCP control is pending.",
-      "root_static_review_limitation": "The old static review did not establish agreement with the existing Cookie digest; the actual TCP control caught this mismatch."
+      "digest_correction": "Protocol framed hash and real Cookie agreement were checked by the actual TCP control.",
+      "root_static_review_limitation": "The old static review did not establish agreement with the existing Cookie digest; the actual TCP control caught this mismatch.",
+      "complete_write_production_patch_sha256": "5e777cf6069b0d4cfa981bf625fa69693d1a8e60749e29eb5d37d0373a05a689",
+      "v3_patch_sha256": "d598f4ac5e9f2f02adc5fe3bfbe1bcd05ad4b0cb694982f66fbcfe88b1d2a491",
+      "root_static_complete_write_review": true,
+      "actual_write_failure_negative": {
+        "normal_repeat_wait_ns": 498647595,
+        "encode_failure_wait_ns": 9170,
+        "real_shutdown_write_failure_wait_ns": 497971281,
+        "original_assertion_failed": true,
+        "native_exit": 101,
+        "originals_retained": true
+      },
+      "actual_complete_write_correction": {
+        "native_passed": 10,
+        "old_ignored": 1,
+        "normal_repeat_wait_ns": 497912789,
+        "encode_failure_wait_ns": 9200,
+        "real_shutdown_write_failure_wait_ns": 9660,
+        "following_valid_native_submission_preserved": true,
+        "reactor_bookkeeping_cost_outside_ended_CpuSettle": true
+      },
+      "original_full_public_v3": {
+        "passed": 287,
+        "failed": 5,
+        "ignored": 2,
+        "failures_r22_fixed_vectors": 4,
+        "prepaid_exhaustion_failures": 1,
+        "prepaid_attempted": 512,
+        "prepaid_paid_ns": 295082319,
+        "original_assertions_unchanged": true
+      },
+      "prepaid_original_source_comparison": {
+        "source": "d95239eda6a666458aa264ddeaf993d6d9fbf37d",
+        "root": "/home/qq/work/chain-prepaid-d952-original-control-20261119-2e9b",
+        "session_id": "dpty-9a50d2a409f4a06149c380aa6730a174248fb1ce308cd2f95093553fe03b45f4",
+        "status": "running; original case/assertion unchanged",
+        "candidate_scalar_source_and_test_diff_from_original": false
+      }
     }
   },
   "CI": {
@@ -3584,7 +3888,7 @@
       "whole_migration_passed": false
     },
     "next_agent_identity_slice": {
-      "status": "actual three-package native result passed; complete-original archive and actual blob gate in progress",
+      "status": "complete original archive and final blob gate published",
       "base": "902a8ccdff0326877515683717fe6e5db4356df7",
       "source_changes": "two Seconds/Z timestamp calls and dependency, existing signed-wire assertions",
       "root": "/Users/qianqi/work/hepta-chrono-agent-identity-joint-20261118-2e9b",
@@ -3621,11 +3925,46 @@
         "direct": 26,
         "indirect": 95,
         "require_zero_exit": 2
-      }
+      },
+      "evidence_commit": "7e28e13e82045f936cb66f9fea4a27ad4368f896",
+      "archive_bytes": 2098968,
+      "archive_sha256": "734427cd6921da4cfb90768ede056ce93d1bfcafc3b4bb8d943f1b9ca80c464b",
+      "original_policy_gate_result_sha256": "34c927b04a3b2b2f62f899ecc639575af045396df42e4889aed5ffbbe18e3598"
+    },
+    "git_utils_slice": {
+      "pr": 6729,
+      "source": "975a29ae7e01aa070e60e1d70256452ae2837cae",
+      "tree": "02e42082bed744d2b5c35daa122c489513b00434",
+      "evidence_commit": "03d782a7af68da6f0572be029693aba22548b415",
+      "status": "completed full original git-utils package, archive and policy gates",
+      "source_before_after_sha256": "3d968f658a5f7bac56a737d0e0ec08876ef9001c4997d6f9d4680814e6739aee",
+      "source_files": 11890,
+      "cases": 38,
+      "passed": 38,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "retries": 0,
+      "original_baseline_cases": 7,
+      "command_wall_seconds": 77.67503870799999,
+      "owner_wall_seconds": 80.27028525,
+      "result_sha256": "5b0be1147d457cc843fc60b2ddd1fdcee1a0a6c292c3d5b873b0fc525c10d659",
+      "junit_sha256": "d3a7e3370cfec2350a97a9f944b7c1cb69f3ab045868c46399dc6b073ea85108",
+      "root_independent_raw_readback": true,
+      "archive_bytes": 2095028,
+      "archive_sha256": "2ba5a3035e20eeb8b9b90249e0928fa78120fe00e8d105e5a6fa685b4cc43a98",
+      "index_sha256": "993a38f681572d1b315a2d38d85ceb5e9dce4923f548b77028e6b1a8afa72444",
+      "remaining_graph": {
+        "reachable": 121,
+        "direct": 25,
+        "indirect": 96,
+        "require_zero_exit": 2
+      },
+      "next_scope": "otel original Millis/Z timestamp, retain original SystemTime pre-epoch refusal boundary; no native result claimed yet"
     }
   },
   "environment": {
-    "scratch_status": "Local exec-server remains unavailable after the environment handoff; original Git and authorized remote jobs/files survive. Temporary function caches were rebuilt from exact original bytes.",
+    "scratch_status": "Local exec-server is available again on 2026-11-18 evening New York. Original remote files and Git objects survived; temporary function caches were rebuilt from exact bytes, without rerunning experiments.",
     "actual_remote_evaluation_continues": true,
     "rerun_experiments_due_to_scratch_outage": false,
     "readout_reconstruction": "Hash-matched published originals and original remote native records; no experiment recomputation.",
@@ -3640,7 +3979,8 @@
       "supported_persistent_operator_pty_verified": true,
       "recovery": "Read exact original request/exit/witness and owned result files over h_pty_start/read. The original delayed launches remain single executions; timeout/transport error never means native failure or absent work.",
       "root_recovered_noupdate_job": "1a1f05d7f3b-ffbe-78e",
-      "new_noupdate_execution_relaunched": false
+      "new_noupdate_execution_relaunched": false,
+      "mac_microsecond_boot_difference_note": "A PTY read may report lost because only sysctl boot microseconds vary while original boot seconds remain unchanged. The actual terminal exit/result files were read to resolve the previous CURRENT blob gate; no task was replayed."
     }
   },
   "qualification": {
@@ -3748,7 +4088,7 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "9af3cc5b6ec8b35d1e97acd534751bf651bc7342",
+  "previous_evidence_commit": "5888d867bd9fc4531107f50e7d6d0e3bca82283a",
   "next_actual_student_collection": {
     "pr": 6717,
     "source": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
@@ -3956,5 +4296,54 @@
     },
     "old_experiment_energy_backfilled": false,
     "full_physical_cost_closed": false
-  }
+  },
+  "latest_root_original_readbacks": [
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/B3_RELEASE.json",
+      "original_path": "/home/qian-qi/work/hepta-b3-independent-materials-20261118-2e9b/B3_RELEASE.json",
+      "sha256": "82dc86a58a51a33a5115439cbe1ad975bff79a5d2c85e60259ca881a927b7420",
+      "bytes": 3214
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/E6_NOUPDATE1_OWNER_RESULT.json",
+      "original_path": "complete-noupdate-1/result.json",
+      "sha256": "2a33bd0236ff63efdb5a8174e4840927bf60763fe2db1cbd02a85c5b358786b9",
+      "bytes": 23746
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/E6_NOUPDATE1_JUNIT.xml",
+      "original_path": "complete-noupdate-1/ordinary-post-a-no-update.xml",
+      "sha256": "970f5a7036d6ab23b61a7cecd05308f64172416f6724e97a0c1a8cdb26a699d5",
+      "bytes": 2501
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/E6_NOUPDATE2_DEPLOYMENT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/complete-noupdate2-DEPLOYMENT.json",
+      "sha256": "c8ccdb61fe5f068a6af14eb55f4b19a3547e662a1cfedabf84ac07c36be921dc"
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/CHRONO_GIT_UTILS_RESULT.json",
+      "original_path": "/Users/qianqi/work/hepta-chrono-git-utils-joint-20261118-2e9b/native-validation-1/RESULT.json",
+      "sha256": "5b0be1147d457cc843fc60b2ddd1fdcee1a0a6c292c3d5b873b0fc525c10d659",
+      "bytes": 1552
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/LAYOUT_A_DOCUMENT_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/evaluation/A/document_evidence/RESULT.json",
+      "sha256": "2812be2feaf9526be114b2e7664fdca7f837b54db09241219cfc4dae5be91c32",
+      "bytes": 11050
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/LAYOUT_A_NATIVE_RESULT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/evaluation/A/native_feedback/RESULT.json",
+      "sha256": "7845bb0f338d087c091bc8b46f412235046cd02558bcb867a953e2e805553191",
+      "bytes": 11028
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2040/LAYOUT_A_OWNER_COMPLETE.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-layout-learning-20261118-2e9b-checkpoint2/owned-evaluation_A-1/COMPLETE.json",
+      "sha256": "94d57d3338f096fc3b99295372686f68f52b18a98ae218936a7374708bd86746",
+      "bytes": 4229
+    }
+  ]
 }
