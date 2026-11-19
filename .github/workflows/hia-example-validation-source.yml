@@ -1,0 +1,32 @@
+name: HIA example-validation source contract
+
+on:
+  push:
+    paths:
+      - '.github/workflows/hia-example-validation-source.yml'
+      - 'hia/example_validation_continuation.hepta'
+      - 'hia/tests/example_validation_source_vm.py'
+      - 'hia/tests/test_example_validation_*.py'
+  pull_request:
+    paths:
+      - '.github/workflows/hia-example-validation-source.yml'
+      - 'hia/example_validation_continuation.hepta'
+      - 'hia/tests/example_validation_source_vm.py'
+      - 'hia/tests/test_example_validation_*.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  source-contract:
+    name: Restricted source-VM checks (not native HIA qualification)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run exact HIA source interpreter and adversarial tests
+        run: python3 -B -m unittest discover -v -s hia/tests -p 'test_example_validation_*.py'
