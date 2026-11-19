@@ -26,6 +26,7 @@ def qualification_lease_clock_library(
         compile_data = [],
         crate_features = [],
         extra_srcs = [],
+        rustc_flags = [],
         base_replacements = {}):
     """Add a distinct qualification library without mutating the normal graph."""
     if "//" + native.package_name() not in LEASE_CLOCK_TEST_DEPENDENCIES:
@@ -45,6 +46,7 @@ def qualification_lease_clock_library(
         crate_name = crate_name,
         crate_root = "src/lib.rs",
         edition = "2024",
+        rustc_flags = rustc_flags,
         rustc_env = {"BAZEL_PACKAGE": native.package_name()},
         deps = rust_test_dependencies(base_replacements | LEASE_CLOCK_TEST_DEPENDENCIES),
         visibility = ["//visibility:public"],

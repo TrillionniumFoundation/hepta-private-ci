@@ -2,7 +2,7 @@ load("@crates//:data.bzl", "DEP_DATA")
 load("@crates//:defs.bzl", "all_crate_deps")
 load("@rules_rust//rust:defs.bzl", "rust_binary")
 
-def v13_acceptance_example():
+def v13_acceptance_example(rustc_flags = []):
     """Expose explicit examples without duplicating auto-discovered targets."""
     binaries = DEP_DATA.get(native.package_name())["binaries"]
     for name in ["neuron_v13_acceptance", "neuron_v13_guarded_acceptance"]:
@@ -21,6 +21,7 @@ def v13_acceptance_example():
             crate_root = source,
             crate_name = name,
             edition = "2024",
+            rustc_flags = rustc_flags,
             deps = [":hepta-agentd"] + all_crate_deps(normal = True),
             tags = ["manual"],
             target_compatible_with = select({
