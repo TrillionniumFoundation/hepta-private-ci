@@ -1,0 +1,839 @@
+{
+  "schema": "reviewed-concurrent-integration-merge-v1",
+  "base": "adc66e6407f83bbc191648ec1784b351541df4bb",
+  "current": "41d193cbd34571fb67a047c206a97734a677e21c",
+  "incoming": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "actual_normal_preview_tree": "c3995fc4c03db4a139fc0a71525085f47092a683",
+  "actual_normal_merge_exit_code": 1,
+  "conflict_paths": [
+    ".github/blob-size-allowlist.txt",
+    ".github/scripts/windows-appcontainer-probe/child_trace.py",
+    ".github/workflows/ndu-windows-storage-probe.yml",
+    "CALLERS.toml",
+    "scripts/hepta_callers_manifest_parts/part-0000.toml.gz"
+  ],
+  "resolved_tree": "25e0859ea2b44e2e23bd798f71c3a19e37270163",
+  "independent_expected_tree": "25e0859ea2b44e2e23bd798f71c3a19e37270163",
+  "expected_overlay_matches": true,
+  "merge_commit": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+  "merge_parents": [
+    "41d193cbd34571fb67a047c206a97734a677e21c",
+    "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d"
+  ],
+  "final_tree": "0ef5bf40bced3af12f1f49245acb2a87272cd520",
+  "final_commit": "1109776d0b777999f0605ff92c98ddfcb03c2159",
+  "followup_parent": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+  "decisions": [
+    {
+      "path": ".github/blob-size-allowlist.txt",
+      "base": [
+        "100644",
+        "dd0524aa0d704a9231d6db0ba38fc4d8a50e7736"
+      ],
+      "current": [
+        "100644",
+        "ebcf1542c114ea44293f8828f095f9413e81177c"
+      ],
+      "incoming": [
+        "100644",
+        "bc18f6cf635ab626ccce7c9c68c1806cf4f67c41"
+      ],
+      "resolved": [
+        "100644",
+        "ebcf1542c114ea44293f8828f095f9413e81177c"
+      ],
+      "reason": "The exact incoming research-inventory comment and digest already occur once in current lines 791-792. Retain that entry and every other current ordinary-history archive digest and qualification disclaimer without appending a duplicate."
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.c",
+      "base": null,
+      "current": [
+        "100644",
+        "1347c252cc9319e070b2fd8c8e9dc7a58fa85a27"
+      ],
+      "incoming": [
+        "100644",
+        "1347c252cc9319e070b2fd8c8e9dc7a58fa85a27"
+      ],
+      "resolved": [
+        "100644",
+        "1347c252cc9319e070b2fd8c8e9dc7a58fa85a27"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": ".github/scripts/windows-appcontainer-probe/child_trace.py",
+      "base": null,
+      "current": [
+        "100644",
+        "3d543f15c82ee2dc04e9cd5d2e09e2ea5cadf1a5"
+      ],
+      "incoming": [
+        "100644",
+        "de4c48119ac204dbafc729aeeceb66503f5c17a7"
+      ],
+      "resolved": [
+        "100644",
+        "de4c48119ac204dbafc729aeeceb66503f5c17a7"
+      ],
+      "reason": "Both observed add/add regions were reviewed: remove unused sys and supply validated LOCALAPPDATA in the diagnostic child environment. Other bytes and owned-fixture/authentication/cleanup semantics are unchanged."
+    },
+    {
+      "path": ".github/workflows/hcsn-differentiable.yml",
+      "base": [
+        "100644",
+        "0f42d5babd58d2d45ec7b773153043df981a155b"
+      ],
+      "current": [
+        "100644",
+        "2ae870a73cd03b31d4cca27f8cb9cdf53bd1c956"
+      ],
+      "incoming": [
+        "100644",
+        "724fc21354c4512b876a538784b5a0ed0ec2b96a"
+      ],
+      "resolved": [
+        "100644",
+        "7f22ce966598ee9154b43fc9118dfe6d6435905d"
+      ],
+      "reason": "Exact automatic union: retain every current gate and required outcome while adding incoming SciPy and neural study. The pre-existing Torch assertion mismatch is fixed in a separate child commit."
+    },
+    {
+      "path": ".github/workflows/ndu-windows-storage-probe.yml",
+      "base": [
+        "100644",
+        "1ef33cb4a6e56bc098a86ba0a322f6479b3fdb30"
+      ],
+      "current": [
+        "100644",
+        "7aed12ad2f7a28e7ae25d742c285893baba1e0e2"
+      ],
+      "incoming": [
+        "100644",
+        "3e527770676e849807f11f4c8309020426f3f6da"
+      ],
+      "resolved": [
+        "100644",
+        "43101886f21b9b5a032c98c0a550f59b70e96f3d"
+      ],
+      "reason": "Choose the exact incoming child_trace.py hash in the sole actual conflict; preserve all 37 verified current source pins, the complete canonical lock fingerprint, original negative predicates and fail-closed production admission."
+    },
+    {
+      "path": "CALLERS.toml",
+      "base": [
+        "100644",
+        "b7da85c4248f601319c2be1760e6be49942c1dfd"
+      ],
+      "current": [
+        "100644",
+        "c74a62e32fa0280864fb4717ef8283e5052f378f"
+      ],
+      "incoming": [
+        "100644",
+        "9791d86c145a414744effbb673621f4ebca14e32"
+      ],
+      "resolved": [
+        "100644",
+        "c74a62e32fa0280864fb4717ef8283e5052f378f"
+      ],
+      "reason": "Retain the complete current two-part package: parsed incoming changes are exactly the control.rs and control_frames.rs required arrays already present, with stronger function-order protection. Preserve 1652 boundaries and 826 protected files."
+    },
+    {
+      "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "base": [
+        "100644",
+        "0f7d7c373e5e9012c9ca763ff56d5bc473996861"
+      ],
+      "current": [
+        "100644",
+        "0f7d7c373e5e9012c9ca763ff56d5bc473996861"
+      ],
+      "incoming": [
+        "100644",
+        "7e165401a2dcffb9d310c6543f0337e99c5bb202"
+      ],
+      "resolved": [
+        "100644",
+        "7e165401a2dcffb9d310c6543f0337e99c5bb202"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/CHECKPOINT.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "0a778cc2ef034e4d918a89bbbe009d5738535002"
+      ],
+      "resolved": [
+        "100644",
+        "0a778cc2ef034e4d918a89bbbe009d5738535002"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-001-010.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "f8140051585ae3f9d5573a7d98904fd9aea0999f"
+      ],
+      "resolved": [
+        "100644",
+        "f8140051585ae3f9d5573a7d98904fd9aea0999f"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-011-020.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "3bbbc61fa4ced9de925823ed5ca295881b9635d8"
+      ],
+      "resolved": [
+        "100644",
+        "3bbbc61fa4ced9de925823ed5ca295881b9635d8"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-021-030.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "438733672be93b5ba3a34b37652cfc0104a25e0a"
+      ],
+      "resolved": [
+        "100644",
+        "438733672be93b5ba3a34b37652cfc0104a25e0a"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-031-040.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "4782cb6d8206d625ed66e4f81e67682f4e2c0400"
+      ],
+      "resolved": [
+        "100644",
+        "4782cb6d8206d625ed66e4f81e67682f4e2c0400"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-041-050.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "c4698776d6b597a9cdb43300585949166d8c95a5"
+      ],
+      "resolved": [
+        "100644",
+        "c4698776d6b597a9cdb43300585949166d8c95a5"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-051-060.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "8fdad257c5b2990dab6fe1cb3f1a377d659452a6"
+      ],
+      "resolved": [
+        "100644",
+        "8fdad257c5b2990dab6fe1cb3f1a377d659452a6"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-061-070.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "a2759a6ce0de21af5f0b61e811f269bb82cfa6df"
+      ],
+      "resolved": [
+        "100644",
+        "a2759a6ce0de21af5f0b61e811f269bb82cfa6df"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qa/repository-consolidation/20261119/round-06/live-refs-pages-071-077.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "354f9a87586299a6b5cdeb51bb5210249ff07874"
+      ],
+      "resolved": [
+        "100644",
+        "354f9a87586299a6b5cdeb51bb5210249ff07874"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/NEURAL_CONTROL.md",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "33e3d3ef8747d9d17598d88d4ecd90c1253b929c"
+      ],
+      "resolved": [
+        "100644",
+        "33e3d3ef8747d9d17598d88d4ecd90c1253b929c"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/attempt001.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "09bb381d6e554add7932e02745955731fe4b6e77"
+      ],
+      "resolved": [
+        "100644",
+        "09bb381d6e554add7932e02745955731fe4b6e77"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/attempt002.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "dabf8b05b69029763564941c9fd6494967f49227"
+      ],
+      "resolved": [
+        "100644",
+        "dabf8b05b69029763564941c9fd6494967f49227"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/attempt003.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "09f04fc19f765f3bbc28c11462f9821f474608d8"
+      ],
+      "resolved": [
+        "100644",
+        "09f04fc19f765f3bbc28c11462f9821f474608d8"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/consolidation-cpu-7246/hepta-execution-manifest.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "d615fb78f1fc2d9d149c3a342f50562e3928253b"
+      ],
+      "resolved": [
+        "100644",
+        "d615fb78f1fc2d9d149c3a342f50562e3928253b"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/consolidation-cpu-7246/provider-summary.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "014fd63fc97713167f8f0fc80278144cc57b76b4"
+      ],
+      "resolved": [
+        "100644",
+        "014fd63fc97713167f8f0fc80278144cc57b76b4"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/consolidation-cpu-7246/result.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "fd21ddbdcb98111349e0c228dc9b8d5474d8b89d"
+      ],
+      "resolved": [
+        "100644",
+        "fd21ddbdcb98111349e0c228dc9b8d5474d8b89d"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/consolidation-cpu-7246/tests.log",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "05af05ca02f2d5ce4e2d0db664edb18a4f3c4cec"
+      ],
+      "resolved": [
+        "100644",
+        "05af05ca02f2d5ce4e2d0db664edb18a4f3c4cec"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/domain-sensitivity.json",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "58356459089b4ae405933b6c4e91c36a9b6d79b7"
+      ],
+      "resolved": [
+        "100644",
+        "58356459089b4ae405933b6c4e91c36a9b6d79b7"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/tests-final.log",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "bd7a657b45d201a4afe8bb0e936e45636a7ac42d"
+      ],
+      "resolved": [
+        "100644",
+        "bd7a657b45d201a4afe8bb0e936e45636a7ac42d"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/evidence/neural-control-20261119/tests.log",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "f32a9fce7f66f8776efc4392e7807dd0413dcb82"
+      ],
+      "resolved": [
+        "100644",
+        "f32a9fce7f66f8776efc4392e7807dd0413dcb82"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "base": null,
+      "current": [
+        "100644",
+        "a86a0298ee79c0abdddffb2a8d425e763d4eb6df"
+      ],
+      "incoming": [
+        "100644",
+        "a86a0298ee79c0abdddffb2a8d425e763d4eb6df"
+      ],
+      "resolved": [
+        "100644",
+        "a86a0298ee79c0abdddffb2a8d425e763d4eb6df"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "d5d021d4914b451c190fed71d418337333cab0b2"
+      ],
+      "resolved": [
+        "100644",
+        "d5d021d4914b451c190fed71d418337333cab0b2"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "base": null,
+      "current": null,
+      "incoming": [
+        "100644",
+        "d5c4680c07cb0dfcd49b98179e7961b24dadd03f"
+      ],
+      "resolved": [
+        "100644",
+        "d5c4680c07cb0dfcd49b98179e7961b24dadd03f"
+      ],
+      "reason": "Current equals merge base, so retain the exact incoming addition/change."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_CONTENT_REVIEW.json",
+      "base": null,
+      "current": [
+        "100644",
+        "4c7bd63ed159f867caab97b0cce8dfcba195f8db"
+      ],
+      "incoming": [
+        "100644",
+        "4c7bd63ed159f867caab97b0cce8dfcba195f8db"
+      ],
+      "resolved": [
+        "100644",
+        "4c7bd63ed159f867caab97b0cce8dfcba195f8db"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA.json",
+      "base": null,
+      "current": [
+        "100644",
+        "7ae9ff142c0fbb25062d157392a90f6dbf78fe74"
+      ],
+      "incoming": [
+        "100644",
+        "7ae9ff142c0fbb25062d157392a90f6dbf78fe74"
+      ],
+      "resolved": [
+        "100644",
+        "7ae9ff142c0fbb25062d157392a90f6dbf78fe74"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/INTEGRATION_DELTA_REVIEW.json",
+      "base": null,
+      "current": [
+        "100644",
+        "8e9dd98e153a7085fb5f0f8d0dc82930cab4844e"
+      ],
+      "incoming": [
+        "100644",
+        "8e9dd98e153a7085fb5f0f8d0dc82930cab4844e"
+      ],
+      "resolved": [
+        "100644",
+        "8e9dd98e153a7085fb5f0f8d0dc82930cab4844e"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/INVENTORY_REVIEW.json",
+      "base": null,
+      "current": [
+        "100644",
+        "ee8d7c062015ba096ca84b42c444504f87527ca1"
+      ],
+      "incoming": [
+        "100644",
+        "ee8d7c062015ba096ca84b42c444504f87527ca1"
+      ],
+      "resolved": [
+        "100644",
+        "ee8d7c062015ba096ca84b42c444504f87527ca1"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/README.md",
+      "base": null,
+      "current": [
+        "100644",
+        "499efcbcd49dc46cee1afa729cf02be5440e011c"
+      ],
+      "incoming": [
+        "100644",
+        "499efcbcd49dc46cee1afa729cf02be5440e011c"
+      ],
+      "resolved": [
+        "100644",
+        "499efcbcd49dc46cee1afa729cf02be5440e011c"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/RESET_CI_METADATA.json",
+      "base": null,
+      "current": [
+        "100644",
+        "a8a1b475fd3a7e8a0b5700ec36b0ed399193dce1"
+      ],
+      "incoming": [
+        "100644",
+        "a8a1b475fd3a7e8a0b5700ec36b0ed399193dce1"
+      ],
+      "resolved": [
+        "100644",
+        "a8a1b475fd3a7e8a0b5700ec36b0ed399193dce1"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/RESET_CI_REVIEW.json",
+      "base": null,
+      "current": [
+        "100644",
+        "20e9dbe6b5c68e9b48180f83db661f522243c3f2"
+      ],
+      "incoming": [
+        "100644",
+        "20e9dbe6b5c68e9b48180f83db661f522243c3f2"
+      ],
+      "resolved": [
+        "100644",
+        "20e9dbe6b5c68e9b48180f83db661f522243c3f2"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/SOURCE_INDEX.json",
+      "base": null,
+      "current": [
+        "100644",
+        "1a2d7fa87e0180d752be968966eb1d0e68fd8693"
+      ],
+      "incoming": [
+        "100644",
+        "1a2d7fa87e0180d752be968966eb1d0e68fd8693"
+      ],
+      "resolved": [
+        "100644",
+        "1a2d7fa87e0180d752be968966eb1d0e68fd8693"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress-data.json",
+      "base": null,
+      "current": [
+        "100644",
+        "c3f794b99ba8ed6b54009a472e58932021fb82bd"
+      ],
+      "incoming": [
+        "100644",
+        "c3f794b99ba8ed6b54009a472e58932021fb82bd"
+      ],
+      "resolved": [
+        "100644",
+        "c3f794b99ba8ed6b54009a472e58932021fb82bd"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.png",
+      "base": null,
+      "current": [
+        "100644",
+        "d5639d1bac7a4964fa1f4884ce46fcf0a4ad3d1b"
+      ],
+      "incoming": [
+        "100644",
+        "d5639d1bac7a4964fa1f4884ce46fcf0a4ad3d1b"
+      ],
+      "resolved": [
+        "100644",
+        "d5639d1bac7a4964fa1f4884ce46fcf0a4ad3d1b"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/c2-continuation-progress.svg",
+      "base": null,
+      "current": [
+        "100644",
+        "3f2c5c24ddb90aee62347c0f325f1b76a786d930"
+      ],
+      "incoming": [
+        "100644",
+        "3f2c5c24ddb90aee62347c0f325f1b76a786d930"
+      ],
+      "resolved": [
+        "100644",
+        "3f2c5c24ddb90aee62347c0f325f1b76a786d930"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/integration-inventory.json.gz",
+      "base": null,
+      "current": [
+        "100644",
+        "b5eb47873662a534dc478c20df657d52b7b7c1b4"
+      ],
+      "incoming": [
+        "100644",
+        "b5eb47873662a534dc478c20df657d52b7b7c1b4"
+      ],
+      "resolved": [
+        "100644",
+        "b5eb47873662a534dc478c20df657d52b7b7c1b4"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/plot_c2_continuation.py",
+      "base": null,
+      "current": [
+        "100644",
+        "ef3e1eb3cf371fc2a89caa0a587ae9d21288a27f"
+      ],
+      "incoming": [
+        "100644",
+        "ef3e1eb3cf371fc2a89caa0a587ae9d21288a27f"
+      ],
+      "resolved": [
+        "100644",
+        "ef3e1eb3cf371fc2a89caa0a587ae9d21288a27f"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/reset-qualification-44481454177.zip",
+      "base": null,
+      "current": [
+        "100644",
+        "4752b704b75a1c2354e2cd5006a6285d2684e516"
+      ],
+      "incoming": [
+        "100644",
+        "4752b704b75a1c2354e2cd5006a6285d2684e516"
+      ],
+      "resolved": [
+        "100644",
+        "4752b704b75a1c2354e2cd5006a6285d2684e516"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/verify_integration_delta.py",
+      "base": null,
+      "current": [
+        "100644",
+        "e3f3259348c5a1b3b1a12aee295ab9ceefc925ef"
+      ],
+      "incoming": [
+        "100644",
+        "e3f3259348c5a1b3b1a12aee295ab9ceefc925ef"
+      ],
+      "resolved": [
+        "100644",
+        "e3f3259348c5a1b3b1a12aee295ab9ceefc925ef"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "qualification/hcsn_research_review_20261119/verify_inventory.py",
+      "base": null,
+      "current": [
+        "100644",
+        "5193d8681d9ecb45be89a81d6dfab350297a68a6"
+      ],
+      "incoming": [
+        "100644",
+        "5193d8681d9ecb45be89a81d6dfab350297a68a6"
+      ],
+      "resolved": [
+        "100644",
+        "5193d8681d9ecb45be89a81d6dfab350297a68a6"
+      ],
+      "reason": "Current and incoming mode/blob are exactly equal; retain identical content."
+    },
+    {
+      "path": "scripts/hepta_callers_manifest_parts/part-0000.toml.gz",
+      "base": [
+        "100644",
+        "7c4b1453565b4b3069d8802fe70c5dc6c3a8ebd3"
+      ],
+      "current": [
+        "100644",
+        "a20310fc174bcd8844e5b1f43d25a518eef4d778"
+      ],
+      "incoming": [
+        "100644",
+        "60c40359549e9ea515a8ab45ae22e0dc735c3076"
+      ],
+      "resolved": [
+        "100644",
+        "a20310fc174bcd8844e5b1f43d25a518eef4d778"
+      ],
+      "reason": "Retain the complete current two-part package: parsed incoming changes are exactly the control.rs and control_frames.rs required arrays already present, with stronger function-order protection. Preserve 1652 boundaries and 826 protected files."
+    }
+  ],
+  "current_preserved_scopes": [
+    "codex-rs",
+    "experiments/ndu_mgp_gates",
+    "scripts/hepta_ci_dependencies.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_native_feedback.py"
+  ],
+  "current_rust_source_unchanged": true,
+  "neural_eight_file_freeze_unchanged": true,
+  "diff_check_passed": true,
+  "refs_before_sha256": "83820a44c02cd768773a95dd9c86fed4346b4d288744894f2c3d60736a4ac58a",
+  "refs_after_sha256": "83820a44c02cd768773a95dd9c86fed4346b4d288744894f2c3d60736a4ac58a",
+  "refs_unchanged_during_this_script": true,
+  "ref_mutating_commands_issued": false,
+  "remote_mutations_issued": false,
+  "neural_combined_cpu_requalification": {
+    "status": "PASS_EXACT_FINAL_SOURCE_ORIGINAL_FOUR_TESTS",
+    "receipt": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/current-neural-cpu-result.json",
+    "receipt_sha256": "2b9cd7c2701361a6e352dc1c03751d1586a2a459d931b170b9975bcff234372d",
+    "final_binding": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/final-source-binding.json",
+    "final_binding_sha256": "029697c1ea808ed92a3c9050551cdee9058086924ada541a418bc1e864c0dc78",
+    "native_job": {
+      "host": "mac",
+      "job_id": "1a1f4bd9b0d-ffbe-112a",
+      "idempotency_key": "hcsn-neural-current-original-four-75cf-v1",
+      "exit_code": 0,
+      "output_complete": true
+    },
+    "tests_run": 4,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "independent_receipt_source_and_log_validation": true,
+    "runtime": {
+      "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+      "platform": "darwin",
+      "versions": {
+        "torch": "2.15.0",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "safetensors": "0.8.0"
+      },
+      "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+      "torch_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/torch/__init__.py",
+      "numpy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/numpy/__init__.py",
+      "scipy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/scipy/__init__.py",
+      "default_tensor_device": "cpu",
+      "cuda_build": null,
+      "torch_threads": 1
+    },
+    "workflow_pinned_environment_claimed": false,
+    "full_repository_ci_claimed": false
+  },
+  "not_claimed": [
+    "Windows native diagnostic execution",
+    "workflow-pinned HCSN runtime qualification",
+    "full repository CI",
+    "full historical archive blob-content review"
+  ],
+  "status": "REVIEWED_AND_SCOPED_VERIFIED_PENDING_REQUIRED_CI"
+}

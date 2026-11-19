@@ -1,0 +1,70 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "native_source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "native_source": "/home/qian-qi/ci-agentd-musl-20261119/source",
+  "isolated_copy": "/home/qian-qi/ci-r3-peercheck-20261119-75cf",
+  "source_preimages": {
+    "codex-rs/app-server-transport/src/transport/unix_socket.rs": "fbd25446ce960b96b2c073ccb446de90f87b9ae373e475a53a40185136a3ec1a",
+    "codex-rs/app-server-transport/src/transport/inherited_socket_tests.rs": "97890ea06d37bcbccdcccbcbe7f6147e86bf46cea82c1d5f7f34c22b0d84040b",
+    "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs": "17d1ddf06cb88bdcfdfc4e7d16a72b8d910a4d977e32ae2f7c5a5362574a763d",
+    "codex-rs/uds/src/lib.rs": "10b7ea8212108b34d627ee90a1e18d35cc85b8c423f3c17090d3bc4478c5366b"
+  },
+  "postimages": {
+    "codex-rs/app-server-transport/src/transport/unix_socket_peer_tests.rs": "29eedd3f8902ecca117e38c30ff5b838983344631b346932e9342cd6a2f1329b",
+    "codex-rs/app-server-transport/src/transport/unix_socket.rs": "4f896cc70f1d365622a8f427fb60b2fbfab2355a35310df1d492e77983ceb298"
+  },
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-app-server-transport",
+    "--lib",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "-j",
+    "4",
+    "-E",
+    "test(unix_socket) | test(inherited_socket)"
+  ],
+  "target_dir": "/home/qian-qi/ci-agentd-musl-test-target-20261119",
+  "started": 1795103388.153305,
+  "exit_code": 0,
+  "finished": 1795103539.1982963,
+  "original_source_after": {
+    "codex-rs/app-server-transport/src/transport/unix_socket.rs": "fbd25446ce960b96b2c073ccb446de90f87b9ae373e475a53a40185136a3ec1a",
+    "codex-rs/app-server-transport/src/transport/inherited_socket_tests.rs": "97890ea06d37bcbccdcccbcbe7f6147e86bf46cea82c1d5f7f34c22b0d84040b",
+    "codex-rs/app-server-transport/src/transport/unix_socket_tests.rs": "17d1ddf06cb88bdcfdfc4e7d16a72b8d910a4d977e32ae2f7c5a5362574a763d",
+    "codex-rs/uds/src/lib.rs": "10b7ea8212108b34d627ee90a1e18d35cc85b8c423f3c17090d3bc4478c5366b"
+  },
+  "original_source_unchanged": true,
+  "previous_attempt_exit_code": 101,
+  "runner_path": "/home/qian-qi/.local/state/hepta-runtime-repair-20261109/tools/cargo-nextest",
+  "runner_sha256": "43aae1265089c61ad9ba835713bad86e8e303be49b7523d3264ef65ce3cf2004",
+  "tool_versions": {
+    "cargo nextest --version": {
+      "exit_code": 0,
+      "stdout": "cargo-nextest 0.9.137 (75ddba7e9 2026-05-26)\nrelease: 0.9.137\ncommit-hash: 75ddba7e911b44c5c0700dac0415d824403de9bd\ncommit-date: 2026-05-26\nhost: x86_64-unknown-linux-musl\n",
+      "stderr": ""
+    },
+    "cargo --version": {
+      "exit_code": 0,
+      "stdout": "cargo 1.96.0 (30a34c682 2026-05-25)\n",
+      "stderr": ""
+    },
+    "rustc --version": {
+      "exit_code": 0,
+      "stdout": "rustc 1.96.0 (ac68faa20 2026-05-25)\n",
+      "stderr": ""
+    },
+    "just --version": {
+      "exit_code": 0,
+      "stdout": "just 1.58.0\n",
+      "stderr": ""
+    }
+  },
+  "postimages_after": {
+    "codex-rs/app-server-transport/src/transport/unix_socket_peer_tests.rs": "29eedd3f8902ecca117e38c30ff5b838983344631b346932e9342cd6a2f1329b",
+    "codex-rs/app-server-transport/src/transport/unix_socket.rs": "4f896cc70f1d365622a8f427fb60b2fbfab2355a35310df1d492e77983ceb298"
+  }
+}

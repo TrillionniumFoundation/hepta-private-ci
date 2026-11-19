@@ -274,7 +274,10 @@ fn workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths()
             fs::create_dir_all(&path)?;
             // The oracle exercises overlap isolation, not lexical path rejection.
             // Windows canonicalize() may add a verbatim disk prefix (\\\\?\\).
-            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)
+            let canonical = path.canonicalize()?;
+            let binding = WorkspaceBinding::new(&canonical, &fleet.root)?;
+            assert_eq!(binding.as_path(), canonical.as_path());
+            Ok(binding)
         })
         .collect::<Result<Vec<_>, FleetRegistryError>>()?;
     // Every subset and both identity orders exercise parents, descendants,

@@ -1,6 +1,8 @@
 """Source-service withdrawal reaches real TCP workers without a second write."""
 
+import json
 import os
+import sqlite3
 from pathlib import Path
 import tempfile
 import unittest
@@ -121,6 +123,15 @@ class SourceNetworkTests(unittest.TestCase):
                     client.snapshot("alpha", "memory")["frontier"]["epoch"],
                     source.authority_view().epoch,
                 )
+                for node in nodes:
+                    with sqlite3.connect(node.root / "fences.sqlite") as database:
+                        observed = json.loads(
+                            database.execute(
+                                "SELECT value FROM frontier WHERE scope='alpha'"
+                            ).fetchone()[0]
+                        )
+                    self.assertIn(written.source_digest, observed["revoked"])
+                    self.assertEqual(observed["epoch"], source.authority_view().epoch)
                 with self.assertRaisesRegex(
                     RemoteError, "owned by the bound source service"
                 ):

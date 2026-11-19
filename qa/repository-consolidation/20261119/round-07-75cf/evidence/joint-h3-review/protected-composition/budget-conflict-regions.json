@@ -1,0 +1,42 @@
+[
+  {
+    "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+    "region": 1,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n    ndu_completed_fraction = np.zeros((len(seeds), size), dtype=np.float64)\n    budget_overruns = np.zeros((len(ARMS), len(seeds), size), dtype=bool)\n=======\n    over_budget = np.zeros((len(ARMS), len(seeds), size), dtype=bool)\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+    "region": 2,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n            _need(row[\"protected_task\"] is protected_flags[str(seed)][j],\n                  \"protected-task label differs from frozen heldout manifest\")\n            protected[i, j] = protected_flags[str(seed)][j]\n=======\n            _need(protected[i, j] == (world_id in protected_sets[seed]),\n                  \"protected-task relabeling or unregistered cohort\")\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+    "region": 3,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n                over_budget = total > hard_cost_limit\n                if over_budget:\n                    # Keep the episode in the matched denominator, with actual\n                    # overrun cost and registered total-failure output penalty.\n                    # An over-budget completed answer must not earn quality.\n                    _need(all(dr[\"status\"] == \"failed\" for dr in drows),\n                          \"overbudget episode must receive failure penalty\")\n                budget_overruns[arm_idx[name], i, j] = over_budget\n                if name == \"ndu\":\n                    ndu_completed_fraction[i, j] = sum(\n                        dr[\"status\"] == \"completed\" for dr in drows) / draws\n=======\n                # An overbudget execution is an outcome, not an omission. It\n                # remains in the denominator with the registered failed loss.\n                # A completed output that exceeded a HARD common resource\n                # ceiling is inadmissible even if aggregate mean cost is low.\n                over_budget[arm_idx[name], i, j] = (\n                    total > episode_cost_limit + max(1e-9, episode_cost_limit * 1e-7))\n                if over_budget[arm_idx[name], i, j]:\n                    _need(all(dr[\"status\"] == \"failed\" for dr in drows),\n                          \"overbudget episode must be marked failed in every draw\")\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+    "region": 4,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n            \"physical_total_cost\": bool(ratio <= max_cost_ratio and cost_margin_upper <= 0),\n=======\n            \"physical_total_cost\": bool(ratio <= max_cost_ratio and\n                                        not np.any(over_budget[[0, index + 1]])),\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/paired_superiority.py",
+    "region": 5,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n               \"all_registered_worlds_seen\": True, \"registered_seeds\": len(seeds),\n               \"worlds_per_seed\": size,\n               \"independent_source_groups_per_seed\": [len(x) for x in seed_group_indexes],\n               \"registered_min_protected_source_groups_per_seed\": protected_source_floor,\n               \"protected_worlds_per_seed\": protected_world_counts,\n               \"protected_labels_checked_against_frozen_manifest\": True,\n               \"protected_original_sources_per_seed\": protected_source_counts,\n               \"registered_min_protected_ndu_quality\": min_protected_quality,\n               \"registered_min_protected_ndu_completion\": min_protected_completion,\n               \"ndu_protected_source_equal_quality_by_seed\": protected_quality_by_seed,\n               \"ndu_protected_source_equal_completion_by_seed\": protected_completion_by_seed,\n               \"draws_per_world\": draws,\n               \"registered_hard_world_cost_limit\": hard_cost_limit,\n               \"overbudget_episodes_by_arm\": {name: int(budget_overruns[k].sum())\n                                               for k, name in enumerate(ARMS)},\n=======\n               \"all_registered_worlds_seen\": True,\n               \"protected_cohort_matches_registration\": True,\n               \"registered_episode_cost_ceiling\": episode_cost_limit,\n               \"overbudget_episode_counts\": {name: int(over_budget[arm_idx[name]].sum())\n                                             for name in ARMS},\n               \"registered_seeds\": len(seeds),\n               \"worlds_per_seed\": size, \"draws_per_world\": draws,\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/test_paired_superiority.py",
+    "region": 1,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n        'calibration_source_group_ids': [f'calibration-src-{i}' for i in range(100)],\n        'training_world_ids': [f'training-{i}' for i in range(128)],\n        'training_source_group_ids': [f'training-src-{i//2}' for i in range(128)],\n        'validation_world_ids': [f'validation-{i}' for i in range(32)],\n        'validation_source_group_ids': [f'validation-src-{i//2}' for i in range(32)],\n=======\n        'protected_world_ids': {str(s): [f'heldout-{s}-{i}' for i in range(32)\n                                           if i % 4 == 0] for s in seeds},\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/test_paired_superiority.py",
+    "region": 2,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n        'draws_per_world': 2, 'failure_loss': 2.0, 'cost_units': 'measured_cpu_seconds',\n        'hard_world_cost_limit': 2.0,\n        'min_protected_source_groups_per_seed': 8,\n        'min_protected_ndu_quality': 0.80,\n        'min_protected_ndu_completion': 0.80,\n=======\n        'draws_per_world': 2, 'failure_loss': 2.0,\n        'cost_units': 'measured_cpu_seconds', 'episode_cost_limit': 2.0,\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  },
+  {
+    "path": "experiments/ndu_mgp_gates/test_paired_superiority.py",
+    "region": 3,
+    "conflict": "<<<<<<< 6c2577f6b5499a6774ec93d84698bbdb077ab3ec\n        lock_protected_task_labels(d)\n        with self.assertRaisesRegex(EvidenceGap, 'no protected-task'):\n=======\n        with self.assertRaisesRegex(EvidenceGap, 'protected-task relabeling'):\n>>>>>>> 227a89333cdb9f8cb330e1a01df9cc5d6b52adf3"
+  }
+]

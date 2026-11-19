@@ -1,0 +1,119 @@
+{
+  "schema": "concurrent-integration-semantic-review-v1",
+  "current": "41d193cbd34571fb67a047c206a97734a677e21c",
+  "incoming": "10fb34ca4ff49e8ceb38a41cc0b018dbdf81452d",
+  "merge_commit": "3aeee638cf589590878b2dd88e4d3558ad76e37b",
+  "final_commit": "1109776d0b777999f0605ff92c98ddfcb03c2159",
+  "final_tree": "0ef5bf40bced3af12f1f49245acb2a87272cd520",
+  "status": "REVIEWED_AND_SCOPED_VERIFIED_PENDING_REQUIRED_CI",
+  "no_refs_or_remote_writes": true,
+  "caller_manifest": {
+    "decision": "Keep the exact current two-part package; add the incoming regression test.",
+    "incoming_raw_bytes": 3125843,
+    "incoming_raw_sha256": "c6eda3c3a149f0260a940f66659011622ae1da587f0ec3dd7551c1d9e8e5285f",
+    "incoming_gzip_git_blob": "60c40359549e9ea515a8ab45ae22e0dc735c3076",
+    "incoming_semantic_delta": "Exactly two protected_file.required arrays, containing three request-deadline substitutions. Both arrays already equal current.",
+    "current_stronger_guard": "control_frames.read_frame function-order contract includes the inherited deadline parameter and pre/post-read expiration checks.",
+    "current_boundaries": 1652,
+    "current_protected_files": 826,
+    "scoped_test": "One original incoming test method executes three mutations and passed on the current raw source/full package.",
+    "evidence": [
+      "caller-delta-review.json",
+      "caller-deadline-test.json",
+      "caller-deadline-test.stderr.log"
+    ]
+  },
+  "windows_diagnostic": {
+    "decision": "Keep existing production-source and lock pins; accept validated LOCALAPPDATA in the independent diagnostic process environment and update only its source digest.",
+    "same_c_blob": "1347c252cc9319e070b2fd8c8e9dc7a58fa85a27",
+    "accepted_python_blob": "de4c48119ac204dbafc729aeeceb66503f5c17a7",
+    "owned_fixtures": "Each run creates a unique AppContainer profile and mkdtemp tree; all DELETE, RemoveDirectory, DACL and integrity-label experiments address this owned tree. It never mutates a production workspace ACL.",
+    "token_boundary": "Child is created suspended with exact inherited stdio handles; parent checks real child AppContainer flag, package SID, Low IL, same user and zero capabilities, plus actual LPAC package authorization before resuming.",
+    "resource_bounds": "Each child gets a five-second wait, at most 65536 captured trace bytes, forced termination of an owned overdue child, handles/token close, fixture removal and profile deletion; cleanup errors prevent successful invocation.",
+    "original_predicates": "Existing native command experiment, four-cell Rust deletion oracle and fail-closed admission gates are retained verbatim. The added always-run trace logs per-operation Win32 errors; its own success means trace completion, not successful security isolation.",
+    "source_binding": "All 37 reviewed source pins and the separately enforced exact anyhow/Matrix dependency and full remaining lock digest match current. Four diagnostic helper hashes match final bytes.",
+    "scope": "No new native Windows run was performed in this review; these observations cannot authorize production admission.",
+    "evidence": [
+      "windows-source-pin-verification.json",
+      "proposed-file-resolution.json"
+    ]
+  },
+  "hcsn_neural": {
+    "decision": "Retain current operator higher-derivative implementation; accept original neural study/tests/documentation/evidence and SciPy1.17 workflow dependency. Retain all current successor, P1 trace, projected-gradient, persistence, evidence and source/event-lane gates.",
+    "model_scope": "An affine reward, constant log-diffusion, fixed absolute reset and positive deterministic refractory optimal-release control problem with FP64 first-order implicit boundary gradients. It does not establish C2/localization, N256, real encoders, general neural-network learning or production benefit.",
+    "numerics": "Monotone bracketed boundary root is rejected outside supported gap (1e-4,8); no clipping. Independent sparse finite-difference Bellman policy iteration does not receive the analytic boundary or value; it has an explicitly approximate affine upper endpoint. Original thresholds and all three tasks/nine optimizer starts are retained.",
+    "historical_cpu": "Retained result, execution manifest and tests.log bytes/hashes agree; test log is exactly the result field and all four original names match. Historical CPU image differs from workflow pins; historical operator blob differs from current, so its evidence alone cannot qualify the current combination.",
+    "new_cpu": "Four unchanged original tests passed with zero failures/errors/skips against all eight exact final source blobs on Mac CPU; source bytes, test names and verbatim log were independently reconciled against retained receipts.",
+    "runtime_fix": "A separate one-line child commit changes the HCSN assertion from 2.10.0+cpu to the version this same job installs, 2.8.0+cpu; no numerical threshold or required outcome is changed.",
+    "evidence": [
+      "neural-cpu-evidence-review.json",
+      "neural-source-freeze.json",
+      "torch-assertion-followup.patch"
+    ],
+    "current_cpu_receipt": {
+      "status": "PASS_EXACT_FINAL_SOURCE_ORIGINAL_FOUR_TESTS",
+      "receipt": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/current-neural-cpu-result.json",
+      "receipt_sha256": "2b9cd7c2701361a6e352dc1c03751d1586a2a459d931b170b9975bcff234372d",
+      "final_binding": "/workspace/scratch/75cf41417dcc/joint-h3-review/hcsn-neural-revalidation/final-source-binding.json",
+      "final_binding_sha256": "029697c1ea808ed92a3c9050551cdee9058086924ada541a418bc1e864c0dc78",
+      "native_job": {
+        "host": "mac",
+        "job_id": "1a1f4bd9b0d-ffbe-112a",
+        "idempotency_key": "hcsn-neural-current-original-four-75cf-v1",
+        "exit_code": 0,
+        "output_complete": true
+      },
+      "tests_run": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "independent_receipt_source_and_log_validation": true,
+      "runtime": {
+        "python": "3.14.3 (main, Feb  3 2026, 15:32:20) [Clang 17.0.0 (clang-1700.6.3.2)]",
+        "platform": "darwin",
+        "versions": {
+          "torch": "2.15.0",
+          "numpy": "2.5.4",
+          "scipy": "1.18.1",
+          "safetensors": "0.8.0"
+        },
+        "executable": "/Users/qianqi/AI/noct-q/.venv/bin/python",
+        "torch_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/torch/__init__.py",
+        "numpy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/numpy/__init__.py",
+        "scipy_file": "/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/scipy/__init__.py",
+        "default_tensor_device": "cpu",
+        "cuda_build": null,
+        "torch_threads": 1
+      },
+      "workflow_pinned_environment_claimed": false,
+      "full_repository_ci_claimed": false
+    }
+  },
+  "historical_custody": {
+    "decision": "Current already contains the exact incoming inventory allowlist entry and HCSN review archive; retain it once along with every other archive digest.",
+    "inventory_replay": "Both original path/mode/blob inventory verifiers executed successfully. The 32151-leaf tree and additive 35-file advanced tree exactly reconstruct their recorded Git identities.",
+    "scope": "The verifier explicitly reads zero historical blob contents and does not certify a line-by-line review or scientific result. Missing historical byte-size observations remain unknown.",
+    "evidence": [
+      "inventory-verifier-result.json",
+      "inventory-delta-verifier-result.json"
+    ]
+  },
+  "preservation": {
+    "expected_overlay_matches": true,
+    "all_existing_rust_source_unchanged": true,
+    "h3_da1_and_mgp_source_unchanged": true,
+    "existing_scoped_ci_scripts_unchanged": true,
+    "neural_eight_file_freeze_unchanged": true,
+    "historical_hia_protected_pins": 415,
+    "protected_ancestor_intersections_both_heads": 0,
+    "evidence": [
+      "resolution.json",
+      "protection-check.json"
+    ]
+  },
+  "remaining_checks": [
+    "Native Windows diagnostic execution on the final source tree",
+    "HCSN source/event workflow on its pinned Python3.12.3/Torch2.8.0+cpu/NumPy2.5.4/SciPy1.17.0 image",
+    "Required combined repository CI"
+  ]
+}

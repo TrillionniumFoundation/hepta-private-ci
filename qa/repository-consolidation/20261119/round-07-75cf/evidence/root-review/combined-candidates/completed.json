@@ -1,0 +1,284 @@
+[
+  {
+    "tip": "818b4a29d1e4375e210eba238d8a3149f5cf21c0",
+    "prior": "0adbc74f85cc629e803cdb50fe726689c00aab0f",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "fixed_automatic_tree": "23eb7f48e0ef1113ae81629a75cf7c567ad76c49",
+    "actual_automatic_tree": "de024132ad6a3d1fc1813f07e6f2d7102774b06c",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      "codex-rs/hepta-agentd/src/control.rs"
+    ],
+    "resolution_paths": [
+      "codex-rs/hepta-agentd/src/control.rs"
+    ],
+    "changes_from_review_base": [],
+    "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "expected_composed_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+    "commit": "2956211395d8f3d84e601d51076a1497f44dc153",
+    "reason": "The two control.rs conflicts are covered by the same Unix peer helper before permit allocation, the inherited owner/root gate, and the protected Windows named-pipe DACL plus bounded token authentication. Retain the relocated actual-connection test and the additional ordering regression. See r3-review/agentd-peer-frontier-resolution.json."
+  },
+  {
+    "tip": "9c7a8c877ddcd4e936b077eadbea21d2e9056b95",
+    "prior": "2956211395d8f3d84e601d51076a1497f44dc153",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+    "fixed_automatic_tree": "c092c447caa6ad8e44c52339bf5a6f7a3f84be27",
+    "actual_automatic_tree": "481c9b07f6cdab7b25be9e11aa349e0febb1d513",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      ".github/workflows/rust-ci-full.yml",
+      "codex-rs/hepta-fleet/src/authority_port.rs"
+    ],
+    "resolution_paths": [
+      ".github/workflows/rust-ci-full.yml",
+      "codex-rs/hepta-fleet/src/authority_port.rs"
+    ],
+    "changes_from_review_base": [
+      ".github/workflows/rust-ci-full-nextest-platform.yml",
+      ".github/workflows/rust-ci-full.yml"
+    ],
+    "resolved_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+    "expected_composed_tree": "d009988b7f02e089c67f908857ed9ee2574cb12f",
+    "commit": "da03f99788223198ba65ee8d05e92827968174ed",
+    "reason": "Use the install action supported tool@version input for sccache and nextest. Preserve current cargo-chef 0.1.78 and the stronger fleet admission assertion. Pinned action inputs and YAML have been checked."
+  },
+  {
+    "tip": "6dd0621bb0f8d9c29b71fdc1da77c9b818195347",
+    "prior": "da03f99788223198ba65ee8d05e92827968174ed",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "8d0b3c63fbdd99b3258f33a10f5a4d2d7dc3fbf7",
+    "fixed_automatic_tree": "a28a45dd3f941940d00f7ee062e1f48f0fa09f4f",
+    "actual_automatic_tree": "2bfc5bb4012b7d4e795cc1de1e732292d595ec62",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      "qa/ndu-grounded-generation/cohort_firewall.py",
+      "qa/ndu-grounded-generation/test_cohort_firewall.py"
+    ],
+    "resolution_paths": [
+      "qa/ndu-grounded-generation/cohort_firewall.py",
+      "qa/ndu-grounded-generation/test_cohort_firewall.py"
+    ],
+    "changes_from_review_base": [
+      "qa/ndu-grounded-generation/V2_GATES.md",
+      "qa/ndu-grounded-generation/test_cohort_firewall.py"
+    ],
+    "resolved_tree": "a07baaae83eaea15a52e74220fbf2ad79db651c5",
+    "expected_composed_tree": "a07baaae83eaea15a52e74220fbf2ad79db651c5",
+    "commit": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+    "reason": "The runtime validation is already present. Preserve it and retain the incoming documentation and fixture explanation. Twelve original scoped tests pass against the reviewed files."
+  },
+  {
+    "tip": "bb853fdb731cdec41df2eae826d6be78aa57e366",
+    "prior": "08fd92aaaea5313d05ed7a0a17db2be5f6e31940",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "dd414ff4f558eac8c233f5f28e4159e64d5b6eea",
+    "fixed_automatic_tree": "0a857c6cda10ec42f5dbafcfb8cfde16f709c22b",
+    "actual_automatic_tree": "c06876a23412bd8a7ad6656f1cce44b131d44e56",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      "codex-rs/v8-poc/BUILD.bazel"
+    ],
+    "resolution_paths": [
+      ".github/workflows/hepta-v8-windows-sandbox.yml",
+      "codex-rs/v8-poc/BUILD.bazel",
+      "codex-rs/v8-poc/src/lib.rs"
+    ],
+    "changes_from_review_base": [
+      ".github/workflows/hepta-v8-windows-sandbox.yml"
+    ],
+    "resolved_tree": "a71b857a6e91c57fe206e214cd240c9af454d108",
+    "expected_composed_tree": "a71b857a6e91c57fe206e214cd240c9af454d108",
+    "commit": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+    "reason": "Retain the existing Once allocator initialization and concurrency regression instead of restoring the historical test mutex. Add the original sandbox Windows workflow with COMMIT_SHA bound to the actual checkout. Static checks pass; Windows execution remains a CI gate."
+  },
+  {
+    "tip": "27da01c95b586702110a1823258f9e1bcbc44aa3",
+    "prior": "1bcbe6350191c2bc748fc4b4b532c7dede15cd6f",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "ccdd8dab2dd997dfab6ca6ef42efabdfda3bfa8c",
+    "fixed_automatic_tree": "0426a9e3ad3c17862fbaa1e823f5af2420f6afc3",
+    "actual_automatic_tree": "4919950eb796feda821d7aec9c5c8782dedf157b",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+    ],
+    "resolution_paths": [
+      "codex-rs/hepta-control-plane/src/scope_lane_wal.rs"
+    ],
+    "changes_from_review_base": [
+      "codex-rs/hepta-control-plane/src/scope_lane_wal_tests.rs"
+    ],
+    "resolved_tree": "012d3faf355c2141a302d4743a5dae674b364be3",
+    "expected_composed_tree": "012d3faf355c2141a302d4743a5dae674b364be3",
+    "commit": "9b6632376958d0dc23b3a15055583f247db50c10",
+    "reason": "Preserve current Windows write/truncate(false), owner locking and explicit append seek, together with Unix no-follow append protection. Retain the original new partial-body recovery regression. Windows native execution is still required."
+  },
+  {
+    "tip": "d01883413fbdae31b5e4bc3c19a01057a5df5b06",
+    "prior": "9b6632376958d0dc23b3a15055583f247db50c10",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "4dd3edd26c7f732c9ab010c86a36180628f3ea02",
+    "fixed_automatic_tree": "4dd3edd26c7f732c9ab010c86a36180628f3ea02",
+    "actual_automatic_tree": "694584761fad8367cdd7faca8587e27e78c6a4fe",
+    "fixed_exit": 0,
+    "actual_exit": 0,
+    "actual_conflicts": [],
+    "resolution_paths": [],
+    "changes_from_review_base": [
+      "results/integration/2026-10-23-objective-sender/README.md",
+      "results/integration/2026-10-23-objective-sender/candidate-test-binary-space.json",
+      "results/integration/2026-10-23-objective-sender/clippy-metadata-cleanup.json",
+      "results/integration/2026-10-23-objective-sender/crash-diagnostic-01.json",
+      "results/integration/2026-10-23-objective-sender/execution-summary.json",
+      "results/integration/2026-10-23-objective-sender/format-baseline-identity.json",
+      "results/integration/2026-10-23-objective-sender/memory-all-01.json",
+      "results/integration/2026-10-23-objective-sender/memory-all-01.junit.xml",
+      "results/integration/2026-10-23-objective-sender/memory-all-01.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-all-01.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-all-final.json",
+      "results/integration/2026-10-23-objective-sender/memory-all-final.junit.xml",
+      "results/integration/2026-10-23-objective-sender/memory-all-final.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-all-final.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-01.json",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-01.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-01.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-02.json",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-02.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-clippy-fix-02.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt-check.json",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt-check.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt-check.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt.json",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-final-fmt.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-01.json",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-01.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-01.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-02.json",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-02.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-02.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-03-recovered-receipt.json",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-03.junit.xml",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-03.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-03.stdout",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-04.json",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-04.junit.xml",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-04.stderr",
+      "results/integration/2026-10-23-objective-sender/memory-sender-schema-recovery-04.stdout",
+      "results/integration/2026-10-23-objective-sender/overlay-identity.json",
+      "results/integration/2026-10-23-objective-sender/owner_overlay.py",
+      "results/integration/2026-10-23-objective-sender/prepare_publication.py",
+      "results/integration/2026-10-23-objective-sender/run_owner_candidate.py",
+      "results/integration/2026-10-23-objective-sender/run_owner_quality.py",
+      "results/integration/2026-10-23-objective-sender/schema-oracle.json"
+    ],
+    "resolved_tree": "694584761fad8367cdd7faca8587e27e78c6a4fe",
+    "expected_composed_tree": "694584761fad8367cdd7faca8587e27e78c6a4fe",
+    "commit": "9583e97a8fdf673ef8e97161a5dba31547127c83",
+    "reason": "Normal conflict-free merge of 46 historical evidence files. JSON, XML, Python syntax and all 18 receipt hashes were checked; original failures remain intact. Archived scripts were read without replay and historical counts do not qualify the current tree."
+  },
+  {
+    "tip": "2e1f37169dacddb2827a4ace92beaea10c25fcd4",
+    "prior": "9583e97a8fdf673ef8e97161a5dba31547127c83",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b",
+    "fixed_automatic_tree": "00b29969a0a2f50c71fc50c64fc36a7f423fe27b",
+    "actual_automatic_tree": "d82f291f4c3d2e69e0e7e32a84e6099cc688ee8e",
+    "fixed_exit": 0,
+    "actual_exit": 0,
+    "actual_conflicts": [],
+    "resolution_paths": [],
+    "changes_from_review_base": [
+      "qa/stem-bakeoff/evidence/20261023-dot-memory-reliability-reader/README.md",
+      "qa/stem-bakeoff/evidence/20261023-dot-memory-reliability-reader/REPRODUCE.md",
+      "qa/stem-bakeoff/evidence/20261023-dot-memory-reliability-reader/development-evidence.zip",
+      "qa/stem-bakeoff/evidence/20261023-dot-memory-reliability-reader/evidence-index.json",
+      "scripts/memory_cell_domain/README.md",
+      "scripts/memory_cell_domain/domain_data.py",
+      "scripts/memory_cell_domain/domain_training.py",
+      "scripts/memory_cell_domain/domain_trial.py",
+      "scripts/memory_cell_domain/test_domain_controls.py",
+      "scripts/memory_cell_domain/test_domain_data.py",
+      "scripts/memory_cell_domain/test_source_group_regressions.py",
+      "scripts/memory_cell_network/README.md",
+      "scripts/memory_cell_network/network_authority.py",
+      "scripts/memory_cell_network/network_fences.py",
+      "scripts/memory_cell_network/network_serve.py",
+      "scripts/memory_cell_network/test_current_parameter_network.py",
+      "scripts/memory_cell_network/test_source_network.py"
+    ],
+    "resolved_tree": "d82f291f4c3d2e69e0e7e32a84e6099cc688ee8e",
+    "expected_composed_tree": "d82f291f4c3d2e69e0e7e32a84e6099cc688ee8e",
+    "commit": "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+    "reason": "Normal conflict-free merge of connected provenance grouping, publication epoch binding and the preserved negative Reader evidence. Fifteen original pure-data tests pass; tensor and source-bound TCP suites remain separate pending native gates."
+  },
+  {
+    "tip": "0bb26140ed20a9e4193dec96dd4bf92c94c91ef3",
+    "prior": "7c744af158dbb33c3dbf8e8cea070d39896943c8",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+    "fixed_automatic_tree": "983dfaf9e4cc0cbf615e0417b1aac39d03927d10",
+    "actual_automatic_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+    "fixed_exit": 0,
+    "actual_exit": 0,
+    "actual_conflicts": [],
+    "resolution_paths": [],
+    "changes_from_review_base": [
+      ".github/workflows/hepta-neuron-near-matched-physical.yml",
+      "qualification/neuron-gated-sparse-v3/PUBLIC_Q24_READONLY_ADMISSION_20261016.md",
+      "qualification/neuron-gated-sparse-v3/public_q24_independent_cases.py",
+      "qualification/neuron-gated-sparse-v3/test_public_q24_independent_cases.py"
+    ],
+    "resolved_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+    "expected_composed_tree": "a68ada49261d55e00fba9370f1296a36d8099e08",
+    "commit": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+    "reason": "Normal conflict-free merge of the independent-utterance reader and its original tests. It preserves DENY_ALL and NO_MODEL_PROMOTION. A follow-up adds both new paths to the workflow trigger. Real CPU tensor tests are required before qualification."
+  },
+  {
+    "tip": "5739a9ce5dfcfb8708eff0b3f4690de65a784d02",
+    "prior": "96c7318a3dffa5918424c787dcf0201ca0bb93e2",
+    "review_base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+    "approved_tree": "e4020d30bb749f489593360bb7285ed98f602533",
+    "fixed_automatic_tree": "cb4404399c4e7dfeb39b5e7124d450ca9460ed37",
+    "actual_automatic_tree": "dcdc27dc13ee44f610f8d1e6c16a678e7e82369a",
+    "fixed_exit": 1,
+    "actual_exit": 1,
+    "actual_conflicts": [
+      "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "codex-rs/hepta-automation/src/lib.rs"
+    ],
+    "resolution_paths": [
+      "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "codex-rs/hepta-automation/migrations/0020_effect_dispatch_recovery_material.sql",
+      "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+      "codex-rs/hepta-automation/src/action_skill_tests.rs",
+      "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "codex-rs/hepta-automation/src/lib.rs",
+      "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+      "codex-rs/hepta-automation/src/store.rs"
+    ],
+    "changes_from_review_base": [
+      "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "codex-rs/hepta-automation/migrations/0023_effect_dispatch_recovery_material.sql",
+      "codex-rs/hepta-automation/src/action_skill_tests.rs",
+      "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+      "codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+      "codex-rs/hepta-automation/src/store.rs"
+    ],
+    "resolved_tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+    "expected_composed_tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+    "commit": "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+    "reason": "Persist the exact provider occurrence key and wire bytes before external contact while retaining prepare_claim and inherited recovery semantics. Preserve original provider-recovery migration SQL bytes at 0023; relocate legacy v20 only on exact original checksum, clean history and an unoccupied target in one immediate transaction. Existing Circuit migrations remain byte-identical. Original Automation package tests pass on the documented old graph with exact matching caller files; final combined-head CI is still required."
+  }
+]

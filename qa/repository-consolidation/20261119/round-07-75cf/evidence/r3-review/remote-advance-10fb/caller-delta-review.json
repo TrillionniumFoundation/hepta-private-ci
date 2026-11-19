@@ -1,0 +1,77 @@
+{
+  "reconstructed_incoming_blob": "60c40359549e9ea515a8ab45ae22e0dc735c3076",
+  "incoming_raw_sha256": "c6eda3c3a149f0260a940f66659011622ae1da587f0ec3dd7551c1d9e8e5285f",
+  "current_boundary_count": 1652,
+  "current_protected_file_count": 826,
+  "changes": [
+    {
+      "section": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/control_frames.rs",
+      "field": "required",
+      "base": [
+        "take(MAX_CONTROL_FRAME_BYTES + 1)",
+        "timeout(IO_TIMEOUT, reader.read_until",
+        "count == 0",
+        "count as u64 > MAX_CONTROL_FRAME_BYTES",
+        "bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES"
+      ],
+      "incoming": [
+        "take(MAX_CONTROL_FRAME_BYTES + 1)",
+        "timeout_at(end, reader.read_until",
+        "count == 0",
+        "count as u64 > MAX_CONTROL_FRAME_BYTES",
+        "bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES"
+      ],
+      "current": [
+        "take(MAX_CONTROL_FRAME_BYTES + 1)",
+        "timeout_at(end, reader.read_until",
+        "count == 0",
+        "count as u64 > MAX_CONTROL_FRAME_BYTES",
+        "bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES"
+      ],
+      "incoming_exactly_covered_by_current": true,
+      "current_extra_fields": []
+    },
+    {
+      "section": "protected_file",
+      "path": "codex-rs/hepta-agentd/src/control.rs",
+      "field": "required",
+      "base": [
+        "CONNECTION_CAPACITY: usize = 32",
+        "try_acquire_owned()",
+        "let _permit = permit",
+        "ControlConnection::<P>::serve_connection(stream, state).await",
+        "state.circuit_task_enabled()",
+        "crate::AgentdMethod::ObjectiveStart",
+        "frames::read_frame(reader).await?",
+        "match frames::write_frame(&mut writer, &bytes).await",
+        "fn run_for<P>("
+      ],
+      "incoming": [
+        "CONNECTION_CAPACITY: usize = 32",
+        "try_acquire_owned()",
+        "let _permit = permit",
+        "ControlConnection::<P>::serve_connection(stream, state, request_end).await",
+        "state.circuit_task_enabled()",
+        "crate::AgentdMethod::ObjectiveStart",
+        "frames::read_frame(reader, request_end).await?",
+        "match frames::write_frame(&mut writer, &bytes).await",
+        "fn run_for<P>("
+      ],
+      "current": [
+        "CONNECTION_CAPACITY: usize = 32",
+        "try_acquire_owned()",
+        "let _permit = permit",
+        "ControlConnection::<P>::serve_connection(stream, state, request_end).await",
+        "state.circuit_task_enabled()",
+        "crate::AgentdMethod::ObjectiveStart",
+        "frames::read_frame(reader, request_end).await?",
+        "match frames::write_frame(&mut writer, &bytes).await",
+        "fn run_for<P>("
+      ],
+      "incoming_exactly_covered_by_current": true,
+      "current_extra_fields": []
+    }
+  ],
+  "all_incoming_semantic_changes_already_current": true
+}

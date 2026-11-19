@@ -1,0 +1,397 @@
+{
+  "parent": "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+  "incoming": "8d1c0f8603f988dfcef77e808183931f18c4aab8",
+  "genuine_preview": "161231bbb71b0ad97bf325101f35c7aa7ceab1bf",
+  "genuine_exit": 1,
+  "resolved_tree": "8e84335fce3c2c152ae2dafdf2d9c55bc6302f7f",
+  "expected_overlay_tree": "8e84335fce3c2c152ae2dafdf2d9c55bc6302f7f",
+  "commit": "5b37792343bbe24baf14918dc519f9786f422a03",
+  "parents": [
+    "4824bf93b41e5c2c37f661f6a88d01ab95fc451d",
+    "8d1c0f8603f988dfcef77e808183931f18c4aab8"
+  ],
+  "selected_blobs": {
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs": "a06d3658ec531ae46ce6135ec5f5f20d26799298",
+    "codex-rs/hepta-fleet/src/authority_port.rs": "1020ef1aafd45a64b5bad9561ab6dbe57470093d",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs": "a067480aa9109937c89f91bed07d7db01730751a",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs": "d15fdb04f145650e6e0dcbe9ff606d66080b15af",
+    "codex-rs/hepta-supervisor/src/tick.rs": "fa2fc5798fa4510a30394acb540cbac432436574",
+    "codex-rs/hepta-supervisor/tests/restart_budget.rs": "9a99befc19418c07df42cb06a25dac56175e77fb",
+    "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs": "292de4246bdcc6d727e33d1d037c175814c51a77",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "191a9d561bf0ed2b2b52a522558a454bb5a66477",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "1e5dc88d75c94041228cb3e098402fb31928de4f",
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "e39ec5d7b2970c40f89192ffec821d90d4fbfe6e",
+    "scripts/hepta_ci_dependencies.py": "45c63596e1abd3c6f0a9e3b491b9f6eb1b3e9bc6",
+    "scripts/test_hepta_ci_exec.py": "5c672aa6b66bbaa480eeece18fcb0d37b9fec79c",
+    "scripts/test_hepta_native_feedback.py": "724f3e9651e4f5daa3d0606575731ba8c81223b1"
+  },
+  "effective_overlay": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "e39ec5d7b2970c40f89192ffec821d90d4fbfe6e",
+    "scripts/hepta_ci_dependencies.py": "45c63596e1abd3c6f0a9e3b491b9f6eb1b3e9bc6",
+    "scripts/test_hepta_ci_exec.py": "5c672aa6b66bbaa480eeece18fcb0d37b9fec79c",
+    "scripts/test_hepta_native_feedback.py": "724f3e9651e4f5daa3d0606575731ba8c81223b1"
+  },
+  "conflict_region_count": 23,
+  "conflict_decisions": [
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let fleet_root = std::fs::create_dir_all(&fleet_root)\n            .and_then(|()| fleet_root.canonicalize())\n            .expect(\"fleet root\");\n=======\n        std::fs::create_dir_all(&fleet_root).expect(\"fleet root\");\n        // Resolve temporary-directory aliases before the store's canonical-root\n        // guard; the provider workspace below has its own PathUri wire identity.\n        let fleet_root = fleet_root.canonicalize().expect(\"canonical fleet root\");\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current creates and canonicalizes fleet root before the HeptaFleetRoot guard. Provider PathUri round trip already defines the exact granted workspace digest and physical-send path, and additionally asserts directory existence and canonical equality. Moving the final URI rather than cloning it preserves ownership and values; no later use requires a clone.",
+      "selected_blob": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let canonical_workspace = workspace.canonicalize().expect(\"canonical workspace\");\n        let workspace_uri =\n            PathUri::from_host_native_path(&canonical_workspace).expect(\"workspace uri\");\n        // Grant and physical send use the same native path carried by the turn URI.\n        let workspace = workspace_uri.to_path_buf();\n        assert!(\n            workspace.is_absolute() && workspace.is_dir(),\n            \"provider workspace must identify an absolute directory\"\n        );\n        assert!(\n            workspace\n                .canonicalize()\n                .expect(\"round-trip canonical workspace\")\n                == canonical_workspace,\n            \"provider workspace URI must preserve the canonical path\"\n=======\n        let workspace = workspace.canonicalize().expect(\"canonical workspace\");\n        // Model observations carry a PathUri, which is rendered back to a native\n        // path at the attachment boundary. On Windows, the canonical \\\\?\\ prefix\n        // may be normalized during this round trip. Grant the exact workspace\n        // identity used at physical-send time; do not weaken the scope check.\n        let workspace_uri = PathUri::from_host_native_path(&workspace).expect(\"workspace uri\");\n        let workspace = workspace_uri.to_path_buf();\n        assert!(\n            workspace.is_absolute(),\n            \"provider workspace must stay absolute\"\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current creates and canonicalizes fleet root before the HeptaFleetRoot guard. Provider PathUri round trip already defines the exact granted workspace digest and physical-send path, and additionally asserts directory existence and canonical equality. Moving the final URI rather than cloning it preserves ownership and values; no later use requires a clone.",
+      "selected_blob": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5"
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+      "region": 3,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                    cwd: workspace_uri,\n=======\n                    cwd: workspace_uri.clone(),\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current creates and canonicalizes fleet root before the HeptaFleetRoot guard. Provider PathUri round trip already defines the exact granted workspace digest and physical-send path, and additionally asserts directory existence and canonical equality. Moving the final URI rather than cloning it preserves ownership and values; no later use requires a clone.",
+      "selected_blob": "8fd6d6b52e1ff6f16fa61f74cc5952852b30d7d5"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n}\n\n#[tokio::test]\nasync fn historical_sqlite_shim_keeps_parallel_owner_fixtures_isolated() {\n    let (canonical_root, canonical) = historical_pool(false).await;\n    let (displaced_root, displaced) = historical_pool(true).await;\n    assert_ne!(canonical_root.path(), displaced_root.path());\n    assert!(canonical_root.path().join(\"historical.sqlite3\").is_file());\n    assert!(displaced_root.path().join(\"historical.sqlite3\").is_file());\n\n    let original_displaced: Vec<Vec<u8>> =\n        sqlx::query_scalar(\"SELECT checksum FROM _sqlx_migrations ORDER BY version\")\n            .fetch_all(&displaced)\n            .await\n            .expect(\"independent displaced migration history\");\n    sqlx::query(\"UPDATE _sqlx_migrations SET checksum = x'00' WHERE version = 4\")\n        .execute(&canonical)\n        .await\n        .expect(\"corrupt only the canonical test fixture\");\n    let still_displaced: Vec<Vec<u8>> =\n        sqlx::query_scalar(\"SELECT checksum FROM _sqlx_migrations ORDER BY version\")\n            .fetch_all(&displaced)\n            .await\n            .expect(\"unchanged independent migration history\");\n    assert_eq!(still_displaced, original_displaced);\n\n    canonical.close().await;\n    displaced.close().await;\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let (directory, pool) = historical_pool(displaced).await;\n=======\n        let (_fixture_directory, pool) = historical_pool(displaced).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "region": 3,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let (directory, pool) = historical_pool(true).await;\n=======\n        let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "region": 4,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let (directory, pool) = historical_pool(displaced).await;\n=======\n    let (_fixture_directory, pool) = historical_pool(displaced).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "region": 5,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let (directory, pool) = historical_pool(/*displaced*/ true).await;\n=======\n    let (_fixture_directory, pool) = historical_pool(/*displaced*/ true).await;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current historical_pool already returns its TempDir with SqlitePool and canonicalizes the database root. All call sites retain the directory until an explicit pool.close().await before drop(directory), stronger lifetime control than the incoming underscore guard. Canonical reopen root and actual persisted-history reopening are present; keep the added independent parallel-owner fixture regression.",
+      "selected_blob": "a06d3658ec531ae46ce6135ec5f5f20d26799298"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        assert_eq!(\n            ledger.admit_host(HostObservation {\n                host_id: \"host-one\".into(),\n                failure_domain_id: \"rack-one\".into(),\n                generation: 1,\n                observed_at_ms: 1_000,\n                valid_until_ms: 10_000,\n                capacity: Resources {\n                    cpu_millis: 1_000,\n                    memory_bytes: 1 << 20,\n                    accelerator_millis: 1_000,\n                },\n            }),\n            Ok(()),\n            \"valid host fixture must be admitted\"\n        );\n        ledger\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() {\n        let directory = tempfile::tempdir().unwrap_or_else(|error| panic!(\"{error:?}\"));\n        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7).unwrap_or_else(|error| panic!(\"{error:?}\")),\n            Arc::new(FixedClock(2_000)),\n        )\n        .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        registry\n            .put_lease(\n                AuthorityLease {\n                    schema_version: 1,\n                    lease_id: \"fleet-issue-one\".into(),\n                    authority_epoch: 7,\n                    revision: 1,\n                    binding,\n                    issued_at_unix_ms: 1_000,\n                    expires_at_unix_ms: 8_000,\n                },\n                0,\n            )\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let port = FleetAuthorityPort::new(registry.verifier());\n        let mut ledger = ledger();\n        let (receipt, witness) = port\n            .issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n=======\n        ledger.admit_host(HostObservation {\n            host_id: \"host-one\".into(),\n            failure_domain_id: \"rack-one\".into(),\n            generation: 1,\n            observed_at_ms: 1_000,\n            valid_until_ms: 10_000,\n            capacity: Resources {\n                cpu_millis: 1_000,\n                memory_bytes: 1 << 20,\n                accelerator_millis: 1_000,\n            },\n        })?;\n        Ok(ledger)\n    }\n\n    #[test]\n    fn allocation_issue_consumes_exact_live_kernel_authority_lease() -> FixtureResult<()> {\n        let directory = tempfile::tempdir()?;\n        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;\n        let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(\n            directory.path(),\n            \"security-authority\".into(),\n            AuthorityLeaseFrontier::for_empty_epoch(7)?,\n            Arc::new(FixedClock(2_000)),\n        )?;\n        let grant = grant();\n        let binding = FleetAuthorityPort::binding_for_issue(&grant)?;\n        registry.put_lease(\n            AuthorityLease {\n                schema_version: 1,\n                lease_id: \"fleet-issue-one\".into(),\n                authority_epoch: 7,\n                revision: 1,\n                binding,\n                issued_at_unix_ms: 1_000,\n                expires_at_unix_ms: 8_000,\n            },\n            0,\n        )?;\n        let port = FleetAuthorityPort::new(registry.verifier());\n        let mut ledger = ledger()?;\n        let (receipt, witness) =\n            port.issue_with_witness(&mut ledger, \"fleet-issue-one\", 1, 2_000, grant.clone())?;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Incoming changes only test error propagation: Result-returning fixtures and ? versus existing unwrap_or_else(panic with diagnostic). Both fail on the same errors; current admit_host checks exact Ok(()). Exact revoked-error equality, live authority witness fields and mutation-binding assertions remain. Preserve the current verified dispatch-time production clock behavior and its separate regressions.",
+      "selected_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        registry\n            .revoke(\"fleet-issue-one\", 1, [9; 32])\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err()\n                .unwrap_or_else(|| panic!(\"revoked lease must be rejected\")),\n            FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)\n=======\n        registry.revoke(\"fleet-issue-one\", 1, [9; 32])?;\n        assert_eq!(\n            port.issue(&mut ledger, \"fleet-issue-one\", 2, 2_001, grant)\n                .err(),\n            Some(FleetAuthorityError::Authority(AuthorityLeaseError::Revoked))\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Incoming changes only test error propagation: Result-returning fixtures and ? versus existing unwrap_or_else(panic with diagnostic). Both fail on the same errors; current admit_host checks exact Ok(()). Exact revoked-error equality, live authority witness fields and mutation-binding assertions remain. Preserve the current verified dispatch-time production clock behavior and its separate regressions.",
+      "selected_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "region": 3,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        let first_binding = FleetAuthorityPort::binding_for_issue(&first)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)\n            .unwrap_or_else(|error| panic!(\"{error:?}\"));\n=======\n        let first_binding = FleetAuthorityPort::binding_for_issue(&first)?;\n        let mut changed = first;\n        changed.resources.cpu_millis += 1;\n        let changed_binding = FleetAuthorityPort::binding_for_issue(&changed)?;\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Incoming changes only test error propagation: Result-returning fixtures and ? versus existing unwrap_or_else(panic with diagnostic). Both fail on the same errors; current admit_host checks exact Ok(()). Exact revoked-error equality, live authority witness fields and mutation-binding assertions remain. Preserve the current verified dispatch-time production clock behavior and its separate regressions.",
+      "selected_blob": "1020ef1aafd45a64b5bad9561ab6dbe57470093d"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry_tests.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n            // The oracle exercises overlap isolation, not lexical path rejection.\n            // Windows canonicalize() may add a verbatim disk prefix (\\\\\\\\?\\\\).\n            WorkspaceBinding::new(path.canonicalize()?, &fleet.root)\n=======\n            let canonical = path.canonicalize()?;\n            let binding = WorkspaceBinding::new(&canonical, &fleet.root)?;\n            assert_eq!(binding.as_path(), canonical.as_path());\n            Ok(binding)\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "compose current canonical fixture with incoming exact-path assertion",
+      "reason": "Preserve current overlap-oracle intent and add the missing assertion that WorkspaceBinding stores the exact canonical native path. No production overlap or symlink rule changes.",
+      "selected_blob": "22b3bf3a78199f1047ac8225569cbcdb765f5f8b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\nuse codex_state::SqliteConfig;\nuse codex_utils_absolute_path::AbsolutePathBuf;\n\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already uses a private TempDir and the durable evidence pool rather than in-memory SQLite. Keep SqliteConfig::new_for_testing to isolate fixtures from ambient configuration; incoming from_sqlite_home would weaken this newer test isolation. Both run compiled migrations and the same independently derived schema/weak-trigger rejection assertions.",
+      "selected_blob": "a067480aa9109937c89f91bed07d7db01730751a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    // Use the central SQLite shim and the same durable evidence profile as\n    // the owner. Keep this private fixture independent of owner database bytes.\n    let temp = tempfile::tempdir().expect(\"schema fixture directory\");\n    let home = AbsolutePathBuf::try_from(temp.path().canonicalize().expect(\"fixture path\"))\n        .expect(\"absolute fixture path\");\n    let pool = SqliteConfig::new_for_testing(home)\n        .open_durable_evidence_pool(&temp.path().join(\"schema-oracle.sqlite\"))\n=======\n    let directory = tempfile::tempdir().expect(\"reference SQLite directory\");\n    let sqlite_home =\n        AbsolutePathBuf::try_from(directory.path().to_path_buf()).expect(\"absolute SQLite home\");\n    let pool = SqliteConfig::from_sqlite_home(sqlite_home)\n        .open_durable_evidence_pool(&directory.path().join(\"schema.sqlite3\"))\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already uses a private TempDir and the durable evidence pool rather than in-memory SQLite. Keep SqliteConfig::new_for_testing to isolate fixtures from ambient configuration; incoming from_sqlite_home would weaken this newer test isolation. Both run compiled migrations and the same independently derived schema/weak-trigger rejection assertions.",
+      "selected_blob": "a067480aa9109937c89f91bed07d7db01730751a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19\"\n=======\n        \"1,2,3,4,5,6,7,8,9,10,11,12,13,14,15\"\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already orders migration versions through the same sorted subquery before group_concat. Retain the accurate canonical migration inventory 1..19; incoming 1..15 is obsolete because migrations 16..19 are in the current tree.",
+      "selected_blob": "d15fdb04f145650e6e0dcbe9ff606d66080b15af"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                // Preserve the existing queue event and expose the durable\n                // automatic-attempt identity to typed observers.\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Both emit legacy RestartQueued plus typed AutomaticRestartQueued with the durably claimed attempt. Both exhausted paths clear restart scheduling, set the max attempt, emit AutomaticRestartBudgetExhausted and return the same RestartBudgetExhausted fault. Conflicting changes are duplicate explanatory comments; keep current code and comments once.",
+      "selected_blob": "fa2fc5798fa4510a30394acb540cbac432436574"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n                // Add a typed terminal observation without removing the\n                // existing TickReport fault or resetting the durable budget.\n=======\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Both emit legacy RestartQueued plus typed AutomaticRestartQueued with the durably claimed attempt. Both exhausted paths clear restart scheduling, set the max attempt, emit AutomaticRestartBudgetExhausted and return the same RestartBudgetExhausted fault. Conflicting changes are duplicate explanatory comments; keep current code and comments once.",
+      "selected_blob": "fa2fc5798fa4510a30394acb540cbac432436574"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick.rs",
+      "region": 3,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n=======\n                // Keep the operator-visible fault rather than silently\n                // acknowledging an exhausted restart budget as a clean tick.\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Both emit legacy RestartQueued plus typed AutomaticRestartQueued with the durably claimed attempt. Both exhausted paths clear restart scheduling, set the max attempt, emit AutomaticRestartBudgetExhausted and return the same RestartBudgetExhausted fault. Conflicting changes are duplicate explanatory comments; keep current code and comments once.",
+      "selected_blob": "fa2fc5798fa4510a30394acb540cbac432436574"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let budget_fault = SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string();\n    assert_eq!(\n        supervisor.tick(now),\n        TickReport {\n            faults: vec![AgentFault {\n                agent_id: agent_id.clone(),\n                message: budget_fault.clone(),\n            }],\n        }\n=======\n    let exhausted = supervisor.tick(now);\n    // Budget exhaustion is both a durable typed event and a fail-closed\n    // operator-visible fault; never claim the exhausted tick was healthy.\n    assert_eq!(exhausted.faults.len(), 1);\n    assert_eq!(exhausted.faults[0].agent_id, agent_id);\n    assert!(\n        exhausted.faults[0]\n            .message\n            .contains(\"exhausted its restart budget\")\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current asserts the exact whole TickReport including the one correct agent and exact formatted RestartBudgetExhausted message, stronger than incoming length/agent/substring assertions; preserve all existing backoff, attempt, event and continued-exhaustion assertions.",
+      "selected_blob": "9a99befc19418c07df42cb06a25dac56175e77fb"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/tests/restart_budget_recovery.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    let budget_fault = SupervisorError::RestartBudgetExhausted(agent_id.clone()).to_string();\n    assert_eq!(\n        supervisor.tick(now),\n        TickReport {\n            faults: vec![AgentFault {\n                agent_id: agent_id.clone(),\n                message: budget_fault.clone(),\n            }],\n        }\n=======\n    // Exhaustion is an operator-visible fail-closed fault, not an empty tick.\n    let report = supervisor.tick(now);\n    assert_eq!(report.faults.len(), 1);\n    assert_eq!(report.faults[0].agent_id, agent_id);\n    assert!(\n        report.faults[0]\n            .message\n            .contains(\"exhausted its restart budget\")\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current asserts exact exhausted TickReport after repeated supervisor recovery, covering incoming one-fault/agent/message intent more precisely, and retains persisted budget assertions.",
+      "selected_blob": "292de4246bdcc6d727e33d1d037c175814c51a77"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/Cargo.toml",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\npretty_assertions = { workspace = true }\ntempfile = { workspace = true }\n=======\nassert_cmd = { workspace = true }\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current already removed assert_cmd from production dependencies and has pretty_assertions/tempfile dev dependencies. Adapt the new test to std::process::Command, whose output() is all it uses, so no assert_cmd or dependency-lock change is needed.",
+      "selected_blob": "191a9d561bf0ed2b2b52a522558a454bb5a66477"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "region": 1,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n/// In `cargo nextest`, `NEXTEST_BIN_EXE_*` env vars are absolute runtime paths.\n/// This helper allows callers to transparently support these runners.\n/// Explicit Cargo/Bazel metadata takes precedence over nextest metadata, including\n/// when an explicit path is invalid. No path is inferred from the build directory.\n/// Missing binary metadata is returned as `CargoBinError::NotFound`, so callers\n/// can handle unavailable optional helpers through the normal `Result` API.\n=======\n/// This helper allows callers to transparently support both.\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current fallible metadata-only lookup supersedes the incoming bounded sibling fallback: it preserves primary/underscore Cargo and Bazel metadata precedence, supports Nextest metadata, rejects invalid explicit paths, and returns NotFound without filesystem guessing. README explicitly documents that contract. Do not regress current behavior to the historical sibling inference; adapt the new scenario to assert its rejection.",
+      "selected_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f"
+    },
+    {
+      "path": "codex-rs/utils/cargo-bin/src/lib.rs",
+      "region": 2,
+      "conflict": "<<<<<<< 4824bf93b41e5c2c37f661f6a88d01ab95fc451d\n    Err(CargoBinError::NotFound {\n        name: name.to_owned(),\n        env_keys,\n        fallback: \"Cargo/Bazel binary metadata is unavailable\".to_owned(),\n    })\n=======\n    // Bazel exposes declared binaries through the env keys checked above.\n    // Do not resolve an undeclared optional binary through Cargo's sibling\n    // layout, which is outside Bazel's declared runfiles.\n    if runfiles_available() {\n        return Err(CargoBinError::NotFound {\n            name: name.to_owned(),\n            env_keys,\n            fallback: \"binary was not declared in the Bazel test runfiles environment\".to_owned(),\n        });\n    }\n    // Legacy Cargo tests place binaries beside the test executable, or one\n    // level above its deps directory. Resolve that bounded location directly:\n    // assert_cmd 2.2 panics when an optional binary is absent.\n    let mut path =\n        std::env::current_exe().map_err(|source| CargoBinError::CurrentExe { source })?;\n    path.pop();\n    if path.ends_with(\"deps\") {\n        path.pop();\n    }\n    path.push(format!(\"{name}{}\", std::env::consts::EXE_SUFFIX));\n    if path.is_file() {\n        Ok(path)\n    } else {\n        Err(CargoBinError::NotFound {\n            name: name.to_owned(),\n            env_keys,\n            fallback: format!(\"Cargo binary was not found at {}\", path.display()),\n        })\n    }\n>>>>>>> 8d1c0f8603f988dfcef77e808183931f18c4aab8",
+      "decision": "retain current implementation after concrete comparison",
+      "reason": "Current fallible metadata-only lookup supersedes the incoming bounded sibling fallback: it preserves primary/underscore Cargo and Bazel metadata precedence, supports Nextest metadata, rejects invalid explicit paths, and returns NotFound without filesystem guessing. README explicitly documents that contract. Do not regress current behavior to the historical sibling inference; adapt the new scenario to assert its rejection.",
+      "selected_blob": "1e5dc88d75c94041228cb3e098402fb31928de4f"
+    }
+  ],
+  "date": "2026-11-19T16:45:59+00:00",
+  "delta": [
+    "M\tcodex-rs/hepta-fleet/src/registry_tests.rs",
+    "A\tcodex-rs/utils/cargo-bin/tests/cargo_bin.rs",
+    "M\tscripts/hepta_ci_dependencies.py",
+    "M\tscripts/test_hepta_ci_exec.py",
+    "M\tscripts/test_hepta_native_feedback.py"
+  ],
+  "native_validation": {
+    "python_ci_exec": {
+      "passed": 15,
+      "failed": 0,
+      "seconds": 4.49,
+      "log": "python-ci-exec.log"
+    },
+    "python_native_feedback": {
+      "passed": 24,
+      "failed": 0,
+      "seconds": 12.906,
+      "log": "python-native-feedback-run2.log",
+      "initial_failure": "8 fixtures lacked the currently required hepta_ci_module_paths.py; copied the exact production module into fixtures and reran all 24, no suppressed failures"
+    },
+    "native": {
+      "job": "1a1f4a390c4-ffbe-10ba",
+      "nextest_run_id": "fab0dfb1-e2b8-416f-b6af-4fcdd8774b8d",
+      "tests_passed": 3,
+      "tests_failed": 0,
+      "filtered_out": 45,
+      "subprocess_scenarios": {
+        "new_optional_lookup": 11,
+        "existing_lookup_nextest_precedence": 10
+      },
+      "actual_original_preimages_equal_base": {
+        "codex-rs/hepta-fleet/src/registry_tests.rs": {
+          "expected_base_sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+          "actual_native_original_sha256": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/Cargo.toml": {
+          "expected_base_sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+          "actual_native_original_sha256": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/BUILD.bazel": {
+          "expected_base_sha256": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+          "actual_native_original_sha256": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/src/lib.rs": {
+          "expected_base_sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+          "actual_native_original_sha256": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/tests/lookup_result.rs": {
+          "expected_base_sha256": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+          "actual_native_original_sha256": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+          "exact_match": true
+        },
+        "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": {
+          "expected_base_sha256": null,
+          "actual_native_original_sha256": null,
+          "exact_match": true
+        }
+      },
+      "postimage_hashes_match_local": true,
+      "original_source_unchanged": true,
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "test",
+        "-p",
+        "codex-utils-cargo-bin",
+        "-p",
+        "codex-hepta-fleet",
+        "--locked",
+        "--cargo-profile",
+        "dev-small",
+        "-j",
+        "4",
+        "-E",
+        "package(codex-utils-cargo-bin) | test(workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths)"
+      ],
+      "native_source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+      "build_seconds": 1.6,
+      "test_seconds": 0.011,
+      "initial_failure": "Compile-only first attempt lacked docs/modules/MODULES.json include_str fixture; supplied exact base blob, then reran unchanged tests"
+    },
+    "clippy": {
+      "job": "1a1f4a6a717-ffbe-10c9",
+      "command": [
+        "cargo",
+        "clippy",
+        "-p",
+        "codex-utils-cargo-bin",
+        "-p",
+        "codex-hepta-fleet",
+        "--locked",
+        "--all-targets",
+        "--profile",
+        "dev-small",
+        "-j",
+        "4",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 8.68,
+      "whole_job_exit": 1,
+      "whole_job_failure": "After Clippy passed, formatter setup tried to copy absent historical evidence files. Exact base fixtures were supplied in later format-only jobs."
+    },
+    "format": {
+      "job": "1a1f4aaf8f1-ffbe-10e2",
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit": 1,
+      "rust_formatter_passed": true,
+      "postimage_bytes_changed": false,
+      "failure": "Python scripts formatter could not launch uv",
+      "tests_not_rerun_after_format": true,
+      "python_formatter_completion": {
+        "evidence": "/workspace/scratch/75cf41417dcc/joint-h3-review/protected-composition/format-offline-result.json",
+        "evidence_sha256": "892c3e462bbbae8d89d5e2091933ff6748265b2e279eed592d3c3d5a54548da9",
+        "exit": 0,
+        "stdout": "3 files left unchanged\n",
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+          "run",
+          "--offline",
+          "--frozen",
+          "--project",
+          "scripts",
+          "ruff",
+          "format",
+          "scripts/hepta_ci_dependencies.py",
+          "scripts/test_hepta_ci_exec.py",
+          "scripts/test_hepta_native_feedback.py"
+        ],
+        "postimage_sha256": {
+          "scripts/hepta_ci_dependencies.py": "3aa79281625f94390f6c60f970ecaf315cc096d51ef4c1b8f613e16e6eb90760",
+          "scripts/test_hepta_ci_exec.py": "aad462e4bef23dc73804bf576dbe47c178238ba32b7145340a03646c34413aec",
+          "scripts/test_hepta_native_feedback.py": "45110c2364d1e4c3946f1ef6e03d0fac195ada0805ed3a70242b34723c760ecd"
+        },
+        "no_tests_repeated": true
+      }
+    },
+    "git_diff_check": true,
+    "full_combined_candidate_ci": false,
+    "platform_scope": "Native Linux Cargo/Nextest; no new Windows/macOS or Bazel runfiles manifest native qualification claimed."
+  },
+  "python_format": {
+    "command": [
+      "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+      "run",
+      "--offline",
+      "--frozen",
+      "--project",
+      "scripts",
+      "ruff",
+      "format",
+      "scripts/hepta_ci_dependencies.py",
+      "scripts/test_hepta_ci_exec.py",
+      "scripts/test_hepta_native_feedback.py"
+    ],
+    "exit": 0,
+    "version": "ruff 0.15.13",
+    "python": "3.12.14",
+    "postimages_changed": false,
+    "tests_rerun_after_format": false
+  },
+  "all_native_evidence_hashes_verified": true,
+  "refs_changed": false
+}

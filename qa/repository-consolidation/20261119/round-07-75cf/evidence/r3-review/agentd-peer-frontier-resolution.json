@@ -1,0 +1,31 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "818b4a29d1e4375e210eba238d8a3149f5cf21c0",
+  "genuine_merge_preview": "23eb7f48e0ef1113ae81629a75cf7c567ad76c49",
+  "genuine_merge_exit": 1,
+  "conflicting_path": "codex-rs/hepta-agentd/src/control.rs",
+  "conflict_regions": 2,
+  "resolved_blob": "f8df537d13d69a9df50fdaf1e5e41bccc1dd9a65",
+  "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "same_entire_tree": true,
+  "resolutions": [
+    {
+      "region": "accept loop before connection permit",
+      "incoming_intent": "Authenticate same-process-owner kernel peer credentials before allocating a permit or reading control bytes.",
+      "current_coverage": "Ordinary non-Windows sockets execute the identical ensure_control_peer helper and rejection before try_acquire_owned. Inherited Linux sockets instead retain the explicitly authorized owner-or-Root kernel gate. Windows uses an owner-only protected named-pipe DACL at kernel open and a bounded real-client-token authentication before ControlConnection; the overload reply also authenticates first. Preserve current accepted-error handling, request deadline, cancellation, permit bounds and join behavior."
+    },
+    {
+      "region": "helper and test module at file end",
+      "incoming_intent": "Call UnixStream::ensure_current_user_peer, map IO error and retain a real connected same-owner test.",
+      "current_coverage": "The helper body and signature are identical, already earlier in the current file under cfg(not(windows)). The original named test already lives in control_socket_tests.rs and binds/accepts/connects a real UDS pair then runs that helper; it now returns TestResult using ?/?? instead of expect and uses the short Darwin-safe temp path. Retain the additional pre-permit ordering test plus the existing circuit-completion test support; adding the old inline module would duplicate tests and violate current module organization."
+    }
+  ],
+  "evidence": {
+    "codex-rs/hepta-agentd/src/control.rs": "f8df537d13d69a9df50fdaf1e5e41bccc1dd9a65",
+    "codex-rs/hepta-agentd/src/control_socket_tests.rs": "d07fea94102a43ea13e0fa5287fd935cf72c356d",
+    "codex-rs/uds/src/owner_local_windows.rs": "329ba220740dff209d4696e1246f4add4719564c",
+    "codex-rs/uds/src/owner_local_security.rs": "91042edf01dfdef6b3c74d928fc67a8ffa769407",
+    "codex-rs/uds/src/owner_local_windows_tests.rs": "f8bcbe00939329b9f12de079dfbd0dc7cb0e1908"
+  },
+  "verification": "Assertions bind the two concrete conflict regions to the current guards and preserved actual-connection regression. Resolved whole tree equals base byte-for-byte; no repeat compilation is warranted. This review preserves existing platform policy and does not claim fresh Windows CI. No refs moved."
+}

@@ -1,0 +1,118 @@
+{
+  "files": [
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-result.json",
+      "sha256": "2405e1c536cfae1936460f87bb523e1ad956bbfa94fa4af90db8011882988502",
+      "size": 2096,
+      "text": "{\n  \"task_venv\": \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1\",\n  \"python\": \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python\",\n  \"backing_read_only_site_packages\": \"/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages\",\n  \"installation_command\": [\n    \"/usr/bin/pip3\",\n    \"--isolated\",\n    \"--disable-pip-version-check\",\n    \"install\",\n    \"--no-cache-dir\",\n    \"--no-deps\",\n    \"--only-binary=:all:\",\n    \"--target\",\n    \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/lib/python3.14/site-packages\",\n    \"peft==0.17.1\",\n    \"accelerate==1.10.1\"\n  ],\n  \"installation_exit\": 0,\n  \"package_constraints\": [\n    \"peft==0.17.1\",\n    \"accelerate==1.10.1\"\n  ],\n  \"new_downloads_exclude\": [\n    \"torch\",\n    \"CUDA\",\n    \"models\"\n  ],\n  \"existing_venv_mutated\": false,\n  \"real_import_exit\": 1,\n  \"real_imports\": [\n    \"torch\",\n    \"transformers\",\n    \"safetensors\",\n    \"peft\",\n    \"accelerate\",\n    \"LlamaConfig\",\n    \"LlamaForCausalLM\",\n    \"LoraConfig\",\n    \"get_peft_model\"\n  ],\n  \"elapsed_seconds\": 65.60609412193298,\n  \"logs\": {\n    \"memory-dependency-install.stdout.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stdout.log\",\n      \"bytes\": 265,\n      \"sha256\": \"c03dfe1c5e8a41418ac5f3fcc20f84d82fc29ca795f8f48ff03976c4f632a0f7\"\n    },\n    \"memory-dependency-install.stderr.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stderr.log\",\n      \"bytes\": 0,\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    \"memory-dependency-import.stdout.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stdout.log\",\n      \"bytes\": 0,\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    \"memory-dependency-import.stderr.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stderr.log\",\n      \"bytes\": 1596,\n      \"sha256\": \"6e5ee3a0aa4a8a6dc3713e9758213e5b40fdf577e79873a5774cb834b85bd600\"\n    }\n  }\n}\n",
+      "version": "16777233:614283658:2096:1795106077377067210:1795106077377067210"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stdout.log",
+      "sha256": "c03dfe1c5e8a41418ac5f3fcc20f84d82fc29ca795f8f48ff03976c4f632a0f7",
+      "size": 265,
+      "text": "Collecting peft==0.17.1\n  Downloading peft-0.17.1-py3-none-any.whl (504 kB)\nCollecting accelerate==1.10.1\n  Downloading accelerate-1.10.1-py3-none-any.whl (374 kB)\nInstalling collected packages: peft, accelerate\nSuccessfully installed accelerate-1.10.1 peft-0.17.1\n",
+      "version": "16777233:614282255:265:1795106072180613464:1795106072180613464"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-install.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777233:614282256:0:1795106011787855726:1795106011787855726"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777233:614283513:0:1795106072210509791:1795106072210509791"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-dependency-import.stderr.log",
+      "sha256": "6e5ee3a0aa4a8a6dc3713e9758213e5b40fdf577e79873a5774cb834b85bd600",
+      "size": 1596,
+      "text": "W1120 00:34:35.638000 62650 torch/distributed/elastic/multiprocessing/redirects.py:35] NOTE: Redirects are currently not supported in MacOs.\nTraceback (most recent call last):\n  File \"<string>\", line 1, in <module>\n    import sys,json,importlib.metadata as m; import torch,transformers,safetensors,peft,accelerate; from transformers import LlamaConfig,LlamaForCausalLM; from peft import LoraConfig,get_peft_model; print(json.dumps({\"python\":sys.version,\"executable\":sys.executable,\"device\":str(torch.ones(1).device),\"versions\":{n:m.version(n) for n in [\"torch\",\"transformers\",\"safetensors\",\"peft\",\"accelerate\",\"huggingface-hub\",\"numpy\"]},\"peft_file\":peft.__file__,\"accelerate_file\":accelerate.__file__,\"torch_file\":torch.__file__}))\n                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/lib/python3.14/site-packages/peft/__init__.py\", line 17, in <module>\n    from .auto import (\n    ...<8 lines>...\n    )\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/lib/python3.14/site-packages/peft/auto.py\", line 32, in <module>\n    from .peft_model import (\n    ...<7 lines>...\n    )\n  File \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/lib/python3.14/site-packages/peft/peft_model.py\", line 37, in <module>\n    from transformers import Cache, DynamicCache, EncoderDecoderCache, HybridCache, PreTrainedModel\nImportError: cannot import name 'HybridCache' from 'transformers' (/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages/transformers/__init__.py)\n",
+      "version": "16777233:614283514:1596:1795106077061666401:1795106077061666401"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture-result.json",
+      "sha256": "5f5731fd3b43cb3ab32cee7d93acafaf10dfe24acc4e568c282acafad9c7c9cb",
+      "size": 1279,
+      "text": "{\n  \"command\": [\n    \"/Users/qianqi/ci-small-python-20261119-75cf/venv-memory-v1/bin/python\",\n    \"-B\",\n    \"-m\",\n    \"unittest\",\n    \"test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory\",\n    \"-v\"\n  ],\n  \"exit\": 0,\n  \"wall_seconds\": 0.15610384941101074,\n  \"base_tree\": \"00b29969a0a2f50c71fc50c64fc36a7f423fe27b\",\n  \"fixture_fixed_tree\": \"f8eab319c3871c4a10fcf6c4c399f9df62c79b8b\",\n  \"verified_source_records\": 182,\n  \"exact_original_records\": 181,\n  \"fixed_fixture_sha256\": \"c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189\",\n  \"all_before_after_sources_unchanged\": true,\n  \"scope\": \"single original stdlib process receipt test; full tensor/TCP suite remains blocked by transformers HybridCache API incompatibility\",\n  \"logs\": {\n    \"memory-path-fixture.stdout.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stdout.log\",\n      \"bytes\": 0,\n      \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\n    },\n    \"memory-path-fixture.stderr.log\": {\n      \"path\": \"/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stderr.log\",\n      \"bytes\": 265,\n      \"sha256\": \"187f4ee6942a892d66e0bf31c96ee546d40b8dbd5f27d0b2acdacd0666efaaae\"\n    }\n  }\n}\n",
+      "version": "16777233:614284456:1279:1795106181616381099:1795106181616381099"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "text": "",
+      "version": "16777233:614284439:0:1795106181460074824:1795106181460074824"
+    },
+    {
+      "eof": true,
+      "path": "/Users/qianqi/ci-small-python-20261119-75cf/memory-path-fixture.stderr.log",
+      "sha256": "187f4ee6942a892d66e0bf31c96ee546d40b8dbd5f27d0b2acdacd0666efaaae",
+      "size": 265,
+      "text": "test_receipt_preserves_raw_output_and_empty_reader_directory (test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory) ... ok\n\n----------------------------------------------------------------------\nRan 1 test in 0.051s\n\nOK\n",
+      "version": "16777233:614284440:265:1795106181560794240:1795106181560794240"
+    }
+  ],
+  "dependency_job": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-c\",\n      \"import json,pathlib,subprocess,sys,venv,os,hashlib,time\\nroot=pathlib.Path('/Users/qianqi/ci-small-python-20261119-75cf')\\ndst=root/'venv-memory-v1'\\nassert not dst.exists(), 'task venv already exists; inspect same operation instead of recreating'\\nbacking=pathlib.Path('/Users/qianqi/AI/noct-q/.venv/lib/python3.14/site-packages')\\nassert backing.is_dir()\\nstarted=time.time()\\nvenv.EnvBuilder(with_pip=False,symlinks=True).create(dst)\\npy=dst/'bin/python'\\nsite=pathlib.Path(subprocess.check_output([str(py),'-B','-c','import sysconfig;print(sysconfig.get_path(\\\"purelib\\\"))'],text=True).strip())\\nassert site.is_relative_to(dst)\\n(site/'existing-tensor-runtime.pth').write_text(str(backing)+'\\\\n')\\nargs=['/usr/bin/pip3','--isolated','--disable-pip-version-check','install','--no-cache-dir','--no-deps','--only-binary=:all:','--target',str(site),'peft==0.17.1','accelerate==1.10.1']\\nprint(json.dumps({'command':args,'existing_venv_mutated':False,'no_dependency_resolution':True}),flush=True)\\nwith (root/'memory-dependency-install.stdout.log').open('wb') as out,(root/'memory-dependency-install.stderr.log').open('wb') as err:\\n p=subprocess.run(args,cwd=root,stdout=out,stderr=err,timeout=240)\\nresult={'task_venv':str(dst),'python':str(py),'backing_read_only_site_packages':str(backing),'installation_command':args,'installation_exit':p.returncode,'package_constraints':['peft==0.17.1','accelerate==1.10.1'],'new_downloads_exclude':['torch','CUDA','models'],'existing_venv_mutated':False}\\nif p.returncode==0:\\n code='import sys,json,importlib.metadata as m; import torch,transformers,safetensors,peft,accelerate; from transformers import LlamaConfig,LlamaForCausalLM; from peft import LoraConfig,get_peft_model; print(json.dumps({\\\"python\\\":sys.version,\\\"executable\\\":sys.executable,\\\"device\\\":str(torch.ones(1).device),\\\"versions\\\":{n:m.version(n) for n in [\\\"torch\\\",\\\"transformers\\\",\\\"safetensors\\\",\\\"peft\\\",\\\"accelerate\\\",\\\"huggingface-hub\\\",\\\"numpy\\\"]},\\\"peft_file\\\":peft.__file__,\\\"accelerate_file\\\":accelerate.__file__,\\\"torch_file\\\":torch.__file__}))'\\n env=dict(os.environ);env.update(PYTHONDONTWRITEBYTECODE='1',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',HF_DATASETS_OFFLINE='1',OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',VECLIB_MAXIMUM_THREADS='1')\\n with (root/'memory-dependency-import.stdout.log').open('wb') as out,(root/'memory-dependency-import.stderr.log').open('wb') as err:\\n  p=subprocess.run([str(py),'-B','-c',code],cwd=root,env=env,stdout=out,stderr=err,timeout=180)\\n result['real_import_exit']=p.returncode\\n result['real_imports']=['torch','transformers','safetensors','peft','accelerate','LlamaConfig','LlamaForCausalLM','LoraConfig','get_peft_model']\\nresult['elapsed_seconds']=time.time()-started\\nresult['logs']={}\\nfor label in ['memory-dependency-install.stdout.log','memory-dependency-install.stderr.log','memory-dependency-import.stdout.log','memory-dependency-import.stderr.log']:\\n p=root/label\\n if p.exists():\\n  b=p.read_bytes();result['logs'][label]={'path':str(p),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()}\\n  print(label+'\\\\n'+b.decode(errors='replace')[-10000:],flush=True)\\n(root/'memory-dependency-result.json').write_text(json.dumps(result,indent=2)+'\\\\n')\\nprint(json.dumps(result,indent=2),flush=True)\\n\"\n    ],\n    \"created_unix_ms\": 1795106011521,\n    \"cwd\": \"/Users/qianqi/ci-small-python-20261119-75cf\",\n    \"env_keys\": [],\n    \"executable\": \"/Users/qianqi/AI/noct-q/.venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1f4a7f981-ffbe-10d3\",\n    \"idempotency_key\": \"h3-memory-dependency-install-75cf-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1f4a7f981-ffbe-10d3\",\n    \"request_digest\": \"d44ea11d8fff30d82707ed10d9b2ffb88bd7f62fe0bdb440a95bcf6da1021768\",\n    \"request_fingerprint\": 15298342132566143192,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f4a7f981-ffbe-10d3\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 61305,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1f4a7f981-ffbe-10d3\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "status": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"at_unix_ms\": 1795106077391,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1f4a7f981-ffbe-10d3\",\n  \"launch_nonce\": \"3cd8970cfc4a0a340b6388a96a64cd8a\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 4455,\n      \"stored\": 4455\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  },
+  "fixture_job": {
+    "start": {
+      "content": [
+        {
+          "type": "text",
+          "text": "{\n  \"audit_recorded\": true,\n  \"job\": {\n    \"args\": [\n      \"-B\",\n      \"-c\",\n      \"import pathlib,hashlib,json,subprocess,os,time\\nroot=pathlib.Path('/Users/qianqi/ci-small-python-20261119-75cf')\\nmanifest=json.loads((root/'source-manifest.json').read_text())\\nfixed='memory/scripts/memory_cell_network/test_model_process.py'\\nfixed_sha='c06fd8ed1adfebe0303df7b290ed155afa8a3d1004bb6875e19fef410b8c2189'\\ndef verify():\\n checked=[]\\n for rec in manifest['records']:\\n  p=root/rec['archive_path'];b=p.read_bytes();want=fixed_sha if rec['archive_path']==fixed else rec['sha256']\\n  assert hashlib.sha256(b).hexdigest()==want,rec['archive_path']\\n  checked.append({'path':rec['archive_path'],'sha256':want})\\n return checked\\nbefore=verify()\\npy=root/'venv-memory-v1/bin/python'\\ncmd=[str(py),'-B','-m','unittest','test_model_process.ModelProcessTests.test_receipt_preserves_raw_output_and_empty_reader_directory','-v']\\nmemory=root/'memory'\\nenv=dict(os.environ)\\nenv.update(PYTHONPATH=':'.join(str(memory/'scripts'/x) for x in ['memory_cell_network','memory_cell_service','memory_cell_catalog','memory_cell']),PYTHONDONTWRITEBYTECODE='1',HF_HUB_OFFLINE='1',TRANSFORMERS_OFFLINE='1',OMP_NUM_THREADS='1')\\nstart=time.time()\\nwith (root/'memory-path-fixture.stdout.log').open('wb') as out,(root/'memory-path-fixture.stderr.log').open('wb') as err:\\n p=subprocess.run(cmd,cwd=memory,env=env,stdout=out,stderr=err,timeout=45)\\nafter=verify();assert before==after\\nresult={'command':cmd,'exit':p.returncode,'wall_seconds':time.time()-start,'base_tree':'00b29969a0a2f50c71fc50c64fc36a7f423fe27b','fixture_fixed_tree':'f8eab319c3871c4a10fcf6c4c399f9df62c79b8b','verified_source_records':len(before),'exact_original_records':len(before)-1,'fixed_fixture_sha256':fixed_sha,'all_before_after_sources_unchanged':True,'scope':'single original stdlib process receipt test; full tensor/TCP suite remains blocked by transformers HybridCache API incompatibility','logs':{}}\\nfor name in ['memory-path-fixture.stdout.log','memory-path-fixture.stderr.log']:\\n b=(root/name).read_bytes();result['logs'][name]={'path':str(root/name),'bytes':len(b),'sha256':hashlib.sha256(b).hexdigest()};print(name+'\\\\n'+b.decode(),flush=True)\\n(root/'memory-path-fixture-result.json').write_text(json.dumps(result,indent=2)+'\\\\n')\\nprint(json.dumps(result,indent=2),flush=True)\\n\"\n    ],\n    \"created_unix_ms\": 1795106181172,\n    \"cwd\": \"/Users/qianqi/ci-small-python-20261119-75cf\",\n    \"env_keys\": [],\n    \"executable\": \"/Users/qianqi/AI/noct-q/.venv/bin/python\",\n    \"execution_mode\": \"operator\",\n    \"host\": \"mac\",\n    \"id\": \"1a1f4aa9034-ffbe-10df\",\n    \"idempotency_key\": \"h3-memory-path-fixture-test-75cf-v1\",\n    \"launch_error\": null,\n    \"launch_state\": \"launched\",\n    \"remote_job_dir\": \"/Users/qianqi/.local/state/hepta-runtime-mac-worker/jobs/1a1f4aa9034-ffbe-10df\",\n    \"request_digest\": \"bac3d514b49e5218bf869fb55ab9a0a8203cbc4c2bcbf6588bbc61e4c5ba56de\",\n    \"request_fingerprint\": 13457834396419510808,\n    \"ssh_target\": \"hepta-mac-local\",\n    \"system_jobctl\": false,\n    \"unit\": \"hepta-runtime-job-1a1f4aa9034-ffbe-10df\"\n  },\n  \"launch\": {\n    \"backend\": \"detached\",\n    \"launcher_pid\": 63773,\n    \"ok\": true,\n    \"systemd_error\": \"systemd user units unavailable on this platform\",\n    \"unit\": \"hepta-runtime-job-1a1f4aa9034-ffbe-10df\"\n  },\n  \"local_record_pending\": false,\n  \"reused\": false\n}"
+        }
+      ],
+      "structuredContent": null,
+      "isError": false
+    },
+    "status": {
+      "status": "fulfilled",
+      "value": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"at_unix_ms\": 1795106181669,\n  \"audit_recorded\": true,\n  \"automatic_retry\": false,\n  \"cancelled\": false,\n  \"exit_code\": 0,\n  \"job_id\": \"1a1f4aa9034-ffbe-10df\",\n  \"launch_nonce\": \"689b59349893a70488dfd680dec5afba\",\n  \"log_bytes\": {\n    \"stderr\": {\n      \"seen\": 0,\n      \"stored\": 0\n    },\n    \"stdout\": {\n      \"seen\": 1608,\n      \"stored\": 1608\n    }\n  },\n  \"log_errors\": {\n    \"stderr\": null,\n    \"stdout\": null\n  },\n  \"log_synced\": {\n    \"stderr\": true,\n    \"stdout\": true\n  },\n  \"log_truncated\": {\n    \"stderr\": false,\n    \"stdout\": false\n  },\n  \"output_complete\": true,\n  \"output_durable\": true,\n  \"state\": \"succeeded\",\n  \"terminal_publication_confirmed\": true,\n  \"terminal_publication_protocol\": 1,\n  \"timed_out\": false\n}"
+          }
+        ],
+        "structuredContent": null,
+        "isError": false
+      }
+    }
+  }
+}

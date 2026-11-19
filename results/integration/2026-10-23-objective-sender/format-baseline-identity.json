@@ -1,0 +1,40 @@
+{
+  "purpose": "External validation Git metadata with the actual fetched upstream base commit, preserving the exact original tree and source scope.",
+  "original_head": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "original_tree": "43fde98e9ea789b81b941e48bb65300c76c4292c",
+  "verified_git_blobs": 9111,
+  "git_dir": "/workspace/scratch/3d6a75235bcb/work/objective-owner/validation/format-baseline.git",
+  "git_work_tree": "/dev/shm/organ-3d6a75235bcb-hepta3398/source",
+  "changed_or_untracked": [
+    "codex-rs/hepta-agentd/src/objective_sender_host_tests.rs",
+    "codex-rs/hepta-agentd/src/production_composition.rs",
+    "codex-rs/hepta-memory/OBJECTIVE_SENDER.md",
+    "codex-rs/hepta-memory/migrations/0017_objective_sender.sql",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/objective_sender.rs",
+    "codex-rs/hepta-memory/src/objective_sender_crash_tests.rs",
+    "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+    "codex-rs/hepta-memory/src/objective_sender_model.rs",
+    "codex-rs/hepta-memory/src/objective_sender_model_tests.rs",
+    "codex-rs/hepta-memory/src/objective_sender_read.rs",
+    "codex-rs/hepta-memory/src/objective_sender_store.rs",
+    "codex-rs/hepta-memory/src/objective_sender_test_support.rs",
+    "codex-rs/hepta-memory/src/objective_sender_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs"
+  ],
+  "actual_base_commit": "16418ddc3416a38a122b883cee46e2d3583cbd41",
+  "previous_synthetic_formatting_commit_not_used": "b392269f54dab438483b2da421f68dfbe70209cf",
+  "metadata_source_pointer": "/dev/shm/organ-3d6a75235bcb-hepta3398/source/.git",
+  "upstream_fetch_command": [
+    "git",
+    "fetch",
+    "--no-tags",
+    "--depth=1",
+    "--filter=blob:none",
+    "https://github.com/TrillionniumFoundation/hepta-private-ci.git",
+    "16418ddc3416a38a122b883cee46e2d3583cbd41"
+  ]
+}

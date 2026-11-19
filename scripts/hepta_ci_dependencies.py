@@ -657,7 +657,7 @@ def execution_command(
             "--all-targets",
             "--",
             "-D",
-            "clippy::correctness",
+            "warnings",
         ]
     raise ValueError("unknown native check")
 

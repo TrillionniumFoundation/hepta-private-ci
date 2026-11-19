@@ -353,6 +353,8 @@ class CohortFirewallTests(unittest.TestCase):
         too_many["splits"]["train"]["count"] = 2049
         with self.assertRaisesRegex(CohortContractError, "source limit exceeded"):
             check_cohort(too_many, [self.old])
+        # Give each split unique IDs so the comparison-limit test reaches
+        # its intended guard instead of the independent task-ID alias guard.
         many = manifest(10000)
         # Distinct task IDs across all four splits: otherwise the earlier
         # canonical task-identity guard aborts before the comparison budget.

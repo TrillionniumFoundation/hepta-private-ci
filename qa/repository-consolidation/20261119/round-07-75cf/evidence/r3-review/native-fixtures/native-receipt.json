@@ -1,0 +1,62 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "native_source": "/home/qian-qi/ci-agentd-musl-20261119/source",
+  "native_source_head": "1e681e550a5c5d4584b5882529e531599459dc31",
+  "isolated_copy": "/home/qian-qi/ci-r3-fixtures-20261119-75cf",
+  "original_source_before": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": null
+  },
+  "postimages": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "8c11254bcc491d9aeacec29565d5b3d47a7a6361cf24edf6411eff6ec2d3cdfa"
+  },
+  "command": [
+    "/home/qian-qi/.cargo/bin/just",
+    "test",
+    "-p",
+    "codex-utils-cargo-bin",
+    "-p",
+    "codex-hepta-fleet",
+    "--locked",
+    "--cargo-profile",
+    "dev-small",
+    "-j",
+    "4",
+    "-E",
+    "package(codex-utils-cargo-bin) | test(workspace_sweep_agrees_with_pairwise_oracle_for_nested_and_sibling_paths)"
+  ],
+  "target_dir": "/home/qian-qi/ci-agentd-musl-test-target-20261119",
+  "fresh_joint_ci": false,
+  "started": 1795105723.6959238,
+  "exit_code": 0,
+  "finished": 1795105725.600527,
+  "original_source_after": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "fa7525d63dd91a1872c762b4fe39c6bb6f4037ee64f10500453ce4dcb0783ff9",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": null
+  },
+  "postimages_after": {
+    "codex-rs/hepta-fleet/src/registry_tests.rs": "289227743978c6537c9189d70ab5b85cdac705802ba9881568aa0ee82f128d49",
+    "codex-rs/utils/cargo-bin/Cargo.toml": "70d2c516f059d8c9ded41cae6cd0e1f4802b150fd7d9f8da964e72aeb9f7cd9e",
+    "codex-rs/utils/cargo-bin/BUILD.bazel": "9a06b3ef2eaec07c5baded16a7ab5ec96cf443d1e471530f0f76d895aea0f872",
+    "codex-rs/utils/cargo-bin/src/lib.rs": "60ddd03a487b197b0519f2fcee3d228b855b75ecaa0fe8cfd3ad623b1a940b42",
+    "codex-rs/utils/cargo-bin/tests/lookup_result.rs": "c16b8a6417b697d7c6abe2ba491dc734026aa330546bb46137fa40e960a17e8d",
+    "codex-rs/utils/cargo-bin/tests/cargo_bin.rs": "8c11254bcc491d9aeacec29565d5b3d47a7a6361cf24edf6411eff6ec2d3cdfa"
+  },
+  "original_source_unchanged": true,
+  "previous_attempt_exit_code": 101,
+  "previous_attempt_failure": "Missing copied docs/modules/MODULES.json compile_data fixture, no tests ran",
+  "compile_data_sha256": "468ce01963e5665ad0b39df7c69a0c630bb93e2168f4d669dd4f8dea55e17716"
+}

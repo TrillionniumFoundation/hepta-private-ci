@@ -1,0 +1,59 @@
+{
+  "results": [
+    {
+      "command": [
+        "just",
+        "fix",
+        "-p",
+        "codex-hepta-automation",
+        "-p",
+        "codex-hepta-agentd",
+        "--allow-no-vcs",
+        "--locked",
+        "--profile",
+        "dev-small",
+        "-j",
+        "4"
+      ],
+      "exit": 0
+    },
+    {
+      "command": [
+        "just",
+        "fmt"
+      ],
+      "exit": 1
+    },
+    {
+      "command": [
+        "rustfmt",
+        "--edition",
+        "2024",
+        "--config",
+        "imports_granularity=Item,skip_children=true",
+        "--check",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-agentd/src/automation_effect_host.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/action_skill_tests.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/authorized_effect.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/hcsn_taskflow_tests.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/provider_recovery_migration_tests.rs",
+        "/home/qian-qi/ci-h3-recovery-20261119-75cf/codex-rs/hepta-automation/src/store.rs"
+      ],
+      "exit": 0
+    }
+  ],
+  "changed_paths": [
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_host.rs",
+      "scope": "outside_candidate",
+      "before_sha256": "390ced8f07a8f7c8f26c7cb8e2d1022198823b428813c151bdb778f7db5db662",
+      "after_sha256": "6c708f895d30a5936fa8880b05f6419f9bd7863801acf1924423e3bb804c81ca",
+      "bytes": 13647
+    }
+  ],
+  "tests_rerun_after_maintenance": false,
+  "candidate_before": "e4020d30bb749f489593360bb7285ed98f602533",
+  "source_scope": "isolated copied files only",
+  "graph": "OLD_GRAPH_SCOPED_NATIVE_ONLY"
+}

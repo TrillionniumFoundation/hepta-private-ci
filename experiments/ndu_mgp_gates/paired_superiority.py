@@ -134,12 +134,16 @@ def evaluate(study: Mapping):
             _need(not frozen_splits[left][1].intersection(frozen_splits[right][1]),
                   "cross-split original-source leakage: " + left + " / " + right)
     _need(tuple(protocol.get("arms", [])) == ARMS, "comparison arms not exact/frozen")
+    # This checks only digest syntax; it does NOT authenticate source or locks.
+    def digest_shape(value):
+        return (isinstance(value, str) and len(value) == 64 and
+                all(ch in "0123456789abcdef" for ch in value))
     _need(protocol.get("validation_selected_best") in CONTROLS and
-          isinstance(protocol.get("selection_lock_digest"), str) and
-          len(protocol["selection_lock_digest"]) == 64, "missing frozen validation selection")
+          digest_shape(protocol.get("selection_lock_digest")),
+          "missing/malformed frozen validation selection lock")
     for key in ("model_digest", "decoder_digest", "objective_digest", "actuator_digest"):
-        _need(isinstance(protocol.get(key), str) and len(protocol[key]) == 64,
-              "missing frozen same-model/actuator identity: " + key)
+        _need(digest_shape(protocol.get(key)),
+              "missing/malformed frozen same-model/actuator identity: " + key)
     min_gain = _number(protocol.get("minimum_cvar_improvement"), "minimum gain", lower=0.01)
     quality_tol = _number(protocol.get("max_quality_drop"), "quality tolerance", upper=0.05)
     ambiguity_tol = _number(protocol.get("max_ambiguity_increase"), "ambiguity tolerance", upper=0.05)
@@ -157,7 +161,11 @@ def evaluate(study: Mapping):
     draws = protocol.get("draws_per_world")
     _need(type(draws) is int and 1 <= draws <= 16, "unregistered draw count")
     cost_units = protocol.get("cost_units")
-    _need(isinstance(cost_units, str) and len(cost_units) > 0, "missing measured cost unit")
+    # Proxy MACs, arbitrary budget tokens, or resource estimates cannot be
+    # substituted for the preregistered measured physical total-cost unit.
+    _need(cost_units in ("measured_cpu_seconds", "measured_wall_seconds",
+                         "measured_gpu_seconds", "measured_energy_joules"),
+          "unsupported physical cost unit (proxy operations are not measured cost)")
     # One protected world in the entire experiment is not a meaningful
     # protected-task cohort. Require a preregistered minimum of genuinely
     # separate original-source groups IN EACH training seed.
@@ -341,8 +349,17 @@ def evaluate(study: Mapping):
         lower = np.quantile(cloud, tail_level, axis=0)
         ratio = point[0, -1] / point[index + 1, -1]
         cost_margin_upper = float(np.quantile(cost_margin[:, index], 1 - tail_level))
-        protected_delta = values[0, :, :, 1] - values[index + 1, :, :, 1]
-        protected_ok = bool(np.all(protected_delta[protected] >= -1e-12))
+        # A good pooled CVaR or mean must NEVER override a protected world's
+        # worse external loss, correct quality, ambiguity, or inconsistency.
+        # Metric ordering: loss (lower), quality (higher), ambiguity (lower),
+        # inconsistency (lower). Compare each registered world and control.
+        protected_delta = values[0, :, :, :len(METRICS)] - values[index + 1, :, :, :len(METRICS)]
+        protected_ok = bool(
+            np.all(protected_delta[:, :, 0][protected] <= 1e-12)
+            and np.all(protected_delta[:, :, 1][protected] >= -1e-12)
+            and np.all(protected_delta[:, :, 2][protected] <= 1e-12)
+            and np.all(protected_delta[:, :, 3][protected] <= 1e-12)
+        )
         gates = {
             # Strong comparators must obey exactly the same preregistered
             # absolute cap. A valid failed episode stays in the data but is

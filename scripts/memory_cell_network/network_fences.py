@@ -27,7 +27,14 @@ class Fences:
             db.execute("INSERT OR IGNORE INTO counter VALUES (1, 0)")
 
     def observe(self, scope, cell_id, snapshot):
-        fields(snapshot, ("placement", "frontier"))
+        fields(snapshot, ("placement", "frontier", "publication"))
+        if snapshot["publication"] not in (
+            "current",
+            "withdrawal_only",
+            "unavailable",
+            "stale",
+        ):
+            raise ValueError("registered publication status required")
         view = Frontier(**snapshot["frontier"])
         current = snapshot["placement"]
         if view.scope != scope:
@@ -77,6 +84,11 @@ class Fences:
                 "INSERT OR REPLACE INTO seen VALUES (?, ?, ?)",
                 (scope, cell_id, encode(current)),
             )
+        # A refusal must not discard the newer source/placement observation.
+        if snapshot["publication"] == "unavailable":
+            raise ValueError("current source parameter binding is unavailable")
+        if snapshot["publication"] == "stale":
+            raise ValueError("placement differs from current source parameter binding")
         return view, current
 
     def calls(self, *, increment=False):

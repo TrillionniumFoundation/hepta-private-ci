@@ -1,0 +1,117 @@
+{
+  "base": "4b4d4182e62d2e28b4c6be6fb3834748ba1b6583",
+  "incoming": "50bf2c7a4793b155ee1d5b79682c51455870420e",
+  "genuine_merge_tree_preview": "9fff68c8ff5c766c12ab6fd7a166f7a6542daa0a",
+  "genuine_merge_exit": 1,
+  "conflict_paths": [
+    "codex-rs/hepta-cognitive-types/src/memory_cell.rs",
+    "codex-rs/hepta-cognitive-types/src/memory_cell_tests.rs",
+    "codex-rs/hepta-cognitive-types/src/wire.rs"
+  ],
+  "resolved_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "base_tree": "dd3fd582f722cb27d62ddcbd459c0ccd94f13adb",
+  "same_entire_tree": true,
+  "production_existing_contract_tokens_equal": true,
+  "wire_contracts": [
+    {
+      "contract": "MemoryCellManifestV1",
+      "domain": "hepta.memory-cell.manifest.v1",
+      "max_bytes": 65536,
+      "validate": "MemoryCellManifestV1::validate",
+      "identical_tokens": true
+    },
+    {
+      "contract": "MemoryCellTickInputV1",
+      "domain": "hepta.memory-cell.tick-input.v1",
+      "max_bytes": 65536,
+      "validate": "MemoryCellTickInputV1::validate",
+      "identical_tokens": true
+    },
+    {
+      "contract": "MemoryCellTickReceiptV1",
+      "domain": "hepta.memory-cell.tick-receipt.v1",
+      "max_bytes": 65536,
+      "validate": "MemoryCellTickReceiptV1::validate",
+      "identical_tokens": true
+    }
+  ],
+  "test_comparisons": [
+    {
+      "function": "valid_manifest",
+      "equivalent": true,
+      "reason": "All Rust tokens, including string contents, are identical."
+    },
+    {
+      "function": "valid_tick_input",
+      "equivalent": true,
+      "reason": "All Rust tokens, including string contents, are identical."
+    },
+    {
+      "function": "valid_receipt",
+      "equivalent": true,
+      "reason": "All Rust tokens, including string contents, are identical."
+    },
+    {
+      "function": "manifest_rejects_self_parent_and_zero_state_budget",
+      "equivalent": true,
+      "reason": "All Rust tokens, including string contents, are identical."
+    },
+    {
+      "function": "manifest_accepts_bounded_projection_identity",
+      "equivalent": true,
+      "reason": "The positive Result::expect success assertion became assert!(Result::is_ok()); every negative case and expected error is token-identical."
+    },
+    {
+      "function": "tick_input_requires_progress_and_budget",
+      "equivalent": true,
+      "reason": "The positive Result::expect success assertion became assert!(Result::is_ok()); every negative case and expected error is token-identical."
+    },
+    {
+      "function": "receipt_binds_selected_output_and_rejects_invalid_abstain",
+      "equivalent": true,
+      "reason": "The positive Result::expect success assertion became assert!(Result::is_ok()); every negative case and expected error is token-identical."
+    },
+    {
+      "function": "id",
+      "equivalent": true,
+      "reason": "Current unwrap_or_else(panic with error diagnostic) has the same success return and error panic as incoming expect; fixture inputs are unchanged."
+    },
+    {
+      "function": "digest",
+      "equivalent": true,
+      "reason": "Current unwrap_or_else(panic with error diagnostic) has the same success return and error panic as incoming expect; fixture inputs are unchanged."
+    },
+    {
+      "function": "generation",
+      "equivalent": true,
+      "reason": "Current unwrap_or_else(panic with error diagnostic) has the same success return and error panic as incoming expect; fixture inputs are unchanged."
+    }
+  ],
+  "resolutions": [
+    {
+      "path": "codex-rs/hepta-cognitive-types/src/lib.rs",
+      "conflict": "auto-merge adds duplicate pub mod memory_cell at an obsolete ordering point",
+      "decision": "Retain the current single public module declaration and all other public modules.",
+      "selected_blob": "fc80ce505bc5c86d9cfffc8a206e6c209f08ac08"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/src/memory_cell.rs",
+      "conflict": "add/add",
+      "decision": "Keep all token-equivalent incoming Manifest/TickInput/TickReceipt fields, enum variants, schema/budget constants and validation. Retain current guarded SplitProposal extension; drop incoming unused PPM import and preserve formatting.",
+      "selected_blob": "b7d7aa0b773db3cba79cec90ddf940c40f459f42"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/src/memory_cell_tests.rs",
+      "conflict": "add/add",
+      "decision": "All four incoming tests and three fixtures are preserved with equivalent positive success assertions and diagnostic-only helper changes. Retain current governed binary split test.",
+      "selected_blob": "90e8dc56893f7adb9f1a370472199f7a36a8ff0a"
+    },
+    {
+      "path": "codex-rs/hepta-cognitive-types/src/wire.rs",
+      "conflict": "content plus duplicate imports from automatic merge",
+      "decision": "Keep three identical incoming contract domain/bound/validator mappings once. Retain the current SplitProposal mapping (262144 bytes), and one import per type.",
+      "selected_blob": "b510517935f512d95cf23c10ba26edcfea75dc58"
+    }
+  ],
+  "verification": "No compilation repeated because resolved full Git tree is byte-for-byte identical to the reviewed base; this does not establish fresh combined candidate CI. No refs were moved."
+}

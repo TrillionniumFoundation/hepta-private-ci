@@ -40,6 +40,7 @@ def main():
         if bool(args.source_root) != bool(args.scope):
             parser.error("--source-root and --scope must be supplied together")
         provider = None
+        binding = None
         if args.source_root:
             from memory_service import MemoryService
 
@@ -47,8 +48,11 @@ def main():
                 args.source_root, args.scope, args.cell_id, role=args.cell_role
             )
             provider = source.authority_view
+            binding = source.parameter_binding
         application = Authority(
-            args.root / "authority.sqlite", source_frontier=provider
+            args.root / "authority.sqlite",
+            source_frontier=provider,
+            source_binding=binding,
         )
     else:
         if not args.node_id or not args.authority or not args.model:

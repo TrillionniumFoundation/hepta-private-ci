@@ -1,0 +1,28 @@
+{
+  "command": [
+    "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/uv",
+    "run",
+    "--offline",
+    "--frozen",
+    "--project",
+    "scripts",
+    "ruff",
+    "format",
+    "scripts/hepta_ci_dependencies.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_native_feedback.py"
+  ],
+  "cwd": "/workspace/scratch/75cf41417dcc/joint-h3-review/protected-composition/format-check",
+  "exit": 0,
+  "stdout": "3 files left unchanged\n",
+  "stderr": "Using CPython 3.12.14 interpreter at: /opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3\nCreating virtual environment at: scripts/.venv\nwarning: Failed to hardlink files; falling back to full copy. This may lead to degraded performance.\n         If the cache and target directories are on different filesystems, hardlinking may not be supported.\n         If this is intentional, set `export UV_LINK_MODE=copy` or use `--link-mode=copy` to suppress this warning.\nInstalled 1 package in 150ms\n",
+  "configuration_files": [
+    "scripts/pyproject.toml",
+    "scripts/uv.lock"
+  ],
+  "paths": [
+    "scripts/hepta_ci_dependencies.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_native_feedback.py"
+  ]
+}

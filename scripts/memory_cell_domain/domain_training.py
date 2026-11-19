@@ -7,7 +7,7 @@ import time
 import numpy as np
 import torch
 
-from domain_data import TRAIN_TEMPLATES, write_json
+from domain_data import TRAIN_TEMPLATES, source_group_ids, write_json
 from experience_inference import frozen_adapter_mode
 from parametric_model import SourceMemoryCell
 from population_partition import source_gradient_sketches
@@ -77,6 +77,9 @@ def load_cell(model, version, scope, allowed):
 
 
 def train(model, cases, scope, output, seed, visits):
+    groups = source_group_ids(cases)
+    if len(set(groups)) < 2:
+        raise ValueError("fission requires two independent source groups")
     output = Path(output)
     output.mkdir()
     facts = [
@@ -122,7 +125,6 @@ def train(model, cases, scope, output, seed, visits):
     )
     sketch = source_gradient_sketches(parent, facts, TRAIN_TEMPLATES[0], width=32)
     write_json(output / "gradient-sketches.json", sketch)
-    groups = [case["root_cause"] for case in cases]
     partitions = {
         name: grouped_partition(
             sketch["sketches"], groups, seed, name == "random_split"

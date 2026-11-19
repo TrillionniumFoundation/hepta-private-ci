@@ -1,0 +1,36 @@
+[
+  {
+    "tip": "a8ce72907288d1836612446b87cb1d5c184993ac",
+    "label": "storage",
+    "prior": "98119c9fb6d3254638a1fd2816f72cb6a9e74068",
+    "automatic_tree": "fb3bd84af57c3ecd95de9225581fcea5b049e5b8",
+    "resolved_tree": "8f4e698051efb6d3c53aab31e06b0a0b0f6c9828",
+    "conflicts": [
+      ".github/workflows/blocking-ci.yml"
+    ],
+    "reason": "The existing four-shard native job already retains all four exact storage-reduction settings. Preserve its 75-minute budget, nextest thread bound and exhaustive owner/reverse-consumer shard selection. Explicitly resolve the sole outdated-context conflict without changing any source bytes.",
+    "commit": "530fbd1ff2fb48d643ee08937eca3a326e86fff3"
+  },
+  {
+    "tip": "cafac72b479e26faa93753f137d97eeec6b704bd",
+    "label": "prior-audit",
+    "prior": "530fbd1ff2fb48d643ee08937eca3a326e86fff3",
+    "automatic_tree": "06e1b81af3005146c69a1e04ab878c27ce3ff34b",
+    "resolved_tree": "06e1b81af3005146c69a1e04ab878c27ce3ff34b",
+    "conflicts": [],
+    "reason": "Preserve the complete prior candidate native-validation and publication checkpoint as a normal conflict-free merge. Its historical execution receipts retain their original source qualification and do not count as final combined-head CI.",
+    "commit": "2dab8dce61fda9ac5c3a079338149e5b4fa54465"
+  },
+  {
+    "tip": "adc66e6407f83bbc191648ec1784b351541df4bb",
+    "label": "remote-advance",
+    "prior": "2dab8dce61fda9ac5c3a079338149e5b4fa54465",
+    "automatic_tree": "fe0cb49388ed6bd949bac2a5c88e9df0b32d62f8",
+    "resolved_tree": "ccd602b948c462185562c12ab4dead274dba883a",
+    "conflicts": [
+      "codex-rs/hepta-agentd/src/client_control.rs"
+    ],
+    "reason": "Preserve all three concurrent remote commits, including the round-05 live census. The one source conflict has equivalent platform-specific futures within the original deadline expression; retain the remote let-connection form and exact rustfmt output. Both forms evaluate the original deadline before constructing the connection and keep Windows owner-local authentication. All other previously reviewed changes are byte-identical.",
+    "commit": "20872beca8fcfaf228c5d33cb6044954db209209"
+  }
+]

@@ -1,0 +1,144 @@
+{
+  "source_current": "6fa36569564e93bef7e3040bae15df1790e8d22a",
+  "tested_original_branch": "0ca096781651508250c950829c347a38edcfede4",
+  "tested_remote_base": "adc66e6407f83bbc191648ec1784b351541df4bb",
+  "exact_source_closure": [
+    {
+      "path": "qualification/hcsn_differentiable/__init__.py",
+      "tested_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "current_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "incoming_blob": null,
+      "candidate_blob": "480da60a88839bc88708c1e2b93f00df26ee6abe",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/contract.py",
+      "tested_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "current_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "incoming_blob": null,
+      "candidate_blob": "802c227f7104658ef0accdb7b92bf497000eb714",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/operator.py",
+      "tested_blob": "4f68cbd2b9b620e48a1aa85a9a6d04ff2313ace3",
+      "current_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "incoming_blob": null,
+      "candidate_blob": "560fac36e2fd8530d7fb269670cf1c6743e1ceec",
+      "blob_matches": false,
+      "bytes_match": false,
+      "sha256_matches": false
+    },
+    {
+      "path": "qualification/hcsn_differentiable/regenerative.py",
+      "tested_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "current_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "incoming_blob": null,
+      "candidate_blob": "050b58e079b0a0b3e61dec56774e8cabaa098d81",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/finite_renewal.py",
+      "tested_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "current_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "incoming_blob": null,
+      "candidate_blob": "0d1021ed1fc2fff9dd23d8ab7f459a29fff77738",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control.py",
+      "tested_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "current_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "incoming_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "candidate_blob": "a86a0298ee79c0abdddffb2a8d425e763d4eb6df",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/neural_control_study.py",
+      "tested_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "current_blob": null,
+      "incoming_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "candidate_blob": "d5d021d4914b451c190fed71d418337333cab0b2",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    },
+    {
+      "path": "qualification/hcsn_differentiable/tests/test_neural_control.py",
+      "tested_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "current_blob": null,
+      "incoming_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "candidate_blob": "d5c4680c07cb0dfcd49b98179e7961b24dadd03f",
+      "blob_matches": true,
+      "bytes_match": true,
+      "sha256_matches": true
+    }
+  ],
+  "all_eight_source_files_match": false,
+  "retained_artifacts": [
+    {
+      "path": "result.json",
+      "expected": {
+        "bytes": 3914,
+        "sha256": "9986c185508d9e80bc4b1d5d7b70aaf8f8df609aba0a7ba2a2032d538f3c0521"
+      },
+      "actual_bytes": 3914,
+      "actual_sha256": "9986c185508d9e80bc4b1d5d7b70aaf8f8df609aba0a7ba2a2032d538f3c0521",
+      "matches": true
+    },
+    {
+      "path": "hepta-execution-manifest.json",
+      "expected": {
+        "bytes": 221,
+        "sha256": "6f258d479f6318cf3f0c50a0d742ea33ed2d7c61a4e1244803f51679c5ab6358"
+      },
+      "actual_bytes": 221,
+      "actual_sha256": "6f258d479f6318cf3f0c50a0d742ea33ed2d7c61a4e1244803f51679c5ab6358",
+      "matches": true
+    },
+    {
+      "path": "tests.log",
+      "expected": {
+        "bytes": 814,
+        "sha256": "f443d080f31021992e14f5900c1480d1fb65deddceffe7bb39795ab701ec4c4f"
+      },
+      "actual_bytes": 814,
+      "actual_sha256": "f443d080f31021992e14f5900c1480d1fb65deddceffe7bb39795ab701ec4c4f",
+      "matches": true
+    }
+  ],
+  "tests_log_exactly_result_field": true,
+  "source_test_names_exactly_receipt_names": true,
+  "tests_run": 4,
+  "counts": {
+    "failure_count": 0,
+    "error_count": 0,
+    "skipped_count": 0
+  },
+  "observed_runtime": {
+    "python": "3.13.18 (main, Oct 26 2026, 15:28:15) [GCC 13.3.0]",
+    "platform": "Linux-6.18.55+-x86_64-with-glibc2.39",
+    "torch": "2.11.0+cpu",
+    "numpy": "2.1.3",
+    "scipy": "1.16.3",
+    "cuda_build": null,
+    "cuda_available": false
+  },
+  "limits": "This verifies the four unchanged original tests and their exact source blobs on the recorded cloud CPU image. The workflow-pinned Python3.12.3/Torch2.8.0+cpu/NumPy2.5.4/SciPy1.17.0 image and full repository CI remain separate required checks.",
+  "request_ids": {
+    "source_record": "hepta-rust-0ca0967-20261119-7246",
+    "provider_summary": "hepta-rust-0ca0967-20261119-7246",
+    "execution_manifest": "hc-a02c594db080c3a8896ec4f0b4dc8797f89a1de8"
+  },
+  "upstream_runtime_provenance_note": "The repository contains collected files and a provider-summary assertion, not a newly issued independent provider observation from this audit."
+}

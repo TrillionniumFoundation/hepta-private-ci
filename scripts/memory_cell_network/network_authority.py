@@ -57,9 +57,14 @@ def placement(value):
 
 
 class Authority:
-    def __init__(self, database, *, source_frontier=None):
+    def __init__(self, database, *, source_frontier=None, source_binding=None):
         self.database = str(Path(database).absolute())
         self.source_frontier = source_frontier
+        if source_binding is not None and (
+            not callable(source_binding) or not callable(source_frontier)
+        ):
+            raise ValueError("current binding requires a live source frontier")
+        self.source_binding = source_binding
         if Path(self.database).is_symlink():
             raise ValueError("authority database cannot be a symlink")
         with transaction(self.database) as db:
@@ -102,17 +107,50 @@ class Authority:
             )
         return asdict(view)
 
-    def snapshot(self, scope, cell_id):
+    def _current_source(self, scope, cell_id):
         if not _name(scope) or not _name(cell_id):
             raise ValueError("scope and cell identity required")
-        if self.source_frontier is not None:
-            view = self.source_frontier(scope)
-            if type(view) is not Frontier or view.scope != scope:
-                raise ValueError("source provider scope mismatch")
-            self.sync_frontier(view)
+        if self.source_frontier is None:
+            return None, "withdrawal_only"
+        view = self.source_frontier(scope)
+        if type(view) is not Frontier or view.scope != scope:
+            raise ValueError("source provider scope mismatch")
+        # Latch withdrawals even if the current parameter publication is absent.
+        self.sync_frontier(view)
+        if self.source_binding is None:
+            return None, "withdrawal_only"
+        binding = self.source_binding()
+        if binding is None:
+            return None, "unavailable"
+        active = binding["active"]
+        if (binding["scope"], binding["cell_id"], binding["epoch"]) != (
+            scope,
+            cell_id,
+            view.epoch,
+        ) or (active.scope, active.cell_id) != (scope, cell_id):
+            raise ValueError("current parameter binding source identity changed")
+        return active, "current"
+
+    @staticmethod
+    def _check_current_binding(candidate, active):
+        if active is not None and (
+            candidate["manifest_sha256"] != active.manifest_sha256
+            or candidate["roots"] != list(active.roots)
+        ):
+            raise ValueError("placement differs from current source parameter binding")
+
+    def snapshot(self, scope, cell_id):
+        active, publication = self._current_source(scope, cell_id)
         with transaction(self.database) as db:
+            current = self._placement(db, scope, cell_id)
+            if current is not None and active is not None:
+                try:
+                    self._check_current_binding(current, active)
+                except ValueError:
+                    publication = "stale"
             return dict(
-                placement=self._placement(db, scope, cell_id),
+                placement=current,
+                publication=publication,
                 frontier=asdict(self._frontier(db, scope)),
             )
 
@@ -126,7 +164,12 @@ class Authority:
             0 if expected_generation is None else expected_generation + 1
         ):
             raise ValueError("placement generation must advance once")
-        self.snapshot(candidate["scope"], candidate["cell_id"])
+        active, publication = self._current_source(
+            candidate["scope"], candidate["cell_id"]
+        )
+        if publication == "unavailable":
+            raise ValueError("current source parameter binding is unavailable")
+        self._check_current_binding(candidate, active)
         with transaction(self.database) as db:
             view = self._frontier(db, candidate["scope"])
             if set(candidate["roots"]) & set(view.revoked):
