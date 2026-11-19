@@ -44,3 +44,5 @@ pub use sandbox_migration::prefix_rule_migration;
 
 #[cfg(feature = "hia-native")]
 mod hia_native_command_dispatch;
+#[cfg(feature = "hia-native")]
+mod hia_native_example_validation;

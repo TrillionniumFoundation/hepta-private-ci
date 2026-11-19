@@ -6,6 +6,7 @@ use crate::policy::Policy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use serde::Deserialize;
 use serde::Serialize;
+#[cfg(not(feature = "hia-native"))]
 use shlex::try_join;
 use std::any::Any;
 use std::fmt::Debug;
@@ -256,6 +257,7 @@ impl Rule for PrefixRule {
 }
 
 /// Count how many rules match each provided example and error if any example is unmatched.
+#[cfg(not(feature = "hia-native"))]
 pub(crate) fn validate_match_examples(
     policy: &Policy,
     rules: &[RuleRef],
@@ -292,6 +294,7 @@ pub(crate) fn validate_match_examples(
 }
 
 /// Ensure that no rule matches any provided negative example.
+#[cfg(not(feature = "hia-native"))]
 pub(crate) fn validate_not_match_examples(
     policy: &Policy,
     _rules: &[RuleRef],
@@ -316,4 +319,22 @@ pub(crate) fn validate_not_match_examples(
     }
 
     Ok(())
+}
+
+#[cfg(feature = "hia-native")]
+pub(crate) fn validate_match_examples(
+    policy: &Policy,
+    rules: &[RuleRef],
+    matches: &[Vec<String>],
+) -> Result<()> {
+    crate::hia_native_example_validation::validate_positive(policy, rules, matches)
+}
+
+#[cfg(feature = "hia-native")]
+pub(crate) fn validate_not_match_examples(
+    policy: &Policy,
+    _rules: &[RuleRef],
+    not_matches: &[Vec<String>],
+) -> Result<()> {
+    crate::hia_native_example_validation::validate_negative(policy, not_matches)
 }
