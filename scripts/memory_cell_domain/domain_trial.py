@@ -16,6 +16,7 @@ except ImportError:  # Windows has no resource module.
 
 from domain_baselines import RetrievalBaselines, dense_nearest
 from domain_data import (
+    source_groups,
     FINAL_TEMPLATE,
     SELECT_TEMPLATE,
     TRAIN_TEMPLATES,
@@ -46,7 +47,7 @@ def run(dataset, expected_sha256, model, output, seed=19031, visits=8):
         raise ValueError("visits must be a bounded multiple of all four templates")
     data = load_dataset(dataset, expected_sha256)
     known = [c for c in data["cases"] if c["id"] in data["partitions"]["train"]]
-    if not 2 <= len(known) <= 64 or len({c["root_cause"] for c in known}) < 2:
+    if not 2 <= len(known) <= 64 or len(source_groups(known)) < 2:
         raise ValueError(
             "two independent train groups required; no copied pseudo-cases"
         )

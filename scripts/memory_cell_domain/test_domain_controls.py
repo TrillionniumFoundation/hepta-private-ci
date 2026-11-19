@@ -3,9 +3,17 @@
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from domain_baselines import RetrievalBaselines, dense_nearest
-from domain_data import TRAIN_TEMPLATES, SELECT_TEMPLATE, canonical, probes, sha
+from domain_data import (
+    TRAIN_TEMPLATES,
+    SELECT_TEMPLATE,
+    canonical,
+    probes,
+    sha,
+    source_group_ids,
+)
 from domain_training import grouped_partition
 from learned_router import fit_router, load_router
 
@@ -23,6 +31,45 @@ class DomainControlTests(unittest.TestCase):
         self.assertEqual(sorted(three["sizes"]), [1, 2])
         with self.assertRaises(ValueError):
             grouped_partition([[1, 0], [0, 1]], ["same", "same"], 20)
+
+    def test_fission_uses_observed_ancestry_not_renamed_causes(self):
+        cases = [
+            dict(id="first", root_cause="label-a", project="p", fixed_commit="x"),
+            dict(id="repeat", root_cause="label-b", project="p", fixed_commit="x"),
+            dict(id="other", root_cause="label-c", project="p", fixed_commit="y"),
+        ]
+        groups = source_group_ids(cases)
+        for randomized in (False, True):
+            split = grouped_partition([[1, 0], [0, 1], [-1, 0]], groups, 20, randomized)
+            self.assertEqual(split["slots"][0], split["slots"][1])
+        with self.assertRaisesRegex(ValueError, "two independent"):
+            grouped_partition([[1, 0], [0, 1]], source_group_ids(cases[:2]), 20)
+
+    def test_single_ancestry_is_rejected_before_model_load_or_output_creation(self):
+        import domain_training
+        import domain_trial
+
+        cases = [
+            dict(id=str(i), root_cause=f"label-{i}", project="p", fixed_commit="x")
+            for i in range(2)
+        ]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "not-created"
+            with patch.object(
+                domain_training,
+                "SourceMemoryCell",
+                side_effect=AssertionError("no model load"),
+            ):
+                with self.assertRaisesRegex(ValueError, "two independent"):
+                    domain_training.train("unused", cases, "scope", output, 20, 8)
+            with patch.object(
+                domain_trial,
+                "load_dataset",
+                return_value=dict(cases=cases, partitions=dict(train=["0", "1"])),
+            ):
+                with self.assertRaisesRegex(ValueError, "two independent"):
+                    domain_trial.run("unused", "unused", "unused", output)
+            self.assertFalse(output.exists())
 
     def test_source_only_retrieval_recovers_changed_wording(self):
         cases = [
