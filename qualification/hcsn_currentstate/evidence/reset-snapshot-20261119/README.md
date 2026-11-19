@@ -35,9 +35,11 @@ original release flux is `lambda*exp(-lambda*u)` for `0<=u<=.1`. Maximum
 gradient errors are respectively zero and 1.1102230246251565e-16.
 
 The six existing current-state tests and the two new Atom/Flux regressions
-all passed. This includes the existing full-state finite-difference gradcheck
-and two-layer flux/content gradient check. No old long-time study, system
-identification training, Erlang campaign, or C2 model was rerun.
+all passed in the local bounded verification. This includes the existing
+full-state finite-difference gradcheck and two-layer flux/content gradient
+check. That local verification did not rerun the old long-time study, system
+identification training, Erlang campaign, or C2 model. The later automatic
+hosted run below is a separate experiment on the repaired source.
 
 The two measured child phases used 2.161540 + 3.652792 = **5.814332 CPU
 seconds** and 2.190111 + 3.685128 = **5.875239 wall seconds**, below the combined
@@ -46,6 +48,30 @@ address space before numerical imports. Stdout, stderr, source identities,
 raw observations, and per-phase resource receipts are retained verbatim.
 The pre-fix diagnostic's exit code zero means its observations were recorded;
 its nonzero semantic errors and `aliases_parameter=true` are the failure.
+
+## Automatic hosted verification on the repaired source
+
+The existing pull-request workflow automatically ran on commit
+`9b20d29391a23fe7f1d4fbb5b1377b10130a1c69`, with repaired kernel SHA-256
+`6dfcef11fa6ee43163bb72e661a8aec0c33453cfd2d353668049d2b0ad24be5e`.
+Run [44479509254](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/44479509254)
+passed the six original checks and completed 60 finite-CTMC identification
+updates. Its final MSE was `1.748380655708663e-7`, maximum DDE discrepancy
+`2.631272977282606e-11`, and maximum probability/signed conservation error
+`1.1102230246251565e-15`. The study reported 2.291058704 wall / 2.284129904 CPU
+seconds and peak process RSS 407,068 KiB. These timers cover the study after
+imports, not total workflow setup or complete fresh-process wall/CPU cost.
+
+The [exact 2,717-byte artifact ZIP](hosted-ci1/artifact-14506983967.zip),
+including source head, runtime, study result and both logs, is retained with
+SHA-256 `0fed7cee45fcb4aabbe378d762061a0872254f1cbdde11ed5d315cc9300f3096`.
+[Its member inventory](hosted-ci1/IDENTITY.json) records exact bytes and hashes.
+No model was rerun to verify or archive these originals.
+
+That workflow version did not execute the two new snapshot regressions.
+This follow-up adds an explicit, two-test step with its own stdout/stderr and
+kernel/test identities in the same uploaded artifact. Its future result is
+not claimed here. The original six-check/60-update step remains unchanged.
 
 ## Scientific source identity remains distinct
 
