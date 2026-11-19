@@ -244,6 +244,55 @@ def normal_tail_integral(lam, u, s):
     return torch.exp(_log_normal_tail_integral(lam, u, s))
 
 
+def _log_normal_tail_pair(u, z, shifted, s):
+    """Log(H(u-z,shifted,s)-H(u+z,shifted,s)) without far-tail cancellation.
+
+    In the negative tail both log H values share a large log Phi term. A
+    difference of their rounded logs can become zero even when H1>H2.
+    Expand the positive difference itself using truncated-normal moments,
+    factoring out 2*z*s**2*J2 before taking its log. Sixteen terms are used
+    only when both dimensionless Taylor arguments are below .08 and w<-2.
+    """
+    u, z, shifted, s = torch.broadcast_tensors(u, z, shifted, s)
+    w = shifted*s
+    h = 1-w
+    far = (w < -2) & ((u.abs()+z)*s/torch.where(w < -2, h, torch.ones_like(h)) < .08)
+    safe_shift = torch.where(far, torch.zeros_like(shifted), shifted)
+    safe_u = torch.where(far, torch.zeros_like(u), u)
+    safe_z = torch.where(far, torch.ones_like(z), z)
+    safe_s = torch.where(far, torch.ones_like(s), s)
+    upper = _log_normal_tail_integral(safe_u-safe_z, safe_shift, safe_s)
+    lower = _log_normal_tail_integral(safe_u+safe_z, safe_shift, safe_s)
+    regular = upper + torch.log(-torch.expm1(lower-upper))
+    if not bool(far.any()):
+        return regular
+    ww = torch.where(far, w, torch.full_like(w, -9))
+    hh = 1-ww
+    tail_u = torch.where(far, u, torch.zeros_like(u))
+    tail_z = torch.where(far, z, torch.ones_like(z))
+    tail_s = torch.where(far, s, torch.ones_like(s))
+    q1, q2 = (tail_u-tail_z)*tail_s/hh, (tail_u+tail_z)*tail_s/hh
+    ratio = 130/(torch.hypot(ww, ww.new_tensor(math.sqrt(260)))-ww)
+    moments = {}
+    for k in range(64, 0, -1):
+        ratio = k/(ratio-ww)
+        if k <= 17:
+            moments[k] = ratio
+    polynomial = torch.full_like(w, .5)
+    divided_power, q2_power, moment_product = torch.ones_like(w), torch.ones_like(w), torch.ones_like(w)
+    for n in range(2, 17):
+        q2_power = q2_power*q2
+        divided_power = q1*divided_power+q2_power
+        moment_product = moment_product*(moments[n+1]*hh)
+        polynomial = polynomial + (-1)**(n+1)*divided_power*moment_product/math.factorial(n+1)
+    # J1 = phi(w) + w*Phi(w), so Phi(w)=phi(w)/(J1/J0-w).
+    # This also avoids cancellation in log_ndtr's backward at enormous |w|.
+    log_phi = -.5*ww*ww-.5*math.log(2*math.pi)-torch.log(moments[1]-ww)
+    log_j2 = log_phi+torch.log(moments[1])+torch.log(moments[2])
+    tail = torch.log(2*tail_z)+2*torch.log(tail_s)+log_j2+torch.log(polynomial)
+    return torch.where(far, tail, regular)
+
+
 def _components(p):
     a = p.mu / p.sigma**2
     z = torch.sqrt(a**2 + 2 * p.r / p.sigma**2)
@@ -335,13 +384,9 @@ def hx_equity(x, par, boundary=None, *, validate=True):
     xr = torch.where(small, torch.full_like(x, 0.5), x)
 
     def resolvent(u):
-        def log_difference(upper, lower):
-            return upper + torch.log(-torch.expm1(lower - upper))
-        left = log_difference(_log_normal_tail_integral(u - z, u, s),
-                              _log_normal_tail_integral(z + u, u, s)) - gamma * xr
+        left = _log_normal_tail_pair(u, z, u, s) - gamma * xr
         shifted = u - xr / s**2
-        right = log_difference(_log_normal_tail_integral(u - z, shifted, s),
-                               _log_normal_tail_integral(z + u, shifted, s)) - (a + u) * xr
+        right = _log_normal_tail_pair(u, z, shifted, s) - (a + u) * xr
         return torch.exp(left) * (-torch.expm1(right - left)) / (p.sigma**2 * z)
 
     rf = resolvent(a) + resolvent(-a)
@@ -406,9 +451,7 @@ def prepare_hx_equity(par, boundary=None, *, like=None, validate=True):
             raise ValueError("Formal HX boundary is locally inadmissible: negative equity near default")
     left = []
     for u in (a, -a, zq, -zq):
-        upper = _log_normal_tail_integral(u-z, u, s)
-        lower = _log_normal_tail_integral(z+u, u, s)
-        left.append(upper + torch.log(-torch.expm1(lower-upper)))
+        left.append(_log_normal_tail_pair(u, z, u, s))
     f1, f2 = _q_derivatives(a, a, s), _q_derivatives(-a, a, s)
     g1, g2 = _q_derivatives(zq, a, s), _q_derivatives(-zq, a, s)
     slope = torch.zeros_like(numerator) if boundary is None else 2/p.sigma**2*(b*denominator-numerator)
@@ -437,10 +480,8 @@ def prepared_hx_equity(x, prepared, *, validate=True):
     resolvents = []
     for u, constant in zip((a, -a, zq, -zq), prepared.left_logs):
         shifted = u-xr/s**2
-        upper = _log_normal_tail_integral(u-z, shifted, s)
-        lower = _log_normal_tail_integral(z+u, shifted, s)
         left = constant-gamma*xr
-        right = upper + torch.log(-torch.expm1(lower-upper)) - (a+u)*xr
+        right = _log_normal_tail_pair(u, z, shifted, s) - (a+u)*xr
         resolvents.append(torch.exp(left)*(-torch.expm1(right-left))/(p.sigma**2*z))
     rf, rg = resolvents[0]+resolvents[1], resolvents[2]+resolvents[3]
     regular = b*(torch.expm1(xr)-torch.expm1(-gamma*xr))
