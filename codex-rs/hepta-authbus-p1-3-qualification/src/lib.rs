@@ -75,10 +75,12 @@ impl StdError for Error {}
 /// Execute the exact closed-world negative matrix against AuthBus.
 pub fn qualify() -> Result<QualificationReceipt, Error> {
     let signing_key = SigningKey::from_bytes(&[91; 32]);
-    let issuer_id = id("issuer:qualification");
-    let subject_id = id("subject:qualification");
-    let message_id = id("message:qualification");
-    let key_epoch = Generation::new(7).expect("non-zero qualification generation");
+    let issuer_id = id("issuer:qualification")?;
+    let subject_id = id("subject:qualification")?;
+    let message_id = id("message:qualification")?;
+    let key_epoch = Generation::new(7).map_err(|error| {
+        Error::PositivePathFailed(format!("non-zero qualification generation: {error:?}"))
+    })?;
     let scope = Digest32::of_bytes(b"qualification-scope");
     let payload = Digest32::of_bytes(b"qualification-payload");
     let claims = SignedMessageClaims {
@@ -191,7 +193,7 @@ fn execute_authenticate_case(
     let observed = message.authenticate(issuer, expected_scope, expected_payload, now_ms);
     match observed {
         Ok(_) => Err(Error::UnexpectedAcceptance(case)),
-        Err(error) if error == expected => Ok(case_evidence(case, error_name(&error))),
+        Err(error) if error == expected => case_evidence(case, error_name(&error)),
         Err(error) => Err(Error::UnexpectedError {
             case,
             observed: format!("{error:?}"),
@@ -231,10 +233,9 @@ fn execute_replay_case(
             observed: format!("first replay admission failed: {error:?}"),
         })?;
     match replay.verify(context, envelope, scope, payload) {
-        Err(AuthBusError::Replay) => Ok(case_evidence(
-            NegativeCase::Replay,
-            error_name(&AuthBusError::Replay),
-        )),
+        Err(AuthBusError::Replay) => {
+            case_evidence(NegativeCase::Replay, error_name(&AuthBusError::Replay))
+        }
         Ok(_) => Err(Error::UnexpectedAcceptance(NegativeCase::Replay)),
         Err(error) => Err(Error::UnexpectedError {
             case: NegativeCase::Replay,
@@ -243,23 +244,23 @@ fn execute_replay_case(
     }
 }
 
-fn case_evidence(case: NegativeCase, observed_error: &'static str) -> CaseEvidence {
+fn case_evidence(case: NegativeCase, observed_error: &'static str) -> Result<CaseEvidence, Error> {
     let case_id = id(match case {
         NegativeCase::Expired => "case:expired",
         NegativeCase::Revoked => "case:revoked",
         NegativeCase::Replay => "case:replay",
         NegativeCase::PayloadDrift => "case:payload-drift",
-    });
+    })?;
     let mut bytes = b"hepta.authbus.negative-case.v2\0".to_vec();
     bytes.push(case_code(case));
     push_id(&mut bytes, &case_id);
     push_bytes(&mut bytes, observed_error.as_bytes());
-    CaseEvidence {
+    Ok(CaseEvidence {
         case,
         case_id,
         observed_error,
         evidence_digest: Digest32::of_bytes(&bytes),
-    }
+    })
 }
 
 fn validate_matrix(cases: &[CaseEvidence]) -> Result<(), Error> {
@@ -298,8 +299,12 @@ fn case_code(value: NegativeCase) -> u8 {
     }
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("static qualification identifier must be valid")
+fn id(value: &str) -> Result<StableId, Error> {
+    StableId::new(value).map_err(|error| {
+        Error::PositivePathFailed(format!(
+            "static qualification identifier must be valid: {error:?}"
+        ))
+    })
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
