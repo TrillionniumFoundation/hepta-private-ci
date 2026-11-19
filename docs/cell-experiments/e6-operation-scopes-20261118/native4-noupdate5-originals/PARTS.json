@@ -1,0 +1,78 @@
+{
+  "schema": "hepta-retained-original-archive-parts-v1",
+  "archive": "complete-native4-noupdate5-originals.tar.xz",
+  "bytes": 59040488,
+  "sha256": "33b9191d52c59bcd57185e46d756299bb0aec92fb094ab0306b3e6153cf08bf0",
+  "parts": [
+    {
+      "part": 1,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part01",
+      "offset": 0,
+      "bytes": 9000000,
+      "sha256": "40e43216c904e2c80f1b810fbf692ec23d17677dddc806913201c81fc91fc1e8",
+      "git_blob": "d85b2edd6d870aee28ced0299fee510387adf9bc"
+    },
+    {
+      "part": 2,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part02",
+      "offset": 9000000,
+      "bytes": 9000000,
+      "sha256": "33e57f2a144d8ee55a2332214c6198eedb1c3ec0eb29173d46ab760060e8f673",
+      "git_blob": "f980ed17cbe946244d695dc2561f55b40d46e2ab"
+    },
+    {
+      "part": 3,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part03",
+      "offset": 18000000,
+      "bytes": 9000000,
+      "sha256": "45031336643635600c197c0377ae515995b8f0ab2052159b97eddd3a122d240c",
+      "git_blob": "72667a2e2229efe311e56e5908229544b44911d3"
+    },
+    {
+      "part": 4,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part04",
+      "offset": 27000000,
+      "bytes": 9000000,
+      "sha256": "d71ee9ffe540b12dfb833254310556e87574e84ad304969d545f80b5cd137966",
+      "git_blob": "7278641f8d48eff3c566f2c50d23af5533942359"
+    },
+    {
+      "part": 5,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part05",
+      "offset": 36000000,
+      "bytes": 9000000,
+      "sha256": "08f472e43d7c25fb7401c27b219c9523b0526fa1ce38629895a3ef435f2ab128",
+      "git_blob": "ce176c670304181fd16a568b92c33d6e3b18b476"
+    },
+    {
+      "part": 6,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part06",
+      "offset": 45000000,
+      "bytes": 9000000,
+      "sha256": "3b92a1367a1589a75d5d1050620a6a6fb116cecd090c1887ce6c2e36a5c0f7a8",
+      "git_blob": "2271c38278d4ce8f714585ccd66977e97f2ff6ee"
+    },
+    {
+      "part": 7,
+      "path": "docs/cell-experiments/e6-operation-scopes-20261118/native4-noupdate5-originals/complete-native4-noupdate5-originals.tar.xz.part07",
+      "offset": 54000000,
+      "bytes": 5040488,
+      "sha256": "c9ddb584d6ebc1cd24a5b7fa02c277c60548f3d12bf7934cc4a757a93d885383",
+      "git_blob": "95c26e870bcae0e183d6925c84b0feceb52d9627"
+    }
+  ],
+  "original_files": 1202,
+  "original_bytes": 122069486,
+  "original_index_sha256": "8c1a9511a53704bad95d1f33c5a1bb3e5d09d546ebfa038bb5f8350cb0932168",
+  "archive_result_sha256": "792dcebd555cd69cffbfa12d3ca61f5d6ecd72420a533215dd5d30ea6640d9d5",
+  "root_full_byte_verification": {
+    "bytes": 59040488,
+    "chunks": 901,
+    "sha256": "33b9191d52c59bcd57185e46d756299bb0aec92fb094ab0306b3e6153cf08bf0",
+    "version": "66306:52865442:59040488:1795061771717071077:1795061772401312766",
+    "root_incremental_full_byte_hash_matches": true,
+    "interrupted_naive_hash_not_counted": true
+  },
+  "qualifies_complete_NoUpdate": false,
+  "scope": "Retains original native4 pass, complete NoUpdate5 read65 failure, original child logs, physical data and the failed first archive attempt. Part hashes bind exact consecutive bytes and do not qualify the native outcome."
+}
