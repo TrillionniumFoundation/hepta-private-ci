@@ -19,7 +19,7 @@ Samefixed300Aadaptupdates/ordinaryanchor.2/lr.003/static64sampler/oldFITcalibrat
 serving forbotharms. Bothperformencoder/input Haar computations; rawdiscards and
 Haarselects. Sharedpretraining/referenceforwards arechargedonce outsidearmtransform
 work. Matchingauxiliarywork isnotnaturaldeploymentcost. Exactfunctionequivalence
-atboundary doesnot mean Adamrotationinvariance or guaranteeimprovement. This is
+atboundary does not mean Adamrotationinvariance or guaranteeimprovement. This is
 notfactorprior/NDUtraining andnot a newriskreweighting orbasis/scale search.
 
 Raw4base/4A finaldigests, completeoldmetrics/FITrecords/profilekeys/datasets exactly

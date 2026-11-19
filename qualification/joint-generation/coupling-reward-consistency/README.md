@@ -29,7 +29,7 @@ This is a changed training objective, not unchanged originalNDU.
 
 Four literal tests passed in0.374525CPU seconds,0.386781wall,28196KiB RSS, under5CPU/
 30wall/512MiB/4MiB with CPU0/single-thread/existing synthetic lock andcompletewait4.
-Zero model restores,trainingupdates or dataset rows. The proof doesnot establish
+Zero model restores,trainingupdates or dataset rows. The proof does not establish
 that this incentive caused the earlier trained-model negative result.
 
 From this directory with existing qualified repository helpers:
@@ -39,7 +39,7 @@ PYTHONPATH=../coupled-simplex-longdouble:../coupled-prefix-numerics:../coupled-l
 ```
 
 The qualification plan andseparate fixed scientific RUN_PLAN retain originalreward
-baselines andthe originalfiveacceptance gates. Only portable code, literal fixtures,
+baselines and the originalfiveacceptance gates. Only portable code, literal fixtures,
 proof, plans andaggregates are public, not weights,private paths orper-request data.
 
 ## Fixed repair-training result: primary failed
@@ -62,7 +62,7 @@ RepairN−repairA passes allfive gates inbothseeds. But repairN still loses to t
 stronger originalindependentN baseline, while repairN−originalcoupledN CE gains
 are below.005 andtextmass/jointsuccess have small regressions inone seed each.
 The **overall primary isfalse**. Correcting the proven incentive did not recover the
-performance gap. This doesnot disprove the algebra, but it doesnot establish that
+performance gap. This does not disprove the algebra, but it does not establish that
 incentive as the main cause of the trained-model negative result. No coefficient
 sweep,gate relaxation orrelabeling internalN>A as overall success followed.
 

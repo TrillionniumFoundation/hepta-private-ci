@@ -134,11 +134,11 @@ def _exp_neg(x: F):
 
 def _density_enclosure(y: F, mu: F, sigma: F, q: F, t: F):
     phi=((y+mu*t)**2)/(2*sigma*sigma*t)+q*t
-    lowe,highe=_exp_neg(phi)
+    lower_exp,upper_exp=_exp_neg(phi)
     lo_pi,hi_pi=_pi_bounds()
     low_denom,hi_denom=_sqrt_bounds(2*lo_pi*t**3,2*hi_pi*t**3)
     c=y/sigma
-    return _floor_grid(c*lowe/hi_denom),_ceil_grid(c*highe/low_denom)
+    return _floor_grid(c*lower_exp/hi_denom),_ceil_grid(c*upper_exp/low_denom)
 
 
 def _sign_poly(y: F, mu: F, sigma: F, q: F, t: F):
