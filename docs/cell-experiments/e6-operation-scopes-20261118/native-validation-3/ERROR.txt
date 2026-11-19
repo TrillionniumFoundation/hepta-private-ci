@@ -1,0 +1,7 @@
+Traceback (most recent call last):
+  File "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/run_native_validation3.py", line 71, in <module>
+    handle=p.open("a+b")
+  File "/usr/lib/python3.14/pathlib/__init__.py", line 772, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target/.hepta-root-native-owner.lock'

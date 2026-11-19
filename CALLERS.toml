@@ -10554,7 +10554,7 @@ symbol = "OriginalDatasetOperationV1::require_original_batch"
 receiver_type = "OriginalDatasetOperationV1"
 definition_path = "codex-rs/hepta-agentd/src/cell_q24_dataset_operation.rs"
 definition_markers = ["fn require_original_batch(", "match (&source.ledger, &self.kind)", "observed.encoded != batch.encoded || observed.digest != batch.digest"]
-product_callers = ["codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs", "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs", "codex-rs/hepta-agentd/src/cell_q24_prepared_operation.rs"]
 caller_markers = ["require_original_batch("]
 
 [[boundary]]
