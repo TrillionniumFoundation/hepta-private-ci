@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "recorded_utc": "2026-11-11T03:50:43.177852+00:00",
+  "kind": "Source-pinned hosted Linux owner native qualification",
+  "status": "PASS_HOSTED_LINUX_OWNER_NATIVE",
+  "source_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "source_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "code_pull_request": 5896,
+  "evidence_parent_commit": "379bcf908aff1b0ae5155e6a3eef60f303cf67a4",
+  "evidence_parent_tree": "f9ee5cf960d80c1c2ce5ac271aa6451ef62f157b",
+  "entrypoint": "LATEST.md",
+  "new_native_result": "native-c1d/RESULT.json",
+  "exact_named_owner_cases": "native-c1d/TARGET_OWNER_TESTS.json",
+  "original_xml_verification": "native-c1d/XML_VERIFICATION.json",
+  "original_artifact_index": "native-c1d/ARTIFACT_INDEX.json",
+  "artifact_download_digest_verification": "native-c1d/ARTIFACT_DOWNLOAD_VERIFICATION.json",
+  "daemon": {
+    "run_id": 42946454461,
+    "job_id": 130280341039,
+    "status": "success",
+    "ordinary_passed": 1158,
+    "ordinary_failed": 0,
+    "separate_root_parent_cases_passed": 7,
+    "root_failed": 0,
+    "root_fixture_uid": 0,
+    "prior_ordinary_xml_excluded": true
+  },
+  "shared": {
+    "run_id": 42946454356,
+    "job_id": 130280341079,
+    "status": "success",
+    "passed": 1196,
+    "failed": 0
+  },
+  "distinct_target_owner_cases": {
+    "Model": 7,
+    "OriginalEvaluation": 5,
+    "OriginalTraining": 6,
+    "total": 18,
+    "passed_in_both_suites": true
+  },
+  "suite_totals_overlap_do_not_sum": true,
+  "six_source_inventories_same_14415_files": true,
+  "source_clean_and_unchanged_after_tests_maintenance_bins": true,
+  "ci_fmt_fix_bins_exit_codes": [
+    0,
+    0,
+    0
+  ],
+  "prior_49_file_snapshot_preserved": true,
+  "historical_snapshot_path": "RESULT.json",
+  "historical_source_checks_not_reexecuted_or_relabelled": true,
+  "original_30692_compile_and_local_resource_failures_retained": true,
+  "root_cases_are_components_not_an_ordinary_daemon_and_Root_restart_loop": true,
+  "ordinary_production_acceptance": {
+    "ordinary_complete_chain_count": 0,
+    "positive_adoption_chain_count": 0,
+    "no_update_or_rollback_chain_count": 0,
+    "independent_C_FinalUse_accepted": false,
+    "daemon_and_Root_real_restart_loop_accepted": false
+  },
+  "remaining_assembly_review": "acceptance-delta/ACCEPTANCE_DELTA.md",
+  "whole_repository_ci_qualified": false,
+  "other_ci_snapshot": {
+    "observed_utc": "2026-11-11T03:35:35Z",
+    "evaluation_architecture_run_id": 42946454598,
+    "evaluation_architecture_status": "source-head in_progress; base-merge success without native implication",
+    "evaluation_blocking_run_id": 42946454563,
+    "evaluation_blocking_status": "initial jobs queued",
+    "core_source_commit": "50c382e3e71229b0bb127129abd3d52ca6ee0e0c",
+    "core_architecture_run_id": 42951319025,
+    "core_architecture_status": "queued",
+    "core_blocking_run_id": 42951319107,
+    "core_blocking_status": "pending",
+    "core_old_b501_results_transferred": false
+  },
+  "core_scope_fix": "core-scope-repair/PUBLISHED.json",
+  "historical_core_runtime_and_failures": "core-b501-observation/OBSERVATION.json",
+  "additional_read_only_host_recovery": "host-access/h-background-inventory-recovery-20261111.json"
+}

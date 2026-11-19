@@ -1,0 +1,83 @@
+{
+  "source_head": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "source_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "run_id": 42940551826,
+  "job_id": 130261056461,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42940551826/job/130261056461",
+  "status": "FAILED_LIB_TEST_COMPILATION",
+  "error_code": "E0659",
+  "error_occurrences": 18,
+  "source_file": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+  "cause": "assert_eq macro from glob-imported pretty_assertions conflicts with the std prelude; explicit test-module macro import is missing.",
+  "minimum_fix": "Add use pretty_assertions::assert_eq; to the test module, retaining every assertion. No source changes made by this read-only audit.",
+  "observed_passed_tests": 0,
+  "observed_failed_tests": 0,
+  "raw_log": "hosted-attempts/evaluation-30692-daemon-130261056461.log.gz",
+  "raw_log_sha256": "6c803a422961403ba4eb3464b5c1fbe5cdce37494fc51d3b7aa0f184feb84c25",
+  "original_execution_record": {
+    "after": {
+      "commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "dirty": false,
+      "parents": [
+        "5b633a85ba74c829f3ec82e71c044442bd31c2ac"
+      ],
+      "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4"
+    },
+    "base_sha": "",
+    "before": {
+      "commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+      "dirty": false,
+      "parents": [
+        "5b633a85ba74c829f3ec82e71c044442bd31c2ac"
+      ],
+      "tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4"
+    },
+    "command": [
+      "just",
+      "test",
+      "--locked",
+      "--offline",
+      "-p",
+      "codex-hepta-agentd",
+      "-p",
+      "codex-hepta-learning-artifacts",
+      "-p",
+      "codex-hepta-intelligence-eval",
+      "--lib",
+      "--test-threads",
+      "2",
+      "--retries",
+      "0",
+      "--success-output",
+      "final",
+      "--failure-output",
+      "final"
+    ],
+    "command_exit_code": 101,
+    "elapsed_seconds": 229.02546886999994,
+    "error": "required tests were not observed passing",
+    "exit_code": 101,
+    "finished_at": "2026-11-11T02:25:11.756105+00:00",
+    "job": "native",
+    "lane": "source-head",
+    "log_bytes": 46406,
+    "log_file": "ordinary.json.8bf2661e4d56413596cf833c461851c1.log",
+    "log_sha256": "3770ced00d2e06a52ecff09d9bc1622de7eaa09394b23be282612522878e1bb8",
+    "minimum_tests": 1,
+    "observed_failed_tests": 0,
+    "observed_passed_tests": 0,
+    "output_limit_exceeded": false,
+    "returncode": 101,
+    "run_attempt": "1",
+    "run_id": "42940551826",
+    "schema_version": 1,
+    "source_sha": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "started_at": "2026-11-11T02:21:22.730014+00:00",
+    "status": "failed",
+    "tested_sha": "30692d721d67321df0414c5c3f990449d7b9fea8",
+    "timed_out": false,
+    "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+  },
+  "log_storage_index": "LOG_STORAGE.json",
+  "log_hashes_describe": "uncompressed original log bytes"
+}

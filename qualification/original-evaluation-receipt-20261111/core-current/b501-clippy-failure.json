@@ -1,0 +1,31 @@
+{
+  "source_commit": "b5019ee98bc7b7b99eb689378f41e66691c2d257",
+  "run_id": 42940299149,
+  "job_id": 130289659026,
+  "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/42940299149/job/130289659026",
+  "job_name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+  "failed_step": "bazel build --config=clippy lint targets",
+  "status": "FAILED_CLIPPY",
+  "command_exit_code": 1,
+  "diagnostic": "holding a disallowed type across an await point tokio::sync::MutexGuard",
+  "lint": "clippy::await-holding-invalid-type",
+  "path": "codex-rs/core/src/unified_exec/async_watcher_tests.rs",
+  "line": 162,
+  "cause": "The guard variable remains in the enclosing lexical scope despite an explicit drop before the following await. The deny lint rejects this source.",
+  "suggested_fix": "Enclose the lock and unchanged complete tuple assertion in a lexical block, remove only the explicit drop, and retain both subsequent assertions and every lint.",
+  "upstream_comparison": {
+    "pull_request": 5865,
+    "head": "cb0598a9099a0d828ce73aedb51e397e600e49d1",
+    "same_file_text": true,
+    "source": "Exact GitHub blob fetches for both immutable commits; compared returned complete file text."
+  },
+  "log": "core-current/core-b501-clippy-macos-130289659026.log.gz",
+  "log_sha256": "ce1018d18b150d6344d9759860c8400fe4f239cb061ca037134d8dbc0b7bcd0f",
+  "log_bytes": 876168,
+  "log_representation": "Full tool-returned job text retained as UTF-8 with LF line endings.",
+  "not_an_evaluation_candidate_result": true,
+  "core_new_test_runtime_pass_observed": false,
+  "code_not_modified_by_evidence_collection": true,
+  "log_storage_index": "LOG_STORAGE.json",
+  "log_hashes_describe": "uncompressed original log bytes"
+}

@@ -1,0 +1,2176 @@
+{
+  "schema_version": 1,
+  "old_code_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "old_code_tree": "790bf1330fde0ee51d9f9ea40848f3dc5d2afcb4",
+  "current_code_commit": "c1d6537f7d979e1ad792eee796c6709d23a86697",
+  "current_code_tree": "e7762b742e6baff12e447a89f40ae1cfb68aa7e1",
+  "method": "Compared complete git ls-tree -r inventories, including path/mode/type/blob, then compared protected files, boundary definitions and source guards by original Git blob IDs. SHA-256 values are from immutable current Git blobs.",
+  "tracked_paths_old": 14415,
+  "tracked_paths_current": 14415,
+  "changed_paths": [
+    "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs"
+  ],
+  "only_change": {
+    "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_tests.rs",
+    "old_blob": "003ae45f7fadfe155221694c481ece7cc06b6871",
+    "current_blob": "234dc2c48ee3c535d171aed836ba58890ecfb661",
+    "added_lines": [
+      "use pretty_assertions::assert_eq;"
+    ],
+    "removed_lines": []
+  },
+  "production_and_guard_blobs_unchanged": true,
+  "unchanged_production_and_guard_blobs": [
+    {
+      "path": ".github/workflows/hepta-daemon-learning-native.yml",
+      "old_blob": "30542aef705485940519a346517ec8f6f4a740f8",
+      "current_blob": "30542aef705485940519a346517ec8f6f4a740f8",
+      "identical": true,
+      "sha256": "913be8cd1abdf2c4d90d41734336d6730e18506360093814506d9c659d994ab9",
+      "bytes": 18828,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": ".github/workflows/hepta-shared-framework.yml",
+      "old_blob": "1c60cc72e63bec9fb1de320d710ecbd785249d74",
+      "current_blob": "1c60cc72e63bec9fb1de320d710ecbd785249d74",
+      "identical": true,
+      "sha256": "7d3013696084d55222eacdaacbea5ead11520afeee53b7d104b398e8531e48a5",
+      "bytes": 4625,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "CALLERS.toml",
+      "old_blob": "4f9bb253844ce98ad8adbdca5bc1166def8c540b",
+      "current_blob": "4f9bb253844ce98ad8adbdca5bc1166def8c540b",
+      "identical": true,
+      "sha256": "d17051d0108930e7499a1d1aab4b7273226de3e992916eda1a09002f6ee263b2",
+      "bytes": 351650,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+      "old_blob": "9114a6184e7793e907cc316fa4327348e107d143",
+      "current_blob": "9114a6184e7793e907cc316fa4327348e107d143",
+      "identical": true,
+      "sha256": "5e9b7b3a4f78cc008d04f7fff60557673ed35bfce0eb4652ffff9d1c5efd939f",
+      "bytes": 36929,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
+      "old_blob": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+      "current_blob": "a634d8844ecbcf87774286d3333bc7d560092d6d",
+      "identical": true,
+      "sha256": "fd6b0dcabf2796c333366bf2ec365c9b939e51c8ad0f9be3afae872ac3f6bed3",
+      "bytes": 18923,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin.rs",
+      "old_blob": "a7d9f9a7621aa311e791f0deb5c1111a97ab15d8",
+      "current_blob": "a7d9f9a7621aa311e791f0deb5c1111a97ab15d8",
+      "identical": true,
+      "sha256": "bdd91da4dcb846e8273a6da662e9081d3a533b42462ccc8a458657ce7c18859b",
+      "bytes": 13440,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_deadline.rs",
+      "old_blob": "78bb33225842f61c46ef7c8dbedce84ed01580d7",
+      "current_blob": "78bb33225842f61c46ef7c8dbedce84ed01580d7",
+      "identical": true,
+      "sha256": "08d3a4030f242efb4bdd01951f18f1b97fe5f8075514db34e62d6dddbb533ba0",
+      "bytes": 734,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_effect.rs",
+      "old_blob": "e02b8d792936932f98f6902935904f14853dc469",
+      "current_blob": "e02b8d792936932f98f6902935904f14853dc469",
+      "identical": true,
+      "sha256": "592c7008c07d06f1071d0e159b754b7013ad8f49c9ae794f7977fbd3f0528f11",
+      "bytes": 5726,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_issuer.rs",
+      "old_blob": "ddf8d1906227cbc3f738aa163118e1d902e99a90",
+      "current_blob": "ddf8d1906227cbc3f738aa163118e1d902e99a90",
+      "identical": true,
+      "sha256": "08bc1f980876ef4d3e19bcee1d008b7096bb3c4d30d5a9aa98af421533f8f337",
+      "bytes": 7537,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_protocol.rs",
+      "old_blob": "2fde5da6bae08db988f0305be4abb1e96495e0bc",
+      "current_blob": "2fde5da6bae08db988f0305be4abb1e96495e0bc",
+      "identical": true,
+      "sha256": "fbea880f4f8730d3c81a9a7adc9f4f54400be81530536394435eeefd489cc854",
+      "bytes": 4202,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_admin_service.rs",
+      "old_blob": "bb14ef568e7354d0df64d97b8d87c22a4add7ad7",
+      "current_blob": "bb14ef568e7354d0df64d97b8d87c22a4add7ad7",
+      "identical": true,
+      "sha256": "7b832467619cc1cffbbe1fbd0bd70f6d4bb4711e13ac51fe4c2e1b580982e50e",
+      "bytes": 9793,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_capture.rs",
+      "old_blob": "c48ba5cce3b80a09fa04c9bf3c4215fb01bea685",
+      "current_blob": "c48ba5cce3b80a09fa04c9bf3c4215fb01bea685",
+      "identical": true,
+      "sha256": "19359751b052abccac74d20b84f48a2edf2ea63ecfe2df452e66a43e328b3571",
+      "bytes": 8271,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_bootstrap_seal.rs",
+      "old_blob": "17437fa8aa1cb93b237e05f1420837796a05ac93",
+      "current_blob": "17437fa8aa1cb93b237e05f1420837796a05ac93",
+      "identical": true,
+      "sha256": "389e96c89371278f1e09c28e9ff34b431cf00aec35f50024c4ffc555ca4e49be",
+      "bytes": 4846,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_adoption.rs",
+      "old_blob": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+      "current_blob": "8aafbdb35ef4205b3da3d831014b6cba9e54af2f",
+      "identical": true,
+      "sha256": "fc26a5ca641b3ec6659ad41ca5efa827772790867fa584852bea22b575089b41",
+      "bytes": 9203,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_lane.rs",
+      "old_blob": "4f4ff9b0e2e1b07ff0874f7d980240ae54365657",
+      "current_blob": "4f4ff9b0e2e1b07ff0874f7d980240ae54365657",
+      "identical": true,
+      "sha256": "d74141c61cecb81d2724abe535cde17e8e100719a04f70761952eea8c16fde71",
+      "bytes": 5833,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material.rs",
+      "old_blob": "b3b5b57a126fecc485e4048bb4435f6e8f2ebe19",
+      "current_blob": "b3b5b57a126fecc485e4048bb4435f6e8f2ebe19",
+      "identical": true,
+      "sha256": "0c3ff171c029e71a7a1be8e354dbc79cc2e7a1c0cfd9accef5e96fe24cc04e0b",
+      "bytes": 12746,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_binding.rs",
+      "old_blob": "0e5f7ae2e0f0dde8cbc04f8874dc963664d0c76a",
+      "current_blob": "0e5f7ae2e0f0dde8cbc04f8874dc963664d0c76a",
+      "identical": true,
+      "sha256": "0416bff31198afc9d5e1fa343c450e77bdd12c6666b8af5c79ff1dcf13ce9c74",
+      "bytes": 4430,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_recovery.rs",
+      "old_blob": "9c6cd4beb9a0d3169dcbac9e1364917eec3cf84b",
+      "current_blob": "9c6cd4beb9a0d3169dcbac9e1364917eec3cf84b",
+      "identical": true,
+      "sha256": "e9b639b4c463b71d240263b09a623fc47a145d4ce13c3412bf999755b93cf6e3",
+      "bytes": 4589,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_checkpoint_material_worker.rs",
+      "old_blob": "28de15ad55c08e5febe409660ac43288bf10655c",
+      "current_blob": "28de15ad55c08e5febe409660ac43288bf10655c",
+      "identical": true,
+      "sha256": "9686f48966400a4da4ac7c43298ec158c4d1968d3622ff4e0f07c53ed2ed273b",
+      "bytes": 7033,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_desktop_successor.rs",
+      "old_blob": "4e507a7ff1f5a577d59680e336900e7bd7dc3acc",
+      "current_blob": "4e507a7ff1f5a577d59680e336900e7bd7dc3acc",
+      "identical": true,
+      "sha256": "d17f5c7b03b68f1ecec785e223739860190ff1e44bb1e73e28e9c5a8890475dd",
+      "bytes": 1178,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_fresh_publish.rs",
+      "old_blob": "4bc1814c4fbef55e2451a33aefc155748e9a5ecb",
+      "current_blob": "4bc1814c4fbef55e2451a33aefc155748e9a5ecb",
+      "identical": true,
+      "sha256": "f2be908c55d6c434126cd6db7941edb1bbb9fe03ce698160c3fc0a6ace0b5ead",
+      "bytes": 7740,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_human_text.rs",
+      "old_blob": "58847bcac5a79b4fc114e0f1f6cc4351711e1aff",
+      "current_blob": "58847bcac5a79b4fc114e0f1f6cc4351711e1aff",
+      "identical": true,
+      "sha256": "973f2de045eac18cfc796c4974c1cf365c6b92390f5f23b9c4f1c9998fee4b0e",
+      "bytes": 3183,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_issuer_renewal.rs",
+      "old_blob": "4d00a76efdd1b644a7c9c45db25fa658e8697cf3",
+      "current_blob": "4d00a76efdd1b644a7c9c45db25fa658e8697cf3",
+      "identical": true,
+      "sha256": "a97da1666b47f876ea044b6299f5735c37bfa09c3a5668fc07996cb154e072a0",
+      "bytes": 6586,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_checkpoint.rs",
+      "old_blob": "dfc225cf5a667cbbb19af23356d864118d07e4d8",
+      "current_blob": "dfc225cf5a667cbbb19af23356d864118d07e4d8",
+      "identical": true,
+      "sha256": "9bd8428f7cae4508eccc6d41375455fb3d0f2521bc43dca7dac2b648fe4311a1",
+      "bytes": 1871,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_profile.rs",
+      "old_blob": "63ee2a518a8b897cfaafb64d36c0b1cf9b5e7811",
+      "current_blob": "63ee2a518a8b897cfaafb64d36c0b1cf9b5e7811",
+      "identical": true,
+      "sha256": "9977181546655beea0044f2ea8be59cfea71994bb29f541844a3ac63a2a056a0",
+      "bytes": 8819,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_registration.rs",
+      "old_blob": "3847fb705928cfe116470cc115a56f110513d495",
+      "current_blob": "3847fb705928cfe116470cc115a56f110513d495",
+      "identical": true,
+      "sha256": "104ea8575161a59a15f81229f409e25322301b710400500624365a3f0e268396",
+      "bytes": 13228,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_learning_session.rs",
+      "old_blob": "4a257779d6625333cfe5c9c6a7229fdeb92086f9",
+      "current_blob": "4a257779d6625333cfe5c9c6a7229fdeb92086f9",
+      "identical": true,
+      "sha256": "1dde39bbbdd9399e333cdf56bc5df2c34227a654cc85138e544342176d004f18",
+      "bytes": 6291,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_listeners.rs",
+      "old_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "current_blob": "50cbe55f7af1969f68d9c98e7ec9317b38b3c8dc",
+      "identical": true,
+      "sha256": "8d55a7e5dbb51f26b51cc2c4d2c2c77cf6208bf61613019e21fb4e479acc82ee",
+      "bytes": 7048,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_logind.rs",
+      "old_blob": "2ef5de6d0c71f7ad2092b66dbdfa4f7d4bc15c29",
+      "current_blob": "2ef5de6d0c71f7ad2092b66dbdfa4f7d4bc15c29",
+      "identical": true,
+      "sha256": "4e55ae898584999aa454468a94510e711f39276b529eb0bedc72c0ce4f172029",
+      "bytes": 7936,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_material_recovery.rs",
+      "old_blob": "c2afc2f93070dddfd1145b3a2ab8f219742e3b69",
+      "current_blob": "c2afc2f93070dddfd1145b3a2ab8f219742e3b69",
+      "identical": true,
+      "sha256": "d0144589b31e21e7bdf5424ba234e5f91606e58348bee2703aab92f64acd8f9f",
+      "bytes": 15074,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_native_launch.rs",
+      "old_blob": "00ddcea5e19a209921d9b98c061d583a693f358e",
+      "current_blob": "00ddcea5e19a209921d9b98c061d583a693f358e",
+      "identical": true,
+      "sha256": "a85727c5b9762aa5b75d2ee60b9b4d9d1b70a8e968e7aff3b4bce962f9653f80",
+      "bytes": 16891,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_notes_successor.rs",
+      "old_blob": "3a7be45325189e32f0326020f3b9ecf7e1c06dcd",
+      "current_blob": "3a7be45325189e32f0326020f3b9ecf7e1c06dcd",
+      "identical": true,
+      "sha256": "dcc9457e1012292acdc7285bdda5914a6991afbca51108f443ead56e681f47a4",
+      "bytes": 1294,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_runtime.rs",
+      "old_blob": "506da9f6e044df9f3e2107653f7f7528a90af6b7",
+      "current_blob": "506da9f6e044df9f3e2107653f7f7528a90af6b7",
+      "identical": true,
+      "sha256": "de346f44df01cf7b0766bfc0d643be60bb652bf26fddb5a17598759538d7eea0",
+      "bytes": 18903,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_service.rs",
+      "old_blob": "5df291ea8b6c2b5424656efe7ea53f6660f8c403",
+      "current_blob": "5df291ea8b6c2b5424656efe7ea53f6660f8c403",
+      "identical": true,
+      "sha256": "2ffcd7ef0951462ba002c43a242bc5bf568f214b471254d751efd84cc797e279",
+      "bytes": 22183,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session.rs",
+      "old_blob": "5c9f1927f9048310eff6d8469dacf1a0c4ee3b21",
+      "current_blob": "5c9f1927f9048310eff6d8469dacf1a0c4ee3b21",
+      "identical": true,
+      "sha256": "a12b45a3cf61a4e7f9bd289733b19a624a7f6edda9c336f228e034f7d9dc966e",
+      "bytes": 17597,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_session_material.rs",
+      "old_blob": "ca74bd2f1c59df613e13442cbba001745d329eb8",
+      "current_blob": "ca74bd2f1c59df613e13442cbba001745d329eb8",
+      "identical": true,
+      "sha256": "cc943045fc6921e091f61ae7c3ad4184711aa3654103ac2ed1852b076e13db4c",
+      "bytes": 7344,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer.rs",
+      "old_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+      "current_blob": "3bd185a92a2e44f61634a553f10f5f6dba44c2b1",
+      "identical": true,
+      "sha256": "9aadadadb59bc9370084a519e9d0b54a442200654e770eb62bdf04f55cfebf60",
+      "bytes": 11717,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_host_writer_rotate.rs",
+      "old_blob": "9f6afb94f771ed50aafd9631dfffa1dee1268281",
+      "current_blob": "9f6afb94f771ed50aafd9631dfffa1dee1268281",
+      "identical": true,
+      "sha256": "ae716f2be969f6409311cda4f4600e7e275d34d947c7ab8203af8bfed3c855d2",
+      "bytes": 2962,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "old_blob": "e0d369c95b4d80ce494d1c2654cb946fb2d9b5d9",
+      "current_blob": "e0d369c95b4d80ce494d1c2654cb946fb2d9b5d9",
+      "identical": true,
+      "sha256": "acf1e9329219b9e777b70de212d4bc1078ce8d5d692233d10acd9c88b4a661ff",
+      "bytes": 52281,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
+      "old_blob": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f",
+      "current_blob": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f",
+      "identical": true,
+      "sha256": "1d13b8f141dde8de5c8709c8371681d17204e6d50c1bf356f3ecebfe306d3211",
+      "bytes": 6460,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/bin/hepta-authority-host.rs",
+      "old_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "current_blob": "a0cc9b78dada59dcb45983a2c1b0bb7444ea1cfa",
+      "identical": true,
+      "sha256": "46b42a6d8846d258ac7abf3c9dd8ff88bf03e25b5b4138f96d6d4d261d84f446",
+      "bytes": 13220,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_process.rs",
+      "old_blob": "1cd600d81e3df1bf679fa6b20a025ef60900ac2d",
+      "current_blob": "1cd600d81e3df1bf679fa6b20a025ef60900ac2d",
+      "identical": true,
+      "sha256": "cbee7ef2f617fa9cedfb1006309e5fed97fc435e54d77806f5f684523406c013",
+      "bytes": 13346,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_recovery_selection.rs",
+      "old_blob": "cce566835f25696a86a3ed9b7866ecae805c8ed9",
+      "current_blob": "cce566835f25696a86a3ed9b7866ecae805c8ed9",
+      "identical": true,
+      "sha256": "55c5272fc31c9cd594bdf7a75ae9cbb361efd3bf5561cf198ae75a0510472df3",
+      "bytes": 3830,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/calculator_runtime_recovery.rs",
+      "old_blob": "d9b5a33991fb4e18adda6321bce70a431862d9c0",
+      "current_blob": "d9b5a33991fb4e18adda6321bce70a431862d9c0",
+      "identical": true,
+      "sha256": "d869c4243b9dca6b5c3b7064e281f51261ca2e8ce030efa7519e81dc2657b9b1",
+      "bytes": 3456,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_feature.rs",
+      "old_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+      "current_blob": "a3cd14c4d14e69e5c1c9dd5062d029e103b6f7e1",
+      "identical": true,
+      "sha256": "3eb1e6779b9e1d052c13f0538b0991de05117a6e70a36a721373819f8d622e0b",
+      "bytes": 7802,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training.rs",
+      "old_blob": "a88c6f4254a660d94f5f3bef55011101d38e7221",
+      "current_blob": "a88c6f4254a660d94f5f3bef55011101d38e7221",
+      "identical": true,
+      "sha256": "3987c195204a4bf1884e81bb62976febd75972e85d6919fe80c76921944b5b6c",
+      "bytes": 15510,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_observation.rs",
+      "old_blob": "63c8257a41ab96bd661813eba4b06af715c34b1b",
+      "current_blob": "63c8257a41ab96bd661813eba4b06af715c34b1b",
+      "identical": true,
+      "sha256": "7de000afceafa85d5f0c25c563af08c44c5b37f97d6bd968442e1222f2fe0a7a",
+      "bytes": 4718,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_owner.rs",
+      "old_blob": "990293d971e24849c326092d781ffccb3b7b1f00",
+      "current_blob": "990293d971e24849c326092d781ffccb3b7b1f00",
+      "identical": true,
+      "sha256": "6e7cb76c5b37d01cbaa1ed4e078225cd89a958dd567138edb23b134b7a54b8c9",
+      "bytes": 14021,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_composed_q24_training_plan.rs",
+      "old_blob": "11b5132fe5a93429557e8634004154fda8ade3e4",
+      "current_blob": "11b5132fe5a93429557e8634004154fda8ade3e4",
+      "identical": true,
+      "sha256": "ba108771a6ad13231d52c43ffa2e0c2c9d9ff99c0719b65fccf024c9b89e6cdb",
+      "bytes": 6590,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal.rs",
+      "old_blob": "5192b067a5e2f3457d28f237c7beb2a318242178",
+      "current_blob": "5192b067a5e2f3457d28f237c7beb2a318242178",
+      "identical": true,
+      "sha256": "1949c90a37d8ecbc01fa9e34bd80a20b57b995875903c7cae139de4ac2a5bbde",
+      "bytes": 11596,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_model_proposal_admission.rs",
+      "old_blob": "662a5239c0091576b9278cc3fb261e6354139b8c",
+      "current_blob": "662a5239c0091576b9278cc3fb261e6354139b8c",
+      "identical": true,
+      "sha256": "df5849870e8e828101c18dd36c06e85c781d91d0578c3d4036c721c6ac16a245",
+      "bytes": 9181,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cell_q24_training_receipt_owner.rs",
+      "old_blob": "0fdca1023b1a4eff420e776c7cebcb04543f17c8",
+      "current_blob": "0fdca1023b1a4eff420e776c7cebcb04543f17c8",
+      "identical": true,
+      "sha256": "80544b1360f4fd419b89109381fb58ce614e877b2a4904041f8f1d07dd7ae55c",
+      "bytes": 12403,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current.rs",
+      "old_blob": "079ff43c900237df9f05092b55ed940f41ba4daf",
+      "current_blob": "079ff43c900237df9f05092b55ed940f41ba4daf",
+      "identical": true,
+      "sha256": "8c933906e320de9b5e5e86c4fcb3793f79d9509aa5b96b5c3bbfbf74a39e368e",
+      "bytes": 13801,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_control.rs",
+      "old_blob": "781485715249d11c05609239a346ede033ccbdf3",
+      "current_blob": "781485715249d11c05609239a346ede033ccbdf3",
+      "identical": true,
+      "sha256": "204bc31e9162b6b52214a569d6fa926f3ece078d0fdc876087eeaf2f7c1142f8",
+      "bytes": 4962,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_learning.rs",
+      "old_blob": "e48a86fca653ee173611d80d6ba330ea1b6096c4",
+      "current_blob": "e48a86fca653ee173611d80d6ba330ea1b6096c4",
+      "identical": true,
+      "sha256": "5439087f898fb6c7a09ccc54e9b2a1df175766abff4e5994658508975116745d",
+      "bytes": 6155,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_owner.rs",
+      "old_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "current_blob": "92224a910d3c8050dde8bb079da36e02d73d3373",
+      "identical": true,
+      "sha256": "361f177e3acefea380d63fc627dd3ab0d92ba14284a8ad41fcae01a63c6111d9",
+      "bytes": 8089,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_recovery.rs",
+      "old_blob": "1f5b54fd7f2a69b4b07d96f122d21d195ba55f12",
+      "current_blob": "1f5b54fd7f2a69b4b07d96f122d21d195ba55f12",
+      "identical": true,
+      "sha256": "ab2b7413f4bfea9066dd5c4589060a020f1555ababb1fbc3cec873d42b558a39",
+      "bytes": 5610,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_feature_current_retirement.rs",
+      "old_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "current_blob": "d100d803ff1e44d814c155f0ef29992fe658ae9f",
+      "identical": true,
+      "sha256": "0c2cc471c5eecd04a8d27f68a38dd9a164807003f52ca75a4ddb6bfacbacc577",
+      "bytes": 2003,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_learning_delivery.rs",
+      "old_blob": "5be35c2573d41351040211d138b086ee01c42746",
+      "current_blob": "5be35c2573d41351040211d138b086ee01c42746",
+      "identical": true,
+      "sha256": "7c8056d5cb52ab9fdae1093bb7e6839ead63e82b093c3ba87934d3fb40c62b75",
+      "bytes": 7020,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_q24_task_profile.rs",
+      "old_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "current_blob": "153381dda993d21b0821d59f6b52e1b971bef98a",
+      "identical": true,
+      "sha256": "3ecab5d15d3ea0509f24800c9368ae657173b26e789c45b64eeb80e3a85cfd78",
+      "bytes": 7595,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source.rs",
+      "old_blob": "8df79f39da886d42add7e7e651693fb4e2d0cd60",
+      "current_blob": "8df79f39da886d42add7e7e651693fb4e2d0cd60",
+      "identical": true,
+      "sha256": "9de7d1a497dbe800650d433cf6c0db9c4b288689ece816f0dc26fbc4bdddcbdd",
+      "bytes": 15630,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_journal.rs",
+      "old_blob": "b6831a444ade3d27bae1b89bcabf284dfb9eafa5",
+      "current_blob": "b6831a444ade3d27bae1b89bcabf284dfb9eafa5",
+      "identical": true,
+      "sha256": "1d52006f9ee84f23ff3f18f925ea6d83c0fdc1edc5d425765da42efd0b00eb21",
+      "bytes": 6113,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/circuit_task_source_readback.rs",
+      "old_blob": "074c2a511a19b3ce7db6659df12249fc0774bf30",
+      "current_blob": "074c2a511a19b3ce7db6659df12249fc0774bf30",
+      "identical": true,
+      "sha256": "ac8c1d70dd7367a219de8d63015297c480ef2eb2cd51af9f99230947799583b5",
+      "bytes": 1765,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "old_blob": "28e565a3569f9148e3d371b0150a02e14bf2fde4",
+      "current_blob": "28e565a3569f9148e3d371b0150a02e14bf2fde4",
+      "identical": true,
+      "sha256": "074b0d76dcd58eb3c0c0c3af5ed5bed805ba022405c78fe36d971b699cff2841",
+      "bytes": 14112,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "old_blob": "5030b81dd7bb5fc0a6fafadcd73ea19cff11c34b",
+      "current_blob": "5030b81dd7bb5fc0a6fafadcd73ea19cff11c34b",
+      "identical": true,
+      "sha256": "ef0f62cd9fc58bd1a77fab82ae312dbb0187ffb42756d73636335a9fc32ac0ca",
+      "bytes": 38906,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_desktop.rs",
+      "old_blob": "bfd51b571957abb5f8310703c16c833a35353147",
+      "current_blob": "bfd51b571957abb5f8310703c16c833a35353147",
+      "identical": true,
+      "sha256": "e2d91e3ae0f1b028ff6cffc36b4899626c222dc26bf874b14aa3ac69a5e7add5",
+      "bytes": 2962,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_q24_circuit_task.rs",
+      "old_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "current_blob": "c969fac0cbae5b43d5aaca8fd5c71bd53d99e934",
+      "identical": true,
+      "sha256": "3457a2cbfcee2e3d99a317ff7abe2ff4d142217687336b3851259833b6fc26c2",
+      "bytes": 1028,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_handoff.rs",
+      "old_blob": "0071512a960b4e9b19b1d2897128c0d67fa59271",
+      "current_blob": "0071512a960b4e9b19b1d2897128c0d67fa59271",
+      "identical": true,
+      "sha256": "ce7a08933a135401786a67c431bb87fb4e2ced22fc21e02a520d1faae4f43a42",
+      "bytes": 9725,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_late_writer.rs",
+      "old_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+      "current_blob": "93f15f74c1b9134eb52489d3d8025255d67308b7",
+      "identical": true,
+      "sha256": "53868d4fd06628467a384e21f10445f804b98f90f1db0f9f70f5a82dc0ce4eb8",
+      "bytes": 5089,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_root_learning.rs",
+      "old_blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "current_blob": "792703744b84ab6df841035f1e6652e3c7bd71ad",
+      "identical": true,
+      "sha256": "09356c0edad6cd17a37b61a12233948e976fbd5a4900bbfca7aa69564071c2a8",
+      "bytes": 2102,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_calculator.rs",
+      "old_blob": "aecd492457ec089be818c84b7c0bbbec6806ea85",
+      "current_blob": "aecd492457ec089be818c84b7c0bbbec6806ea85",
+      "identical": true,
+      "sha256": "6e6c74e40add49db03fbfbe0175c5c63ccab2d65fb9bb0dfc487f129b7cf1ec3",
+      "bytes": 10450,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_desktop.rs",
+      "old_blob": "d3719d1c1ea28c49e7e4fd9050b23aeffc7dfc95",
+      "current_blob": "d3719d1c1ea28c49e7e4fd9050b23aeffc7dfc95",
+      "identical": true,
+      "sha256": "2f8c9e3111de7dfe2f87ecb4ce15acac0cde99c530660f79408bf2eabfcf6f31",
+      "bytes": 7063,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer.rs",
+      "old_blob": "caaae9c941cb76d8a575b7e7ce35defbb0ab0386",
+      "current_blob": "caaae9c941cb76d8a575b7e7ce35defbb0ab0386",
+      "identical": true,
+      "sha256": "f1f67b480ae8c1b6633aedbc5df4636e5fe839189cd24ab94f66cbe28f722d97",
+      "bytes": 20558,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_dependencies.rs",
+      "old_blob": "14d820cf58de5a883cb6fd24a02afbf0b4b675bc",
+      "current_blob": "14d820cf58de5a883cb6fd24a02afbf0b4b675bc",
+      "identical": true,
+      "sha256": "566fa0bc05e93f22b3e50aa3b6dbcde12650353e98b5fafc1987596c4855ff72",
+      "bytes": 4746,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_issuer_root.rs",
+      "old_blob": "289e1f205337ff15d84de4e49cef55166b3f3add",
+      "current_blob": "289e1f205337ff15d84de4e49cef55166b3f3add",
+      "identical": true,
+      "sha256": "6c9334e43648207a58aa9ec2c9c73f737b557f76235af5f7065ab9439e3932be",
+      "bytes": 9117,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes.rs",
+      "old_blob": "bfb919dde3e27bb2588cca720d57a84446fbd68f",
+      "current_blob": "bfb919dde3e27bb2588cca720d57a84446fbd68f",
+      "identical": true,
+      "sha256": "88bac0da45827654accbd850df23169518efbd01ddccdbf74a0d121e303c06c3",
+      "bytes": 16043,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_observation.rs",
+      "old_blob": "16c29bf729a478fef1a1c2fa8c056a76c97e9454",
+      "current_blob": "16c29bf729a478fef1a1c2fa8c056a76c97e9454",
+      "identical": true,
+      "sha256": "4216757bd72e1ce19144c6202da3ac9f712846082655dd92139e1aee427e68df",
+      "bytes": 5981,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke.rs",
+      "old_blob": "0385101b9eb0f23d6153327ee4794b7400b7b99c",
+      "current_blob": "0385101b9eb0f23d6153327ee4794b7400b7b99c",
+      "identical": true,
+      "sha256": "f54c5f71d95b031b02f6e938663caeaffaf207f02411b89b70c762eb5df8d163",
+      "bytes": 5694,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_notes_revoke_observation.rs",
+      "old_blob": "7bff1b0b377126de452880deffb83d6a01472441",
+      "current_blob": "7bff1b0b377126de452880deffb83d6a01472441",
+      "identical": true,
+      "sha256": "a4310bea0e1d470212694b294249f8006c91ea2e7cbc37d672c3cecca48b5c9d",
+      "bytes": 4232,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_signed_grant.rs",
+      "old_blob": "9e498c1685651f41e970b836de499a7a83f11b68",
+      "current_blob": "9e498c1685651f41e970b836de499a7a83f11b68",
+      "identical": true,
+      "sha256": "3bc76f5586d0a72ff4ced1e55058fa97dc33664bb92730cb0356eec3e5bd259c",
+      "bytes": 2945,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text.rs",
+      "old_blob": "9568f1a648dc5b49a7060eab1da22b15ae3a6e6b",
+      "current_blob": "9568f1a648dc5b49a7060eab1da22b15ae3a6e6b",
+      "identical": true,
+      "sha256": "2c2f7b82f4a2f6c9465bb4ad8259c33d2e3233a2ce4bc8754ba4133754b30448",
+      "bytes": 15897,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_text_human.rs",
+      "old_blob": "11002618c08049d8ab65ce6c7fdcd3f7cbb5bf3c",
+      "current_blob": "11002618c08049d8ab65ce6c7fdcd3f7cbb5bf3c",
+      "identical": true,
+      "sha256": "99bd0564466793f545bbc5a1db00bfcba35187de7d621bfd898f971a42fe0cbb",
+      "bytes": 4233,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer.rs",
+      "old_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+      "current_blob": "364a161a83265cbc1b6e7c33a3b4098a7f534fc8",
+      "identical": true,
+      "sha256": "5cdff81e698dc81f41930c7f07e49cacc12e10d5dd01c673a9c0fa34f1a35781",
+      "bytes": 12120,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/deployment_writer_rotate.rs",
+      "old_blob": "ff883c9cab51f91d1bd70e10a844ce17d389b415",
+      "current_blob": "ff883c9cab51f91d1bd70e10a844ce17d389b415",
+      "identical": true,
+      "sha256": "2e782008e9036f06ae8c77bba11fbf8dff67c277ae8527fce46fdae5e99ec4fd",
+      "bytes": 5485,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_adapter_prepare.rs",
+      "old_blob": "6393529592a343aa69244b645729d6d540509810",
+      "current_blob": "6393529592a343aa69244b645729d6d540509810",
+      "identical": true,
+      "sha256": "c8dd20575744e365511fbc13653b41f645be58b8781dce33c4b06bc25189137a",
+      "bytes": 15380,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_previous_recovery.rs",
+      "old_blob": "38ee404f468bc7a043c4fe541d9a066983b0a6f9",
+      "current_blob": "38ee404f468bc7a043c4fe541d9a066983b0a6f9",
+      "identical": true,
+      "sha256": "5096368d78e721edea54dad1f10634f627253c82fb6107924a36b7994b8f14cd",
+      "bytes": 4390,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_root_composition.rs",
+      "old_blob": "70cd2a73a33e8d8b53fb037be8fb7e928eb7cacd",
+      "current_blob": "70cd2a73a33e8d8b53fb037be8fb7e928eb7cacd",
+      "identical": true,
+      "sha256": "8ff76052b7d87895e5bb926d7f97ae526c8fc3dd2da97fd596cc8291557ecbda",
+      "bytes": 5826,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_observe.rs",
+      "old_blob": "dfeb5059d8e69bc8a1f96ac25885e94a02e0e924",
+      "current_blob": "dfeb5059d8e69bc8a1f96ac25885e94a02e0e924",
+      "identical": true,
+      "sha256": "d62ea375ee75905e5f959d1a221f10a0e19550a8b2cb4f7055c7d25d2c281063",
+      "bytes": 4682,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_proof.rs",
+      "old_blob": "337fb02754e34624149789a2b840c5978a8183b9",
+      "current_blob": "337fb02754e34624149789a2b840c5978a8183b9",
+      "identical": true,
+      "sha256": "9a4b224581f47faca84527a598c8f142ee3e562e99067dbde67ef713668a3df6",
+      "bytes": 6663,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recorded.rs",
+      "old_blob": "cb213ef942b35b1817aeb3efcd9c5e8cab0850e9",
+      "current_blob": "cb213ef942b35b1817aeb3efcd9c5e8cab0850e9",
+      "identical": true,
+      "sha256": "12a7d6fe5f44c3d80f510a554b0eb4cdcb76991152b94399cebe7655e63a1968",
+      "bytes": 16285,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recovery.rs",
+      "old_blob": "e6ac575694b4d1852794473e1fcf826e62e53631",
+      "current_blob": "e6ac575694b4d1852794473e1fcf826e62e53631",
+      "identical": true,
+      "sha256": "f8eb4698e40d04173bafb0b8c01b7714be766b2500469bc351b488bca2bfd727",
+      "bytes": 10870,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_recovery_runtime.rs",
+      "old_blob": "f41fbb270875de74055a370569bd9cdb1396bacc",
+      "current_blob": "f41fbb270875de74055a370569bd9cdb1396bacc",
+      "identical": true,
+      "sha256": "1d48ff19eb65f53849e828c38cdfb8f2a9638b274aa563a56e68cda5ecbbde6b",
+      "bytes": 2642,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/desktop_thread_transport.rs",
+      "old_blob": "671ecd15f84e7ed0533efd76924e06cf8b67a2d8",
+      "current_blob": "671ecd15f84e7ed0533efd76924e06cf8b67a2d8",
+      "identical": true,
+      "sha256": "f8b004127d64e7ce0c3b5de5ded3c4302471ee6e694bee6ec30929026712d940",
+      "bytes": 10158,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration.rs",
+      "old_blob": "e7e2af11c08d91059d4256e414963c3a491b5e56",
+      "current_blob": "e7e2af11c08d91059d4256e414963c3a491b5e56",
+      "identical": true,
+      "sha256": "4399691fee7613a58e471bd5eeef4d238559029d10c278be81485df8e19b80bb",
+      "bytes": 20335,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_auth.rs",
+      "old_blob": "6e1a88f8412304bf92456d4cec0705eded02e6c4",
+      "current_blob": "6e1a88f8412304bf92456d4cec0705eded02e6c4",
+      "identical": true,
+      "sha256": "7819a40f8384772d2e17fbfb90144ddfe140ea5bfd649ed6011ccf85aea82c5b",
+      "bytes": 6925,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint.rs",
+      "old_blob": "7c0ad26ab249c6e657e41b0fd8d8b5f6f4606b9f",
+      "current_blob": "7c0ad26ab249c6e657e41b0fd8d8b5f6f4606b9f",
+      "identical": true,
+      "sha256": "489d3179d2d5a874f220862ac8d29ed742790ac357cf30b5e1f9026c4b2938f8",
+      "bytes": 14939,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_codec.rs",
+      "old_blob": "9564a0973714028d37484d84d3a8a1cab6e372b4",
+      "current_blob": "9564a0973714028d37484d84d3a8a1cab6e372b4",
+      "identical": true,
+      "sha256": "f2d003729bfdfd85cc1cb42841d0161b5f7df0a6a76221c05e912ef1dc3a70ac",
+      "bytes": 20018,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_checkpoint_transport.rs",
+      "old_blob": "5d1b99b73b329a994bd04015f9b1c5450a411f21",
+      "current_blob": "5d1b99b73b329a994bd04015f9b1c5450a411f21",
+      "identical": true,
+      "sha256": "d69d4693ab8fdf55853ca50eb5ba9c6c68992ebfcb98d78b64b887ea98b4630e",
+      "bytes": 13197,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_delivery_runtime.rs",
+      "old_blob": "8f7e108ed411c0208fa7a2181b896509eca8b06f",
+      "current_blob": "8f7e108ed411c0208fa7a2181b896509eca8b06f",
+      "identical": true,
+      "sha256": "a29f48b169b2eef494767a55692f61a0e51e29f2390ef6c70c9aceeeb5cefcc8",
+      "bytes": 10673,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evaluation_evidence.rs",
+      "old_blob": "e099a12408afcb7bb993c733d0ec067c18fa8926",
+      "current_blob": "e099a12408afcb7bb993c733d0ec067c18fa8926",
+      "identical": true,
+      "sha256": "779316f273e35c8e99ebf63a93ee23d5ac73107cf0af631433dfcf0df9d155ea",
+      "bytes": 8068,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_client.rs",
+      "old_blob": "cc556120ea54dbd30548224b0f836b085ddcc5da",
+      "current_blob": "cc556120ea54dbd30548224b0f836b085ddcc5da",
+      "identical": true,
+      "sha256": "d07c434cbd8ad6976503dc81bd20aa9ccef2d6bc23dd366dae4deaddd1be8bde",
+      "bytes": 8942,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_evidence_wire.rs",
+      "old_blob": "930c828171fff88c7ea461b9d3ea6d088e5c863c",
+      "current_blob": "930c828171fff88c7ea461b9d3ea6d088e5c863c",
+      "identical": true,
+      "sha256": "3d36e7854fb3d973a335ade3c96a492937b155de418f80c84ddfaaa8bc94c9e7",
+      "bytes": 3076,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_iteration_generation_evidence.rs",
+      "old_blob": "f544581f3a35f8e41eda3aadd767a12f2ea6e47d",
+      "current_blob": "f544581f3a35f8e41eda3aadd767a12f2ea6e47d",
+      "identical": true,
+      "sha256": "a1cfd504e09ff4621d39a9618318240f6ea2ffbc830309f5c41fae4fe1404436",
+      "bytes": 8499,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_evidence.rs",
+      "old_blob": "922f9209f520046c5aa01b5284395cf3ef10f56c",
+      "current_blob": "922f9209f520046c5aa01b5284395cf3ef10f56c",
+      "identical": true,
+      "sha256": "2dea7fbbdedfe17cb62a0255c1425a472a6d7105266e9dd2575d1ab40188878e",
+      "bytes": 3753,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/learning_owner_journal.rs",
+      "old_blob": "42644a8bdd5bee77f9d4fa7ca672782bb38bc11e",
+      "current_blob": "42644a8bdd5bee77f9d4fa7ca672782bb38bc11e",
+      "identical": true,
+      "sha256": "1eb69785d7bc32dde09e928e9d3ac7449edb66e1dd8cb0c23c04580442e5cc53",
+      "bytes": 6515,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_g2_entry/owner.rs",
+      "old_blob": "269fd64c6d864c1be46f8257f3306ae7053b0ede",
+      "current_blob": "269fd64c6d864c1be46f8257f3306ae7053b0ede",
+      "identical": true,
+      "sha256": "42145c81c504aa5ef4adfd473759a747914e8b935beffe2a560de3917e366d31",
+      "bytes": 8418,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/native_hos2_owner.rs",
+      "old_blob": "eddb0c081dce1ad735fd325ee1e652c353727515",
+      "current_blob": "eddb0c081dce1ad735fd325ee1e652c353727515",
+      "identical": true,
+      "sha256": "507d99f1c6f8b5ae2554877330c5d9341369c454be6d10c8e09123c8588f458b",
+      "bytes": 10570,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation.rs",
+      "old_blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "current_blob": "d189af42af44d64dbc3e298c402d95254920e95f",
+      "identical": true,
+      "sha256": "ee0f9bce8e55160f785924a20b3cbad3b243c454227faf00699968e120e1aa1b",
+      "bytes": 16450,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_owner.rs",
+      "old_blob": "248d0ccbdba1590ec579bc3a58fb4c3210564c8a",
+      "current_blob": "248d0ccbdba1590ec579bc3a58fb4c3210564c8a",
+      "identical": true,
+      "sha256": "5d9ce6d99baf7895c7bfde7ef1aa6fe12b2daae396e416ffec65521f62eaa6af",
+      "bytes": 9376,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_evaluation_receipt_owner.rs",
+      "old_blob": "8dbf4097769d84b4093867d6918e0e871c89bd30",
+      "current_blob": "8dbf4097769d84b4093867d6918e0e871c89bd30",
+      "identical": true,
+      "sha256": "44e1c771ae778f2637178eb0a19a540349969485a20f2e86f45896cb381a7dd7",
+      "bytes": 20868,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/neuron_cell_learning_evaluation.rs",
+      "old_blob": "a3e199643440ea90c216520e5d8ac67d7887f5da",
+      "current_blob": "a3e199643440ea90c216520e5d8ac67d7887f5da",
+      "identical": true,
+      "sha256": "59d630ecaa524a0c21b2f276fc12afb5958fcbe0b00acb932f9fd59b9f43a7c1",
+      "bytes": 7569,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_adapter.rs",
+      "old_blob": "46abae4a97429b88cc7fa5eaf5483b07d79becec",
+      "current_blob": "46abae4a97429b88cc7fa5eaf5483b07d79becec",
+      "identical": true,
+      "sha256": "79f9acaf2ca2e44b26b99687e42e5157241a7c58b3496b2ef5c7fa759406f710",
+      "bytes": 28398,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_literal_prepare.rs",
+      "old_blob": "1fd55d97626b98dc1b3fabad7924e7b8bb616cda",
+      "current_blob": "1fd55d97626b98dc1b3fabad7924e7b8bb616cda",
+      "identical": true,
+      "sha256": "c9abf7f8cf3dfd4f0f99f2adcd711e9aa02d7bd65ff610a0c63dd0bb86fa3758",
+      "bytes": 4201,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_recovery_selection.rs",
+      "old_blob": "4c72f99ec4879a1b9bbea2977b3472f0a67745fc",
+      "current_blob": "4c72f99ec4879a1b9bbea2977b3472f0a67745fc",
+      "identical": true,
+      "sha256": "860f44b0db324b41bab9b875688adb0258ef1c852aff10ea3219520ea8078f6c",
+      "bytes": 3569,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_execution.rs",
+      "old_blob": "d7c6b4110dfb7d5efde8862e6c7e7c5e4cd8fc7a",
+      "current_blob": "d7c6b4110dfb7d5efde8862e6c7e7c5e4cd8fc7a",
+      "identical": true,
+      "sha256": "6efacf39bd1da20c1892219f391f896b2080de326955f5741d58c8eb2576c59a",
+      "bytes": 9927,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_human.rs",
+      "old_blob": "adfcabf7f56abc30aa37ac6c3dc183b18e9011a4",
+      "current_blob": "adfcabf7f56abc30aa37ac6c3dc183b18e9011a4",
+      "identical": true,
+      "sha256": "89c0c61a6c20f1a27b282f5f19a796f7f1ceca1608159554d17c051d41268e84",
+      "bytes": 5204,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_proof.rs",
+      "old_blob": "d76c5eb5fde22954aae26bbb2d95c76a1017390a",
+      "current_blob": "d76c5eb5fde22954aae26bbb2d95c76a1017390a",
+      "identical": true,
+      "sha256": "0ddd985f0c8dddf0c835081283b70b51db6c3b7827e38d1164ed22e41e804ea3",
+      "bytes": 6816,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_recorded.rs",
+      "old_blob": "aab40d7dc2cff9e239b1700eca193b98830dfe48",
+      "current_blob": "aab40d7dc2cff9e239b1700eca193b98830dfe48",
+      "identical": true,
+      "sha256": "69287b2f7822d486bc527b104e4dc04422b9652f3019713b7941267d262919a8",
+      "bytes": 16479,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_runtime.rs",
+      "old_blob": "f376e51cd2aa8cd38a3327801cc6719d833d24df",
+      "current_blob": "f376e51cd2aa8cd38a3327801cc6719d833d24df",
+      "identical": true,
+      "sha256": "3e263d46c7b3190021b43f159c021f0f3d1105819c515d09bb6275c563a79078",
+      "bytes": 27108,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_seed.rs",
+      "old_blob": "2fe2e42ace22d6685f9d4f4d99750e01cfbc7067",
+      "current_blob": "2fe2e42ace22d6685f9d4f4d99750e01cfbc7067",
+      "identical": true,
+      "sha256": "4adffd0d0d83342cd2ba60e3aed8af25c483ded476440cce22a67c1cea3353a4",
+      "bytes": 15976,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_status.rs",
+      "old_blob": "adeeeee4f7780eb4cfbf2c6080db73af5800540a",
+      "current_blob": "adeeeee4f7780eb4cfbf2c6080db73af5800540a",
+      "identical": true,
+      "sha256": "f37b0170bccf6061b77ec199c2eacd534da824e1900c6f3fcdd858ef56938faa",
+      "bytes": 7455,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/notes_thread_tool.rs",
+      "old_blob": "c32d0180dff979ee75e7ab77ebe06deb31c4d449",
+      "current_blob": "c32d0180dff979ee75e7ab77ebe06deb31c4d449",
+      "identical": true,
+      "sha256": "7bba5e74f222749ad4a1225c8f7e21e59930bd172375c510b1990138c0d8f62a",
+      "bytes": 16299,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_learning_source.rs",
+      "old_blob": "31a138658dba423e79b52c3f95574f83159eccde",
+      "current_blob": "31a138658dba423e79b52c3f95574f83159eccde",
+      "identical": true,
+      "sha256": "a420c394880419f0ff17e736816bc958afacb3ae88c8d4498d7e6f07f1134e04",
+      "bytes": 6055,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/owner_writer_custody.rs",
+      "old_blob": "5d6047c3809c4ff317e49a0ae09fee6f09ce7de1",
+      "current_blob": "5d6047c3809c4ff317e49a0ae09fee6f09ce7de1",
+      "identical": true,
+      "sha256": "1026a1369dd53397fcfcfe4e157a4761133d1b363ca033e96b0c73d016ccd6bc",
+      "bytes": 2193,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_authority.rs",
+      "old_blob": "5fca295975820a2ab10308b82eaf0bf7d31e6f7a",
+      "current_blob": "5fca295975820a2ab10308b82eaf0bf7d31e6f7a",
+      "identical": true,
+      "sha256": "30ecb92c79ec9a0718d54a59bace10f8f6568cd2927abf926117c406ec996374",
+      "bytes": 1502,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher.rs",
+      "old_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "current_blob": "4b615c40566ec351d53861eb2a57d8d85da1c310",
+      "identical": true,
+      "sha256": "f5aa92d683df793c1a2aa6076f783759496c7d0e6fcface276239ddf6cbea097",
+      "bytes": 18594,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_launcher_inputs.rs",
+      "old_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+      "current_blob": "707345d2cab002009f3f46466e77bf7f9c7bce02",
+      "identical": true,
+      "sha256": "2f756431d4f8749930a6cfc7c1c1647f7131770d785bc1b1986774954e44659e",
+      "bytes": 16134,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_notes_deployment.rs",
+      "old_blob": "d17f77ef95cac62ce5b88d1b634bebd7d6cdb2e7",
+      "current_blob": "d17f77ef95cac62ce5b88d1b634bebd7d6cdb2e7",
+      "identical": true,
+      "sha256": "8d95d4e287dde9ec7f5ad122368d7ed56a8141709579807cfd69098687f045ac",
+      "bytes": 6176,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_protected_host.rs",
+      "old_blob": "b2914a015352f28d96fdec04417f55453b1587e2",
+      "current_blob": "b2914a015352f28d96fdec04417f55453b1587e2",
+      "identical": true,
+      "sha256": "e00a2f5371171db7ff7ee28a209de5a0567e60b406c3e2469947e00817fcc4ed",
+      "bytes": 3829,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "old_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+      "current_blob": "39d127250b8e825292c25f8c34ec360d5d94ff60",
+      "identical": true,
+      "sha256": "ce7c64920815d9735c4025ee11af122496f6376d10da3609212da6d366c67034",
+      "bytes": 27044,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_authority_session.rs",
+      "old_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+      "current_blob": "c1af9340a0044b1159d65f5e631d2e918a14f544",
+      "identical": true,
+      "sha256": "4ddfe5b8a630433726fd530060608c52f6906cf25b6479a646449a1b1bac495e",
+      "bytes": 16197,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_desktop_startup.rs",
+      "old_blob": "b7756ea8f06b96048a2e29366b1a3e35a006bde6",
+      "current_blob": "b7756ea8f06b96048a2e29366b1a3e35a006bde6",
+      "identical": true,
+      "sha256": "420ec48c2cf0c0506d1adf978ba47c29781043c699265b2edf96550fbaaf5983",
+      "bytes": 8844,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_human_text_client.rs",
+      "old_blob": "485ce1848751ea7f17a1109d8cc23f2112764f9f",
+      "current_blob": "485ce1848751ea7f17a1109d8cc23f2112764f9f",
+      "identical": true,
+      "sha256": "a9272bb89ff090bcdd9cc18919c110f16f1f2f1ce0f6138af9e588ef746b5b1b",
+      "bytes": 2540,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_notes_startup.rs",
+      "old_blob": "535bf1e075c9fcb1a7e13eecfe01c9f0d92a2b91",
+      "current_blob": "535bf1e075c9fcb1a7e13eecfe01c9f0d92a2b91",
+      "identical": true,
+      "sha256": "eaf5011a34af75ba29e247d4d9ec84e255795f31ce64a82b3d624646a02e0476",
+      "bytes": 13228,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_observation_stream.rs",
+      "old_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "current_blob": "9d3d24bd5104be99372c8a55859360e792120605",
+      "identical": true,
+      "sha256": "e2e6f4d977f2648aafef7717ce670228856019ff6fa5f201f0571b68db94cefb",
+      "bytes": 9788,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_handoff.rs",
+      "old_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+      "current_blob": "3cb6a23f0ed4468492e5eeaf999c00e7c0e3e4b4",
+      "identical": true,
+      "sha256": "652ab0c4177d5105bc55b2a7ba2308eb53483ead3b454647bd958caf285f89ed",
+      "bytes": 9366,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_inputs.rs",
+      "old_blob": "d41e9127a9d9f982ba9ff2469de7cdd9d2631a65",
+      "current_blob": "d41e9127a9d9f982ba9ff2469de7cdd9d2631a65",
+      "identical": true,
+      "sha256": "c46260717d90ee9da91bd9a252ea233996843acf328bf3e938501d8b3ee2df56",
+      "bytes": 12923,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_handoff.rs",
+      "old_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "current_blob": "c3372a8e6493b8a9f5acc09c2d73a03e452ac22c",
+      "identical": true,
+      "sha256": "daec53d03c4f9e34323c5903354529c5f151bb5c08a1f030f7ab9c870009d78e",
+      "bytes": 4136,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_learning_inputs.rs",
+      "old_blob": "f12e808a049e0fa1418df0a578c0f9dde9bbe538",
+      "current_blob": "f12e808a049e0fa1418df0a578c0f9dde9bbe538",
+      "identical": true,
+      "sha256": "ef442ef7599e7f01139e7fd5af23cce3fae2d3389a584f4c9449c32a798836a6",
+      "bytes": 8373,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/root_production_writer_handoff.rs",
+      "old_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+      "current_blob": "deb83fae10fb7799d7faf1d3514a26aaf3488222",
+      "identical": true,
+      "sha256": "8ab8237504696c0f8835771c25c327e670d926306cfe5953838c5b0790c663f6",
+      "bytes": 4960,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "old_blob": "5e6971b0efecc5fb6fc91cbf1671dfb7fc02f8b5",
+      "current_blob": "5e6971b0efecc5fb6fc91cbf1671dfb7fc02f8b5",
+      "identical": true,
+      "sha256": "74fff8b657bd172303bcf89548b563ba762c26024fab6390d4d677f9b5312b67",
+      "bytes": 31673,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/action_skill_driver.rs",
+      "old_blob": "ab6103e0355ce326c82b8100145dfcbd6390d9cc",
+      "current_blob": "ab6103e0355ce326c82b8100145dfcbd6390d9cc",
+      "identical": true,
+      "sha256": "3bf30d9aab117f1ed26c4f239a034664a71e7826d1ad024c1a21627bb3a3ac19",
+      "bytes": 13319,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "old_blob": "b9c97eb6f85f39250658d7ee67b65b63c5d9bc61",
+      "current_blob": "b9c97eb6f85f39250658d7ee67b65b63c5d9bc61",
+      "identical": true,
+      "sha256": "e0b80b3e62217006481cc7dc211190104f0b3ee3ecaa2b99d0bb95cbe1f7a1d3",
+      "bytes": 64416,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/circuit_learning_outbox.rs",
+      "old_blob": "3ac271ff93a71d25891576dbeb2a750c25e48c06",
+      "current_blob": "3ac271ff93a71d25891576dbeb2a750c25e48c06",
+      "identical": true,
+      "sha256": "4146073b5ae32b234d19f959aba9e92fb82b6103011fceaa28840ed067530ef7",
+      "bytes": 11606,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "old_blob": "7840a3aab99080c99849c04553611fd728df1332",
+      "current_blob": "7840a3aab99080c99849c04553611fd728df1332",
+      "identical": true,
+      "sha256": "ddf06452709ddec72e8a0b268df3705dfa8d8ebc2e248a779b7b1b378bfec702",
+      "bytes": 10052,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "old_blob": "2fc9ce3431897ee1a9bce4485fc5d8a230a05066",
+      "current_blob": "2fc9ce3431897ee1a9bce4485fc5d8a230a05066",
+      "identical": true,
+      "sha256": "78ebb074a9a9a1fc359be8bbf760f50dbd3fa2f644863556075947c6b0009e20",
+      "bytes": 21468,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_host_issuer.rs",
+      "old_blob": "cbd5eb1ed0ea67fc20dcff244d1e637a5a73fff9",
+      "current_blob": "cbd5eb1ed0ea67fc20dcff244d1e637a5a73fff9",
+      "identical": true,
+      "sha256": "1e60093e11bd52b9b0d40624b2638a8e82f8c06c201480ac8a69b456274d9ae9",
+      "bytes": 9096,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "old_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "current_blob": "924e4552472038934f665f6acf7a95438294893f",
+      "identical": true,
+      "sha256": "9f151ac75919c4b901e798b5eb34b74ba2c7a5548e0c72844ec2a02555ea0d10",
+      "bytes": 61661,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_issuer_boundary.rs",
+      "old_blob": "d4d9a7436073da67334a8f807d8c51ea738ec02a",
+      "current_blob": "d4d9a7436073da67334a8f807d8c51ea738ec02a",
+      "identical": true,
+      "sha256": "ec3820c94760d28596c29302088301c191c478073ad273ae4625721dfd543951",
+      "bytes": 7695,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease_revoke.rs",
+      "old_blob": "b66a4daefc4612f08f44f82ccb899ea9d74e51bd",
+      "current_blob": "b66a4daefc4612f08f44f82ccb899ea9d74e51bd",
+      "identical": true,
+      "sha256": "a05b90323caec82824c850a34e135e80eeab4d33a42906240b8d31cfcf5126fe",
+      "bytes": 5452,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "old_blob": "84d55caf39b1746285f42c2777ddd410854fb7c9",
+      "current_blob": "84d55caf39b1746285f42c2777ddd410854fb7c9",
+      "identical": true,
+      "sha256": "a3c957633471d79121b39fd5a3ead8ea06a8a379c8ed66e756c40541b5edf214",
+      "bytes": 37673,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "old_blob": "c933f5bfe49bbc8b5515659edec2811471207659",
+      "current_blob": "c933f5bfe49bbc8b5515659edec2811471207659",
+      "identical": true,
+      "sha256": "472357b426d58e7d966c52cd1f8fb873881fac81e8689154f13cc95a169a8a05",
+      "bytes": 41842,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/provider_effect.rs",
+      "old_blob": "44b98cd8644180627b3ff055dd011bc08aa4d696",
+      "current_blob": "44b98cd8644180627b3ff055dd011bc08aa4d696",
+      "identical": true,
+      "sha256": "922820410f1e03a07649e7b1e5d0a0a27c3391c25d5620b1fed2536d64aab519",
+      "bytes": 111959,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
+      "old_blob": "ee151018f42aca5ee62d99b5234dfc21457b64cd",
+      "current_blob": "ee151018f42aca5ee62d99b5234dfc21457b64cd",
+      "identical": true,
+      "sha256": "99a55cb14e0cc5fc8093b0872a5bda6162b577a807b39131a73123a85172576c",
+      "bytes": 13173,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "old_blob": "13fe1b3def1e894ba9fbd755662f9da4a23204e9",
+      "current_blob": "13fe1b3def1e894ba9fbd755662f9da4a23204e9",
+      "identical": true,
+      "sha256": "236789c71714274210b837e2266e048eb376b63dd5d58b7ea67932978a05bffc",
+      "bytes": 10861,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs",
+      "old_blob": "5ba248accf42aea808b51929b73ccc4fde400c48",
+      "current_blob": "5ba248accf42aea808b51929b73ccc4fde400c48",
+      "identical": true,
+      "sha256": "0e0e483ef6b992787c6fe1c140c302b9225c1b8896ffead17bf174a593d243ed",
+      "bytes": 10261,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/product_execution.rs",
+      "old_blob": "ab8912206bc97219f7d6a2bb5f7513ccd4250fce",
+      "current_blob": "ab8912206bc97219f7d6a2bb5f7513ccd4250fce",
+      "identical": true,
+      "sha256": "b08ae74c9da62d474f5669020000f15f538f10433f2eeda3da6b0a7218f50e11",
+      "bytes": 13379,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration.rs",
+      "old_blob": "70b0194f3863ab88445476e7c3a33bec1f47efea",
+      "current_blob": "70b0194f3863ab88445476e7c3a33bec1f47efea",
+      "identical": true,
+      "sha256": "e3305a1bab3239d84168ab67ad3b3f52508c1e3295ab774c5181855531503fc5",
+      "bytes": 19593,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_digest.rs",
+      "old_blob": "9b7e8da3c7ebe9dc51cf24684945b60931028978",
+      "current_blob": "9b7e8da3c7ebe9dc51cf24684945b60931028978",
+      "identical": true,
+      "sha256": "83b9d2cfd7f248ac7300ec95c8eacd045e6906e9a9b0b0af4221a1ab1ae23664",
+      "bytes": 7909,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_scope.rs",
+      "old_blob": "a702abce92903e1c8e4c411baff1fa82ad8bcdf4",
+      "current_blob": "a702abce92903e1c8e4c411baff1fa82ad8bcdf4",
+      "identical": true,
+      "sha256": "51281b59b332c472acb4a7fbe91d71d784ee164386ef4bd6e58fb89eab6c5e71",
+      "bytes": 5176,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/learning_iteration_types.rs",
+      "old_blob": "827d05abc541498920013465880e6fd4211088b9",
+      "current_blob": "827d05abc541498920013465880e6fd4211088b9",
+      "identical": true,
+      "sha256": "fe2b03a31b5d7e48f27674bad66ce627323d130ec3401861f25c2957a857a0f8",
+      "bytes": 7792,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
+      "old_blob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b",
+      "current_blob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b",
+      "identical": true,
+      "sha256": "9ac23a42999349a7defd1dd7f268ccb498f007ff1766b51e5cc1fea3d9dbd822",
+      "bytes": 88330,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
+      "old_blob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b",
+      "current_blob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b",
+      "identical": true,
+      "sha256": "f993d1e56f25da24b90400ca590248faa7c165dfcd188717ab4cec4d640de888",
+      "bytes": 24881,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
+      "old_blob": "3a097702ef7294467e2a16b5ae8624b716372c41",
+      "current_blob": "3a097702ef7294467e2a16b5ae8624b716372c41",
+      "identical": true,
+      "sha256": "bdca616c77008c7b4fb9cdbdc0dd972f912facd3665279d1ede0df15e6654098",
+      "bytes": 10147,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
+      "old_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+      "current_blob": "83bfc190f930409df01d099668370ad2d7578f7f",
+      "identical": true,
+      "sha256": "f7ef6d101e90c347fe7f3b49aec62a8a3c8148540789c10d5e7bb0e6e92f96df",
+      "bytes": 29173,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "old_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "current_blob": "214cae5c9fc4e60598a572faeca5d92c87b0be7f",
+      "identical": true,
+      "sha256": "6b8f65d3324cd4531c0a5f94ac321068b4a2661132944472b8176838b335590a",
+      "bytes": 15660,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint.rs",
+      "old_blob": "1124d36c5d50a589a2df31641fa29b5e631d3a44",
+      "current_blob": "1124d36c5d50a589a2df31641fa29b5e631d3a44",
+      "identical": true,
+      "sha256": "3576228e7da7d2a2328b39d6f16169a5e18ac9575e8dfda2971881653c3cf86c",
+      "bytes": 17060,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_image.rs",
+      "old_blob": "4bf00bf3ff07fd9a56eebb379cfc11ef7b419f23",
+      "current_blob": "4bf00bf3ff07fd9a56eebb379cfc11ef7b419f23",
+      "identical": true,
+      "sha256": "1c8289add747fca408cbab4715e123ba407ae60dff3ebc7395a01c0e9ab137a5",
+      "bytes": 11851,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_install.rs",
+      "old_blob": "e217cf7df577dc56a23327ef775c558e38c56531",
+      "current_blob": "e217cf7df577dc56a23327ef775c558e38c56531",
+      "identical": true,
+      "sha256": "9e2aef0a6074d26758c816c033c97c801883777937892074beef1f0c50103f55",
+      "bytes": 15086,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_checkpoint_publication.rs",
+      "old_blob": "b59ede97ce1bf8393e5452c55db823cc6f5d9c77",
+      "current_blob": "b59ede97ce1bf8393e5452c55db823cc6f5d9c77",
+      "identical": true,
+      "sha256": "a7a4598e40869f92a4d771b1818aca063f88799d28d7a68a965bf6e1d15b6aa9",
+      "bytes": 2873,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_barrier.rs",
+      "old_blob": "ee7a8de8d3e14fc9c2be3f5973edea8891092926",
+      "current_blob": "ee7a8de8d3e14fc9c2be3f5973edea8891092926",
+      "identical": true,
+      "sha256": "01e90ddda3162665491893217a3edf189021ca9ee24cf328d56ebfde43688c26",
+      "bytes": 2076,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "old_blob": "31ff28513c61f22f752e8118814521cc8017b0e5",
+      "current_blob": "31ff28513c61f22f752e8118814521cc8017b0e5",
+      "identical": true,
+      "sha256": "2196d6e4902be46e0706a51779872cd3a9c0c4ec1a314ad58ba586adb65aee29",
+      "bytes": 29371,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_hos2_ordering.rs",
+      "old_blob": "0138e912ba08033086ac72e2d77577412f08d6fa",
+      "current_blob": "0138e912ba08033086ac72e2d77577412f08d6fa",
+      "identical": true,
+      "sha256": "3e2c4a482fe3e19082683563631f77780a7979d08045d20cdfdeb9d2becddcbe",
+      "bytes": 13548,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_retirement_ack.rs",
+      "old_blob": "bdd1c4a4e60014da34201a97c545e69c1f7f912e",
+      "current_blob": "bdd1c4a4e60014da34201a97c545e69c1f7f912e",
+      "identical": true,
+      "sha256": "e1856ebdaca93891ca1f219c2f5fde3861edc3706d0bc7384026160e8cda9df9",
+      "bytes": 12046,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_integrity.rs",
+      "old_blob": "9718aa2116358c00f2b922d1e3637ac8ef224f57",
+      "current_blob": "9718aa2116358c00f2b922d1e3637ac8ef224f57",
+      "identical": true,
+      "sha256": "b6dca3632ac83505aa265fec4564052763e11e6ad45610ab4fa0b487cdbaecc2",
+      "bytes": 9062,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_model.rs",
+      "old_blob": "18472af4159beb35c8830dc8d4bddebf2a2b6fe6",
+      "current_blob": "18472af4159beb35c8830dc8d4bddebf2a2b6fe6",
+      "identical": true,
+      "sha256": "f6758ac3c919532f6b61964e397d99ffbf24bdde4dcdc3f79724e63cb921d149",
+      "bytes": 12754,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_read.rs",
+      "old_blob": "56874586b346c6a611e61af478506716405aa75f",
+      "current_blob": "56874586b346c6a611e61af478506716405aa75f",
+      "identical": true,
+      "sha256": "71c6b68a8a29708e3a7ac2e8850d80994f850e00c695c839d59e1976cc534464",
+      "bytes": 8154,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/objective_sender_store.rs",
+      "old_blob": "b82f733910fe7b808b2e0e38bb5e03a38732bd99",
+      "current_blob": "b82f733910fe7b808b2e0e38bb5e03a38732bd99",
+      "identical": true,
+      "sha256": "20186aabbd7b337f3cc95b1c3cce0b748b3e21fc6ffda5eb0bd4dcaefeb75b59",
+      "bytes": 12029,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_calculator_previous.rs",
+      "old_blob": "33b0cbe005da10b01e49c4e89a71dcf1017c4d3f",
+      "current_blob": "33b0cbe005da10b01e49c4e89a71dcf1017c4d3f",
+      "identical": true,
+      "sha256": "751c86ad4f01f38a814d9168c097380cbd2ae59c3bacfdbec345870261eb30a6",
+      "bytes": 5542,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_hos2_owner.rs",
+      "old_blob": "aab1dadcd353344ec1656864b1df98bd815bb7f5",
+      "current_blob": "aab1dadcd353344ec1656864b1df98bd815bb7f5",
+      "identical": true,
+      "sha256": "03e307a78cf42062f24c63951178ce3d15890e9e2e0121c63fe36e90387e5ea2",
+      "bytes": 8285,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_notes_owner.rs",
+      "old_blob": "f15bc21970adda726a0eca41f6c96693df2e7b70",
+      "current_blob": "f15bc21970adda726a0eca41f6c96693df2e7b70",
+      "identical": true,
+      "sha256": "f43d92f7c368184eb41fd54b085843a2bb80f95ce82f8850d9d9e6d78716f271",
+      "bytes": 10475,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_owner_publication.rs",
+      "old_blob": "9a667e041442cb5cf3bf66a994ff263229923936",
+      "current_blob": "9a667e041442cb5cf3bf66a994ff263229923936",
+      "identical": true,
+      "sha256": "94e6e9f8ff1de0d8bae8366fde4ec5c2fa9688f6aaed9a73272c9993cbfc56ce",
+      "bytes": 4111,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_retirement_ack.rs",
+      "old_blob": "d70847cd249ad7249b1c2d90f2b35c3c5293d59b",
+      "current_blob": "d70847cd249ad7249b1c2d90f2b35c3c5293d59b",
+      "identical": true,
+      "sha256": "e0bab6c84d5c36f5b102efc7c3b083e0b33a8434e36758b8fe495d810f51b90f",
+      "bytes": 8869,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "old_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+      "current_blob": "6ca435e1219b4258b0da1a3a05f3dad7dcbf12bd",
+      "identical": true,
+      "sha256": "5899048c5b316dcf7acf4f5eca7ac2edf9cbf38f6832131f862bac04d361c9cb",
+      "bytes": 172904,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_inference.rs",
+      "old_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+      "current_blob": "41c76f880fe05d71b298834c6cef936291f6c9e0",
+      "identical": true,
+      "sha256": "45347b020decc2c213cecfccf6b395dc2d514d3e5eb2ee03cace27c60f673e23",
+      "bytes": 10719,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal.rs",
+      "old_blob": "3fcefa51a70ab2c56ad5182c569d884fa5c43f57",
+      "current_blob": "3fcefa51a70ab2c56ad5182c569d884fa5c43f57",
+      "identical": true,
+      "sha256": "06c16fd8ac629694ce07be7f1ca75616b9b593c561290c9bab36177bb1bbc13a",
+      "bytes": 21620,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/cell_journal_readback.rs",
+      "old_blob": "da62a742ade74c8550a73534c138ffe960a5fc8d",
+      "current_blob": "da62a742ade74c8550a73534c138ffe960a5fc8d",
+      "identical": true,
+      "sha256": "a805c3c98b01d35881b07610be9c24669937822943412ee5bdb8bcbea872370c",
+      "bytes": 1916,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control.rs",
+      "old_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+      "current_blob": "b71415f30d7bc42e6989f342c308a8d41fbc3f36",
+      "identical": true,
+      "sha256": "7546e1c3689d08487fe21c0178ab915f1e7615fd3b9f680de504ab48755995fc",
+      "bytes": 13098,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-neuron/src/feature_control_codec.rs",
+      "old_blob": "c6e3b2218e9bd6c30a3013869890452b660a93bd",
+      "current_blob": "c6e3b2218e9bd6c30a3013869890452b660a93bd",
+      "identical": true,
+      "sha256": "84b1480c9d8054b0b4d3eb65248333be314332ccabdc1ebc11fbdd3eea65febb",
+      "bytes": 4644,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/notes_thread_source.rs",
+      "old_blob": "96c588c4cb17c7634186d865c7f662a04cc86f31",
+      "current_blob": "96c588c4cb17c7634186d865c7f662a04cc86f31",
+      "identical": true,
+      "sha256": "ca1cc530cdc96cebf0c42cd3ace6af5e12527e44052aa6318926e8484f32e506",
+      "bytes": 2831,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_dispatch.rs",
+      "old_blob": "9adde4531daad8c6d42bab23e34fa8099ead2418",
+      "current_blob": "9adde4531daad8c6d42bab23e34fa8099ead2418",
+      "identical": true,
+      "sha256": "5f4fa963d5ea337afbd459f45f3a4f46a12ffd8e42f99a93d6cd55d645e51e09",
+      "bytes": 15349,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon.rs",
+      "old_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "current_blob": "eed817dcac736beded62ad83c2cbb908936370e4",
+      "identical": true,
+      "sha256": "aaf780f945bf45b9a0e6442c22fdee06f2c953efcc968d61141efe61b25bce16",
+      "bytes": 62705,
+      "protected_file": false,
+      "boundary_definition": true
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/main.rs",
+      "old_blob": "65259282764e188b3bb993109b79fd62b0e46c27",
+      "current_blob": "65259282764e188b3bb993109b79fd62b0e46c27",
+      "identical": true,
+      "sha256": "a2c62f0a54d8d236a15d76568e85a0b5fad7b126a3f46fdc77d275da1313f70e",
+      "bytes": 6503,
+      "protected_file": true,
+      "boundary_definition": false
+    },
+    {
+      "path": "codex-rs/model-provider/src/provider_effect.rs",
+      "old_blob": "e6edec8572740f88c16fd9f26427c58c0f8d1380",
+      "current_blob": "e6edec8572740f88c16fd9f26427c58c0f8d1380",
+      "identical": true,
+      "sha256": "c2cbd1a5449c4983955db2aa9035643af1f103a73103aba244fd4c7758079a6d",
+      "bytes": 38888,
+      "protected_file": true,
+      "boundary_definition": true
+    },
+    {
+      "path": "justfile",
+      "old_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "current_blob": "a215a76cf407ace9715bca39c20497014e7dd4dc",
+      "identical": true,
+      "sha256": "74f869224eba12fc4212b043428e7f5b35b551d26f5b06161c25d8aca525f124",
+      "bytes": 7838,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_cell_learning_evaluation_source_closure.py",
+      "old_blob": "63b205bc1c145ef10aaed87217e44ec1c601102b",
+      "current_blob": "63b205bc1c145ef10aaed87217e44ec1c601102b",
+      "identical": true,
+      "sha256": "c3a45003ea4271bdb906e4dbc3494d87a63530e29537e16962d1bddb2e4c446e",
+      "bytes": 11132,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_current_caller_migrations.py",
+      "old_blob": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+      "current_blob": "2572859b4f67298235d6573851d0ca6c6ffc5632",
+      "identical": true,
+      "sha256": "5f1606e2c9b0f2c496558e8f64f1794f6776fb8fbaa7173563f195e11f87c3f4",
+      "bytes": 16037,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_generation_learning_evidence_source_closure.py",
+      "old_blob": "2032e55bab47db0f18263bdfd82a130d901811e4",
+      "current_blob": "2032e55bab47db0f18263bdfd82a130d901811e4",
+      "identical": true,
+      "sha256": "a7d73a77de4634ad8ec3ae655e1444617f3d1dbfb3dd998cd810e6b1195846cc",
+      "bytes": 7286,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_closed_world.py",
+      "old_blob": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+      "current_blob": "b94fb21327b38015cd3bc7a973a100916397ba3d",
+      "identical": true,
+      "sha256": "868dc981a1d0333d76702f8c70babee4f523e0c28c232a002191ac8bc176d937",
+      "bytes": 9571,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_checkpoint_source_closure.py",
+      "old_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+      "current_blob": "db2df6e8a3396effb6eae9a2f3f3229186d7f16f",
+      "identical": true,
+      "sha256": "d9af5ff23cc7d7eb6d1f8f702bfa3e6d9d55fff7a7b3cbddf179c1e5b6ddf57b",
+      "bytes": 7652,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_learning_evaluation_recovery_source_closure.py",
+      "old_blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "current_blob": "8d607e733cf950165475cd80b9e3a080b13ed949",
+      "identical": true,
+      "sha256": "36c96acedbed534ce2df59f60afc362ce2cccdf7b9631a1a165b2303cb661fde",
+      "bytes": 8442,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_evaluation_receipt_owner_source_closure.py",
+      "old_blob": "83c2b0ab02f2e505ad4a615646c5088fd27177e0",
+      "current_blob": "83c2b0ab02f2e505ad4a615646c5088fd27177e0",
+      "identical": true,
+      "sha256": "28c0d2779b2ef3d7c679a15edaf1554b21c698769964f1e9c95c164dc502d3dd",
+      "bytes": 13759,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_learning_owner_source_closure.py",
+      "old_blob": "9c93ced86e71b2faccdb559c42fb0d911efdfb36",
+      "current_blob": "9c93ced86e71b2faccdb559c42fb0d911efdfb36",
+      "identical": true,
+      "sha256": "ae332da50320d01baaaf283d6074f538cd0452c07adfe78301f93079988051c9",
+      "bytes": 11500,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_original_training_owner_source_closure.py",
+      "old_blob": "b67e45761add0147c90581faa911e9a1a7d23de0",
+      "current_blob": "b67e45761add0147c90581faa911e9a1a7d23de0",
+      "identical": true,
+      "sha256": "0d584a3295eb9abe09d0f5831546b88301e40bf41a2c3bf9179d384218ed797d",
+      "bytes": 5869,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_model_proposal_source_closure.py",
+      "old_blob": "7734a3bc99aa73505ac0811f23aef9427a5287b8",
+      "current_blob": "7734a3bc99aa73505ac0811f23aef9427a5287b8",
+      "identical": true,
+      "sha256": "fd2b665281cf9d2760d3fabcbcc4ff9b986c6798e6c3a13c204e9dfe33da999d",
+      "bytes": 5999,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_q24_training_plan_source_closure.py",
+      "old_blob": "da3f6c11e3430af3c0d0e111360438d36fbb4be7",
+      "current_blob": "da3f6c11e3430af3c0d0e111360438d36fbb4be7",
+      "identical": true,
+      "sha256": "c0151a4d9fb1c38360d7634729ea987ab7dd6b1f6c1c2a9e5d412eabce1c5c1d",
+      "bytes": 7733,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_admin_source_closure.py",
+      "old_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+      "current_blob": "fdcabf49eb7aa7ac9827ce8ad5ace4ea62342982",
+      "identical": true,
+      "sha256": "aa5036a5498383d8c4968f7fc546d1e93c15e10b7bb76cd288804100273a8b7e",
+      "bytes": 4867,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_bootstrap_source_closure.py",
+      "old_blob": "cef14c9405a61793af2e92ba79a3ad2582290c7b",
+      "current_blob": "cef14c9405a61793af2e92ba79a3ad2582290c7b",
+      "identical": true,
+      "sha256": "de68b52da4bc13e54249f23896efabdf7f76ed683a9049cf15fcdff201abe87e",
+      "bytes": 16191,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_root_learning_scope_source_closure.py",
+      "old_blob": "8e0e5e36ee31673071f1fba7dddd59dfd93d123c",
+      "current_blob": "8e0e5e36ee31673071f1fba7dddd59dfd93d123c",
+      "identical": true,
+      "sha256": "a96477e917dd5febef1cdbb6c9b2a7f2ea5f1540fb872f074ffd1a82cef9e6a0",
+      "bytes": 12169,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_training_no_update_source_closure.py",
+      "old_blob": "373efb313ea6bbce97d1855a7269d05dcc50e016",
+      "current_blob": "373efb313ea6bbce97d1855a7269d05dcc50e016",
+      "identical": true,
+      "sha256": "4752c4a83f4b1a7082efb325696a243f372144808a09fa679a2b08643ebdbd28",
+      "bytes": 4618,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "qa/b4-no-bypass/test_verify_hepta_callers.py",
+      "old_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+      "current_blob": "a8a52d5ca4ba00d510eb24c763a32bc7c4771593",
+      "identical": true,
+      "sha256": "fc879da40eb15575788a310cf2ddbe4dc988bfa192f729d3d842c9a3bf12b787",
+      "bytes": 46748,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "scripts/hepta_typed_callers.py",
+      "old_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "current_blob": "e23bb8aa42241b429ef5dbce5a4660853b66eb2f",
+      "identical": true,
+      "sha256": "3740bc9c17796686f1d6b282675d275d1b07c70a4b22c67945072c7b61a40d38",
+      "bytes": 7672,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "scripts/run-nextest.py",
+      "old_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "current_blob": "1ed63abe84267b320cbfb0123a70aac5507f4595",
+      "identical": true,
+      "sha256": "45c4e35d1ff24840d9e1e05331af0b89475bfe1aec3231afc56fecb8cea66127",
+      "bytes": 10206,
+      "protected_file": false,
+      "boundary_definition": false
+    },
+    {
+      "path": "scripts/verify_hepta_callers.py",
+      "old_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "current_blob": "7a6709691c372504ca11b5d2a74e14ba819fca8f",
+      "identical": true,
+      "sha256": "8899ec2b328125b2049b808cac0eeda3f57bfc6db89348512a58777101ae6dfa",
+      "bytes": 31701,
+      "protected_file": false,
+      "boundary_definition": false
+    }
+  ],
+  "original_full_scanner_pass_commit": "30692d721d67321df0414c5c3f990449d7b9fea8",
+  "full_scanner_rerun_on_current": false,
+  "old_native_results_transferred": false,
+  "comparison_coverage": {
+    "protected_file_rows": 219,
+    "unique_protected_file_paths": 175,
+    "boundary_rows": 225,
+    "unique_boundary_definition_paths": 115,
+    "distinct_production_and_guard_blobs_compared": 214,
+    "complete_git_tree_inventories_compared": true
+  }
+}

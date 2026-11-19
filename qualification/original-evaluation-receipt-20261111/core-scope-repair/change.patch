@@ -1,0 +1,44 @@
+diff --git a/codex-rs/core/src/unified_exec/async_watcher_tests.rs b/codex-rs/core/src/unified_exec/async_watcher_tests.rs
+index 0992e0fd217..278bf63d343 100644
+--- a/codex-rs/core/src/unified_exec/async_watcher_tests.rs
++++ b/codex-rs/core/src/unified_exec/async_watcher_tests.rs
+@@ -159,22 +159,23 @@ async fn output_transcript_survives_lagged_deltas_polling_and_late_output() -> a
+     let mut expected = prefix[..head_budget].to_vec();
+     expected.extend_from_slice(format!("\n... {omitted} bytes omitted ...\n").as_bytes());
+     expected.extend_from_slice(&prefix[prefix.len() - head_budget..]);
+-    let retained = transcript.lock().await;
+-    assert_eq!(
+-        (
+-            retained.total_bytes(),
+-            retained.retained_bytes(),
+-            retained.omitted_bytes(),
+-            retained.to_bytes_with_omission_marker(),
+-        ),
+-        (
+-            prefix.len(),
+-            UNIFIED_EXEC_OUTPUT_MAX_BYTES,
+-            omitted,
+-            expected.clone(),
+-        )
+-    );
+-    drop(retained);
++    {
++        let retained = transcript.lock().await;
++        assert_eq!(
++            (
++                retained.total_bytes(),
++                retained.retained_bytes(),
++                retained.omitted_bytes(),
++                retained.to_bytes_with_omission_marker(),
++            ),
++            (
++                prefix.len(),
++                UNIFIED_EXEC_OUTPUT_MAX_BYTES,
++                omitted,
++                expected.clone(),
++            )
++        );
++    }
+     assert_eq!(
+         resolve_aggregated_output(&transcript, "fallback must not win".to_string()).await,
+         String::from_utf8_lossy(&expected)

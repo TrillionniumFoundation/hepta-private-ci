@@ -1,0 +1,36 @@
+{"command": ["just", "test", "-p", "codex-hepta-agentd", "--lib", "--locked", "--offline", "-E", "test(q24_model_proposal)"], "cpu_affinity": [0, 1], "cargo_build_jobs": 1, "bindgen_resource": "-resource-dir=/workspace/scratch/623459b0e1bc/toolchains/llvm20/unpacked/usr/lib/llvm-20/lib/clang/20"}
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local python3 ../scripts/run-nextest.py "$@"
+    Blocking waiting for file lock on build directory
+   Compiling tracing-serde v0.2.0
+   Compiling tracing-subscriber v0.3.23
+   Compiling tracing-appender v0.2.5
+   Compiling rama-core v0.3.0
+   Compiling rama-net v0.3.0
+   Compiling tempfile v3.27.0
+   Compiling rama-crypto v0.3.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/third_party/rama-crypto-0.3.0-time-backport)
+   Compiling rama-tls v0.3.0
+   Compiling sorted_vector_map v0.2.1
+   Compiling rama-http-types v0.3.0
+   Compiling terminal_size v0.4.4
+   Compiling pagable v0.4.2
+   Compiling clap_builder v4.6.7
+   Compiling rama-http-headers v0.3.0
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling rama-http v0.3.0
+   Compiling clap v4.6.7
+   Compiling codex-http-client v0.0.0 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/http-client)
+   Compiling starlark_map v0.14.2
+   Compiling rama-tcp v0.3.0
+   Compiling fd-lock v4.0.4
+   Compiling starlark v0.14.2 (/workspace/scratch/b4d6d3702e3a/hepta-model-proposal-build/codex-rs/third_party/starlark-0.14.2-blake3-backport)
+   Compiling rustyline v14.0.0
+   Compiling rama-http-core v0.3.0
+   Compiling starlark_syntax v0.14.2
+   Compiling rama-unix v0.3.0
+   Compiling rama-udp v0.3.0
+error: could not compile `starlark` (lib)
+
+Caused by:
+  process didn't exit successfully: `rustc --crate-name starlark --edition=2024 third_party/starlark-0.14.2-blake3-backport/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=1 --warn=unexpected_cfgs --check-cfg 'cfg(rust_nightly)' --check-cfg 'cfg(starlark_require_heap_names)' --check-cfg 'cfg(feature, values("pagable", "pagable_dep"))' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "pagable"))' -C metadata=cee29a4e1a0ca366 -C extra-filename=-ab949670020ccdb4 --out-dir /workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps -C incremental=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/incremental -L dependency=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps --extern allocative=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liballocative-a393c6a523b3409c.rmeta --extern anyhow=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libanyhow-a49a7ed4571cd982.rmeta --extern blake3=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libblake3-f17b19d90f8f7035.rmeta --extern bumpalo=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libbumpalo-feb7c4da7a5c3b3b.rmeta --extern cmp_any=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libcmp_any-103264c9ffa2ce97.rmeta --extern dashmap=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libdashmap-5e72c1074f6ccb92.rmeta --extern debugserver_types=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libdebugserver_types-e683a386f1faa306.rmeta --extern derivative=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libderivative-59b9b1b20ce618bc.so --extern derive_more=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libderive_more-025ca80f5463b204.rmeta --extern display_container=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libdisplay_container-6c0376e15ff0033c.rmeta --extern dupe=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libdupe-54b8e36748e06210.rmeta --extern either=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libeither-67ecebc30647e1fd.rmeta --extern erased_serde=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/liberased_serde-e12b5b68aff185aa.rmeta --extern hashbrown=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libhashbrown-d1446fd11770bd87.rmeta --extern indexmap=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libindexmap-34b02962001d7eb6.rmeta --extern inventory=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libinventory-01fa82dec78b4af1.rmeta --extern itertools=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libitertools-ca6cb04479df34d5.rmeta --extern maplit=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libmaplit-52f8e7946961a059.rmeta --extern memoffset=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libmemoffset-86e8c9d6235a3b2c.rmeta --extern num_bigint=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libnum_bigint-3d42254a4cd83688.rmeta --extern num_traits=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libnum_traits-2d3bcc9629f34f3f.rmeta --extern once_cell=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libonce_cell-b39916a9fb8aefe3.rmeta --extern pagable=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libpagable-58139f8888f125db.rmeta --extern paste=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libpaste-1a2f1349fa487086.so --extern ref_cast=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libref_cast-f26a1e1630ade7ad.rmeta --extern regex=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libregex-0c05008eff25009b.rmeta --extern rustyline=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/librustyline-cb2990d7cc254f4d.rmeta --extern serde=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libserde-b291de652172b6e6.rmeta --extern serde_json=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libserde_json-4032f7e57058850e.rmeta --extern starlark_derive=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstarlark_derive-1c4391259ced4f73.so --extern starlark_map=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstarlark_map-477538c22a67e42c.rmeta --extern starlark_syntax=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstarlark_syntax-72ef07771ee54961.rmeta --extern static_assertions=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstatic_assertions-a2c0b3b0d9b492ce.rmeta --extern strong_hash=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstrong_hash-fe31bc00b8291c95.rmeta --extern strsim=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libstrsim-692bc331d97929b3.rmeta --extern textwrap=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libtextwrap-14233a7d030f56b6.rmeta --extern thiserror=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/deps/libthiserror-249897f4a8942419.rmeta -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/blake3-bd7a76ddc34693f7/out -L native=/workspace/scratch/b4d6d3702e3a/hepta-rmcp-target/debug/build/blake3-bd7a76ddc34693f7/out` (signal: 9, SIGKILL: kill)
+error: command `/workspace/scratch/f7c0ded86bcc/toolchain/installed/bin/cargo test --no-run --message-format json-render-diagnostics --package codex-hepta-agentd --lib --locked --offline` exited with code 101
+error: recipe `test` failed on line 89 with exit code 101
