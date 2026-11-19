@@ -1,0 +1,127 @@
+{
+  "schema": "mem-native-five-preparation-publication-v2",
+  "state": "ACTUAL_IMMUTABLE_PARTS_AND_METADATA_PUBLISHED_NO_REF_CHANGES",
+  "archive": {
+    "bytes": 815008,
+    "git_blob": "d46ba90b70eb42ccfd239a3dec813a2be5d555fb",
+    "path": "NATIVE_FIVE_PREPARATION_V2.tar.xz",
+    "sha256": "41e4fd36bd7d1af83d5e9cc3a4dea389bb37dd5871c8b3f6bf9290017e4c5d58",
+    "whole_archive_git_blob_created": false
+  },
+  "members": 73,
+  "parts": [
+    {
+      "bytes": 460800,
+      "git_blob": "7fb231b13137050e83012cfa1f196502468afe1c",
+      "offset": 0,
+      "path": "NATIVE_FIVE_PREPARATION_V2.part-001.xz.part",
+      "sha256": "d23d0d5a525dc9a976b48db70471e37176d9157135616f1cb2556b091e7a8b79",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "7fb231b13137050e83012cfa1f196502468afe1c"
+        },
+        "isError": false
+      },
+      "actual_create_ack_matches_local_git_blob": true,
+      "complete_raw_remote_readback": false,
+      "readback_error": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "bytes": 354208,
+      "git_blob": "cb802e6911f2b5aed91fff220b8d0e1266ea5ded",
+      "offset": 460800,
+      "path": "NATIVE_FIVE_PREPARATION_V2.part-002.xz.part",
+      "sha256": "b9b118ea7c8866323047ccf8b30cd48b20f70478d78df64013d9e4ce7cbd0db6",
+      "actual_create_response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Action completed."
+          }
+        ],
+        "structuredContent": {
+          "sha": "cb802e6911f2b5aed91fff220b8d0e1266ea5ded"
+        },
+        "isError": false
+      },
+      "actual_create_ack_matches_local_git_blob": true,
+      "complete_raw_remote_readback": false,
+      "readback_error": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch only accepts UTF-8 text. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    }
+  ],
+  "metadata": [
+    {
+      "path": "MEMBER_MANIFEST_V2.json",
+      "bytes": 19289,
+      "sha256": "40e648e67607cfb1552bd1ed61aad0bddbb60bac524103d3d400ee83a5149248",
+      "git_blob": "8c2612d01ff761ecf0d9ec2cda3f08d1b61638c8",
+      "complete_utf8_readback_equal": true
+    },
+    {
+      "path": "ARCHIVE_INDEX_V2.json",
+      "bytes": 891,
+      "sha256": "da5eccd3df9e50a82878ed0ab28e9c8a9e1afcad0e1381757355cc7e71fefdae",
+      "git_blob": "e529bcc566ff58cc659dec9df5c7480275977408",
+      "complete_utf8_readback_equal": true
+    },
+    {
+      "path": "LOCAL_ARCHIVE_AUDIT_V2.json",
+      "bytes": 665,
+      "sha256": "8235f8f439776cb5777ef99c5710352329d978c8ebcde38f8d95f2fce168b689",
+      "git_blob": "3fd9f8352c9f71709f15d0c0b128f8437ec60cc8",
+      "complete_utf8_readback_equal": true
+    },
+    {
+      "path": "verify_preparation_v2.py",
+      "bytes": 6252,
+      "sha256": "32ccab32cdf3013306cd432850cd47140c2f98143f45684c048ca298f124d7bd",
+      "git_blob": "efd6094e51989223867232175541b6bf0fd9bda7",
+      "complete_utf8_readback_equal": true
+    },
+    {
+      "path": "LOCAL_PACKAGING_HISTORY.json",
+      "bytes": 834,
+      "sha256": "25329669a652ffca0a4c231f8816abf3d8c14a4c9d908a7fe026d8338dc7f717",
+      "git_blob": "6b17570e18242c840f00886f3af0268e4503d8e7",
+      "complete_utf8_readback_equal": true
+    }
+  ],
+  "local_audit": "ALL_73_MEMBERS_19_REFERENCES_26_FINAL_SOURCES_COMPLETE_TREE_RENDERED_FOUR_AND_ADMISSION_VERIFIED",
+  "source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+  "source_tree": "5a7c897a33e4eef48ea8f4bf52eaf48ea7c866ae",
+  "harness_head": "5529aeaace80458fb0b1ecae776f95de78c5f9c3",
+  "original_run": 43047914262,
+  "original_job": 130616746852,
+  "native_results_included": false,
+  "boundary": "Binary Git Fetch rejected non-UTF8 parts. Creation acknowledged their exact Git SHA; full raw remote readback is delegated to the root carrier. Five UTF8 metadata objects were compared in full. Initial local packaging reader failed from variable shadowing; original local archive/reader retained and V2 independently verified. No model, native, host, rerun or ref mutation was issued for publication."
+}

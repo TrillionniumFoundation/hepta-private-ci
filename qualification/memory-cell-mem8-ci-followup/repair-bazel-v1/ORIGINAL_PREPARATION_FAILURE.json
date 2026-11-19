@@ -1,0 +1,232 @@
+{
+  "schema": "mem8.bazel-lock-preparation-failure.v1",
+  "execution_host": "desktop",
+  "original_launch_job": "1a1c9e74b6d-2564-358",
+  "original_idempotency_key": "mem8-integrated-bazel-lock-via-ai395-ed353817-v1",
+  "original_pid": 3970050,
+  "launch_receipt": {
+    "candidate_tree": "6a809f5a03bf2d9d399c9b2f78dbb0d0b48f9aa9",
+    "execution_host": "desktop",
+    "input_sha256": "c8aebccc54263da0b3fe35921eb3dd125db8bf18ab2f7645ce97d2f2e0403fdf",
+    "inputs": "/home/qian-qi/mem8-integrated-bazel-lock-inputs-ed353817-v1",
+    "maximum_lock_phase_count": 2,
+    "model_requests_executed": 0,
+    "native_tests_executed": 0,
+    "pgid": 3970050,
+    "phase_timeout_seconds": 1200,
+    "pid": 3970050,
+    "started_at": "2026-11-11T09:19:03.687193+00:00",
+    "state": "launched; original RESULT.json required for terminal conclusion",
+    "task": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1"
+  },
+  "status": "failed_exact_clean_base_precondition_before_candidate_overlay_or_bazel",
+  "phases_completed": [
+    {
+      "name": "bazel-version",
+      "command": [
+        "/home/qian-qi/.cache/bazelisk/downloads/sha256/d302d22ed77ee5658b87857249baa579db84300ecebe0a1e9a357b5b20f80eb8/bin/bazel",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.152399+00:00",
+      "finished_at": "2026-11-11T09:19:04.160715+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.00830551516264677,
+      "cleanup": {
+        "owned_pgid": 3970091,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "just-version",
+      "command": [
+        "/home/qian-qi/.cargo/bin/just",
+        "--version"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.161051+00:00",
+      "finished_at": "2026-11-11T09:19:04.164823+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.0037734038196504116,
+      "cleanup": {
+        "owned_pgid": 3970092,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "clone",
+      "command": [
+        "git",
+        "clone",
+        "--shared",
+        "--no-checkout",
+        "/home/qian-qi/mem8-matrix-diagnostic-ed353817-v1/source",
+        "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1/source"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.165073+00:00",
+      "finished_at": "2026-11-11T09:19:04.197578+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.03250669199042022,
+      "cleanup": {
+        "owned_pgid": 3970093,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "origin",
+      "command": [
+        "git",
+        "-C",
+        "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1/source",
+        "remote",
+        "set-url",
+        "origin",
+        "https://github.com/TrillionniumFoundation/hepta-private-ci.git"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.197815+00:00",
+      "finished_at": "2026-11-11T09:19:04.201719+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.00390433706343174,
+      "cleanup": {
+        "owned_pgid": 3970096,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "base-object",
+      "command": [
+        "git",
+        "-C",
+        "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1/source",
+        "cat-file",
+        "-e",
+        "2ae5215beaf8d7b7df111a090b82134beae2683d^{commit}"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.202091+00:00",
+      "finished_at": "2026-11-11T09:19:04.206051+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.003961640177294612,
+      "cleanup": {
+        "owned_pgid": 3970097,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "sparse",
+      "command": [
+        "git",
+        "-C",
+        "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1/source",
+        "sparse-checkout",
+        "set",
+        "--cone",
+        "codex-rs",
+        "scripts",
+        ".github",
+        "tools",
+        "bazel",
+        "patches",
+        "docs"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.206271+00:00",
+      "finished_at": "2026-11-11T09:19:04.210291+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 0.00402932008728385,
+      "cleanup": {
+        "owned_pgid": 3970098,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    },
+    {
+      "name": "checkout-base",
+      "command": [
+        "git",
+        "-C",
+        "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1/source",
+        "checkout",
+        "--detach",
+        "2ae5215beaf8d7b7df111a090b82134beae2683d"
+      ],
+      "cwd": "/home/qian-qi/mem8-integrated-bazel-lock-ed353817-v1",
+      "started_at": "2026-11-11T09:19:04.210751+00:00",
+      "finished_at": "2026-11-11T09:19:05.879387+00:00",
+      "exit_code": 0,
+      "timed_out": false,
+      "timeout_seconds": 120,
+      "elapsed_seconds": 1.6686556180939078,
+      "cleanup": {
+        "owned_pgid": 3970099,
+        "new_session": true,
+        "required": false,
+        "signals": [],
+        "group_absent_after": true,
+        "parent_reaped": true
+      }
+    }
+  ],
+  "observed_at": "2026-11-11T09:28:16.804622+00:00",
+  "actual_head": "2ae5215beaf8d7b7df111a090b82134beae2683d",
+  "actual_tree": "12159640adcf073b51f3837e75575e11f5c20233",
+  "actual_status": " D codex-rs/app-server/src/config_manager.rs\n D codex-rs/app-server/src/config_manager_feature_constraints_tests.rs\n D codex-rs/hepta-agentd/src/app_runtime.rs\n D codex-rs/hepta-agentd/src/config_episodic.rs\n D codex-rs/hepta-agentd/src/production_composition_fixture.rs\n D codex-rs/hepta-agentd/src/production_episodic_control_tests.rs\n D codex-rs/hepta-agentd/src/production_episodic_provider_authority.rs\n D codex-rs/hepta-agentd/src/production_episodic_provider_tests.rs\n D codex-rs/hepta-agentd/src/runtime.rs\n",
+  "exact_head_and_tree": true,
+  "tracked_deleted_count": 9,
+  "clean_base_gate_passed": false,
+  "lock_commands_executed": 0,
+  "native_tests_executed": 0,
+  "model_requests_executed": 0,
+  "source_overlay_applied": false,
+  "failure_file": "original-prep-records/DRIVER_FAILURE.txt",
+  "checkout_stderr": "original-prep-records/checkout-base.stderr",
+  "checkout_exit_code": 0,
+  "checkout_stderr_missing_object_errors_preserved": true,
+  "root_cause_observed": "source objects missing from shared clone while exact commit/tree objects existed",
+  "underlying_partial_clone_explanation": "A shared local clone did not configure an origin promisor remote to obtain absent donor objects; v2 explicitly prepares the new clone only.",
+  "original_pid_observed_absent": true,
+  "original_driver_numeric_exit_code": null,
+  "numeric_exit_not_observed_note": "Detached process traceback and failure file were observed; no numeric process wait result was retained by the original launcher.",
+  "replayed": false,
+  "v1_worktree_modified_after_failure": false,
+  "original_formatted_capsule_sha256": "9bf19c161d3f4bc5831ca88fe5719d7e70fe4b8814a22c3ab5969a510cf2ece2",
+  "original_formatted_capsule_bytes": 2147662,
+  "candidate_tree_not_yet_materialized": "6a809f5a03bf2d9d399c9b2f78dbb0d0b48f9aa9"
+}

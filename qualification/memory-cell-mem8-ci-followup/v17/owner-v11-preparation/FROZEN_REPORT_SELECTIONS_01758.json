@@ -1,0 +1,605 @@
+{
+  "schema": "mem8.owner-v11.frozen-report-selections.v1",
+  "purpose": "Reviewable selections from original completed reports and explicitly named observations; not a final owner publication.",
+  "records": [
+    {
+      "id": "source_v9",
+      "proof": {
+        "local_path": "mem8-source-v9-preparation/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1160,
+        "sha256": "bfbfaf82ab765638349f1c47390484e6645dd86f0f9bf16ffac2aa28892f71a2",
+        "git_blob": "de2ede197c810f23a6f9af832d89a332a6cb5257"
+      },
+      "project": {
+        "status": "/status",
+        "run": "/run",
+        "job": "/job",
+        "attempt": "/attempt",
+        "source": "/source",
+        "tree": "/tree",
+        "formatter_changed_paths": "/formatter_changed_paths",
+        "source_after_clean": "/source_after_clean",
+        "cumulative_overlay_paths": "/cumulative_overlay_paths",
+        "rust_inventory": "/rust_inventory",
+        "python_pass": "/python_pass",
+        "old_name_hits": "/old_name_hits",
+        "full_golden_equal_except_derived_count": "/full_golden_equal_except_derived_count",
+        "both_lock_bytes_unchanged": "/both_lock_bytes_unchanged",
+        "elapsed_seconds": "/elapsed_seconds",
+        "original_deadline_seconds": "/original_deadline_seconds",
+        "native_tests_executed": "/native_tests_executed",
+        "real_model_requests": "/real_model_requests"
+      },
+      "expected": {
+        "/status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "/python_pass": 18,
+        "/rust_inventory": 6204,
+        "/original_deadline_seconds": 600,
+        "/native_tests_executed": 0,
+        "/real_model_requests": 0,
+        "/formatter_changed_paths": [],
+        "/source_after_clean": true,
+        "/both_lock_bytes_unchanged": true,
+        "/full_golden_equal_except_derived_count": true
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "completed_work": {
+        "id": "MEM8-V9-SOURCE-GATES",
+        "status": "CLOSED_SOURCE_ONLY",
+        "scope": "Original source-only gate, tree, caller receipt, locks and 18 Python regressions verified."
+      }
+    },
+    {
+      "id": "source_v10",
+      "proof": {
+        "local_path": "mem8-source-v10-preparation/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1162,
+        "sha256": "e0949b39fe15edfb012d11eee05de9c34215a30ccde10d06087421faf7302ac1",
+        "git_blob": "7ec42e5b814661be43e815788b3a16cfdd0cf6c7"
+      },
+      "project": {
+        "status": "/status",
+        "run": "/run",
+        "job": "/job",
+        "attempt": "/attempt",
+        "source": "/source",
+        "tree": "/tree",
+        "formatter_changed_paths": "/formatter_changed_paths",
+        "source_after_clean": "/source_after_clean",
+        "cumulative_overlay_paths": "/cumulative_overlay_paths",
+        "rust_inventory": "/rust_inventory",
+        "python_pass": "/python_pass",
+        "old_name_hits": "/old_name_hits",
+        "full_golden_equal_except_derived_count": "/full_golden_equal_except_derived_count",
+        "both_lock_bytes_unchanged": "/both_lock_bytes_unchanged",
+        "elapsed_seconds": "/elapsed_seconds",
+        "original_deadline_seconds": "/original_deadline_seconds",
+        "native_tests_executed": "/native_tests_executed",
+        "real_model_requests": "/real_model_requests"
+      },
+      "expected": {
+        "/status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "/python_pass": 18,
+        "/rust_inventory": 6204,
+        "/original_deadline_seconds": 600,
+        "/native_tests_executed": 0,
+        "/real_model_requests": 0,
+        "/formatter_changed_paths": [],
+        "/source_after_clean": true,
+        "/both_lock_bytes_unchanged": true,
+        "/full_golden_equal_except_derived_count": true
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "completed_work": {
+        "id": "MEM8-V10-SOURCE-GATES",
+        "status": "CLOSED_SOURCE_ONLY",
+        "scope": "Original source-only gate, tree, caller receipt, locks and 18 Python regressions verified."
+      }
+    },
+    {
+      "id": "source_v11",
+      "proof": {
+        "local_path": "mem8-source-v11-preparation/ROOT_SOURCE_GATE_AUDIT.json",
+        "bytes": 1513,
+        "sha256": "cd82e07467d57c30e6174aea67d394e2935ab657e6111570400a12f730d58e82",
+        "git_blob": "f6eca22113eb2612e5a88ff47b5d18124b64a11a"
+      },
+      "project": {
+        "status": "/status",
+        "run": "/run",
+        "job": "/job",
+        "attempt": "/attempt",
+        "source": "/source",
+        "tree": "/tree",
+        "formatter_changed_paths": "/formatter_changed_paths",
+        "source_after_clean": "/source_after_clean",
+        "cumulative_overlay_paths": "/cumulative_overlay_paths",
+        "rust_inventory": "/rust_inventory",
+        "python_pass": "/python_pass",
+        "old_name_hits": "/old_name_hits",
+        "full_golden_equal_except_derived_count": "/full_golden_equal_except_derived_count",
+        "both_lock_bytes_unchanged": "/both_lock_bytes_unchanged",
+        "elapsed_seconds": "/elapsed_seconds",
+        "original_deadline_seconds": "/original_deadline_seconds",
+        "native_tests_executed": "/native_tests_executed",
+        "real_model_requests": "/real_model_requests"
+      },
+      "expected": {
+        "/status": "PASS_FULL_ORIGINAL_ZIP_CANONICAL_TAR_AND_UNCHANGED_VERIFIER",
+        "/python_pass": 18,
+        "/rust_inventory": 6204,
+        "/original_deadline_seconds": 600,
+        "/native_tests_executed": 0,
+        "/real_model_requests": 0,
+        "/formatter_changed_paths": [],
+        "/source_after_clean": true,
+        "/both_lock_bytes_unchanged": true,
+        "/full_golden_equal_except_derived_count": true
+      },
+      "boundary": "Original source-only qualification on its own head; no native pass or adoption benefit.",
+      "completed_work": {
+        "id": "MEM8-V11-SOURCE-GATES",
+        "status": "CLOSED_SOURCE_ONLY",
+        "scope": "Original source-only gate, tree, caller receipt, locks and 18 Python regressions verified."
+      }
+    },
+    {
+      "id": "mem_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-memarch-original/MEM_COMPLETE_ORIGINAL_AUDIT.json",
+        "bytes": 10936,
+        "sha256": "5d2ead0506e8cc00cdb2afe558ea9a2c6b287ef4e8d9f1e56c003bfed0cac794",
+        "git_blob": "d46e88fd6fec0e3592d1d55e7e0c195d7405b542"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "attempt": "/attempt",
+        "head": "/head",
+        "tree": "/tree",
+        "status": "/status",
+        "api_status": "/api_status",
+        "api_conclusion": "/api_conclusion",
+        "CPU_executions": "/CPU/test_executions",
+        "integrity_executions": "/integrity/test_executions",
+        "python_totals": "/python_totals",
+        "native_totals": "/native_totals",
+        "all_test_totals": "/all_test_totals",
+        "native_evidence": "/native_evidence",
+        "synthetic_campaign": "/synthetic_campaign",
+        "original_jobs": "/original_jobs",
+        "ignored_real_provider_test_executions": "/ignored_real_provider_test_executions",
+        "not_established": "/not_established"
+      },
+      "expected": {
+        "/head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "/status": "PASS_ORIGINAL_MEM_WORKFLOW_SOFTWARE_SCOPE",
+        "/CPU/test_executions": 119,
+        "/integrity/test_executions": 35,
+        "/native_totals/executions": 34,
+        "/native_totals/distinct_case_names": 33,
+        "/native_totals/drain_child_markers": 3,
+        "/all_test_totals/failed": 0,
+        "/ignored_real_provider_test_executions": 0,
+        "/new_scored_memory_actor_episodes": 0
+      },
+      "boundary": "154 Python executions/120 distinct plus34 native executions/33 distinct; three drain child markers are not three more selected cases. Fourteen synthetic readers do not prove successor-task benefit.",
+      "completed_work": {
+        "id": "MEM8-D0F-MEM-SOFTWARE-SCOPE",
+        "status": "QUALIFIED_ORIGINAL_SOFTWARE_SCOPE",
+        "scope": "Original exact-d0f MEM workflow only; no scientific memory-benefit or production-owner acceptance."
+      }
+    },
+    {
+      "id": "architecture_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-memarch-original/ARCH_COMPLETE_ORIGINAL_AUDIT.json",
+        "bytes": 426132,
+        "sha256": "ad4d5b9d647a5915e97d481732df2ab11035cb6661d6908ad3139bd377ebe347",
+        "git_blob": "c4f313a35f19aa4e99b57070da79c5e9b50bf062"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "attempt": "/attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "status": "/status",
+        "API_terminal": "/API_terminal",
+        "Architecture_required": "/Architecture_required",
+        "python_totals": "/python_totals",
+        "native_totals": "/native_totals",
+        "combined_test_executions": "/combined_test_executions",
+        "language_qualified_distinct_case_ids": "/language_qualified_distinct_case_ids",
+        "base_lane_candidate": "/lanes/0/candidate",
+        "source_lane_candidate": "/lanes/1/candidate",
+        "original_jobs": "/original_jobs",
+        "all_receipts_known_exit_zero_and_source_before_after_clean": "/all_receipts_known_exit_zero_and_source_before_after_clean",
+        "boundary": "/boundary",
+        "candidate_transport_boundary": "/candidate_transport_boundary"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "/status": "PASS_ORIGINAL_ARCHITECTURE_WORKFLOW",
+        "/python_totals/executions": 290,
+        "/python_totals/distinct_case_names": 146,
+        "/native_totals/executions": 526,
+        "/native_totals/distinct_package_target_case_ids": 521,
+        "/native_totals/failed": 0,
+        "/combined_test_executions": 816,
+        "/all_receipts_known_exit_zero_and_source_before_after_clean": true
+      },
+      "boundary": "Base lane144 Python/source lane146 Python; source526 native executions/521 distinct. Same-tree base reuse required the actual source lane success. Not whole hostedCI or independent trust.",
+      "completed_work": {
+        "id": "MEM8-D0F-ARCHITECTURE-SCOPE",
+        "status": "QUALIFIED_ORIGINAL_SOFTWARE_SCOPE",
+        "scope": "Original Architecture lanes and aggregate, preserving base-merge/source-head identity and repeated cases."
+      }
+    },
+    {
+      "id": "private_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-private-evidence-v1/package/AUDIT.json",
+        "bytes": 9126,
+        "sha256": "06198cca9fd5bd3d47ead64d1cb2dc2748a65940a88815af4ecd1ed8fd6818df",
+        "git_blob": "13b3fec8bcf761bf8215efa8f20509a4a52a3c08"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "run_attempt": "/run_attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "job_conclusion": "/job_conclusion",
+        "original_unmutated_named_passes": "/original_unmutated_named_passes",
+        "original_unmutated_unique_case_ids": "/original_unmutated_unique_case_ids",
+        "phase_test_counts": "/phase_test_counts",
+        "additional_unmutated_control_executions": "/additional_unmutated_control_executions",
+        "counterfactual_mutated_executions": "/counterfactual_mutated_executions",
+        "expected_mutation_failures": "/expected_mutation_failures",
+        "controls_not_added_to_unique_34": "/controls_not_added_to_unique_34",
+        "signed_credit": "/signed_credit",
+        "scope": "/scope"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "/job_conclusion": "success",
+        "/original_unmutated_unique_case_ids": 34,
+        "/additional_unmutated_control_executions": 2,
+        "/counterfactual_mutated_executions": 4,
+        "/expected_mutation_failures": 2
+      },
+      "boundary": "Thirty-four distinct primary passes; repeated positives and mutation controls remain separate. No broad Windows sandbox claim.",
+      "completed_work": {
+        "id": "MEM8-D0F-PRIVATE-SCOPE",
+        "status": "QUALIFIED_ORIGINAL_SOFTWARE_SCOPE",
+        "scope": "Original Windows private-state, prompt-runtime and signed-credit selection only."
+      }
+    },
+    {
+      "id": "native_two_d0f",
+      "proof": {
+        "local_path": "mem8-ci-followup-v17/d0f-arch-native2-remote/native-two-d0f/INDEPENDENT_AUDIT.json",
+        "bytes": 9767,
+        "sha256": "2b67d1301259d740490948ed894e864249aba4606e2b5aae03b15f80c6f685b3",
+        "git_blob": "609e5c3571f56b45b680bcde0b40e1b9ed1ef6ce"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "attempt": "/attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "harness_head": "/harness_head",
+        "qualification": "/qualification",
+        "observed_status_counts": "/observed_status_counts",
+        "observed_terminal_execution_count": "/observed_terminal_execution_count",
+        "observed_unique_terminal_case_count": "/observed_unique_terminal_case_count",
+        "independently_qualified_native_cases": "/independently_qualified_native_cases",
+        "clean_scoped_fix_packages": "/clean_scoped_fix_packages",
+        "phases": "/phases",
+        "binary_boundary": "/binary_boundary"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "/qualification": "PASS_TWO_NATIVE_AND_ONE_CLEAN_FIX",
+        "/observed_status_counts": {
+          "PASS": 2
+        },
+        "/observed_terminal_execution_count": 2,
+        "/clean_scoped_fix_packages": [
+          "codex-core"
+        ]
+      },
+      "boundary": "Two exact V2 routing cases and one clean codex-core fix on d0f. No adjacent logging-case or cross-head pass transfer.",
+      "completed_work": {
+        "id": "MEM8-D0F-TWO-NATIVE-AND-CORE-FIX",
+        "status": "QUALIFIED_ORIGINAL_SOFTWARE_SCOPE",
+        "scope": "Only the two named cases, fresh JUnit/UUID/raw records and the original clean core lint."
+      }
+    },
+    {
+      "id": "fence013_isolated",
+      "proof": {
+        "local_path": "mem-fence013-evidence-v1/package/AUDIT.json",
+        "bytes": 6423,
+        "sha256": "851994529f9502095c80c4c83e87bba99ba6227e55169205105f83cda648cd8e",
+        "git_blob": "d65e88b8633cf19f9beff56abb083eccdcbe91ef"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "attempt": "/attempt",
+        "action_commit": "/action_commit",
+        "reviewed_action_source": "/reviewed_action_source",
+        "source_anchor": "/source_anchor",
+        "harness": "/harness",
+        "bundle_manifest": "/bundle_manifest",
+        "final_qualification": "/final_qualification",
+        "post_mode": "/post_mode",
+        "post_result": "/post_result",
+        "post_controls": "/post_controls",
+        "actual_python_tests": "/actual_python_tests",
+        "changed_files_checked": "/changed_files_checked",
+        "original_blob_threshold_bytes": "/original_blob_threshold_bytes",
+        "source_before_after": "/source_before_after",
+        "limitations": "/limitations"
+      },
+      "expected": {
+        "/final_qualification": "PASS_FOR_THIS_AUDIT_MODE_ACTION_AND_ORIGINAL_POLICY_JOB",
+        "/changed_files_checked": 1,
+        "/post_mode": "audit",
+        "/post_controls/protection_available": false,
+        "/post_controls/readiness": "ready_observation_only"
+      },
+      "boundary": "Independent c895-parent one-workflow qualification, complete captured action/binary identity. Audit readiness does not assert enforcing protection or explain old v0.10.",
+      "completed_work": {
+        "id": "MEM8-FENCE013-AUDIT-QUALIFICATION",
+        "status": "CLOSED_AUDIT_MODE_POLICY_SCOPE",
+        "scope": "Only original unchanged audit-mode action and blob-policy checks in the isolated one-file harness."
+      }
+    },
+    {
+      "id": "fence013_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/FENCE_SCOPE_AUDIT.json",
+        "bytes": 14394,
+        "sha256": "2432bd9f6525a0dfb5f39aa85b82762bd22cd7593c0a30a84245c5c792947719",
+        "git_blob": "f57637f75260322d2ac46b8c91d08a3abed88d1a"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "attempt": "/run_attempt",
+        "source_head": "/source_head",
+        "merge_head": "/checkout_merge",
+        "tree": "/source_and_merge_tree",
+        "action_pin": "/action_pin",
+        "status": "/status",
+        "policy_selftests": "/policy_selftests",
+        "policy_changed_files_checked": "/policy_changed_files_checked",
+        "max_bytes": "/max_bytes",
+        "post_mode": "/original_final_report/mode",
+        "post_result": "/original_final_report/result",
+        "post_controls": "/original_final_report/controls",
+        "actual_runtime_binary_sha256_observed_in_this_job": "/actual_runtime_binary_sha256_observed_in_this_job",
+        "scope_boundaries": "/scope_boundaries"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/status": "PASSED_ORIGINAL_BLOB_POLICY_JOB_AUDIT_ONLY",
+        "/policy_changed_files_checked": 224,
+        "/max_bytes": 512000,
+        "/actual_runtime_binary_sha256_observed_in_this_job": null,
+        "/original_final_report/controls/protection_available": false
+      },
+      "boundary": "Ordinary d0f PR blob-policy job checked224 changed files. It has no separate full action/binary capture; do not import that observation from the isolated one-file harness."
+    },
+    {
+      "id": "blocking_original_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/snapshot-016/OBSERVATION.json",
+        "bytes": 3777,
+        "sha256": "99bfa00818fa049f8abba3b2db5ab7ccb9dde06c24f2d7b019cb03e3aa3a545f",
+        "git_blob": "1183fbf0998e1ef38e199d4fddd5f5fad62d07b4"
+      },
+      "project": {
+        "observed_at_utc": "/observed_at_utc",
+        "run_id": "/run_id",
+        "head_sha": "/head_sha",
+        "run_attempt": "/run_attempt",
+        "run_status": "/run_status",
+        "run_conclusion": "/run_conclusion",
+        "jobs_count": "/jobs_count",
+        "counts": "/counts",
+        "nonterminal": "/nonterminal",
+        "artifact_metadata_count": "/artifact_metadata_count"
+      },
+      "expected": {
+        "/run_id": 43062473474,
+        "/head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/run_attempt": 1,
+        "/read_only": true
+      },
+      "boundary": "This is the explicitly named original API observation, not a synthetic final result. Running and absent aggregate jobs remain unevaluated. All raw-log recovery gaps stay in the complete blocking packet."
+    },
+    {
+      "id": "windows_shard2_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD2_FAILURE_AUDIT.json",
+        "bytes": 2964,
+        "sha256": "11263f3f07f20085a82848c3445a6ec344eb6a3a6eb8bdf4be554842c26a7153",
+        "git_blob": "57440b0f876e28e16b15d3e8e3dc7a2889b6749d"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "head": "/head",
+        "original_raw": "/original_raw",
+        "distinct_failed_cases": "/distinct_failed_cases",
+        "limits": "/limits"
+      },
+      "expected": {
+        "/head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/job_id": 130668671332
+      },
+      "boundary": "Retain elevated outside-delete and CLI probe failures and plugin Persist OS5 flaky attempt. Reprinted failures are not new executions."
+    },
+    {
+      "id": "mac_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/MAC_INTEL_TARGET_RECORDS.json",
+        "bytes": 236038,
+        "sha256": "79a3b13104cbabd68a86ec27b086c538dae685a582b82d8f6b275b8ead942065",
+        "git_blob": "de4358ddaa6a61c839d6765409f8d66b64771697"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "run_attempt": "/run_attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "raw": "/raw",
+        "counts": "/counts",
+        "cached_targets": "/cached_targets",
+        "actual_targets": "/actual_targets",
+        "original_summary": "/original_summary",
+        "summary_pass_includes_flaky": "/summary_pass_includes_flaky",
+        "original_flaky_runs_are_aggregate_shard_attempts_not_unique_case_count": "/original_flaky_runs_are_aggregate_shard_attempts_not_unique_case_count"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+        "/counts": {
+          "PASSED": 408,
+          "SKIPPED": 172,
+          "TIMEOUT": 1,
+          "FAILED": 2,
+          "FLAKY": 1
+        },
+        "/cached_targets": 403,
+        "/actual_targets": 9
+      },
+      "boundary": "Bazel target counts only. Memory and code-mode failures plus supervisor target timeout remain; core-all flaky display does not supply every passing retry body. No lifecycle observation proves a unique cause."
+    },
+    {
+      "id": "windows_shard1_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD1_PARTIAL_SEGMENT_ADDENDUM.json",
+        "bytes": 40531,
+        "sha256": "78ea70524e714c88dabbc3159e6c1845bce7263427930bef5c80d2a50e13063b",
+        "git_blob": "e716e11d1c0d87db3612a7343107fc45f129f9ea"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "source_head": "/source_head",
+        "original_target_outcome": "/original_target_outcome",
+        "cause": "/cause",
+        "attribution_limit": "/attribution_limit",
+        "prior_reading_boundary": "/prior_reading_boundary",
+        "complete_first_segment_summaries": "/complete_first_segment/summaries",
+        "unfinished_second_segment_announced": "/unfinished_second_segment/announced_tests",
+        "unfinished_second_segment_has_terminal": "/unfinished_second_segment/has_terminal_libtest_summary",
+        "unfinished_second_segment_running_observations": "/unfinished_second_segment/named_running_observations"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/cause": "UNKNOWN",
+        "/unfinished_second_segment/has_terminal_libtest_summary": false
+      },
+      "boundary": "One displayed flaky block contains a complete89-pass segment and an unfinished79-test segment; a60-second running marker is not a terminal failure."
+    },
+    {
+      "id": "windows_shard4_d0f",
+      "proof": {
+        "local_path": "mem-ci-d0f-original/WINDOWS_SHARD4_TARGET_RECORDS.v2.json",
+        "bytes": 27434,
+        "sha256": "d9829dabd81fbc2db38d5a6cc93dbdc5aba95e5974234a3856d58b081c310d94",
+        "git_blob": "e70b10dc567ac269fc61bab34010c5d9478f35b1"
+      },
+      "project": {
+        "source_head": "/source_head",
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "target_status_counts": "/target_status_counts",
+        "cached_pass_targets": "/cached_pass_targets",
+        "uncached_targets_including_flaky": "/uncached_targets_including_flaky",
+        "scope": "/scope",
+        "parser_erratum": "/parser_erratum"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/job_id": 130668671323
+      },
+      "boundary": "Original shard4 FLAKY remains separate from strictPASS; neighboring communication-log timeout is not either repaired V9 routing fixture."
+    },
+    {
+      "id": "native_five_c895",
+      "proof": {
+        "local_path": "mem8-ci-followup-v17/native-five-remote/native-five-c895/INDEPENDENT_AUDIT.json",
+        "bytes": 17351,
+        "sha256": "4cd3e1b00a25a3c0ef06e32806f4331de168b971893d9e01cb020d826863fcb4",
+        "git_blob": "ae2b120e1bd83af73ae73578489a7187d3904fd6"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "attempt": "/attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "qualification": "/qualification",
+        "original_driver_status": "/original_driver_status",
+        "original_collection_status": "/original_collection_status",
+        "observed_status_counts": "/observed_status_counts",
+        "observed_terminal_execution_count": "/observed_terminal_execution_count",
+        "independently_qualified_native_cases": "/independently_qualified_native_cases",
+        "clean_scoped_fix_packages": "/clean_scoped_fix_packages",
+        "phases": "/phases",
+        "binary_boundary": "/binary_boundary"
+      },
+      "expected": {
+        "/source_head": "c89540598693697577cda8cba31cb07f6ce65317",
+        "/observed_status_counts": {
+          "PASS": 5
+        },
+        "/qualification": "NOT_QUALIFIED_RETAIN_ORIGINAL_FAILURE_OR_UNKNOWN"
+      },
+      "boundary": "All five original named native cases passed, including captured leak scope, but later core lint was interrupted and Windows lint had no phase evidence. Overall run is not promoted toPASS; results stay on c895."
+    },
+    {
+      "id": "windows_lint_d0f",
+      "proof": {
+        "local_path": "mem8-ci-followup-v17/d0f-lint-private-remote/windows-fix-d0f-original/OFFLINE_AUDIT.json",
+        "bytes": 3398,
+        "sha256": "845d695fb4042ec2bbbfa9ef9c422533d7fe85011a18e7267a06b064bd6537ae",
+        "git_blob": "a92ea5b2fa5f43dac2f91ba29f61b065ba4d7486"
+      },
+      "project": {
+        "run_id": "/run_id",
+        "job_id": "/job_id",
+        "attempt": "/attempt",
+        "source_head": "/source_head",
+        "source_tree": "/source_tree",
+        "job_conclusion": "/job_conclusion",
+        "driver_status": "/driver_status",
+        "collection_status": "/collection_status",
+        "phases": "/phases",
+        "source_rewrite_paths": "/source_rewrite_paths",
+        "qualification_passed": "/qualification_passed",
+        "native_test_commands": "/native_test_commands",
+        "model_commands": "/model_commands"
+      },
+      "expected": {
+        "/source_head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+        "/job_conclusion": "failure",
+        "/qualification_passed": false,
+        "/native_test_commands": 0,
+        "/model_commands": 0
+      },
+      "boundary": "Original helper build and lint commands exited0, but the one actual source rewrite failed exact-clean qualification. V11 source-only acceptance of that postimage does not convert this original failure or imply fresh Windows lintPASS."
+    }
+  ]
+}

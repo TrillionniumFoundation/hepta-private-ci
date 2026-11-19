@@ -1,0 +1,97 @@
+{
+  "schema": "mem.windows-sandbox-lint.v11.preparation-publication.v1",
+  "archive": {
+    "path": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.tar.xz",
+    "bytes": 717176,
+    "sha256": "930a0b2e2598f00e7fb113b4bb89d3d863b1db7cc7fcfd7fb0d45643c3edad48",
+    "git_blob_computed_only": "c655a283cddd5908c79cea2be0e1f4149977b76f",
+    "members": 67
+  },
+  "parts": [
+    {
+      "name": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-001.bin",
+      "bytes": 460800,
+      "sha256": "1bdd00f84673d2cf70163f5f63e165f07d056be8273896d72e947707287b58a9",
+      "git_blob": "138008ff7d07bbabcdbd82557d3e450cc8911b00",
+      "actual_created": true,
+      "remote_full_binary_readback": "PENDING_ROOT_CARRIER"
+    },
+    {
+      "name": "WINDOWS_SANDBOX_FIX_V11_PREPARATION.part-002.bin",
+      "bytes": 256376,
+      "sha256": "14f4d51498012b6bd0f19105f46e896e01531ba7baa876ef38eed53bdb15fe0d",
+      "git_blob": "8a6f00b33d69d2b0bb23630261f8d240540b1271",
+      "actual_created": true,
+      "remote_full_binary_readback": "PENDING_ROOT_CARRIER"
+    }
+  ],
+  "texts": [
+    {
+      "path": "publication/ARCHIVE_INDEX.json",
+      "bytes": 1830,
+      "sha256": "d4e2f5d127c5258f7643c7e0e9eefad926454541cd1df406125d37f6cb0d6fc8",
+      "git_blob": "355785a9df3b87e4245516dfbd74d5a5f5ef72bc",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "publication/PACKAGE_MEMBER_MANIFEST.json",
+      "bytes": 16314,
+      "sha256": "1a50afb0e8f3fe9299d343a8e21bfd99ed711582e259b49c569e085a3557eb94",
+      "git_blob": "4e3cf03c5f2c53485e3a7bfd953354a6fb47c097",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "FINAL_FOUR_OBJECT_SPEC.json",
+      "bytes": 1629,
+      "sha256": "1035dfc89f9ce2c804589b3d35eb63a563d0817f5d28557876147c4d64dd45a7",
+      "git_blob": "36243628e4d8c13451dfedb266eaf0d017b427f0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "MEM_CI_FINAL_QUALIFICATION_PEER.json",
+      "bytes": 2898,
+      "sha256": "588a17a26bd94bc77ccdf22094e6cde22477d7dbe8a946f09664af70fba84623",
+      "git_blob": "16f3c36fa1950c467417487742a0f883a4cf64cd",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "verify_preparation.py",
+      "bytes": 7981,
+      "sha256": "3177d9c88c2266e5022153644eb2de245e03f6eece7158c7ef950aed6e842e8b",
+      "git_blob": "c8218a01606cab2ecf4b2a01a31932b1e1d2f2a3",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "OFFLINE_PREPARATION_AUDIT.json",
+      "bytes": 761,
+      "sha256": "3f1f28bca8923df028df09808effd2d828a77d4ebe66d9c2f9656d042d842fee",
+      "git_blob": "4a7e311d90c32cb84cd7db962d6bd9555f1551ad",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 3195,
+      "sha256": "3140411149c23cf52d3081b920e35f453e4ca58f016ea3f4f25791b8ac6aa82c",
+      "git_blob": "7e5a4353cb5f17066a8ee83a39d2153120b3d3b3",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "all_20_full_dependency_source_files_inside": true,
+  "provisional_history_preserved": true,
+  "root_single_admission_receipts_included": true,
+  "source_gate_original_archive_not_inside": true,
+  "source_gate_root_audit_inside": true,
+  "remote_binary_full_readback": "PENDING_ROOT_CARRIER",
+  "new_original_run": 43072390230,
+  "new_original_job": 130703409994,
+  "attempt": 1,
+  "new_run_results_included": false,
+  "no_ref_mutation_by_publication": true
+}

@@ -1,0 +1,11 @@
+# b054 original blocking CI evidence
+
+This archive binds source b0547d2f874c0aeb54dabd3491caa2bee49fcb0b and tested merge0789f10892ac1b4e8a3e05b4c908bdfff10b8c68, both tree3f89ddeff13d0af85f4abe2690699107357f1038. Original run43035589938 attempt1 ended failure with37 jobs:23success,6failure,4cancelled,4skipped.
+
+It includes16 complete original blocking-job logs, their original metadata and snapshots, all37 final job records, three root-captured parallel prerequisite logs, exact merge evidence, and a complete offline target/case counting audit. Original Mac Intel full text is present. The11 Bazel execution-artifact ZIP metadata entries are preserved; those ZIP bodies are outside this archive. Private34-case evidence is separately pinned in QUALIFICATION_SUMMARY.json.
+
+Run `python3 records/verify_package.py` after extraction. It verifies every member and replays the full counting audit. The parser preserves cached versus fresh results, FLAKY failed attempts, timeout partial output, and repeated post-job tails. It recognizes embedded diagnostic output, split result lines and Rust should-panic names, then checks every complete displayed libtest block against its original summary. No case PASS is inferred from a target-only PASS.
+
+The four Mac failed targets are two assertion failures and two300-second timeouts. Core-all is a separate FLAKY target; its original failures remain evidence. Windows shard2 contains an elevated delete-boundary failure and two later shared-lock poisoning failures. The original Fence and SDK prerequisite failures occurred before their protected work. The fan-in logs retain their actual NEEDS values, including abandoned aggregates, without inventing why aggregate status differs from an individual successful job.
+
+Preparation-history records disclose the corrected unmeasured capture timestamps and the initial offline parser omission of the standard should-panic qualifier. Original CI payload bytes were not changed. The memory subdirectory is read-only source analysis: completed_peers0 has multiple possible fail-closed paths and the original output does not uniquely establish a deadline, SQL or authority cause. There was no new native/model/host execution, workflow rerun, dispatch, gate change or ref update.

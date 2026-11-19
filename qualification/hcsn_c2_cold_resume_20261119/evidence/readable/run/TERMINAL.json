@@ -1,0 +1,66 @@
+{
+  "attempts": [
+    {
+      "name": "hcsn-s211-lr0.001-replica1",
+      "peak_rss_bytes": 3222208512,
+      "pid": 947142,
+      "returncode": 0,
+      "scope": "exact per-PID wait4 through process exit",
+      "system_cpu_seconds": 6.997833,
+      "timed_out": false,
+      "user_cpu_seconds": 58.026767,
+      "wall_seconds": 65.5053217819659
+    },
+    {
+      "name": "hcsn-s211-lr0.001-replica2",
+      "peak_rss_bytes": 3272966144,
+      "pid": 950360,
+      "returncode": 0,
+      "scope": "exact per-PID wait4 through process exit",
+      "system_cpu_seconds": 6.657982,
+      "timed_out": false,
+      "user_cpu_seconds": 58.336879,
+      "wall_seconds": 65.20509607496206
+    },
+    {
+      "name": "hcsn-s307-lr0.001-replica1",
+      "peak_rss_bytes": 3205382144,
+      "pid": 954784,
+      "returncode": 0,
+      "scope": "exact per-PID wait4 through process exit",
+      "system_cpu_seconds": 5.912418,
+      "timed_out": false,
+      "user_cpu_seconds": 51.422677,
+      "wall_seconds": 57.493264915945474
+    },
+    {
+      "name": "hcsn-s307-lr0.001-replica2",
+      "peak_rss_bytes": 3210440704,
+      "pid": 957045,
+      "returncode": 0,
+      "scope": "exact per-PID wait4 through process exit",
+      "system_cpu_seconds": 6.024014,
+      "timed_out": false,
+      "user_cpu_seconds": 51.820927,
+      "wall_seconds": 58.492624828009866
+    }
+  ],
+  "cold_repeat_comparisons": [
+    {
+      "cold_repeats_bitwise_semantically_equal": true,
+      "fit": "hcsn-s211-lr0.001"
+    },
+    {
+      "cold_repeats_bitwise_semantically_equal": true,
+      "fit": "hcsn-s307-lr0.001"
+    }
+  ],
+  "full_six_fit_replay": false,
+  "identity": "hcsn-c2-cold-resume-20261119-d741-001",
+  "independent_complete_training_replays": 0,
+  "optimizer_calls_completed": 4,
+  "original_controller_terminal": "UNKNOWN",
+  "original_runtime_exact_replay": false,
+  "scientific_admission": "HOLD",
+  "status": "COMPLETED"
+}

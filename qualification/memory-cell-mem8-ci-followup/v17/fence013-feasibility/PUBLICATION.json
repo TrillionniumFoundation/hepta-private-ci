@@ -1,0 +1,115 @@
+{
+  "schema": "mem.fence013.actual-immutable-publication.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "archive": {
+    "bytes": 571416,
+    "sha256": "334ebed3fc3ace4823ada6ca1547f4f246e74afb1c49f509099af27859e48b99",
+    "git_blob_computed_only": "90228d3aadc9479e4ab3fdcee41fc84e13fea282",
+    "members": 72
+  },
+  "files": [
+    {
+      "path": "mem-fence013-feasibility-v1.tar.xz.part-01",
+      "bytes": 450000,
+      "sha256": "2affbab68825eb34a55d4f91140827f349103ac19adeb4dea39492f9a232e254",
+      "git_blob": "3f5fd70fd099924d3348586b4b66ceb1ab6c7dba",
+      "created": true,
+      "encoding": "base64",
+      "create_response": {
+        "sha": "3f5fd70fd099924d3348586b4b66ceb1ab6c7dba"
+      }
+    },
+    {
+      "path": "mem-fence013-feasibility-v1.tar.xz.part-02",
+      "bytes": 121416,
+      "sha256": "6d125f7d0fa15fc037fc7d7a221cf29d6b0caeb4fd0974227a95fc05ef8c138b",
+      "git_blob": "589e443718af3a88a766f136c503f032add13ce3",
+      "created": true,
+      "encoding": "base64",
+      "create_response": {
+        "sha": "589e443718af3a88a766f136c503f032add13ce3"
+      }
+    },
+    {
+      "path": "FILE_MANIFEST.json",
+      "bytes": 15821,
+      "sha256": "c71ead0b35f9a860f5146a68b3851bd31148947e3dc24ffe7e9f692fb2998240",
+      "git_blob": "75a5d538b37ea5653220c825ea7dc7f3e8d62c1e",
+      "created": true,
+      "encoding": "utf-8",
+      "create_response": {
+        "sha": "75a5d538b37ea5653220c825ea7dc7f3e8d62c1e"
+      }
+    },
+    {
+      "path": "REPORT.md",
+      "bytes": 11164,
+      "sha256": "35ff24262a2ab260f919ff011082cfb19e3edf36436f93eb455a5e79410bb858",
+      "git_blob": "2a32a53c5b0cc8df94c9f7546ec34cdce4f8e96b",
+      "created": true,
+      "encoding": "utf-8",
+      "create_response": {
+        "sha": "2a32a53c5b0cc8df94c9f7546ec34cdce4f8e96b"
+      }
+    },
+    {
+      "path": "CANDIDATE.patch",
+      "bytes": 446,
+      "sha256": "de1667b6f36da9038469c4b5d57d72a39a23dca3ad24918039fbe55f3555dbff",
+      "git_blob": "5d28d5c673a114966b6eaa59cffce9f7e0ec14db",
+      "created": true,
+      "encoding": "utf-8",
+      "create_response": {
+        "sha": "5d28d5c673a114966b6eaa59cffce9f7e0ec14db"
+      }
+    },
+    {
+      "path": "candidate/.github/workflows/blob-size-policy.yml",
+      "bytes": 1809,
+      "sha256": "4a0f656d386d3a9ddc1478c111e09105486cd8cff7e71cb0911c8bd4068ceafd",
+      "git_blob": "7e01fc010f7c5dd48a2d5f688283e8795436fdcf",
+      "created": true,
+      "encoding": "utf-8",
+      "create_response": {
+        "sha": "7e01fc010f7c5dd48a2d5f688283e8795436fdcf"
+      }
+    },
+    {
+      "path": "IDENTITY_AUDIT.json",
+      "bytes": 1815,
+      "sha256": "131b7bc73dabe30acc920f2ec039ce6e416a0907d5fd78febbb6432a8a5371af",
+      "git_blob": "0b7025a46a9a34401b98810eaa880df01aa440eb",
+      "created": true,
+      "encoding": "utf-8",
+      "create_response": {
+        "sha": "0b7025a46a9a34401b98810eaa880df01aa440eb"
+      }
+    }
+  ],
+  "text_readbacks": [
+    {
+      "path": "FILE_MANIFEST.json",
+      "full_text_equal": true
+    },
+    {
+      "path": "REPORT.md",
+      "full_text_equal": true
+    },
+    {
+      "path": "CANDIDATE.patch",
+      "full_text_equal": true
+    },
+    {
+      "path": "candidate/.github/workflows/blob-size-policy.yml",
+      "full_text_equal": true
+    },
+    {
+      "path": "IDENTITY_AUDIT.json",
+      "full_text_equal": true
+    }
+  ],
+  "binary_parts_independently_remote_readback": false,
+  "binary_parts_boundary": "Actual create responses match computed SHA. Root may attach immutable tree and perform full base64 readback; no claim yet.",
+  "reference_changed": false,
+  "qualification_executed": false
+}

@@ -1,0 +1,109 @@
+--- v5/WORKFLOW_V5_TO_V6.patch
++++ v6/WORKFLOW_V5_TO_V6.patch
+@@ -1,36 +1,36 @@
+-name: MEM8 V5 source-only gates
++name: MEM8 V6 source-only gates
+ 
+ "on":
+   push:
+     branches:
+-      - codex/mem8-source-gates-v5-20261111-ed353817
++      - codex/mem8-source-gates-v6-20261111-ed353817
+ 
+ permissions:
+   contents: read
+ 
+ concurrency:
+-  group: mem8-source-gates-v5-${{ github.ref }}
++  group: mem8-source-gates-v6-${{ github.ref }}
+   cancel-in-progress: false
+ 
+ jobs:
+   source-only:
+-    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/mem8-source-gates-v5-20261111-ed353817'
++    if: github.event_name == 'push' && github.ref == 'refs/heads/codex/mem8-source-gates-v6-20261111-ed353817'
+     runs-on: ubuntu-24.04
+     timeout-minutes: 20
+     env:
+       RUSTUP_TOOLCHAIN: "1.96.0"
+       PYTHONDONTWRITEBYTECODE: "1"
+-      MEM_SOURCE_COMMIT: c842e995b047eb2ee7d81c073f14fb2fcaa6bff2
+-      MEM_SOURCE_TREE: e9ba2746237562d68b1c732bee0f86df9e352cde
++      MEM_SOURCE_COMMIT: 421d15080b3cb942be8ac51bbe443e268d124a9e
++      MEM_SOURCE_TREE: df293c7709860ecfc3889e4cabb1f970fb649d8e
+       MEM_SOURCE_BASE: 2ae5215beaf8d7b7df111a090b82134beae2683d
+       CODEX_REPO_ROOT: ${{ github.workspace }}/source
+     steps:
+       - name: Retain this source-only invocation identity
+         shell: bash
+         env:
+-          MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5
+-          MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v5-launcher
+-          CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-source-gates-v5-cargo-target
++          MEM_GATE_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v6
++          MEM_LAUNCH_OUTPUT: ${{ runner.temp }}/mem8-source-gates-v6-launcher
++          CARGO_TARGET_DIR: ${{ runner.temp }}/mem8-source-gates-v6-cargo-target
+         run: |
+           set -euo pipefail
+           printf '%s\n' \
+@@ -64,9 +64,9 @@
+       - name: Checkout the exact pure source candidate
+         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+         with:
+-          ref: c842e995b047eb2ee7d81c073f14fb2fcaa6bff2
++          ref: 421d15080b3cb942be8ac51bbe443e268d124a9e
+           path: source
+-          fetch-depth: 4
++          fetch-depth: 6
+           persist-credentials: false
+ 
+       - name: Install the pinned formatting toolchain
+@@ -104,7 +104,7 @@
+           assert len(binary) == 1642752
+           binary_sha = hashlib.sha256(binary).hexdigest()
+           assert binary_sha == "54a03b42f0337eba584bc33563237d45aeca11a34de2e7159f76d7695fe5b936"
+-          install = Path(os.environ["RUNNER_TEMP"]) / "mem8-source-gates-v5-tools"
++          install = Path(os.environ["RUNNER_TEMP"]) / "mem8-source-gates-v6-tools"
+           install.mkdir(mode=0o700)
+           executable = install / "dotslash"
+           with executable.open("xb") as stream:
+@@ -142,8 +142,9 @@
+           test "$(git -C source rev-parse HEAD^{tree})" = "$MEM_SOURCE_TREE"
+           git -C harness status --porcelain=v1 --untracked-files=all > "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+           test ! -s "$MEM_LAUNCH_OUTPUT/harness-before.txt"
+-          sha256sum harness/.github/scripts/mem8_source_gates_v5.py \
+-            harness/qualification/memory-cell-mem8-source-gates-v5/INPUT_SOURCE_GATES.json.xz \
++          sha256sum harness/.github/scripts/mem8_source_gates_v6.py \
++            harness/qualification/memory-cell-mem8-source-gates-v6/INPUT_SOURCE_GATES.json.xz \
++            harness/qualification/memory-cell-mem8-source-gates-v6/GOLDEN_CALLER_RECEIPT.json \
+             > "$MEM_LAUNCH_OUTPUT/harness-input-sha256.txt"
+           python3 - <<'PY'
+           import hashlib
+@@ -187,10 +188,11 @@
+         working-directory: source
+         run: |
+           set -euo pipefail
+-          python3 "$GITHUB_WORKSPACE/harness/.github/scripts/mem8_source_gates_v5.py" \
++          python3 "$GITHUB_WORKSPACE/harness/.github/scripts/mem8_source_gates_v6.py" \
+             --source "$GITHUB_WORKSPACE/source" \
+             --output "$MEM_GATE_OUTPUT" \
+-            --input "$GITHUB_WORKSPACE/harness/qualification/memory-cell-mem8-source-gates-v5/INPUT_SOURCE_GATES.json.xz" \
++            --input "$GITHUB_WORKSPACE/harness/qualification/memory-cell-mem8-source-gates-v6/INPUT_SOURCE_GATES.json.xz" \
++            --golden "$GITHUB_WORKSPACE/harness/qualification/memory-cell-mem8-source-gates-v6/GOLDEN_CALLER_RECEIPT.json" \
+             --expected-head "$MEM_SOURCE_COMMIT" \
+             --expected-tree "$MEM_SOURCE_TREE" \
+             --base "$MEM_SOURCE_BASE" \
+@@ -201,10 +203,10 @@
+         if: always()
+         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+         with:
+-          name: mem8-source-gates-v5-${{ github.run_id }}-${{ github.run_attempt }}
++          name: mem8-source-gates-v6-${{ github.run_id }}-${{ github.run_attempt }}
+           path: |
+-            ${{ runner.temp }}/mem8-source-gates-v5/
+-            ${{ runner.temp }}/mem8-source-gates-v5-launcher/
++            ${{ runner.temp }}/mem8-source-gates-v6/
++            ${{ runner.temp }}/mem8-source-gates-v6-launcher/
+           if-no-files-found: error
+           retention-days: 14
+           compression-level: 6

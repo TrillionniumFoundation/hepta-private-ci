@@ -1,0 +1,96 @@
+{
+  "schema": "candidate-evidence-publication-readback-v1",
+  "published_at": "2026-11-11T14:47:09.097Z",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "base_commit": "b0547d2f874c0aeb54dabd3491caa2bee49fcb0b",
+  "base_tree": "3f89ddeff13d0af85f4abe2690699107357f1038",
+  "refs_changed": false,
+  "rust_or_native_execution_performed": false,
+  "model_requests": 0,
+  "packages": [
+    {
+      "label": "leak_handle_isolation",
+      "archive": {
+        "bytes": 344768,
+        "sha256": "99b00a0df9c7b8a178f52cc4bffb7142b5f4c1d3a03f9bc76c7224b5768cb1fa",
+        "git_blob": "407093565ddbad4e5e55677358f03ba40c13c1db"
+      },
+      "manifest": {
+        "bytes": 15898,
+        "sha256": "42ce24cf85f9fd3f4557bca361901eb3a441fcd41e7900af7fbf1d5240bc2452",
+        "git_blob": "8b446a268fed11f8b11eab524bb8d405091c08c7"
+      },
+      "members": 55,
+      "archive_path": "leak_handle_isolation.tar.xz",
+      "manifest_path": "leak_handle_isolation.MANIFEST.json",
+      "archive_create": {
+        "sha": "407093565ddbad4e5e55677358f03ba40c13c1db"
+      },
+      "manifest_create": {
+        "sha": "8b446a268fed11f8b11eab524bb8d405091c08c7"
+      },
+      "local_full_tar_member_readback": "PASS",
+      "remote_utf8_manifest_full_byte_readback": "PASS",
+      "remote_binary_readback": "NOT_COMPLETED_BY_THIS_TOOL",
+      "remote_binary_readback_error": {
+        "content": [
+          {
+            "type": "text",
+            "text": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfd in position 0: invalid start byte"
+          }
+        ],
+        "structuredContent": {
+          "error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfd in position 0: invalid start byte",
+          "error_code": "UNKNOWN"
+        },
+        "isError": true
+      },
+      "remaining_action": "Parent may attach the created binary blob to an immutable evidence tree and verify the complete raw/base64 readback. Do not interpret successful blob creation or manifest verification as complete remote binary readback."
+    },
+    {
+      "label": "matched_request_observation",
+      "archive": {
+        "bytes": 218248,
+        "sha256": "11a1736bd37e62106b209936abb529ff2b2fb51a548628db421e8ebad3d3c839",
+        "git_blob": "40b3730eab1b4760fa35f5468f2b27ec24b82323"
+      },
+      "manifest": {
+        "bytes": 10685,
+        "sha256": "dfa0c2507637f6d35bb1fe9012fac03a11bb7760bfd4226c6436bad55b2fa655",
+        "git_blob": "4be4e79a8a89d5e25858d53c4e7cb3952aed99e1"
+      },
+      "members": 34,
+      "archive_path": "matched_request_observation.tar.xz",
+      "manifest_path": "matched_request_observation.MANIFEST.json",
+      "archive_create": {
+        "sha": "40b3730eab1b4760fa35f5468f2b27ec24b82323"
+      },
+      "manifest_create": {
+        "sha": "4be4e79a8a89d5e25858d53c4e7cb3952aed99e1"
+      },
+      "local_full_tar_member_readback": "PASS",
+      "remote_utf8_manifest_full_byte_readback": "PASS",
+      "remote_binary_readback": "NOT_COMPLETED_BY_THIS_TOOL",
+      "remote_binary_readback_error": {
+        "content": [
+          {
+            "type": "text",
+            "text": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfd in position 0: invalid start byte"
+          }
+        ],
+        "structuredContent": {
+          "error": "UnicodeDecodeError: 'utf-8' codec can't decode byte 0xfd in position 0: invalid start byte",
+          "error_code": "UNKNOWN"
+        },
+        "isError": true
+      },
+      "remaining_action": "Parent may attach the created binary blob to an immutable evidence tree and verify the complete raw/base64 readback. Do not interpret successful blob creation or manifest verification as complete remote binary readback."
+    }
+  ],
+  "boundaries": [
+    "Both source candidates have independent static peer reports but no formatter, compiler or native result.",
+    "LEAK V1 is historical; revision2 is current and includes the path-contract erratum.",
+    "Hook safe timeline V1 is historical; V2 corrects exact CRLF per-line hashes without altering original raw or conclusions.",
+    "Original complete core hook raw log with request content is not recopied. Its whole-file hash and already-published V15 binding are retained."
+  ]
+}

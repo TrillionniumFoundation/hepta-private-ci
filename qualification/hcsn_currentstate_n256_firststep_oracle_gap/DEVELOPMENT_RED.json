@@ -1,0 +1,28 @@
+{
+  "schema": "hcsn-n256-firststep-oracle-gap-development-red-v1",
+  "identity": "hcsn-n256-firststep-oracle-gap-20261117-c06d-local001",
+  "attempts": [
+    {
+      "command": "python -O qualification/hcsn_currentstate_n256_firststep_oracle_gap/verify_source.py",
+      "exit_code": 1,
+      "failure": "ModuleNotFoundError: No module named 'qualification'",
+      "cause": "direct script execution set sys.path to the package directory rather than the repository root",
+      "minimal_correction": "invoke the verifier with python -m from the repository root"
+    },
+    {
+      "command": "python -O -m qualification.hcsn_currentstate_n256_firststep_oracle_gap.verify_source",
+      "exit_code": 1,
+      "failure": "ValueError: candidate current-state packet surface changed",
+      "cause": "the first AST review looked for packet.output inside _advance, while the candidate reads it in _template called by _advance",
+      "minimal_correction": "inspect the existing _template function without changing candidate source"
+    }
+  ],
+  "failed_invocations": 2,
+  "reviewed_source_imported": false,
+  "n256_serializer_calls": 0,
+  "dynamic_steps": 0,
+  "matrix_exponential_actions": 0,
+  "torch_calls": 0,
+  "optimizer_steps": 0,
+  "preserved": true
+}

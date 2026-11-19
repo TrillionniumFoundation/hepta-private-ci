@@ -31,7 +31,7 @@ class FormatterScopeTests(unittest.TestCase):
         self.git("config", "user.name", "Scope Test")
         self.git("config", "user.email", "scope@localhost")
         # Reproduce the immutable test-input inventory in this real Git fixture.
-        for relative in FMT.VERBATIM_FIXTURES:
+        for relative in (*FMT.VERBATIM_FIXTURES, *FMT.ORIGINAL_EVIDENCE_FILES):
             destination = self.root / relative
             destination.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(SOURCE_ROOT / relative, destination)
@@ -146,6 +146,40 @@ class FormatterScopeTests(unittest.TestCase):
             [command.args[-1] for command in groups[0].commands],
             [str(self.root / neighbor)],
         )
+
+    def test_exact_historical_rust_records_do_not_exempt_neighboring_source(self):
+        records = list(FMT.ORIGINAL_EVIDENCE_FILES)
+        neighbor = self.write(
+            f"{FMT.ORIGINAL_EVIDENCE_PREFIX}/actual.rs", "fn original(){}\n"
+        )
+        groups = FMT.scoped_formatter_groups(
+            [*records, str(neighbor.relative_to(self.root))], check=True
+        )
+        self.assertEqual([group.name for group in groups], ["Rust"])
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands], [str(neighbor)]
+        )
+        self.assertEqual(FMT.verified_original_evidence_paths(), frozenset(records))
+
+    def test_historical_rust_record_mutation_fails_before_format(self):
+        relative = next(iter(FMT.ORIGINAL_EVIDENCE_FILES))
+        source = self.root / relative
+        raw = source.read_bytes()
+        source.write_bytes(bytes([raw[0] ^ 1]) + raw[1:])
+        with self.assertRaisesRegex(ValueError, "original evidence bytes changed"):
+            FMT.scoped_formatter_groups([], check=True)
+        with self.assertRaisesRegex(ValueError, "original evidence bytes changed"):
+            FMT.formatter_groups(check=False)
+
+    def test_historical_rust_inventory_cannot_register_production_source(self):
+        digest = next(iter(FMT.ORIGINAL_EVIDENCE_FILES.values()))
+        for relative in (
+            "codex-rs/core/src/lib.rs",
+            f"{FMT.ORIGINAL_EVIDENCE_PREFIX}/../actual.rs",
+        ):
+            with patch.object(FMT, "ORIGINAL_EVIDENCE_FILES", {relative: digest}):
+                with self.assertRaisesRegex(ValueError, "fixed prefix"):
+                    FMT.verified_original_evidence_paths()
 
     def test_exact_base_includes_committed_work_and_rejects_unknown_base(self):
         self.write("scripts/first.py")

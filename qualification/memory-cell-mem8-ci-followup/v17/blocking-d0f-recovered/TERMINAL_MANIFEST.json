@@ -1,0 +1,2115 @@
+{
+  "schema": "hepta.mem8.d0f.original-blocking-terminal-recovery.v1",
+  "status": "COMPLETE_TERMINAL_JOB_ACCOUNTING_WITH_EXPLICIT_ORIGINAL_RAW_AND_ARTIFACT_GAPS",
+  "observed_at_utc": "2026-11-11 18:54:29 UTC",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "original_run": {
+    "id": 43062473474,
+    "attempt": 1,
+    "head": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+    "branch": "codex/mem8-integrated-source-20261111-ed353817",
+    "status": "completed",
+    "conclusion": "failure",
+    "updated_at": "2026-11-11T18:52:45Z"
+  },
+  "source_tree": "658fa040046285116b1fd81b94ff8c96444072ad",
+  "actual_checkout_in_both_final_job_logs": "a49776ffdea3547ed407a710bb19e93377b29535",
+  "terminal_job_count": 37,
+  "terminal_counts": {
+    "success": 24,
+    "cancelled": 5,
+    "skipped": 4,
+    "failure": 4
+  },
+  "active_job_count": 0,
+  "original_36_job_ids_preserved": true,
+  "only_new_final_job": {
+    "id": 130736222112,
+    "name": "CI required"
+  },
+  "closed_jobs": [
+    {
+      "id": 130668438898,
+      "name": "Select blocking CI scope",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:51:51Z",
+      "completed_at": "2026-11-11T16:52:11Z",
+      "runner_id": 1000111111,
+      "steps_count": 7,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 44964,
+        "sha256": "789f1e81931f8fb223fad7762893953ee0615433cebed7597eb82a63d2a6314c",
+        "git_blob": "c62a3ef4995ab0c5fc598f7247b79efa0023ef19"
+      }
+    },
+    {
+      "id": 130668439366,
+      "name": "Codespell / Check for spelling errors",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:51:51Z",
+      "completed_at": "2026-11-11T16:52:26Z",
+      "runner_id": 1000111114,
+      "steps_count": 8,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 27624,
+        "sha256": "26ad61d0af0e1b4b6dde695f5814826041e2510f6f55848f824f97fde362801f",
+        "git_blob": "6ff55b6a8be64458ffa032a613ed618d02b66683"
+      }
+    },
+    {
+      "id": 130668439547,
+      "name": "Blob size policy / Blob size policy",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:51:51Z",
+      "completed_at": "2026-11-11T17:01:27Z",
+      "runner_id": 1000111107,
+      "steps_count": 10,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 1643776,
+        "sha256": "fa73d786c462e821c1013b952e153d33a29922a6dc871ade201136d98ad5c35e",
+        "git_blob": "7ff9d1f4b6bd697918f38aeccb5e32a3a1918f78"
+      }
+    },
+    {
+      "id": 130668669591,
+      "name": "Hepta contract gate / Validate canonical branch and contract metadata",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:14Z",
+      "completed_at": "2026-11-11T16:53:56Z",
+      "runner_id": 1000111125,
+      "steps_count": 6,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 1605768,
+        "sha256": "6c38fe10e52ae32365c5450264baf1140dbecc1eead6e12adb386ee776f868a3",
+        "git_blob": "cd36b6dd5d5b88c9ba981c3776fd3ead340dca47"
+      }
+    },
+    {
+      "id": 130668669632,
+      "name": "repo-checks / build-test",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:14Z",
+      "completed_at": "2026-11-11T16:57:20Z",
+      "runner_id": 1000111129,
+      "steps_count": 26,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 223089,
+        "sha256": "cbe77ba107933af401e39bcb56faaf1748a4f4fee5fa9bfb75bc8661fab992db",
+        "git_blob": "9d00149a7837a4a31c0da0e0a3cd923f8083b403"
+      }
+    },
+    {
+      "id": 130668669641,
+      "name": "cargo-deny / cargo-deny",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:53:41Z",
+      "runner_id": 1000111128,
+      "steps_count": 10,
+      "evidence": "ORIGINAL_FULL_LOG_TRANSPORT_GAP_API_SUCCESS_ONLY",
+      "full_raw": null
+    },
+    {
+      "id": 130668669786,
+      "name": "sdk / python-sdk",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:53:40Z",
+      "runner_id": 1000111132,
+      "steps_count": 6,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 32480,
+        "sha256": "3ccfa4b4b9d4ed56db91d4cf6d7a6dc5ca7520490fdbe66e44ba8a256a21613b",
+        "git_blob": "d25fe88b8b4b6a27a1bfa17129c83e37d549ff6c"
+      }
+    },
+    {
+      "id": 130668669838,
+      "name": "repo-checks / Native Hepta paths on windows-latest",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:54:12Z",
+      "runner_id": 1000111130,
+      "steps_count": 10,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 97259,
+        "sha256": "cc3409335faaae2d862df2cd9250f6188496ff2ac58d03a2ea2618a8ab752a93",
+        "git_blob": "3b5be419debc52a0e2f34ed31c89a19d508f71ae"
+      }
+    },
+    {
+      "id": 130668669839,
+      "name": "repo-checks / Native Hepta paths on ubuntu-24.04",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:14Z",
+      "completed_at": "2026-11-11T16:52:56Z",
+      "runner_id": 1000111126,
+      "steps_count": 10,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 95650,
+        "sha256": "e20bd345d52629f8a6f2d4fa9155f46b25364c06c0878cc82dd2c5a8611503b2",
+        "git_blob": "d6e29a66f4f7dbc1f4bf0ac70fa55b1144788f04"
+      }
+    },
+    {
+      "id": 130668669844,
+      "name": "rust-ci / Detect changed areas",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T16:52:30Z",
+      "runner_id": 1000111127,
+      "steps_count": 9,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 32409,
+        "sha256": "719e68650d008073ec5ac53cf25766d472a7f3d6d27191fbb49fd9e706ac7a20",
+        "git_blob": "189452cf915afccf59ab6a67f7b15ca47099724a"
+      }
+    },
+    {
+      "id": 130668669849,
+      "name": "repo-checks / Native Hepta paths on macos-15",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T17:07:14Z",
+      "runner_id": 0,
+      "steps_count": 0,
+      "evidence": "CANCELLED_NO_RUNNER_OR_STEP_EXECUTION_OBSERVED_CAUSE_UNKNOWN",
+      "full_raw": null
+    },
+    {
+      "id": 130668669915,
+      "name": "sdk / sdks",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:59:36Z",
+      "runner_id": 1000111133,
+      "steps_count": 19,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 713807,
+        "sha256": "20ecd5312468776fdc85a74ac48624d905fa3e5380987a8f3e15fac2db2e0513",
+        "git_blob": "1e54630f4a511f40f4ca46aed808f8c5d10f818a"
+      }
+    },
+    {
+      "id": 130668671072,
+      "name": "Bazel / Verify release build on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:59:06Z",
+      "runner_id": 1000111134,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 804904,
+        "sha256": "601962039eb868a932a4ce5ce7f7a2d9ea99c4297a31b8963245190d5002af88",
+        "git_blob": "5e66782df8e424013a25061c5cdb2ae26d688cca"
+      }
+    },
+    {
+      "id": 130668671156,
+      "name": "Bazel / Bazel clippy on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:58:03Z",
+      "runner_id": 1000111137,
+      "steps_count": 10,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 829802,
+        "sha256": "1c3bab55b10ab83814a78f8ef68393d3357df466880fccbc4c64e80c0b9d731a",
+        "git_blob": "f723a521076d41ee88c2a6dc33fbbb772aeafdc2"
+      }
+    },
+    {
+      "id": 130668671182,
+      "name": "Bazel / Verify release build on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T17:07:14Z",
+      "runner_id": 0,
+      "steps_count": 0,
+      "evidence": "CANCELLED_NO_RUNNER_OR_STEP_EXECUTION_OBSERVED_CAUSE_UNKNOWN",
+      "full_raw": null
+    },
+    {
+      "id": 130668671187,
+      "name": "Bazel / Verify release build on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T17:03:20Z",
+      "runner_id": 1000111144,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 447339,
+        "sha256": "9663fdf3e660183dfe909e45bced2176d754aaf6f7cbc9c61a336c9c472a146c",
+        "git_blob": "5c1bed5693e37bed03c1c1398abdd5246dd7e957"
+      }
+    },
+    {
+      "id": 130668671236,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 1/4",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:17Z",
+      "completed_at": "2026-11-11T17:17:29Z",
+      "runner_id": 1000111147,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 404204,
+        "sha256": "b51670bd9d4edf19b5d672ff0a697bb61731afba650f265f228828847b555c26",
+        "git_blob": "f07f665f48b1e4cde9896467ced7047bc0f3ced8"
+      }
+    },
+    {
+      "id": 130668671237,
+      "name": "Bazel / Bazel clippy on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T16:59:56Z",
+      "runner_id": 1000111145,
+      "steps_count": 10,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 511763,
+        "sha256": "b354bd179b407df595c47bbfed430e2b73ce73c347145b7f42434192b8e41ffe",
+        "git_blob": "344bc46e507bfec638404a168dd0eaaa54963d0c"
+      }
+    },
+    {
+      "id": 130668671246,
+      "name": "Hepta scoped native checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T16:52:11Z",
+      "runner_id": 0,
+      "steps_count": 0,
+      "evidence": "SKIPPED_NO_STEP_EXECUTION_OBSERVED",
+      "full_raw": null
+    },
+    {
+      "id": 130668671323,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 4/4",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T17:10:19Z",
+      "runner_id": 1000111142,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 435599,
+        "sha256": "a95b899a3a025cd9b83c7efaeac8342c0eb1f57342940afe845547aedd8178cc",
+        "git_blob": "77d0cd2dafb52e686493281a81703788a85825c4"
+      }
+    },
+    {
+      "id": 130668671332,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 2/4",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:11:38Z",
+      "runner_id": 1000111143,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 601497,
+        "sha256": "ee9fa45b6f2d59233031e96bfad2b2e3fcf005c0a08c75a395bcfefc3d86248f",
+        "git_blob": "75c4f5631ed4f037af56f8493f3396ed7ce55bf5"
+      }
+    },
+    {
+      "id": 130668671371,
+      "name": "Bazel / Bazel clippy on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T17:07:14Z",
+      "runner_id": 0,
+      "steps_count": 0,
+      "evidence": "CANCELLED_NO_RUNNER_OR_STEP_EXECUTION_OBSERVED_CAUSE_UNKNOWN",
+      "full_raw": null
+    },
+    {
+      "id": 130668671376,
+      "name": "Bazel / Bazel test on macos-15-intel for x86_64-apple-darwin",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:23:31Z",
+      "runner_id": 1000111141,
+      "steps_count": 14,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 3201889,
+        "sha256": "499edf02dad83e7669006f1d788edbdca1a7d43b144086631b539f306ffaf239",
+        "git_blob": "fac09318fdd6d4272167bbbf7d13815bd9e41b94"
+      }
+    },
+    {
+      "id": 130668671390,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-musl",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:15Z",
+      "completed_at": "2026-11-11T18:52:30Z",
+      "runner_id": 1000111135,
+      "steps_count": 14,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 64337,
+        "sha256": "0d4a548abb7ce6370754a0e83fa3a04e8d5e9d99763fb5440369fabfe2217a33",
+        "git_blob": "dc648d0474e94e7ac1a82b64e82bae539c057bd0"
+      }
+    },
+    {
+      "id": 130668671417,
+      "name": "Bazel / Bazel test on macos-15 for aarch64-apple-darwin",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T17:07:14Z",
+      "runner_id": 0,
+      "steps_count": 0,
+      "evidence": "CANCELLED_NO_RUNNER_OR_STEP_EXECUTION_OBSERVED_CAUSE_UNKNOWN",
+      "full_raw": null
+    },
+    {
+      "id": 130668671426,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc shard 3/4",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T17:05:31Z",
+      "runner_id": 1000111146,
+      "steps_count": 11,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 384869,
+        "sha256": "589a9b7a680e1e83a1fa35b7060057eeffa2ff1b2dc5b9ec549bb82caea0d2dd",
+        "git_blob": "92c1db32e8c44f3a42500b416f8b9d71f3fc86a1"
+      }
+    },
+    {
+      "id": 130668671482,
+      "name": "Bazel / Bazel test on ubuntu-24.04 for x86_64-unknown-linux-gnu",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:16Z",
+      "completed_at": "2026-11-11T16:59:47Z",
+      "runner_id": 1000111136,
+      "steps_count": 14,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 995116,
+        "sha256": "9aae343f5e637c7ec550b9c3177624a58a9cb886f58d60a5dfca92c0e24a3315",
+        "git_blob": "c0d252d7dab6feed9b288376562256daba4bd184"
+      }
+    },
+    {
+      "id": 130668672167,
+      "name": "Lightweight prose and derived checks",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T16:52:11Z",
+      "runner_id": null,
+      "steps_count": 0,
+      "evidence": "SKIPPED_NO_STEP_EXECUTION_OBSERVED",
+      "full_raw": null
+    },
+    {
+      "id": 130668673161,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:12Z",
+      "completed_at": "2026-11-11T16:52:12Z",
+      "runner_id": null,
+      "steps_count": 0,
+      "evidence": "SKIPPED_NO_STEP_EXECUTION_OBSERVED",
+      "full_raw": null
+    },
+    {
+      "id": 130668842242,
+      "name": "rust-ci / Rust format",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:33Z",
+      "completed_at": "2026-11-11T16:53:15Z",
+      "runner_id": 1000111148,
+      "steps_count": 8,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 133645,
+        "sha256": "3793cfbad645b8130e3ee7501fdee9c39621e3b25c8b35beeb6e88ff583d7a6a",
+        "git_blob": "6b132a9db536161bacf95304fa161955689b189c"
+      }
+    },
+    {
+      "id": 130668842286,
+      "name": "rust-ci / Cargo manifest preflight",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:33Z",
+      "completed_at": "2026-11-11T16:52:51Z",
+      "runner_id": 1000111149,
+      "steps_count": 8,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 34812,
+        "sha256": "fe9ffeaea406590c365ce7c6ebf70b0f2fc4e372b8cc9d605c012d7a9fdd04ae",
+        "git_blob": "72541c1cb3111ce30881473e14e08a4a15c2f53e"
+      }
+    },
+    {
+      "id": 130668842658,
+      "name": "rust-ci / cargo shear",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:33Z",
+      "completed_at": "2026-11-11T16:53:19Z",
+      "runner_id": 1000111150,
+      "steps_count": 9,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 185658,
+        "sha256": "2a2df8e5a796c1dbe6236ef4ef238a90edf43beda2b50db552df29dad046b78a",
+        "git_blob": "8a1a928b18167c98483553a73e15f710d1da4b15"
+      }
+    },
+    {
+      "id": 130668845842,
+      "name": "rust-ci / Argument comment lint package",
+      "status": "completed",
+      "conclusion": "skipped",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:30Z",
+      "completed_at": "2026-11-11T16:52:30Z",
+      "runner_id": null,
+      "steps_count": 0,
+      "evidence": "SKIPPED_NO_STEP_EXECUTION_OBSERVED",
+      "full_raw": null
+    },
+    {
+      "id": 130669042117,
+      "name": "rust-ci / Rust benchmark smoke",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:52:55Z",
+      "completed_at": "2026-11-11T16:54:21Z",
+      "runner_id": 1000111155,
+      "steps_count": 8,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 173716,
+        "sha256": "d4547bcf20ec8ea795e76e868ef83721dcdde2765e75b92a4c221e2bfe5bb26c",
+        "git_blob": "9504f8633914135eec0f85b28ab32af39905f91f"
+      }
+    },
+    {
+      "id": 130669910594,
+      "name": "rust-ci / CI results (required)",
+      "status": "completed",
+      "conclusion": "success",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T16:54:25Z",
+      "completed_at": "2026-11-11T16:54:28Z",
+      "runner_id": 1000111217,
+      "steps_count": 3,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 4906,
+        "sha256": "90145b6300adc3e9dfcf389f4687785b5002b707ff6e750d28d2399bd20d4a7c",
+        "git_blob": "84011a1cc0e1ff561df82b98048fd3b0b046eb0b"
+      }
+    },
+    {
+      "id": 130683493034,
+      "name": "Bazel / Bazel test on windows-latest for x86_64-pc-windows-msvc",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T17:17:34Z",
+      "completed_at": "2026-11-11T17:17:47Z",
+      "runner_id": 1000111343,
+      "steps_count": 3,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 2640,
+        "sha256": "80a838b24b426e0467adef2b9b68e8bddfcfa0b41abefeb62b61708f45455ccc",
+        "git_blob": "a91732efe6d1dc019f3101dc9ab040dad8a8bcf5"
+      }
+    },
+    {
+      "id": 130736222112,
+      "name": "CI required",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "head_sha": "d0f6507e08f7f5c5855f5164d07c049a34d1a6d9",
+      "started_at": "2026-11-11T18:52:34Z",
+      "completed_at": "2026-11-11T18:52:44Z",
+      "runner_id": 1000112371,
+      "steps_count": 5,
+      "evidence": "FULL_ORIGINAL_DECODED_LOG_PERSISTED",
+      "full_raw": {
+        "bytes": 18400,
+        "sha256": "e2ddc311a5ad55979d3c378af2142dcda5d32b9556e534d9f6a44a2139915766",
+        "git_blob": "8701f4c6c7e7c6e2bfa59414fb8e53122b5ee6ad"
+      }
+    }
+  ],
+  "original_terminal_objects": [
+    {
+      "path": "terminal/run.json",
+      "bytes": 16570,
+      "sha256": "12758581870f393cdebe68ad6ef7314aa514d0c1b621048198b2bb53d5fea9f5",
+      "git_blob": "18b9b5b7a3e86a5f11b77ba83a58ac7a5b6b8fd0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "terminal/jobs.json",
+      "bytes": 88627,
+      "sha256": "487d309e414edeb65d98a70512bfe459dfb527e96e9998ea5e2fe60f65dc69c1",
+      "git_blob": "06c93efe95c2d4e379a7d421c6757ddb84611775",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "terminal/artifacts.json",
+      "bytes": 8087,
+      "sha256": "256b5f55b9e17c989a210a06940ace5d57d8c6358a96a111e2e59fb9fe6a0b2d",
+      "git_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "terminal/job-130668671390.log",
+      "bytes": 64337,
+      "sha256": "0d4a548abb7ce6370754a0e83fa3a04e8d5e9d99763fb5440369fabfe2217a33",
+      "git_blob": "dc648d0474e94e7ac1a82b64e82bae539c057bd0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "path": "terminal/job-130736222112.log",
+      "bytes": 18400,
+      "sha256": "e2ddc311a5ad55979d3c378af2142dcda5d32b9556e534d9f6a44a2139915766",
+      "git_blob": "8701f4c6c7e7c6e2bfa59414fb8e53122b5ee6ad",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "all_original_full_raw_files": [
+    {
+      "path": "raw/job-130668439366.log",
+      "full_pin": {
+        "bytes": 27624,
+        "sha256": "26ad61d0af0e1b4b6dde695f5814826041e2510f6f55848f824f97fde362801f",
+        "git_blob": "6ff55b6a8be64458ffa032a613ed618d02b66683"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 27622,
+          "path": "raw/job-130668439366.log.utf8.part-001",
+          "bytes": 27624,
+          "sha256": "26ad61d0af0e1b4b6dde695f5814826041e2510f6f55848f824f97fde362801f",
+          "git_blob": "6ff55b6a8be64458ffa032a613ed618d02b66683",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668439547.log",
+      "full_pin": {
+        "bytes": 1643776,
+        "sha256": "fa73d786c462e821c1013b952e153d33a29922a6dc871ade201136d98ad5c35e",
+        "git_blob": "7ff9d1f4b6bd697918f38aeccb5e32a3a1918f78"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668439547.log.utf8.part-001",
+          "bytes": 300014,
+          "sha256": "0bb490102a4d5324990f7bc3b7b8bde3f9b55cb78b10a8d6efe952e74f12d1a0",
+          "git_blob": "26d81bcac842606296d893a845255a7b5696cf3a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668439547.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "e565dec684f48c66d444d8b5a56f20d54c7f39a80e471871353c6c07c2f198fa",
+          "git_blob": "5b626c821faea376525b065525050fe51f8b4e54",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668439547.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "5f5ded2996356ebcf661384bdb4b619109750dff0d82004950e642eb61a52808",
+          "git_blob": "fec869815b1bc7b00efaae99981e05becca045d8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668439547.log.utf8.part-004",
+          "bytes": 300000,
+          "sha256": "e4287395a4c33c3463821999554ba00f3879ca65fa09a8ff143ae4946afe18b4",
+          "git_blob": "bdcbe22e981c9e974b4ae9518037249d9206281d",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668439547.log.utf8.part-005",
+          "bytes": 300000,
+          "sha256": "176933565ef5e4e128175364da4b59d45e2bbf5dff75f2c311a4e15a7c2083b1",
+          "git_blob": "2bca30c26ae0b231dddfcbd149ac4a6b17921a95",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1643754,
+          "path": "raw/job-130668439547.log.utf8.part-006",
+          "bytes": 143762,
+          "sha256": "ba8b7ee41677ff8c46ab1cdd3894e525e8aeac95104d1dabcf47e32bffbae78a",
+          "git_blob": "d19318612bbcd8ddf03db0bb7067295eb9377c40",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669591.log",
+      "full_pin": {
+        "bytes": 1605768,
+        "sha256": "6c38fe10e52ae32365c5450264baf1140dbecc1eead6e12adb386ee776f868a3",
+        "git_blob": "cd36b6dd5d5b88c9ba981c3776fd3ead340dca47"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668669591.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "dc89dfb3a1e31d4e8617aa5dd48f9bcb9882743f39cbfddf94e8be14d0f9074c",
+          "git_blob": "0bd3b4763845f4bbd93836c3a65585543540d10a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668669591.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "46d79653c39bded683938fa6f4b1bec0411027de7dfcaf36ceedd877d2115bc4",
+          "git_blob": "5922a607815970263e3fdf6668c87fa66c064db7",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668669591.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "c8a82bb94e14640b21d0db8676be11e329d11d502eed2b71dab2d29a97fbde96",
+          "git_blob": "8b6911a46291494e9cb765b491abbf8e29d63ad9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668669591.log.utf8.part-004",
+          "bytes": 300000,
+          "sha256": "6873026535bd6a5b5900caec9bea6dd9b72d9fb24462bd200e41e35dd7caf216",
+          "git_blob": "38c8fc4d54fced12a359947144055ac7dc46bea0",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668669591.log.utf8.part-005",
+          "bytes": 300000,
+          "sha256": "c1ac3dea7f871502f9717a3b82ffbb14989f0eafcda69da749b9c4972c31ab0e",
+          "git_blob": "1ae758f80f67fe17f9bd147694bfb22f58a9d289",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1605766,
+          "path": "raw/job-130668669591.log.utf8.part-006",
+          "bytes": 105766,
+          "sha256": "6f99e4e682d7ff4a11c7bb8f9887a1acbb033aa8dc274913b05ecc55d1e33812",
+          "git_blob": "43599e5bb77982843af49837290494e429904a74",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669632.log",
+      "full_pin": {
+        "bytes": 223089,
+        "sha256": "cbe77ba107933af401e39bcb56faaf1748a4f4fee5fa9bfb75bc8661fab992db",
+        "git_blob": "9d00149a7837a4a31c0da0e0a3cd923f8083b403"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 223033,
+          "path": "raw/job-130668669632.log.utf8.part-001",
+          "bytes": 223089,
+          "sha256": "cbe77ba107933af401e39bcb56faaf1748a4f4fee5fa9bfb75bc8661fab992db",
+          "git_blob": "9d00149a7837a4a31c0da0e0a3cd923f8083b403",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669786.log",
+      "full_pin": {
+        "bytes": 32480,
+        "sha256": "3ccfa4b4b9d4ed56db91d4cf6d7a6dc5ca7520490fdbe66e44ba8a256a21613b",
+        "git_blob": "d25fe88b8b4b6a27a1bfa17129c83e37d549ff6c"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 32398,
+          "path": "raw/job-130668669786.log.utf8.part-001",
+          "bytes": 32480,
+          "sha256": "3ccfa4b4b9d4ed56db91d4cf6d7a6dc5ca7520490fdbe66e44ba8a256a21613b",
+          "git_blob": "d25fe88b8b4b6a27a1bfa17129c83e37d549ff6c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669838.log",
+      "full_pin": {
+        "bytes": 97259,
+        "sha256": "cc3409335faaae2d862df2cd9250f6188496ff2ac58d03a2ea2618a8ab752a93",
+        "git_blob": "3b5be419debc52a0e2f34ed31c89a19d508f71ae"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 97209,
+          "path": "raw/job-130668669838.log.utf8.part-001",
+          "bytes": 97259,
+          "sha256": "cc3409335faaae2d862df2cd9250f6188496ff2ac58d03a2ea2618a8ab752a93",
+          "git_blob": "3b5be419debc52a0e2f34ed31c89a19d508f71ae",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669839.log",
+      "full_pin": {
+        "bytes": 95650,
+        "sha256": "e20bd345d52629f8a6f2d4fa9155f46b25364c06c0878cc82dd2c5a8611503b2",
+        "git_blob": "d6e29a66f4f7dbc1f4bf0ac70fa55b1144788f04"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 95600,
+          "path": "raw/job-130668669839.log.utf8.part-001",
+          "bytes": 95650,
+          "sha256": "e20bd345d52629f8a6f2d4fa9155f46b25364c06c0878cc82dd2c5a8611503b2",
+          "git_blob": "d6e29a66f4f7dbc1f4bf0ac70fa55b1144788f04",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669844.log",
+      "full_pin": {
+        "bytes": 32409,
+        "sha256": "719e68650d008073ec5ac53cf25766d472a7f3d6d27191fbb49fd9e706ac7a20",
+        "git_blob": "189452cf915afccf59ab6a67f7b15ca47099724a"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 32407,
+          "path": "raw/job-130668669844.log.utf8.part-001",
+          "bytes": 32409,
+          "sha256": "719e68650d008073ec5ac53cf25766d472a7f3d6d27191fbb49fd9e706ac7a20",
+          "git_blob": "189452cf915afccf59ab6a67f7b15ca47099724a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668669915.log",
+      "full_pin": {
+        "bytes": 713807,
+        "sha256": "20ecd5312468776fdc85a74ac48624d905fa3e5380987a8f3e15fac2db2e0513",
+        "git_blob": "1e54630f4a511f40f4ca46aed808f8c5d10f818a"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668669915.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "f082fb4abfc417ba8cbb8aef39f6aa69789076e60313cc9c442d8e197e248ca3",
+          "git_blob": "5d715204e2f40375221ee35d1c1408a7142597ee",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668669915.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "38ef39c6ac971f5838d2f4dc254572e2d3db7699d97319d86e14a9996878ab39",
+          "git_blob": "8338d630998044be24975a0bcbe2c98162ee9b15",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 713743,
+          "path": "raw/job-130668669915.log.utf8.part-003",
+          "bytes": 113805,
+          "sha256": "fffa228e06368ca7ef431ed59db9da8fd638f9700e3b74bfc692f5d3cb8f612a",
+          "git_blob": "f5fd90b32d457a2b620eb6fee1ca752032887bc8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671072.log",
+      "full_pin": {
+        "bytes": 804904,
+        "sha256": "601962039eb868a932a4ce5ce7f7a2d9ea99c4297a31b8963245190d5002af88",
+        "git_blob": "5e66782df8e424013a25061c5cdb2ae26d688cca"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671072.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "32f287f759d416afc74c0f19e6d117ac927f8d324b23c0293e652596f6e00ea6",
+          "git_blob": "1bfe9407e07cee152913a0d9e63c939713b78c51",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671072.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "3ed716e47c4a9ad9706db7b5120af21116e6f5bfea86978f90d9b32a33a26ede",
+          "git_blob": "0b34747e26378aeabcfd6f46b58b3a2b43585528",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 804902,
+          "path": "raw/job-130668671072.log.utf8.part-003",
+          "bytes": 204902,
+          "sha256": "28a8e88c4e777b5e31914aa327092c47fa8a3365bfe5d16241d9262e17cc3219",
+          "git_blob": "705639869d00e41b7a7528d1b01132c7da57fab8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671156.log",
+      "full_pin": {
+        "bytes": 829802,
+        "sha256": "1c3bab55b10ab83814a78f8ef68393d3357df466880fccbc4c64e80c0b9d731a",
+        "git_blob": "f723a521076d41ee88c2a6dc33fbbb772aeafdc2"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671156.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "d906317e4f7c987fdf83b00d07341176d3280b8e9f7dd2253503f0a1c9a670f6",
+          "git_blob": "4b027a11d22203596d377d1b53d802ec7370a8d1",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671156.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "9b3abedce78a895c3b8712b5f04bc3fbd59b86ea0992d565bf215292fa27980f",
+          "git_blob": "ebe907646ae2495e60a9bee90cce62afac90489d",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 829800,
+          "path": "raw/job-130668671156.log.utf8.part-003",
+          "bytes": 229800,
+          "sha256": "9c91c75e84bc753861e7e4808857c4fd88e215b71d25adfea3fc47d646503b38",
+          "git_blob": "9f4ab8a9a3d57a74e23e1520e18db19afad331a9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671187.log",
+      "full_pin": {
+        "bytes": 447339,
+        "sha256": "9663fdf3e660183dfe909e45bced2176d754aaf6f7cbc9c61a336c9c472a146c",
+        "git_blob": "5c1bed5693e37bed03c1c1398abdd5246dd7e957"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671187.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "6420bc44c930f7522337f7ac8c51fe3100c640819d1a1ce0d18be9473e072f0c",
+          "git_blob": "bb080961c5dccb28a9386c1871a8928621877873",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 447337,
+          "path": "raw/job-130668671187.log.utf8.part-002",
+          "bytes": 147337,
+          "sha256": "3514213fd3b2da34dce081c1881906ebcaeebc406176b24c34439d6f9ed1476d",
+          "git_blob": "35ab4db973c9f95e27175b130de296bdde96525e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671236.log",
+      "full_pin": {
+        "bytes": 404204,
+        "sha256": "b51670bd9d4edf19b5d672ff0a697bb61731afba650f265f228828847b555c26",
+        "git_blob": "f07f665f48b1e4cde9896467ced7047bc0f3ced8"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671236.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "d0c78a18669dbe48430fb9a0c4918b0016c564a6a099cdfa1df24d346f5ce486",
+          "git_blob": "80bbaf095cc85fd904c72717debacf244d507fee",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 404202,
+          "path": "raw/job-130668671236.log.utf8.part-002",
+          "bytes": 104202,
+          "sha256": "e64064dc14bceb3cc3cd2001f94b84f50ae5849b8a28f177d9c2937153beecf2",
+          "git_blob": "9b89d299164b93a6a0c91c6dbeba9629fef59edc",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671237.log",
+      "full_pin": {
+        "bytes": 511763,
+        "sha256": "b354bd179b407df595c47bbfed430e2b73ce73c347145b7f42434192b8e41ffe",
+        "git_blob": "344bc46e507bfec638404a168dd0eaaa54963d0c"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671237.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "fdac9bf4a87d71d3fe59adad72056ac6aabed6f11d864ee02db1a6507312d810",
+          "git_blob": "7747560431b68a4674e2fba4af0e0f6d4b1ecaed",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 511761,
+          "path": "raw/job-130668671237.log.utf8.part-002",
+          "bytes": 211761,
+          "sha256": "21117e9f0fef26684f8d8be87cc50c2da783c4aec94cf266d7e589fe107b54c1",
+          "git_blob": "51fe68e01144856608cf505eb6275bb89bf3b420",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671323.log",
+      "full_pin": {
+        "bytes": 435599,
+        "sha256": "a95b899a3a025cd9b83c7efaeac8342c0eb1f57342940afe845547aedd8178cc",
+        "git_blob": "77d0cd2dafb52e686493281a81703788a85825c4"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671323.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "08ed6f7f35f1416334c4d604d0ade8df268f44f4e53276cce41ebdea1b6e9cae",
+          "git_blob": "fb70a873fef749c88dcceee624c9fda33fdf7349",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 435597,
+          "path": "raw/job-130668671323.log.utf8.part-002",
+          "bytes": 135597,
+          "sha256": "56fabd3991cf67db8699cf33af9bc036f77395469a67ce63b36e2a7a31caf472",
+          "git_blob": "8857873ab891f93793c2cb27607690d94f1ba87a",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671332.log",
+      "full_pin": {
+        "bytes": 601497,
+        "sha256": "ee9fa45b6f2d59233031e96bfad2b2e3fcf005c0a08c75a395bcfefc3d86248f",
+        "git_blob": "75c4f5631ed4f037af56f8493f3396ed7ce55bf5"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671332.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "1b0afcb87cdc4413558c573f11712a7a34955894552a1beb0884dcfc54f817dd",
+          "git_blob": "9163bc821103be5837206333fe88694cc8f8bb99",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671332.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "a35a9261732d4c0887fb281722e3ce73476c569a722ea0a873296946dd2adbaa",
+          "git_blob": "8d1fd93e15f9cce3a7fcf371c8c164d5e6246154",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 601495,
+          "path": "raw/job-130668671332.log.utf8.part-003",
+          "bytes": 1495,
+          "sha256": "48ad5434c44a0d4ecf51c28bae5eb1a657760f57e278eed03e1cb292f5c0262d",
+          "git_blob": "f168ae5ada6b502f7b371c44f806ab5ef7f80417",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671376.log",
+      "full_pin": {
+        "bytes": 3201889,
+        "sha256": "499edf02dad83e7669006f1d788edbdca1a7d43b144086631b539f306ffaf239",
+        "git_blob": "fac09318fdd6d4272167bbbf7d13815bd9e41b94"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671376.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "49c82243f49accdc588f6e0b3404f864e10cd1ec8408343d8e5eb978ae91d686",
+          "git_blob": "3730a2977ee660137658d1e860b79a426db527cf",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671376.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "dda2ee44049445a0735bf65cea37ea03eb83894b858f306ebdf0eb981ea507f5",
+          "git_blob": "dd51a2fa9a5acd73f23dbf924084b8738be7dcd1",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668671376.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "747bb6c164f06e02912e957a693157c20f941614319b97c0fec19ef970c74ccd",
+          "git_blob": "e65a600fa10750723af556dbcd8ce811e658fcf8",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 1200000,
+          "path": "raw/job-130668671376.log.utf8.part-004",
+          "bytes": 300048,
+          "sha256": "880e45f45445954ad38641e075556d66fbc2094bb5fbf607027ecf0a140cb2f3",
+          "git_blob": "ccc81b1466009e27c9505c270e934db49f5dd993",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 5,
+          "char_start": 1200000,
+          "char_end": 1500000,
+          "path": "raw/job-130668671376.log.utf8.part-005",
+          "bytes": 300036,
+          "sha256": "05cb0e4d3e850f67e8a5989ae431f3fec7322aabdbd279cdc1d80b80dbcad077",
+          "git_blob": "0d29d9a6dd2c38adabc0897be1e519b97840c196",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 6,
+          "char_start": 1500000,
+          "char_end": 1800000,
+          "path": "raw/job-130668671376.log.utf8.part-006",
+          "bytes": 300054,
+          "sha256": "0268a1faa66c86a397854fed3be2224da88e2de90047a65d99dde4e7a2fa2284",
+          "git_blob": "41f849c5fdd29a71be26a1b073936e55db2c8d2b",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 7,
+          "char_start": 1800000,
+          "char_end": 2100000,
+          "path": "raw/job-130668671376.log.utf8.part-007",
+          "bytes": 300054,
+          "sha256": "ebfc41ba9da86c40e661e121318f9c1e794d6af76b29427dc6b292f960704901",
+          "git_blob": "3e1920384488918997498a9f5908b768c9a98bd9",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 8,
+          "char_start": 2100000,
+          "char_end": 2400000,
+          "path": "raw/job-130668671376.log.utf8.part-008",
+          "bytes": 300056,
+          "sha256": "3a96ee4513bca29af8a87d9a03421e65f1d0d04d193d60e8eadf7d42933fc8c7",
+          "git_blob": "eec388695e345b642ec422d84c596e6196a21843",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 9,
+          "char_start": 2400000,
+          "char_end": 2700000,
+          "path": "raw/job-130668671376.log.utf8.part-009",
+          "bytes": 300054,
+          "sha256": "29d05aaaf0bbf3968c367bd9df1cb7ea697645f830266d85f0b4e17e3f003348",
+          "git_blob": "8aab20de0964f6446b4519bd25daa84eb6d72de7",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 10,
+          "char_start": 2700000,
+          "char_end": 3000000,
+          "path": "raw/job-130668671376.log.utf8.part-010",
+          "bytes": 300048,
+          "sha256": "d1d8506cb4d766e93cdf179c91b701fee263a7122089dd9c08be668be6b6c2e4",
+          "git_blob": "485d21a5d71532027a0a7840983f4f83b172772e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 11,
+          "char_start": 3000000,
+          "char_end": 3201537,
+          "path": "raw/job-130668671376.log.utf8.part-011",
+          "bytes": 201537,
+          "sha256": "a59a251d30ed8bb0091586f714cda5560129c7d622b3c58195e1c4aa937fb447",
+          "git_blob": "41629016e85d1215a924b04c1363069689c22d45",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671426.log",
+      "full_pin": {
+        "bytes": 384869,
+        "sha256": "589a9b7a680e1e83a1fa35b7060057eeffa2ff1b2dc5b9ec549bb82caea0d2dd",
+        "git_blob": "92c1db32e8c44f3a42500b416f8b9d71f3fc86a1"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671426.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "4d94c08977379cc1c31d0321904458a35a1986e14e0607e59e7b93865a91b1be",
+          "git_blob": "91d740b54f9067e4e3342a185dd1e5851d24dd35",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 384867,
+          "path": "raw/job-130668671426.log.utf8.part-002",
+          "bytes": 84867,
+          "sha256": "f87b567b916a4c9da0a03374003f9358b7e473ce406088a7bbb8ef8d3da081fb",
+          "git_blob": "d77b9eb45b46a35c158d8bbc0fa8c3c1e1c5a8f4",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671482.log",
+      "full_pin": {
+        "bytes": 995116,
+        "sha256": "9aae343f5e637c7ec550b9c3177624a58a9cb886f58d60a5dfca92c0e24a3315",
+        "git_blob": "c0d252d7dab6feed9b288376562256daba4bd184"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 300000,
+          "path": "raw/job-130668671482.log.utf8.part-001",
+          "bytes": 300002,
+          "sha256": "03b9d34023a859bd4e65e3990fce2c6a9990a99a188af07f993ddd5bdf42a5e1",
+          "git_blob": "9a5b0a37ccdd6712f4a40e4be83b4afc6b37892c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 2,
+          "char_start": 300000,
+          "char_end": 600000,
+          "path": "raw/job-130668671482.log.utf8.part-002",
+          "bytes": 300000,
+          "sha256": "a4adf67b44f75c5f0b5afba02c088feb0db8b6f7d3005f7bcdfdc500ebc8356d",
+          "git_blob": "443a65b80c5f66f4793e83af970ee0898dbd95ab",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 3,
+          "char_start": 600000,
+          "char_end": 900000,
+          "path": "raw/job-130668671482.log.utf8.part-003",
+          "bytes": 300000,
+          "sha256": "e654af87d0dbfe3822e42e9aba3e2d24d0f0c65aec80eff5afc21549d7311005",
+          "git_blob": "004a67570dead5deefcfd9cb028957db533d5bb5",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        },
+        {
+          "sequence": 4,
+          "char_start": 900000,
+          "char_end": 995114,
+          "path": "raw/job-130668671482.log.utf8.part-004",
+          "bytes": 95114,
+          "sha256": "36f496d8390f91b785b6e17cb2e09b87ab90f5bb63c79e82d7cae6e7dd974f3e",
+          "git_blob": "8250ad4ac13ed389631390128bedd262a443240e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842242.log",
+      "full_pin": {
+        "bytes": 133645,
+        "sha256": "3793cfbad645b8130e3ee7501fdee9c39621e3b25c8b35beeb6e88ff583d7a6a",
+        "git_blob": "6b132a9db536161bacf95304fa161955689b189c"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 133643,
+          "path": "raw/job-130668842242.log.utf8.part-001",
+          "bytes": 133645,
+          "sha256": "3793cfbad645b8130e3ee7501fdee9c39621e3b25c8b35beeb6e88ff583d7a6a",
+          "git_blob": "6b132a9db536161bacf95304fa161955689b189c",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842658.log",
+      "full_pin": {
+        "bytes": 185658,
+        "sha256": "2a2df8e5a796c1dbe6236ef4ef238a90edf43beda2b50db552df29dad046b78a",
+        "git_blob": "8a1a928b18167c98483553a73e15f710d1da4b15"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 185656,
+          "path": "raw/job-130668842658.log.utf8.part-001",
+          "bytes": 185658,
+          "sha256": "2a2df8e5a796c1dbe6236ef4ef238a90edf43beda2b50db552df29dad046b78a",
+          "git_blob": "8a1a928b18167c98483553a73e15f710d1da4b15",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130669042117.log",
+      "full_pin": {
+        "bytes": 173716,
+        "sha256": "d4547bcf20ec8ea795e76e868ef83721dcdde2765e75b92a4c221e2bfe5bb26c",
+        "git_blob": "9504f8633914135eec0f85b28ab32af39905f91f"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 173698,
+          "path": "raw/job-130669042117.log.utf8.part-001",
+          "bytes": 173716,
+          "sha256": "d4547bcf20ec8ea795e76e868ef83721dcdde2765e75b92a4c221e2bfe5bb26c",
+          "git_blob": "9504f8633914135eec0f85b28ab32af39905f91f",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130669910594.log",
+      "full_pin": {
+        "bytes": 4906,
+        "sha256": "90145b6300adc3e9dfcf389f4687785b5002b707ff6e750d28d2399bd20d4a7c",
+        "git_blob": "84011a1cc0e1ff561df82b98048fd3b0b046eb0b"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 4904,
+          "path": "raw/job-130669910594.log.utf8.part-001",
+          "bytes": 4906,
+          "sha256": "90145b6300adc3e9dfcf389f4687785b5002b707ff6e750d28d2399bd20d4a7c",
+          "git_blob": "84011a1cc0e1ff561df82b98048fd3b0b046eb0b",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130683493034.log",
+      "full_pin": {
+        "bytes": 2640,
+        "sha256": "80a838b24b426e0467adef2b9b68e8bddfcfa0b41abefeb62b61708f45455ccc",
+        "git_blob": "a91732efe6d1dc019f3101dc9ab040dad8a8bcf5"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 2638,
+          "path": "raw/job-130683493034.log.utf8.part-001",
+          "bytes": 2640,
+          "sha256": "80a838b24b426e0467adef2b9b68e8bddfcfa0b41abefeb62b61708f45455ccc",
+          "git_blob": "a91732efe6d1dc019f3101dc9ab040dad8a8bcf5",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668438898.log",
+      "full_pin": {
+        "bytes": 44964,
+        "sha256": "789f1e81931f8fb223fad7762893953ee0615433cebed7597eb82a63d2a6314c",
+        "git_blob": "c62a3ef4995ab0c5fc598f7247b79efa0023ef19"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 44962,
+          "path": "raw/job-130668438898.log.utf8.part-001",
+          "bytes": 44964,
+          "sha256": "789f1e81931f8fb223fad7762893953ee0615433cebed7597eb82a63d2a6314c",
+          "git_blob": "c62a3ef4995ab0c5fc598f7247b79efa0023ef19",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668842286.log",
+      "full_pin": {
+        "bytes": 34812,
+        "sha256": "fe9ffeaea406590c365ce7c6ebf70b0f2fc4e372b8cc9d605c012d7a9fdd04ae",
+        "git_blob": "72541c1cb3111ce30881473e14e08a4a15c2f53e"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "char_start": 0,
+          "char_end": 34810,
+          "path": "raw/job-130668842286.log.utf8.part-001",
+          "bytes": 34812,
+          "sha256": "fe9ffeaea406590c365ce7c6ebf70b0f2fc4e372b8cc9d605c012d7a9fdd04ae",
+          "git_blob": "72541c1cb3111ce30881473e14e08a4a15c2f53e",
+          "status": "FULL_READBACK_VERIFIED",
+          "actual_created": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130668671390.log",
+      "full_pin": {
+        "bytes": 64337,
+        "sha256": "0d4a548abb7ce6370754a0e83fa3a04e8d5e9d99763fb5440369fabfe2217a33",
+        "git_blob": "dc648d0474e94e7ac1a82b64e82bae539c057bd0"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "path": "terminal/job-130668671390.log",
+          "bytes": 64337,
+          "sha256": "0d4a548abb7ce6370754a0e83fa3a04e8d5e9d99763fb5440369fabfe2217a33",
+          "git_blob": "dc648d0474e94e7ac1a82b64e82bae539c057bd0",
+          "actual_created": true,
+          "full_utf8_readback_equal": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    },
+    {
+      "path": "raw/job-130736222112.log",
+      "full_pin": {
+        "bytes": 18400,
+        "sha256": "e2ddc311a5ad55979d3c378af2142dcda5d32b9556e534d9f6a44a2139915766",
+        "git_blob": "8701f4c6c7e7c6e2bfa59414fb8e53122b5ee6ad"
+      },
+      "parts": [
+        {
+          "sequence": 1,
+          "path": "terminal/job-130736222112.log",
+          "bytes": 18400,
+          "sha256": "e2ddc311a5ad55979d3c378af2142dcda5d32b9556e534d9f6a44a2139915766",
+          "git_blob": "8701f4c6c7e7c6e2bfa59414fb8e53122b5ee6ad",
+          "actual_created": true,
+          "full_utf8_readback_equal": true,
+          "full_utf8_readback_verified": true
+        }
+      ]
+    }
+  ],
+  "full_raw_job_count": 28,
+  "raw_part_count": 64,
+  "total_full_raw_bytes": 13751922,
+  "previous_nonterminal_recovery_manifest": "3b5c751478f8da58d2c695d347d4c6d7e7029943",
+  "original_creation_and_readback_receipts": "3ae4e298c76d739a963f5421ef156fb13ff22902",
+  "independent_six_log_peer": {
+    "bytes": 32475,
+    "sha256": "88d5417df7d29d5f423d7adf56dd1068f891dddbdbd32196aed96251eaf90969",
+    "git_blob": "976f4fc65a8c11764f80de588f68efa1080afae3",
+    "actual_created": true,
+    "full_utf8_readback_verified": true,
+    "scope": "New independent target-table accounting from complete original Mac/GNU/Windows1-4 logs; not recovery of old detailed parser/output."
+  },
+  "independent_reproducibility_companions": [
+    {
+      "name": "independent_target_tables.json",
+      "bytes": 166667,
+      "sha256": "7156e3a5e96e8478b47994ffbf15ad0cf465e0a13577a4f56d2fb855bf7ebf85",
+      "git_blob": "b60fda336e91b8ad543a8a76983dd07b6c73dd0b",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "parse_original_target_tables.mjs",
+      "bytes": 5511,
+      "sha256": "1722d1e5361cf0425b072d10df5f6b4985053633ec684ad22169245676ca3ef9",
+      "git_blob": "bee878b17f525945a9185f37dccea69fa4782cc0",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    },
+    {
+      "name": "independent_utf8_hashes.mjs",
+      "bytes": 3259,
+      "sha256": "9b3727d70ae97189350a46b780161b8d2f63332b9706c80b5bc15d5ffa6169ac",
+      "git_blob": "9dcceb69531b5a8c04efba523a3717de48962784",
+      "actual_created": true,
+      "full_utf8_readback_equal": true
+    }
+  ],
+  "musl": {
+    "job_id": 130668671390,
+    "api_conclusion": "cancelled",
+    "started_at": "2026-11-11T16:52:15Z",
+    "completed_at": "2026-11-11T18:52:30Z",
+    "elapsed_seconds": 7215,
+    "original_declared_job_timeout_minutes": 120,
+    "dependency_step": {
+      "number": 6,
+      "name": "Install OpenSSH for the native operator-acceptance test action",
+      "started_at": "2026-11-11T16:52:34Z",
+      "completed_at": "2026-11-11T18:52:28Z",
+      "conclusion": "cancelled"
+    },
+    "original_raw_error": "The operation was canceled.",
+    "scheduler_cancellation_reason": "NOT_IDENTIFIED_BY_ORIGINAL_LOG_OR_METADATA",
+    "budget_elapsed_similarity_not_proof_of_scheduler_reason": true,
+    "native_test_commands_executed": 0,
+    "operator_acceptance_test_commands_executed": 0,
+    "source_after_clean_check": "SKIPPED_UNOBSERVED",
+    "post_prepare_ci": "success",
+    "post_checkout": "success",
+    "original_apt_output_slice": [
+      {
+        "line": 677,
+        "text": "2026-11-11T16:52:34.4266629Z ##[group]Run sudo apt-get update"
+      },
+      {
+        "line": 678,
+        "text": "2026-11-11T16:52:34.4266795Z \u001b[36;1msudo apt-get update\u001b[0m"
+      },
+      {
+        "line": 679,
+        "text": "2026-11-11T16:52:34.4266992Z \u001b[36;1msudo apt-get install -y --no-install-recommends openssh-client\u001b[0m"
+      },
+      {
+        "line": 680,
+        "text": "2026-11-11T16:52:34.4267201Z \u001b[36;1mtest -x /usr/bin/ssh-keygen\u001b[0m"
+      },
+      {
+        "line": 681,
+        "text": "2026-11-11T16:52:34.4267385Z \u001b[36;1mdpkg-query -W -f='${Package} ${Version}\\n' openssh-client\u001b[0m"
+      },
+      {
+        "line": 682,
+        "text": "2026-11-11T16:52:34.4267758Z \u001b[36;1msha256sum /usr/bin/ssh-keygen\u001b[0m"
+      },
+      {
+        "line": 683,
+        "text": "2026-11-11T16:52:34.4281118Z shell: /usr/bin/bash --noprofile --norc -e -o pipefail {0}"
+      },
+      {
+        "line": 684,
+        "text": "2026-11-11T16:52:34.4281292Z env:"
+      },
+      {
+        "line": 685,
+        "text": "2026-11-11T16:52:34.4281423Z   CI_BUILD_ROOT: /home/runner/.cache/codex-ci"
+      },
+      {
+        "line": 686,
+        "text": "2026-11-11T16:52:34.4281629Z   CODEX_REPO_ROOT: /home/runner/work/hepta-private-ci/hepta-private-ci"
+      },
+      {
+        "line": 687,
+        "text": "2026-11-11T16:52:34.4281842Z   BAZEL_OUTPUT_BASE: /home/runner/.cache/codex-ci/o"
+      },
+      {
+        "line": 688,
+        "text": "2026-11-11T16:52:34.4282029Z   BAZEL_OUTPUT_USER_ROOT: /home/runner/.cache/codex-ci/b"
+      },
+      {
+        "line": 689,
+        "text": "2026-11-11T16:52:34.4282279Z   BAZEL_REPOSITORY_CACHE: /home/runner/.cache/codex-ci/bazel-repository-cache"
+      },
+      {
+        "line": 690,
+        "text": "2026-11-11T16:52:34.4282583Z   BAZEL_REPO_CONTENTS_CACHE: /home/runner/.cache/codex-ci/bazel-repo-contents-cache-43062473474-test"
+      },
+      {
+        "line": 691,
+        "text": "2026-11-11T16:52:34.4282861Z   CARGO_TARGET_DIR: /home/runner/.cache/codex-ci/cargo-target"
+      },
+      {
+        "line": 692,
+        "text": "2026-11-11T16:52:34.4283043Z   TEMP: /home/runner/.cache/codex-ci/tmp"
+      },
+      {
+        "line": 693,
+        "text": "2026-11-11T16:52:34.4283198Z   TMP: /home/runner/.cache/codex-ci/tmp"
+      },
+      {
+        "line": 694,
+        "text": "2026-11-11T16:52:34.4283345Z   CARGO_NET_GIT_FETCH_WITH_CLI: true"
+      },
+      {
+        "line": 695,
+        "text": "2026-11-11T16:52:34.4284766Z   BAZELISK_GITHUB_TOKEN: ***"
+      },
+      {
+        "line": 696,
+        "text": "2026-11-11T16:52:34.4284976Z   CODEX_BAZEL_EXECUTION_LOG_COMPACT_DIR: /home/runner/work/_temp/bazel-execution-logs"
+      },
+      {
+        "line": 697,
+        "text": "2026-11-11T16:52:34.4285197Z ##[endgroup]"
+      },
+      {
+        "line": 698,
+        "text": "2026-11-11T16:52:34.4879947Z Get:1 file:/etc/apt/apt-mirrors.txt Mirrorlist [144 B]"
+      },
+      {
+        "line": 699,
+        "text": "2026-11-11T16:52:34.5410247Z Get:6 https://packages.microsoft.com/ubuntu/24.04/prod noble InRelease [3600 B]"
+      },
+      {
+        "line": 700,
+        "text": "2026-11-11T16:52:34.5897153Z Get:7 https://packages.microsoft.com/ubuntu/24.04/prod noble/main amd64 Packages [764 kB]"
+      },
+      {
+        "line": 701,
+        "text": "2026-11-11T16:52:34.6105801Z Get:8 https://packages.microsoft.com/ubuntu/24.04/prod noble/main armhf Packages [12.6 kB]"
+      },
+      {
+        "line": 702,
+        "text": "2026-11-11T16:52:34.6164658Z Get:9 https://packages.microsoft.com/ubuntu/24.04/prod noble/main arm64 Packages [693 kB]"
+      },
+      {
+        "line": 703,
+        "text": "2026-11-11T16:52:54.3363332Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+      },
+      {
+        "line": 704,
+        "text": "2026-11-11T16:53:14.3552106Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+      },
+      {
+        "line": 705,
+        "text": "2026-11-11T16:53:34.3801582Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+      },
+      {
+        "line": 706,
+        "text": "2026-11-11T16:53:54.4113437Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+      },
+      {
+        "line": 707,
+        "text": "2026-11-11T16:54:41.4369169Z Ign:2 http://azure.archive.ubuntu.com/ubuntu noble InRelease"
+      },
+      {
+        "line": 708,
+        "text": "2026-11-11T16:54:41.4414136Z Ign:3 http://azure.archive.ubuntu.com/ubuntu noble-updates InRelease"
+      },
+      {
+        "line": 709,
+        "text": "2026-11-11T16:54:41.4415100Z Ign:4 http://azure.archive.ubuntu.com/ubuntu noble-backports InRelease"
+      },
+      {
+        "line": 710,
+        "text": "2026-11-11T16:54:41.4415687Z Ign:5 http://azure.archive.ubuntu.com/ubuntu noble-security InRelease"
+      },
+      {
+        "line": 711,
+        "text": "2026-11-11T16:54:47.4171422Z Hit:2 https://archive.ubuntu.com/ubuntu noble InRelease"
+      },
+      {
+        "line": 712,
+        "text": "2026-11-11T16:54:47.5282934Z Get:3 https://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]"
+      },
+      {
+        "line": 713,
+        "text": "2026-11-11T16:54:47.8518239Z Ign:10 http://azure.archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages"
+      },
+      {
+        "line": 714,
+        "text": "2026-11-11T16:54:47.8518833Z Ign:11 http://azure.archive.ubuntu.com/ubuntu noble-updates/main Translation-en"
+      },
+      {
+        "line": 715,
+        "text": "2026-11-11T16:54:47.8519463Z Ign:12 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages"
+      },
+      {
+        "line": 716,
+        "text": "2026-11-11T16:54:47.8519994Z Ign:13 http://azure.archive.ubuntu.com/ubuntu noble-updates/universe Translation-en"
+      },
+      {
+        "line": 717,
+        "text": "2026-11-11T16:54:47.8520457Z Ign:14 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages"
+      },
+      {
+        "line": 718,
+        "text": "2026-11-11T16:54:47.8521160Z Ign:15 http://azure.archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en"
+      },
+      {
+        "line": 719,
+        "text": "2026-11-11T16:54:47.8521626Z Ign:16 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Packages"
+      },
+      {
+        "line": 720,
+        "text": "2026-11-11T16:54:47.8522062Z Ign:17 http://azure.archive.ubuntu.com/ubuntu noble-updates/multiverse Translation-en"
+      },
+      {
+        "line": 721,
+        "text": "2026-11-11T16:54:47.9158589Z Get:4 https://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]"
+      },
+      {
+        "line": 722,
+        "text": "2026-11-11T16:54:48.0906863Z Get:5 https://archive.ubuntu.com/ubuntu noble-security InRelease [126 kB]"
+      },
+      {
+        "line": 723,
+        "text": "2026-11-11T18:52:28.1390227Z ##[error]The operation was canceled."
+      }
+    ]
+  },
+  "required": {
+    "job_id": 130736222112,
+    "conclusion": "failure",
+    "started_at": "2026-11-11T18:52:34Z",
+    "completed_at": "2026-11-11T18:52:44Z",
+    "exact_failure": "CI gate rejected: invalid or absent CI result: bazel",
+    "needs": {
+      "scope": {
+        "result": "success",
+        "outputs": {
+          "inference": "true",
+          "effects": "true",
+          "lifecycle": "true",
+          "learning": "true",
+          "objective": "true",
+          "native": "true",
+          "derived": "true",
+          "full_repo": "true"
+        }
+      },
+      "hepta-contract-gate": {
+        "result": "success",
+        "outputs": {}
+      },
+      "bazel": {
+        "result": "abandoned",
+        "outputs": {}
+      },
+      "blob-size-policy": {
+        "result": "success",
+        "outputs": {}
+      },
+      "cargo-deny": {
+        "result": "success",
+        "outputs": {}
+      },
+      "codespell": {
+        "result": "success",
+        "outputs": {}
+      },
+      "repo-checks": {
+        "result": "abandoned",
+        "outputs": {}
+      },
+      "rust-ci": {
+        "result": "success",
+        "outputs": {}
+      },
+      "sdk": {
+        "result": "success",
+        "outputs": {}
+      },
+      "hepta-scoped": {
+        "result": "skipped",
+        "outputs": {}
+      },
+      "lightweight": {
+        "result": "skipped",
+        "outputs": {}
+      }
+    },
+    "script_exit_code": 1,
+    "rust_ci_required_job": {
+      "id": 130669910594,
+      "conclusion": "success"
+    },
+    "does_not_override_failed_global_gate": true
+  },
+  "artifacts": {
+    "count": 10,
+    "metadata_blob": "79a3ba789600a87d17e1715b2ce7ce427e639ecc",
+    "all_ids": [
+      13876372739,
+      13876150183,
+      13876096414,
+      13875941527,
+      13875555296,
+      13875075385,
+      13875028052,
+      13874478194,
+      13873884047,
+      13873789411
+    ],
+    "mac_original_zip": {
+      "artifact_id": 13876372739,
+      "bytes": 10555309,
+      "sha256": "8b8fb19211e1227414670de11a9695cfd3773cc81081a5022714055fbf7eee56",
+      "full_original_zip_previously_verified_in_disconnected_scratch": true,
+      "full_zip_not_persisted_in_this_recovery_package": true,
+      "semantic_compact_decode_not_performed": true
+    },
+    "other_nine_execution_zip_artifacts": "METADATA_ONLY_NOT_FULL_CONTENT_RECOVERY"
+  },
+  "retained_gaps": {
+    "cargo_deny_full_log": "API success, original two transport failures; no third log read. First original failure response persisted as c701e3d00536096d456f8b2730f755914e32ebeb. Second response currently inaccessible scratch.",
+    "original_detailed_parser_and_output": "audit_bazel_observed.py and approximately1.76MB original output remain inaccessible scratch originals; new peer parser is distinct.",
+    "four_mac_arm_cancelled_jobs": "No assigned runner/steps in original metadata; cause unknown. Do not infer case executions.",
+    "original_source_after_for_musl": "No clean-worktree step observation after cancellation."
+  },
+  "actions": {
+    "workflow_runs_started": 0,
+    "workflow_reruns": 0,
+    "cancellations_sent": 0,
+    "ref_changes": 0,
+    "native_tests_executed_by_auditor": 0,
+    "new_model_requests": 0
+  },
+  "adoption_boundaries": {
+    "all_ten_adoption_gates_remain_open": true,
+    "provider_original_outcome_still_unknown": true,
+    "new_memory_benefit_not_established": true,
+    "overall_hosted_ci_not_passed": true
+  }
+}
