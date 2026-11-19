@@ -961,3 +961,64 @@ host_executable(name = "git", paths = ["{git_path_literal}"])
     );
     Ok(())
 }
+
+#[test]
+fn example_validation_preserves_ordered_positive_errors() {
+    let mut parser = PolicyParser::new();
+    let err = parser
+        .parse(
+            "test.rules",
+            r#"
+prefix_rule(
+    pattern = ["git", "status"],
+    match = [
+        ["git", "restore"],
+        ["git", "status"],
+        ["git", "reset"],
+    ],
+)
+"#,
+        )
+        .expect_err("two unmatched positive examples must be reported");
+    match err {
+        Error::ExampleDidNotMatch { examples, .. } => {
+            assert_eq!(examples, vec!["git restore", "git reset"]);
+        }
+        other => panic!("unexpected positive example validation error: {other:?}"),
+    }
+}
+
+#[test]
+fn example_validation_stops_at_first_negative_match() {
+    let mut parser = PolicyParser::new();
+    let err = parser
+        .parse(
+            "test.rules",
+            r#"
+prefix_rule(
+    pattern = ["git", "status"],
+    not_match = [
+        ["git", "status", "--short"],
+        ["git", "status", "--branch"],
+    ],
+)
+"#,
+        )
+        .expect_err("first matched negative example must be reported");
+    match err {
+        Error::ExampleDidMatch { example, .. } => {
+            assert_eq!(example, "git status --short");
+        }
+        other => panic!("unexpected negative example validation error: {other:?}"),
+    }
+}
+
+#[test]
+fn example_validation_accepts_empty_example_lists() -> Result<()> {
+    let mut parser = PolicyParser::new();
+    parser.parse(
+        "test.rules",
+        r#"prefix_rule(pattern=["git", "status"], match=[], not_match=[])"#,
+    )?;
+    Ok(())
+}
