@@ -25,6 +25,23 @@ LANES = (
 )
 
 
+def parse_fanin_needs(job: str) -> tuple[str, ...]:
+    """Read the checked-in flow-style needs list, whether inline or multiline.
+
+    A multiline flow list with a trailing comma is valid YAML; the old
+    substring test silently assumed the closing bracket stayed on one line.
+    This intentionally rejects other YAML shapes rather than guessing a
+    different dependency graph.
+    """
+    match = re.search(r"(?m)^    needs:[ \t]*\s*\[([^\]]+)\]", job)
+    if match is None:
+        raise ValueError("terminal needs list is absent or is not a flow sequence")
+    names = tuple(item.strip() for item in match.group(1).split(",") if item.strip())
+    if not names or not all(re.fullmatch(r"[a-z][a-z0-9-]*", name) for name in names):
+        raise ValueError("malformed terminal dependency")
+    return names
+
+
 class TerminalGateTests(unittest.TestCase):
     def run_gate(self, needs, *, expected=LANES, allowed=()):
         env = os.environ.copy()
@@ -130,15 +147,29 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
-        self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
+        self.assertCountEqual(parse_fanin_needs(job), LANES)
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
         self.assertNotIn("continue-on-error", self.text)
+
+    def test_fanin_flow_sequence_is_format_independent_but_not_optional(self):
+        for text in (
+            "    needs: [derived-projections, process-qualification]\n",
+            "    needs:\n      [\n        derived-projections,\n"
+            "        process-qualification,\n      ]\n",
+        ):
+            with self.subTest(text=text):
+                self.assertEqual(
+                    parse_fanin_needs(text),
+                    ("derived-projections", "process-qualification"),
+                )
+        for text in (
+            "    needs:\n      derived-projections\n",
+            "    steps:\n      - run: echo process-qualification]\n",
+        ):
+            with self.subTest(text=text), self.assertRaises(ValueError):
+                parse_fanin_needs(text)
 
     def test_existing_behavior_suites_remain(self):
         process = self.jobs["process-qualification"]
@@ -185,7 +216,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        self.assertIn("process-qualification", parse_fanin_needs(terminal))
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

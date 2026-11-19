@@ -5,6 +5,9 @@ inputs:
     description: Target triple used for cache namespacing.
     required: true
 outputs:
+  disk-cache-path:
+    description: Filesystem path used for the local Bazel action cache.
+    value: ${{ steps.configure_bazel_repository_cache.outputs.disk-cache-path }}
   repository-cache-path:
     description: Filesystem path used for the Bazel repository cache.
     value: ${{ steps.configure_bazel_repository_cache.outputs.repository-cache-path }}
@@ -25,11 +28,20 @@ runs:
         # BAZEL_OUTPUT_USER_ROOT and leaves Bazel's I/O-heavy trees on C:.
         output-base: ${{ steps.setup_ci.outputs.bazel-output-base }}
 
-    - name: Configure Bazel repository cache
+    - name: Configure Bazel cache paths
       id: configure_bazel_repository_cache
       shell: pwsh
       run: |
         "repository-cache-path=$env:BAZEL_REPOSITORY_CACHE" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        # Match the pinned setup-bazel paths, including the Windows Dev Drive.
+        # Persistence is managed by prepare/save so source changes can refresh
+        # immutable Actions caches without a second restore overwriting them.
+        if ($env:RUNNER_OS -eq 'Windows') {
+          $diskCachePath = "$env:BAZEL_OUTPUT_BASE-disk"
+        } else {
+          $diskCachePath = Join-Path $HOME '.cache/bazel-disk'
+        }
+        "disk-cache-path=$diskCachePath" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
     - name: Expose MSVC SDK environment (Windows)
       if: runner.os == 'Windows'

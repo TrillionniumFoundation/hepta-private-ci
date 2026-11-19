@@ -80,6 +80,29 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(lock_scope[key] for key in GROUPS))
         self.assertTrue(lock_scope["full_repo"])
 
+    def test_cargo_advisories_run_only_on_supply_chain_changes_in_pull_requests(self):
+        for path in [
+            "codex-rs/Cargo.lock",
+            "codex-rs/Cargo.toml",
+            "codex-rs/deny.toml",
+            "codex-rs/hepta-infer-core/Cargo.toml",
+            "codex-rs/core/Cargo.toml",
+            ".github/workflows/cargo-deny.yml",
+        ]:
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["cargo_audit"])
+        for path in [
+            ".github/workflows/bazel.yml",
+            ".github/workflows/github-actions-fleet-500.yml",
+            ".github/workflows/blocking-ci.yml",
+            ".bazelrc",
+            "codex-rs/hepta-infer-core/src/lib.rs",
+            "docs/readiness/STATUS.md",
+        ]:
+            with self.subTest(path=path):
+                self.assertFalse(select([path])["cargo_audit"])
+        self.assertTrue(select([], force_full=True)["cargo_audit"])
+
     def test_generated_module_projections_do_not_force_native_builds(self):
         for path in [
             "docs/modules/SOURCE_BINDINGS.json",
