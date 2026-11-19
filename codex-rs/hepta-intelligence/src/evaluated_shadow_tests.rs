@@ -107,13 +107,6 @@ fn witness_path(path: &std::path::Path) -> std::path::PathBuf {
     path.with_extension("witness")
 }
 
-fn closed_ledger_bytes(path: &std::path::Path) -> [Vec<u8>; 2] {
-    [
-        fs::read(path).unwrap(),
-        fs::read(witness_path(path)).unwrap(),
-    ]
-}
-
 fn open_ledger_directory(path: &std::path::Path) -> std::io::Result<std::fs::File> {
     crate::directory_test_support::directory(path)
 }
