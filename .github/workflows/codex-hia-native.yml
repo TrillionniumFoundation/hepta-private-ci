@@ -511,7 +511,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_lines_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-output-lines-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-lines-abi.log"
 
@@ -521,7 +521,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_output_item_budget_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-output-item-budget-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-output-item-budget-abi.log"
 
@@ -531,7 +531,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_format_env_display_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-format-env-display-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-format-env-display-abi.log"
 
@@ -541,7 +541,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_citation_stream_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-citation-stream-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-citation-stream-parser-abi.log"
       - name: Verify proposed plan literal frames and atomic ABI errors
@@ -550,7 +550,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_proposed_plan_parser_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-proposed-plan-parser-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-proposed-plan-parser-abi.log"
       - name: Verify fuzzy match literal states and atomic ABI errors
@@ -559,7 +559,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_fuzzy_match_abi.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-fuzzy-match-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-fuzzy-match-abi.log"
 
@@ -1206,7 +1206,7 @@ jobs:
           set -euo pipefail
           python3 -B codex/hia/tests/test_network_host_abi.py \
             --library "$RUNNER_TEMP/hia-native/network_host.so" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --report "$RUNNER_TEMP/hia-network-host-abi.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host-abi.log"
 
@@ -1219,7 +1219,7 @@ jobs:
           # That private bundle is not available on this GitHub runner.
           python3 -B codex/hia/tests/test_native_network_host.py \
             --library-dir "$RUNNER_TEMP/hia-native" \
-            --build-profile full-native35 \
+            --build-profile full-native36 \
             --rustc "$RUSTC" --target-dir "$CARGO_TARGET_DIR" \
             --report "$RUNNER_TEMP/hia-network-host.json" \
             2>&1 | tee "$RUNNER_TEMP/hia-network-host.log"
