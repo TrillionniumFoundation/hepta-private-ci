@@ -1,0 +1,1245 @@
+{
+  "status": "COMPLETE_ARITHMETIC_REVIEW",
+  "failures": [],
+  "fits_reviewed": 30,
+  "validation_records_recomputed": 175,
+  "completed_optimizer_updates": 157464,
+  "all_child_cpu_seconds": 2044.665142,
+  "sum_child_wall_seconds_not_campaign_elapsed": 2240.9856222300004,
+  "max_child_rss_kib": 290968,
+  "all_child_failures": 0,
+  "new_model_calls": 0,
+  "new_optimizer_calls": 0,
+  "aggregate": {
+    "flow": {
+      "completed_seeds": 3,
+      "seeds": [
+        211,
+        307,
+        101
+      ],
+      "accuracy": {
+        "mean": 0.2913093196112064,
+        "sample_sd": 0.07800898497842786,
+        "values": [
+          0.2444253859348199,
+          0.24814179531160663,
+          0.38136077758719267
+        ]
+      },
+      "cross_entropy": {
+        "mean": 2.008832745309138,
+        "sample_sd": 0.07452641698177441,
+        "values": [
+          2.0629907118801434,
+          2.0396707096366757,
+          1.9238368144105944
+        ]
+      },
+      "updates": {
+        "mean": 250.0,
+        "sample_sd": 80.20598481410225,
+        "values": [
+          162,
+          269,
+          319
+        ]
+      },
+      "state_bytes": {
+        "mean": 521360.0,
+        "sample_sd": 0.0,
+        "values": [
+          521360,
+          521360,
+          521360
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 17362017.0,
+        "sample_sd": 0.0,
+        "values": [
+          17362017,
+          17362017,
+          17362017
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.099408491999687,
+        "sample_sd": 0.01346508235164957,
+        "values": [
+          0.08681477700156393,
+          0.11360200699709821,
+          0.09780869200039888
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 1.4680794326656421,
+        "sample_sd": 0.3317420514836432,
+        "values": [
+          1.2702320399985183,
+          1.8510719510013587,
+          1.2829343069970491
+        ]
+      },
+      "target_observed": 0
+    },
+    "flow_fixed": {
+      "completed_seeds": 3,
+      "seeds": [
+        307,
+        101,
+        211
+      ],
+      "accuracy": {
+        "mean": 0.3628740232513817,
+        "sample_sd": 0.08698591711681646,
+        "values": [
+          0.2644368210405946,
+          0.429388221841052,
+          0.39479702687249857
+        ]
+      },
+      "cross_entropy": {
+        "mean": 1.8921070411591205,
+        "sample_sd": 0.10657157890987097,
+        "values": [
+          2.009482438307815,
+          1.8014074145034702,
+          1.8654312706660763
+        ]
+      },
+      "updates": {
+        "mean": 478.6666666666667,
+        "sample_sd": 131.47369825685035,
+        "values": [
+          368,
+          624,
+          444
+        ]
+      },
+      "state_bytes": {
+        "mean": 521360.0,
+        "sample_sd": 0.0,
+        "values": [
+          521360,
+          521360,
+          521360
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 14071688.0,
+        "sample_sd": 0.0,
+        "values": [
+          14071688,
+          14071688,
+          14071688
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.08175415766891092,
+        "sample_sd": 0.012432929768493672,
+        "values": [
+          0.09549509100179421,
+          0.07128260700119426,
+          0.07848477500374429
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 2.219051396335999,
+        "sample_sd": 0.6656975554335269,
+        "values": [
+          1.4755221450031968,
+          2.4219183470049757,
+          2.7597136969998246
+        ]
+      },
+      "target_observed": 0
+    },
+    "flow_mass": {
+      "completed_seeds": 3,
+      "seeds": [
+        101,
+        211,
+        307
+      ],
+      "accuracy": {
+        "mean": 0.10405946255002858,
+        "sample_sd": 0.0,
+        "values": [
+          0.10405946255002858,
+          0.10405946255002858,
+          0.10405946255002858
+        ]
+      },
+      "cross_entropy": {
+        "mean": 2.3021700026171517,
+        "sample_sd": 0.00010369718664125244,
+        "values": [
+          2.3021290061922257,
+          2.302093070976003,
+          2.3022879306832262
+        ]
+      },
+      "updates": {
+        "mean": 528.0,
+        "sample_sd": 159.84992962150469,
+        "values": [
+          672,
+          556,
+          356
+        ]
+      },
+      "state_bytes": {
+        "mean": 521360.0,
+        "sample_sd": 0.0,
+        "values": [
+          521360,
+          521360,
+          521360
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 17362017.0,
+        "sample_sd": 0.0,
+        "values": [
+          17362017,
+          17362017,
+          17362017
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 1.167346053662186,
+        "sample_sd": 1.8755447209327047,
+        "values": [
+          0.08271997099654982,
+          3.333037576994684,
+          0.08628061299532419
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 4.42457508000128,
+        "sample_sd": 4.600151746182384,
+        "values": [
+          1.8954906290018698,
+          9.734385525000107,
+          1.6438490860018646
+        ]
+      },
+      "target_observed": 0
+    },
+    "flow_no_return": {
+      "completed_seeds": 3,
+      "seeds": [
+        101,
+        307,
+        211
+      ],
+      "accuracy": {
+        "mean": 0.4059462550028588,
+        "sample_sd": 0.03261637166534717,
+        "values": [
+          0.4425385934819897,
+          0.37993138936535165,
+          0.395368782161235
+        ]
+      },
+      "cross_entropy": {
+        "mean": 1.8554476516488727,
+        "sample_sd": 0.0724289220281198,
+        "values": [
+          1.772560628020381,
+          1.90654801241414,
+          1.887234314512097
+        ]
+      },
+      "updates": {
+        "mean": 489.3333333333333,
+        "sample_sd": 117.67044375429768,
+        "values": [
+          625,
+          415,
+          428
+        ]
+      },
+      "state_bytes": {
+        "mean": 515344.0,
+        "sample_sd": 0.0,
+        "values": [
+          515344,
+          515344,
+          515344
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 15882265.0,
+        "sample_sd": 0.0,
+        "values": [
+          15882265,
+          15882265,
+          15882265
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.15496101366685858,
+        "sample_sd": 0.07914443108009972,
+        "values": [
+          0.11211208799795713,
+          0.2462912570044864,
+          0.10647969599813223
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 1.2987520523335359,
+        "sample_sd": 0.1714582155413839,
+        "values": [
+          1.3894759609975154,
+          1.4057869449970894,
+          1.1009932510060025
+        ]
+      },
+      "target_observed": 0
+    },
+    "flow_erlang4": {
+      "completed_seeds": 3,
+      "seeds": [
+        101,
+        211,
+        307
+      ],
+      "accuracy": {
+        "mean": 0.5771869639794168,
+        "sample_sd": 0.04596411141513085,
+        "values": [
+          0.5546026300743282,
+          0.5468839336763865,
+          0.6300743281875357
+        ]
+      },
+      "cross_entropy": {
+        "mean": 1.407088995383427,
+        "sample_sd": 0.12173179010659599,
+        "values": [
+          1.4726991807277265,
+          1.4819412592033967,
+          1.2666265462191575
+        ]
+      },
+      "updates": {
+        "mean": 1607.3333333333333,
+        "sample_sd": 542.0150674412413,
+        "values": [
+          1063,
+          1612,
+          2147
+        ]
+      },
+      "state_bytes": {
+        "mean": 132336.0,
+        "sample_sd": 0.0,
+        "values": [
+          132336,
+          132336,
+          132336
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 2936305.0,
+        "sample_sd": 0.0,
+        "values": [
+          2936305,
+          2936305,
+          2936305
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.038898417667951435,
+        "sample_sd": 0.023462875444250235,
+        "values": [
+          0.024961082999652717,
+          0.0659872130054282,
+          0.025746956998773385
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.5378128793333113,
+        "sample_sd": 0.5438718465181361,
+        "values": [
+          0.22872974000347313,
+          1.1657964149999316,
+          0.21891248299652943
+        ]
+      },
+      "target_observed": 0
+    },
+    "gate": {
+      "completed_seeds": 3,
+      "seeds": [
+        101,
+        211,
+        307
+      ],
+      "accuracy": {
+        "mean": 0.9399656946826758,
+        "sample_sd": 0.009214843602793697,
+        "values": [
+          0.9336763865065751,
+          0.9505431675242996,
+          0.9356775300171527
+        ]
+      },
+      "cross_entropy": {
+        "mean": 0.22751117665323894,
+        "sample_sd": 0.009176559392553586,
+        "values": [
+          0.21756088857219508,
+          0.22933147242272786,
+          0.23564116896479398
+        ]
+      },
+      "updates": {
+        "mean": 10867.333333333334,
+        "sample_sd": 5414.962080507428,
+        "values": [
+          7838,
+          17119,
+          7645
+        ]
+      },
+      "state_bytes": {
+        "mean": 4096.0,
+        "sample_sd": 0.0,
+        "values": [
+          4096,
+          4096,
+          4096
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 360840.0,
+        "sample_sd": 0.0,
+        "values": [
+          360840,
+          360840,
+          360840
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.00562934133389111,
+        "sample_sd": 0.003656831142148342,
+        "values": [
+          0.005852897003933322,
+          0.009169265998934861,
+          0.0018658609988051467
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.015776737333605222,
+        "sample_sd": 0.005566231263041813,
+        "values": [
+          0.021703815000364557,
+          0.014966160000767559,
+          0.010660236999683548
+        ]
+      },
+      "target_observed": 3
+    },
+    "gru": {
+      "completed_seeds": 3,
+      "seeds": [
+        307,
+        101,
+        211
+      ],
+      "accuracy": {
+        "mean": 0.8606822946445588,
+        "sample_sd": 0.10951924921805524,
+        "values": [
+          0.7344196683819325,
+          0.9176672384219554,
+          0.9299599771297884
+        ]
+      },
+      "cross_entropy": {
+        "mean": 0.46629987753802854,
+        "sample_sd": 0.3478378174250123,
+        "values": [
+          0.8678816118457514,
+          0.2591662796002443,
+          0.27185174116808997
+        ]
+      },
+      "updates": {
+        "mean": 9501.333333333334,
+        "sample_sd": 7020.26782490051,
+        "values": [
+          1411,
+          13987,
+          13106
+        ]
+      },
+      "state_bytes": {
+        "mean": 3072.0,
+        "sample_sd": 0.0,
+        "values": [
+          3072,
+          3072,
+          3072
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 278088.0,
+        "sample_sd": 0.0,
+        "values": [
+          278088,
+          278088,
+          278088
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.0029825706684884303,
+        "sample_sd": 0.0003357499950777449,
+        "values": [
+          0.003348128004290629,
+          0.0029116129953763448,
+          0.0026879710057983175
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.016577385998971295,
+        "sample_sd": 0.004421352836993939,
+        "values": [
+          0.021642122002958786,
+          0.014601522998418659,
+          0.013488512995536439
+        ]
+      },
+      "target_observed": 2
+    },
+    "cfc": {
+      "completed_seeds": 3,
+      "seeds": [
+        211,
+        101,
+        307
+      ],
+      "accuracy": {
+        "mean": 0.8873642081189251,
+        "sample_sd": 0.04286544386094455,
+        "values": [
+          0.91852487135506,
+          0.9050886220697542,
+          0.8384791309319611
+        ]
+      },
+      "cross_entropy": {
+        "mean": 0.42437647085454316,
+        "sample_sd": 0.1897948265163831,
+        "values": [
+          0.28011401927832535,
+          0.35363245396114856,
+          0.6393829393241556
+        ]
+      },
+      "updates": {
+        "mean": 8393.333333333334,
+        "sample_sd": 2934.288045392499,
+        "values": [
+          9388,
+          10701,
+          5091
+        ]
+      },
+      "state_bytes": {
+        "mean": 3072.0,
+        "sample_sd": 0.0,
+        "values": [
+          3072,
+          3072,
+          3072
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 407016.0,
+        "sample_sd": 0.0,
+        "values": [
+          407016,
+          407016,
+          407016
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.011733206997935971,
+        "sample_sd": 0.008707079821980135,
+        "values": [
+          0.011760388995753601,
+          0.02042666399938753,
+          0.003012567998666782
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.031210786338003043,
+        "sample_sd": 0.027406419943857115,
+        "values": [
+          0.01488271100242855,
+          0.06285156400554115,
+          0.015898084006039426
+        ]
+      },
+      "target_observed": 3
+    },
+    "snn": {
+      "completed_seeds": 3,
+      "seeds": [
+        307,
+        211,
+        101
+      ],
+      "accuracy": {
+        "mean": 0.6875357347055461,
+        "sample_sd": 0.14220193131793057,
+        "values": [
+          0.5260148656375071,
+          0.7427101200686106,
+          0.7938822184105203
+        ]
+      },
+      "cross_entropy": {
+        "mean": 1.0072972071929471,
+        "sample_sd": 0.4847684120409708,
+        "values": [
+          1.5601402705967373,
+          0.8068613566912562,
+          0.6548899942908477
+        ]
+      },
+      "updates": {
+        "mean": 7951.333333333333,
+        "sample_sd": 8301.413273252534,
+        "values": [
+          601,
+          6298,
+          16955
+        ]
+      },
+      "state_bytes": {
+        "mean": 15360.0,
+        "sample_sd": 0.0,
+        "values": [
+          15360,
+          15360,
+          15360
+        ]
+      },
+      "autograd_payload_bytes": {
+        "mean": 136520.0,
+        "sample_sd": 0.0,
+        "values": [
+          136520,
+          136520,
+          136520
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.005490462664359559,
+        "sample_sd": 0.0029744358457869454,
+        "values": [
+          0.002598396997200325,
+          0.00854093799716793,
+          0.005332052998710424
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.01950151433508533,
+        "sample_sd": 0.016905959557130375,
+        "values": [
+          0.010057032995973714,
+          0.039019457006361336,
+          0.009428053002920933
+        ]
+      },
+      "target_observed": 1
+    },
+    "transformer": {
+      "completed_seeds": 3,
+      "seeds": [
+        307,
+        101,
+        211
+      ],
+      "accuracy": {
+        "mean": 0.6932532875929103,
+        "sample_sd": 0.03681833264779705,
+        "values": [
+          0.6538021726700972,
+          0.6992567181246426,
+          0.7267009719839909
+        ]
+      },
+      "cross_entropy": {
+        "mean": 0.874536811605883,
+        "sample_sd": 0.10307233042776326,
+        "values": [
+          0.9222648433449848,
+          0.94509435863138,
+          0.7562512328412843
+        ]
+      },
+      "updates": {
+        "mean": 12421.333333333334,
+        "sample_sd": 492.39245864790956,
+        "values": [
+          12075,
+          12204,
+          12985
+        ]
+      },
+      "state_bytes": {
+        "mean": null,
+        "sample_sd": null,
+        "values": []
+      },
+      "autograd_payload_bytes": {
+        "mean": 317160.0,
+        "sample_sd": 0.0,
+        "values": [
+          317160,
+          317160,
+          317160
+        ]
+      },
+      "forward_backward_seconds": {
+        "mean": 0.03617155166769711,
+        "sample_sd": 0.05864923665903461,
+        "values": [
+          0.10389190000569215,
+          0.00275722099468112,
+          0.00186553400271805
+        ]
+      },
+      "test_inference_seconds": {
+        "mean": 0.05680868566560093,
+        "sample_sd": 0.05854323670953844,
+        "values": [
+          0.12440698999853339,
+          0.02260641699831467,
+          0.023412649999954738
+        ]
+      },
+      "target_observed": 0
+    }
+  },
+  "rows": [
+    {
+      "arm": "flow_no_return",
+      "seed": 101,
+      "accuracy": 0.4425385934819897,
+      "cross_entropy": 1.772560628020381,
+      "updates": 625,
+      "selected_updates": 518,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 515344,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 15882265,
+      "forward_backward_seconds": 0.11211208799795713,
+      "test_inference_seconds": 1.3894759609975154,
+      "training_wall_seconds": 60.05857245700463,
+      "training_cpu_seconds": 59.995600073
+    },
+    {
+      "arm": "transformer",
+      "seed": 307,
+      "accuracy": 0.6538021726700972,
+      "cross_entropy": 0.9222648433449848,
+      "updates": 12075,
+      "selected_updates": 10000,
+      "parameters": 274,
+      "first_target_seconds": null,
+      "state_bytes": null,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 317160,
+      "forward_backward_seconds": 0.10389190000569215,
+      "test_inference_seconds": 0.12440698999853339,
+      "training_wall_seconds": 60.00210792099824,
+      "training_cpu_seconds": 59.696118423
+    },
+    {
+      "arm": "snn",
+      "seed": 307,
+      "accuracy": 0.5260148656375071,
+      "cross_entropy": 1.5601402705967373,
+      "updates": 601,
+      "selected_updates": 483,
+      "parameters": 240,
+      "first_target_seconds": null,
+      "state_bytes": 15360,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 136520,
+      "forward_backward_seconds": 0.002598396997200325,
+      "test_inference_seconds": 0.010057032995973714,
+      "training_wall_seconds": 60.02696549900429,
+      "training_cpu_seconds": 43.408238669
+    },
+    {
+      "arm": "gru",
+      "seed": 307,
+      "accuracy": 0.7344196683819325,
+      "cross_entropy": 0.8678816118457514,
+      "updates": 1411,
+      "selected_updates": 553,
+      "parameters": 250,
+      "first_target_seconds": null,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 278088,
+      "forward_backward_seconds": 0.003348128004290629,
+      "test_inference_seconds": 0.021642122002958786,
+      "training_wall_seconds": 60.12364891800098,
+      "training_cpu_seconds": 46.399974615000005
+    },
+    {
+      "arm": "gate",
+      "seed": 101,
+      "accuracy": 0.9336763865065751,
+      "cross_entropy": 0.21756088857219508,
+      "updates": 7838,
+      "selected_updates": 5552,
+      "parameters": 266,
+      "first_target_seconds": 20.1644998519987,
+      "state_bytes": 4096,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 360840,
+      "forward_backward_seconds": 0.005852897003933322,
+      "test_inference_seconds": 0.021703815000364557,
+      "training_wall_seconds": 60.00088052399951,
+      "training_cpu_seconds": 56.034592008000004
+    },
+    {
+      "arm": "cfc",
+      "seed": 211,
+      "accuracy": 0.91852487135506,
+      "cross_entropy": 0.28011401927832535,
+      "updates": 9388,
+      "selected_updates": 7143,
+      "parameters": 286,
+      "first_target_seconds": 10.37143051399471,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 407016,
+      "forward_backward_seconds": 0.011760388995753601,
+      "test_inference_seconds": 0.01488271100242855,
+      "training_wall_seconds": 60.001984351998544,
+      "training_cpu_seconds": 58.460641775000006
+    },
+    {
+      "arm": "flow_no_return",
+      "seed": 307,
+      "accuracy": 0.37993138936535165,
+      "cross_entropy": 1.90654801241414,
+      "updates": 415,
+      "selected_updates": 337,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 515344,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 15882265,
+      "forward_backward_seconds": 0.2462912570044864,
+      "test_inference_seconds": 1.4057869449970894,
+      "training_wall_seconds": 60.04007036500116,
+      "training_cpu_seconds": 59.880859232999995
+    },
+    {
+      "arm": "cfc",
+      "seed": 101,
+      "accuracy": 0.9050886220697542,
+      "cross_entropy": 0.35363245396114856,
+      "updates": 10701,
+      "selected_updates": 8662,
+      "parameters": 286,
+      "first_target_seconds": 10.018666828000278,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 407016,
+      "forward_backward_seconds": 0.02042666399938753,
+      "test_inference_seconds": 0.06285156400554115,
+      "training_wall_seconds": 60.001295294001466,
+      "training_cpu_seconds": 59.526227536
+    },
+    {
+      "arm": "flow_no_return",
+      "seed": 211,
+      "accuracy": 0.395368782161235,
+      "cross_entropy": 1.887234314512097,
+      "updates": 428,
+      "selected_updates": 358,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 515344,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 15882265,
+      "forward_backward_seconds": 0.10647969599813223,
+      "test_inference_seconds": 1.1009932510060025,
+      "training_wall_seconds": 66.9371545699978,
+      "training_cpu_seconds": 59.655699663
+    },
+    {
+      "arm": "flow_erlang4",
+      "seed": 101,
+      "accuracy": 0.5546026300743282,
+      "cross_entropy": 1.4726991807277265,
+      "updates": 1063,
+      "selected_updates": 1013,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 132336,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 2936305,
+      "forward_backward_seconds": 0.024961082999652717,
+      "test_inference_seconds": 0.22872974000347313,
+      "training_wall_seconds": 60.01429367100354,
+      "training_cpu_seconds": 51.315118676
+    },
+    {
+      "arm": "flow_mass",
+      "seed": 101,
+      "accuracy": 0.10405946255002858,
+      "cross_entropy": 2.3021290061922257,
+      "updates": 672,
+      "selected_updates": 576,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 0.08271997099654982,
+      "test_inference_seconds": 1.8954906290018698,
+      "training_wall_seconds": 60.07179089199781,
+      "training_cpu_seconds": 59.836501541
+    },
+    {
+      "arm": "flow_mass",
+      "seed": 211,
+      "accuracy": 0.10405946255002858,
+      "cross_entropy": 2.302093070976003,
+      "updates": 556,
+      "selected_updates": 188,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 3.333037576994684,
+      "test_inference_seconds": 9.734385525000107,
+      "training_wall_seconds": 60.01704738699482,
+      "training_cpu_seconds": 59.71557676
+    },
+    {
+      "arm": "flow",
+      "seed": 211,
+      "accuracy": 0.2444253859348199,
+      "cross_entropy": 2.0629907118801434,
+      "updates": 162,
+      "selected_updates": 142,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 0.08681477700156393,
+      "test_inference_seconds": 1.2702320399985183,
+      "training_wall_seconds": 60.130621858996165,
+      "training_cpu_seconds": 50.12601651
+    },
+    {
+      "arm": "flow_fixed",
+      "seed": 307,
+      "accuracy": 0.2644368210405946,
+      "cross_entropy": 2.009482438307815,
+      "updates": 368,
+      "selected_updates": 240,
+      "parameters": 258,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 14071688,
+      "forward_backward_seconds": 0.09549509100179421,
+      "test_inference_seconds": 1.4755221450031968,
+      "training_wall_seconds": 60.05365738100227,
+      "training_cpu_seconds": 50.997249935999996
+    },
+    {
+      "arm": "transformer",
+      "seed": 101,
+      "accuracy": 0.6992567181246426,
+      "cross_entropy": 0.94509435863138,
+      "updates": 12204,
+      "selected_updates": 6954,
+      "parameters": 274,
+      "first_target_seconds": null,
+      "state_bytes": null,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 317160,
+      "forward_backward_seconds": 0.00275722099468112,
+      "test_inference_seconds": 0.02260641699831467,
+      "training_wall_seconds": 60.00097950100462,
+      "training_cpu_seconds": 59.067666355
+    },
+    {
+      "arm": "flow",
+      "seed": 307,
+      "accuracy": 0.24814179531160663,
+      "cross_entropy": 2.0396707096366757,
+      "updates": 269,
+      "selected_updates": 188,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 0.11360200699709821,
+      "test_inference_seconds": 1.8510719510013587,
+      "training_wall_seconds": 60.00108116999763,
+      "training_cpu_seconds": 59.88696847199999
+    },
+    {
+      "arm": "flow_fixed",
+      "seed": 101,
+      "accuracy": 0.429388221841052,
+      "cross_entropy": 1.8014074145034702,
+      "updates": 624,
+      "selected_updates": 491,
+      "parameters": 258,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 14071688,
+      "forward_backward_seconds": 0.07128260700119426,
+      "test_inference_seconds": 2.4219183470049757,
+      "training_wall_seconds": 60.090766984001675,
+      "training_cpu_seconds": 57.449922677
+    },
+    {
+      "arm": "flow_fixed",
+      "seed": 211,
+      "accuracy": 0.39479702687249857,
+      "cross_entropy": 1.8654312706660763,
+      "updates": 444,
+      "selected_updates": 403,
+      "parameters": 258,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 14071688,
+      "forward_backward_seconds": 0.07848477500374429,
+      "test_inference_seconds": 2.7597136969998246,
+      "training_wall_seconds": 60.12884414000291,
+      "training_cpu_seconds": 58.667375623
+    },
+    {
+      "arm": "flow_erlang4",
+      "seed": 211,
+      "accuracy": 0.5468839336763865,
+      "cross_entropy": 1.4819412592033967,
+      "updates": 1612,
+      "selected_updates": 1360,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 132336,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 2936305,
+      "forward_backward_seconds": 0.0659872130054282,
+      "test_inference_seconds": 1.1657964149999316,
+      "training_wall_seconds": 60.00342296400049,
+      "training_cpu_seconds": 58.585443153
+    },
+    {
+      "arm": "snn",
+      "seed": 211,
+      "accuracy": 0.7427101200686106,
+      "cross_entropy": 0.8068613566912562,
+      "updates": 6298,
+      "selected_updates": 4371,
+      "parameters": 240,
+      "first_target_seconds": null,
+      "state_bytes": 15360,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 136520,
+      "forward_backward_seconds": 0.00854093799716793,
+      "test_inference_seconds": 0.039019457006361336,
+      "training_wall_seconds": 60.00465098299901,
+      "training_cpu_seconds": 58.79653618900001
+    },
+    {
+      "arm": "snn",
+      "seed": 101,
+      "accuracy": 0.7938822184105203,
+      "cross_entropy": 0.6548899942908477,
+      "updates": 16955,
+      "selected_updates": 8518,
+      "parameters": 240,
+      "first_target_seconds": 20.03170514300291,
+      "state_bytes": 15360,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 136520,
+      "forward_backward_seconds": 0.005332052998710424,
+      "test_inference_seconds": 0.009428053002920933,
+      "training_wall_seconds": 60.00051232599799,
+      "training_cpu_seconds": 59.554163057
+    },
+    {
+      "arm": "flow",
+      "seed": 101,
+      "accuracy": 0.38136077758719267,
+      "cross_entropy": 1.9238368144105944,
+      "updates": 319,
+      "selected_updates": 287,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 0.09780869200039888,
+      "test_inference_seconds": 1.2829343069970491,
+      "training_wall_seconds": 60.10345859300287,
+      "training_cpu_seconds": 60.059992242
+    },
+    {
+      "arm": "gru",
+      "seed": 101,
+      "accuracy": 0.9176672384219554,
+      "cross_entropy": 0.2591662796002443,
+      "updates": 13987,
+      "selected_updates": 11371,
+      "parameters": 250,
+      "first_target_seconds": 10.040098985999066,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 278088,
+      "forward_backward_seconds": 0.0029116129953763448,
+      "test_inference_seconds": 0.014601522998418659,
+      "training_wall_seconds": 60.00079370500316,
+      "training_cpu_seconds": 59.586823837
+    },
+    {
+      "arm": "transformer",
+      "seed": 211,
+      "accuracy": 0.7267009719839909,
+      "cross_entropy": 0.7562512328412843,
+      "updates": 12985,
+      "selected_updates": 10579,
+      "parameters": 274,
+      "first_target_seconds": null,
+      "state_bytes": null,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 317160,
+      "forward_backward_seconds": 0.00186553400271805,
+      "test_inference_seconds": 0.023412649999954738,
+      "training_wall_seconds": 60.01664169099968,
+      "training_cpu_seconds": 60.000938243
+    },
+    {
+      "arm": "flow_erlang4",
+      "seed": 307,
+      "accuracy": 0.6300743281875357,
+      "cross_entropy": 1.2666265462191575,
+      "updates": 2147,
+      "selected_updates": 1717,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 132336,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 2936305,
+      "forward_backward_seconds": 0.025746956998773385,
+      "test_inference_seconds": 0.21891248299652943,
+      "training_wall_seconds": 60.01033386699419,
+      "training_cpu_seconds": 59.554482695
+    },
+    {
+      "arm": "cfc",
+      "seed": 307,
+      "accuracy": 0.8384791309319611,
+      "cross_entropy": 0.6393829393241556,
+      "updates": 5091,
+      "selected_updates": 2875,
+      "parameters": 286,
+      "first_target_seconds": 20.05248696199851,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 407016,
+      "forward_backward_seconds": 0.003012567998666782,
+      "test_inference_seconds": 0.015898084006039426,
+      "training_wall_seconds": 60.002921664003225,
+      "training_cpu_seconds": 59.722372969999995
+    },
+    {
+      "arm": "gru",
+      "seed": 211,
+      "accuracy": 0.9299599771297884,
+      "cross_entropy": 0.27185174116808997,
+      "updates": 13106,
+      "selected_updates": 11627,
+      "parameters": 250,
+      "first_target_seconds": 10.013303382998856,
+      "state_bytes": 3072,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 278088,
+      "forward_backward_seconds": 0.0026879710057983175,
+      "test_inference_seconds": 0.013488512995536439,
+      "training_wall_seconds": 60.00225666199549,
+      "training_cpu_seconds": 59.325980183000006
+    },
+    {
+      "arm": "flow_mass",
+      "seed": 307,
+      "accuracy": 0.10405946255002858,
+      "cross_entropy": 2.3022879306832262,
+      "updates": 356,
+      "selected_updates": 300,
+      "parameters": 259,
+      "first_target_seconds": null,
+      "state_bytes": 521360,
+      "physics_bytes": 560,
+      "autograd_payload_bytes": 17362017,
+      "forward_backward_seconds": 0.08628061299532419,
+      "test_inference_seconds": 1.6438490860018646,
+      "training_wall_seconds": 60.04994180399808,
+      "training_cpu_seconds": 57.936216234
+    },
+    {
+      "arm": "gate",
+      "seed": 211,
+      "accuracy": 0.9505431675242996,
+      "cross_entropy": 0.22933147242272786,
+      "updates": 17119,
+      "selected_updates": 13659,
+      "parameters": 266,
+      "first_target_seconds": 10.01480173500022,
+      "state_bytes": 4096,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 360840,
+      "forward_backward_seconds": 0.009169265998934861,
+      "test_inference_seconds": 0.014966160000767559,
+      "training_wall_seconds": 60.00123142800294,
+      "training_cpu_seconds": 59.607235567000004
+    },
+    {
+      "arm": "gate",
+      "seed": 307,
+      "accuracy": 0.9356775300171527,
+      "cross_entropy": 0.23564116896479398,
+      "updates": 7645,
+      "selected_updates": 7382,
+      "parameters": 266,
+      "first_target_seconds": 10.006867037998745,
+      "state_bytes": 4096,
+      "physics_bytes": null,
+      "autograd_payload_bytes": 360840,
+      "forward_backward_seconds": 0.0018658609988051467,
+      "test_inference_seconds": 0.010660236999683548,
+      "training_wall_seconds": 60.2180006530034,
+      "training_cpu_seconds": 45.095010005
+    }
+  ],
+  "seed_sd_is_not_independent_dataset_uncertainty": true,
+  "global_advantage_or_training_adequacy_proven": false
+}

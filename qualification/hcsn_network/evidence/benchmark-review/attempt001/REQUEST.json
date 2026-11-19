@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/workspace/scratch/d741f7769aeb/hcsn-venv/bin/python",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/evidence/benchmark-review/run_review.py",
+    "--campaign",
+    "/workspace/scratch/d741f7769aeb/network-benchmark-attempt001",
+    "--protocol",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/PROTOCOL.json",
+    "--data",
+    "/workspace/scratch/d741f7769aeb/pendigits-data",
+    "--output",
+    "/workspace/scratch/d741f7769aeb/worktrees/task-coupling/qualification/hcsn_network/evidence/benchmark-review/attempt001",
+    "--child"
+  ],
+  "cpu": 8,
+  "threads": 1,
+  "address_space_bytes": 4294967296,
+  "cpu_limits": [
+    60,
+    65
+  ],
+  "wall_limit_seconds": 90
+}
