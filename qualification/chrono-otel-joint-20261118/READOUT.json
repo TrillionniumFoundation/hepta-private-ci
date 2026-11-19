@@ -1,0 +1,98 @@
+{
+  "archive": {
+    "all_members_verified": true,
+    "bytes": 4073288,
+    "index_sha256": "f52ceda3fcca24c5579c9ddbeebab2a3a93e3a5722f39a46fe4570de5f4b7aa7",
+    "original_files": 123,
+    "path": "qualification/chrono-otel-joint-20261118/retained/chrono-otel-originals.tar.gz",
+    "sha256": "d79127170c229139ba295727e5ab4d2809bb7ab89a3c7f7c5dc6ad5b6328aa7a"
+  },
+  "chronograph_retirement_closed": false,
+  "costs": {
+    "charges": null,
+    "full_system_cost_known": false,
+    "physical_energy_joules": null,
+    "scopes_nested_not_additive": true
+  },
+  "execution_source": "f1f036ee44476eec54a79fcbde6a8a99cdcf5829",
+  "execution_tree": "7304f0dbb7b42eaddcf5430a33db3f046a19ca9e",
+  "graph": {
+    "after": {
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 24,
+      "indirect_only_candidate_roots": 97,
+      "package_count": 1524,
+      "source_less_candidate_roots": 194
+    },
+    "base": "03d782a7af68da6f0572be029693aba22548b415",
+    "before": {
+      "affected_candidate_roots": 121,
+      "direct_candidate_roots": 25,
+      "indirect_only_candidate_roots": 96,
+      "package_count": 1524,
+      "source_less_candidate_roots": 194
+    },
+    "delta": {
+      "new_edges": [],
+      "remaining_edges": 32,
+      "retired_edges": [
+        [
+          "workspace_local",
+          "codex-otel",
+          "0.0.0"
+        ]
+      ]
+    },
+    "remaining_otel_paths": [
+      {
+        "path": [
+          "codex-otel@0.0.0",
+          "codex-api@0.0.0",
+          "chrono@0.4.45"
+        ],
+        "root": "codex-otel@0.0.0"
+      }
+    ],
+    "require_zero_actual_exit": 2,
+    "whole_chrono_retirement_closed": false
+  },
+  "native": {
+    "cases": 70,
+    "child_system_cpu_seconds": 35.023305,
+    "child_user_cpu_seconds": 160.908044,
+    "command_wall_seconds": 123.79499291704269,
+    "errors": 0,
+    "failures": 0,
+    "junit_sha256": "ca550db6797826d85a10312c64f83776e1a2fb374683c3849846d2f5c2707c19",
+    "max_child_rss_bytes": 1262747648,
+    "owner_wall_seconds": 125.22408762504347,
+    "result_sha256": "305c79951df8e93d7067bcd713e3dc6dddab838d14a6e91740fd46deee75294a",
+    "retries": 0,
+    "skipped": 0,
+    "source_after_sha256": "351ebfd57be2017d6a3279ecf62338b21a15f8fb80bae4e6d288bb0a8933b89c",
+    "source_before_sha256": "351ebfd57be2017d6a3279ecf62338b21a15f8fb80bae4e6d288bb0a8933b89c",
+    "suites": {
+      "codex-otel": 24,
+      "codex-otel::tests": 36,
+      "codex-utils-time": 10
+    },
+    "wait_returncode": 0
+  },
+  "new_model_calls": 0,
+  "prior_attempt": {
+    "command_wall_seconds": 25.35950966598466,
+    "native_cases": 0,
+    "owner_wall_seconds": 26.419093707983848,
+    "reason": "Copied aws-lc CMake cache referred to its earlier absolute build path.",
+    "result_sha256": "9eaf7a2a7c30f5020d89f8047b37abcddc53350cba67322ed950c2b433379dfc",
+    "source_unchanged": true,
+    "wait_returncode": 101
+  },
+  "repair": {
+    "admission_sha256": "aacf9148ca9ec4e116996ebf78305522098f90bec7fa4dd0ad407038008470fb",
+    "original_owner_sha256": "bfe6f5b2dac795fb3d0b6626d419339e0a3bdc01c6c1fb789e8d285056b60ff5",
+    "scope": "Four CMake build directories inside this candidate-owned copied target moved atomically to retained quarantine; original owner, source, commands, assertions and deadlines unchanged."
+  },
+  "schema": "hepta.chrono-otel-native-readout.v1",
+  "status": "ORIGINAL_PACKAGE_TESTS_PASSED"
+}

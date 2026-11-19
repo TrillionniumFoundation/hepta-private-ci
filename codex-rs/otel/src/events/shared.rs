@@ -1,7 +1,10 @@
-use chrono::SecondsFormat;
-use chrono::Utc;
 use codex_protocol::DEFAULT_FUNCTION_NAMESPACE;
 use codex_protocol::ToolName;
+use codex_utils_time::CanonicalUtcTimestamp;
+use codex_utils_time::Precision;
+use codex_utils_time::UtcSuffix;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 pub(crate) fn tool_namespace(tool_name: &ToolName) -> &str {
     tool_name
@@ -66,5 +69,10 @@ pub(crate) use log_event;
 pub(crate) use trace_event;
 
 pub(crate) fn timestamp() -> String {
-    Utc::now().to_rfc3339_opts(SecondsFormat::Millis, true)
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system time before Unix epoch");
+    CanonicalUtcTimestamp::from_unix_parts(now.as_secs() as i64, now.subsec_nanos())
+        .expect("system time outside the supported UTC range")
+        .format(Precision::Millis, UtcSuffix::Z)
 }

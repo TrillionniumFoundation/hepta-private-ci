@@ -1,0 +1,25 @@
+{
+  "base": "03d782a7af68da6f0572be029693aba22548b415",
+  "base_execution_source": "975a29ae7e01aa070e60e1d70256452ae2837cae",
+  "selection": "remaining real first-party direct Chrono consumer; otel single event timestamp function",
+  "scope": [
+    "codex-rs/otel/src/events/shared.rs: timestamp",
+    "codex-rs/otel/Cargo.toml direct dependency",
+    "codex-rs/Cargo.lock dependency edge"
+  ],
+  "semantics": {
+    "clock": "one SystemTime::now, duration_since Unix epoch",
+    "before_epoch": "same explicit panic boundary as actual original Chrono native Utc::now",
+    "range": "existing helper retains original Chrono UTC range",
+    "precision": "fixed three fractional millisecond digits, truncate",
+    "utc_suffix": "Z",
+    "log_or_trace_fields_changed": false,
+    "redaction_or_routing_changed": false
+  },
+  "original_clock_source_sha256": "81eac3e383a218d209f8a6d6b3e15a1c11bf526f80b133887baa1939c9d0e766",
+  "helper_source": "616dccdbf8d68192aa984b676608a01d1a75e168",
+  "helper_math_changed": false,
+  "existing_package_tests_unchanged": true,
+  "previous_native_test_counts_inherited": false,
+  "chrono_retirement_or_cargo_deny_claimed": false
+}
