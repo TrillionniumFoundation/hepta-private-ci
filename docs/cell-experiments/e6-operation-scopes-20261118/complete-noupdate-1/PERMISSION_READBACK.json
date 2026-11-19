@@ -1,0 +1,139 @@
+{
+  "uid": 0,
+  "stats": [
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1",
+      "mode": "0o700",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 4096
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/bin",
+      "mode": "0o700",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 4096
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/helpers",
+      "mode": "0o755",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 4096
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/helpers/bin",
+      "mode": "0o755",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 4096
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/bin/codex-hepta-agentd",
+      "mode": "0o555",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 1364183408
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/bin/hepta-authority-host",
+      "mode": "0o555",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 974871648
+    },
+    {
+      "path": "/var/tmp/hepta-native-root-e6-scopes-ab12-noupdate-1/helpers/bin/hepta-joint-propose",
+      "mode": "0o500",
+      "uid": 1000,
+      "gid": 1000,
+      "bytes": 6620920
+    },
+    {
+      "path": "/run/oq-yvszAJ",
+      "mode": "0o2710",
+      "uid": 0,
+      "gid": 60001,
+      "bytes": 240
+    },
+    {
+      "path": "/tmp/ordinary-original-independent-b-GfpHAq",
+      "mode": "0o700",
+      "uid": 60002,
+      "gid": 60001,
+      "bytes": 520
+    }
+  ],
+  "child_logs": [
+    {
+      "path": "/tmp/ordinary-q24-original-process-8VTaEM",
+      "entries": [
+        {
+          "name": "stderr.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "tail_only": false
+        },
+        {
+          "name": "stdout.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 227,
+          "sha256": "eb91236f74914080d9d326de122d391652a373aff24592fa9a7c883e4452b1d0",
+          "text": "\nrunning 1 test\ntest neuron_generation_current::initial_root_tests::ordinary::observer::ordinary_original_observer_child ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 1349 filtered out; finished in 0.88s\n\n",
+          "tail_only": false
+        }
+      ]
+    },
+    {
+      "path": "/tmp/ordinary-q24-original-process-MNl218",
+      "entries": [
+        {
+          "name": "stderr.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 16093,
+          "sha256": "cc6bd8547d018551ec85b0a1986c0c9fe6152c281c7186eeb78410f89f81e150",
+          "text": "=0\noriginal control method=objective_start; request_id=1; phase=response-before; elapsed_micros=13\noriginal Objective completion phase=build-before; elapsed_micros=0\noriginal Objective completion phase=build-returned; elapsed_micros=928\noriginal Objective completion phase=submit-before; elapsed_micros=1132\noriginal control method=initial_task_progress; request_id=2; phase=request-received; elapsed_micros=1\noriginal control method=initial_task_progress; request_id=2; phase=response-before; elapsed_micros=18\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=80; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=83; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=279; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=280; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=548; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=550; pending=None\noriginal Initial progress phase=producer-current-returned; elapsed_micros=150627; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=150641; pending=Some(2)\noriginal Initial progress phase=in-flight; elapsed_micros=150644; pending=Some(2)\noriginal Initial progress phase=body-returned; elapsed_micros=150646; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=150647; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=150835; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=150838; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=151422; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=151426; pending=None\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=293035; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=293046; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=293361; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=293372; pending=None\noriginal control method=initial_task_progress; request_id=2; phase=response-returned; elapsed_micros=293928\noriginal control method=initial_task_progress; request_id=2; phase=write-before; elapsed_micros=293958\noriginal control method=initial_task_progress; request_id=2; phase=write-completed; elapsed_micros=293999\noriginal control method=initial_task_progress; request_id=3; phase=request-received; elapsed_micros=0\noriginal control method=initial_task_progress; request_id=3; phase=response-before; elapsed_micros=17\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=78; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=81; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=267; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=269; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=539; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=542; pending=None\noriginal Initial progress phase=producer-current-returned; elapsed_micros=258336; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=258350; pending=Some(2)\noriginal Initial progress phase=in-flight; elapsed_micros=258353; pending=Some(2)\noriginal Initial progress phase=body-returned; elapsed_micros=258354; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=258356; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=258500; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=258505; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=258898; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=258906; pending=None\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=425951; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=425962; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=426267; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=426277; pending=None\noriginal control method=initial_task_progress; request_id=3; phase=response-returned; elapsed_micros=426495\noriginal control method=initial_task_progress; request_id=3; phase=write-before; elapsed_micros=426524\noriginal control method=initial_task_progress; request_id=3; phase=write-completed; elapsed_micros=426565\noriginal control method=initial_task_progress; request_id=4; phase=request-received; elapsed_micros=0\noriginal control method=initial_task_progress; request_id=4; phase=response-before; elapsed_micros=12\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=77; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=80; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=235; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=236; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=474; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=476; pending=None\noriginal Initial progress phase=producer-current-returned; elapsed_micros=110113; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=110126; pending=Some(2)\noriginal Initial progress phase=in-flight; elapsed_micros=110129; pending=Some(2)\noriginal Initial progress phase=body-returned; elapsed_micros=110131; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=110133; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=110276; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=110277; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=110698; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=110700; pending=None\noriginal Objective completion phase=receipt-returned; elapsed_micros=2946310\noriginal Objective completion phase=publish-before; elapsed_micros=2946789\noriginal Objective completion phase=publish-returned; elapsed_micros=2950815\noriginal Objective completion phase=observe-before; elapsed_micros=2951068\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=249128; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=249139; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=249455; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=249466; pending=None\noriginal control method=initial_task_progress; request_id=4; phase=response-returned; elapsed_micros=249850\noriginal control method=initial_task_progress; request_id=4; phase=write-before; elapsed_micros=249881\noriginal control method=initial_task_progress; request_id=4; phase=write-completed; elapsed_micros=249922\noriginal control method=initial_task_progress; request_id=5; phase=request-received; elapsed_micros=1\noriginal control method=initial_task_progress; request_id=5; phase=response-before; elapsed_micros=15\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=130; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=134; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=322; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=324; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=553; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=559; pending=None\noriginal Initial progress phase=producer-current-returned; elapsed_micros=143701; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=143715; pending=Some(1)\noriginal Initial progress phase=in-flight; elapsed_micros=143718; pending=Some(1)\noriginal Initial progress phase=body-returned; elapsed_micros=143720; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=143722; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=143862; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=143863; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=144312; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=144314; pending=None\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=235797; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=235807; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=235960; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=235970; pending=None\noriginal control method=initial_task_progress; request_id=5; phase=response-returned; elapsed_micros=236398\noriginal control method=initial_task_progress; request_id=5; phase=write-before; elapsed_micros=236426\noriginal control method=initial_task_progress; request_id=5; phase=write-completed; elapsed_micros=236454\noriginal control method=initial_task_progress; request_id=6; phase=request-received; elapsed_micros=1\noriginal control method=initial_task_progress; request_id=6; phase=response-before; elapsed_micros=11\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=72; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=75; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=227; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=228; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=466; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=469; pending=None\noriginal Initial progress phase=producer-current-returned; elapsed_micros=85145; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=85158; pending=Some(1)\noriginal Initial progress phase=in-flight; elapsed_micros=85160; pending=Some(1)\noriginal Initial progress phase=body-returned; elapsed_micros=85162; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=85164; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=85301; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=85303; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=85696; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=85699; pending=None\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=279530; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=279540; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=279836; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=279847; pending=None\noriginal control method=initial_task_progress; request_id=6; phase=response-returned; elapsed_micros=280172\noriginal control method=initial_task_progress; request_id=6; phase=write-before; elapsed_micros=280202\noriginal control method=initial_task_progress; request_id=6; phase=write-completed; elapsed_micros=280243\noriginal control method=initial_task_progress; request_id=7; phase=request-received; elapsed_micros=0\noriginal control method=initial_task_progress; request_id=7; phase=response-before; elapsed_micros=14\noriginal Initial progress phase=current-before; elapsed_micros=0; pending=None\noriginal Initial progress phase=current-returned; elapsed_micros=133; pending=None\noriginal Initial progress phase=host-before; elapsed_micros=137; pending=None\noriginal Initial progress phase=host-returned; elapsed_micros=359; pending=None\noriginal Initial progress phase=run-start-before; elapsed_micros=361; pending=None\noriginal Initial progress phase=run-start-returned; elapsed_micros=620; pending=None\noriginal Initial progress phase=producer-current-before; elapsed_micros=622; pending=None\noriginal Objective completion phase=observe-returned; elapsed_micros=3763004\noriginal Objective completion phase=enqueue-before; elapsed_micros=3763017\ncommitted task awaits its original learning owner (run_id=ordinary-original-a, task_committed=true, learning_pending=TerminalOutcome)\noriginal Objective completion phase=enqueue-returned; elapsed_micros=3763028\noriginal Objective completion phase=final-run-start-before; elapsed_micros=3763030\noriginal Objective completion phase=final-run-start-returned; elapsed_micros=3763556\noriginal Objective completion phase=receipt-return; elapsed_micros=3763559\noriginal control method=objective_start; request_id=1; phase=response-returned; elapsed_micros=3812205\noriginal control method=objective_start; request_id=1; phase=write-before; elapsed_micros=3812241\noriginal control method=objective_start; request_id=1; phase=write-lost-after-completion; elapsed_micros=3812263\noriginal Initial progress phase=producer-current-returned; elapsed_micros=97159; pending=None\noriginal Initial progress phase=pending-sampled; elapsed_micros=97171; pending=Some(0)\noriginal Initial progress phase=producer-before; elapsed_micros=97175; pending=None\noriginal Initial progress phase=producer-before-returned; elapsed_micros=692268; pending=None\noriginal Initial progress phase=store-before; elapsed_micros=692279; pending=None\noriginal Initial progress phase=store-returned; elapsed_micros=692286; pending=None\noriginal Initial progress phase=trace-before; elapsed_micros=692288; pending=None\noriginal Initial progress phase=trace-before-returned; elapsed_micros=695072; pending=None\noriginal Initial progress phase=producer-after; elapsed_micros=695088; pending=None\noriginal Initial progress phase=producer-after-returned; elapsed_micros=1296580; pending=None\noriginal Initial progress phase=trace-after; elapsed_micros=1296591; pending=None\noriginal Initial progress phase=trace-after-returned; elapsed_micros=1300127; pending=None\noriginal Initial progress phase=completed; elapsed_micros=1301488; pending=None\noriginal Initial progress phase=body-returned; elapsed_micros=1301614; pending=None\noriginal Initial progress phase=post-host-before; elapsed_micros=1301617; pending=None\noriginal Initial progress phase=post-host-returned; elapsed_micros=1301849; pending=None\noriginal Initial progress phase=post-run-start-before; elapsed_micros=1301851; pending=None\noriginal Initial progress phase=post-run-start-returned; elapsed_micros=1302473; pending=None\noriginal Initial progress phase=post-producer-current-before; elapsed_micros=1302475; pending=None\noriginal Initial progress phase=post-producer-current-returned; elapsed_micros=1394548; pending=None\noriginal Initial progress phase=post-current-before; elapsed_micros=1394553; pending=None\noriginal Initial progress phase=post-current-returned; elapsed_micros=1394741; pending=None\noriginal Initial progress phase=response-return; elapsed_micros=1394750; pending=None\noriginal control method=initial_task_progress; request_id=7; phase=response-returned; elapsed_micros=1395220\noriginal control method=initial_task_progress; request_id=7; phase=write-before; elapsed_micros=1395294\noriginal control method=initial_task_progress; request_id=7; phase=write-completed; elapsed_micros=1395325\n",
+          "tail_only": true
+        },
+        {
+          "name": "stdout.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "tail_only": false
+        }
+      ]
+    },
+    {
+      "path": "/tmp/ordinary-q24-original-process-T1eKow",
+      "entries": [
+        {
+          "name": "stderr.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 2326,
+          "sha256": "97269dd8b934302715f7f859a5ad9a4677a07b7ecd993af56b84b06a81d08312",
+          "text": "original Initial phase=worker.accept-before; elapsed_micros=0; remaining_micros=299999728\noriginal Initial phase=worker.accept-returned; elapsed_micros=96259; remaining_micros=299903469\noriginal Initial phase=ready.channel-before; elapsed_micros=0; remaining_micros=299903458\noriginal Initial phase=ready.channel-returned; elapsed_micros=21; remaining_micros=299903437\noriginal Initial phase=ready.frame-received; elapsed_micros=543; remaining_micros=499975\noriginal Initial phase=ready.context-returned; elapsed_micros=2445; remaining_micros=498073\noriginal Initial phase=enrollment.context-before; elapsed_micros=0; remaining_micros=493706\noriginal Initial phase=enrollment.profile-before; elapsed_micros=992; remaining_micros=492714\noriginal Initial phase=enrollment.profile-returned; elapsed_micros=12275; remaining_micros=481431\noriginal Initial phase=enrollment.profile-context-returned; elapsed_micros=13182; remaining_micros=480524\noriginal Initial phase=enrollment.run-start-before; elapsed_micros=13187; remaining_micros=480519\noriginal Initial phase=enrollment.run-start-returned; elapsed_micros=23626; remaining_micros=470080\noriginal Initial phase=enrollment.cell-before; elapsed_micros=23629; remaining_micros=470077\noriginal Initial phase=enrollment.cell-returned; elapsed_micros=32474; remaining_micros=461232\noriginal Initial phase=enrollment.ledger-before; elapsed_micros=32477; remaining_micros=461229\noriginal Initial phase=enrollment.ledger-returned; elapsed_micros=47983; remaining_micros=445723\noriginal Initial phase=enrollment.profile-recheck-before; elapsed_micros=47986; remaining_micros=445720\noriginal Initial phase=enrollment.profile-recheck-returned; elapsed_micros=48370; remaining_micros=445336\noriginal Initial phase=enrollment.final-context-before; elapsed_micros=48373; remaining_micros=445333\noriginal Initial phase=enrollment.final-context-returned; elapsed_micros=49332; remaining_micros=444374\noriginal Initial phase=ready.enrollment-returned; elapsed_micros=56153; remaining_micros=444365\noriginal Initial phase=ready.registration-context-returned; elapsed_micros=57446; remaining_micros=443072\noriginal Initial phase=ready.response-encoded; elapsed_micros=57852; remaining_micros=442666\noriginal Initial phase=ready.exchange-returned; elapsed_micros=57870; remaining_micros=299845587\n",
+          "tail_only": false
+        },
+        {
+          "name": "stdout.log",
+          "mode": "0o600",
+          "uid": 0,
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "tail_only": false
+        }
+      ]
+    }
+  ]
+}
