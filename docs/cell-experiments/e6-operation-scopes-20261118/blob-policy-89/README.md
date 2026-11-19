@@ -1,0 +1,7 @@
+# Original full-PR blob gate and exact caller-inventory pin
+
+The original seven policy tests and metadata range 97d6cb0bd4f385a22c9e994121e622e878fa4139 → 89e95284366bd3901b5d48290e3e89e9a2ba74d7 passed. The additional actual PR-base range 0cdb2a4985c91327e0ae3d59ceead35b950b16e9 → 89e95284366bd3901b5d48290e3e89e9a2ba74d7 failed for CALLERS.toml only. That failure and the full original logs are retained unchanged here.
+
+CALLERS.toml is 1,737,903 bytes, Git blob 28c38fc44fbd93ec2bc715428941aff123e63298, SHA-256 f2b46c38aa92eaf4725d6af76cbe51f04f014d82068de71cab50cef562abc850. The file is byte-identical to reviewed source commit ab12b8bc1e6761efc16ea8c64e839721739cef5f and unchanged between 97d6cb and 89e. The coordinator independently checked its original file and reviewed the relevant boundary sequences before authorizing this metadata-only pin update.
+
+The existing exact CALLERS path/SHA rule is replaced with this reviewed digest. No path-wide rule is added; the 512000-byte default, policy implementation, caller inventory bytes, native source, existing execution directories and test outcomes are unchanged. The three complete research archives already passed their own exact path/SHA rules. This commit's actual PR-base range is checked separately by the same original checker; the earlier failure is not rewritten as a pass. These are storage-policy results, not native business or adoption success.
