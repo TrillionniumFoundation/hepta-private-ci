@@ -1089,7 +1089,7 @@ mod tests {
     use anyhow::Result;
     use codex_keyring_store::tests::MockKeyringStore;
     use codex_secrets::compute_keyring_account;
-    use keyring::Error as KeyringError;
+    use keyring_core::Error as KeyringError;
     use pretty_assertions::assert_eq;
     use std::sync::Arc;
     #[path = "persistor_tests.rs"]

@@ -1,3 +1,3 @@
 #![recursion_limit = "256"]
 
-include!("main.rs");
+include!("main_impl.rs");

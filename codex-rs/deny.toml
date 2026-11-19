@@ -22,15 +22,26 @@
 # this list would mean the nix crate, as well as any of its exclusive
 # dependencies not shared by any other crates, would be ignored, as the target
 # list here is effectively saying which targets you are building for.
+# Audit the targets shipped by this repository's CI/release matrix. The crate's
+# optional FreeBSD/OpenBSD keyring backend is not a supported production target;
+# excluding it keeps cargo-deny from auditing an unbuilt optional dependency tree.
 targets = [
-    # The triple can be any string, but only the target triples built in to
+    "x86_64-unknown-linux-gnu",
+    "aarch64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "aarch64-unknown-linux-musl",
+    "x86_64-apple-darwin",
+    "aarch64-apple-darwin",
+    "x86_64-pc-windows-msvc",
+    "aarch64-pc-windows-msvc",
+]
+# The triple can be any string, but only the target triples built in to
     # rustc (as of 1.40) can be checked against actual config expressions
     #"x86_64-unknown-linux-musl",
     # You can also specify which target_features you promise are enabled for a
     # particular target. target_features are currently not validated against
     # the actual valid features supported by the target architecture.
     #{ triple = "wasm32-unknown-unknown", features = ["atomics"] },
-]
 # When creating the dependency graph used as the source of truth when checks are
 # executed, this field can be used to prune crates from the graph, removing them
 # from the view of cargo-deny. This is an extremely heavy hammer, as if a crate
@@ -108,6 +119,8 @@ allow = [
     # BSD-2-Clause - https://opensource.org/license/bsd-2-clause
     # Used by: transitive only
     "BSD-2-Clause",
+    # bzip2-sys reports the upstream bzip2-1.0.6 license text.
+    "bzip2-1.0.6",
     # BSD-3-Clause - https://opensource.org/license/bsd-3-clause
     # Used by: encoding_rs, seccompiler
     "BSD-3-Clause",
