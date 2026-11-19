@@ -283,7 +283,7 @@ jobs:
 
   required:
     name: Architecture required
-    if: ${{ always() }}
+    if: ${{ !cancelled() }}
     needs: qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 5
