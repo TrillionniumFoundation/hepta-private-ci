@@ -1,0 +1,75 @@
+{
+  "schema": "hepta.rust-consolidation-continuation.v6",
+  "date_utc": "2026-11-19",
+  "source_head": "54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+  "source_tree": "b66b83f6c62f7921aa5af8a4f46d35b113215ba6",
+  "source_parents": [
+    "df0f52a86747d89e10249ab9f631453505c037b6",
+    "b5bed98f9db33eede1afe065e2812bffd462ca09"
+  ],
+  "main_read": "732e934ba496d90fbe042b8d41d479ef901643e5",
+  "ref_inventory": {
+    "source_git_ref": "GET git/matching-refs/heads (single response; no atomic cross-resource guarantee)",
+    "last_round_05": 7647,
+    "entries": 7647,
+    "unique_names": 7647,
+    "duplicates": 0,
+    "added": [],
+    "changed": [
+      {
+        "name": "codex/hia-example-validation-continuation-20261118-a11",
+        "from": "7ea1e8dba2d992d46e8ef6ea988692972c401ce0",
+        "to": "70827abaa7fcb4abbd44d53466ce9a60244b405e"
+      },
+      {
+        "name": "integration/hepta-single-main-20261113-ab5b",
+        "from": "c0b8960ea2ed8f0c8c6e27176260d6b6ef494d8d",
+        "to": "54432bb23e7b6c0df1b16677091ecf1e4883d10b"
+      }
+    ],
+    "missing": [],
+    "protection": [],
+    "head_at_start": "54432bb23e7b6c0df1b16677091ecf1e4883d10b",
+    "main_at_start": "732e934ba496d90fbe042b8d41d479ef901643e5"
+  },
+  "files": [
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-001-010.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-011-020.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-021-030.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-031-040.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-041-050.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-051-060.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-061-070.json",
+    "qa/repository-consolidation/20261119/round-06/live-refs-pages-071-077.json"
+  ],
+  "protection": {
+    "minimum_named_round05": 396,
+    "latest_source_commit_message_claims_history_pins": 416,
+    "all_unproven_new_names_hold": true,
+    "chrono_otel": "PROTECTED_HISTORICAL_ANCESTRY, do not touch",
+    "all_hia_refs_write_count": 0
+  },
+  "ordinary_coverage": {
+    "precise_current": "NOT_RECOMPUTED",
+    "old_7615_snapshot": {
+      "ordinary": 7225,
+      "covered": 2083,
+      "pending": 5142
+    },
+    "this_audit_new_ordinary_merge_heads": 0
+  },
+  "ci": {
+    "exact_latest_head_required_gates": "NOT_YET_COMPLETE, no qualification claimed",
+    "history": "Windows ACL FILE_DELETE_CHILD elevated bypass fail-closed; Agentd user identity; Linux musl; cargo-deny RUSTSEC-2026-0543; Draft #6396 not qualified",
+    "no_bypass": true
+  },
+  "operations": {
+    "main_merge": 0,
+    "branch_delete": 0,
+    "force_push": false,
+    "write_scope": "integration/hepta-single-main-20261113-ab5b only",
+    "delete_ref_api_unavailable": true,
+    "validation": "snapshot-only; no native tests executed",
+    "required_architecture_and_ci_must_pass_before_main": true
+  }
+}
