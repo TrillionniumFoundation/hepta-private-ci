@@ -1,0 +1,106 @@
+{
+  "original_result_path": "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-preparation-2/RESULT.json",
+  "original_result_sha256": "ef4336446b2359cd53ee7b6108436ae60411a6306a4b05648ede232fe8a9c3cf",
+  "files": [
+    {
+      "name": "owner.py",
+      "sha256": "2dcd2184d99926bff43ba490f570a8b5a70ace96c11c57f9509aad5aedf99e66",
+      "bytes": 10974,
+      "ast_unchanged": true,
+      "before_sha256": "f074f651bcf1ffc2eb5e074bf487873239107762285325dc12af550f6bd9731c"
+    },
+    {
+      "name": "run_replacement.py",
+      "sha256": "71c2c1f8269d3c1f01a6218b581c61150dfa227c1b919061ad94b8f33f0ab56c",
+      "bytes": 16667,
+      "ast_unchanged": true,
+      "before_sha256": "4df4998dde3ae179845da867d8cd4d72dbc13e9b433299466a0e121a67831593"
+    }
+  ],
+  "cpu_qualified_files_unchanged": {
+    "prepare.py": "460357e90f1d2017df7f994af86fee0c663dd6e8ac3fee34aaba9f59e920135a",
+    "replacement_codec.py": "e1147a8d02624ca87b4a1f2f3345b034664b11b074f29787cb4b34085d4058c3"
+  },
+  "stages": [
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/owner.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/run_replacement.py"
+      ],
+      "exit_source": "subprocess.Popen.wait",
+      "stage": "new-format-before",
+      "wait_returncode": 1,
+      "wall_seconds": 0.2654662480344996
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/owner.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/run_replacement.py"
+      ],
+      "exit_source": "subprocess.Popen.wait",
+      "stage": "new-format",
+      "wait_returncode": 0,
+      "wall_seconds": 0.06434739200631157
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "format",
+        "--check",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/owner.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/replacement_codec.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/run_replacement.py"
+      ],
+      "exit_source": "subprocess.Popen.wait",
+      "stage": "all-format-after",
+      "wait_returncode": 0,
+      "wall_seconds": 0.0643359930254519
+    },
+    {
+      "argv": [
+        "/home/qian-qi/work/hepta-e4-parent-credit-20261118-2e9b/tooling/uv-env/bin/uv",
+        "run",
+        "--frozen",
+        "--offline",
+        "--project",
+        "/home/qian-qi/work/hepta-upstream-student-format-20261118-2e9b/source/scripts",
+        "ruff",
+        "check",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/owner.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/prepare.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/replacement_codec.py",
+        "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/execution-source-2/run_replacement.py"
+      ],
+      "exit_source": "subprocess.Popen.wait",
+      "stage": "all-lint",
+      "wait_returncode": 0,
+      "wall_seconds": 0.0645854840404354
+    }
+  ],
+  "new_model_calls": 0,
+  "new_native_children": 0
+}
