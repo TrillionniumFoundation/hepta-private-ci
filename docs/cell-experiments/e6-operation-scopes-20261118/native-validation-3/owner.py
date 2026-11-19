@@ -153,7 +153,7 @@ try:
     r.update(test_cases=cases,native_cases=len(cases),expected_native_cases=len(expected),
         missing_cases=sorted(set(expected)-set(actual)),unexpected_cases=sorted(set(actual)-set(expected)))
     r["all_native_passed"]=(len(observed)==1 and len(cases)==len(expected)
-        and sorted(actual)==sorted(expected) and all(not (x["failures"] or x["errors"] or x["skipped"]) for x in cases)
+        and sorted(actual)==sorted(expected) and all(not (x["failures"] or x["errors"] or x["skipped"]) for x in cases))
 except BaseException as error:
     r.update(status="driver_failed",error=repr(error))
     (OUT/"ERROR.txt").write_text(traceback.format_exc())

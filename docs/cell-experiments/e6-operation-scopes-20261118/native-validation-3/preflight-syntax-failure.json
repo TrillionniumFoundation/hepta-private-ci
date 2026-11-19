@@ -1,0 +1,27 @@
+{
+  "schema": "hepta.e6.native-owner-syntax-preflight.v1",
+  "execution_source": "6fa338217163c79fe956f8ee1ff1e3d5506ee819",
+  "publication": "08a057cb07d0d6d0e0f2b1f6d04166fa57a22288",
+  "original_driver_sha256": "4b270a189bee9d0f626da74031ef522b685334c9d8e00b96d8372bf71cef2e39",
+  "original_pty": "dpty-373e03f1eeeb1f3b9f1da5149b4812a98d435ec4f9a47d3ce01d995280bd3f66",
+  "original_terminal": {
+    "boot": "b1620269-aaef-43e7-bf47-bc6eb1c1a447",
+    "bytes_seen": 558,
+    "bytes_stored": 558,
+    "capture_error": null,
+    "closed": false,
+    "created_unix_ms": 1795059683879,
+    "exit_code": 1,
+    "output_complete": true,
+    "owner_pid": 1262635,
+    "pid": 1262636,
+    "state": "exited"
+  },
+  "original_output": "Traceback (most recent call last):\r\n  File \u001b[35m\"<string>\"\u001b[0m, line \u001b[35m5\u001b[0m, in \u001b[35m<module>\u001b[0m\r\n    \u001b[31mcompile\u001b[0m\u001b[1;31m(files['run_native_validation3.py'],'run_native_validation3.py','exec')\u001b[0m\r\n    \u001b[31m~~~~~~~\u001b[0m\u001b[1;31m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\u001b[0m\r\n  File \u001b[35m\"run_native_validation3.py\"\u001b[0m, line \u001b[35m155\u001b[0m\r\n    r[\"all_native_passed\"]=\u001b[1;31m(\u001b[0mlen(observed)==1 and len(cases)==len(expected)\r\n                           \u001b[1;31m^\u001b[0m\r\n\u001b[1;35mSyntaxError\u001b[0m: \u001b[35m'(' was never closed\u001b[0m\r\n",
+  "native_command_started": false,
+  "native_cases": 0,
+  "compilation_started": false,
+  "model_calls": 0,
+  "reason": "Compile of the prospective Python owner failed before any file installation or owner launch; one missing outer parenthesis corrected, unchanged native protocol and source.",
+  "retry_native_case": false
+}
