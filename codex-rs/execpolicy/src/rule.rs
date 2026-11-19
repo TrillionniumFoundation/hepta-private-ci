@@ -1,6 +1,7 @@
 use crate::decision::Decision;
 use crate::error::Error;
 use crate::error::Result;
+#[cfg(not(feature = "hia-native"))]
 use crate::policy::MatchOptions;
 use crate::policy::Policy;
 use codex_utils_absolute_path::AbsolutePathBuf;
