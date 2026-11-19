@@ -1,91 +1,102 @@
 # E1–E6 current progress
 
-Observed 2026-11-19T02:46:59Z (2026-11-18T21:46:59-05:00, America/New_York). The historical joint source remains `2b3642214ba5ff4aaac27de13322a354a69507e7`; its original SOURCE_FREEZE is unchanged. New source repairs, model candidates and dependency slices retain their own execution identities.
+Observed 2026-11-19T04:04:58Z (2026-11-18T23:04:58-05:00, America/New_York). The historical joint source remains `2b3642214ba5ff4aaac27de13322a354a69507e7`; the original freeze is unchanged. Every later candidate retains its own execution source, model, protocol and original receipts.
 
 ## Current result
 
-The new student experiment finished all 56 planned new A/B3 calls. Original P, document-evidence and native-feedback first/final/common-prefix scores remain 0/4 on both A and B3. None of the new calls reached an actual native test child. The pre-registered decision is **NoUpdate**. Both 32-update training runs were real and retained, but neither produced the required task improvement.
+E6 source `4adb42883bf29357105de078359fdb44c28b2f0b` now passes the complete original caller verifier and all 11 original native component cases. The unique complete NoUpdate5 owner has started fresh helper/product/library preparation under the prospectively published original command contract. It has not yet passed the complete lifecycle.
 
-The fourth E6 complete original NoUpdate parent actually started the dedicated independent B source, then failed at historical request 65 against the unchanged maximum of 64. The actual native case failed in 68.140 seconds. Preparation and component passes do not establish complete NoUpdate, C, cold fresh D, adoption, FinalUse or settlement.
+The original 56-call learning experiment remains **NoUpdate**. A subsequent 24-call exposed-A diagnostic reached 23 actual native children, but P and both updated models still scored 0/4 for first response, final response and recovery. A new matched raw-function learning candidate is training with actual semantic feedback. Its future task selection was frozen prospectively and begins only after both weights freeze.
 
-The new Chain F0 on `333fe8cd89f0ec855e7b856e99e40f48f56c2137` completed with the original business failure: 1/6 confirmations in the original 30-second phases and 0/6 within the original four-second target. The original numeric depletion reader also refused. Source repairs continue in isolated targets.
+Chain source `3db79eb2682ba3bcbbf33557c5eee3b67731028f` still fails the original F0: 1/6 confirmations in the original 30-second phases, 0/6 within the scheduled four-second targets. Numeric depletion was not established.
 
-All ten joint qualification flags in CURRENT_PROGRESS.json remain false.
+All ten joint qualification flags remain false. Complete evidence and component success do not establish independent learning, original owner adoption, cold fresh D, FinalUse, settlement, production eligibility or complete physical costs.
 
-## Actual student execution and mechanism
+## Actual student execution
 
-[Learning candidate #6722](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6722) now retains final evidence at `077b552e6265be1c00cd045506f00e2aa3082c2f`. Execution source is `78099aa6af4c70c00f26cb11888e20aa59510014`, with mathematical source `02b3fb49ac00ccb7ad28e5d803af5675fbd28e26`. Both arms started from identical frozen P parameters, used empty AdamW state, and completed their actual 32-update budgets. Inner recomputation, padded positions, loss masks, target tokens and parameter changes remain in the full training archive.
+[Original learning candidate #6722](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6722) retains its completed 56 new A/B3 calls at `077b552e6265be1c00cd045506f00e2aa3082c2f`. Both training arms executed their original budgets. P, document-evidence and native-feedback first/final/common-prefix scores remained 0/4 on both panels; no new model patch reached a native child and 24 calls hit their output cap. The original decision remains NoUpdate.
 
-Root independently read the frozen weights, A results, B3 results, complete 56-call readout and full cost ledger and checked their SHA256 values. B3 was released only after frozen weights were independently verified. Its task/protocol/loader bytes remained those committed before training. [B3 source package #6720](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6720) retains its complete 4,284,798-byte archive at `b6ffc41158ac3357b28c6d681f460331a55b819f`.
+[Common raw-function interface #6735](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6735) subsequently completed 24 new diagnostic calls on exposed A, execution source `18b16357c9e1a6a437b418ebd7abdbfda17cbff7`, final evidence `dd1f4978b4927a74c75483994bc8fb4b155e653c`.
 
-| Actual evidence | Result |
+| New diagnostic evidence | Actual outcome |
 | --- | --- |
-| New A calls | 24, both updated arms first/final/common-prefix 0/4 |
-| New B3 calls | 32, P and both updated arms first/final/common-prefix 0/4 |
-| Total new calls | 56; no retries or added model/verifier readout calls |
-| New input/output tokens | 104,679 / 67,072 |
-| Output-limit hits | 24 |
-| Actual native children from new model patches | 0 |
-| Original advancement decision | NoUpdate |
-| Native common-prefix success set strictly contains document control | False, on both A and B3 |
-| Authenticated external users or independent-controller qualification | 0 / false |
+| P / document / native calls | 8 / 8 / 8 |
+| Actual native children | 8 / 8 / 7; one admission refusal |
+| First, final and recovery scores | 0/4 for every model |
+| Original pytest case executions | 660, including 83 failed cases |
+| Output-cap hits | 0 |
+| Admitted patches with unchanged BEFORE AST | 22/23 |
+| Second responses repeating the first | 11/12 |
+| Decision | Diagnostic only; retain prior NoUpdate |
 
-The A-only mechanism audit verified causal alignment, masks, full targets, actual optimizer steps and original rendering. Its observed failures include JSON escaping, repeated generation and nonunique or mismatched old spans. A subsequent shared editing representation is being checked on A-only maintainer originals with CPU positive and negative controls before any new model work. It must preserve the original strict admission, sandbox, native oracle and common arm budget. B3 observations do not become training targets or retroactively alter the old protocol.
+The interface can now reach the original native oracle. The unchanged function outputs and repeated second responses identify a learning problem that remains after the transport repair. The document model produced the same outputs as P. The old training feedback consisted of admission failures, without semantic native feedback.
 
-The complete evaluation archive is 202,240 bytes, SHA256 `3b852f7dc5917ea9b338db9dc6d7619562285496f70bef3bc48a00c2254030b1`. Its original readout is `d122f4e32f75a53e06238dd1260a676f8542a9f0dc3aee6e15eb15521d05063a`. The 214,761-byte cost ledger is `b2b05e61e3545dcbab553f73b72b03d1f8e3ec312b819942b0eb533732aec0b2`: 15 nonoverlapping measured stages total 6,633.705098843959 seconds of stage wall time and 6,737.601896 seconds of child CPU. Ten package sample windows total 362,409.545008 joules of whole-host package energy, including background work. Nested intervals are not added. These are not model-only energy or total project costs; GPU/network energy and monetary costs remain unknown.
+These 24 calls consumed 38,669 input and 4,373 output tokens. Owner wall was 594.454376972 seconds; observed child CPU including energy reads was 449.919131 seconds. The whole-host CPU-package sample windows total 37,546.518016 joules and include unrelated activity. GPU/network energy and monetary charges remain unknown. Original 56-call costs remain separate and retained. The complete new diagnostic archive contains 783 original files, 179,156 bytes, SHA256 `585d2993f48a8f962d60cccbca41ae1cd729ec2e4cf94520eccf843645bbc083`.
 
-## E6 original full parent and source repair
+[New matched learning #6737](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6737) executes source `2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82` under protocol SHA256 `e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5`. Both arms start from identical frozen P parameters and empty AdamW state. Each has 32 updates, 56 outer forward/backward passes, 10,256 supervised target tokens and 200,704 padded positions at full length 3,584. No truncation is allowed. Failed actions and actual native feedback are masked; both layouts receive the same information and verified target.
 
-[Operation scopes #6726](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6726) retains complete failure evidence at `89e95284366bd3901b5d48290e3e89e9a2ba74d7`. The actual executed source remains `ab12b8bc1e6761efc16ea8c64e839721739cef5f`; its original 11 native component cases and 90 source cases passed before the complete-parent attempts.
+The latest original-owner observation reports document training complete at 32/32 and 56/56 forward/backward passes, with native-feedback training active. Root independently read the protocol and CPU controls; final dual-weight manifests have not yet been independently verified. Physical wall/energy equality is not claimed.
 
-| Original attempt | Actual outcome |
+The future selection appendix was published before candidate content was opened at `807695d60d83ebc8593fe1b069d072da2de89ed1`. It fixes project order, HEAD freezing, bounded original history, first eligible task per project, four projects, license/input/original-test checks and exclusion of all old A/B/B2/B3 sources and ASTs. Every rejection is retained. Selection starts after both weights freeze and finishes before inspecting new A outputs. The predeclared generation budget is 56 new calls plus eight retained common P calls on A; no added retries or early exit after first success.
+
+## E6 original lifecycle
+
+[Operation scopes #6726](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6726) now retains source `4adb42883bf29357105de078359fdb44c28b2f0b`, tree `5d75a506b215b9457ef435857cbc004e446c364c`, separately from the earlier ab12 executions.
+
+| Frozen source4adb gate | Actual result |
 | --- | --- |
-| NoUpdate 1 | Native parent failed with Permission denied; complete owner and original child logs retained |
-| NoUpdate 2 | Public helper/product checks passed; actual original unit-test descriptor still had mode 0700 and dedicated UID execution failed; one native case failed in 60.072 seconds |
-| Preparation 3 | Exact immutable public unit-test copy executed under the original capless dedicated UID; nextest refused reused metadata combined with build flags; zero business cases |
-| NoUpdate 4 | Exact B child actually started; original historical read request 65 exceeded 64; one actual native case failed in 68.140 seconds |
+| Original source tests | 143 passed, no failures/errors/skips |
+| Original protected entries | All 892 retained and passed |
+| Affected boundary/symbol checks | 107 passed |
+| Complete unchanged caller CLI | Exit0, all 1,124 boundaries, 6,900 Rust files, 469.234 seconds |
+| Original native component roster | 11/11, zero failure/error/skip |
+| Native command including compilation | 440.018 seconds |
+| Full tracked source before/after | Same 15,643 files and inventory digest |
+| Original compiler environment before/after | Same |
+| Original historical read maximum | 64, unchanged |
 
-Attempt 4's owner wall was 90.76478434517048 seconds. Owner self CPU was 5.158997 user / 1.777918 system seconds; child CPU was 13.2956 user / 2.249066 system seconds. Original source, compiler, installed and original executable hashes, original executable modes/inodes and mount cleanup were checked. The unchanged original JUnit collector separately refused the reused-binaries command because it requires the prefix `just test --locked`. Raw fresh native XML and the collector refusal are both retained; no collector success is claimed.
+The four-file repair groups historical authorization, projection and immutable Prepared construction inside the same actual borrowed dataset operation, and likewise groups original historical delivery initialization. Mandatory pre/post Root observations, current/expiry checks, exact prepared/batch identities and error fencing remain. CALLERS now lists two actual same-batch guards previously missing from its inventory; the verifier and original protected set were not weakened.
 
-The entire second-owner archive contains 64 original files and is 1,946,682 bytes, SHA256 `dbf7024cf6d280922607f56e520be365d86760112d2f31ff30891c2d66c28444`. The preparation-3/owner-4 archive contains 102 original files and is 3,604,749 bytes, SHA256 `1321614792217f7edb9764bb4bbe63e7060c98e7b9674dc600865467e7656208`. Root independently read both complete archives with pinned versions and checked their hashes. Exact path/hash exceptions preserve the original 512,000-byte policy threshold.
+All failed source attempts remain retained, including full-verifier failures that exposed missing typed receivers and missing real caller registrations. A complete closed-source archive contains 190 originals and is 3,006,828 bytes, SHA256 `b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee`. The archiver verified every member and unchanged original; root full binary readback/publication is still pending at this snapshot.
 
-The next isolated source change groups historical authorization, projection and immutable Prepared construction into one typed operation, and likewise groups original historical delivery journal initialization. It retains actual pre/post Root observations, exact receipt/owner identity checks, time/current activation checks, error fencing, nonescaping borrowed authority and the original 64-read maximum. Actual compile/source validation is running. There is no new full-parent pass yet. The next changed-source execution must use the original runner and collector command contract.
+The old private native target was observed physically absent; its cause is unknown. A new private target was restored by a read-only copy of an independently owned stable cache, with all 23,085 files hash matched and all inodes different. Only a foreign absolute CMake cache inside the new owned target was quarantined. Source4adb then actually compiled and ran; no other source's test qualification was transferred.
 
-The fresh-D product path is separately under implementation at `/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/source`. Its first data/protocol stage compiled and passed 8 actual native cases. Root read the full original diff and result. New cold-recipient observations must retain exact finalized C facts; a separately signed new D authorization and ObjectiveStart must bind the same selected model, new task/run, new writer and actual consumer. The factual C bridge has compiled; closed one-use Root grant, physical CURRENT transition and actual D execution remain in progress. No old C grant or engineering adoption journal qualifies D.
+Earlier complete attempts remain failed evidence:
 
-## Chain original pressure window
+| Attempt | Retained actual outcome |
+| --- | --- |
+| NoUpdate1 | Dedicated execution refused with Permission denied |
+| NoUpdate2 | Public binaries admitted; original 0700 test ELF still refused through the dedicated UID's FD |
+| Preparation3 | Exact immutable public copy executed; nextest refused incompatible build flags with reused metadata; zero business cases |
+| NoUpdate4 | Independent B actually started; historical request65 exceeded the original64 maximum; original collector separately refused the adapted command |
+| Native3 preflight | Initial driver syntax error, then corrected driver found the old target absent; zero native cases |
 
-[New F0 evidence #967](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/967) retains `f088f1d4f8a50aff0c5ecd465480b2aeee6e5e94`, based on actual execution source `333fe8cd89f0ec855e7b856e99e40f48f56c2137`. The unique F0 run is `44441548029`. Root independently read its original source/control/configuration/business readout and cost summary.
+NoUpdate5 is prospectively published at `f2c6677c30f437edfd3b875e5c738f1137736d73`, with protocol SHA256 `dfaaa51f6fb68f98569d44ef40fed1d52ae08d7f2c19477c2e8dde10f3aac3a9`. Its original harness test function and JUnit collector are unchanged. It actually rebuilds exact-source helpers/products/libraries and uses `just test --locked --offline`. Only its newly owned exact test ELF receives 0555 mode; every private ancestor retains its mode. A fully capless UID60002 probe must still fail through the private path while succeeding through the original opened descriptor. The complete parent must actually finish independent B, retain a genuine NoUpdate bundle and execute original new C. Preparation passes cannot satisfy that gate.
 
-All seven original preparation controls passed. Business outcomes remained 1/6 at 30 seconds, 0/6 at four seconds, zero ROOT History calls, and 17/42 timely ACK exposures. Native exit was 101 with original `BASELINE_MUST_PASS`; the original depletion reader retained `NUMERIC_DEPLETION_REQUIRED`. Services were known empty after cleanup.
+The cold fresh-D implementation remains separate. Root reviewed the complete finalized-C factual bridge, durable one-use attempt/grant state, same actual context/store/request/issuer checks, new Root enrollment and sealed lane. A review found that a shutdown flag could swallow a real operation error; the agent removed that branch and is adding actual interleaving controls. The actual client/CURRENT bridge has compiled, with further product integration and native qualification pending. No D has been issued. Old C authority and engineering journals do not authorize a new D.
 
-The complete 17,579,578-byte original ZIP has SHA256 `77cc90508efd6fa36829ce4f89b5d740f25a8bd76f3059ce54ed49743d377c7e`. A separate complete readback archive preserves 23 runs, including 22 automatic CI runs and the one F0, and all 38 failed-job logs. Its SHA256 is `220ea3949fb05d06892cb4f93fd04dbc85ed3c6a8ffb9e3f8d2fa5d0b23d9176`.
+## Chain original pressure test
 
-The original baseline measured ten imports and 81,454 Host checkpoints, with 4.5555 seconds of nested Host CPU. Nested CPU must not be added to whole-process CPU. The next source investigation targets repeated complete account-graph traversal inside the same original transaction and frontier. It must preserve the original four slots, frontier provenance, full current State/Record/Delta physical reads, actual Host checks, write/schema/ABA invalidation, credit and business windows. No new F0 result exists for that change.
+[Candidate #968](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/968) passed its original local scope controls, including 127 authenticated cases, 25 detached cases and 56 History cases, with their original ignored cases retained. The same-transaction repeated graph control changed from 44 checks to 5 while its complete first graph remained 140/44. Actual graph-scope identity and invalidation remain enforced.
 
-The original 512-attempt prepaid assertion was retained. Matched full runs exposed the same quota failure in the candidate and original source; the original isolated cold control passed. Those findings do not convert either full suite or the F0 to pass. Candidate-specific CI registry/source-pin inconsistencies are retained for repair, with their original failure logs.
+[Complete F0 evidence #969](https://github.com/TrillionniumFoundation/Trillionnium-Chain/pull/969), head `f0a8364118df01113c14d6a81fbb6fdb6210e4ff`, preserves the unique original run [44451798839](https://github.com/TrillionniumFoundation/Trillionnium-Chain/actions/runs/44451798839).
 
-## Dependency and CI components
+The original result is 1/6 confirmations at 30 seconds, 0/6 at scheduled four seconds, 17/42 timely ACK exposures and 24 unattempted exposures. Native exit was101. All seven preparation controls passed and services were known empty after cleanup. The original business and numeric-depletion refusals remain unchanged. The first confirmation required 21.612150435 seconds from its scheduled start.
 
-The historical joint RMCP/SQLite locks and separate component results remain recorded in JSON. The Chrono consumer work now has four additional completed slices:
+The baseline's ten imports still performed 80,709 Host checks, compared with 81,454 previously. Nested Host CPU was 4.517504795 seconds. This modest reduction did not close the service objective. Remaining activation/reorg steps use separate original SQL transactions; their results cannot be reused across those authority boundaries. Work now targets first full graph and physical Host-check costs.
 
-| Slice | Actual native result | Evidence |
-| --- | --- | --- |
-| Time/cloud | 45/45 | [#6724](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6724) |
-| Agent identity | 61/61 | [#6727](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6727) |
-| Git utils | 38/38 | [#6729](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6729) |
-| Otel/codec | 70/70: 24 unit + 36 integration + 10 codec | [#6734](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/6734) |
+Actual ROOT paid CPU was6.352965233 seconds, credited refill6.344940903 seconds and remaining paid credit1.991975670 seconds from initial2 seconds. The aggregate identity reconciles, but this does not prove depletion or complete per-request observation. The agent reports one ROOT observer measurement failure; the baseline observer was complete. Full raw readback of that failure remains pending.
 
-Otel source is `f1f036ee44476eec54a79fcbde6a8a99cdcf5829`, final evidence `a4d52eadab774ad651825fb2bcc07ab2ec89893a`. Its initial compile failure from a copied absolute CMake path is retained. The successful original command took 123.794992917 seconds; source before/after matched. The 4,073,288-byte archive holds 123 originals, SHA256 `d79127170c229139ba295727e5ab4d2809bb7ab89a3c7f7c5dc6ad5b6328aa7a`. Seven policy tests and the final changed-blob gate passed. The remaining graph has 121 reachable packages, 24 direct and 97 indirect-only. Network-proxy work is paused while this executor implements fresh D.
+Root read the original quota, scalar meter and depletion-reader sources. Original depletion requires initial2 seconds, remaining paid credit below0.1 seconds, paid debit above1.9 seconds and known valid accounting. Equal average CPU quota and refill are insufficient by themselves to prove impossibility: refill clipping before delayed debit and the maximum unobserved CPU gap still require exact analysis.
 
-These results do not qualify a whole joint migration. The original Windows positive business case, the remaining graph and full joint gates remain distinct.
+The complete original ZIP is17,640,478 bytes, SHA256 `744a0d353fb5055fd111cb5acae33259c0e526a8e4240a8f33752d01bfac5ccd`. It is persisted in two exact Git parts after retained upload/transport failures. A separate 338-member original evidence archive retains the26-run/199-job snapshot and24 failed-job logs. Four original automatic workflows were still active at that snapshot; final collection continues without rerunning them. The denominator is25 automatic runs plus the one F0.
 
-## E1–E5 evidence boundaries
+Physical energy, network bytes, storage byte-seconds, concurrent system RSS and provider charges remain unknown. Provider zero billable fields do not mean zero cost. Original local compile failures, quota assertions, source-lock inconsistencies, failed transfers and all prior F0 failures remain retained.
 
-The existing E1 four-arm external B result remains 0/6 for each arm. Prior E2 A retention and common-prefix successes remain development results under their original failed advancement decision. E3 has no demonstrated complementary teacher success set. E4's real interaction experiment remains 5/6 for both the tested Circuit and strong matched single-model arms; no Circuit necessity is established.
+## Other retained boundaries and continuing work
 
-E5 has four deduplicated licensed A maintainer lineages and four separate public B3 projects. These are source projects, not authenticated users. Authenticated users remain zero. The registered fixed-total and fixed-per-source growth curves have not been executed. Source expansion, expert expansion, native HIA numerical work, long-run organization and public contributor rewards remain subject to the actual evidence gates.
+Time/cloud45/45, agent-identity61/61, git-utils38/38 and otel/codec70/70 remain separately qualified dependency slices. The old RMCP/SQLite and Mac results retain their original sources; the original Windows positive business case and full joint gates remain open.
 
-## Continuing work
+E1's external B still has0/6 in each original four-arm comparison. Prior E2 seen-A retention is not future generalization. E3 has not shown teacher complementarity. E4's tested Circuit and matched strong single-model arms both scored5/6. E5 has licensed source projects but zero authenticated users; its fixed-total and fixed-per-source growth curves remain unexecuted.
 
-Complete the E6 same-operation source validation and original full parent, finish actual cold fresh D, test the A-only common editing representation before freezing its next experiment, and repair the Chain transaction-scope bottleneck under the same original F0. Every original failure, rejected preparation, true NoUpdate and measured cost remains retained. Missing original controller authentication, independent custody, complete costs, FinalUse and settlement are not inferred from component success.
+Continue the unique original NoUpdate5 owner, finish real cold fresh D and its native refusal controls, finish dual training and the frozen future task evaluation, and repair Chain under its unchanged original pressure windows. Preserve all NoUpdate results, failures, costs, authority boundaries and exact execution identities. Do not combine separate local successes into joint qualification.

@@ -1,0 +1,290 @@
+{
+  "ci_snapshot_aggregate": {
+    "aggregate_child_system_cpu_seconds": 3.351744,
+    "aggregate_child_user_cpu_seconds": 13.200318,
+    "ended_utc": "2026-11-19T03:44:21.368753+00:00",
+    "total_wall_seconds": 142.68920985498698
+  },
+  "full_physical_cost_closed": false,
+  "git_zip_publication": {
+    "archive_name": "f0-original.zip",
+    "bytes": 17640478,
+    "child_system_cpu_seconds": null,
+    "child_user_cpu_seconds": null,
+    "complete": true,
+    "connector_full_transport_rejection": "tool call error: tool call failed for `codex_apps/github.create_blob`\n\nCaused by:\n    Transport send error: Transport [codex_rmcp_client::tool_list_changes::ToolListChanges<codex_rmcp_client::event_notification_transport::EventNotificationTransport<rmcp::transport::worker::WorkerTransport<rmcp::transport::streamable_http_client::StreamableHttpClientWorker<codex_rmcp_client::http_client_adapter::StreamableHttpClientAdapter>>>>] error: unexpected server response: HTTP 400: {\"detail\":\"MCP request body is invalid or exceeds the 16 MiB limit\"}",
+    "connector_transport_rejected_calls": 1,
+    "cost_note": "Native failed upload has measured CPU/wall below. Connector execution CPU/wall not independently observed; not zero.",
+    "credentials_changed": false,
+    "expected_git_blob": "92eddc7cbd4d6b489c98a5e8a2414b6d107a32bc",
+    "full_blob_uploaded": false,
+    "full_content_git_blob": "92eddc7cbd4d6b489c98a5e8a2414b6d107a32bc",
+    "head": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+    "lossless_concatenation_verified": true,
+    "native_full_upload": {
+      "bytes": 17640478,
+      "child_system_cpu_seconds": 0.109646,
+      "child_user_cpu_seconds": 0.21673299999999998,
+      "command": [
+        "/usr/bin/gh",
+        "api",
+        "--method",
+        "POST",
+        "repos/TrillionniumFoundation/Trillionnium-Chain/git/blobs",
+        "--input",
+        "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/zip-git-blob-1/blob-request.json"
+      ],
+      "complete": false,
+      "error": "AssertionError()",
+      "exit_code": 1,
+      "expected_git_blob": "92eddc7cbd4d6b489c98a5e8a2414b6d107a32bc",
+      "parent_candidate": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+      "pid": 414048,
+      "post_count": 1,
+      "schema": "chain-original-f0-zip-git-blob-publication-v1",
+      "sha256": "744a0d353fb5055fd111cb5acae33259c0e526a8e4240a8f33752d01bfac5ccd",
+      "started_utc": "2026-11-19T03:44:54.136714+00:00",
+      "wall_seconds": 214.1625269309734
+    },
+    "parts": [
+      {
+        "absolute_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/zip-git-parts-1/f0-original.zip.part-000",
+        "already_published": true,
+        "bytes": 9000000,
+        "git_blob": "f101c8f8d9919dcf25e25dd307bcb2f00d52e9f9",
+        "offset": 0,
+        "path": "f0-original.zip.part-000",
+        "sha256": "8f8a101cc0a90e3f7e0c546e7076e43b19932430c6ef815ae9ae36b2490563d5"
+      },
+      {
+        "absolute_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/zip-git-parts-1/f0-original.zip.part-001",
+        "already_published": true,
+        "bytes": 8640478,
+        "git_blob": "dcb76559e987c53a2af1b2ba5c38e698237bb0fd",
+        "offset": 9000000,
+        "path": "f0-original.zip.part-001",
+        "sha256": "adb6bd58decd24af43395ad2bf9d593d48ec6859a714a2def759c63ef7e4f48f"
+      }
+    ],
+    "post_count": 3,
+    "published_parts": [
+      {
+        "absolute_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/zip-git-parts-1/f0-original.zip.part-000",
+        "bytes": 9000000,
+        "git_blob": "f101c8f8d9919dcf25e25dd307bcb2f00d52e9f9",
+        "offset": 0,
+        "path": "f0-original.zip.part-000",
+        "result": {
+          "sha": "f101c8f8d9919dcf25e25dd307bcb2f00d52e9f9"
+        },
+        "sha256": "8f8a101cc0a90e3f7e0c546e7076e43b19932430c6ef815ae9ae36b2490563d5"
+      },
+      {
+        "absolute_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/zip-git-parts-1/f0-original.zip.part-001",
+        "bytes": 8640478,
+        "git_blob": "dcb76559e987c53a2af1b2ba5c38e698237bb0fd",
+        "offset": 9000000,
+        "path": "f0-original.zip.part-001",
+        "result": {
+          "sha": "dcb76559e987c53a2af1b2ba5c38e698237bb0fd"
+        },
+        "sha256": "adb6bd58decd24af43395ad2bf9d593d48ec6859a714a2def759c63ef7e4f48f"
+      }
+    ],
+    "reason": "Complete native gh upload returned401; connector whole body was rejected by16MiB transport limit; same bytes split into two ordinary supported blobs. No credentials changed and no workload repeated.",
+    "run_id": 44451798839,
+    "schema": "chain-exact-original-f0-zip-parts-v1",
+    "self_system_cpu_seconds": 0.055869,
+    "self_user_cpu_seconds": 0.17146799999999998,
+    "sha256": "744a0d353fb5055fd111cb5acae33259c0e526a8e4240a8f33752d01bfac5ccd",
+    "wall_seconds": null,
+    "workload_repeated": false
+  },
+  "head": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+  "original_credits_and_windows_changed": false,
+  "phases": [
+    {
+      "final_actual_cpu_credit_flow": {
+        "balance_identity_verified": true,
+        "booked_reservation_ns": 0,
+        "credited_refill_ns": 930250000,
+        "discarded_refill_ns": 5271115223,
+        "initial_credit_ns": 2000000000,
+        "live_debited_cpu_ns": 937353365,
+        "live_owners": 0,
+        "paid_cpu_debit_ns": 937367822,
+        "remaining_paid_credit_ns": 1992882178,
+        "schema": "public-v3-local-actual-cpu-flow-v1",
+        "settled_full_cpu_ns": 937367822,
+        "settlement_discard_ns": 0,
+        "settlement_residual_cpu_ns": 14457,
+        "stored_credit_ns": 1992882178,
+        "unsettled_known_live_cpu_ns": 0
+      },
+      "history_client_cpu": {
+        "complete_observed_sum": 5438173614,
+        "known_sum": 5438173614,
+        "observed_rows": 10,
+        "unknown_rows": 0
+      },
+      "history_host_calls": 80709,
+      "history_host_cpu_nested": {
+        "complete_observed_sum": 4517504795,
+        "known_sum": 4517504795,
+        "observed_rows": 10,
+        "unknown_rows": 0
+      },
+      "observed_imports": 10,
+      "original_controller_cgroup_resources": {
+        "cpu_interval_scope": "before phase launcher spawn through actual actor reaping and phase exit; excludes earlier honest-miner preparation",
+        "cpu_usage_delta_usec": 2503689,
+        "memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+        "per_actor_rss_qualified": false,
+        "samples": [
+          {
+            "cpu_usage_usec": 7343632,
+            "memory_current_bytes": 50298880,
+            "memory_peak_lifetime_bytes": 57724928,
+            "stage": "before_launch"
+          },
+          {
+            "cpu_usage_usec": 7861002,
+            "memory_current_bytes": 75030528,
+            "memory_peak_lifetime_bytes": 76161024,
+            "stage": "actors_ready"
+          },
+          {
+            "cpu_usage_usec": 9847321,
+            "memory_current_bytes": 57843712,
+            "memory_peak_lifetime_bytes": 79872000,
+            "stage": "after_reap"
+          }
+        ],
+        "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+      },
+      "phase": "baseline",
+      "whole_public_phase_cpu_ns": 8374266693,
+      "whole_public_phase_wall_ns": 34581570236
+    },
+    {
+      "final_actual_cpu_credit_flow": {
+        "balance_identity_verified": true,
+        "booked_reservation_ns": 0,
+        "credited_refill_ns": 6344940903,
+        "discarded_refill_ns": 1204571237,
+        "initial_credit_ns": 2000000000,
+        "live_debited_cpu_ns": 6352538730,
+        "live_owners": 0,
+        "paid_cpu_debit_ns": 6352965233,
+        "remaining_paid_credit_ns": 1991975670,
+        "schema": "public-v3-local-actual-cpu-flow-v1",
+        "settled_full_cpu_ns": 6352965233,
+        "settlement_discard_ns": 0,
+        "settlement_residual_cpu_ns": 426503,
+        "stored_credit_ns": 1991975670,
+        "unsettled_known_live_cpu_ns": 0
+      },
+      "history_client_cpu": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "history_host_calls": 0,
+      "history_host_cpu_nested": {
+        "complete_observed_sum": 0,
+        "known_sum": 0,
+        "observed_rows": 0,
+        "unknown_rows": 0
+      },
+      "observed_imports": 0,
+      "original_controller_cgroup_resources": {
+        "cpu_interval_scope": "before phase launcher spawn through actual actor reaping and phase exit; excludes earlier honest-miner preparation",
+        "cpu_usage_delta_usec": 4157776,
+        "memory_peak_scope": "whole original controller service lifetime, including earlier preparation and previous phases; never a memory delta or per-actor peak",
+        "per_actor_rss_qualified": false,
+        "samples": [
+          {
+            "cpu_usage_usec": 9856855,
+            "memory_current_bytes": 60723200,
+            "memory_peak_lifetime_bytes": 79872000,
+            "stage": "before_launch"
+          },
+          {
+            "cpu_usage_usec": 10440164,
+            "memory_current_bytes": 116396032,
+            "memory_peak_lifetime_bytes": 116465664,
+            "stage": "actors_ready"
+          },
+          {
+            "cpu_usage_usec": 14014631,
+            "memory_current_bytes": 104329216,
+            "memory_peak_lifetime_bytes": 127451136,
+            "stage": "after_reap"
+          }
+        ],
+        "scope": "whole original controller cgroup and all descendants; includes controller, broker, launcher and external producer processes; excludes separately systemd-owned public phase; not per-actor RSS"
+      },
+      "phase": "valid-work-root",
+      "whole_public_phase_cpu_ns": 8718771078,
+      "whole_public_phase_wall_ns": 34994772932
+    }
+  ],
+  "provider": {
+    "billable": {
+      "UBUNTU": {
+        "job_runs": [
+          {
+            "duration_ms": 0,
+            "job_id": 135317303807
+          }
+        ],
+        "jobs": 1,
+        "total_ms": 0
+      }
+    },
+    "run_duration_ms": 523000
+  },
+  "provider_zero_billable_values_do_not_mean_zero_cost": true,
+  "readback_execution": {
+    "business_reexecuted": false,
+    "child_system_cpu_seconds": 0.244053,
+    "child_user_cpu_seconds": 1.751386,
+    "command": [
+      "/usr/bin/python3",
+      "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/f0-readback.py"
+    ],
+    "exit_code": 0,
+    "head": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+    "invocation_count": 1,
+    "outputs": [
+      {
+        "bytes": 17072,
+        "path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/f0-independent-readback.json",
+        "sha256": "2bd7a12e08e6fb62df66406872c901c63438a285ab428d04229daec0337fa6c9"
+      },
+      {
+        "bytes": 195338,
+        "path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/current-cost-profile.json",
+        "sha256": "0f12a9e90c8a209f97bb211aeb0265ee1ae2cd562de79be91dd46c1f2e30d6b9"
+      }
+    ],
+    "pid": 405754,
+    "run_id": 44451798839,
+    "schema": "chain-original-f0-readback-execution-v1",
+    "wall_seconds": 2.0238580859731883
+  },
+  "run_id": 44451798839,
+  "schema": "chain-original-operation-f0-cost-summary-v1",
+  "scope": "observed original phase/import CPU and wall intervals; nested measurements overlap and must not be added",
+  "unknown_cost_dimensions": [
+    "compiler/dependency acquisition CPU",
+    "concurrent whole-system RSS",
+    "physical storage I/O",
+    "storage byte-seconds",
+    "physical network bytes",
+    "GPU activity",
+    "energy",
+    "provider charges"
+  ]
+}

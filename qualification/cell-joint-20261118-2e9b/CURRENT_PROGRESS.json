@@ -1,8 +1,8 @@
 {
   "schema": "hepta.joint-continuation-observation.v1",
-  "observed_at_utc": "2026-11-19T02:46:59Z",
+  "observed_at_utc": "2026-11-19T04:04:58Z",
   "user_timezone": "America/New_York",
-  "observed_at_user_timezone": "2026-11-18T21:46:59-05:00",
+  "observed_at_user_timezone": "2026-11-18T23:04:58-05:00",
   "joint_execution_source": "e52c4f67cb58a65409256f7be263cfb49ac22557",
   "joint_execution_tree": "3f976284d2990dcf0edb8de2ed2ec003a6685292",
   "historical_freeze_rewritten": false,
@@ -1423,6 +1423,155 @@
         "next_prospective_work": "A-only shared full replacement representation with exact original source binding and unchanged native admission/oracle; CPU positive/negative controls before any new model calls",
         "old_scores_changed": false
       }
+    },
+    "raw_function_interface_followup": {
+      "pr": 6735,
+      "evidence_commit": "dd1f4978b4927a74c75483994bc8fb4b155e653c",
+      "execution_source": "18b16357c9e1a6a437b418ebd7abdbfda17cbff7",
+      "status": "Completed original 24 exposed-A diagnostic calls; all models first/final/recovery0/4; prior NoUpdate retained",
+      "original_readout_sha256": "a6d6ada131e98314f01a07b4929b99a70bcf1f65166043fce5d23ae7248a5fe0",
+      "cost_ledger_sha256": "f3e8aec83ccdc223cb0552c2c71ba49855d26d49b5ac803848284a700d7db64a",
+      "actual_new_model_calls": 24,
+      "actual_native_children": 23,
+      "original_native_case_executions": 660,
+      "original_native_failed_cases": 83,
+      "admission_refusals": 1,
+      "output_cap_hits": 0,
+      "models": {
+        "P": {
+          "calls": 8,
+          "native_children": 8,
+          "scores": {
+            "any_success": 0,
+            "final": 0,
+            "first": 0,
+            "preservation_opportunity": 0,
+            "recovery": 0,
+            "recovery_opportunity": 4,
+            "regression": 0
+          },
+          "input_tokens": 12790,
+          "output_tokens": 1588
+        },
+        "document_evidence": {
+          "calls": 8,
+          "native_children": 8,
+          "scores": {
+            "any_success": 0,
+            "final": 0,
+            "first": 0,
+            "preservation_opportunity": 0,
+            "recovery": 0,
+            "recovery_opportunity": 4,
+            "regression": 0
+          },
+          "input_tokens": 12782,
+          "output_tokens": 1588
+        },
+        "native_feedback": {
+          "calls": 8,
+          "native_children": 7,
+          "scores": {
+            "any_success": 0,
+            "final": 0,
+            "first": 0,
+            "preservation_opportunity": 0,
+            "recovery": 0,
+            "recovery_opportunity": 4,
+            "regression": 0
+          },
+          "input_tokens": 13097,
+          "output_tokens": 1197
+        }
+      },
+      "mechanism": {
+        "unchanged_before_AST": 22,
+        "admitted_patches": 23,
+        "repeated_second_answers": 11,
+        "second_answers": 12,
+        "document_outputs_equal_P": true,
+        "old_training_feedback_was_admission_only": true,
+        "limits": "Exposed-A diagnostic; functioning native interface does not prove learning gain or independent confirmation"
+      },
+      "input_tokens": 38669,
+      "output_tokens": 4373,
+      "owner_wall_seconds": 594.4543769720476,
+      "observed_child_cpu_seconds_including_energy_reads": 449.9191310000001,
+      "whole_host_package_joules_including_background": 37546.518016,
+      "whole_host_samples": 34,
+      "full_system_cost_known": false,
+      "authenticated_users": 0,
+      "archive": {
+        "original_files": 783,
+        "bytes": 179156,
+        "sha256": "585d2993f48a8f962d60cccbca41ae1cd729ec2e4cf94520eccf843645bbc083"
+      }
+    },
+    "raw_function_matched_learning_followup": {
+      "pr": 6737,
+      "execution_source": "2b85ea867e2749d4dc3bbb75ac16c9b5f9344f82",
+      "execution_tree": "e0e9e3494ab8560259ff4bb50668d3f287612b73",
+      "prospective_protocol_sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
+      "root": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b",
+      "status": "Original uniquely owned training active; no future candidates opened and no new model gain measured",
+      "owner_session": "dpty-6c6be2c6d50ab70f860e9a0dc5c285905b2d01c74724fab4cc931d70fa5910b4",
+      "idempotency_key": "e123-raw-function-matched-training-2b85ea-2e9b-001",
+      "exclusive_owner": "e123_learning",
+      "training_budget_per_arm": {
+        "updates": 32,
+        "outer_forward_backward": 56,
+        "supervised_target_tokens": 10256,
+        "padded_positions": 200704,
+        "padded_length": 3584,
+        "no_truncation": true
+      },
+      "model_start": "Identical original frozen P parameters and empty AdamW state",
+      "data": "Four unique original P first responses and actual native semantic feedback on exposed A; original verified function targets, failed actions and feedback fully masked; same information in both layouts",
+      "physical_wall_energy_equality_claim": false,
+      "latest_agent_observation": {
+        "document_updates": 32,
+        "document_forward_backward": 56,
+        "native_feedback_updates": 1,
+        "dual_weights_frozen": false,
+        "FAILED_observed": false,
+        "scope": "Agent original-owner observation; root read protocol/CPU controls, not yet both final manifests"
+      },
+      "cpu_control_result_sha256": "4d6d7d0fedb54ab58d85e7daf15f1e4a6dd53a9a073f3d1680b3df4e1c204e8c",
+      "future_selection": {
+        "prospective_commit": "807695d60d83ebc8593fe1b069d072da2de89ed1",
+        "appendix_sha256": "5a5b42e36436722ff203a6cf08777f367dc6c4765ecfac1c265466fc7b4410dd",
+        "candidate_order": [
+          "python-trio/outcome",
+          "python-trio/sniffio",
+          "jmespath/jmespath.py",
+          "lepture/mistune",
+          "davidhalter/parso",
+          "pallets/itsdangerous",
+          "facelessuser/wcmatch",
+          "pallets/click",
+          "pallets/werkzeug",
+          "more-itertools/more-itertools",
+          "python-babel/babel",
+          "pallets/jinja"
+        ],
+        "open_only_after_both_weights_freeze": true,
+        "freeze_before_new_A_output_inspection": true,
+        "excluded": "All old A/B/B2/B3 source/maintainer/before-after blob/function-test AST; retain all rejections in original order",
+        "max_per_project": 1,
+        "first_eligible_projects": 4
+      },
+      "inference_budget": {
+        "new_generations": 56,
+        "retained_common_A_P_generations": 8,
+        "input_cap": 8192,
+        "output_cap": 2048,
+        "context": 32768,
+        "retries": 0,
+        "second_call_required_after_first_success": true
+      },
+      "original_NoUpdate_unchanged": true,
+      "independent_confirmation_qualified": false,
+      "authenticated_users": 0
     }
   },
   "E3": {
@@ -2694,7 +2843,7 @@
       "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
       "original_executor_mutated": false,
       "original_target_used": false,
-      "status": "ab12 native components passed; actual fourth complete parent starts B then refuses historical request 65 at original maximum 64; source repair in isolated QA",
+      "status": "Frozen read64 repair4adb passed full original caller CLI and11 native components; original complete NoUpdate5 running fresh preparation",
       "source_changes": [
         "cell_q24_prepared_learning.rs",
         "production_post_a_q24_owners.rs"
@@ -2881,7 +3030,7 @@
         "complete_archive_originals": 64,
         "complete_archive_sha256": "dbf7024cf6d280922607f56e520be365d86760112d2f31ff30891c2d66c28444"
       },
-      "evidence_commit": "89e95284366bd3901b5d48290e3e89e9a2ba74d7",
+      "evidence_commit": "f2c6677c30f437edfd3b875e5c738f1137736d73",
       "complete_NoUpdate_attempt_3": {
         "prospective_commit": "645ea8809818ca39b60fad034c9a6df65780e143",
         "status": "preparation failed; actual capless dedicated-UID descriptor execution of new exact binary passed; nextest rejected metadata combined with build flags",
@@ -2929,18 +3078,109 @@
         }
       },
       "read_budget_repair": {
-        "status": "four-file isolated source patch in actual cargo-check QA; not a frozen or qualified execution candidate",
-        "base": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
+        "status": "Complete source/native component gates passed; complete lifecycle executing",
+        "source": "4adb42883bf29357105de078359fdb44c28b2f0b",
+        "tree": "5d75a506b215b9457ef435857cbc004e446c364c",
         "root": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b",
-        "owner_session": "dpty-266a8b99439eeef8c597fbd41e72bcca7e40975fd91b721fb55ed85100089463",
-        "scope": "one same-operation borrow for historical authorization/projection/prepared construction and original delivery journal initialization; all exact checks and real pre/post Root reads retained",
+        "source_inventory_sha256": "bd330eab5ddf10f76d43cff7745ea01a7a840d473fba60fd3dc618f41363f9dc",
+        "source_files": 15643,
+        "source_freeze_result_sha256": "ff6f1abba7235d596a1f286efcdd165be0d7c3f5c71d3efbf8937a4765cb3812",
+        "four_files": [
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_preparation.rs",
+            "sha256": "f31fc10f9502989d13155ae0df0c68901757cbf9d7526edd7cb1cbf34072b477"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_prepared_learning.rs",
+            "sha256": "c61e054f7fb85f2abc4e149e789a2eba143551dfa04c61a6f3b628baaa48f897"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/learning_iteration_historical_source.rs",
+            "sha256": "5d349d7d7a058e77f511f4650037f897ef4650fb53d2d81badf01df60ea5ac13"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/cell_q24_dataset_historical_ledger.rs",
+            "sha256": "4c8695c4327effb30c200ebbd6800c7d4915be320c79df82425eaf53d93ab56f"
+          }
+        ],
         "maximum_reads": 64,
         "no_authority_verdict_cache": true,
-        "complete_parent_rerun_yet": false
+        "source_qa": {
+          "original_tests": 143,
+          "protected_rows": 892,
+          "targeted_boundaries": 107,
+          "all_passed": true,
+          "original_full_caller_cli_exit": 0,
+          "original_full_caller_wall_seconds": 469.23400229401886,
+          "original_all_boundaries": 1124,
+          "rust_sources": 6900,
+          "result_sha256": "d76620ec7bc39b9d91504143b9b8c2c27da52af8d8c7585373d02fd903b884c7",
+          "original_full_receipt_sha256": "3e2de15376c42034badabca95f1d5c933f32ef8927fa21bf9a2ff0f98439ccc7",
+          "verifier_unchanged": true
+        },
+        "native_component": {
+          "cases": 11,
+          "passed": 11,
+          "skipped": 0,
+          "failed": 0,
+          "command_exit": 0,
+          "command_wall_seconds": 440.0180792780593,
+          "owner_wall_seconds": 444.88162242178805,
+          "child_user_cpu_seconds": 708.2077270000001,
+          "child_system_cpu_seconds": 89.610781,
+          "max_child_rss_kib": 5780624,
+          "source_unchanged": true,
+          "compiler_unchanged": true,
+          "result_sha256": "985b613a0b1e1646f2fc5ac8e98b23c62b9a8745f3221f05e7817b1c559c6156",
+          "junit_sha256": "0e0e8a2b41449d7497ce83fbfba4cb0c27105c181dc4b88d777b96c079f0fe68",
+          "cost_windows_nested_not_additive": true
+        },
+        "preserved_failed_source_gates": {
+          "attempts": 6,
+          "all_results_retained": true,
+          "syntax_preflight_failure_retained": true,
+          "missing_old_target_native3_failure_result_sha256": "8ac4f92a8dcd35c0280f59b0058a98e74477dd4257f5464757cc57921bee9f59"
+        },
+        "closed_source_original_archive": {
+          "original_files": 190,
+          "bytes": 3006828,
+          "sha256": "b158bbd5ce2993423d462422e68b2468e8899321425e92c137faea8f25f18aee",
+          "index_sha256": "2c7f117ebb8b45bcda8aa8b4a146dd2f120d0ba0f08564f991159033e9070f21",
+          "all_members_verified_by_original_archiver": true,
+          "root_full_binary_readback_pending": true
+        },
+        "target_restoration": {
+          "new_owned_target": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-target-restored-1",
+          "old_target_physically_missing": true,
+          "cause": "unknown",
+          "independent_copy_files": 23085,
+          "independent_copy_bytes": 14986214549,
+          "receipt_sha256": "000abeed9f33e0a9b0fe79b0a7dd4d519e668fcb550d7131a991ff9b50100ddb",
+          "shared_inodes": 0,
+          "source_qualification_transferred": false,
+          "own_foreign_absolute_CMake_cache_quarantined": true
+        },
+        "complete_parent_has_passed": false
+      },
+      "complete_NoUpdate_attempt_5": {
+        "status": "Unique owner running original fresh helper/product/library preparation",
+        "source": "4adb42883bf29357105de078359fdb44c28b2f0b",
+        "prospective_commit": "f2c6677c30f437edfd3b875e5c738f1137736d73",
+        "protocol_sha256": "dfaaa51f6fb68f98569d44ef40fed1d52ae08d7f2c19477c2e8dde10f3aac3a9",
+        "driver_sha256": "bf908eee1de16112bf34add086e05897230067747ec2ab78c7b218b51c2eb426",
+        "owner_session": "dpty-201c535552916ff23626397694fec7c1bf49ab2fe79587bfedcebe2f88085f3e",
+        "idempotency_key": "e6-original-complete-noupdate5-frozen4adb-f2c667-private-target-001",
+        "original_harness_test_function_unchanged": true,
+        "original_collector_unchanged": true,
+        "original_command_prefix": "just test --locked --offline",
+        "max_reads": 64,
+        "original_deadlines_unchanged": true,
+        "automatic_retry": false,
+        "complete_native_NoUpdate": false
       }
     },
     "cold_fresh_D_implementation": {
-      "status": "isolated product implementation active; no D issued or adopted",
+      "status": "Original cold finalized-C bridge, closed durable one-use grant, fresh Root enrollment and sealed lane compiled; actual client/CURRENT bridge integrating; zero D issuance",
       "root": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/source",
       "base": "ab12b8bc1e6761efc16ea8c64e839721739cef5f",
       "stage1_local_commit": "9d3fbbcfa717e511ada483acba195faa899f3b0e",
@@ -2951,9 +3191,39 @@
       "stage1_native_failed": 0,
       "stage2_local_commit_agent_reported": "361f45646fd2e00f8ae91add2f03f108ae3db1c8",
       "stage2_cargo_check_agent_reported": 0,
-      "scope": "new recipient observes exact finalized C facts; independent signed D authorization and ObjectiveStart, same selected model, new run/task and writer epoch; closed one-use Root grant and physical consumer checks still under implementation",
+      "scope": "Fresh Root observes seven original completed journals/finalized C, verifies two new D signatures/current roles/epoch/source and exact original C consumer; one-shot nonescaping actual issuer/writer, physical CURRENT C→D and real D still required.",
       "new_native_D_executions": 0,
-      "independent_human_controller_qualification": false
+      "independent_human_controller_qualification": false,
+      "stage3_4_root_review": {
+        "same_actual_context_store_request_and_issuer_identity": true,
+        "durable_prepare_armed_before_physical_action": true,
+        "grant_attempted_before_actual_issue": true,
+        "ready_only_after_all_successful_postchecks": true,
+        "original_C_unique_transition": true,
+        "read64_unchanged": true
+      },
+      "stage5": {
+        "local_commit": "5d1819f7c6d6276c1a857b0cc7a1c4a533e5184a",
+        "complete_diff_sha256": "dd1699427a2e3be4e76575e980000e9edf3e453bb78dbbd408b1dc2426ee9807",
+        "root_full_diff_reviewed": true
+      },
+      "stage6": {
+        "local_head_short_agent_reported": "a3094ea1",
+        "complete_diff_sha256": "c52b4f73ea534315e4bd8ee7428d46c7ae9b180588f2d9849508c08ebce05b4d",
+        "root_full_diff_reviewed": true,
+        "root_finding": "Shutdown flag could swallow a real callback/authentication/protocol/expiry error",
+        "agent_correction": "Original error now propagates directly; actual interleaving negatives still required",
+        "native_data_protocol_cases_agent_reported": 15,
+        "actual_D_issued": 0
+      },
+      "stage7_agent_report": {
+        "actual_fmt_exit": 0,
+        "actual_cargo_check_exit": 0,
+        "cargo_check_wall_seconds": 19.894943417,
+        "result_sha256": "6f8a166ea07b7bd10fe7f02cf116839c83500f03065db7dc772e7640728dc8ea",
+        "root_readback_pending": true,
+        "actual_D_issued": 0
+      }
     }
   },
   "Chain": {
@@ -3781,14 +4051,101 @@
       }
     },
     "native_operation_graph_followup": {
-      "status": "original deterministic repeated traversal control started before production change; no new F0 yet",
+      "status": "3db same-operation graph passed local source/native gates; original F0 failed; first complete graph/Host checks investigation continues",
       "root": "/home/qq/work/chain-native-operation-readback-20261119-2e9b/source",
       "base": "f088f1d4f8a50aff0c5ecd465480b2aeee6e5e94",
       "original_baseline_imports": 10,
       "original_baseline_host_checkpoints": 81454,
       "nested_host_cpu_seconds": 4.5555,
       "scope": "original transaction-bound four slots and existing frontier provenance only; complete physical State/Record/Delta and pre/post Host checks preserved; no cross-request or cross-write verdict cache",
-      "credit_or_business_assertions_changed": false
+      "credit_or_business_assertions_changed": false,
+      "source": "3db79eb2682ba3bcbbf33557c5eee3b67731028f",
+      "tree": "4877dd4e945841e734a57234e89fb1eb0440805e",
+      "pr": 968,
+      "evidence_pr": 969,
+      "evidence_commit": "f0a8364118df01113c14d6a81fbb6fdb6210e4ff",
+      "evidence_tree": "592753ff6410f74bbf3042d774aacaf70f83a808",
+      "production_patch_sha256": "74949e2e203c064b4e70ec80e330bdf3436bcec4d101caa968908af2bc0cbc24",
+      "actual_scope_identity_Rc_and_ABA_rejection": true,
+      "local_native": {
+        "authenticated_passed": 127,
+        "postwrite_subset": 49,
+        "detached_passed": 25,
+        "detached_ignored": 1,
+        "history_passed": 56,
+        "history_ignored": 1,
+        "strict_clippy_exit": 0,
+        "original_repeated_scope_counts": {
+          "full": 140,
+          "first": 44,
+          "repeated": 5
+        }
+      },
+      "local_readout_sha256": "57f0e666e4bff753f5462a09efbfe1c735752420445bc5e82db6cd2e138a5887",
+      "local_cost_sha256": "b180fbade3ba545642732dbc6e6e200ff18a6ea337121b3893663bcae8bcf2ea",
+      "original_F0": {
+        "run_id": 44451798839,
+        "attempt": 1,
+        "planned_confirmations": 6,
+        "confirmed_30s": 1,
+        "scheduled_four_second_successes": 0,
+        "timely_ACK": 17,
+        "planned_packets": 42,
+        "unattempted_exposures": 24,
+        "first_confirmation_elapsed_from_schedule_seconds": 21.612150435,
+        "native_exit": 101,
+        "original_gates": [
+          "BASELINE_MUST_PASS",
+          "F0_ALL_SIX_SCHEDULED_FOUR_SECOND_TARGETS_REQUIRED",
+          "NUMERIC_DEPLETION_REQUIRED"
+        ],
+        "business_pass": false,
+        "controls": 7,
+        "all_services_known_empty": true,
+        "readout_sha256": "2bd7a12e08e6fb62df66406872c901c63438a285ab428d04229daec0337fa6c9",
+        "cost_summary_sha256": "92cf0238c36b6a5e7715a61adf4ed7490e85fae54f8be4e1db58567f9b52f1bf",
+        "original_zip_bytes": 17640478,
+        "original_zip_sha256": "744a0d353fb5055fd111cb5acae33259c0e526a8e4240a8f33752d01bfac5ccd",
+        "zip_persisted_as_two_exact_parts": true,
+        "readback_archive_original_files": 338,
+        "readback_archive_sha256": "474b695f57cadfd047a40089362ed61cdb8ecc27bc4f85d275153a8288b8e488",
+        "receiver_observation_agent_read": {
+          "baseline_complete": true,
+          "baseline_measurement_failures": 0,
+          "root_complete": false,
+          "root_measurement_failures": 1,
+          "records_not_retained_both": 0,
+          "root_full_raw_readback_pending": true
+        }
+      },
+      "baseline_cost": {
+        "imports": 10,
+        "host_checks": 80709,
+        "nested_host_cpu_seconds": 4.517504795,
+        "prior_host_checks": 81454,
+        "whole_public_phase_cpu_ns": 8374266693,
+        "whole_public_phase_wall_ns": 34581570236,
+        "not_additive": true
+      },
+      "root_actual_credit_flow": {
+        "initial_ns": 2000000000,
+        "credited_refill_ns": 6344940903,
+        "paid_cpu_ns": 6352965233,
+        "remaining_ns": 1991975670,
+        "balance_identity_verified": true,
+        "numeric_depletion_observed": false
+      },
+      "CI": {
+        "total_runs": 26,
+        "automatic_runs": 25,
+        "unique_F0_runs": 1,
+        "snapshot_jobs": 199,
+        "snapshot_failed_logs": 24,
+        "snapshot_original_automatic_runs_still_active": 4,
+        "terminal_collection_continues": true
+      },
+      "next_work": "Preserve separate actual SQL transactions/frontiers; investigate first full graph and per-operation Host physical checks; repair current exact source-lock. Equal average CPU cap/refill alone is not an impossibility proof: cap-before-debit, actual initial2s, reservations and maximum unobserved debit need exact analysis. Original depletion excludes initial-zero credit.",
+      "full_physical_cost_closed": false
     }
   },
   "CI": {
@@ -4505,7 +4862,7 @@
     "production_eligible": false,
     "full_system_cost_complete": false
   },
-  "interpretation": "The actual new 56-call candidate is NoUpdate, the unchanged E6 original NoUpdate parent still fails its 64-read bound after B starts, and the new Chain F0 still fails 30s/4s/depletion business gates. Product source repairs and cold fresh-D implementation continue; component passes and complete retained evidence confer none of the ten joint qualifications.",
+  "interpretation": "The original56-call candidate remains NoUpdate; the additional24-call A interface diagnostic reached real native tests but all models remain0/4. New prospectively frozen raw-function learning is training. E6 source4adb passed full original caller scan and11 native components; original complete NoUpdate5 has started, with no full-parent success yet. Chain3db original F0 remains1/6 at30s and0/6 at4s with numeric depletion refused. Cold fresh D and independent controller/authenticated user evidence remain unclosed. All ten joint qualification flags remain false.",
   "original_native_files": [
     {
       "path": "native-v8/RESULT.json",
@@ -4598,165 +4955,12 @@
       "original_path": "/Users/qianqi/work/hepta-root-mac-fixtures-shallow-20261118-2e9b/native-validation-1/original-macos-fixtures.stderr"
     }
   ],
-  "previous_evidence_commit": "2a63b74a9f95f1e2165d75802f51a57c9de8c552",
+  "previous_evidence_commit": "e43de393facc73b0207a754f30c90d3d4247425b",
   "next_actual_student_collection": {
-    "pr": 6717,
-    "source": "dfc4e24ba68fa983f4dbdaca1de6c2d54a4df950",
-    "tree": "6abcd8ed0fee281b8154171f830aeba90afecde1",
-    "status": "A/B3 frozen candidate finished with ResearchNoUpdate; next shared editing representation uses A-only evidence and CPU controls before any new model work",
-    "parent_model": "430f4051d47672d121a5d790aca0e489804b0d8419c101e3c1171b3d17157786",
-    "credit_model": "785bc1cea2996e33cfe02c9c51a5a3802c931b010060369fc659b47fde4440a1",
-    "actual_parent_credit_job": "1a1efba0ff6-ffbe-5bf",
-    "host": "desktop",
-    "idempotency_key": "e123-upstream-current-students-dfc4e24-2e9b-001",
-    "planned_parent_calls": 8,
-    "planned_credit_calls": 8,
-    "conditional_teacher_calls": 8,
-    "total_call_cap": 24,
-    "new_training_updates": 0,
-    "source_pool": "Same four newly acquired upstream A materials; no B/B2 training",
-    "protocol_sha256": "56071aea433cbf5e3b3c479e01ad39e3b025533030e6d4c57c68357163bdfc50",
-    "tasks_sha256": "b30229f6fe886a0d23151b3e761592e3e11eeb333bdaf7e79c606eb6f85a08de",
-    "generation_policy_sha256": "f2241e8719eb2e9b8b699aa402ddd6d5915e18c153a9301f372a56040a9376da",
-    "input_cap": 8192,
-    "output_cap": 2048,
-    "student_native_context": 32768,
-    "teacher_per_slot_context": 131072,
-    "initial_prompt_tokens": [
-      473,
-      1303,
-      1770,
-      1757
-    ],
-    "reference_patch_tokens": [
-      113,
-      1194,
-      374,
-      99
-    ],
-    "complete_reference_repairs_reproduce_original_after_bytes": true,
-    "prompt_truncation_allowed": false,
-    "actual_sandbox_preflight_job": "1a1efa9ebe8-ffbe-597",
-    "actual_sandbox_case_executions": 228,
-    "actual_sandbox_child_count": 8,
-    "original_case_timeout_seconds": 3,
-    "oracle_and_dependencies_read_only": true,
-    "network_namespace_isolated": true,
-    "host_canary_inaccessible": true,
-    "reference_preflight_model_calls": 0,
-    "actual_model_result_known": true,
-    "teacher_first_preflight_refused": true,
-    "teacher_service_natural_restoration_observed": true,
-    "teacher_service_restarted_by_this_work": false,
-    "physical_compute_matched": false,
-    "new_policy_is_old_384_policy": false,
-    "original_NoUpdate_rejudged": false,
-    "cpu_energy_scope": "Prospective whole-host CPU package counters sampled every 20 seconds; includes concurrent activity, is not per-model net energy; GPU remains unmeasured.",
-    "remaining_scope": "Both student arms failed all four A tasks. T2 preserved humanize only; no failed-task recovery. Actual failed observations now seed a separately frozen 2-arm learning study.",
-    "teacher_freeze_commit": "9cfa4995c5d08aa0af00cdda6ef1fa67e49b6d1e",
-    "teacher_freeze_path": "qualification/cell-upstream-current-student-20261118/teacher-preparation/TEACHER_FREEZE.json",
-    "teacher_freeze_sha256": "c9e7b72fb1bd196b32bb7022d6743054e234e1b7de1f08233e93939e3ff33094",
-    "teacher_template_codec_preflight_passed": true,
-    "teacher_freeze_new_generations": 0,
-    "teacher_actual_first_four_job": "1a1efc81fab-ffbe-5e5",
-    "teacher_first_four_status": "succeeded",
-    "student_owner_status": "succeeded with original 16 P/C calls",
-    "evidence_commit": "9af894b5505cd3f3d49313b925954b76f8c62b70",
-    "teacher_second_four_job": "1a1efccb06e-ffbe-5f5",
-    "teacher_second_four_status": "succeeded",
-    "actual_calls": 24,
-    "actual_verifier_calls": 24,
-    "actual_native_children": 6,
-    "actual_native_case_executions": 170,
-    "model_results": {
-      "C": {
-        "actual_model_calls": 8,
-        "actual_native_children": 0,
-        "actual_verifier_calls": 8,
-        "any_success": 0,
-        "failure_categories": {
-          "invalid_JSON": 1,
-          "invalid_edit_schema": 1,
-          "original_text_mismatch": 6
-        },
-        "final": 0,
-        "first": 0,
-        "generation_wall_seconds": 32.077592954039574,
-        "input_tokens": 11183,
-        "output_caps_hit": 0,
-        "output_tokens": 357,
-        "preservation_opportunities": 0,
-        "recovery": 0,
-        "recovery_opportunities": 4,
-        "regression": 0,
-        "tasks": 4,
-        "unchanged_second_answers": 2,
-        "verifier_wall_seconds": 0.033595237124245614
-      },
-      "P": {
-        "actual_model_calls": 8,
-        "actual_native_children": 0,
-        "actual_verifier_calls": 8,
-        "any_success": 0,
-        "failure_categories": {
-          "invalid_JSON": 5,
-          "original_text_mismatch": 2,
-          "restricted_name": 1
-        },
-        "final": 0,
-        "first": 0,
-        "generation_wall_seconds": 213.08247939689318,
-        "input_tokens": 12948,
-        "output_caps_hit": 0,
-        "output_tokens": 2940,
-        "preservation_opportunities": 0,
-        "recovery": 0,
-        "recovery_opportunities": 4,
-        "regression": 0,
-        "tasks": 4,
-        "unchanged_second_answers": 2,
-        "verifier_wall_seconds": 0.051986724021844566
-      },
-      "T2": {
-        "actual_model_calls": 8,
-        "actual_native_children": 6,
-        "actual_verifier_calls": 8,
-        "any_success": 1,
-        "failure_categories": {
-          "native_business_failure": 4,
-          "native_pass": 2,
-          "original_text_mismatch": 2
-        },
-        "final": 1,
-        "first": 1,
-        "generation_wall_seconds": 147.37514885514975,
-        "input_tokens": 13378,
-        "output_caps_hit": 0,
-        "output_tokens": 3327,
-        "preservation_opportunities": 1,
-        "recovery": 0,
-        "recovery_opportunities": 3,
-        "regression": 0,
-        "tasks": 4,
-        "unchanged_second_answers": 3,
-        "verifier_wall_seconds": 52.80877933098236
-      }
-    },
-    "readout_sha256": "1b9451d4839046c7407e01d301eada93b14adb001f6e7be48cb6d88c2ece792d",
-    "archive": {
-      "bytes": 879198,
-      "sha256": "c23f69125da60941fd2b5c8719cc47af77cb2b76bbcec7ca7f5e6e142b8d33c9",
-      "original_files": 631,
-      "index_additional": true
-    },
-    "whole_host_cpu_energy_joules": {
-      "package-0": 7642.957667,
-      "package-1": 8596.784023
-    },
-    "cpu_energy_samples": 19,
-    "cpu_energy_attribution": "whole-host package window, includes background work; no model-net attribution or idle subtraction",
-    "full_system_cost_known": false,
-    "mutual_teacher_complementarity": false
+    "status": "Finish both raw-function weights; freeze four unseen projects before reading new A outputs; execute predeclared current-policy/common-prefix comparisons",
+    "new_candidate_pr": 6737,
+    "old_56_call_NoUpdate_retained": true,
+    "new_24_call_diagnostic_NoUpdate_retained": true
   },
   "prospective_cost_counter_capability": {
     "original_job": "1a1ef98043c-ffbe-55b",
@@ -4926,6 +5130,69 @@
       "original_path": "/home/qq/work/hepta-e6-cold-next-task-20261119-2e9b/source-qa-5/RESULT.json",
       "sha256": "afe162e0998416eb9070c0069ac69b2c3d37998a6a0d4daf97acd72398d28e1f",
       "bytes": 1420
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/REPLACEMENT_A_READOUT.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/analysis-1/READOUT.json",
+      "sha256": "a6d6ada131e98314f01a07b4929b99a70bcf1f65166043fce5d23ae7248a5fe0",
+      "bytes": 5585,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/REPLACEMENT_A_COST.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-replacement-interface-20261119-2e9b/analysis-1/COST_LEDGER.json",
+      "sha256": "f3e8aec83ccdc223cb0552c2c71ba49855d26d49b5ac803848284a700d7db64a",
+      "bytes": 2088,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/RAW_FUNCTION_PROTOCOL.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/source/qualification/cell-upstream-raw-function-learning-20261119/prepared/PROTOCOL.json",
+      "sha256": "e5907ac5c963919d1a947df5274bb6e4a84565ab52f0478eabca91334b3739b5",
+      "bytes": 30106,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/RAW_FUNCTION_CPU_CONTROLS.json",
+      "original_path": "/home/qian-qi/work/hepta-upstream-raw-function-learning-20261119-2e9b/source/qualification/cell-upstream-raw-function-learning-20261119/prepared/CPU_CONTROLS.json",
+      "sha256": "4d6d7d0fedb54ab58d85e7daf15f1e4a6dd53a9a073f3d1680b3df4e1c204e8c",
+      "bytes": 6003,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/E6_COMPLETE_CALLER_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read65-source-closure-7/RESULT.json",
+      "sha256": "d76620ec7bc39b9d91504143b9b8c2c27da52af8d8c7585373d02fd903b884c7",
+      "bytes": 48556,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/E6_NATIVE11_RESULT.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/native-validation-4/RESULT.json",
+      "sha256": "985b613a0b1e1646f2fc5ac8e98b23c62b9a8745f3221f05e7817b1c559c6156",
+      "bytes": 8873,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/E6_SOURCE_FREEZE.json",
+      "original_path": "/home/qq/work/hepta-e6-operation-scope-20261118-2e9b/read65-frozen-source-batch7/RESULT.json",
+      "sha256": "ff6f1abba7235d596a1f286efcdd165be0d7c3f5c71d3efbf8937a4765cb3812",
+      "bytes": 4262,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/CHAIN_3DB_F0_READOUT.json",
+      "original_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/f0-independent-readback.json",
+      "sha256": "2bd7a12e08e6fb62df66406872c901c63438a285ab428d04229daec0337fa6c9",
+      "bytes": 17072,
+      "root_full_original_read_and_hash_checked": true
+    },
+    {
+      "path": "qualification/cell-joint-20261118-2e9b/original-readbacks/20261118-2304/CHAIN_3DB_F0_COST.json",
+      "original_path": "/home/qian-qi/work/chain-native-operation-readback-f0-20261119-2e9b/publication-2/cost-summary.json",
+      "sha256": "92cf0238c36b6a5e7715a61adf4ed7490e85fae54f8be4e1db58567f9b52f1bf",
+      "bytes": 11900,
+      "root_full_original_read_and_hash_checked": true
     }
   ]
 }
