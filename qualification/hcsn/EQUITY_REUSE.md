@@ -48,3 +48,8 @@ log difference reaches `log(0)` and contaminates backward. The raw value
 and all gradients are preserved in the study output; equal NaNs are not
 counted as an equivalence pass. No clipping or tail-branch replacement is
 introduced by this optimization.
+
+That failure describes the frozen optimization-study source. The subsequent
+[tail-stability repair](TAIL_STABILITY.md) retains this original observation
+and fixes the reproduced gradient failure separately; it does not revise these
+timings or the frozen Cell training results.
