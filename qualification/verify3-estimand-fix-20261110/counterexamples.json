@@ -1,0 +1,82 @@
+{
+  "after": {
+    "unequal_cluster_size": {
+      "gates": {
+        "accepted_error_noninferiority": true,
+        "coverage": true,
+        "externally_reviewable": false,
+        "horizon_labels_complete": true,
+        "independent_labels_receipt_authenticated": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": false,
+        "physical_costs_complete_claim_verified": true,
+        "roster_complete": true,
+        "terminal_error_reduction": true
+      },
+      "paired_group_signflip_one_sided_p": 0.5,
+      "paired_mean_loss_improvement": 0.0019801980198019776,
+      "production_authority": "NONE",
+      "scientific_admission": "HOLD",
+      "terminal_error_rate_reduction": 0.04950495049504951
+    },
+    "zero_reduction_threshold": {
+      "gates": {
+        "accepted_error_noninferiority": true,
+        "coverage": true,
+        "externally_reviewable": false,
+        "horizon_labels_complete": true,
+        "independent_labels_receipt_authenticated": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": true,
+        "physical_costs_complete_claim_verified": true,
+        "roster_complete": true,
+        "terminal_error_reduction": false
+      },
+      "paired_group_signflip_one_sided_p": 0.00390625,
+      "paired_mean_loss_improvement": 1.0,
+      "production_authority": "NONE",
+      "scientific_admission": "HOLD",
+      "terminal_error_rate_reduction": 0.0
+    }
+  },
+  "before": {
+    "unequal_cluster_size": {
+      "gates": {
+        "accepted_error_noninferiority": true,
+        "coverage": true,
+        "externally_reviewable": true,
+        "horizon_labels_complete": true,
+        "independent_labels_receipt_authenticated": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": true,
+        "physical_costs_complete_claim_verified": true,
+        "roster_complete": true,
+        "terminal_error_reduction": true
+      },
+      "paired_group_signflip_one_sided_p": 0.03125,
+      "paired_mean_loss_improvement": 0.0019801980198019776,
+      "production_authority": "NONE",
+      "scientific_admission": "HOLD",
+      "terminal_error_rate_reduction": 0.04950495049504951
+    },
+    "zero_reduction_threshold": {
+      "gates": {
+        "accepted_error_noninferiority": true,
+        "coverage": true,
+        "externally_reviewable": true,
+        "horizon_labels_complete": true,
+        "independent_labels_receipt_authenticated": true,
+        "mean_total_loss_improvement": true,
+        "paired_statistical_threshold": true,
+        "physical_costs_complete_claim_verified": true,
+        "roster_complete": true,
+        "terminal_error_reduction": true
+      },
+      "paired_group_signflip_one_sided_p": 0.00390625,
+      "paired_mean_loss_improvement": 1.0,
+      "production_authority": "NONE",
+      "scientific_admission": "HOLD",
+      "terminal_error_rate_reduction": 0.0
+    }
+  }
+}

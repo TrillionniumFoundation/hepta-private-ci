@@ -1,0 +1,32 @@
+test_callback_missing_or_truthy_string_does_not_verify (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_callback_missing_or_truthy_string_does_not_verify) ... ok
+test_forged_or_late_records_fail_closed (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_forged_or_late_records_fail_closed) ... ok
+test_missing_cost_and_not_run_preserved_in_denominator (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_missing_cost_and_not_run_preserved_in_denominator) ... ok
+test_missing_horizon_not_replaced_by_interrupted_disposition (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_missing_horizon_not_replaced_by_interrupted_disposition) ... ok
+test_multiple_cases_from_same_template_are_one_stat_group (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_multiple_cases_from_same_template_are_one_stat_group) ... ok
+test_no_terminal_error_reduction_never_qualifies (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_no_terminal_error_reduction_never_qualifies) ... ok
+test_positive_paired_signal_is_only_reviewable_not_promoted (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_positive_paired_signal_is_only_reviewable_not_promoted) ... ok
+test_refuse_reject_everything_even_when_wrong_accepts_fall (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_refuse_reject_everything_even_when_wrong_accepts_fall) ... ok
+test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported) ... FAIL
+test_unknown_accepted_truth_has_explicit_worst_case (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_unknown_accepted_truth_has_explicit_worst_case) ... ok
+test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction) ... FAIL
+
+======================================================================
+FAIL: test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/40a1a085876c/matched-fix/baseline/experiments/verification_cell_verify1/test_matched_qualification.py", line 123, in test_unequal_clusters_test_the_same_pair_weighted_gain_as_reported
+    self.assertEqual(result["paired_group_signflip_one_sided_p"], 0.5)
+AssertionError: 0.03125 != 0.5
+
+======================================================================
+FAIL: test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction (experiments.verification_cell_verify1.test_matched_qualification.MatchedQualificationTests.test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/workspace/scratch/40a1a085876c/matched-fix/baseline/experiments/verification_cell_verify1/test_matched_qualification.py", line 108, in test_zero_reduction_threshold_does_not_turn_cost_savings_into_error_reduction
+    self.assertFalse(result["gates"]["terminal_error_reduction"])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.015s
+
+FAILED (failures=2)

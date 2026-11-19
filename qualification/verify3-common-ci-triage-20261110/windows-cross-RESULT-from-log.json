@@ -1,0 +1,806 @@
+{
+  "cases": [
+    {
+      "directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive",
+      "executable_argument": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+      "executable_verbatim_argv": false,
+      "key_argument": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key",
+      "name": "drive",
+      "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "status": "ALL_STAGES_OBSERVED",
+      "verbatim_argv": false
+    },
+    {
+      "directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim",
+      "executable_argument": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+      "executable_verbatim_argv": false,
+      "key_argument": "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key",
+      "name": "verbatim",
+      "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "status": "ALL_STAGES_OBSERVED",
+      "verbatim_argv": true
+    },
+    {
+      "directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive",
+      "executable_argument": "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+      "executable_verbatim_argv": true,
+      "key_argument": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key",
+      "name": "verbatim-executable-drive",
+      "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "status": "ALL_STAGES_OBSERVED",
+      "verbatim_argv": false
+    },
+    {
+      "directory": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim",
+      "executable_argument": "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+      "executable_verbatim_argv": true,
+      "key_argument": "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key",
+      "name": "verbatim-executable-verbatim",
+      "statement_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "status": "ALL_STAGES_OBSERVED",
+      "verbatim_argv": true
+    }
+  ],
+  "diagnostic_success": true,
+  "ephemeral_keys_removed": true,
+  "executable": {
+    "file_version": [
+      9,
+      5,
+      6,
+      4
+    ],
+    "path": "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+    "product_version": [
+      9,
+      5,
+      6,
+      4
+    ],
+    "sha256_after": "c9dc170cd161db87e75eb6cf282f1325005b9e35628b9a36cb19883a8be1a34f",
+    "sha256_before": "c9dc170cd161db87e75eb6cf282f1325005b9e35628b9a36cb19883a8be1a34f"
+  },
+  "executable_identity_unchanged": true,
+  "operations": [
+    {
+      "argv": [
+        "C:\\Windows\\system32\\icacls.exe",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive"
+      ],
+      "elapsed_wall_seconds": 0.014009299999997893,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "drive-directory-acl",
+      "stderr": {
+        "bytes": 0,
+        "file": "drive-directory-acl.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 365,
+        "file": "drive-directory-acl.stdout.bin",
+        "sha256": "f43cb8f8e7c7e459fb326655845db54389341fdbf32d2f8b5e04d601d0283d48",
+        "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                       BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                       OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key"
+      ],
+      "elapsed_wall_seconds": 0.018870900000010238,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "drive-generate",
+      "stderr": {
+        "bytes": 0,
+        "file": "drive-generate.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "drive-generate.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-E",
+        "sha256",
+        "-lf",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key.pub"
+      ],
+      "elapsed_wall_seconds": 0.017293500000008066,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "drive-fingerprint",
+      "stderr": {
+        "bytes": 0,
+        "file": "drive-fingerprint.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 92,
+        "file": "drive-fingerprint.stdout.bin",
+        "sha256": "0e9f163df45112f3c0d0fca44e5552dce0aab369ee778e8714a08d00e055189a",
+        "utf8": "256 SHA256:kxCUqfOtjcEGlYZYc6zqlAQkWlSsi8oTZgfzOABtCXk runneradmin@runnervmm7ud1 (ED25519)\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "sign",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\operator-key",
+        "-n",
+        "hepta-path-diagnostic",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement"
+      ],
+      "elapsed_wall_seconds": 0.020605799999998453,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "drive-sign",
+      "stderr": {
+        "bytes": 200,
+        "file": "drive-sign.stderr.bin",
+        "sha256": "f7dc8d9a178e1fd3e03cfe0110d6f0136e0f993b27bb9c0e4049b13fee37c83a",
+        "utf8": "Signing file C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement\r\nWrite signature to C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig\r\n"
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "drive-sign.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "hepta-path-diagnostic",
+        "-s",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.021169299999996838,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "drive-verify",
+      "stderr": {
+        "bytes": 0,
+        "file": "drive-verify.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 123,
+        "file": "drive-verify.stdout.bin",
+        "sha256": "e47b4ae2ba563758e9ba46dd7d5c3ccd198dd213d9576fab99c6818679c15f3f",
+        "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:kxCUqfOtjcEGlYZYc6zqlAQkWlSsi8oTZgfzOABtCXk\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "wrong-namespace",
+        "-s",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\drive\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.018146100000009824,
+      "exit_code": 4294967295,
+      "expected_exit": "nonzero",
+      "expected_exit_observed": true,
+      "name": "drive-wrong-namespace",
+      "stderr": {
+        "bytes": 53,
+        "file": "drive-wrong-namespace.stderr.bin",
+        "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00",
+        "utf8": "Couldn't verify signature: namespace does not match\r\n"
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 29,
+        "file": "drive-wrong-namespace.stdout.bin",
+        "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37",
+        "utf8": "Could not verify signature.\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\icacls.exe",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim"
+      ],
+      "elapsed_wall_seconds": 0.008583999999999037,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-directory-acl",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-directory-acl.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 374,
+        "file": "verbatim-directory-acl.stdout.bin",
+        "sha256": "ef5c4a467a11d25fd32fe7b878f3a950d692bc365209890e35886c4472cd3264",
+        "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                          BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                          OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key"
+      ],
+      "elapsed_wall_seconds": 0.017987899999994283,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-generate",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-generate.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-generate.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-E",
+        "sha256",
+        "-lf",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key.pub"
+      ],
+      "elapsed_wall_seconds": 0.01598150000000942,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-fingerprint",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-fingerprint.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 92,
+        "file": "verbatim-fingerprint.stdout.bin",
+        "sha256": "9c653bf667bd31fb258d222ec90f41e8dbb7df8872a124d7ae714df28088a5d7",
+        "utf8": "256 SHA256:ZW3d6/t4kUit/CD6AAt3Rn3F5Yw196PTnJZ82pBkEuc runneradmin@runnervmm7ud1 (ED25519)\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "sign",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\operator-key",
+        "-n",
+        "hepta-path-diagnostic",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement"
+      ],
+      "elapsed_wall_seconds": 0.0191983999999934,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-sign",
+      "stderr": {
+        "bytes": 214,
+        "file": "verbatim-sign.stderr.bin",
+        "sha256": "4f45cafb9d4b1763b12743d41eb362f8b09c2d4bdb9ab7a4003abd935e6e1c54",
+        "utf8": "Signing file \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement\r\nWrite signature to \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig\r\n"
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-sign.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "hepta-path-diagnostic",
+        "-s",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.019883499999991727,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-verify",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-verify.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 123,
+        "file": "verbatim-verify.stdout.bin",
+        "sha256": "acdcda4d4ca9228a29e967e11e8cef38b4063ebe1acd942140b47321583fa55c",
+        "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:ZW3d6/t4kUit/CD6AAt3Rn3F5Yw196PTnJZ82pBkEuc\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "wrong-namespace",
+        "-s",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.018280700000005368,
+      "exit_code": 4294967295,
+      "expected_exit": "nonzero",
+      "expected_exit_observed": true,
+      "name": "verbatim-wrong-namespace",
+      "stderr": {
+        "bytes": 53,
+        "file": "verbatim-wrong-namespace.stderr.bin",
+        "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00",
+        "utf8": "Couldn't verify signature: namespace does not match\r\n"
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 29,
+        "file": "verbatim-wrong-namespace.stdout.bin",
+        "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37",
+        "utf8": "Could not verify signature.\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\icacls.exe",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive"
+      ],
+      "elapsed_wall_seconds": 0.008590100000006373,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-directory-acl",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-directory-acl.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 425,
+        "file": "verbatim-executable-drive-directory-acl.stdout.bin",
+        "sha256": "4ac6345b69e1883fd1fa64a6afd945f4fc790790f0e3f0a536cdbce42c9c1205",
+        "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                                           BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                                           OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key"
+      ],
+      "elapsed_wall_seconds": 0.021035800000007043,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-generate",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-generate.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-generate.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-E",
+        "sha256",
+        "-lf",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key.pub"
+      ],
+      "elapsed_wall_seconds": 0.01731059999998763,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-fingerprint",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-fingerprint.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 92,
+        "file": "verbatim-executable-drive-fingerprint.stdout.bin",
+        "sha256": "9ea038f7aa53ea59a71edd4a1ff56bf2426c800322c48d234084cab0085890fe",
+        "utf8": "256 SHA256:3W6VvhMcOERt2NAsZYJ1DuB/DkPtrKhghS9FyaeXpjs runneradmin@runnervmm7ud1 (ED25519)\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "sign",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\operator-key",
+        "-n",
+        "hepta-path-diagnostic",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement"
+      ],
+      "elapsed_wall_seconds": 0.022943499999996675,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-sign",
+      "stderr": {
+        "bytes": 240,
+        "file": "verbatim-executable-drive-sign.stderr.bin",
+        "sha256": "f7b08e99362be528227e23f6b2ace19d0768913b20a1655d071871e0d5a55566",
+        "utf8": "Signing file C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement\r\nWrite signature to C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig\r\n"
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-sign.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "hepta-path-diagnostic",
+        "-s",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.02256669999999872,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-verify",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-drive-verify.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 123,
+        "file": "verbatim-executable-drive-verify.stdout.bin",
+        "sha256": "14888c26ad13b3a34c346d5ca49940959e64c7f4885ab113fe95d8a434a8a2cd",
+        "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:3W6VvhMcOERt2NAsZYJ1DuB/DkPtrKhghS9FyaeXpjs\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "wrong-namespace",
+        "-s",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-drive\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.02075460000000362,
+      "exit_code": 4294967295,
+      "expected_exit": "nonzero",
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-drive-wrong-namespace",
+      "stderr": {
+        "bytes": 53,
+        "file": "verbatim-executable-drive-wrong-namespace.stderr.bin",
+        "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00",
+        "utf8": "Couldn't verify signature: namespace does not match\r\n"
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 29,
+        "file": "verbatim-executable-drive-wrong-namespace.stdout.bin",
+        "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37",
+        "utf8": "Could not verify signature.\r\n"
+      }
+    },
+    {
+      "argv": [
+        "C:\\Windows\\system32\\icacls.exe",
+        "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim"
+      ],
+      "elapsed_wall_seconds": 0.009765599999994379,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-directory-acl",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-directory-acl.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 434,
+        "file": "verbatim-executable-verbatim-directory-acl.stdout.bin",
+        "sha256": "ea0f10d60c286a4ff39156c76169f398d3d74c8079c1f749c0db794c1d40758f",
+        "utf8": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim NT AUTHORITY\\SYSTEM:(OI)(CI)(F)\n                                                                                              BUILTIN\\Administrators:(OI)(CI)(F)\n                                                                                              OWNER RIGHTS:(OI)(CI)(F)\n\nSuccessfully processed 1 files; Failed processing 0 files\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-q",
+        "-t",
+        "ed25519",
+        "-N",
+        "",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key"
+      ],
+      "elapsed_wall_seconds": 0.02072610000000452,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-generate",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-generate.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-generate.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-E",
+        "sha256",
+        "-lf",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key.pub"
+      ],
+      "elapsed_wall_seconds": 0.016741899999999532,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-fingerprint",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-fingerprint.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 92,
+        "file": "verbatim-executable-verbatim-fingerprint.stdout.bin",
+        "sha256": "6c5c69f265442ff4600b5461b8b945941845e2e928d180780e712d4acd45fe5b",
+        "utf8": "256 SHA256:dIK2Rz/RNJlklNxqmph1rzgTvrTiDrfd1rhInU5LYS8 runneradmin@runnervmm7ud1 (ED25519)\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "sign",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\operator-key",
+        "-n",
+        "hepta-path-diagnostic",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement"
+      ],
+      "elapsed_wall_seconds": 0.019686999999990462,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-sign",
+      "stderr": {
+        "bytes": 254,
+        "file": "verbatim-executable-verbatim-sign.stderr.bin",
+        "sha256": "b81bb946a95d1146df71dca7b047d2b95062663e44e04ea55f15da2dd8c18ed4",
+        "utf8": "Signing file \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement\r\nWrite signature to \\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig\r\n"
+      },
+      "stdin_mode": "DEVNULL",
+      "stdin_sha256": null,
+      "stdout": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-sign.stdout.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "hepta-path-diagnostic",
+        "-s",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.021050299999998856,
+      "exit_code": 0,
+      "expected_exit": 0,
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-verify",
+      "stderr": {
+        "bytes": 0,
+        "file": "verbatim-executable-verbatim-verify.stderr.bin",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "utf8": ""
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 123,
+        "file": "verbatim-executable-verbatim-verify.stdout.bin",
+        "sha256": "5d25f84a06cbebbb916ef23edbd503dea69c36c28e5d75d2eeef0f941885dff9",
+        "utf8": "Good \"hepta-path-diagnostic\" signature for diagnostic with ED25519 key SHA256:dIK2Rz/RNJlklNxqmph1rzgTvrTiDrfd1rhInU5LYS8\r\n"
+      }
+    },
+    {
+      "argv": [
+        "\\\\?\\C:\\Windows\\system32\\OpenSSH\\ssh-keygen.exe",
+        "-Y",
+        "verify",
+        "-f",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\allowed_signers",
+        "-I",
+        "diagnostic",
+        "-n",
+        "wrong-namespace",
+        "-s",
+        "\\\\?\\C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x\\verbatim-executable-verbatim\\statement.sig"
+      ],
+      "elapsed_wall_seconds": 0.01968469999999911,
+      "exit_code": 4294967295,
+      "expected_exit": "nonzero",
+      "expected_exit_observed": true,
+      "name": "verbatim-executable-verbatim-wrong-namespace",
+      "stderr": {
+        "bytes": 53,
+        "file": "verbatim-executable-verbatim-wrong-namespace.stderr.bin",
+        "sha256": "9bd29b8ad464abaa369873681c84108b9d1ab2a61b03448419c69b158ac25f00",
+        "utf8": "Couldn't verify signature: namespace does not match\r\n"
+      },
+      "stdin_mode": "file",
+      "stdin_sha256": "2648aa5a8c9857daa43dd39c7b560b733dcdbea4edf4c50b9c88dfc42644a5fe",
+      "stdout": {
+        "bytes": 29,
+        "file": "verbatim-executable-verbatim-wrong-namespace.stdout.bin",
+        "sha256": "60d62558ded958e8877989fcb0872c91e0cac25a85d028a930fccba435c20e37",
+        "utf8": "Could not verify signature.\r\n"
+      }
+    }
+  ],
+  "original_operator_target_qualified": false,
+  "os": "Windows-2025Server-10.0.26100-SP0",
+  "production_authority": "NONE",
+  "python": "3.12.10",
+  "schema": "hepta.openssh-path-diagnostic.v1",
+  "script_sha256": "7794f06e824e3f5cd6ee7cab29375206d11186e8fd37eeeb1dad4e3434b756d6",
+  "source_sha": "68e9e6c80b9139d5a4b081e4cdd41341fc951142",
+  "temporary_root": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\hepta-openssh-path-un1t9n1x"
+}
