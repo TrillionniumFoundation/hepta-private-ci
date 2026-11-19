@@ -326,6 +326,14 @@ QUALIFICATION_SOURCE_SHA256 = {
         "research_evidence/hepta_stable_flow_20261029/report003_recovery/Hepta_Recov"
         "ery_Scientific_Report_20261030.html"
     ): "fee305a08fa030f21bdd68f9672d28892a15a0df206a7c098cc41dd2d66c5184",
+    (
+        "qa/repository-consolidation/20261119/round-03/local-time-compatibility/evid"
+        "ence.tar.gz.part-001"
+    ): "84c771075dc220affd16c3c1599e266547507368b984aafcf697fe7d332308a9",
+    (
+        "qa/repository-consolidation/20261119/round-03/local-time-compatibility/evid"
+        "ence.tar.gz.part-002"
+    ): "44c491b8c00e1230bd372bde1192202f00511eaebf6717846cb15d6198a6b118",
 }
 
 
