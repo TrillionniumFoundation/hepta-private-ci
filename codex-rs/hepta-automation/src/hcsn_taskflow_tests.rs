@@ -91,7 +91,9 @@ fn dispatch(
     intent: &AuthorizedEffectIntent,
     payload: &[u8],
 ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
+    let provider_effect_key = driver.recovery_key(intent)?;
     driver.dispatch(&AuthorizedEffectRequest {
+        provider_effect_key: &provider_effect_key,
         operation_intent: &intent.operation_intent_v1().expect("operation"),
         intent,
         intent_digest: &intent.digest().expect("intent digest"),
@@ -107,6 +109,8 @@ fn pending(intent: &AuthorizedEffectIntent) -> AuthorizedEffectPending {
         attempt: intent.attempt,
         intent_digest: intent.digest().expect("digest"),
         payload_digest: intent.payload_digest.clone(),
+        provider_effect_key: None,
+        wire_payload: None,
         binding_digest: Sha256Digest::for_bytes(b"owner-durable-binding"),
         destination_id: intent.destination_id.clone(),
         authority_epoch: 7,
@@ -206,8 +210,10 @@ fn payload_scope_and_binding_mismatches_never_contact_supervisor() {
     );
     let mut binding = intent.final_use_binding().expect("binding");
     binding.payload_sha256[0] ^= 1;
+    let provider_effect_key = driver.recovery_key(&intent).expect("recovery key");
     assert_eq!(
         driver.dispatch(&AuthorizedEffectRequest {
+            provider_effect_key: &provider_effect_key,
             operation_intent: &intent.operation_intent_v1().expect("operation"),
             intent: &intent,
             intent_digest: &intent.digest().expect("digest"),

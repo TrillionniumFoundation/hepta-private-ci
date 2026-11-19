@@ -1361,8 +1361,9 @@ fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {
     Ok(())
 }
 
-/// Preserve the two independently applied v4/v5 histories after their source
-/// imports collided. Only exact original checksums can move to versions 17/18.
+/// Preserve independently applied histories whose migration numbers collided.
+/// Only exact original checksums may move from v4/v5 to versions 17/18 or from
+/// provider-recovery v20 to version 23. The canonical Circuit v20 stays v20.
 /// This transaction changes migration identities, never their SQL, checksums,
 /// timestamps or product data. Unknown/dirty/duplicate histories fail closed.
 async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), AutomationError> {
@@ -1407,6 +1408,7 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
         let relocated = match version {
             4 => 17,
             5 => 18,
+            20 => 23,
             _ => return Err(AutomationError::Corrupt),
         };
         if !MIGRATOR.iter().any(|migration| {
@@ -1439,3 +1441,7 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
 #[cfg(test)]
 #[path = "migration_convergence_tests.rs"]
 mod migration_convergence_tests;
+
+#[cfg(test)]
+#[path = "provider_recovery_migration_tests.rs"]
+mod provider_recovery_migration_tests;
