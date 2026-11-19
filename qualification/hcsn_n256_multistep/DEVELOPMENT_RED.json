@@ -1,0 +1,11 @@
+{
+  "attempt": "first scalar occupation control before authentic N256 execution",
+  "exit_code": 1,
+  "failure": "ValueError: unrecognized csr_matrix constructor input: (0.2,)",
+  "source": "legacy sparse_dynamic_v2_intent._extended",
+  "cause": "A tuple of row values is interpreted as a sparse constructor specification, not a dense row.",
+  "authentic_n256_input_loads": 0,
+  "matrix_exponential_actions": 0,
+  "optimizer_steps": 0,
+  "repair": "The new successor uses a nested list. Later legacy occupation/reset counterexamples apply only this constructor repair in memory; all original source bytes remain unchanged."
+}
