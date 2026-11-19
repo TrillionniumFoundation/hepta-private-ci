@@ -3403,7 +3403,7 @@ fn plural_time(value: i64, unit: &str) -> String {
 }
 
 fn format_timestamp(ts: codex_utils_time::Timestamp) -> String {
-    ts.format_utc("%Y-%m-%d %H:%M:%S").expect("supported timestamp format")
+    ts.format_utc(codex_utils_time::UtcFormat::DateTime)
 }
 
 fn render_empty_state_line(state: &PickerState) -> Line<'static> {

@@ -552,7 +552,7 @@ fn local_time_context() -> (String, String) {
     match iana_time_zone::get_timezone() {
         Ok(timezone) => (codex_utils_time::Timestamp::now().format_local("%Y-%m-%d"), timezone),
         Err(_) => (
-            codex_utils_time::Timestamp::now().format_utc("%Y-%m-%d").expect("supported timestamp format"),
+            codex_utils_time::Timestamp::now().format_utc(codex_utils_time::UtcFormat::Date),
             "Etc/UTC".to_string(),
         ),
     }

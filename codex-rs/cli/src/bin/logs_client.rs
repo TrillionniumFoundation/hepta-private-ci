@@ -347,7 +347,7 @@ mod formatter {
     pub(super) fn ts(ts: i64, ts_nanos: i64, compact: bool) -> String {
         let nanos = u32::try_from(ts_nanos).unwrap_or(0);
         match codex_utils_time::Timestamp::from_timestamp(ts, nanos) {
-            Some(dt) if compact => dt.format_utc("%H:%M:%S").expect("supported timestamp format"),
+            Some(dt) if compact => dt.format_utc(codex_utils_time::UtcFormat::Time),
             Some(dt) => dt.to_rfc3339_opts(SecondsFormat::Millis, true),
             None => format!("{ts}.{ts_nanos:09}Z"),
         }

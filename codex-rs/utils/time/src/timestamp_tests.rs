@@ -111,7 +111,7 @@ fn network_and_filename_parsers_retain_distinct_contracts() {
         assert!(Timestamp::parse_from_rfc3339(input).is_err(), "{input}");
     }
     let leap = Timestamp::parse_filename_timestamp("2016-12-31T23-59-60").expect("legacy filename");
-    assert_eq!(leap.format_utc("%Y-%m-%dT%H-%M-%S").expect("known format"), "2016-12-31T23-59-60");
+    assert_eq!(leap.format_utc(super::UtcFormat::Filename), "2016-12-31T23-59-60");
     assert!(Timestamp::parse_filename_timestamp("2016-12-31T23-59-60Z").is_err());
     assert!(Timestamp::parse_filename_timestamp("2016-12-31T23-59-60.1").is_err());
 }

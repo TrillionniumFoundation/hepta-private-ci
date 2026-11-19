@@ -403,12 +403,12 @@ async fn memories_startup_phase2_prunes_old_extension_resources() -> anyhow::Res
     .await?;
     let old_file = chronicle_resources.join(format!(
         "{}-abcd-10min-old.md",
-        (now - time::Duration::days(8)).format_utc("%Y-%m-%dT%H-%M-%S").expect("supported timestamp format")
+        (now - time::Duration::days(8)).format_utc(codex_utils_time::UtcFormat::Filename)
     ));
     tokio::fs::write(&old_file, "old resource").await?;
     let recent_file = chronicle_resources.join(format!(
         "{}-abcd-10min-recent.md",
-        (now - time::Duration::days(6)).format_utc("%Y-%m-%dT%H-%M-%S").expect("supported timestamp format")
+        (now - time::Duration::days(6)).format_utc(codex_utils_time::UtcFormat::Filename)
     ));
     tokio::fs::write(&recent_file, "recent resource").await?;
     seed_required_memory_artifacts(&home.path().join("memories")).await?;
@@ -469,7 +469,7 @@ async fn memories_startup_phase2_prunes_old_extension_resources_without_stage1_i
     .await?;
     let old_file = chronicle_resources.join(format!(
         "{}-abcd-10min-old.md",
-        (now - time::Duration::days(8)).format_utc("%Y-%m-%dT%H-%M-%S").expect("supported timestamp format")
+        (now - time::Duration::days(8)).format_utc(codex_utils_time::UtcFormat::Filename)
     ));
     tokio::fs::write(&old_file, "old resource").await?;
     seed_required_memory_artifacts(&home.path().join("memories")).await?;
