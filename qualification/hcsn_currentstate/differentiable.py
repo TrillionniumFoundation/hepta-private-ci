@@ -184,7 +184,7 @@ def intervene(state, physics, fraction, work=None):
     result = replace(state, active=state.active * (1 - fraction), hits=state.hits + mass,
                      discounted_hits=state.discounted_hits + discounted,
                      value=state.value + physics.spike_reward * discounted,
-                     pending=state.pending + (Atom(state.time + physics.delay, mass, physics.reset),))
+                     pending=state.pending + (Atom(state.time + physics.delay, mass, physics.reset.clone()),))
     if any(not bool(torch.isfinite(t).all()) for t in result.tensors()):
         raise FloatingPointError("unresolved intervention state")
     return result
@@ -259,7 +259,7 @@ def advance(state, physics, target, work=None):
                                     torch.stack((lower, reward), 1), duration, work)
         credits = state.discount_factor * (alpha @ discounted)
         packet = Flux(state.time + physics.delay, stop + physics.delay, alpha,
-                      generator, lower, physics.reset)
+                      generator, lower, physics.reset.clone())
         state = State(stop, current[:, :n], current[:, n], state.hits + increments[:, 0],
                       state.discounted_hits + credits[:, 0], state.occupation + increments[:, 1],
                       state.value + credits[:, 1] + physics.spike_reward * credits[:, 0],
