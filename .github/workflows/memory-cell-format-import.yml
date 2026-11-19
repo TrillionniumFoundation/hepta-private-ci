@@ -1,0 +1,66 @@
+name: One-time exact MemoryCell formatter import
+on:
+  push:
+    branches: [codex/memory-cell-format-source-20261009-v1]
+permissions:
+  contents: write
+  actions: read
+jobs:
+  import-verified-format:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-format-source-20261009-v1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          artifact-ids: '11586986385'
+          run-id: 37862770665
+          github-token: ${{ github.token }}
+          path: /tmp/formatter-source
+          merge-multiple: true
+      - name: Check exact formatter output and construct source-only child
+        id: source
+        env:
+          BASE: 4e996a707a7717152ab36cccaed901c4bd8248a2
+        run: |
+          python3 - <<'PY'
+          import hashlib, os, subprocess
+          from pathlib import Path
+          def git(*args):
+              return subprocess.check_output(['git', *args], text=True).strip()
+          base = os.environ['BASE']
+          assert git('rev-parse', 'HEAD^') == base
+          path = Path('/tmp/formatter-source/memory-cell-format.patch')
+          raw = path.read_bytes()
+          assert len(raw) == 188652
+          assert hashlib.sha256(raw).hexdigest() == '83f56f6854525c75438f0ffc933dc7c1ca05b08888dd38f837829827b3412eb8'
+          git('checkout', '--detach', base)
+          git('apply', '--index', '--check', str(path))
+          git('apply', '--index', str(path))
+          paths = git('diff', '--cached', '--name-only').splitlines()
+          assert len(paths) == 29
+          assert all(p.startswith(('scripts/memory_cell/', 'codex-rs/hepta-agentd/src/', 'codex-rs/hepta-intelligence-eval/src/', 'codex-rs/hepta-learning-artifacts/src/')) for p in paths)
+          assert not any(p.startswith('.github/') for p in paths)
+          git('diff', '--cached', '--check')
+          tree = git('write-tree')
+          sha = git('-c', 'user.name=github-actions[bot]', '-c', 'user.email=41898282+github-actions[bot]@users.noreply.github.com', 'commit-tree', tree, '-p', base, '-m', 'style(memory-cell): apply exact read-only CI formatter output')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as stream:
+              stream.write('sha=' + sha + '\n')
+          print('SOURCE_CANDIDATE=' + sha + '\nSOURCE_TREE=' + tree)
+          PY
+      - name: Publish only an isolated create-only source branch
+        env:
+          TOKEN: ${{ github.token }}
+          CANDIDATE: ${{ steps.source.outputs.sha }}
+        run: |
+          set -euo pipefail
+          header="$(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)"
+          echo "::add-mask::$header"
+          git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $header" push \
+            --force-with-lease=refs/heads/codex/memory-cell-formatted-source-20261009-v1: \
+            origin "$CANDIDATE:refs/heads/codex/memory-cell-formatted-source-20261009-v1"
